@@ -1,16 +1,137 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:111:29: error: array subscript is not an integer
-  111 |     itemsItem i = items.data[i];
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:122:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  122 |   list_itemsItem items = tmp1;
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:122:26: error: incompatible types when initializing type ‘int’ using type ‘list_ItemsItem’
+  122 |   list_itemsItem items = tmp1;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:123:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  123 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:123:25: warning: implicit declaration of function ‘list_itemsItem_create’; did you mean ‘list_ItemsItem_create’? [-Wimplicit-function-declaration]
+  123 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+      |                         list_ItemsItem_create
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:123:52: error: request for member ‘len’ in something not a structure or union
+  123 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |                                                    ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:124:46: error: request for member ‘len’ in something not a structure or union
+  124 |   list_string tmp3 = list_string_create(items.len);
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:126:28: error: request for member ‘len’ in something not a structure or union
+  126 |   for (int i = 0; i < items.len; i++) {
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:127:5: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  127 |     itemsItem i = items.data[i];
+      |     ^~~~~~~~~
+      |     ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:127:24: error: request for member ‘data’ in something not a structure or union
+  127 |     itemsItem i = items.data[i];
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:128:9: error: request for member ‘data’ in something not a structure or union
+  128 |     tmp2.data[tmp4] = i;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:129:24: error: request for member ‘cat’ in something not a structure or union
+  129 |     tmp3.data[tmp4] = i.cat;
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:132:7: error: request for member ‘len’ in something not a structure or union
+  132 |   tmp2.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:135:3: error: unknown type name ‘list_resultItem’; did you mean ‘list_ResultItem’?
+  135 |   list_resultItem tmp6 = list_resultItem_create(tmp5.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_ResultItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:135:26: warning: implicit declaration of function ‘list_resultItem_create’; did you mean ‘list_ResultItem_create’? [-Wimplicit-function-declaration]
+  135 |   list_resultItem tmp6 = list_resultItem_create(tmp5.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_ResultItem_create
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:140:5: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  140 |     list_itemsItem tmp9 = list_itemsItem_create(_gp.items.len);
+      |     ^~~~~~~~~~~~~~
+      |     list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:142:11: error: request for member ‘data’ in something not a structure or union
+  142 |       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
+      |           ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:142:26: error: request for member ‘data’ in something not a structure or union
+  142 |       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:144:9: error: request for member ‘len’ in something not a structure or union
+  144 |     tmp9.len = _gp.items.len;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:147:7: error: unknown type name ‘list_itemsItem’
+  147 |       list_itemsItem items;
+      |       ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:149:45: error: request for member ‘len’ in something not a structure or union
+  149 |     list_int tmp10 = list_int_create(g.items.len);
+      |                                             ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:151:32: error: request for member ‘len’ in something not a structure or union
+  151 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:152:7: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  152 |       itemsItem x = g.items.data[i];
+      |       ^~~~~~~~~
+      |       ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:152:28: error: request for member ‘data’ in something not a structure or union
+  152 |       itemsItem x = g.items.data[i];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:153:29: error: request for member ‘flag’ in something not a structure or union
+  153 |       tmp10.data[tmp11] = (x.flag ? x.val : 0);
       |                             ^
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:151:14: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
-  151 |     _t8[_t7] = g.key;
-      |              ^
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:168:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-  168 |   printf("%d\n", result);
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:153:38: error: request for member ‘val’ in something not a structure or union
+  153 |       tmp10.data[tmp11] = (x.flag ? x.val : 0);
+      |                                      ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:157:45: error: request for member ‘len’ in something not a structure or union
+  157 |     list_int tmp12 = list_int_create(g.items.len);
+      |                                             ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:159:32: error: request for member ‘len’ in something not a structure or union
+  159 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:160:7: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  160 |       itemsItem x = g.items.data[i];
+      |       ^~~~~~~~~
+      |       ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:160:28: error: request for member ‘data’ in something not a structure or union
+  160 |       itemsItem x = g.items.data[i];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:161:28: error: request for member ‘val’ in something not a structure or union
+  161 |       tmp12.data[tmp13] = x.val;
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:165:9: error: request for member ‘data’ in something not a structure or union
+  165 |     tmp6.data[tmp7] =
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:167:16: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  167 |     tmp8[tmp7] = g.key;
+      |                ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:170:7: error: request for member ‘len’ in something not a structure or union
+  170 |   tmp6.len = tmp7;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:177:9: error: unknown type name ‘resultItem’; did you mean ‘ResultItem’?
+  177 |         resultItem tmp15 = tmp6.data[i];
+      |         ^~~~~~~~~~
+      |         ResultItem
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:177:32: error: request for member ‘data’ in something not a structure or union
+  177 |         resultItem tmp15 = tmp6.data[i];
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:178:13: error: request for member ‘data’ in something not a structure or union
+  178 |         tmp6.data[i] = tmp6.data[j];
+      |             ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:178:28: error: request for member ‘data’ in something not a structure or union
+  178 |         tmp6.data[i] = tmp6.data[j];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:179:13: error: request for member ‘data’ in something not a structure or union
+  179 |         tmp6.data[j] = tmp15;
+      |             ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:183:28: error: invalid initializer
+  183 |   list_ResultItem result = tmp6;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:184:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_ResultItem’ [-Wformat=]
+  184 |   printf("%d\n", result);
       |           ~^     ~~~~~~
       |            |     |
-      |            int   list_resultItem
+      |            int   list_ResultItem
 
    1: #include <stdio.h>

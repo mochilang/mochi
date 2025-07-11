@@ -8,12 +8,16 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 int main() {
-  int _t1_data[] = {1, 2, 3};
-  list_int _t1 = {3, _t1_data};
-  printf("%d\n", _t1.len);
+  int tmp1_data[] = {1, 2, 3};
+  list_int tmp1 = {3, tmp1_data};
+  printf("%d\n", tmp1.len);
   return 0;
 }

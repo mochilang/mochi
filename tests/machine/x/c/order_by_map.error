@@ -1,16 +1,74 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/order_by_map.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/order_by_map.c:89:18: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
-   89 |       if (_t5[i] > _t5[j]) {
-      |           ~~~~~~ ^ ~~~~~~
-      |              |        |
-      |              |        map_string_int
-      |              map_string_int
-/workspace/mochi/tests/machine/x/c/order_by_map.c:100:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
-  100 |   printf("%d\n", sorted);
-      |           ~^     ~~~~~~
-      |            |     |
-      |            int   list_dataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:80:3: error: unknown type name ‘list_dataItem’; did you mean ‘list_DataItem’?
+   80 |   list_dataItem data = tmp1;
+      |   ^~~~~~~~~~~~~
+      |   list_DataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:80:24: error: incompatible types when initializing type ‘int’ using type ‘list_DataItem’
+   80 |   list_dataItem data = tmp1;
+      |                        ^~~~
+/workspace/mochi/tests/machine/x/c/order_by_map.c:81:3: error: unknown type name ‘list_dataItem’; did you mean ‘list_DataItem’?
+   81 |   list_dataItem tmp2 = list_dataItem_create(data.len);
+      |   ^~~~~~~~~~~~~
+      |   list_DataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:81:24: warning: implicit declaration of function ‘list_dataItem_create’; did you mean ‘list_DataItem_create’? [-Wimplicit-function-declaration]
+   81 |   list_dataItem tmp2 = list_dataItem_create(data.len);
+      |                        ^~~~~~~~~~~~~~~~~~~~
+      |                        list_DataItem_create
+/workspace/mochi/tests/machine/x/c/order_by_map.c:81:49: error: request for member ‘len’ in something not a structure or union
+   81 |   list_dataItem tmp2 = list_dataItem_create(data.len);
+      |                                                 ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:83:61: error: request for member ‘len’ in something not a structure or union
+   83 |       (map_string_int *)malloc(sizeof(map_string_int) * data.len);
+      |                                                             ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:85:33: error: request for member ‘len’ in something not a structure or union
+   85 |   for (int tmp4 = 0; tmp4 < data.len; tmp4++) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:86:5: error: unknown type name ‘dataItem’; did you mean ‘DataItem’?
+   86 |     dataItem x = data.data[tmp4];
+      |     ^~~~~~~~
+      |     DataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:86:22: error: request for member ‘data’ in something not a structure or union
+   86 |     dataItem x = data.data[tmp4];
+      |                      ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:87:9: error: request for member ‘data’ in something not a structure or union
+   87 |     tmp2.data[tmp3] = x;
+      |         ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:89:37: error: request for member ‘a’ in something not a structure or union
+   89 |     map_string_int_put(&tmp6, "a", x.a);
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:90:37: error: request for member ‘b’ in something not a structure or union
+   90 |     map_string_int_put(&tmp6, "b", x.b);
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:94:7: error: request for member ‘len’ in something not a structure or union
+   94 |   tmp2.len = tmp3;
+      |       ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:97:19: error: invalid operands to binary > (have ‘map_string_int’ and ‘map_string_int’)
+   97 |       if (tmp5[i] > tmp5[j]) {
+      |           ~~~~~~~ ^ ~~~~~~~
+      |               |         |
+      |               |         map_string_int
+      |               map_string_int
+/workspace/mochi/tests/machine/x/c/order_by_map.c:101:9: error: unknown type name ‘dataItem’; did you mean ‘DataItem’?
+  101 |         dataItem tmp8 = tmp2.data[i];
+      |         ^~~~~~~~
+      |         DataItem
+/workspace/mochi/tests/machine/x/c/order_by_map.c:101:29: error: request for member ‘data’ in something not a structure or union
+  101 |         dataItem tmp8 = tmp2.data[i];
+      |                             ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:102:13: error: request for member ‘data’ in something not a structure or union
+  102 |         tmp2.data[i] = tmp2.data[j];
+      |             ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:102:28: error: request for member ‘data’ in something not a structure or union
+  102 |         tmp2.data[i] = tmp2.data[j];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:103:13: error: request for member ‘data’ in something not a structure or union
+  103 |         tmp2.data[j] = tmp8;
+      |             ^
+/workspace/mochi/tests/machine/x/c/order_by_map.c:107:3: error: unknown type name ‘list_dataItem’; did you mean ‘list_DataItem’?
+  107 |   list_dataItem sorted = tmp2;
+      |   ^~~~~~~~~~~~~
+      |   list_DataItem
 
    1: #include <stdio.h>

@@ -1,0 +1,35 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:59:3: error: unknown type name ‘list_pairsItem’; did you mean ‘list_PairsItem’?
+   59 |   list_pairsItem tmp3 = list_pairsItem_create(nums.len * letters.len);
+      |   ^~~~~~~~~~~~~~
+      |   list_PairsItem
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:59:25: warning: implicit declaration of function ‘list_pairsItem_create’; did you mean ‘list_PairsItem_create’? [-Wimplicit-function-declaration]
+   59 |   list_pairsItem tmp3 = list_pairsItem_create(nums.len * letters.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+      |                         list_PairsItem_create
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:68:11: error: request for member ‘data’ in something not a structure or union
+   68 |       tmp3.data[tmp4] = (PairsItem){.n = n, .l = l};
+      |           ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:72:7: error: request for member ‘len’ in something not a structure or union
+   72 |   tmp3.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:73:26: error: invalid initializer
+   73 |   list_PairsItem pairs = tmp3;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:76:5: error: unknown type name ‘pairsItem’; did you mean ‘PairsItem’?
+   76 |     pairsItem p = pairs.data[tmp5];
+      |     ^~~~~~~~~
+      |     PairsItem
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:76:19: error: incompatible types when initializing type ‘int’ using type ‘PairsItem’
+   76 |     pairsItem p = pairs.data[tmp5];
+      |                   ^~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:77:20: error: request for member ‘n’ in something not a structure or union
+   77 |     printf("%d ", p.n);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:78:21: error: request for member ‘l’ in something not a structure or union
+   78 |     printf("%s\n", p.l);
+      |                     ^
+
+   1: #include <stdio.h>

@@ -4,15 +4,19 @@
 typedef struct {
   int id;
   char *name;
-} customersItem;
+} CustomersItem;
 typedef struct {
   int len;
-  customersItem *data;
-} list_customersItem;
-static list_customersItem list_customersItem_create(int len) {
-  list_customersItem l;
+  CustomersItem *data;
+} list_CustomersItem;
+static list_CustomersItem list_CustomersItem_create(int len) {
+  list_CustomersItem l;
   l.len = len;
-  l.data = (customersItem *)malloc(sizeof(customersItem) * len);
+  l.data = calloc(len, sizeof(CustomersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -20,15 +24,19 @@ typedef struct {
   int id;
   int customerId;
   int total;
-} ordersItem;
+} OrdersItem;
 typedef struct {
   int len;
-  ordersItem *data;
-} list_ordersItem;
-static list_ordersItem list_ordersItem_create(int len) {
-  list_ordersItem l;
+  OrdersItem *data;
+} list_OrdersItem;
+static list_OrdersItem list_OrdersItem_create(int len) {
+  list_OrdersItem l;
   l.len = len;
-  l.data = (ordersItem *)malloc(sizeof(ordersItem) * len);
+  l.data = calloc(len, sizeof(OrdersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -37,48 +45,52 @@ typedef struct {
   int orderCustomerId;
   char *pairedCustomerName;
   int orderTotal;
-} resultItem;
+} ResultItem;
 typedef struct {
   int len;
-  resultItem *data;
-} list_resultItem;
-static list_resultItem list_resultItem_create(int len) {
-  list_resultItem l;
+  ResultItem *data;
+} list_ResultItem;
+static list_ResultItem list_ResultItem_create(int len) {
+  list_ResultItem l;
   l.len = len;
-  l.data = (resultItem *)malloc(sizeof(resultItem) * len);
+  l.data = calloc(len, sizeof(ResultItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  customersItem _t1_data[] = {(customersItem){.id = 1, .name = "Alice"},
-                              (customersItem){.id = 2, .name = "Bob"},
-                              (customersItem){.id = 3, .name = "Charlie"}};
-  list_customersItem _t1 = {3, _t1_data};
-  list_customersItem customers = _t1;
-  ordersItem _t2_data[] = {
-      (ordersItem){.id = 100, .customerId = 1, .total = 250},
-      (ordersItem){.id = 101, .customerId = 2, .total = 125},
-      (ordersItem){.id = 102, .customerId = 1, .total = 300}};
-  list_ordersItem _t2 = {3, _t2_data};
-  list_ordersItem orders = _t2;
-  list_resultItem _t3 = list_resultItem_create(orders.len * customers.len);
-  int _t4 = 0;
-  for (int _t5 = 0; _t5 < orders.len; _t5++) {
-    ordersItem o = orders.data[_t5];
-    for (int _t6 = 0; _t6 < customers.len; _t6++) {
-      customersItem c = customers.data[_t6];
-      _t3.data[_t4] = (resultItem){.orderId = o.id,
-                                   .orderCustomerId = o.customerId,
-                                   .pairedCustomerName = c.name,
-                                   .orderTotal = o.total};
-      _t4++;
+  CustomersItem tmp1_data[] = {(CustomersItem){.id = 1, .name = "Alice"},
+                               (CustomersItem){.id = 2, .name = "Bob"},
+                               (CustomersItem){.id = 3, .name = "Charlie"}};
+  list_CustomersItem tmp1 = {3, tmp1_data};
+  list_customersItem customers = tmp1;
+  OrdersItem tmp2_data[] = {
+      (OrdersItem){.id = 100, .customerId = 1, .total = 250},
+      (OrdersItem){.id = 101, .customerId = 2, .total = 125},
+      (OrdersItem){.id = 102, .customerId = 1, .total = 300}};
+  list_OrdersItem tmp2 = {3, tmp2_data};
+  list_ordersItem orders = tmp2;
+  list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+  int tmp4 = 0;
+  for (int o_idx = 0; o_idx < orders.len; o_idx++) {
+    ordersItem o = orders.data[o_idx];
+    for (int c_idx = 0; c_idx < customers.len; c_idx++) {
+      customersItem c = customers.data[c_idx];
+      tmp3.data[tmp4] = (ResultItem){.orderId = o.id,
+                                     .orderCustomerId = o.customerId,
+                                     .pairedCustomerName = c.name,
+                                     .orderTotal = o.total};
+      tmp4++;
     }
   }
-  _t3.len = _t4;
-  list_resultItem result = _t3;
+  tmp3.len = tmp4;
+  list_ResultItem result = tmp3;
   printf("%s\n", "--- Cross Join: All order-customer pairs ---");
-  for (int _t7 = 0; _t7 < result.len; _t7++) {
-    resultItem entry = result.data[_t7];
+  for (int tmp5 = 0; tmp5 < result.len; tmp5++) {
+    resultItem entry = result.data[tmp5];
     printf("%s ", "Order");
     printf("%d ", entry.orderId);
     printf("%s ", "(customerId:");

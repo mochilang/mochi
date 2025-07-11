@@ -1,0 +1,18 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:27:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+   27 |   mItem m = (MItem){.a = x, .b = y};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:27:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+   27 |   mItem m = (MItem){.a = x, .b = y};
+      |             ^
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:28:18: error: request for member ‘a’ in something not a structure or union
+   28 |   printf("%d ", m.a);
+      |                  ^
+/workspace/mochi/tests/machine/x/c/map_literal_dynamic.c:29:19: error: request for member ‘b’ in something not a structure or union
+   29 |   printf("%d\n", m.b);
+      |                   ^
+
+   1: #include <stdio.h>

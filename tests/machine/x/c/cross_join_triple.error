@@ -1,0 +1,38 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:63:3: error: unknown type name ‘list_combosItem’; did you mean ‘list_CombosItem’?
+   63 |   list_combosItem tmp4 =
+      |   ^~~~~~~~~~~~~~~
+      |   list_CombosItem
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:64:7: warning: implicit declaration of function ‘list_combosItem_create’; did you mean ‘list_CombosItem_create’? [-Wimplicit-function-declaration]
+   64 |       list_combosItem_create(nums.len * letters.len * bools.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~
+      |       list_CombosItem_create
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:72:13: error: request for member ‘data’ in something not a structure or union
+   72 |         tmp4.data[tmp5] = (CombosItem){.n = n, .l = l, .b = b};
+      |             ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:77:7: error: request for member ‘len’ in something not a structure or union
+   77 |   tmp4.len = tmp5;
+      |       ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:78:28: error: invalid initializer
+   78 |   list_CombosItem combos = tmp4;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:81:5: error: unknown type name ‘combosItem’; did you mean ‘CombosItem’?
+   81 |     combosItem c = combos.data[tmp6];
+      |     ^~~~~~~~~~
+      |     CombosItem
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:81:20: error: incompatible types when initializing type ‘int’ using type ‘CombosItem’
+   81 |     combosItem c = combos.data[tmp6];
+      |                    ^~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:82:20: error: request for member ‘n’ in something not a structure or union
+   82 |     printf("%d ", c.n);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:83:20: error: request for member ‘l’ in something not a structure or union
+   83 |     printf("%s ", c.l);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:84:22: error: request for member ‘b’ in something not a structure or union
+   84 |     printf("%s\n", (c.b) ? "true" : "false");
+      |                      ^
+
+   1: #include <stdio.h>

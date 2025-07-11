@@ -2,7 +2,7 @@ line: 0
 error: output mismatch
 -- got --
 4
-496538048
+1410707360
 -- want --
 4
 3.141592653589793

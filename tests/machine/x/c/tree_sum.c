@@ -23,23 +23,23 @@ typedef struct Tree {
 #define Tree_Node 1
 
 int sum_tree(Tree t) {
-  Tree _t1 = t;
-  int _t2;
-  switch (_t1.tag) {
+  Tree tmp1 = t;
+  int tmp2;
+  switch (tmp1.tag) {
   case Tree_Leaf:
-    _t2 = 0;
+    tmp2 = 0;
     break;
   case Tree_Node:
-    Tree left = *_t1.value.Node.left;
-    int value = _t1.value.Node.value;
-    Tree right = *_t1.value.Node.right;
-    _t2 = sum_tree(left) + value + sum_tree(right);
+    Tree left = *tmp1.value.Node.left;
+    int value = tmp1.value.Node.value;
+    Tree right = *tmp1.value.Node.right;
+    tmp2 = sum_tree(left) + value + sum_tree(right);
     break;
   default:
-    _t2 = 0;
+    tmp2 = 0;
     break;
   }
-  return _t2;
+  return tmp2;
 }
 
 int main() {

@@ -1,0 +1,93 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join.c:69:3: error: unknown type name ‘list_customersItem’; did you mean ‘list_CustomersItem’?
+   69 |   list_customersItem customers = tmp1;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_CustomersItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:69:34: error: incompatible types when initializing type ‘int’ using type ‘list_CustomersItem’
+   69 |   list_customersItem customers = tmp1;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join.c:75:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+   75 |   list_ordersItem orders = tmp2;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:75:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+   75 |   list_ordersItem orders = tmp2;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join.c:76:3: error: unknown type name ‘list_resultItem’; did you mean ‘list_ResultItem’?
+   76 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_ResultItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:76:26: warning: implicit declaration of function ‘list_resultItem_create’; did you mean ‘list_ResultItem_create’? [-Wimplicit-function-declaration]
+   76 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_ResultItem_create
+/workspace/mochi/tests/machine/x/c/cross_join.c:76:55: error: request for member ‘len’ in something not a structure or union
+   76 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                                                       ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:76:71: error: request for member ‘len’ in something not a structure or union
+   76 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                                                                       ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:78:37: error: request for member ‘len’ in something not a structure or union
+   78 |   for (int o_idx = 0; o_idx < orders.len; o_idx++) {
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:79:5: error: unknown type name ‘ordersItem’; did you mean ‘OrdersItem’?
+   79 |     ordersItem o = orders.data[o_idx];
+      |     ^~~~~~~~~~
+      |     OrdersItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:79:26: error: request for member ‘data’ in something not a structure or union
+   79 |     ordersItem o = orders.data[o_idx];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:80:42: error: request for member ‘len’ in something not a structure or union
+   80 |     for (int c_idx = 0; c_idx < customers.len; c_idx++) {
+      |                                          ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:81:7: error: unknown type name ‘customersItem’; did you mean ‘CustomersItem’?
+   81 |       customersItem c = customers.data[c_idx];
+      |       ^~~~~~~~~~~~~
+      |       CustomersItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:81:34: error: request for member ‘data’ in something not a structure or union
+   81 |       customersItem c = customers.data[c_idx];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:82:11: error: request for member ‘data’ in something not a structure or union
+   82 |       tmp3.data[tmp4] = (ResultItem){.orderId = o.id,
+      |           ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:82:50: error: request for member ‘id’ in something not a structure or union
+   82 |       tmp3.data[tmp4] = (ResultItem){.orderId = o.id,
+      |                                                  ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:83:58: error: request for member ‘customerId’ in something not a structure or union
+   83 |                                      .orderCustomerId = o.customerId,
+      |                                                          ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:84:61: error: request for member ‘name’ in something not a structure or union
+   84 |                                      .pairedCustomerName = c.name,
+      |                                                             ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:85:53: error: request for member ‘total’ in something not a structure or union
+   85 |                                      .orderTotal = o.total};
+      |                                                     ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:89:7: error: request for member ‘len’ in something not a structure or union
+   89 |   tmp3.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:90:28: error: invalid initializer
+   90 |   list_ResultItem result = tmp3;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join.c:93:5: error: unknown type name ‘resultItem’; did you mean ‘ResultItem’?
+   93 |     resultItem entry = result.data[tmp5];
+      |     ^~~~~~~~~~
+      |     ResultItem
+/workspace/mochi/tests/machine/x/c/cross_join.c:93:24: error: incompatible types when initializing type ‘int’ using type ‘ResultItem’
+   93 |     resultItem entry = result.data[tmp5];
+      |                        ^~~~~~
+/workspace/mochi/tests/machine/x/c/cross_join.c:95:24: error: request for member ‘orderId’ in something not a structure or union
+   95 |     printf("%d ", entry.orderId);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:97:24: error: request for member ‘orderCustomerId’ in something not a structure or union
+   97 |     printf("%d ", entry.orderCustomerId);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:99:24: error: request for member ‘orderTotal’ in something not a structure or union
+   99 |     printf("%d ", entry.orderTotal);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/cross_join.c:101:25: error: request for member ‘pairedCustomerName’ in something not a structure or union
+  101 |     printf("%s\n", entry.pairedCustomerName);
+      |                         ^
+
+   1: #include <stdio.h>

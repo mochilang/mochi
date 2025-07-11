@@ -1,7 +1,12 @@
 line: 0
-error: output mismatch
--- got --
-0
--- want --
-1 2 3
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/values_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/values_builtin.c:25:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+   25 |   mItem m = (MItem){.a = 1, .b = 2, .c = 3};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/values_builtin.c:25:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+   25 |   mItem m = (MItem){.a = 1, .b = 2, .c = 3};
+      |             ^
+
    1: #include <stdio.h>

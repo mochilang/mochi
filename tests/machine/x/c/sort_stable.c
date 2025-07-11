@@ -9,7 +9,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static void _print_list_string(list_string v) {
@@ -22,47 +26,51 @@ static void _print_list_string(list_string v) {
 typedef struct {
   int n;
   char *v;
-} itemsItem;
+} ItemsItem;
 typedef struct {
   int len;
-  itemsItem *data;
-} list_itemsItem;
-static list_itemsItem list_itemsItem_create(int len) {
-  list_itemsItem l;
+  ItemsItem *data;
+} list_ItemsItem;
+static list_ItemsItem list_ItemsItem_create(int len) {
+  list_ItemsItem l;
   l.len = len;
-  l.data = (itemsItem *)malloc(sizeof(itemsItem) * len);
+  l.data = calloc(len, sizeof(ItemsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  itemsItem _t1_data[] = {(itemsItem){.n = 1, .v = "a"},
-                          (itemsItem){.n = 1, .v = "b"},
-                          (itemsItem){.n = 2, .v = "c"}};
-  list_itemsItem _t1 = {3, _t1_data};
-  list_itemsItem items = _t1;
-  list_string _t2 = list_string_create(items.len);
-  int *_t5 = (int *)malloc(sizeof(int) * items.len);
-  int _t3 = 0;
-  for (int _t4 = 0; _t4 < items.len; _t4++) {
-    itemsItem i = items.data[_t4];
-    _t2.data[_t3] = i.v;
-    _t5[_t3] = i.n;
-    _t3++;
+  ItemsItem tmp1_data[] = {(ItemsItem){.n = 1, .v = "a"},
+                           (ItemsItem){.n = 1, .v = "b"},
+                           (ItemsItem){.n = 2, .v = "c"}};
+  list_ItemsItem tmp1 = {3, tmp1_data};
+  list_itemsItem items = tmp1;
+  list_string tmp2 = list_string_create(items.len);
+  int *tmp5 = (int *)malloc(sizeof(int) * items.len);
+  int tmp3 = 0;
+  for (int tmp4 = 0; tmp4 < items.len; tmp4++) {
+    itemsItem i = items.data[tmp4];
+    tmp2.data[tmp3] = i.v;
+    tmp5[tmp3] = i.n;
+    tmp3++;
   }
-  _t2.len = _t3;
-  for (int i = 0; i < _t3 - 1; i++) {
-    for (int j = i + 1; j < _t3; j++) {
-      if (_t5[i] > _t5[j]) {
-        int _t6 = _t5[i];
-        _t5[i] = _t5[j];
-        _t5[j] = _t6;
-        char *_t7 = _t2.data[i];
-        _t2.data[i] = _t2.data[j];
-        _t2.data[j] = _t7;
+  tmp2.len = tmp3;
+  for (int i = 0; i < tmp3 - 1; i++) {
+    for (int j = i + 1; j < tmp3; j++) {
+      if (tmp5[i] > tmp5[j]) {
+        int tmp6 = tmp5[i];
+        tmp5[i] = tmp5[j];
+        tmp5[j] = tmp6;
+        char *tmp7 = tmp2.data[i];
+        tmp2.data[i] = tmp2.data[j];
+        tmp2.data[j] = tmp7;
       }
     }
   }
-  list_string result = _t2;
+  list_string result = tmp2;
   _print_list_string(result);
   printf("\n");
   return 0;

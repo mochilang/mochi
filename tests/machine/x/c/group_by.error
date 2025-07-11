@@ -1,0 +1,113 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/group_by.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/group_by.c:129:3: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  129 |   list_peopleItem people = tmp1;
+      |   ^~~~~~~~~~~~~~~
+      |   list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by.c:129:28: error: incompatible types when initializing type ‘int’ using type ‘list_PeopleItem’
+  129 |   list_peopleItem people = tmp1;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by.c:130:3: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  130 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by.c:130:26: warning: implicit declaration of function ‘list_peopleItem_create’; did you mean ‘list_PeopleItem_create’? [-Wimplicit-function-declaration]
+  130 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_PeopleItem_create
+/workspace/mochi/tests/machine/x/c/group_by.c:130:55: error: request for member ‘len’ in something not a structure or union
+  130 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |                                                       ^
+/workspace/mochi/tests/machine/x/c/group_by.c:131:47: error: request for member ‘len’ in something not a structure or union
+  131 |   list_string tmp3 = list_string_create(people.len);
+      |                                               ^
+/workspace/mochi/tests/machine/x/c/group_by.c:133:29: error: request for member ‘len’ in something not a structure or union
+  133 |   for (int i = 0; i < people.len; i++) {
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by.c:134:5: error: unknown type name ‘peopleItem’; did you mean ‘PeopleItem’?
+  134 |     peopleItem person = people.data[i];
+      |     ^~~~~~~~~~
+      |     PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by.c:134:31: error: request for member ‘data’ in something not a structure or union
+  134 |     peopleItem person = people.data[i];
+      |                               ^
+/workspace/mochi/tests/machine/x/c/group_by.c:135:9: error: request for member ‘data’ in something not a structure or union
+  135 |     tmp2.data[tmp4] = person;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by.c:136:29: error: request for member ‘city’ in something not a structure or union
+  136 |     tmp3.data[tmp4] = person.city;
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by.c:139:7: error: request for member ‘len’ in something not a structure or union
+  139 |   tmp2.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by.c:142:3: error: unknown type name ‘list_statsItem’; did you mean ‘list_StatsItem’?
+  142 |   list_statsItem tmp6 = list_statsItem_create(tmp5.len);
+      |   ^~~~~~~~~~~~~~
+      |   list_StatsItem
+/workspace/mochi/tests/machine/x/c/group_by.c:142:25: warning: implicit declaration of function ‘list_statsItem_create’; did you mean ‘list_StatsItem_create’? [-Wimplicit-function-declaration]
+  142 |   list_statsItem tmp6 = list_statsItem_create(tmp5.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+      |                         list_StatsItem_create
+/workspace/mochi/tests/machine/x/c/group_by.c:146:5: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  146 |     list_peopleItem tmp8 = list_peopleItem_create(_gp.items.len);
+      |     ^~~~~~~~~~~~~~~
+      |     list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by.c:148:11: error: request for member ‘data’ in something not a structure or union
+  148 |       tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+      |           ^
+/workspace/mochi/tests/machine/x/c/group_by.c:148:26: error: request for member ‘data’ in something not a structure or union
+  148 |       tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by.c:150:9: error: request for member ‘len’ in something not a structure or union
+  150 |     tmp8.len = _gp.items.len;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by.c:153:7: error: unknown type name ‘list_peopleItem’
+  153 |       list_peopleItem items;
+      |       ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by.c:155:44: error: request for member ‘len’ in something not a structure or union
+  155 |     list_int tmp9 = list_int_create(g.items.len);
+      |                                            ^
+/workspace/mochi/tests/machine/x/c/group_by.c:157:32: error: request for member ‘len’ in something not a structure or union
+  157 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by.c:158:7: error: unknown type name ‘peopleItem’; did you mean ‘PeopleItem’?
+  158 |       peopleItem p = g.items.data[i];
+      |       ^~~~~~~~~~
+      |       PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by.c:158:29: error: request for member ‘data’ in something not a structure or union
+  158 |       peopleItem p = g.items.data[i];
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by.c:159:27: error: request for member ‘age’ in something not a structure or union
+  159 |       tmp9.data[tmp10] = p.age;
+      |                           ^
+/workspace/mochi/tests/machine/x/c/group_by.c:163:9: error: request for member ‘data’ in something not a structure or union
+  163 |     tmp6.data[tmp7] =
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by.c:164:52: error: request for member ‘len’ in something not a structure or union
+  164 |         (StatsItem){.city = g.key, .count = g.items.len, .avg_age = _avg(tmp9)};
+      |                                                    ^
+/workspace/mochi/tests/machine/x/c/group_by.c:167:7: error: request for member ‘len’ in something not a structure or union
+  167 |   tmp6.len = tmp7;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by.c:168:26: error: invalid initializer
+  168 |   list_StatsItem stats = tmp6;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/group_by.c:171:5: error: unknown type name ‘statsItem’; did you mean ‘StatsItem’?
+  171 |     statsItem s = stats.data[tmp11];
+      |     ^~~~~~~~~
+      |     StatsItem
+/workspace/mochi/tests/machine/x/c/group_by.c:171:19: error: incompatible types when initializing type ‘int’ using type ‘StatsItem’
+  171 |     statsItem s = stats.data[tmp11];
+      |                   ^~~~~
+/workspace/mochi/tests/machine/x/c/group_by.c:172:20: error: request for member ‘city’ in something not a structure or union
+  172 |     printf("%s ", s.city);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/group_by.c:174:20: error: request for member ‘count’ in something not a structure or union
+  174 |     printf("%d ", s.count);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/group_by.c:176:24: error: request for member ‘avg_age’ in something not a structure or union
+  176 |     printf("%.17g\n", s.avg_age);
+      |                        ^
+
+   1: #include <stdio.h>

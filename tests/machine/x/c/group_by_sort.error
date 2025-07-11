@@ -1,13 +1,131 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_sort.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_sort.c:110:29: error: array subscript is not an integer
-  110 |     itemsItem i = items.data[i];
-      |                             ^
-/workspace/mochi/tests/machine/x/c/group_by_sort.c:166:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
-  166 |   printf("%d\n", grouped);
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:121:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  121 |   list_itemsItem items = tmp1;
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:121:26: error: incompatible types when initializing type ‘int’ using type ‘list_ItemsItem’
+  121 |   list_itemsItem items = tmp1;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:122:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  122 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:122:25: warning: implicit declaration of function ‘list_itemsItem_create’; did you mean ‘list_ItemsItem_create’? [-Wimplicit-function-declaration]
+  122 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+      |                         list_ItemsItem_create
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:122:52: error: request for member ‘len’ in something not a structure or union
+  122 |   list_itemsItem tmp2 = list_itemsItem_create(items.len);
+      |                                                    ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:123:46: error: request for member ‘len’ in something not a structure or union
+  123 |   list_string tmp3 = list_string_create(items.len);
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:125:28: error: request for member ‘len’ in something not a structure or union
+  125 |   for (int i = 0; i < items.len; i++) {
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:126:5: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  126 |     itemsItem i = items.data[i];
+      |     ^~~~~~~~~
+      |     ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:126:24: error: request for member ‘data’ in something not a structure or union
+  126 |     itemsItem i = items.data[i];
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:127:9: error: request for member ‘data’ in something not a structure or union
+  127 |     tmp2.data[tmp4] = i;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:128:24: error: request for member ‘cat’ in something not a structure or union
+  128 |     tmp3.data[tmp4] = i.cat;
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:131:7: error: request for member ‘len’ in something not a structure or union
+  131 |   tmp2.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:134:3: error: unknown type name ‘list_groupedItem’; did you mean ‘list_GroupedItem’?
+  134 |   list_groupedItem tmp6 = list_groupedItem_create(tmp5.len);
+      |   ^~~~~~~~~~~~~~~~
+      |   list_GroupedItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:134:27: warning: implicit declaration of function ‘list_groupedItem_create’; did you mean ‘list_GroupedItem_create’? [-Wimplicit-function-declaration]
+  134 |   list_groupedItem tmp6 = list_groupedItem_create(tmp5.len);
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~
+      |                           list_GroupedItem_create
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:139:5: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+  139 |     list_itemsItem tmp9 = list_itemsItem_create(_gp.items.len);
+      |     ^~~~~~~~~~~~~~
+      |     list_ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:141:11: error: request for member ‘data’ in something not a structure or union
+  141 |       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
+      |           ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:141:26: error: request for member ‘data’ in something not a structure or union
+  141 |       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:143:9: error: request for member ‘len’ in something not a structure or union
+  143 |     tmp9.len = _gp.items.len;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:146:7: error: unknown type name ‘list_itemsItem’
+  146 |       list_itemsItem items;
+      |       ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:148:45: error: request for member ‘len’ in something not a structure or union
+  148 |     list_int tmp10 = list_int_create(g.items.len);
+      |                                             ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:150:32: error: request for member ‘len’ in something not a structure or union
+  150 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:151:7: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  151 |       itemsItem x = g.items.data[i];
+      |       ^~~~~~~~~
+      |       ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:151:28: error: request for member ‘data’ in something not a structure or union
+  151 |       itemsItem x = g.items.data[i];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:152:28: error: request for member ‘val’ in something not a structure or union
+  152 |       tmp10.data[tmp11] = x.val;
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:156:9: error: request for member ‘data’ in something not a structure or union
+  156 |     tmp6.data[tmp7] = (GroupedItem){.cat = g.key, .total = _sum_int(tmp10)};
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:157:45: error: request for member ‘len’ in something not a structure or union
+  157 |     list_int tmp12 = list_int_create(g.items.len);
+      |                                             ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:159:32: error: request for member ‘len’ in something not a structure or union
+  159 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:160:7: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  160 |       itemsItem x = g.items.data[i];
+      |       ^~~~~~~~~
+      |       ItemsItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:160:28: error: request for member ‘data’ in something not a structure or union
+  160 |       itemsItem x = g.items.data[i];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:161:28: error: request for member ‘val’ in something not a structure or union
+  161 |       tmp12.data[tmp13] = x.val;
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:168:7: error: request for member ‘len’ in something not a structure or union
+  168 |   tmp6.len = tmp7;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:175:9: error: unknown type name ‘groupedItem’; did you mean ‘GroupedItem’?
+  175 |         groupedItem tmp15 = tmp6.data[i];
+      |         ^~~~~~~~~~~
+      |         GroupedItem
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:175:33: error: request for member ‘data’ in something not a structure or union
+  175 |         groupedItem tmp15 = tmp6.data[i];
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:176:13: error: request for member ‘data’ in something not a structure or union
+  176 |         tmp6.data[i] = tmp6.data[j];
+      |             ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:176:28: error: request for member ‘data’ in something not a structure or union
+  176 |         tmp6.data[i] = tmp6.data[j];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:177:13: error: request for member ‘data’ in something not a structure or union
+  177 |         tmp6.data[j] = tmp15;
+      |             ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:181:30: error: invalid initializer
+  181 |   list_GroupedItem grouped = tmp6;
+      |                              ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:182:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_GroupedItem’ [-Wformat=]
+  182 |   printf("%d\n", grouped);
       |           ~^     ~~~~~~~
       |            |     |
-      |            int   list_groupedItem
+      |            int   list_GroupedItem
 
    1: #include <stdio.h>

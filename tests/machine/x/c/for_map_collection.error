@@ -1,11 +1,18 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/for_map_collection.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/for_map_collection.c:21:28: error: ‘mItem’ has no member named ‘len’
-   21 |   for (int _t1 = 0; _t1 < m.len; _t1++) {
-      |                            ^
-/workspace/mochi/tests/machine/x/c/for_map_collection.c:22:14: error: ‘mItem’ has no member named ‘data’
-   22 |     int k = m.data[_t1];
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:24:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:24:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |             ^
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:25:30: error: request for member ‘len’ in something not a structure or union
+   25 |   for (int tmp1 = 0; tmp1 < m.len; tmp1++) {
+      |                              ^
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:26:14: error: request for member ‘data’ in something not a structure or union
+   26 |     int k = m.data[tmp1];
       |              ^
 
    1: #include <stdio.h>

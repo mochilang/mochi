@@ -1,0 +1,113 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/join_multi.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/join_multi.c:84:3: error: unknown type name ‘list_customersItem’; did you mean ‘list_CustomersItem’?
+   84 |   list_customersItem customers = tmp1;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_CustomersItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:84:34: error: incompatible types when initializing type ‘int’ using type ‘list_CustomersItem’
+   84 |   list_customersItem customers = tmp1;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/join_multi.c:88:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+   88 |   list_ordersItem orders = tmp2;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:88:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+   88 |   list_ordersItem orders = tmp2;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/join_multi.c:92:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+   92 |   list_itemsItem items = tmp3;
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:92:26: error: incompatible types when initializing type ‘int’ using type ‘list_ItemsItem’
+   92 |   list_itemsItem items = tmp3;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/join_multi.c:93:3: error: unknown type name ‘list_resultItem’; did you mean ‘list_ResultItem’?
+   93 |   list_resultItem tmp4 =
+      |   ^~~~~~~~~~~~~~~
+      |   list_ResultItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:94:7: warning: implicit declaration of function ‘list_resultItem_create’; did you mean ‘list_ResultItem_create’? [-Wimplicit-function-declaration]
+   94 |       list_resultItem_create(orders.len * customers.len * items.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~
+      |       list_ResultItem_create
+/workspace/mochi/tests/machine/x/c/join_multi.c:94:36: error: request for member ‘len’ in something not a structure or union
+   94 |       list_resultItem_create(orders.len * customers.len * items.len);
+      |                                    ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:94:52: error: request for member ‘len’ in something not a structure or union
+   94 |       list_resultItem_create(orders.len * customers.len * items.len);
+      |                                                    ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:94:64: error: request for member ‘len’ in something not a structure or union
+   94 |       list_resultItem_create(orders.len * customers.len * items.len);
+      |                                                                ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:96:35: error: request for member ‘len’ in something not a structure or union
+   96 |   for (int tmp6 = 0; tmp6 < orders.len; tmp6++) {
+      |                                   ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:97:5: error: unknown type name ‘ordersItem’; did you mean ‘OrdersItem’?
+   97 |     ordersItem o = orders.data[tmp6];
+      |     ^~~~~~~~~~
+      |     OrdersItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:97:26: error: request for member ‘data’ in something not a structure or union
+   97 |     ordersItem o = orders.data[tmp6];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:98:40: error: request for member ‘len’ in something not a structure or union
+   98 |     for (int tmp7 = 0; tmp7 < customers.len; tmp7++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:99:7: error: unknown type name ‘customersItem’; did you mean ‘CustomersItem’?
+   99 |       customersItem c = customers.data[tmp7];
+      |       ^~~~~~~~~~~~~
+      |       CustomersItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:99:34: error: request for member ‘data’ in something not a structure or union
+   99 |       customersItem c = customers.data[tmp7];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:100:14: error: request for member ‘customerId’ in something not a structure or union
+  100 |       if (!(o.customerId == c.id)) {
+      |              ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:100:30: error: request for member ‘id’ in something not a structure or union
+  100 |       if (!(o.customerId == c.id)) {
+      |                              ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:103:38: error: request for member ‘len’ in something not a structure or union
+  103 |       for (int tmp8 = 0; tmp8 < items.len; tmp8++) {
+      |                                      ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:104:9: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+  104 |         itemsItem i = items.data[tmp8];
+      |         ^~~~~~~~~
+      |         ItemsItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:104:28: error: request for member ‘data’ in something not a structure or union
+  104 |         itemsItem i = items.data[tmp8];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:105:16: error: request for member ‘id’ in something not a structure or union
+  105 |         if (!(o.id == i.orderId)) {
+      |                ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:105:24: error: request for member ‘orderId’ in something not a structure or union
+  105 |         if (!(o.id == i.orderId)) {
+      |                        ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:108:13: error: request for member ‘data’ in something not a structure or union
+  108 |         tmp4.data[tmp5] = (ResultItem){.name = c.name, .sku = i.sku};
+      |             ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:108:49: error: request for member ‘name’ in something not a structure or union
+  108 |         tmp4.data[tmp5] = (ResultItem){.name = c.name, .sku = i.sku};
+      |                                                 ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:108:64: error: request for member ‘sku’ in something not a structure or union
+  108 |         tmp4.data[tmp5] = (ResultItem){.name = c.name, .sku = i.sku};
+      |                                                                ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:113:7: error: request for member ‘len’ in something not a structure or union
+  113 |   tmp4.len = tmp5;
+      |       ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:114:28: error: invalid initializer
+  114 |   list_ResultItem result = tmp4;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/join_multi.c:117:5: error: unknown type name ‘resultItem’; did you mean ‘ResultItem’?
+  117 |     resultItem r = result.data[tmp9];
+      |     ^~~~~~~~~~
+      |     ResultItem
+/workspace/mochi/tests/machine/x/c/join_multi.c:117:20: error: incompatible types when initializing type ‘int’ using type ‘ResultItem’
+  117 |     resultItem r = result.data[tmp9];
+      |                    ^~~~~~
+/workspace/mochi/tests/machine/x/c/join_multi.c:118:20: error: request for member ‘name’ in something not a structure or union
+  118 |     printf("%s ", r.name);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/join_multi.c:120:21: error: request for member ‘sku’ in something not a structure or union
+  120 |     printf("%s\n", r.sku);
+      |                     ^
+
+   1: #include <stdio.h>

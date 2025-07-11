@@ -7,15 +7,19 @@ static char *end_date = "1994-01-01";
 typedef struct {
   int n_nationkey;
   char *n_name;
-} nationItem;
+} NationItem;
 typedef struct {
   int len;
-  nationItem *data;
-} list_nationItem;
-static list_nationItem list_nationItem_create(int len) {
-  list_nationItem l;
+  NationItem *data;
+} list_NationItem;
+static list_NationItem list_NationItem_create(int len) {
+  list_NationItem l;
   l.len = len;
-  l.data = (nationItem *)malloc(sizeof(nationItem) * len);
+  l.data = calloc(len, sizeof(NationItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -27,15 +31,19 @@ typedef struct {
   char *c_address;
   char *c_phone;
   char *c_comment;
-} customerItem;
+} CustomerItem;
 typedef struct {
   int len;
-  customerItem *data;
-} list_customerItem;
-static list_customerItem list_customerItem_create(int len) {
-  list_customerItem l;
+  CustomerItem *data;
+} list_CustomerItem;
+static list_CustomerItem list_CustomerItem_create(int len) {
+  list_CustomerItem l;
   l.len = len;
-  l.data = (customerItem *)malloc(sizeof(customerItem) * len);
+  l.data = calloc(len, sizeof(CustomerItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -43,15 +51,19 @@ typedef struct {
   int o_orderkey;
   int o_custkey;
   char *o_orderdate;
-} ordersItem;
+} OrdersItem;
 typedef struct {
   int len;
-  ordersItem *data;
-} list_ordersItem;
-static list_ordersItem list_ordersItem_create(int len) {
-  list_ordersItem l;
+  OrdersItem *data;
+} list_OrdersItem;
+static list_OrdersItem list_OrdersItem_create(int len) {
+  list_OrdersItem l;
   l.len = len;
-  l.data = (ordersItem *)malloc(sizeof(ordersItem) * len);
+  l.data = calloc(len, sizeof(OrdersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -60,15 +72,19 @@ typedef struct {
   char *l_returnflag;
   double l_extendedprice;
   double l_discount;
-} lineitemItem;
+} LineitemItem;
 typedef struct {
   int len;
-  lineitemItem *data;
-} list_lineitemItem;
-static list_lineitemItem list_lineitemItem_create(int len) {
-  list_lineitemItem l;
+  LineitemItem *data;
+} list_LineitemItem;
+static list_LineitemItem list_LineitemItem_create(int len) {
+  list_LineitemItem l;
   l.len = len;
-  l.data = (lineitemItem *)malloc(sizeof(lineitemItem) * len);
+  l.data = calloc(len, sizeof(LineitemItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -81,49 +97,53 @@ typedef struct {
   int c_address;
   int c_phone;
   int c_comment;
-} resultItem;
+} ResultItem;
 typedef struct {
   int len;
-  resultItem *data;
-} list_resultItem;
-static list_resultItem list_resultItem_create(int len) {
-  list_resultItem l;
+  ResultItem *data;
+} list_ResultItem;
+static list_ResultItem list_ResultItem_create(int len) {
+  list_ResultItem l;
   l.len = len;
-  l.data = (resultItem *)malloc(sizeof(resultItem) * len);
+  l.data = calloc(len, sizeof(ResultItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  nationItem _t1_data[] = {(nationItem){.n_nationkey = 1, .n_name = "BRAZIL"}};
-  list_nationItem _t1 = {1, _t1_data};
-  list_nationItem nation = _t1;
-  customerItem _t2_data[] = {(customerItem){.c_custkey = 1,
-                                            .c_name = "Alice",
-                                            .c_acctbal = 100.0,
-                                            .c_nationkey = 1,
-                                            .c_address = "123 St",
-                                            .c_phone = "123-456",
-                                            .c_comment = "Loyal"}};
-  list_customerItem _t2 = {1, _t2_data};
-  list_customerItem customer = _t2;
-  ordersItem _t3_data[] = {
-      (ordersItem){
+  NationItem tmp1_data[] = {(NationItem){.n_nationkey = 1, .n_name = "BRAZIL"}};
+  list_NationItem tmp1 = {1, tmp1_data};
+  list_nationItem nation = tmp1;
+  CustomerItem tmp2_data[] = {(CustomerItem){.c_custkey = 1,
+                                             .c_name = "Alice",
+                                             .c_acctbal = 100.0,
+                                             .c_nationkey = 1,
+                                             .c_address = "123 St",
+                                             .c_phone = "123-456",
+                                             .c_comment = "Loyal"}};
+  list_CustomerItem tmp2 = {1, tmp2_data};
+  list_customerItem customer = tmp2;
+  OrdersItem tmp3_data[] = {
+      (OrdersItem){
           .o_orderkey = 1000, .o_custkey = 1, .o_orderdate = "1993-10-15"},
-      (ordersItem){
+      (OrdersItem){
           .o_orderkey = 2000, .o_custkey = 1, .o_orderdate = "1994-01-02"}};
-  list_ordersItem _t3 = {2, _t3_data};
-  list_ordersItem orders = _t3;
-  lineitemItem _t4_data[] = {(lineitemItem){.l_orderkey = 1000,
-                                            .l_returnflag = "R",
-                                            .l_extendedprice = 1000.0,
-                                            .l_discount = 0.1},
-                             (lineitemItem){.l_orderkey = 2000,
-                                            .l_returnflag = "N",
-                                            .l_extendedprice = 500.0,
-                                            .l_discount = 0.0}};
-  list_lineitemItem _t4 = {2, _t4_data};
-  list_lineitemItem lineitem = _t4;
-  list_resultItem result = 0;
+  list_OrdersItem tmp3 = {2, tmp3_data};
+  list_ordersItem orders = tmp3;
+  LineitemItem tmp4_data[] = {(LineitemItem){.l_orderkey = 1000,
+                                             .l_returnflag = "R",
+                                             .l_extendedprice = 1000.0,
+                                             .l_discount = 0.1},
+                              (LineitemItem){.l_orderkey = 2000,
+                                             .l_returnflag = "N",
+                                             .l_extendedprice = 500.0,
+                                             .l_discount = 0.0}};
+  list_LineitemItem tmp4 = {2, tmp4_data};
+  list_lineitemItem lineitem = tmp4;
+  list_ResultItem result = 0;
   printf("%d\n", result);
   return 0;
 }

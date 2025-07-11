@@ -1,7 +1,180 @@
 line: 0
-error: output mismatch
--- got --
-2
--- want --
-map[part:100 total:20] map[part:200 total:15]
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:178:3: error: unknown type name ‘list_nationsItem’; did you mean ‘list_NationsItem’?
+  178 |   list_nationsItem nations = tmp1;
+      |   ^~~~~~~~~~~~~~~~
+      |   list_NationsItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:178:30: error: incompatible types when initializing type ‘int’ using type ‘list_NationsItem’
+  178 |   list_nationsItem nations = tmp1;
+      |                              ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:182:3: error: unknown type name ‘list_suppliersItem’; did you mean ‘list_SuppliersItem’?
+  182 |   list_suppliersItem suppliers = tmp2;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_SuppliersItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:182:34: error: incompatible types when initializing type ‘int’ using type ‘list_SuppliersItem’
+  182 |   list_suppliersItem suppliers = tmp2;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:188:3: error: unknown type name ‘list_partsuppItem’; did you mean ‘list_PartsuppItem’?
+  188 |   list_partsuppItem partsupp = tmp3;
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_PartsuppItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:188:32: error: incompatible types when initializing type ‘int’ using type ‘list_PartsuppItem’
+  188 |   list_partsuppItem partsupp = tmp3;
+      |                                ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:189:3: error: unknown type name ‘list_filteredItem’; did you mean ‘list_FilteredItem’?
+  189 |   list_filteredItem tmp4 =
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_FilteredItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:190:7: warning: implicit declaration of function ‘list_filteredItem_create’; did you mean ‘list_FilteredItem_create’? [-Wimplicit-function-declaration]
+  190 |       list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~
+      |       list_FilteredItem_create
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:190:40: error: request for member ‘len’ in something not a structure or union
+  190 |       list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:190:56: error: request for member ‘len’ in something not a structure or union
+  190 |       list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
+      |                                                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:190:70: error: request for member ‘len’ in something not a structure or union
+  190 |       list_filteredItem_create(partsupp.len * suppliers.len * nations.len);
+      |                                                                      ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:192:37: error: request for member ‘len’ in something not a structure or union
+  192 |   for (int tmp6 = 0; tmp6 < partsupp.len; tmp6++) {
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:193:5: error: unknown type name ‘partsuppItem’; did you mean ‘PartsuppItem’?
+  193 |     partsuppItem ps = partsupp.data[tmp6];
+      |     ^~~~~~~~~~~~
+      |     PartsuppItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:193:31: error: request for member ‘data’ in something not a structure or union
+  193 |     partsuppItem ps = partsupp.data[tmp6];
+      |                               ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:194:40: error: request for member ‘len’ in something not a structure or union
+  194 |     for (int tmp7 = 0; tmp7 < suppliers.len; tmp7++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:195:7: error: unknown type name ‘suppliersItem’; did you mean ‘SuppliersItem’?
+  195 |       suppliersItem s = suppliers.data[tmp7];
+      |       ^~~~~~~~~~~~~
+      |       SuppliersItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:195:34: error: request for member ‘data’ in something not a structure or union
+  195 |       suppliersItem s = suppliers.data[tmp7];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:196:14: error: request for member ‘id’ in something not a structure or union
+  196 |       if (!(s.id == ps.supplier)) {
+      |              ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:196:23: error: request for member ‘supplier’ in something not a structure or union
+  196 |       if (!(s.id == ps.supplier)) {
+      |                       ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:199:40: error: request for member ‘len’ in something not a structure or union
+  199 |       for (int tmp8 = 0; tmp8 < nations.len; tmp8++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:200:9: error: unknown type name ‘nationsItem’; did you mean ‘NationsItem’?
+  200 |         nationsItem n = nations.data[tmp8];
+      |         ^~~~~~~~~~~
+      |         NationsItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:200:32: error: request for member ‘data’ in something not a structure or union
+  200 |         nationsItem n = nations.data[tmp8];
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:201:16: error: request for member ‘id’ in something not a structure or union
+  201 |         if (!(n.id == s.nation)) {
+      |                ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:201:24: error: request for member ‘nation’ in something not a structure or union
+  201 |         if (!(n.id == s.nation)) {
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:204:24: error: request for member ‘name’ in something not a structure or union
+  204 |         if (!((strcmp(n.name, "A") == 0))) {
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:207:13: error: request for member ‘data’ in something not a structure or union
+  207 |         tmp4.data[tmp5] =
+      |             ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:208:38: error: request for member ‘part’ in something not a structure or union
+  208 |             (FilteredItem){.part = ps.part, .value = ps.cost * ps.qty};
+      |                                      ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:208:56: error: request for member ‘cost’ in something not a structure or union
+  208 |             (FilteredItem){.part = ps.part, .value = ps.cost * ps.qty};
+      |                                                        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:208:66: error: request for member ‘qty’ in something not a structure or union
+  208 |             (FilteredItem){.part = ps.part, .value = ps.cost * ps.qty};
+      |                                                                  ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:213:7: error: request for member ‘len’ in something not a structure or union
+  213 |   tmp4.len = tmp5;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:214:32: error: invalid initializer
+  214 |   list_FilteredItem filtered = tmp4;
+      |                                ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:215:3: error: unknown type name ‘list_filteredItem’; did you mean ‘list_FilteredItem’?
+  215 |   list_filteredItem tmp9 = list_filteredItem_create(filtered.len);
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_FilteredItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:219:5: error: unknown type name ‘filteredItem’; did you mean ‘FilteredItem’?
+  219 |     filteredItem x = filtered.data[i];
+      |     ^~~~~~~~~~~~
+      |     FilteredItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:219:22: error: incompatible types when initializing type ‘int’ using type ‘FilteredItem’
+  219 |     filteredItem x = filtered.data[i];
+      |                      ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:220:9: error: request for member ‘data’ in something not a structure or union
+  220 |     tmp9.data[tmp11] = x;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:221:26: error: request for member ‘part’ in something not a structure or union
+  221 |     tmp10.data[tmp11] = x.part;
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:224:7: error: request for member ‘len’ in something not a structure or union
+  224 |   tmp9.len = tmp11;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:227:3: error: unknown type name ‘list_groupedItem’; did you mean ‘list_GroupedItem’?
+  227 |   list_groupedItem tmp13 = list_groupedItem_create(tmp12.len);
+      |   ^~~~~~~~~~~~~~~~
+      |   list_GroupedItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:227:28: warning: implicit declaration of function ‘list_groupedItem_create’; did you mean ‘list_GroupedItem_create’? [-Wimplicit-function-declaration]
+  227 |   list_groupedItem tmp13 = list_groupedItem_create(tmp12.len);
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~
+      |                            list_GroupedItem_create
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:231:5: error: unknown type name ‘list_filteredItem’; did you mean ‘list_FilteredItem’?
+  231 |     list_filteredItem tmp15 = list_filteredItem_create(_gp.items.len);
+      |     ^~~~~~~~~~~~~~~~~
+      |     list_FilteredItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:233:12: error: request for member ‘data’ in something not a structure or union
+  233 |       tmp15.data[j] = tmp9.data[_gp.items.data[j]];
+      |            ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:233:27: error: request for member ‘data’ in something not a structure or union
+  233 |       tmp15.data[j] = tmp9.data[_gp.items.data[j]];
+      |                           ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:235:10: error: request for member ‘len’ in something not a structure or union
+  235 |     tmp15.len = _gp.items.len;
+      |          ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:238:7: error: unknown type name ‘list_filteredItem’
+  238 |       list_filteredItem items;
+      |       ^~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:240:49: error: request for member ‘len’ in something not a structure or union
+  240 |     list_float tmp16 = list_float_create(g.items.len);
+      |                                                 ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:242:32: error: request for member ‘len’ in something not a structure or union
+  242 |     for (int i = 0; i < g.items.len; i++) {
+      |                                ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:243:7: error: unknown type name ‘filteredItem’; did you mean ‘FilteredItem’?
+  243 |       filteredItem r = g.items.data[i];
+      |       ^~~~~~~~~~~~
+      |       FilteredItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:243:31: error: request for member ‘data’ in something not a structure or union
+  243 |       filteredItem r = g.items.data[i];
+      |                               ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:244:28: error: request for member ‘value’ in something not a structure or union
+  244 |       tmp16.data[tmp17] = r.value;
+      |                            ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:248:10: error: request for member ‘data’ in something not a structure or union
+  248 |     tmp13.data[tmp14] =
+      |          ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:252:8: error: request for member ‘len’ in something not a structure or union
+  252 |   tmp13.len = tmp14;
+      |        ^
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:253:30: error: invalid initializer
+  253 |   list_GroupedItem grouped = tmp13;
+      |                              ^~~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join.c:254:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_GroupedItem’ [-Wformat=]
+  254 |   printf("%d\n", grouped);
+      |           ~^     ~~~~~~~
+      |            |     |
+      |            int   list_GroupedItem
+
    1: #include <stdio.h>

@@ -1,8 +1,35 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_left_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_left_join.c:60:26: error: invalid initializer
-   60 |   list_statsItem stats = 0;
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:66:3: error: unknown type name ‘list_customersItem’; did you mean ‘list_CustomersItem’?
+   66 |   list_customersItem customers = tmp1;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_CustomersItem
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:66:34: error: incompatible types when initializing type ‘int’ using type ‘list_CustomersItem’
+   66 |   list_customersItem customers = tmp1;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:71:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+   71 |   list_ordersItem orders = tmp2;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:71:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+   71 |   list_ordersItem orders = tmp2;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:72:26: error: invalid initializer
+   72 |   list_StatsItem stats = 0;
       |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:75:5: error: unknown type name ‘statsItem’; did you mean ‘StatsItem’?
+   75 |     statsItem s = stats.data[tmp3];
+      |     ^~~~~~~~~
+      |     StatsItem
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:75:19: error: incompatible types when initializing type ‘int’ using type ‘StatsItem’
+   75 |     statsItem s = stats.data[tmp3];
+      |                   ^~~~~
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:76:20: error: request for member ‘name’ in something not a structure or union
+   76 |     printf("%s ", s.name);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/group_by_left_join.c:78:21: error: request for member ‘count’ in something not a structure or union
+   78 |     printf("%d\n", s.count);
+      |                     ^
 
    1: #include <stdio.h>

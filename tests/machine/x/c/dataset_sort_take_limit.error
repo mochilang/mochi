@@ -1,0 +1,81 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:33:3: error: unknown type name ‘list_productsItem’; did you mean ‘list_ProductsItem’?
+   33 |   list_productsItem products = tmp1;
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:33:32: error: incompatible types when initializing type ‘int’ using type ‘list_ProductsItem’
+   33 |   list_productsItem products = tmp1;
+      |                                ^~~~
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:34:3: error: unknown type name ‘list_productsItem’; did you mean ‘list_ProductsItem’?
+   34 |   list_productsItem tmp2 = list_productsItem_create(products.len);
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:34:28: warning: implicit declaration of function ‘list_productsItem_create’; did you mean ‘list_ProductsItem_create’? [-Wimplicit-function-declaration]
+   34 |   list_productsItem tmp2 = list_productsItem_create(products.len);
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                            list_ProductsItem_create
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:34:61: error: request for member ‘len’ in something not a structure or union
+   34 |   list_productsItem tmp2 = list_productsItem_create(products.len);
+      |                                                             ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:35:51: error: request for member ‘len’ in something not a structure or union
+   35 |   int *tmp5 = (int *)malloc(sizeof(int) * products.len);
+      |                                                   ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:40:37: error: request for member ‘len’ in something not a structure or union
+   40 |   for (int tmp4 = 0; tmp4 < products.len; tmp4++) {
+      |                                     ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:41:5: error: unknown type name ‘productsItem’; did you mean ‘ProductsItem’?
+   41 |     productsItem p = products.data[tmp4];
+      |     ^~~~~~~~~~~~
+      |     ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:41:30: error: request for member ‘data’ in something not a structure or union
+   41 |     productsItem p = products.data[tmp4];
+      |                              ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:50:9: error: request for member ‘data’ in something not a structure or union
+   50 |     tmp2.data[tmp3] = p;
+      |         ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:51:21: error: request for member ‘price’ in something not a structure or union
+   51 |     tmp5[tmp3] = (-p.price);
+      |                     ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:54:7: error: request for member ‘len’ in something not a structure or union
+   54 |   tmp2.len = tmp3;
+      |       ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:61:9: error: unknown type name ‘productsItem’; did you mean ‘ProductsItem’?
+   61 |         productsItem tmp10 = tmp2.data[i];
+      |         ^~~~~~~~~~~~
+      |         ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:61:34: error: request for member ‘data’ in something not a structure or union
+   61 |         productsItem tmp10 = tmp2.data[i];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:62:13: error: request for member ‘data’ in something not a structure or union
+   62 |         tmp2.data[i] = tmp2.data[j];
+      |             ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:62:28: error: request for member ‘data’ in something not a structure or union
+   62 |         tmp2.data[i] = tmp2.data[j];
+      |                            ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:63:13: error: request for member ‘data’ in something not a structure or union
+   63 |         tmp2.data[j] = tmp10;
+      |             ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:67:3: error: unknown type name ‘list_productsItem’; did you mean ‘list_ProductsItem’?
+   67 |   list_productsItem expensive = tmp2;
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:69:40: error: request for member ‘len’ in something not a structure or union
+   69 |   for (int tmp11 = 0; tmp11 < expensive.len; tmp11++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:70:5: error: unknown type name ‘productsItem’; did you mean ‘ProductsItem’?
+   70 |     productsItem item = expensive.data[tmp11];
+      |     ^~~~~~~~~~~~
+      |     ProductsItem
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:70:34: error: request for member ‘data’ in something not a structure or union
+   70 |     productsItem item = expensive.data[tmp11];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:71:23: error: request for member ‘name’ in something not a structure or union
+   71 |     printf("%s ", item.name);
+      |                       ^
+/workspace/mochi/tests/machine/x/c/dataset_sort_take_limit.c:73:24: error: request for member ‘price’ in something not a structure or union
+   73 |     printf("%d\n", item.price);
+      |                        ^
+
+   1: #include <stdio.h>

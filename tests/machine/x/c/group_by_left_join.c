@@ -4,63 +4,75 @@
 typedef struct {
   int id;
   char *name;
-} customersItem;
+} CustomersItem;
 typedef struct {
   int len;
-  customersItem *data;
-} list_customersItem;
-static list_customersItem list_customersItem_create(int len) {
-  list_customersItem l;
+  CustomersItem *data;
+} list_CustomersItem;
+static list_CustomersItem list_CustomersItem_create(int len) {
+  list_CustomersItem l;
   l.len = len;
-  l.data = (customersItem *)malloc(sizeof(customersItem) * len);
+  l.data = calloc(len, sizeof(CustomersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 typedef struct {
   int id;
   int customerId;
-} ordersItem;
+} OrdersItem;
 typedef struct {
   int len;
-  ordersItem *data;
-} list_ordersItem;
-static list_ordersItem list_ordersItem_create(int len) {
-  list_ordersItem l;
+  OrdersItem *data;
+} list_OrdersItem;
+static list_OrdersItem list_OrdersItem_create(int len) {
+  list_OrdersItem l;
   l.len = len;
-  l.data = (ordersItem *)malloc(sizeof(ordersItem) * len);
+  l.data = calloc(len, sizeof(OrdersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 typedef struct {
   char *name;
   int count;
-} statsItem;
+} StatsItem;
 typedef struct {
   int len;
-  statsItem *data;
-} list_statsItem;
-static list_statsItem list_statsItem_create(int len) {
-  list_statsItem l;
+  StatsItem *data;
+} list_StatsItem;
+static list_StatsItem list_StatsItem_create(int len) {
+  list_StatsItem l;
   l.len = len;
-  l.data = (statsItem *)malloc(sizeof(statsItem) * len);
+  l.data = calloc(len, sizeof(StatsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  customersItem _t1_data[] = {(customersItem){.id = 1, .name = "Alice"},
-                              (customersItem){.id = 2, .name = "Bob"},
-                              (customersItem){.id = 3, .name = "Charlie"}};
-  list_customersItem _t1 = {3, _t1_data};
-  list_customersItem customers = _t1;
-  ordersItem _t2_data[] = {(ordersItem){.id = 100, .customerId = 1},
-                           (ordersItem){.id = 101, .customerId = 1},
-                           (ordersItem){.id = 102, .customerId = 2}};
-  list_ordersItem _t2 = {3, _t2_data};
-  list_ordersItem orders = _t2;
-  list_statsItem stats = 0;
+  CustomersItem tmp1_data[] = {(CustomersItem){.id = 1, .name = "Alice"},
+                               (CustomersItem){.id = 2, .name = "Bob"},
+                               (CustomersItem){.id = 3, .name = "Charlie"}};
+  list_CustomersItem tmp1 = {3, tmp1_data};
+  list_customersItem customers = tmp1;
+  OrdersItem tmp2_data[] = {(OrdersItem){.id = 100, .customerId = 1},
+                            (OrdersItem){.id = 101, .customerId = 1},
+                            (OrdersItem){.id = 102, .customerId = 2}};
+  list_OrdersItem tmp2 = {3, tmp2_data};
+  list_ordersItem orders = tmp2;
+  list_StatsItem stats = 0;
   printf("%s\n", "--- Group Left Join ---");
-  for (int _t3 = 0; _t3 < stats.len; _t3++) {
-    statsItem s = stats.data[_t3];
+  for (int tmp3 = 0; tmp3 < stats.len; tmp3++) {
+    statsItem s = stats.data[tmp3];
     printf("%s ", s.name);
     printf("%s ", "orders:");
     printf("%d\n", s.count);

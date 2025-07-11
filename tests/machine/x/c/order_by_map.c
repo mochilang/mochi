@@ -21,8 +21,11 @@ static map_string_int map_string_int_create(int cap) {
   map_string_int m;
   m.len = 0;
   m.cap = cap;
-  m.data =
-      cap ? (pair_string_int *)malloc(sizeof(pair_string_int) * cap) : NULL;
+  m.data = cap ? calloc(cap, sizeof(pair_string_int)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_string_int_put(map_string_int *m, char *k, int v) {
@@ -53,50 +56,55 @@ static int map_string_int_contains(map_string_int m, const char *k) {
 typedef struct {
   int a;
   int b;
-} dataItem;
+} DataItem;
 typedef struct {
   int len;
-  dataItem *data;
-} list_dataItem;
-static list_dataItem list_dataItem_create(int len) {
-  list_dataItem l;
+  DataItem *data;
+} list_DataItem;
+static list_DataItem list_DataItem_create(int len) {
+  list_DataItem l;
   l.len = len;
-  l.data = (dataItem *)malloc(sizeof(dataItem) * len);
+  l.data = calloc(len, sizeof(DataItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  dataItem _t1_data[] = {(dataItem){.a = 1, .b = 2}, (dataItem){.a = 1, .b = 1},
-                         (dataItem){.a = 0, .b = 5}};
-  list_dataItem _t1 = {3, _t1_data};
-  list_dataItem data = _t1;
-  list_dataItem _t2 = list_dataItem_create(data.len);
-  map_string_int *_t5 =
+  DataItem tmp1_data[] = {(DataItem){.a = 1, .b = 2},
+                          (DataItem){.a = 1, .b = 1},
+                          (DataItem){.a = 0, .b = 5}};
+  list_DataItem tmp1 = {3, tmp1_data};
+  list_dataItem data = tmp1;
+  list_dataItem tmp2 = list_dataItem_create(data.len);
+  map_string_int *tmp5 =
       (map_string_int *)malloc(sizeof(map_string_int) * data.len);
-  int _t3 = 0;
-  for (int _t4 = 0; _t4 < data.len; _t4++) {
-    dataItem x = data.data[_t4];
-    _t2.data[_t3] = x;
-    map_string_int _t6 = map_string_int_create(2);
-    map_string_int_put(&_t6, "a", x.a);
-    map_string_int_put(&_t6, "b", x.b);
-    _t5[_t3] = _t6;
-    _t3++;
+  int tmp3 = 0;
+  for (int tmp4 = 0; tmp4 < data.len; tmp4++) {
+    dataItem x = data.data[tmp4];
+    tmp2.data[tmp3] = x;
+    map_string_int tmp6 = map_string_int_create(2);
+    map_string_int_put(&tmp6, "a", x.a);
+    map_string_int_put(&tmp6, "b", x.b);
+    tmp5[tmp3] = tmp6;
+    tmp3++;
   }
-  _t2.len = _t3;
-  for (int i = 0; i < _t3 - 1; i++) {
-    for (int j = i + 1; j < _t3; j++) {
-      if (_t5[i] > _t5[j]) {
-        map_string_int _t7 = _t5[i];
-        _t5[i] = _t5[j];
-        _t5[j] = _t7;
-        dataItem _t8 = _t2.data[i];
-        _t2.data[i] = _t2.data[j];
-        _t2.data[j] = _t8;
+  tmp2.len = tmp3;
+  for (int i = 0; i < tmp3 - 1; i++) {
+    for (int j = i + 1; j < tmp3; j++) {
+      if (tmp5[i] > tmp5[j]) {
+        map_string_int tmp7 = tmp5[i];
+        tmp5[i] = tmp5[j];
+        tmp5[j] = tmp7;
+        dataItem tmp8 = tmp2.data[i];
+        tmp2.data[i] = tmp2.data[j];
+        tmp2.data[j] = tmp8;
       }
     }
   }
-  list_dataItem sorted = _t2;
+  list_dataItem sorted = tmp2;
   printf("%d\n", sorted);
   return 0;
 }

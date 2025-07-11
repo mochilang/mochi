@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static double _avg(list_int v) {
@@ -73,15 +81,19 @@ typedef struct {
   char *name;
   int age;
   char *city;
-} peopleItem;
+} PeopleItem;
 typedef struct {
   int len;
-  peopleItem *data;
-} list_peopleItem;
-static list_peopleItem list_peopleItem_create(int len) {
-  list_peopleItem l;
+  PeopleItem *data;
+} list_PeopleItem;
+static list_PeopleItem list_PeopleItem_create(int len) {
+  list_PeopleItem l;
   l.len = len;
-  l.data = (peopleItem *)malloc(sizeof(peopleItem) * len);
+  l.data = calloc(len, sizeof(PeopleItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -89,70 +101,74 @@ typedef struct {
   char *city;
   int count;
   double avg_age;
-} statsItem;
+} StatsItem;
 typedef struct {
   int len;
-  statsItem *data;
-} list_statsItem;
-static list_statsItem list_statsItem_create(int len) {
-  list_statsItem l;
+  StatsItem *data;
+} list_StatsItem;
+static list_StatsItem list_StatsItem_create(int len) {
+  list_StatsItem l;
   l.len = len;
-  l.data = (statsItem *)malloc(sizeof(statsItem) * len);
+  l.data = calloc(len, sizeof(StatsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  peopleItem _t1_data[] = {
-      (peopleItem){.name = "Alice", .age = 30, .city = "Paris"},
-      (peopleItem){.name = "Bob", .age = 15, .city = "Hanoi"},
-      (peopleItem){.name = "Charlie", .age = 65, .city = "Paris"},
-      (peopleItem){.name = "Diana", .age = 45, .city = "Hanoi"},
-      (peopleItem){.name = "Eve", .age = 70, .city = "Paris"},
-      (peopleItem){.name = "Frank", .age = 22, .city = "Hanoi"}};
-  list_peopleItem _t1 = {6, _t1_data};
-  list_peopleItem people = _t1;
-  list_peopleItem _t2 = list_peopleItem_create(people.len);
-  list_string _t3 = list_string_create(people.len);
-  int _t4 = 0;
+  PeopleItem tmp1_data[] = {
+      (PeopleItem){.name = "Alice", .age = 30, .city = "Paris"},
+      (PeopleItem){.name = "Bob", .age = 15, .city = "Hanoi"},
+      (PeopleItem){.name = "Charlie", .age = 65, .city = "Paris"},
+      (PeopleItem){.name = "Diana", .age = 45, .city = "Hanoi"},
+      (PeopleItem){.name = "Eve", .age = 70, .city = "Paris"},
+      (PeopleItem){.name = "Frank", .age = 22, .city = "Hanoi"}};
+  list_PeopleItem tmp1 = {6, tmp1_data};
+  list_peopleItem people = tmp1;
+  list_peopleItem tmp2 = list_peopleItem_create(people.len);
+  list_string tmp3 = list_string_create(people.len);
+  int tmp4 = 0;
   for (int i = 0; i < people.len; i++) {
     peopleItem person = people.data[i];
-    _t2.data[_t4] = person;
-    _t3.data[_t4] = person.city;
-    _t4++;
+    tmp2.data[tmp4] = person;
+    tmp3.data[tmp4] = person.city;
+    tmp4++;
   }
-  _t2.len = _t4;
-  _t3.len = _t4;
-  list_group_string _t5 = _group_by_string(_t3);
-  list_statsItem _t6 = list_statsItem_create(_t5.len);
-  int _t7 = 0;
-  for (int gi = 0; gi < _t5.len; gi++) {
-    _GroupString _gp = _t5.data[gi];
-    list_peopleItem _t8 = list_peopleItem_create(_gp.items.len);
+  tmp2.len = tmp4;
+  tmp3.len = tmp4;
+  list_group_string tmp5 = _group_by_string(tmp3);
+  list_statsItem tmp6 = list_statsItem_create(tmp5.len);
+  int tmp7 = 0;
+  for (int gi = 0; gi < tmp5.len; gi++) {
+    _GroupString _gp = tmp5.data[gi];
+    list_peopleItem tmp8 = list_peopleItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
-      _t8.data[j] = _t2.data[_gp.items.data[j]];
+      tmp8.data[j] = tmp2.data[_gp.items.data[j]];
     }
-    _t8.len = _gp.items.len;
+    tmp8.len = _gp.items.len;
     struct {
       char *key;
       list_peopleItem items;
-    } g = {_gp.key, _t8};
-    list_int _t9 = list_int_create(g.items.len);
-    int _t10 = 0;
+    } g = {_gp.key, tmp8};
+    list_int tmp9 = list_int_create(g.items.len);
+    int tmp10 = 0;
     for (int i = 0; i < g.items.len; i++) {
       peopleItem p = g.items.data[i];
-      _t9.data[_t10] = p.age;
-      _t10++;
+      tmp9.data[tmp10] = p.age;
+      tmp10++;
     }
-    _t9.len = _t10;
-    _t6.data[_t7] =
-        (statsItem){.city = g.key, .count = g.items.len, .avg_age = _avg(_t9)};
-    _t7++;
+    tmp9.len = tmp10;
+    tmp6.data[tmp7] =
+        (StatsItem){.city = g.key, .count = g.items.len, .avg_age = _avg(tmp9)};
+    tmp7++;
   }
-  _t6.len = _t7;
-  list_statsItem stats = _t6;
+  tmp6.len = tmp7;
+  list_StatsItem stats = tmp6;
   printf("%s\n", "--- People grouped by city ---");
-  for (int _t11 = 0; _t11 < stats.len; _t11++) {
-    statsItem s = stats.data[_t11];
+  for (int tmp11 = 0; tmp11 < stats.len; tmp11++) {
+    statsItem s = stats.data[tmp11];
     printf("%s ", s.city);
     printf("%s ", ": count =");
     printf("%d ", s.count);

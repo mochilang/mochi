@@ -1,11 +1,18 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_assign.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_assign.c:20:9: error: ‘scoresItem’ has no member named ‘data’
-   20 |   scores.data["bob"] = 2;
+/workspace/mochi/tests/machine/x/c/map_assign.c:23:3: error: unknown type name ‘scoresItem’; did you mean ‘ScoresItem’?
+   23 |   scoresItem scores = (ScoresItem){.alice = 1};
+      |   ^~~~~~~~~~
+      |   ScoresItem
+/workspace/mochi/tests/machine/x/c/map_assign.c:23:23: error: incompatible types when initializing type ‘int’ using type ‘ScoresItem’
+   23 |   scoresItem scores = (ScoresItem){.alice = 1};
+      |                       ^
+/workspace/mochi/tests/machine/x/c/map_assign.c:24:9: error: request for member ‘data’ in something not a structure or union
+   24 |   scores.data["bob"] = 2;
       |         ^
-/workspace/mochi/tests/machine/x/c/map_assign.c:21:24: error: ‘scoresItem’ has no member named ‘data’
-   21 |   printf("%d\n", scores.data["bob"]);
+/workspace/mochi/tests/machine/x/c/map_assign.c:25:24: error: request for member ‘data’ in something not a structure or union
+   25 |   printf("%d\n", scores.data["bob"]);
       |                        ^
 
    1: #include <stdio.h>

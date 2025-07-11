@@ -1,8 +1,38 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/load_yaml.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/load_yaml.c:270:24: error: invalid initializer
-  270 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
+/workspace/mochi/tests/machine/x/c/load_yaml.c:293:24: error: invalid initializer
+  293 |   list_Person people = _load_json("../interpreter/valid/people.yaml");
       |                        ^~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:294:3: error: unknown type name ‘list_adultsItem’; did you mean ‘list_AdultsItem’?
+  294 |   list_adultsItem tmp1 = list_adultsItem_create(people.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_AdultsItem
+/workspace/mochi/tests/machine/x/c/load_yaml.c:294:26: warning: implicit declaration of function ‘list_adultsItem_create’; did you mean ‘list_AdultsItem_create’? [-Wimplicit-function-declaration]
+  294 |   list_adultsItem tmp1 = list_adultsItem_create(people.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_AdultsItem_create
+/workspace/mochi/tests/machine/x/c/load_yaml.c:301:9: error: request for member ‘data’ in something not a structure or union
+  301 |     tmp1.data[tmp2] = (AdultsItem){.name = p.name, .email = p.email};
+      |         ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:304:7: error: request for member ‘len’ in something not a structure or union
+  304 |   tmp1.len = tmp2;
+      |       ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:305:28: error: invalid initializer
+  305 |   list_AdultsItem adults = tmp1;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:307:5: error: unknown type name ‘adultsItem’; did you mean ‘AdultsItem’?
+  307 |     adultsItem a = adults.data[tmp4];
+      |     ^~~~~~~~~~
+      |     AdultsItem
+/workspace/mochi/tests/machine/x/c/load_yaml.c:307:20: error: incompatible types when initializing type ‘int’ using type ‘AdultsItem’
+  307 |     adultsItem a = adults.data[tmp4];
+      |                    ^~~~~~
+/workspace/mochi/tests/machine/x/c/load_yaml.c:308:20: error: request for member ‘name’ in something not a structure or union
+  308 |     printf("%s ", a.name);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/load_yaml.c:309:21: error: request for member ‘email’ in something not a structure or union
+  309 |     printf("%s\n", a.email);
+      |                     ^
 
    1: #include <stdio.h>

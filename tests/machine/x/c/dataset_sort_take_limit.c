@@ -4,66 +4,70 @@
 typedef struct {
   char *name;
   int price;
-} productsItem;
+} ProductsItem;
 typedef struct {
   int len;
-  productsItem *data;
-} list_productsItem;
-static list_productsItem list_productsItem_create(int len) {
-  list_productsItem l;
+  ProductsItem *data;
+} list_ProductsItem;
+static list_ProductsItem list_ProductsItem_create(int len) {
+  list_ProductsItem l;
   l.len = len;
-  l.data = (productsItem *)malloc(sizeof(productsItem) * len);
+  l.data = calloc(len, sizeof(ProductsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  productsItem _t1_data[] = {
-      (productsItem){.name = "Laptop", .price = 1500},
-      (productsItem){.name = "Smartphone", .price = 900},
-      (productsItem){.name = "Tablet", .price = 600},
-      (productsItem){.name = "Monitor", .price = 300},
-      (productsItem){.name = "Keyboard", .price = 100},
-      (productsItem){.name = "Mouse", .price = 50},
-      (productsItem){.name = "Headphones", .price = 200}};
-  list_productsItem _t1 = {7, _t1_data};
-  list_productsItem products = _t1;
-  list_productsItem _t2 = list_productsItem_create(products.len);
-  int *_t5 = (int *)malloc(sizeof(int) * products.len);
-  int _t3 = 0;
-  int _t6 = 1;
-  int _t7 = 3;
-  int _t8 = 0;
-  for (int _t4 = 0; _t4 < products.len; _t4++) {
-    productsItem p = products.data[_t4];
-    if (_t8 < _t6) {
-      _t8++;
+  ProductsItem tmp1_data[] = {
+      (ProductsItem){.name = "Laptop", .price = 1500},
+      (ProductsItem){.name = "Smartphone", .price = 900},
+      (ProductsItem){.name = "Tablet", .price = 600},
+      (ProductsItem){.name = "Monitor", .price = 300},
+      (ProductsItem){.name = "Keyboard", .price = 100},
+      (ProductsItem){.name = "Mouse", .price = 50},
+      (ProductsItem){.name = "Headphones", .price = 200}};
+  list_ProductsItem tmp1 = {7, tmp1_data};
+  list_productsItem products = tmp1;
+  list_productsItem tmp2 = list_productsItem_create(products.len);
+  int *tmp5 = (int *)malloc(sizeof(int) * products.len);
+  int tmp3 = 0;
+  int tmp6 = 1;
+  int tmp7 = 3;
+  int tmp8 = 0;
+  for (int tmp4 = 0; tmp4 < products.len; tmp4++) {
+    productsItem p = products.data[tmp4];
+    if (tmp8 < tmp6) {
+      tmp8++;
       continue;
     }
-    if (_t7 >= 0 && _t3 >= _t7) {
+    if (tmp7 >= 0 && tmp3 >= tmp7) {
       break;
     }
-    _t8++;
-    _t2.data[_t3] = p;
-    _t5[_t3] = (-p.price);
-    _t3++;
+    tmp8++;
+    tmp2.data[tmp3] = p;
+    tmp5[tmp3] = (-p.price);
+    tmp3++;
   }
-  _t2.len = _t3;
-  for (int i = 0; i < _t3 - 1; i++) {
-    for (int j = i + 1; j < _t3; j++) {
-      if (_t5[i] > _t5[j]) {
-        int _t9 = _t5[i];
-        _t5[i] = _t5[j];
-        _t5[j] = _t9;
-        productsItem _t10 = _t2.data[i];
-        _t2.data[i] = _t2.data[j];
-        _t2.data[j] = _t10;
+  tmp2.len = tmp3;
+  for (int i = 0; i < tmp3 - 1; i++) {
+    for (int j = i + 1; j < tmp3; j++) {
+      if (tmp5[i] > tmp5[j]) {
+        int tmp9 = tmp5[i];
+        tmp5[i] = tmp5[j];
+        tmp5[j] = tmp9;
+        productsItem tmp10 = tmp2.data[i];
+        tmp2.data[i] = tmp2.data[j];
+        tmp2.data[j] = tmp10;
       }
     }
   }
-  list_productsItem expensive = _t2;
+  list_productsItem expensive = tmp2;
   printf("%s\n", "--- Top products (excluding most expensive) ---");
-  for (int _t11 = 0; _t11 < expensive.len; _t11++) {
-    productsItem item = expensive.data[_t11];
+  for (int tmp11 = 0; tmp11 < expensive.len; tmp11++) {
+    productsItem item = expensive.data[tmp11];
     printf("%s ", item.name);
     printf("%s ", "costs $");
     printf("%d\n", item.price);

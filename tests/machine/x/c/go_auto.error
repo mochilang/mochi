@@ -2,7 +2,7 @@ line: 0
 error: output mismatch
 -- got --
 5
--1416462912
+408048608
 42
 -- want --
 5

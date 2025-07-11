@@ -1,8 +1,35 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_join.c:59:26: error: invalid initializer
-   59 |   list_statsItem stats = 0;
+/workspace/mochi/tests/machine/x/c/group_by_join.c:65:3: error: unknown type name ‘list_customersItem’; did you mean ‘list_CustomersItem’?
+   65 |   list_customersItem customers = tmp1;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_CustomersItem
+/workspace/mochi/tests/machine/x/c/group_by_join.c:65:34: error: incompatible types when initializing type ‘int’ using type ‘list_CustomersItem’
+   65 |   list_customersItem customers = tmp1;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_join.c:70:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+   70 |   list_ordersItem orders = tmp2;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/group_by_join.c:70:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+   70 |   list_ordersItem orders = tmp2;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_join.c:71:26: error: invalid initializer
+   71 |   list_StatsItem stats = 0;
       |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_join.c:74:5: error: unknown type name ‘statsItem’; did you mean ‘StatsItem’?
+   74 |     statsItem s = stats.data[tmp3];
+      |     ^~~~~~~~~
+      |     StatsItem
+/workspace/mochi/tests/machine/x/c/group_by_join.c:74:19: error: incompatible types when initializing type ‘int’ using type ‘StatsItem’
+   74 |     statsItem s = stats.data[tmp3];
+      |                   ^~~~~
+/workspace/mochi/tests/machine/x/c/group_by_join.c:75:20: error: request for member ‘name’ in something not a structure or union
+   75 |     printf("%s ", s.name);
+      |                    ^
+/workspace/mochi/tests/machine/x/c/group_by_join.c:77:21: error: request for member ‘count’ in something not a structure or union
+   77 |     printf("%d\n", s.count);
+      |                     ^
 
    1: #include <stdio.h>

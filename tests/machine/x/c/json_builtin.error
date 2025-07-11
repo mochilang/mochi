@@ -1,0 +1,18 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/json_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/json_builtin.c:120:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+  120 |   mItem m = (MItem){.a = 1, .b = 2};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/json_builtin.c:120:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+  120 |   mItem m = (MItem){.a = 1, .b = 2};
+      |             ^
+/workspace/mochi/tests/machine/x/c/json_builtin.c:124:14: error: request for member ‘a’ in something not a structure or union
+  124 |   _json_int(m.a);
+      |              ^
+/workspace/mochi/tests/machine/x/c/json_builtin.c:128:14: error: request for member ‘b’ in something not a structure or union
+  128 |   _json_int(m.b);
+      |              ^
+
+   1: #include <stdio.h>

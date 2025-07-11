@@ -1,13 +1,41 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:126:28: error: invalid initializer
-  126 |   list_resultItem result = 0;
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:119:3: error: unknown type name ‘list_nationItem’; did you mean ‘list_NationItem’?
+  119 |   list_nationItem nation = tmp1;
+      |   ^~~~~~~~~~~~~~~
+      |   list_NationItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:119:28: error: incompatible types when initializing type ‘int’ using type ‘list_NationItem’
+  119 |   list_nationItem nation = tmp1;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:128:3: error: unknown type name ‘list_customerItem’; did you mean ‘list_CustomerItem’?
+  128 |   list_customerItem customer = tmp2;
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_CustomerItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:128:32: error: incompatible types when initializing type ‘int’ using type ‘list_CustomerItem’
+  128 |   list_customerItem customer = tmp2;
+      |                                ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:135:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+  135 |   list_ordersItem orders = tmp3;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:135:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+  135 |   list_ordersItem orders = tmp3;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:145:3: error: unknown type name ‘list_lineitemItem’; did you mean ‘list_LineitemItem’?
+  145 |   list_lineitemItem lineitem = tmp4;
+      |   ^~~~~~~~~~~~~~~~~
+      |   list_LineitemItem
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:145:32: error: incompatible types when initializing type ‘int’ using type ‘list_LineitemItem’
+  145 |   list_lineitemItem lineitem = tmp4;
+      |                                ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:146:28: error: invalid initializer
+  146 |   list_ResultItem result = 0;
       |                            ^
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:127:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-  127 |   printf("%d\n", result);
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:147:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_ResultItem’ [-Wformat=]
+  147 |   printf("%d\n", result);
       |           ~^     ~~~~~~
       |            |     |
-      |            int   list_resultItem
+      |            int   list_ResultItem
 
    1: #include <stdio.h>

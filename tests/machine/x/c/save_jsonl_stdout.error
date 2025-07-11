@@ -13,8 +13,15 @@ error: cc error: exit status 1
    36 | static void _save_json(list_map_string rows, const char *path) {
       |                        ^~~~~~~~~~~~~~~
 /workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:78:3: warning: implicit declaration of function ‘_save_json’ [-Wimplicit-function-declaration]
-   78 |   _save_json(people, "-");
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:81:3: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+   81 |   list_peopleItem people = tmp1;
+      |   ^~~~~~~~~~~~~~~
+      |   list_PeopleItem
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:81:28: error: incompatible types when initializing type ‘int’ using type ‘list_PeopleItem’
+   81 |   list_peopleItem people = tmp1;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/save_jsonl_stdout.c:82:3: warning: implicit declaration of function ‘_save_json’ [-Wimplicit-function-declaration]
+   82 |   _save_json(people, "-");
       |   ^~~~~~~~~~
 
    1: #include <stdio.h>

@@ -1,13 +1,89 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_having.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_having.c:193:13: error: incompatible type for argument 1 of ‘_json_int’
-  193 |   _json_int(big);
+/workspace/mochi/tests/machine/x/c/group_by_having.c:186:3: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  186 |   list_peopleItem people = tmp1;
+      |   ^~~~~~~~~~~~~~~
+      |   list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:186:28: error: incompatible types when initializing type ‘int’ using type ‘list_PeopleItem’
+  186 |   list_peopleItem people = tmp1;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_having.c:187:3: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  187 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:187:26: warning: implicit declaration of function ‘list_peopleItem_create’; did you mean ‘list_PeopleItem_create’? [-Wimplicit-function-declaration]
+  187 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_PeopleItem_create
+/workspace/mochi/tests/machine/x/c/group_by_having.c:187:55: error: request for member ‘len’ in something not a structure or union
+  187 |   list_peopleItem tmp2 = list_peopleItem_create(people.len);
+      |                                                       ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:188:47: error: request for member ‘len’ in something not a structure or union
+  188 |   list_string tmp3 = list_string_create(people.len);
+      |                                               ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:190:29: error: request for member ‘len’ in something not a structure or union
+  190 |   for (int i = 0; i < people.len; i++) {
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:191:5: error: unknown type name ‘peopleItem’; did you mean ‘PeopleItem’?
+  191 |     peopleItem p = people.data[i];
+      |     ^~~~~~~~~~
+      |     PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:191:26: error: request for member ‘data’ in something not a structure or union
+  191 |     peopleItem p = people.data[i];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:192:9: error: request for member ‘data’ in something not a structure or union
+  192 |     tmp2.data[tmp4] = p;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:193:24: error: request for member ‘city’ in something not a structure or union
+  193 |     tmp3.data[tmp4] = p.city;
+      |                        ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:196:7: error: request for member ‘len’ in something not a structure or union
+  196 |   tmp2.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:199:3: error: unknown type name ‘list_bigItem’; did you mean ‘list_BigItem’?
+  199 |   list_bigItem tmp6 = list_bigItem_create(tmp5.len);
+      |   ^~~~~~~~~~~~
+      |   list_BigItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:199:23: warning: implicit declaration of function ‘list_bigItem_create’; did you mean ‘list_BigItem_create’? [-Wimplicit-function-declaration]
+  199 |   list_bigItem tmp6 = list_bigItem_create(tmp5.len);
+      |                       ^~~~~~~~~~~~~~~~~~~
+      |                       list_BigItem_create
+/workspace/mochi/tests/machine/x/c/group_by_having.c:203:5: error: unknown type name ‘list_peopleItem’; did you mean ‘list_PeopleItem’?
+  203 |     list_peopleItem tmp8 = list_peopleItem_create(_gp.items.len);
+      |     ^~~~~~~~~~~~~~~
+      |     list_PeopleItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:205:11: error: request for member ‘data’ in something not a structure or union
+  205 |       tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+      |           ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:205:26: error: request for member ‘data’ in something not a structure or union
+  205 |       tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:207:9: error: request for member ‘len’ in something not a structure or union
+  207 |     tmp8.len = _gp.items.len;
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:210:7: error: unknown type name ‘list_peopleItem’
+  210 |       list_peopleItem items;
+      |       ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_having.c:212:9: error: request for member ‘data’ in something not a structure or union
+  212 |     tmp6.data[tmp7] = (BigItem){.city = g.key, .num = g.items.len};
+      |         ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:212:62: error: request for member ‘len’ in something not a structure or union
+  212 |     tmp6.data[tmp7] = (BigItem){.city = g.key, .num = g.items.len};
+      |                                                              ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:215:7: error: request for member ‘len’ in something not a structure or union
+  215 |   tmp6.len = tmp7;
+      |       ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:216:22: error: invalid initializer
+  216 |   list_BigItem big = tmp6;
+      |                      ^~~~
+/workspace/mochi/tests/machine/x/c/group_by_having.c:217:13: error: incompatible type for argument 1 of ‘_json_int’
+  217 |   _json_int(big);
       |             ^~~
       |             |
-      |             list_bigItem
-/workspace/mochi/tests/machine/x/c/group_by_having.c:45:27: note: expected ‘int’ but argument is of type ‘list_bigItem’
-   45 | static void _json_int(int v) { printf("%d", v); }
+      |             list_BigItem
+/workspace/mochi/tests/machine/x/c/group_by_having.c:61:27: note: expected ‘int’ but argument is of type ‘list_BigItem’
+   61 | static void _json_int(int v) { printf("%d", v); }
       |                       ~~~~^
 
    1: #include <stdio.h>

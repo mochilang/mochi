@@ -8,7 +8,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static int _sum_int(list_int v) {
@@ -18,21 +22,21 @@ static int _sum_int(list_int v) {
   return sum;
 }
 int main() {
-  int _t1_data[] = {1, 2, 3};
-  list_int _t1 = {3, _t1_data};
-  list_int nums = _t1;
-  list_int _t2 = list_int_create(nums.len);
-  int _t3 = 0;
-  for (int _t4 = 0; _t4 < nums.len; _t4++) {
-    int n = nums.data[_t4];
+  int tmp1_data[] = {1, 2, 3};
+  list_int tmp1 = {3, tmp1_data};
+  list_int nums = tmp1;
+  list_int tmp2 = list_int_create(nums.len);
+  int tmp3 = 0;
+  for (int tmp4 = 0; tmp4 < nums.len; tmp4++) {
+    int n = nums.data[tmp4];
     if (!(n > 1)) {
       continue;
     }
-    _t2.data[_t3] = n;
-    _t3++;
+    tmp2.data[tmp3] = n;
+    tmp3++;
   }
-  _t2.len = _t3;
-  double result = _sum_int(_t2);
+  tmp2.len = tmp3;
+  double result = _sum_int(tmp2);
   printf("%.17g\n", result);
   return 0;
 }

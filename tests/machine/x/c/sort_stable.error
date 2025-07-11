@@ -1,0 +1,34 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/sort_stable.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/sort_stable.c:50:3: error: unknown type name ‘list_itemsItem’; did you mean ‘list_ItemsItem’?
+   50 |   list_itemsItem items = tmp1;
+      |   ^~~~~~~~~~~~~~
+      |   list_ItemsItem
+/workspace/mochi/tests/machine/x/c/sort_stable.c:50:26: error: incompatible types when initializing type ‘int’ using type ‘list_ItemsItem’
+   50 |   list_itemsItem items = tmp1;
+      |                          ^~~~
+/workspace/mochi/tests/machine/x/c/sort_stable.c:51:46: error: request for member ‘len’ in something not a structure or union
+   51 |   list_string tmp2 = list_string_create(items.len);
+      |                                              ^
+/workspace/mochi/tests/machine/x/c/sort_stable.c:52:48: error: request for member ‘len’ in something not a structure or union
+   52 |   int *tmp5 = (int *)malloc(sizeof(int) * items.len);
+      |                                                ^
+/workspace/mochi/tests/machine/x/c/sort_stable.c:54:34: error: request for member ‘len’ in something not a structure or union
+   54 |   for (int tmp4 = 0; tmp4 < items.len; tmp4++) {
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/sort_stable.c:55:5: error: unknown type name ‘itemsItem’; did you mean ‘ItemsItem’?
+   55 |     itemsItem i = items.data[tmp4];
+      |     ^~~~~~~~~
+      |     ItemsItem
+/workspace/mochi/tests/machine/x/c/sort_stable.c:55:24: error: request for member ‘data’ in something not a structure or union
+   55 |     itemsItem i = items.data[tmp4];
+      |                        ^
+/workspace/mochi/tests/machine/x/c/sort_stable.c:56:24: error: request for member ‘v’ in something not a structure or union
+   56 |     tmp2.data[tmp3] = i.v;
+      |                        ^
+/workspace/mochi/tests/machine/x/c/sort_stable.c:57:19: error: request for member ‘n’ in something not a structure or union
+   57 |     tmp5[tmp3] = i.n;
+      |                   ^
+
+   1: #include <stdio.h>

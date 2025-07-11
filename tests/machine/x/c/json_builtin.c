@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_float list_float_create(int len) {
   list_float l;
   l.len = len;
-  l.data = (double *)malloc(sizeof(double) * len);
+  l.data = calloc(len, sizeof(double));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -29,7 +37,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -39,7 +51,11 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static void _json_int(int v) { printf("%d", v); }
@@ -84,20 +100,24 @@ static void _json_list_list_int(list_list_int v) {
 typedef struct {
   int a;
   int b;
-} mItem;
+} MItem;
 typedef struct {
   int len;
-  mItem *data;
-} list_mItem;
-static list_mItem list_mItem_create(int len) {
-  list_mItem l;
+  MItem *data;
+} list_MItem;
+static list_MItem list_MItem_create(int len) {
+  list_MItem l;
   l.len = len;
-  l.data = (mItem *)malloc(sizeof(mItem) * len);
+  l.data = calloc(len, sizeof(MItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  mItem m = (mItem){.a = 1, .b = 2};
+  mItem m = (MItem){.a = 1, .b = 2};
   printf("{");
   _json_string("a");
   printf(":");

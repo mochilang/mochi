@@ -1,22 +1,29 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_membership.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_membership.c:21:21: error: expected ‘)’ before ‘in’
-   21 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:24:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/map_membership.c:24:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |             ^
+/workspace/mochi/tests/machine/x/c/map_membership.c:25:21: error: expected ‘)’ before ‘in’
+   25 |   printf("%d\n", "a" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/map_membership.c:21:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   21 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:25:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   25 |   printf("%d\n", "a" in m);
       |           ~^     ~~~
       |            |     |
       |            int   char *
       |           %s
-/workspace/mochi/tests/machine/x/c/map_membership.c:22:21: error: expected ‘)’ before ‘in’
-   22 |   printf("%d\n", "c" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:26:21: error: expected ‘)’ before ‘in’
+   26 |   printf("%d\n", "c" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/map_membership.c:22:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   22 |   printf("%d\n", "c" in m);
+/workspace/mochi/tests/machine/x/c/map_membership.c:26:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   26 |   printf("%d\n", "c" in m);
       |           ~^     ~~~
       |            |     |
       |            int   char *

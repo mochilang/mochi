@@ -1,11 +1,114 @@
 line: 0
-error: output mismatch
--- got --
---- Left Join ---
-Order 100 customer 1 total 250
-Order 101 customer 0 total 80
--- want --
---- Left Join ---
-Order 100 customer map[id:1 name:Alice] total 250
-Order 101 customer <nil> total 80
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/left_join.c:45:3: error: unknown type name ‘customersItem’
+   45 |   customersItem customer;
+      |   ^~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/left_join.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/left_join.c:67:3: error: unknown type name ‘list_customersItem’; did you mean ‘list_CustomersItem’?
+   67 |   list_customersItem customers = tmp1;
+      |   ^~~~~~~~~~~~~~~~~~
+      |   list_CustomersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:67:34: error: incompatible types when initializing type ‘int’ using type ‘list_CustomersItem’
+   67 |   list_customersItem customers = tmp1;
+      |                                  ^~~~
+/workspace/mochi/tests/machine/x/c/left_join.c:72:3: error: unknown type name ‘list_ordersItem’; did you mean ‘list_OrdersItem’?
+   72 |   list_ordersItem orders = tmp2;
+      |   ^~~~~~~~~~~~~~~
+      |   list_OrdersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:72:28: error: incompatible types when initializing type ‘int’ using type ‘list_OrdersItem’
+   72 |   list_ordersItem orders = tmp2;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/left_join.c:73:3: error: unknown type name ‘list_resultItem’; did you mean ‘list_ResultItem’?
+   73 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |   ^~~~~~~~~~~~~~~
+      |   list_ResultItem
+/workspace/mochi/tests/machine/x/c/left_join.c:73:26: warning: implicit declaration of function ‘list_resultItem_create’; did you mean ‘list_ResultItem_create’? [-Wimplicit-function-declaration]
+   73 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_ResultItem_create
+/workspace/mochi/tests/machine/x/c/left_join.c:73:55: error: request for member ‘len’ in something not a structure or union
+   73 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                                                       ^
+/workspace/mochi/tests/machine/x/c/left_join.c:73:71: error: request for member ‘len’ in something not a structure or union
+   73 |   list_resultItem tmp3 = list_resultItem_create(orders.len * customers.len);
+      |                                                                       ^
+/workspace/mochi/tests/machine/x/c/left_join.c:75:35: error: request for member ‘len’ in something not a structure or union
+   75 |   for (int tmp5 = 0; tmp5 < orders.len; tmp5++) {
+      |                                   ^
+/workspace/mochi/tests/machine/x/c/left_join.c:76:5: error: unknown type name ‘ordersItem’; did you mean ‘OrdersItem’?
+   76 |     ordersItem o = orders.data[tmp5];
+      |     ^~~~~~~~~~
+      |     OrdersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:76:26: error: request for member ‘data’ in something not a structure or union
+   76 |     ordersItem o = orders.data[tmp5];
+      |                          ^
+/workspace/mochi/tests/machine/x/c/left_join.c:78:40: error: request for member ‘len’ in something not a structure or union
+   78 |     for (int tmp6 = 0; tmp6 < customers.len; tmp6++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/left_join.c:79:7: error: unknown type name ‘customersItem’; did you mean ‘CustomersItem’?
+   79 |       customersItem c = customers.data[tmp6];
+      |       ^~~~~~~~~~~~~
+      |       CustomersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:79:34: error: request for member ‘data’ in something not a structure or union
+   79 |       customersItem c = customers.data[tmp6];
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/left_join.c:80:14: error: request for member ‘customerId’ in something not a structure or union
+   80 |       if (!(o.customerId == c.id)) {
+      |              ^
+/workspace/mochi/tests/machine/x/c/left_join.c:80:30: error: request for member ‘id’ in something not a structure or union
+   80 |       if (!(o.customerId == c.id)) {
+      |                              ^
+/workspace/mochi/tests/machine/x/c/left_join.c:84:11: error: request for member ‘data’ in something not a structure or union
+   84 |       tmp3.data[tmp4] =
+      |           ^
+/workspace/mochi/tests/machine/x/c/left_join.c:85:36: error: request for member ‘id’ in something not a structure or union
+   85 |           (ResultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                    ^
+/workspace/mochi/tests/machine/x/c/left_join.c:85:66: error: request for member ‘total’ in something not a structure or union
+   85 |           (ResultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                                                  ^
+/workspace/mochi/tests/machine/x/c/left_join.c:89:7: error: unknown type name ‘customersItem’; did you mean ‘CustomersItem’?
+   89 |       customersItem c = (customersItem){0};
+      |       ^~~~~~~~~~~~~
+      |       CustomersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:89:26: error: ‘customersItem’ undeclared (first use in this function); did you mean ‘CustomersItem’?
+   89 |       customersItem c = (customersItem){0};
+      |                          ^~~~~~~~~~~~~
+      |                          CustomersItem
+/workspace/mochi/tests/machine/x/c/left_join.c:89:26: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/left_join.c:89:40: error: expected ‘,’ or ‘;’ before ‘{’ token
+   89 |       customersItem c = (customersItem){0};
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/left_join.c:90:11: error: request for member ‘data’ in something not a structure or union
+   90 |       tmp3.data[tmp4] =
+      |           ^
+/workspace/mochi/tests/machine/x/c/left_join.c:91:36: error: request for member ‘id’ in something not a structure or union
+   91 |           (ResultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                    ^
+/workspace/mochi/tests/machine/x/c/left_join.c:91:66: error: request for member ‘total’ in something not a structure or union
+   91 |           (ResultItem){.orderId = o.id, .customer = c, .total = o.total};
+      |                                                                  ^
+/workspace/mochi/tests/machine/x/c/left_join.c:95:7: error: request for member ‘len’ in something not a structure or union
+   95 |   tmp3.len = tmp4;
+      |       ^
+/workspace/mochi/tests/machine/x/c/left_join.c:96:28: error: invalid initializer
+   96 |   list_ResultItem result = tmp3;
+      |                            ^~~~
+/workspace/mochi/tests/machine/x/c/left_join.c:99:5: error: unknown type name ‘resultItem’; did you mean ‘ResultItem’?
+   99 |     resultItem entry = result.data[tmp8];
+      |     ^~~~~~~~~~
+      |     ResultItem
+/workspace/mochi/tests/machine/x/c/left_join.c:99:24: error: incompatible types when initializing type ‘int’ using type ‘ResultItem’
+   99 |     resultItem entry = result.data[tmp8];
+      |                        ^~~~~~
+/workspace/mochi/tests/machine/x/c/left_join.c:101:24: error: request for member ‘orderId’ in something not a structure or union
+  101 |     printf("%d ", entry.orderId);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/left_join.c:103:24: error: request for member ‘customer’ in something not a structure or union
+  103 |     printf("%d ", entry.customer);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/left_join.c:105:25: error: request for member ‘total’ in something not a structure or union
+  105 |     printf("%d\n", entry.total);
+      |                         ^
+
    1: #include <stdio.h>

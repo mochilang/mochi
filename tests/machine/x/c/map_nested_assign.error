@@ -1,0 +1,21 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:23:3: error: unknown type name ‘outerItem’
+   23 |   outerItem outer;
+      |   ^~~~~~~~~
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:41:3: error: unknown type name ‘dataItem’; did you mean ‘DataItem’?
+   41 |   dataItem data = (DataItem){.outer = (OuterItem){.inner = 1}};
+      |   ^~~~~~~~
+      |   DataItem
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:41:39: error: incompatible types when initializing type ‘int’ using type ‘OuterItem’
+   41 |   dataItem data = (DataItem){.outer = (OuterItem){.inner = 1}};
+      |                                       ^
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:42:7: error: request for member ‘outer’ in something not a structure or union
+   42 |   data.outer.inner = 2;
+      |       ^
+/workspace/mochi/tests/machine/x/c/map_nested_assign.c:43:22: error: request for member ‘outer’ in something not a structure or union
+   43 |   printf("%d\n", data.outer.inner);
+      |                      ^
+
+   1: #include <stdio.h>

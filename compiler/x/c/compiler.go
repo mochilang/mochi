@@ -51,6 +51,14 @@ func sanitizeName(name string) string {
 	return s
 }
 
+func sanitizeTypeName(name string) string {
+	s := sanitizeName(name)
+	if len(s) > 0 {
+		s = strings.ToUpper(s[:1]) + s[1:]
+	}
+	return s
+}
+
 type captureInfo struct {
 	global string
 	typ    types.Type
@@ -133,7 +141,7 @@ func (c *Compiler) writeIndent() {
 
 func (c *Compiler) newTemp() string {
 	c.tmp++
-	return fmt.Sprintf("_t%d", c.tmp)
+	return fmt.Sprintf("tmp%d", c.tmp)
 }
 
 func (c *Compiler) need(key string) {
@@ -431,7 +439,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	name := sanitizeName(t.Name)
+	name := sanitizeTypeName(t.Name)
 	if c.structs[name] {
 		return nil
 	}
@@ -439,7 +447,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if len(t.Variants) > 0 {
 		// compile variant structs
 		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
+			vname := sanitizeTypeName(v.Name)
 			c.writeln(fmt.Sprintf("typedef struct %s {", vname))
 			c.indent++
 			for _, f := range v.Fields {
@@ -459,7 +467,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		c.writeln("union {")
 		c.indent++
 		for _, v := range t.Variants {
-			vname := sanitizeName(v.Name)
+			vname := sanitizeTypeName(v.Name)
 			c.writeln(fmt.Sprintf("%s %s;", vname, vname))
 		}
 		c.indent--
@@ -469,11 +477,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		// tag constants
 		keys := make([]string, len(t.Variants))
 		for i, v := range t.Variants {
-			keys[i] = sanitizeName(v.Name)
+			keys[i] = sanitizeTypeName(v.Name)
 		}
 		sort.Strings(keys)
 		for i, k := range keys {
-			c.writeln(fmt.Sprintf("#define %s_%s %d", sanitizeName(t.Name), k, i))
+			c.writeln(fmt.Sprintf("#define %s_%s %d", sanitizeTypeName(t.Name), k, i))
 		}
 		if c.env != nil {
 			ut := types.UnionType{Name: t.Name, Variants: map[string]types.StructType{}}
@@ -703,7 +711,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 }
 
 func (c *Compiler) compileStructType(st types.StructType) {
-	name := sanitizeName(st.Name)
+	name := sanitizeTypeName(st.Name)
 	if c.structs[name] {
 		return
 	}
@@ -744,7 +752,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileStructListType(st types.StructType) {
-	listName := "list_" + sanitizeName(st.Name)
+	listName := "list_" + sanitizeTypeName(st.Name)
 	if c.listStructs[listName] {
 		return
 	}
@@ -754,12 +762,12 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		oldIndent := c.indent
 		c.buf = bytes.Buffer{}
 		c.indent = 0
-		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
 		c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
 		c.indent++
 		c.writeln(fmt.Sprintf("%s l;", listName))
 		c.writeln("l.len = len;")
-		c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+		c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeTypeName(st.Name)))
 		c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 		c.writeln("return l;")
 		c.indent--
@@ -769,12 +777,12 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		c.indent = oldIndent
 		return
 	}
-	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
 	c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s l;", listName))
 	c.writeln("l.len = len;")
-	c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+	c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeTypeName(st.Name)))
 	c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 	c.writeln("return l;")
 	c.indent--
@@ -782,7 +790,7 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 }
 
 func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
-	name := "_fetch_" + sanitizeName(st.Name)
+	name := "_fetch_" + sanitizeTypeName(st.Name)
 	if c.fetchStructs[name] {
 		return name
 	}
@@ -791,10 +799,10 @@ func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
 	oldIndent := c.indent
 	c.buf = bytes.Buffer{}
 	c.indent = 0
-	c.writeln(fmt.Sprintf("static %s %s(const char* url, void* opts){", sanitizeName(st.Name), name))
+	c.writeln(fmt.Sprintf("static %s %s(const char* url, void* opts){", sanitizeTypeName(st.Name), name))
 	c.indent++
 	c.writeln("map_string row = _fetch(url, opts);")
-	c.writeln(fmt.Sprintf("%s out;", sanitizeName(st.Name)))
+	c.writeln(fmt.Sprintf("%s out;", sanitizeTypeName(st.Name)))
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
 		field := sanitizeName(fn)
@@ -1216,7 +1224,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := c.structLits[ml]; ok {
-							typ = "list_" + sanitizeName(st.Name)
+							typ = "list_" + sanitizeTypeName(st.Name)
 							t = types.ListType{Elem: st}
 						}
 					}
@@ -1228,7 +1236,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 				if ml := asMapLiteral(q.Select); ml != nil {
 					if st, ok := c.structLits[ml]; ok {
-						typ = "list_" + sanitizeName(st.Name)
+						typ = "list_" + sanitizeTypeName(st.Name)
 						t = types.ListType{Elem: st}
 					}
 				}
@@ -3638,7 +3646,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				val := c.compileExpr(it.Value)
 				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
 			}
-			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
 	}
 
@@ -3762,7 +3770,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					val := c.compileExpr(it.Value)
 					parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
 				}
-				expr = fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+				expr = fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 				isStr = false
 				isFloatList = false
 				isStringList = false
@@ -3965,21 +3973,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
-					listName := "list_" + sanitizeName(st.Name)
+					listName := "list_" + sanitizeTypeName(st.Name)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
 						vals[i] = c.compileExpr(el)
 					}
 					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
 				stName := sl.Name
 				if st, ok := c.env.GetStruct(stName); ok {
-					listName := "list_" + sanitizeName(st.Name)
+					listName := "list_" + sanitizeTypeName(st.Name)
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
@@ -3987,7 +3995,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						vals[i] = c.compileExpr(el)
 					}
 					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
@@ -4013,7 +4021,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(it.Value)
 				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
 			}
-			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
 		name := c.newTemp()
 		if isMapStringIntLiteral(p.Map, c.env) {

@@ -1,0 +1,15 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/map_index.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/map_index.c:24:3: error: unknown type name ‘mItem’; did you mean ‘MItem’?
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |   ^~~~~
+      |   MItem
+/workspace/mochi/tests/machine/x/c/map_index.c:24:13: error: incompatible types when initializing type ‘int’ using type ‘MItem’
+   24 |   mItem m = (MItem){.a = 1, .b = 2};
+      |             ^
+/workspace/mochi/tests/machine/x/c/map_index.c:25:19: error: request for member ‘b’ in something not a structure or union
+   25 |   printf("%d\n", m.b);
+      |                   ^
+
+   1: #include <stdio.h>
