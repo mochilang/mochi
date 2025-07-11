@@ -936,11 +936,11 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
 					ct := c.inferPostfixType(prefix)
 					if mt, ok := ct.(types.MapType); ok {
-						val = fmt.Sprintf("(%s[%s] as MutableMap<%s, %s>)", val, idx, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
+						val = fmt.Sprintf("(%s[%s] as %s)", val, idx, kotlinTypeOf(mt.Value))
 					} else if types.IsMapType(ct) {
 						val = fmt.Sprintf("(%s[%s] as MutableMap<*, *>)", val, idx)
 					} else if lt, ok := ct.(types.ListType); ok {
-						val = fmt.Sprintf("(%s[%s] as MutableList<%s>)", val, idx, kotlinTypeOf(lt.Elem))
+						val = fmt.Sprintf("(%s[%s] as %s)", val, idx, kotlinTypeOf(lt.Elem))
 					} else if types.IsListType(ct) {
 						val = fmt.Sprintf("(%s[%s] as MutableList<Any?>)", val, idx)
 					} else {

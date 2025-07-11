@@ -1,8 +1,8 @@
+data class Order(var id: Int, var customerId: Int, var total: Int)
+
 data class Result(var orderId: Any?, var customerName: Any?, var total: Any?)
 
 data class Customer(var id: Int, var name: String)
-
-data class Order(var id: Int, var customerId: Int, var total: Int)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
 

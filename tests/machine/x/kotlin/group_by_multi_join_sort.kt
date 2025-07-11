@@ -14,6 +14,8 @@ fun toDouble(v: Any?): Double = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+data class Nation(var n_nationkey: Int, var n_name: String)
+
 data class Customer(var c_custkey: Int, var c_name: String, var c_acctbal: Double, var c_nationkey: Int, var c_address: String, var c_phone: String, var c_comment: String)
 
 data class Order(var o_orderkey: Int, var o_custkey: Int, var o_orderdate: String)
@@ -21,8 +23,6 @@ data class Order(var o_orderkey: Int, var o_custkey: Int, var o_orderdate: Strin
 data class Lineitem(var l_orderkey: Int, var l_returnflag: String, var l_extendedprice: Double, var l_discount: Double)
 
 data class Result(var c_custkey: Any?, var c_name: Any?, var revenue: Int, var c_acctbal: Any?, var n_name: Any?, var c_address: Any?, var c_phone: Any?, var c_comment: Any?)
-
-data class Nation(var n_nationkey: Int, var n_name: String)
 
 val nation = mutableListOf(Nation(n_nationkey = 1, n_name = "BRAZIL"))
 
@@ -69,7 +69,7 @@ val result = run {
         __res.add(Result(c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (x in g) {
-        __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
     }
     __res
 }.sum(), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment))
@@ -78,7 +78,7 @@ val result = run {
 }.sortedByDescending { run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (x in it) {
-        __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
     }
     __res
 }.sum() as Comparable<Any> }

@@ -1,7 +1,7 @@
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Item(var cat: String, var `val`: Int)
-
 data class Grouped(var cat: Any?, var total: Int)
+
+data class Item(var cat: String, var `val`: Int)
 
 val items = mutableListOf(Item(cat = "a", `val` = 3), Item(cat = "a", `val` = 1), Item(cat = "b", `val` = 5), Item(cat = "b", `val` = 2))
 

@@ -133,3 +133,13 @@ Successfully ran: 97/100 programs
 - [ ] Provide configuration for custom package names
 - [ ] Generate unit tests alongside compiled code
 - [ ] Experiment with using Kotlin flow for query pipelines
+- [ ] Optimize generated code for KAPT annotation processing
+- [ ] Provide CLI flag to configure runtime path
+- [ ] Support inline classes for wrapper types
+- [ ] Use Kotlin `when` with sealed class outputs
+- [ ] Implement generics for numeric operations
+- [ ] Generate KDoc comments for functions
+- [ ] Allow nested package structures in output
+- [ ] Add integration tests for generated programs
+- [ ] Provide Gradle build scripts for compiled code
+- [ ] Explore Kotlin/Native backends for cross-platform

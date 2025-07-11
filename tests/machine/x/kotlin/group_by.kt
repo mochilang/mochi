@@ -6,9 +6,9 @@ fun toDouble(v: Any?): Double = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Stat(var city: Any?, var count: Int, var avg_age: Double)
-
 data class People(var name: String, var age: Int, var city: String)
+
+data class Stat(var city: Any?, var count: Int, var avg_age: Double)
 
 val people = mutableListOf(People(name = "Alice", age = 30, city = "Paris"), People(name = "Bob", age = 15, city = "Hanoi"), People(name = "Charlie", age = 65, city = "Paris"), People(name = "Diana", age = 45, city = "Hanoi"), People(name = "Eve", age = 70, city = "Paris"), People(name = "Frank", age = 22, city = "Hanoi"))
 
