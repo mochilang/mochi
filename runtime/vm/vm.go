@@ -2,6 +2,7 @@ package vm
 
 import (
 	"bufio"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -95,6 +96,7 @@ const (
 	OpFirst
 	OpCount
 	OpExists
+	OpSHA256
 	OpAvg
 	OpSum
 	OpMin
@@ -231,6 +233,8 @@ func (op Op) String() string {
 		return "Count"
 	case OpExists:
 		return "Exists"
+	case OpSHA256:
+		return "SHA256"
 	case OpAvg:
 		return "Avg"
 	case OpSum:
@@ -1469,6 +1473,25 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
 			}
+		case OpSHA256:
+			v := fr.regs[ins.B]
+			var data []byte
+			if v.Tag == ValueStr {
+				data = []byte(v.Str)
+			} else if lst, ok := toList(v); ok {
+				data = make([]byte, len(lst))
+				for i, it := range lst {
+					data[i] = byte(toInt(it))
+				}
+			} else {
+				return Value{}, m.newError(fmt.Errorf("sha256 expects string or list"), trace, ins.Line)
+			}
+			sum := sha256.Sum256(data)
+			out := make([]Value, len(sum))
+			for i, b := range sum {
+				out[i] = Value{Tag: ValueInt, Int: int(b)}
+			}
+			fr.regs[ins.A] = Value{Tag: ValueList, List: out}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -2364,7 +2387,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst:
+	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst, OpSHA256:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -3518,6 +3541,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "sha256":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpSHA256, A: dst, B: arg})
 			return dst
 		case "distinct":
 			arg := fc.compileExpr(p.Call.Args[0])
