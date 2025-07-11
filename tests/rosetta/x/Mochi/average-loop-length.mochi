@@ -1,0 +1,110 @@
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun floorf(x: float): float {
+  return (x as int) as float
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmtF(x: float): string {
+  var y = floorf(x * 10000.0 + 0.5) / 10000.0
+  var s = str(y)
+  var dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + ".0000"
+  } else {
+    var decs = len(s) - dot - 1
+    if decs > 4 {
+      s = substring(s, 0, dot + 5)
+    } else {
+      while decs < 4 {
+        s = s + "0"
+        decs = decs + 1
+      }
+    }
+  }
+  return s
+}
+
+fun padInt(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun padFloat(x: float, width: int): string {
+  var s = fmtF(x)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun avgLen(n: int): float {
+  let tests = 10000
+  var sum = 0
+  var seed = 1
+  var t = 0
+  while t < tests {
+    var visited: list<bool> = []
+    var i = 0
+    while i < n {
+      visited = append(visited, false)
+      i = i + 1
+    }
+    var x = 0
+    while !visited[x] {
+      visited[x] = true
+      sum = sum + 1
+      seed = (seed * 1664525 + 1013904223) % 2147483647
+      x = seed % n
+    }
+    t = t + 1
+  }
+  return (sum as float) / tests
+}
+
+fun ana(n: int): float {
+  var nn = n as float
+  var term = 1.0
+  var sum = 1.0
+  var i = nn - 1.0
+  while i >= 1.0 {
+    term = term * (i / nn)
+    sum = sum + term
+    i = i - 1.0
+  }
+  return sum
+}
+
+fun main() {
+  let nmax = 20
+  print(" N    average    analytical    (error)")
+  print("===  =========  ============  =========")
+  var n = 1
+  while n <= nmax {
+    let a = avgLen(n)
+    let b = ana(n)
+    let err = absf(a - b) / b * 100.0
+    var line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " + padFloat(b, 12) + "  (" + padFloat(err, 6) + "%)"
+    print(line)
+    n = n + 1
+  }
+}
+
+main()
