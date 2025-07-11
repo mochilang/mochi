@@ -1,6 +1,5 @@
 object cross_join_filter {
   case class Auto1(n: Int, l: String)
-  case class Auto2(n: Any, l: Any)
 
   val nums = List[Int](1, 2, 3)
   val letters = List[String]("A", "B")

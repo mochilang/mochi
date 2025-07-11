@@ -644,15 +644,17 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
+	var elemType types.Type = types.AnyType{}
 	loop := start
 	if s.RangeEnd != nil {
 		end, err := c.compileExpr(s.RangeEnd)
 		if err != nil {
 			return err
 		}
-		loop = fmt.Sprintf("%s to %s", start, end)
+		loop = fmt.Sprintf("%s until %s", start, end)
+		// range loops produce integer indices
+		elemType = types.IntType{}
 	}
-	var elemType types.Type = types.AnyType{}
 	if t := types.ExprType(s.Source, c.env); t != nil {
 		if mt, ok := t.(types.MapType); ok {
 			c.writeln(fmt.Sprintf("for((%s, _) <- %s) {", s.Name, loop))
@@ -1586,10 +1588,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if j.Side == nil {
 			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
 			parts = append(parts, fmt.Sprintf("if %s", cond))
+			child.SetVar(j.Var, elemT, false)
 		} else {
 			parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
+			child.SetVar(j.Var, types.AnyType{}, false)
 		}
-		child.SetVar(j.Var, elemT, false)
 	}
 
 	if q.Where != nil {
@@ -1750,7 +1753,24 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		}
 	}
 	c.use("_load_" + format)
-	return fmt.Sprintf("_load_%s(%s)", format, path), nil
+	expr := fmt.Sprintf("_load_%s(%s)", format, path)
+	if l.Type != nil {
+		if st, ok := types.ResolveTypeRef(l.Type, c.env).(types.StructType); ok {
+			fields := make([]string, len(st.Order))
+			for i, f := range st.Order {
+				conv := ""
+				switch st.Fields[f].(type) {
+				case types.IntType:
+					conv = ".toInt"
+				case types.FloatType:
+					conv = ".toDouble"
+				}
+				fields[i] = fmt.Sprintf("%s = r(%q)%s", sanitizeField(f), f, conv)
+			}
+			expr = fmt.Sprintf("%s.map(r => %s(%s))", expr, st.Name, strings.Join(fields, ", "))
+		}
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileSaveExpr(sv *parser.SaveExpr) (string, error) {

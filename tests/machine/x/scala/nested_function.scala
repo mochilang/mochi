@@ -1,8 +1,6 @@
 object nested_function {
   def outer(x: Int): Int = {
-    def inner(y: Int): Int = {
-      return (x).asInstanceOf[Int] + (y).asInstanceOf[Int]
-    }
+    def inner(y: Int): Int = x + y
     return inner(5)
   }
   

@@ -1,6 +1,6 @@
 object group_by_conditional_sum {
   case class Auto1(cat: String, `val`: Int, flag: Boolean)
-  case class Auto2(cat: Any, share: Double)
+  case class Auto2(cat: String, share: Double)
 
   def _truthy(v: Any): Boolean = v match {
     case null => false

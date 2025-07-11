@@ -18,12 +18,10 @@ object match_full {
     case true => "confirmed"
     case false => "denied"
   }
-  def classify(n: Int): String = {
-    return n match {
-      case 0 => "zero"
-      case 1 => "one"
-      case _ => "many"
-    }
+  def classify(n: Int): String = n match {
+    case 0 => "zero"
+    case 1 => "one"
+    case _ => "many"
   }
   
   def main(args: Array[String]): Unit = {
