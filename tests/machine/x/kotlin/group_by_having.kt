@@ -29,7 +29,7 @@ val big = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("p" to p) as MutableMap<Any?, Any?>)
+        __g.add(p)
     }
     val __res = mutableListOf<Big>()
     for (k in __order) {

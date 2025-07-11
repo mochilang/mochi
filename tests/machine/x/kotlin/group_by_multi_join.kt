@@ -44,7 +44,7 @@ val grouped = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("x" to x) as MutableMap<Any?, Any?>)
+        __g.add(x)
     }
     val __res = mutableListOf<Grouped>()
     for (k in __order) {
@@ -55,7 +55,7 @@ val grouped = run {
         __res.add(r.value)
     }
     __res
-}.sumOf { toInt(it) }))
+}.sum()))
     }
     __res
 }

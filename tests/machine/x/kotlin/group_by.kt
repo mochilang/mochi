@@ -1,7 +1,14 @@
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class People(var name: String, var age: Int, var city: String)
+fun toDouble(v: Any?): Double = when (v) {
+    is Double -> v
+    is Int -> v.toDouble()
+    is String -> v.toDouble()
+    else -> 0.0
+}
 
+class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class Stat(var city: Any?, var count: Int, var avg_age: Double)
+
+data class People(var name: String, var age: Int, var city: String)
 
 val people = mutableListOf(People(name = "Alice", age = 30, city = "Paris"), People(name = "Bob", age = 15, city = "Hanoi"), People(name = "Charlie", age = 65, city = "Paris"), People(name = "Diana", age = 45, city = "Hanoi"), People(name = "Eve", age = 70, city = "Paris"), People(name = "Frank", age = 22, city = "Hanoi"))
 
@@ -16,7 +23,7 @@ val stats = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("person" to person) as MutableMap<Any?, Any?>)
+        __g.add(person)
     }
     val __res = mutableListOf<Stat>()
     for (k in __order) {

@@ -16,7 +16,7 @@ val result = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("i" to i) as MutableMap<Any?, Any?>)
+        __g.add(i)
     }
     val __res = mutableListOf<Result>()
     for (k in __order) {

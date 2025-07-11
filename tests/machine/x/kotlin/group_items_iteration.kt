@@ -7,9 +7,9 @@ fun toInt(v: Any?): Int = when (v) {
 }
 
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Data(var tag: String, var val: Int)
+data class Data(var tag: String, var `val`: Int)
 
-val data = mutableListOf(Data(tag = "a", val = 1), Data(tag = "a", val = 2), Data(tag = "b", val = 3))
+val data = mutableListOf(Data(tag = "a", `val` = 1), Data(tag = "a", `val` = 2), Data(tag = "b", `val` = 3))
 
 val groups = run {
     val __groups = mutableMapOf<Any?, Group>()
@@ -22,7 +22,7 @@ val groups = run {
             __groups[__k] = __g
             __order.add(__k)
         }
-        __g.add(mutableMapOf("d" to d) as MutableMap<Any?, Any?>)
+        __g.add(d)
     }
     val __res = mutableListOf<Group>()
     for (k in __order) {
