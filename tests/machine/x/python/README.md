@@ -110,7 +110,7 @@ Compiled programs: 100/100 successful.
 - [ ] Improve error reporting for runtime failures
 - [ ] Support optional type annotations
 - [ ] Integrate with Python packaging tools
-- [ ] Generate docstrings for compiled functions
+- [x] Generate docstrings for compiled functions
 - [ ] Optimize stream handling performance
 - [ ] Expand test coverage for edge cases
 - [ ] Reduce external module dependencies
@@ -125,3 +125,14 @@ Compiled programs: 100/100 successful.
 - [ ] Add plugin architecture for new targets
 - [ ] Provide integration tests with dataset examples
 - [ ] Document embedding compiled code in larger projects
+- [ ] Implement static analysis for unreachable code
+- [ ] Support generator functions
+- [ ] Provide configuration file for compiler options
+- [ ] Optimize recursive function handling
+- [ ] Generate type stub files
+- [ ] Integrate with virtual environments
+- [ ] Provide interactive REPL for compiled code
+- [ ] Add runtime checks for invariants
+- [ ] Support advanced slicing operations
+- [ ] Document integration with Jupyter notebooks
+- [ ] Add pattern matching support

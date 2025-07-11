@@ -1005,7 +1005,20 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	origEnv := c.env
 	c.env = child
 	c.indent++
-	c.writeln(fmt.Sprintf("\"\"\"%s.\"\"\"", name))
+	paramDocs := make([]string, len(fun.Params))
+	for i, p := range fun.Params {
+		desc := sanitizeName(p.Name)
+		if paramTypes[i] != nil && c.typeHints {
+			typStr := pyType(c.namedType(paramTypes[i]))
+			desc += ": " + typStr
+		}
+		paramDocs[i] = desc
+	}
+	sigDoc := fmt.Sprintf("%s(%s)", name, strings.Join(paramDocs, ", "))
+	if retType != "None" {
+		sigDoc += " -> " + retType
+	}
+	c.writeln(fmt.Sprintf("\"\"\"%s\"\"\"", sigDoc))
 	for _, n := range nonlocals {
 		c.writeln("nonlocal " + n)
 	}
