@@ -358,7 +358,22 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if s.Type != nil {
 		typ = types.ResolveTypeRef(s.Type, c.env)
 	} else if s.Value != nil {
-		typ = c.namedType(types.ExprType(s.Value, c.env))
+		if mp := s.Value.Binary.Left.Value.Target.Map; mp != nil && c.mapVars[s.Name] {
+			var valT types.Type = types.AnyType{}
+			if len(mp.Items) > 0 {
+				valT = c.namedType(types.ExprType(mp.Items[0].Value, c.env))
+				for _, it := range mp.Items[1:] {
+					t := c.namedType(types.ExprType(it.Value, c.env))
+					if !sameType(valT, t) {
+						valT = types.AnyType{}
+						break
+					}
+				}
+			}
+			typ = types.MapType{Key: types.StringType{}, Value: valT}
+		} else {
+			typ = c.namedType(types.ExprType(s.Value, c.env))
+		}
 		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
 			qenv := c.querySelectEnv(q)
 			if st, ok := c.detectStructMap(q.Select, qenv); ok {
