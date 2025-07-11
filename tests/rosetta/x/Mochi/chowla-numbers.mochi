@@ -1,0 +1,92 @@
+// Mochi implementation of Rosetta "Chowla numbers" task
+
+fun chowla(n: int): int {
+  if n < 1 { return 0 }
+  var sum = 0
+  var i = 2
+  while i * i <= n {
+    if n % i == 0 {
+      let j = n / i
+      if i == j { sum = sum + i } else { sum = sum + i + j }
+    }
+    i = i + 1
+  }
+  return sum
+}
+
+fun sieve(limit: int): list<bool> {
+  var c: list<bool> = []
+  var i = 0
+  while i < limit {
+    c = append(c, false)
+    i = i + 1
+  }
+  i = 3
+  while i * 3 < limit {
+    if !c[i] && chowla(i) == 0 {
+      var j = 3 * i
+      while j < limit {
+        c[j] = true
+        j = j + 2 * i
+      }
+    }
+    i = i + 2
+  }
+  return c
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var i = len(s) - 3
+  while i >= 1 {
+    s = s[0:i] + "," + s[i:len(s)]
+    i = i - 3
+  }
+  return s
+}
+
+var i = 1
+while i <= 37 {
+  print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  i = i + 1
+}
+
+print("")
+var count = 1
+var limit = 10000000
+var c = sieve(limit)
+var power = 100
+var x = 3
+while x < limit {
+  if !c[x] { count = count + 1 }
+  if x == power - 1 {
+    print("Count of primes up to " + commatize(power).padStart(10, " ") + " = " + commatize(count))
+    power = power * 10
+  }
+  x = x + 2
+}
+
+print("")
+count = 0
+limit = 35000000
+var pExp = 2
+while true {
+  var p = pow2(pExp - 1) * (pow2(pExp) - 1)
+  if p > limit { break }
+  if chowla(p) == p - 1 {
+    print(commatize(p) + " is a perfect number")
+    count = count + 1
+  }
+  pExp = pExp + 1
+}
+print("There are " + str(count) + " perfect numbers <= 35,000,000")
+
+fun pow2(n: int): int {
+  var r = 1
+  var i = 0
+  while i < n {
+    r = r * 2
+    i = i + 1
+  }
+  return r
+}

@@ -1,0 +1,2051 @@
+call graph: main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main -> main
+stack trace:
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main at tests/rosetta/x/Mochi/chowla-numbers.mochi:50
+    print("chowla(" + str(i).padStart(2, " ") + ") = " + str(chowla(i)))
+  main:0

@@ -1,0 +1,34 @@
+// Mochi implementation of Rosetta "Chinese zodiac" task
+
+let animal = ["Rat","Ox","Tiger","Rabbit","Dragon","Snake","Horse","Goat","Monkey","Rooster","Dog","Pig"]
+let yinYang = ["Yang","Yin"]
+let element = ["Wood","Fire","Earth","Metal","Water"]
+let stemChArr = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]
+let branchChArr = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"]
+
+type Info {
+  animal: string
+  yinYang: string
+  element: string
+  stemBranch: string
+  cycle: int
+}
+
+fun cz(yr: int, animal: list<string>, yinYang: list<string>, element: list<string>, sc: list<string>, bc: list<string>): Info {
+  var y = yr - 4
+  let stem = y % 10
+  let branch = y % 12
+  let sb = sc[stem] + bc[branch]
+  return Info{
+    animal: animal[branch] as string,
+    yinYang: yinYang[stem % 2] as string,
+    element: element[(stem / 2) as int] as string,
+    stemBranch: sb,
+    cycle: y % 60 + 1,
+  }
+}
+
+for yr in [1935,1938,1968,1972,1976] {
+  let r = cz(yr, animal, yinYang, element, stemChArr, branchChArr)
+  print(str(yr) + ": " + r.element + " " + r.animal + ", " + r.yinYang + ", Cycle year " + str(r.cycle) + " " + r.stemBranch)
+}

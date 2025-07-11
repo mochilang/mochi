@@ -1,0 +1,73 @@
+// Mochi implementation of Rosetta "Cholesky decomposition" task (real matrices)
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+fun cholesky(a: list<list<float>>): list<list<float>> {
+  let n = len(a)
+  var l: list<list<float>> = []
+  var i = 0
+  while i < n {
+    var row: list<float> = []
+    var j = 0
+    while j < n {
+      row = append(row, 0.0)
+      j = j + 1
+    }
+    l = append(l, row)
+    i = i + 1
+  }
+  i = 0
+  while i < n {
+    var j = 0
+    while j <= i {
+      var sum = a[i][j]
+      var k = 0
+      while k < j {
+        sum = sum - l[i][k] * l[j][k]
+        k = k + 1
+      }
+      if i == j {
+        l[i][j] = sqrtApprox(sum)
+      } else {
+        l[i][j] = sum / l[j][j]
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return l
+}
+
+fun printMat(m: list<list<float>>) {
+  var i = 0
+  while i < len(m) {
+    var line = ""
+    var j = 0
+    while j < len(m[i]) {
+      line = line + str(m[i][j])
+      if j < len(m[i]) - 1 { line = line + " " }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun demo(a: list<list<float>>) {
+  print("A:")
+  printMat(a)
+  let l = cholesky(a)
+  print("L:")
+  printMat(l)
+}
+
+demo([[25.0,15.0,-5.0],[15.0,18.0,0.0],[-5.0,0.0,11.0]])
+demo([[18.0,22.0,54.0,42.0],[22.0,70.0,86.0,62.0],[54.0,86.0,174.0,134.0],[42.0,62.0,134.0,106.0]])

@@ -1,0 +1,83 @@
+// Mochi implementation of Rosetta "Cheryl's birthday" task
+// Translated from the Go version.
+
+type Birthday {
+  month: int
+  day: int
+}
+
+fun monthUnique(b: Birthday, list: list<Birthday>): bool {
+  var c = 0
+  for x in list {
+    if x.month == b.month {
+      c = c + 1
+    }
+  }
+  return c == 1
+}
+
+fun dayUnique(b: Birthday, list: list<Birthday>): bool {
+  var c = 0
+  for x in list {
+    if x.day == b.day {
+      c = c + 1
+    }
+  }
+  return c == 1
+}
+
+fun monthWithUniqueDay(b: Birthday, list: list<Birthday>): bool {
+  for x in list {
+    if x.month == b.month && dayUnique(x, list) {
+      return true
+    }
+  }
+  return false
+}
+
+fun bstr(b: Birthday): string {
+  let months = ["", "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"]
+  return months[b.month] + " " + str(b.day)
+}
+
+var choices: list<Birthday> = [
+  Birthday{month:5, day:15}, Birthday{month:5, day:16}, Birthday{month:5, day:19},
+  Birthday{month:6, day:17}, Birthday{month:6, day:18},
+  Birthday{month:7, day:14}, Birthday{month:7, day:16},
+  Birthday{month:8, day:14}, Birthday{month:8, day:15}, Birthday{month:8, day:17}
+]
+
+var filtered: list<Birthday> = []
+for bd in choices {
+  if !monthUnique(bd, choices) {
+    filtered = append(filtered, bd)
+  }
+}
+
+var filtered2: list<Birthday> = []
+for bd in filtered {
+  if !monthWithUniqueDay(bd, filtered) {
+    filtered2 = append(filtered2, bd)
+  }
+}
+
+var filtered3: list<Birthday> = []
+for bd in filtered2 {
+  if dayUnique(bd, filtered2) {
+    filtered3 = append(filtered3, bd)
+  }
+}
+
+var filtered4: list<Birthday> = []
+for bd in filtered3 {
+  if monthUnique(bd, filtered3) {
+    filtered4 = append(filtered4, bd)
+  }
+}
+
+if len(filtered4) == 1 {
+  print("Cheryl's birthday is " + bstr(filtered4[0]))
+} else {
+  print("Something went wrong!")
+}
