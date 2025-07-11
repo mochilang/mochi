@@ -2,7 +2,7 @@ program OuterJoin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -21,8 +21,8 @@ var
   customers: specialize TArray<specialize TFPGMap<string, Variant>>;
   o: specialize TFPGMap<string, integer>;
   orders: specialize TArray<specialize TFPGMap<string, integer>>;
-  _result: specialize TArray<specialize TFPGMap<string, specialize TFPGMap<string, integer>>>;
-  row: specialize TFPGMap<string, specialize TFPGMap<string, integer>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  row: specialize TFPGMap<string, Variant>;
 
 begin
   _tmp0 := specialize TFPGMap<string, Variant>.Create;

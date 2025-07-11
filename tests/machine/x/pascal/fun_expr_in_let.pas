@@ -2,7 +2,7 @@ program FunExprInLet;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  square: function (p0: p0__integer): integer;
+  square: function (p0: integer): integer;
 
 begin
   square := @_lambda0;

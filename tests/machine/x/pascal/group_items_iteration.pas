@@ -2,7 +2,7 @@ program GroupItemsIteration;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -101,8 +101,8 @@ var
   _tmp8: specialize TArray<Variant>;
   d: specialize TFPGMap<string, Variant>;
   data: specialize TArray<specialize TFPGMap<string, Variant>>;
-  g: integer;
-  groups: specialize TArray<integer>;
+  g: Variant;
+  groups: specialize TArray<Variant>;
   r: Variant;
   _result: specialize TArray<Variant>;
   tmp: specialize TArray<Variant>;

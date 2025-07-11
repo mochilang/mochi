@@ -1,4 +1,4 @@
-program LenBuiltin;
+program PythonAuto;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
@@ -8,5 +8,6 @@ type
   generic TArray<T> = array of T;
 
 begin
-  writeln(Length(specialize TArray<integer>([1, 2, 3])));
+  writeln(math.sqrt(16));
+  writeln(math.pi);
 end.

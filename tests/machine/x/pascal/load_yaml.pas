@@ -2,7 +2,7 @@ program LoadYaml;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -13,32 +13,42 @@ type Person = record
   email: string;
 end;
 
-function _load(path: string): specialize TArray<string>;
+generic function _loadYAML<T>(path: string): specialize TArray<T>;
 
 var sl: TStringList;
+  data: TJSONData;
+  arr: TJSONArray;
   i: Integer;
+  ds: TJSONDeStreamer;
 begin
   sl := TStringList.Create;
   try
     sl.LoadFromFile(path);
-    SetLength(Result, sl.Count);
-    for i := 0 to sl.Count - 1 do
-      Result[i] := sl[i];
-  finally
-    sl.Free;
+    data := GetJSON(sl.Text);
+    arr := TJSONArray(data);
+    SetLength(Result, arr.Count);
+    ds := TJSONDeStreamer.Create(nil);
+    try
+      for i := 0 to arr.Count - 1 do
+        ds.JSONToObject(arr.Objects[i], @Result[i], TypeInfo(T));
+    finally
+      ds.Free;
+end;
+finally
+  sl.Free;
 end;
 end;
 
 var
   _tmp0: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp1: specialize TFPGMap<string, Variant>;
-  a: specialize TFPGMap<string, string>;
-  adults: specialize TArray<specialize TFPGMap<string, string>>;
+  a: specialize TFPGMap<string, Variant>;
+  adults: specialize TArray<specialize TFPGMap<string, Variant>>;
   p: Person;
   people: specialize TArray<Person>;
 
 begin
-  people := _load("../interpreter/valid/people.yaml");
+  people := specialize _loadYAML<Person>("../interpreter/valid/people.yaml");
   SetLength(_tmp0, 0);
   for p in people do
     begin

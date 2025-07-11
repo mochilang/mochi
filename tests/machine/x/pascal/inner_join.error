@@ -7,8 +7,7 @@ Compiling /workspace/mochi/tests/machine/x/pascal/inner_join.pas
 inner_join.pas(57,11) Error: Identifier not found "c"
 inner_join.pas(59,46) Error: Identifier not found "c"
 inner_join.pas(62,46) Error: Identifier not found "c"
-inner_join.pas(67,14) Error: Incompatible types: got "TArray$1$crcE0B4E8C7" expected "TArray$1$crc7ED07D64"
-inner_join.pas(75) Fatal: There were 4 errors compiling module, stopping
+inner_join.pas(75) Fatal: There were 3 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

@@ -2,7 +2,7 @@ program Closure;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -24,7 +24,7 @@ begin
 end;
 
 var
-  add10: function (p0: p0__integer): integer;
+  add10: function (p0: integer): integer;
 
 begin
   add10 := makeAdder(10);

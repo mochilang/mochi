@@ -66,7 +66,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln(fmt.Sprintf("program %s;", name))
 	c.writeln("{$mode objfpc}")
 	c.writeln("{$modeswitch nestedprocvars}")
-	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;")
+	c.writeln("uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;")
 	c.writeln("")
 	c.writeln("type")
 	c.indent++
@@ -2427,6 +2427,9 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	case "jsonl":
 		c.use("_loadJSONL")
 		return fmt.Sprintf("specialize _loadJSONL<%s>(%s)", typ, path), nil
+	case "yaml":
+		c.use("_loadYAML")
+		return fmt.Sprintf("specialize _loadYAML<%s>(%s)", typ, path), nil
 	default:
 		c.use("_load")
 		return fmt.Sprintf("_load(%s)", path), nil
@@ -2450,6 +2453,9 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 	case "jsonl":
 		c.use("_saveJSONL")
 		return fmt.Sprintf("_saveJSONL(%s, %s)", src, path), nil
+	case "yaml":
+		c.use("_saveYAML")
+		return fmt.Sprintf("_saveYAML(%s, %s)", src, path), nil
 	default:
 		c.use("_save")
 		return fmt.Sprintf("_save(%s, %s)", src, path), nil
@@ -2879,6 +2885,39 @@ func (c *Compiler) emitHelpers() {
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
+		case "_loadYAML":
+			c.writeln("generic function _loadYAML<T>(path: string): specialize TArray<T>;")
+			c.writeln("var sl: TStringList; data: TJSONData; arr: TJSONArray; i: Integer; ds: TJSONDeStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("try")
+			c.indent++
+			c.writeln("sl.LoadFromFile(path);")
+			c.writeln("data := GetJSON(sl.Text);")
+			c.writeln("arr := TJSONArray(data);")
+			c.writeln("SetLength(Result, arr.Count);")
+			c.writeln("ds := TJSONDeStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to arr.Count - 1 do")
+			c.indent++
+			c.writeln("ds.JSONToObject(arr.Objects[i], @Result[i], TypeInfo(T));")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
 		case "_saveJSON":
 			c.writeln("generic procedure _saveJSON<T>(data: specialize TArray<T>; path: string);")
 			c.writeln("var sl: TStringList; i: Integer; ds: TJSONStreamer;")
@@ -2910,6 +2949,32 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("")
 		case "_saveJSONL":
 			c.writeln("generic procedure _saveJSONL<T>(data: specialize TArray<T>; path: string);")
+			c.writeln("var sl: TStringList; i: Integer; ds: TJSONStreamer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl := TStringList.Create;")
+			c.writeln("ds := TJSONStreamer.Create(nil);")
+			c.writeln("try")
+			c.indent++
+			c.writeln("for i := 0 to High(data) do")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("sl.Add(ds.ObjectToJSONString(@data[i], TypeInfo(T)));")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("sl.SaveToFile(path);")
+			c.indent--
+			c.writeln("finally")
+			c.indent++
+			c.writeln("ds.Free;")
+			c.writeln("sl.Free;")
+			c.indent--
+			c.writeln("end;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_saveYAML":
+			c.writeln("generic procedure _saveYAML<T>(data: specialize TArray<T>; path: string);")
 			c.writeln("var sl: TStringList; i: Integer; ds: TJSONStreamer;")
 			c.writeln("begin")
 			c.indent++

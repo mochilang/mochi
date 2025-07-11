@@ -2,7 +2,7 @@ program InnerJoin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -18,10 +18,10 @@ var
   _tmp7: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp8: specialize TFPGMap<string, Variant>;
   customers: specialize TArray<specialize TFPGMap<string, Variant>>;
-  entry: specialize TFPGMap<string, integer>;
+  entry: specialize TFPGMap<string, Variant>;
   o: specialize TFPGMap<string, integer>;
   orders: specialize TArray<specialize TFPGMap<string, integer>>;
-  _result: specialize TArray<specialize TFPGMap<string, integer>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
 
 begin
   _tmp0 := specialize TFPGMap<string, Variant>.Create;
