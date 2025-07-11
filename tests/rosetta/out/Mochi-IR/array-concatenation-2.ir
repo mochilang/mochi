@@ -1,0 +1,126 @@
+func main (regs=32)
+  // var test1_a = [1, 2, 3]
+  Const        r0, [1, 2, 3]
+  Move         r1, r0
+  // var test1_b = [4, 5, 6]
+  Const        r2, [4, 5, 6]
+  Move         r3, r2
+  // var test1_c = arrayConcatInts(test1_a, test1_b)
+  Move         r4, r1
+  Move         r5, r3
+  Call2        r6, arrayConcatInts, r4, r5
+  Move         r7, r6
+  // print(str(test1_a) + "  +  " + str(test1_b) + "  =  " + str(test1_c))
+  Const        r8, "[1 2 3]"
+  Const        r9, "  +  "
+  Add          r10, r8, r9
+  Const        r11, "[4 5 6]"
+  Add          r12, r10, r11
+  Const        r13, "  =  "
+  Add          r14, r12, r13
+  Str          r15, r7
+  Add          r16, r14, r15
+  Print        r16
+  // var test2_a: list<any> = ["a", "b", "c"]
+  Const        r17, ["a", "b", "c"]
+  Move         r18, r17
+  // var test2_b: list<any> = ["d", "e", "f"]
+  Const        r19, ["d", "e", "f"]
+  Move         r20, r19
+  // var test2_c = arrayConcat(test2_a, test2_b)
+  Move         r21, r18
+  Move         r22, r20
+  Call2        r23, arrayConcat, r21, r22
+  Move         r24, r23
+  // print(str(test2_a) + "  +  " + str(test2_b) + "  =  " + str(test2_c))
+  Const        r25, "[a b c]"
+  Const        r9, "  +  "
+  Add          r26, r25, r9
+  Const        r27, "[d e f]"
+  Add          r28, r26, r27
+  Const        r13, "  =  "
+  Add          r29, r28, r13
+  Str          r30, r24
+  Add          r31, r29, r30
+  Print        r31
+  Return       r0
+
+  // fun arrayConcatInts(a: list<int>, b: list<int>): list<int> {
+func arrayConcatInts (regs=21)
+  // var out: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // for v in a { out = append(out, v) }
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  Append       r10, r3, r9
+  Move         r3, r10
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  Jump         L1
+L0:
+  // for v in b { out = append(out, v) }
+  IterPrep     r13, r1
+  Len          r14, r13
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  Index        r17, r13, r15
+  Move         r9, r17
+  Append       r18, r3, r9
+  Move         r3, r18
+  Const        r19, 1
+  AddInt       r20, r15, r19
+  Move         r15, r20
+  Jump         L3
+L2:
+  // return out
+  Return       r3
+
+  // fun arrayConcat(a: list<any>, b: list<any>): list<any> {
+func arrayConcat (regs=21)
+  // var out: list<any> = []
+  Const        r2, []
+  Move         r3, r2
+  // for v in a { out = append(out, v) }
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  Append       r10, r3, r9
+  Move         r3, r10
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r6, r12
+  Jump         L1
+L0:
+  // for v in b { out = append(out, v) }
+  IterPrep     r13, r1
+  Len          r14, r13
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  Index        r17, r13, r15
+  Move         r9, r17
+  Append       r18, r3, r9
+  Move         r3, r18
+  Const        r19, 1
+  AddInt       r20, r15, r19
+  Move         r15, r20
+  Jump         L3
+L2:
+  // return out
+  Return       r3

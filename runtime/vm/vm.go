@@ -92,6 +92,7 @@ const (
 	OpUpper
 	OpLower
 	OpReverse
+	OpCopy
 	OpInput
 	OpFirst
 	OpCount
@@ -225,6 +226,8 @@ func (op Op) String() string {
 		return "Lower"
 	case OpReverse:
 		return "Reverse"
+	case OpCopy:
+		return "Copy"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -1472,6 +1475,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(r)}
 			default:
 				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
+			}
+		case OpCopy:
+			v := fr.regs[ins.B]
+			if lst, ok := toList(v); ok {
+				out := append([]Value(nil), lst...)
+				fr.regs[ins.A] = Value{Tag: ValueList, List: out}
+			} else if v.Tag == ValueStr {
+				fr.regs[ins.A] = Value{Tag: ValueStr, Str: string([]rune(v.Str))}
+			} else {
+				fr.regs[ins.A] = v
 			}
 		case OpSHA256:
 			v := fr.regs[ins.B]
@@ -3541,6 +3554,12 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "copy":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCopy, A: dst, B: arg})
+			fc.tags[dst] = fc.tags[arg]
 			return dst
 		case "sha256":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -6685,6 +6704,20 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueList, List: out}, true
 		}
 		return Value{}, false
+	case "copy":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if lst, ok := toList(v); ok {
+			out := append([]Value(nil), lst...)
+			return Value{Tag: ValueList, List: out}, true
+		}
+		if v.Tag == ValueStr {
+			r := []rune(v.Str)
+			return Value{Tag: ValueStr, Str: string(r)}, true
+		}
+		return v, true
 	case "substring":
 		if len(args) != 3 {
 			return Value{}, false

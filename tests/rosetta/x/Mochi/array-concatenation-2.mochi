@@ -1,0 +1,25 @@
+// Mochi implementation matching Go version array-concatenation-2
+
+fun arrayConcatInts(a: list<int>, b: list<int>): list<int> {
+  var out: list<int> = []
+  for v in a { out = append(out, v) }
+  for v in b { out = append(out, v) }
+  return out
+}
+
+fun arrayConcat(a: list<any>, b: list<any>): list<any> {
+  var out: list<any> = []
+  for v in a { out = append(out, v) }
+  for v in b { out = append(out, v) }
+  return out
+}
+
+var test1_a = [1, 2, 3]
+var test1_b = [4, 5, 6]
+var test1_c = arrayConcatInts(test1_a, test1_b)
+print(str(test1_a) + "  +  " + str(test1_b) + "  =  " + str(test1_c))
+
+var test2_a: list<any> = ["a", "b", "c"]
+var test2_b: list<any> = ["d", "e", "f"]
+var test2_c = arrayConcat(test2_a, test2_b)
+print(str(test2_a) + "  +  " + str(test2_b) + "  =  " + str(test2_c))
