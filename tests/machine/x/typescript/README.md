@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 99/100 programs
+Compiled: 100/100 programs
 
 ## Checklist
 
@@ -79,7 +79,7 @@ Compiled: 99/100 programs
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [x] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
