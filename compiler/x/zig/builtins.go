@@ -404,15 +404,8 @@ func (c *Compiler) writeBuiltins() {
 	if c.needsJoinString {
 		c.writeln("fn _join_strings(parts: []const []const u8, sep: []const u8) []const u8 {")
 		c.indent++
-		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
-		c.writeln("defer res.deinit();")
-		c.writeln("for (parts, 0..) |it, i| {")
-		c.indent++
-		c.writeln("if (i > 0) res.appendSlice(sep) catch unreachable;")
-		c.writeln("res.appendSlice(it) catch unreachable;")
-		c.indent--
-		c.writeln("}")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("const alloc = std.heap.page_allocator;")
+		c.writeln("return std.mem.join(u8, sep, parts, alloc) catch unreachable;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
