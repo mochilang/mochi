@@ -3,7 +3,7 @@
 This directory contains Scala code generated from the Mochi programs in `tests/vm/valid` using the Scala compiler. Each source file was compiled with `scalac` and executed with `scala`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
 Compiled programs: 100
-Executed successfully: 79
+Executed successfully: 80
 
 ## Program checklist
 - [x] append_builtin.mochi
@@ -42,7 +42,7 @@ Executed successfully: 79
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [ ] in_operator_extended.mochi
+- [x] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
@@ -106,3 +106,9 @@ Executed successfully: 79
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+- [ ] Support automatic imports for Go/Python packages.
+- [ ] Implement dataset joins and YAML helpers.
+- [ ] Improve JSON saving helpers.
+
