@@ -14,8 +14,8 @@ func main() {
 	}
 
 	var m M = M{
-		A: 1,
-		B: 2,
+		1,
+		2,
 	}
 	func() { b, _ := json.Marshal(m); fmt.Println(string(b)) }()
 }

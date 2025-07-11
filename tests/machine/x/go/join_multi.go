@@ -13,11 +13,11 @@ func main() {
 	}
 
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}}
 	_ = customers
 	type OrdersItem struct {
@@ -26,11 +26,11 @@ func main() {
 	}
 
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
+		100,
+		1,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
+		101,
+		2,
 	}}
 	type ItemsItem struct {
 		OrderId int    `json:"orderId"`
@@ -38,11 +38,11 @@ func main() {
 	}
 
 	var items []ItemsItem = []ItemsItem{ItemsItem{
-		OrderId: 100,
-		Sku:     "a",
+		100,
+		"a",
 	}, ItemsItem{
-		OrderId: 101,
-		Sku:     "b",
+		101,
+		"b",
 	}}
 	_ = items
 	type Result struct {
@@ -62,8 +62,8 @@ func main() {
 						continue
 					}
 					results = append(results, Result{
-						Name: c.Name,
-						Sku:  i.Sku,
+						c.Name,
+						i.Sku,
 					})
 				}
 			}

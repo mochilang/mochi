@@ -568,3 +568,21 @@ func zeroValue(t types.Type) string {
 		return "nil"
 	}
 }
+
+// structLiteralMatchesOrder reports whether the map literal's keys
+// appear in the same order as the struct field order.
+func structLiteralMatchesOrder(st types.StructType, ml *parser.MapLiteral) bool {
+	if ml == nil {
+		return false
+	}
+	if len(ml.Items) != len(st.Order) {
+		return false
+	}
+	for i, it := range ml.Items {
+		key, ok := simpleStringKey(it.Key)
+		if !ok || key != st.Order[i] {
+			return false
+		}
+	}
+	return true
+}

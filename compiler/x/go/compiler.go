@@ -2285,6 +2285,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		typ := c.inferPrimaryType(p)
 		if st, ok := typ.(types.StructType); ok {
+			useUnkeyed := structLiteralMatchesOrder(st, p.Map)
 			parts := make([]string, len(p.Map.Items))
 			for i, item := range p.Map.Items {
 				key, ok2 := simpleStringKey(item.Key)
@@ -2296,7 +2297,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+				if useUnkeyed {
+					parts[i] = v
+				} else {
+					parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+				}
 			}
 			c.compileStructType(st)
 			return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil
@@ -3875,6 +3880,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 	if st, ok := hint.(types.StructType); ok {
 		if e.Binary != nil && len(e.Binary.Right) == 0 {
 			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+				useUnkeyed := structLiteralMatchesOrder(st, ml)
 				parts := make([]string, len(ml.Items))
 				for i, item := range ml.Items {
 					key, ok2 := simpleStringKey(item.Key)
@@ -3886,7 +3892,11 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 					if err != nil {
 						return "", err
 					}
-					parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+					if useUnkeyed {
+						parts[i] = v
+					} else {
+						parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+					}
 				}
 				c.compileStructType(st)
 				return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil

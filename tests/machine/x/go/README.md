@@ -106,7 +106,6 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
 ## Remaining Tasks
 - [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
 - [ ] Optimize dataset query loops for large join results.
@@ -129,13 +128,13 @@ Checklist:
 - [ ] Emit warnings for unused variables in generated code.
 - [ ] Expand documentation comments for generated helper functions.
 - [ ] Investigate concurrency patterns for dataset operations.
-- [ ] Improve dataset join heuristics.
-- [ ] Add cross-module constant propagation.
-- [ ] Implement SSA-based optimizations.
-- [ ] Expand integration tests for edge cases.
-- [ ] Provide interactive REPL support for Go backend.
-- [ ] Document compiler internal design.
-- [ ] Add plugin system for code generation hooks.
-- [ ] Support incremental compilation.
-- [ ] Provide AST visualization tooling.
-- [ ] Add runtime tracing for garbage collection.
+- [ ] Explore generating context-aware error hints.
+- [ ] Add configuration flag for custom helper injection.
+- [ ] Profile memory usage of generated programs.
+- [ ] Support automatic import removal.
+- [ ] Implement dead code elimination pass.
+- [ ] Provide built-in support for `time.Time` type.
+- [ ] Generate better error positions for nested expressions.
+- [ ] Add CLI flag to keep intermediate Go files.
+- [ ] Investigate using generics for dataset groups.
+- [ ] Document best practices for cross-language modules.

@@ -14,11 +14,11 @@ func main() {
 	}
 
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}}
 	_ = customers
 	type OrdersItem struct {
@@ -28,13 +28,13 @@ func main() {
 	}
 
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 3,
-		Total:      80,
+		101,
+		3,
+		80,
 	}}
 	type Result struct {
 		OrderId  any `json:"orderId"`
@@ -82,9 +82,9 @@ func main() {
 			}
 			_ = c
 			return Result{
-				OrderId:  o.Id,
-				Customer: c,
-				Total:    o.Total,
+				o.Id,
+				c,
+				o.Total,
 			}
 		}, skip: -1, take: -1})
 		out := make([]Result, len(resAny))

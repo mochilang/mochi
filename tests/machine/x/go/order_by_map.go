@@ -14,14 +14,14 @@ func main() {
 	}
 
 	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
-		A: 1,
-		B: 2,
+		1,
+		2,
 	}, DataVarItem{
-		A: 1,
-		B: 1,
+		1,
+		1,
 	}, DataVarItem{
-		A: 0,
-		B: 5,
+		0,
+		5,
 	}}
 	type v struct {
 		A int `json:"a"`
@@ -46,8 +46,8 @@ func main() {
 			}
 			_ = x
 			return v{
-				A: x.A,
-				B: x.B,
+				x.A,
+				x.B,
 			}
 		}, skip: -1, take: -1})
 		out := make([]DataVarItem, len(resAny))

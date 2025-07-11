@@ -18,34 +18,34 @@ func main() {
 
 	var people []PeopleItem = []PeopleItem{
 		PeopleItem{
-			Name: "Alice",
-			Age:  30,
-			City: "Paris",
+			"Alice",
+			30,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Bob",
-			Age:  15,
-			City: "Hanoi",
+			"Bob",
+			15,
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Charlie",
-			Age:  65,
-			City: "Paris",
+			"Charlie",
+			65,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Diana",
-			Age:  45,
-			City: "Hanoi",
+			"Diana",
+			45,
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Eve",
-			Age:  70,
-			City: "Paris",
+			"Eve",
+			70,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Frank",
-			Age:  22,
-			City: "Hanoi",
+			"Frank",
+			22,
+			"Hanoi",
 		},
 	}
 	type Stats struct {
@@ -72,9 +72,9 @@ func main() {
 		for _, ks := range order {
 			g := groups[ks]
 			results = append(results, Stats{
-				City:  g.Key,
-				Count: len(g.Items),
-				Avg_age: _avg(func() []any {
+				g.Key,
+				len(g.Items),
+				_avg(func() []any {
 					results := []any{}
 					for _, p := range g.Items {
 						results = append(results, _toAnyMap(p)["age"])

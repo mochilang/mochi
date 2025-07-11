@@ -22,7 +22,7 @@ func main() {
 	}
 
 	var people []Person = func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(v{Format: "yaml"}))
+		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(v{"yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
 			out[i] = r.(Person)
@@ -40,8 +40,8 @@ func main() {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
 					results = append(results, Adults{
-						Name:  p.Name,
-						Email: p.Email,
+						p.Name,
+						p.Email,
 					})
 				}
 			}

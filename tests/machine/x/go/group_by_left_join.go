@@ -16,14 +16,14 @@ func main() {
 	}
 
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}, CustomersItem{
-		Id:   3,
-		Name: "Charlie",
+		3,
+		"Charlie",
 	}}
 	type OrdersItem struct {
 		Id         int `json:"id"`
@@ -31,14 +31,14 @@ func main() {
 	}
 
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
+		100,
+		1,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 1,
+		101,
+		1,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 2,
+		102,
+		2,
 	}}
 	_ = orders
 	type Stats struct {
@@ -104,8 +104,8 @@ func main() {
 		results := []Stats{}
 		for _, g := range items {
 			results = append(results, Stats{
-				Name: g.Key,
-				Count: len(func() []any {
+				g.Key,
+				len(func() []any {
 					results := []any{}
 					for _, r := range g.Items {
 						if _exists(_toAnyMap(r)["o"]) {

@@ -24,9 +24,9 @@ func main() {
 			for _, l := range letters {
 				for _, b := range bools {
 					results = append(results, Combos{
-						N: n,
-						L: l,
-						B: b,
+						n,
+						l,
+						b,
 					})
 				}
 			}

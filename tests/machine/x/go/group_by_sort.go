@@ -18,20 +18,20 @@ func main() {
 
 	var items []ItemsItem = []ItemsItem{
 		ItemsItem{
-			Cat: "a",
-			Val: 3,
+			"a",
+			3,
 		},
 		ItemsItem{
-			Cat: "a",
-			Val: 1,
+			"a",
+			1,
 		},
 		ItemsItem{
-			Cat: "b",
-			Val: 5,
+			"b",
+			5,
 		},
 		ItemsItem{
-			Cat: "b",
-			Val: 2,
+			"b",
+			2,
 		},
 	}
 	type Grouped struct {
@@ -106,8 +106,8 @@ func main() {
 		results := []Grouped{}
 		for _, g := range items {
 			results = append(results, Grouped{
-				Cat: g.Key,
-				Total: _sum(func() []any {
+				g.Key,
+				_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, _toAnyMap(x)["val"])

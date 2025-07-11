@@ -17,14 +17,14 @@ func main() {
 	}
 
 	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
-		Tag: "a",
-		Val: 1,
+		"a",
+		1,
 	}, DataVarItem{
-		Tag: "a",
-		Val: 2,
+		"a",
+		2,
 	}, DataVarItem{
-		Tag: "b",
-		Val: 3,
+		"b",
+		3,
 	}}
 	var groups []*data.Group = func() []*data.Group {
 		groups := map[string]*data.Group{}
@@ -59,8 +59,8 @@ func main() {
 		}
 
 		tmp = append(tmp, v{
-			Tag:   g.Key,
-			Total: total,
+			g.Key,
+			total,
 		})
 	}
 	var result []any = func() []any {

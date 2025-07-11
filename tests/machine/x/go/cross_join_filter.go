@@ -21,8 +21,8 @@ func main() {
 			if (n % 2) == 0 {
 				for _, l := range letters {
 					results = append(results, Pairs{
-						N: n,
-						L: l,
+						n,
+						l,
 					})
 				}
 			}

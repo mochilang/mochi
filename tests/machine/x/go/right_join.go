@@ -18,20 +18,20 @@ func main() {
 
 	var customers []CustomersItem = []CustomersItem{
 		CustomersItem{
-			Id:   1,
-			Name: "Alice",
+			1,
+			"Alice",
 		},
 		CustomersItem{
-			Id:   2,
-			Name: "Bob",
+			2,
+			"Bob",
 		},
 		CustomersItem{
-			Id:   3,
-			Name: "Charlie",
+			3,
+			"Charlie",
 		},
 		CustomersItem{
-			Id:   4,
-			Name: "Diana",
+			4,
+			"Diana",
 		},
 	}
 	type OrdersItem struct {
@@ -41,17 +41,17 @@ func main() {
 	}
 
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-		Total:      125,
+		101,
+		2,
+		125,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 1,
-		Total:      300,
+		102,
+		1,
+		300,
 	}}
 	_ = orders
 	type Result struct {
@@ -99,8 +99,8 @@ func main() {
 			}
 			_ = o
 			return Result{
-				CustomerName: c.Name,
-				Order:        o,
+				c.Name,
+				o,
 			}
 		}, skip: -1, take: -1})
 		out := make([]Result, len(resAny))
