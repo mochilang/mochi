@@ -1,2 +1,1 @@
-Error on line 0: compile error: operator "in" cannot be used on types string and M
-1: let m = {"a": 1, "b": 2}
+operator "in" cannot be used on types string and M

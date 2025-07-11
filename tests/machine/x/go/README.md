@@ -110,3 +110,13 @@ Checklist:
 ## Remaining Tasks
 
 - [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
+- [ ] Optimize list append to avoid helper conversions.
+- [ ] Remove unused helper functions from output.
+- [ ] Support generics in user-defined functions.
+- [ ] Improve error messages for unsupported operations.
+- [ ] Implement constant folding for arithmetic expressions.
+- [ ] Add support for Go modules in compiled code.
+- [ ] Generate comments from Mochi docs.
+- [ ] Handle map key types more precisely.
+- [ ] Simplify string concatenation logic.
+- [ ] Improve formatting of generated code.

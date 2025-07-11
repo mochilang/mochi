@@ -3986,14 +3986,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 
 	switch call.Func {
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		listT := c.inferExprType(call.Args[0])
+		if lt, ok := listT.(types.ListType); ok {
+			a0, err := c.compileExprHint(call.Args[0], lt)
+			if err != nil {
+				return "", err
+			}
+			a1, err := c.compileExprHint(call.Args[1], lt.Elem)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("append(%s, %s)", a0, a1), nil
+		}
+		return fmt.Sprintf("append(%s)", strings.Join(args, ", ")), nil
 	case "print":
 		c.imports["fmt"] = true
-		if len(call.Args) == 1 {
-			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
-				c.imports["strings"] = true
-				return fmt.Sprintf("fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(%s), \"[\"), \"]\"))", args[0]), nil
-			}
-		}
 		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true

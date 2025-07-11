@@ -1,8 +1,0 @@
-Error on line 0: output mismatch
--- got --
-30,Alice
-25,Bob
--- want --
-{"age":30,"name":"Alice"}
-{"age":25,"name":"Bob"}
-1: //go:build ignore

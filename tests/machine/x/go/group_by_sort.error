@@ -1,5 +1,3 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_sort.go:110:12: cannot use _sum(func() []any {…}()) (value of type float64) as int value in struct literal
-
-1: //go:build ignore
+tests/machine/x/go/group_by_sort.go:110:12: cannot use _sum(func() []any {…}()) (value of type float64) as int value in struct literal

@@ -168,7 +168,7 @@ func main() {
 			pairs[idx] = pair{item: it, key: -_sum(func() []any {
 				results := []any{}
 				for _, x := range g.Items {
-					results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
+					results = append(results, ((_toAnyMap(_toAnyMap(x)["l"])["l_extendedprice"]).(float64) * (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)).(float64)))
 				}
 				return results
 			}())}
@@ -202,25 +202,25 @@ func main() {
 		results := []Result{}
 		for _, g := range items {
 			results = append(results, Result{
-				C_custkey: (g.Key).(map[string]any)["c_custkey"],
-				C_name:    (g.Key).(map[string]any)["c_name"],
+				C_custkey: _toAnyMap(g.Key)["c_custkey"],
+				C_name:    _toAnyMap(g.Key)["c_name"],
 				Revenue: _sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
-						results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
+						results = append(results, ((_toAnyMap(_toAnyMap(x)["l"])["l_extendedprice"]).(float64) * (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)).(float64)))
 					}
 					return results
 				}()),
-				C_acctbal: (g.Key).(map[string]any)["c_acctbal"],
-				N_name:    (g.Key).(map[string]any)["n_name"],
-				C_address: (g.Key).(map[string]any)["c_address"],
-				C_phone:   (g.Key).(map[string]any)["c_phone"],
-				C_comment: (g.Key).(map[string]any)["c_comment"],
+				C_acctbal: _toAnyMap(g.Key)["c_acctbal"],
+				N_name:    _toAnyMap(g.Key)["n_name"],
+				C_address: _toAnyMap(g.Key)["c_address"],
+				C_phone:   _toAnyMap(g.Key)["c_phone"],
+				C_comment: _toAnyMap(g.Key)["c_comment"],
 			})
 		}
 		return results
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(result)
 }
 
 func _sum(v any) float64 {
