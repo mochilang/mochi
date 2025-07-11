@@ -660,7 +660,14 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	for _, fld := range st.Field {
 		name += "." + fld.Name
 	}
+	prevHint := c.nextStructName
+	if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+		if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
+			c.nextStructName = structNameFromVar(st.Name)
+		}
+	}
 	expr, err := c.compileExpr(st.Value)
+	c.nextStructName = prevHint
 	if err != nil {
 		return err
 	}
@@ -757,6 +764,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		c.writeln(fmt.Sprintf("for (auto %s : %s) {", st.Name, src))
 		if t := c.varStruct[src]; t != "" {
 			c.varStruct[st.Name] = t
+		} else if et := c.elemType[src]; et != "" {
+			c.varStruct[st.Name] = et
 		}
 		if et := c.elemType[src]; et != "" {
 			if strings.Contains(et, "std::string") {
@@ -983,8 +992,31 @@ func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) str
 				}
 			}
 		case st.For != nil:
+			srcExpr, err := c.simulateExpr(st.For.Source)
+			var saved string
+			var elem string
+			if err == nil {
+				elem = c.extractVectorElemType(srcExpr)
+				if elem == "" {
+					elem = c.elemType[srcExpr]
+				}
+			}
+			if elem != "" {
+				saved = c.varStruct[st.For.Name]
+				c.varStruct[st.For.Name] = elem
+			}
 			if et := c.predictElemTypeIn(name, st.For.Body); et != "" {
+				if saved != "" {
+					c.varStruct[st.For.Name] = saved
+				} else {
+					delete(c.varStruct, st.For.Name)
+				}
 				return et
+			}
+			if saved != "" {
+				c.varStruct[st.For.Name] = saved
+			} else {
+				delete(c.varStruct, st.For.Name)
 			}
 		case st.While != nil:
 			if et := c.predictElemTypeIn(name, st.While.Body); et != "" {
@@ -1963,6 +1995,8 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 						t = t[:idx]
 					}
 					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+				} else if et := c.elemType[v]; et != "" {
+					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", et, fld)
 				}
 			}
 		} else if t := c.varStruct[val]; t != "" {

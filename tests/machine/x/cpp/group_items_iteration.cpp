@@ -5,19 +5,17 @@
 #include <utility>
 #include <vector>
 
-struct __struct1 {
+struct Data {
   decltype(std::string("a")) tag;
   decltype(1) val;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Data &a, const Data &b) {
   return a.tag == b.tag && a.val == b.val;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Data &a, const Data &b) { return !(a == b); }
 struct __struct2 {
-  decltype(std::declval<__struct1>().tag) key;
-  std::vector<__struct1> items;
+  decltype(std::declval<Data>().tag) key;
+  std::vector<Data> items;
 };
 inline bool operator==(const __struct2 &a, const __struct2 &b) {
   return a.key == b.key && a.items == b.items;
@@ -25,16 +23,14 @@ inline bool operator==(const __struct2 &a, const __struct2 &b) {
 inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
-struct __struct3 {
-  decltype(std::declval<__struct1>().key) tag;
+struct Tmp {
+  decltype(std::declval<Data>().key) tag;
   int total;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Tmp &a, const Tmp &b) {
   return a.tag == b.tag && a.total == b.total;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Tmp &a, const Tmp &b) { return !(a == b); }
 template <typename T, typename U>
 std::vector<T> __append(const std::vector<T> &v, const U &x) {
   auto r = v;
@@ -42,14 +38,13 @@ std::vector<T> __append(const std::vector<T> &v, const U &x) {
   return r;
 }
 int main() {
-  std::vector<__struct1> data = std::vector<__struct1>{
-      __struct1{std::string("a"), 1}, __struct1{std::string("a"), 2},
-      __struct1{std::string("b"), 3}};
+  std::vector<Data> data =
+      std::vector<Data>{Data{std::string("a"), 1}, Data{std::string("a"), 2},
+                        Data{std::string("b"), 3}};
   auto groups = ([&]() {
-    std::map<decltype(std::declval<__struct1>().tag), std::vector<__struct1>>
-        __groups;
+    std::map<decltype(std::declval<Data>().tag), std::vector<Data>> __groups;
     for (auto d : data) {
-      __groups[d.tag].push_back(__struct1{d});
+      __groups[d.tag].push_back(Data{d});
     }
     std::vector<__struct2> __items;
     for (auto &kv : __groups) {
@@ -63,17 +58,16 @@ int main() {
     for (auto x : g.items) {
       total = (total + x.val);
     }
-    tmp = __append(tmp, __struct3{g.key, total});
+    tmp = __append(tmp, Tmp{g.key, total});
   }
   auto result = ([&]() {
-    std::vector<std::pair<decltype(std::declval<__struct3>().tag), __struct3>>
-        __items;
+    std::vector<std::pair<decltype(std::declval<Tmp>().tag), Tmp>> __items;
     for (auto r : tmp) {
       __items.push_back({r.tag, r});
     }
     std::sort(__items.begin(), __items.end(),
               [](auto &a, auto &b) { return a.first < b.first; });
-    std::vector<__struct3> __res;
+    std::vector<Tmp> __res;
     for (auto &p : __items)
       __res.push_back(p.second);
     return __res;
@@ -85,7 +79,7 @@ int main() {
       if (!first)
         std::cout << ' ';
       first = false;
-      std::cout << "<struct>";
+      std::cout << std::boolalpha << _x;
     }
     std::cout << std::endl;
   }
