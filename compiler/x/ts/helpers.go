@@ -272,6 +272,17 @@ func tsType(t types.Type) string {
 	}
 }
 
+func cleanTSType(ts string) string {
+	switch ts {
+	case "_":
+		return "any"
+	case "_[]":
+		return "any[]"
+	default:
+		return ts
+	}
+}
+
 func isAny(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok

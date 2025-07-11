@@ -133,7 +133,7 @@ func (c *Compiler) collectGlobals(stmts []*parser.Statement) {
 					typ = c.inferExprType(s.Let.Value)
 				}
 			}
-			ts := tsType(typ)
+			ts := cleanTSType(tsType(typ))
 			if ts != "" {
 				c.globals[name] = fmt.Sprintf("let %s: %s", name, ts)
 			} else {
@@ -149,7 +149,7 @@ func (c *Compiler) collectGlobals(stmts []*parser.Statement) {
 					typ = c.inferExprType(s.Var.Value)
 				}
 			}
-			ts := tsType(typ)
+			ts := cleanTSType(tsType(typ))
 			if ts != "" {
 				c.globals[name] = fmt.Sprintf("var %s: %s", name, ts)
 			} else {
@@ -516,7 +516,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 		c.env.SetVar(s.Name, typ, false)
 	}
-	typStr := tsType(typ)
+	typStr := cleanTSType(tsType(typ))
 	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
 	if c.moduleScope && c.indent == 1 {
 		// declare at module scope
@@ -566,7 +566,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 		c.env.SetVar(s.Name, typ, true)
 	}
-	typStr := tsType(typ)
+	typStr := cleanTSType(tsType(typ))
 	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
 	if c.moduleScope && c.indent == 1 {
 		if needType && typStr != "" {
