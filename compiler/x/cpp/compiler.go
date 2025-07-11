@@ -974,6 +974,15 @@ func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) str
 				}
 			}
 		case st.For != nil:
+			srcExpr, err := c.simulateExpr(st.For.Source)
+			if err == nil {
+				if t := c.varStruct[srcExpr]; t != "" {
+					c.varStruct[st.For.Name] = t
+				}
+				if et := c.elemType[srcExpr]; et != "" {
+					c.varStruct[st.For.Name] = et
+				}
+			}
 			if et := c.predictElemTypeIn(name, st.For.Body); et != "" {
 				return et
 			}
@@ -1004,6 +1013,27 @@ func (c *Compiler) simulateExpr(e *parser.Expr) (string, error) {
 	sub.buf.Reset()
 	sub.header.Reset()
 	sub.future = nil
+	// Deep copy maps to avoid polluting the parent compiler
+	sub.structMap = map[string]*structInfo{}
+	for k, v := range c.structMap {
+		sub.structMap[k] = v
+	}
+	sub.structByName = map[string]*structInfo{}
+	for k, v := range c.structByName {
+		sub.structByName[k] = v
+	}
+	sub.unions = map[string]*unionInfo{}
+	for k, v := range c.unions {
+		sub.unions[k] = v
+	}
+	sub.variants = map[string]*variantInfo{}
+	for k, v := range c.variants {
+		sub.variants[k] = v
+	}
+	sub.placeholders = map[string]string{}
+	for k, v := range c.placeholders {
+		sub.placeholders[k] = v
+	}
 	sub.vars = map[string]string{}
 	for k, v := range c.vars {
 		sub.vars[k] = v
