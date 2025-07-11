@@ -609,8 +609,10 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		switch op {
 		case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
 			return "boolean"
-		case "+", "-", "*", "/", "%":
+		case "+", "-", "*", "%":
 			return "int"
+		case "/":
+			return "double"
 		}
 	}
 	if l := isListLiteral(e); l != nil {
