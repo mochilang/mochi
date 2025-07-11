@@ -106,3 +106,8 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] Fix `right_join` compilation errors.
+- [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.

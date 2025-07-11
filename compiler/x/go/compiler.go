@@ -2366,7 +2366,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMap(c.inferExprType(f.With)) {
+		if isStringMap(c.inferExprType(f.With)) {
 			withStr = w
 		} else {
 			c.use("_toAnyMap")
@@ -2464,7 +2464,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMap(c.inferExprType(l.With)) {
+		if isStringMap(c.inferExprType(l.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
@@ -2516,7 +2516,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMap(c.inferExprType(s.With)) {
+		if isStringMap(c.inferExprType(s.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
@@ -2625,7 +2625,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		elemType = lt.Elem
 		directRange = true
 	}
-	elemIsMap := isStringAnyMap(elemType)
+	elemIsMap := isStringMap(elemType)
 	original := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
@@ -2638,7 +2638,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			felem = lt.Elem
 		}
 		child.SetVar(f.Var, felem, true)
-		fromIsMap[i] = isStringAnyMap(felem)
+		fromIsMap[i] = isStringMap(felem)
 	}
 	// Add join variables to environment
 	joinIsMap := make([]bool, len(q.Joins))
@@ -2649,7 +2649,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			jelem = lt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
-		joinIsMap[i] = isStringAnyMap(jelem)
+		joinIsMap[i] = isStringMap(jelem)
 	}
 
 	var groupKey string
