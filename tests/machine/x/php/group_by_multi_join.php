@@ -1,23 +1,11 @@
 <?php
 $nations = [
-    [
-        "id" => 1,
-        "name" => "A"
-    ],
-    [
-        "id" => 2,
-        "name" => "B"
-    ]
+    ["id" => 1, "name" => "A"],
+    ["id" => 2, "name" => "B"]
 ];
 $suppliers = [
-    [
-        "id" => 1,
-        "nation" => 1
-    ],
-    [
-        "id" => 2,
-        "nation" => 2
-    ]
+    ["id" => 1, "nation" => 1],
+    ["id" => 2, "nation" => 2]
 ];
 $partsupp = [
     [

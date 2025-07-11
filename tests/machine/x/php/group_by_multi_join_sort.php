@@ -1,17 +1,21 @@
 <?php
-$nation = [[
-    "n_nationkey" => 1,
-    "n_name" => "BRAZIL"
-]];
-$customer = [[
-    "c_custkey" => 1,
-    "c_name" => "Alice",
-    "c_acctbal" => 100,
-    "c_nationkey" => 1,
-    "c_address" => "123 St",
-    "c_phone" => "123-456",
-    "c_comment" => "Loyal"
-]];
+$nation = [
+    [
+        "n_nationkey" => 1,
+        "n_name" => "BRAZIL"
+    ]
+];
+$customer = [
+    [
+        "c_custkey" => 1,
+        "c_name" => "Alice",
+        "c_acctbal" => 100,
+        "c_nationkey" => 1,
+        "c_address" => "123 St",
+        "c_phone" => "123-456",
+        "c_comment" => "Loyal"
+    ]
+];
 $orders = [
     [
         "o_orderkey" => 1000,

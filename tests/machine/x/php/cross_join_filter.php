@@ -1,22 +1,12 @@
 <?php
-$nums = [
-    1,
-    2,
-    3
-];
-$letters = [
-    "A",
-    "B"
-];
+$nums = [1, 2, 3];
+$letters = ["A", "B"];
 $pairs = (function() use ($letters, $nums) {
     $result = [];
     foreach ($nums as $n) {
         foreach ($letters as $l) {
             if ($n % 2 == 0) {
-                $result[] = [
-    "n" => $n,
-    "l" => $l
-];
+                $result[] = ["n" => $n, "l" => $l];
             }
         }
     }
