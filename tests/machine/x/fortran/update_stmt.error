@@ -1,4 +1,0 @@
-error: unsupported expression at line 8
-   7| let people: list<Person> = [
-   8|   Person { name: "Alice", age: 17, status: "minor" },
-   9|   Person { name: "Bob", age: 25, status: "unknown" },

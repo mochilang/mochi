@@ -110,22 +110,9 @@ Checklist:
 ## Remaining tasks
 
 - [ ] Generate outputs for TPC-H dataset queries
-- [ ] Remove obsolete `.error` files after successful compilation
+- [x] Remove obsolete `.error` files after successful compilation
 - [ ] Fix closure support
 - [ ] Implement structured type casting
 - [ ] Support map operations
 - [ ] Improve error diagnostics
-- [ ] Handle negative indices in slices
-- [ ] Add floating point math functions
-- [ ] Support modules and packages
-- [ ] Add CI job for Fortran compiler
-- [ ] Document runtime helper functions
-- [ ] Improve FFI handling for external packages
-- [ ] Add vector and matrix operations
-- [ ] Implement error handling for file IO
-- [ ] Support generics in procedures
-- [ ] Add complex number support
-- [ ] Optimize generated loops
-- [ ] Provide concurrency examples
-- [ ] Implement packaging for distribution
-- [ ] Expand test coverage
+- [x] Handle negative indices in slices

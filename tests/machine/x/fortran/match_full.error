@@ -1,4 +1,0 @@
-error: unsupported expression at line 3
-   2| 
-   3| let label = match x {
-   4|   1 => "one"

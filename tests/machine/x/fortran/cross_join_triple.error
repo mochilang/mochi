@@ -1,4 +1,0 @@
-error: unsupported expression at line 4
-   3| let bools = [true, false]
-   4| let combos = from n in nums
-   5|              from l in letters
