@@ -106,3 +106,16 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] Improve struct naming heuristics
+- [ ] Implement pattern matching for variants
+- [ ] Support concurrency primitives
+- [ ] Provide wrappers for standard libraries
+- [ ] Implement generics for map keys
+- [ ] Enhance vector element type inference
+- [ ] Add command line interface for the compiler
+- [ ] Integrate CMake build generation
+- [ ] Support user defined modules
+- [ ] Document the C++ backend

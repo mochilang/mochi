@@ -1092,7 +1092,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			c.writeIndent()
 			switch typ {
 			case "bool":
-				c.buf.WriteString("std::cout << std::boolalpha << (" + s + ") << std::endl;")
+				c.buf.WriteString("std::cout << (" + s + " ? \"true\" : \"false\") << std::endl;")
 			case "int", "double", "string":
 				c.buf.WriteString("std::cout << " + s + " << std::endl;")
 			case "pair":
@@ -1170,7 +1170,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			}
 			c.buf.WriteString(" } ")
 		case "bool":
-			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
+			c.buf.WriteString("std::cout << (" + s + " ? \"true\" : \"false\"); ")
 		case "int", "double", "string":
 			c.buf.WriteString("std::cout << " + s + "; ")
 		case "pair":
