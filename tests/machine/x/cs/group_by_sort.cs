@@ -4,10 +4,23 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        var items = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "cat", "a" }, { "val", 3 } }, new Dictionary<dynamic, dynamic> { { "cat", "a" }, { "val", 1 } }, new Dictionary<dynamic, dynamic> { { "cat", "b" }, { "val", 5 } }, new Dictionary<dynamic, dynamic> { { "cat", "b" }, { "val", 2 } } };
-        var grouped = _group_by(items, i => i.cat).OrderBy(g => (-_sum(g.Items.Select(x => x.val).ToArray()))).Select(g => new Dictionary<dynamic, dynamic> { { "cat", g.Key }, { "total", _sum(g.Items.Select(x => x.val).ToArray()) } }).ToList();
+        List<Item> items = new List<Item> { new Item { cat = "a", val = 3 }, new Item { cat = "a", val = 1 }, new Item { cat = "b", val = 5 }, new Item { cat = "b", val = 2 } };
+        List<Grouped> grouped = _group_by(items, i => i.cat).OrderBy(g => (-_sum(g.Items.Select(x => x.val).ToArray()))).Select(g => new Grouped { cat = g.Key, total = _sum(g.Items.Select(x => x.val).ToArray()) }).ToList();
         Console.WriteLine(JsonSerializer.Serialize(grouped));
     }
+    public class Item {
+        public string cat;
+        public int val;
+    }
+    
+    
+    public class Grouped {
+        public string cat;
+        public int total;
+    }
+    
+    
+    
     static double _sum(dynamic v) {
         if (v == null) return 0.0;
         double _sum = 0;

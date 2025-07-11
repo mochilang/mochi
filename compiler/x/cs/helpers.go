@@ -251,6 +251,34 @@ func (c *Compiler) newStructName(base string) string {
 	}
 }
 
+// findStructByFields searches the current environment for a struct type with
+// the same set of field names as st. Field order does not matter.
+func (c *Compiler) findStructByFields(st types.StructType) (string, bool) {
+	if c.env == nil {
+		return "", false
+	}
+	fields := map[string]struct{}{}
+	for k := range st.Fields {
+		fields[k] = struct{}{}
+	}
+	for name, def := range c.env.Structs() {
+		if len(def.Fields) != len(fields) {
+			continue
+		}
+		match := true
+		for k := range fields {
+			if _, ok := def.Fields[k]; !ok {
+				match = false
+				break
+			}
+		}
+		if match {
+			return name, true
+		}
+	}
+	return "", false
+}
+
 // assignTypeNames attaches generated names to anonymous struct types so that
 // compiled code can avoid "dynamic" fields. The returned type mirrors t but
 // with any unnamed structs replaced by named versions.
@@ -258,8 +286,12 @@ func (c *Compiler) assignTypeNames(t types.Type, hint string) types.Type {
 	switch tt := t.(type) {
 	case types.StructType:
 		if tt.Name == "" {
-			tt.Name = c.newStructName(hint)
-			c.extraStructs = append(c.extraStructs, tt)
+			if name, ok := c.findStructByFields(tt); ok {
+				tt.Name = name
+			} else {
+				tt.Name = c.newStructName(hint)
+				c.extraStructs = append(c.extraStructs, tt)
+			}
 		}
 		for k, ft := range tt.Fields {
 			tt.Fields[k] = c.assignTypeNames(ft, pascalCase(k))

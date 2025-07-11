@@ -74,6 +74,20 @@ func (e *Env) GetStruct(name string) (StructType, bool) {
 	return StructType{}, false
 }
 
+// Structs returns all struct types visible in the environment.
+func (e *Env) Structs() map[string]StructType {
+	out := map[string]StructType{}
+	if e.parent != nil {
+		for k, v := range e.parent.Structs() {
+			out[k] = v
+		}
+	}
+	for k, v := range e.structs {
+		out[k] = v
+	}
+	return out
+}
+
 // SetUnion defines a user-defined union type.
 func (e *Env) SetUnion(name string, ut UnionType) { e.unions[name] = ut }
 

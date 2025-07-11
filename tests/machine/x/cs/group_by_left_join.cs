@@ -4,9 +4,9 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        var customers = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<dynamic, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<dynamic, dynamic> { { "id", 3 }, { "name", "Charlie" } } };
-        var orders = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 100 }, { "customerId", 1 } }, new Dictionary<dynamic, dynamic> { { "id", 101 }, { "customerId", 1 } }, new Dictionary<dynamic, dynamic> { { "id", 102 }, { "customerId", 2 } } };
-        var stats = new Func<List<dynamic>>(() => {
+        List<Customer> customers = new List<Customer> { new Customer { id = 1, name = "Alice" }, new Customer { id = 2, name = "Bob" }, new Customer { id = 3, name = "Charlie" } };
+        List<Order> orders = new List<Order> { new Order { id = 100, customerId = 1 }, new Order { id = 101, customerId = 1 }, new Order { id = 102, customerId = 2 } };
+        List<Stat> stats = new Func<List<Stat>>(() => {
     var groups = new Dictionary<string, _Group>();
     var order = new List<string>();
     foreach (var c in customers) {
@@ -24,9 +24,9 @@ class Program {
     }
     var items = new List<_Group>();
     foreach (var ks in order) items.Add(groups[ks]);
-    var _res = new List<dynamic>();
+    var _res = new List<Stat>();
     foreach (var g in items) {
-        _res.Add(new Dictionary<dynamic, dynamic> { { "name", g.key }, { "count", Enumerable.Count(g.Where(r => r["o"]).Select(r => r).ToArray()) } });
+        _res.Add(new Stat { name = g.key, count = Enumerable.Count(g.Where(r => r["o"]).Select(r => r).ToArray()) });
     }
     return _res;
 })();
@@ -35,6 +35,25 @@ class Program {
             Console.WriteLine(string.Join(" ", new [] { Convert.ToString(s.name), Convert.ToString("orders:"), Convert.ToString(s.count) }));
         }
     }
+    public class Customer {
+        public int id;
+        public string name;
+    }
+    
+    
+    public class Order {
+        public int id;
+        public int customerId;
+    }
+    
+    
+    public class Stat {
+        public string name;
+        public int count;
+    }
+    
+    
+    
     public class _Group {
         public dynamic key;
         public List<dynamic> Items = new List<dynamic>();
