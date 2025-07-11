@@ -118,3 +118,13 @@ Checklist:
 - [ ] Add concurrency primitives like channels
 - [ ] Optimize generated code formatting
 - [ ] Expand LLM helper coverage
+- [ ] Improve error messages for Lua runtime
+- [ ] Generate idiomatic for-in loops for tables
+- [ ] Reduce reliance on helper functions
+- [ ] Support pattern matching with tables
+- [ ] Implement generics for Lua functions
+- [ ] Support asynchronous I/O operations
+- [ ] Add support for metatables in struct types
+- [ ] Provide CLI for running compiled Lua
+- [ ] Implement incremental compilation caching
+- [ ] Add automated regression tests for Lua compiler

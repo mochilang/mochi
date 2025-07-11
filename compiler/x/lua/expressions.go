@@ -372,9 +372,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		if len(call.Args) == 1 && isList(c.inferExprType(call.Args[0])) {
-			a := args[0]
-			return fmt.Sprintf("print(table.concat(%s, \" \"))", a), nil
+		if len(call.Args) == 1 {
+			if isList(c.inferExprType(call.Args[0])) {
+				a := args[0]
+				return fmt.Sprintf("print(table.concat(%s, \" \"))", a), nil
+			}
+			if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
+				return fmt.Sprintf("print(%s)", args[0]), nil
+			}
 		}
 		for i := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {

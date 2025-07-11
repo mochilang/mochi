@@ -1,6 +1,7 @@
-line 217: run error: exit status 1
-lua: ...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:217: attempt to call a table value
+line 229: run error: exit status 1
+lua: ...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:229: invalid value (table) at index 1 in table for 'concat'
 stack traceback:
-	...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:217: in main chunk
+	[C]: in function 'table.concat'
+	...kspace/mochi/tests/machine/x/lua/group_by_multi_join.lua:229: in main chunk
 	[C]: in ?
 

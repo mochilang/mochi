@@ -10,14 +10,6 @@ function __add(a, b)
         return a + b
     end
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 Counter = {}
 Counter.__index = Counter
 function Counter.new(o)
@@ -32,4 +24,4 @@ end
 
 c = {n=0}
 inc(c)
-__print(c.n)
+print(c.n)

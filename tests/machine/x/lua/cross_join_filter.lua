@@ -11,14 +11,6 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 nums = {1, 2, 3}
 letters = {"A", "B"}
 pairs = (function()
@@ -32,8 +24,8 @@ pairs = (function()
   end
   return _res
 end)()
-__print("--- Even pairs ---")
+print("--- Even pairs ---")
 for _, p in ipairs(pairs) do
-  __print(p.n, p.l)
+  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(p.n, p.l)
   ::__continue0::
 end

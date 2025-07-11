@@ -1,6 +1,7 @@
-line 205: run error: exit status 1
-lua: /workspace/mochi/tests/machine/x/lua/group_by_sort.lua:205: attempt to call a table value
+line 220: run error: exit status 1
+lua: /workspace/mochi/tests/machine/x/lua/group_by_sort.lua:220: invalid value (table) at index 1 in table for 'concat'
 stack traceback:
-	/workspace/mochi/tests/machine/x/lua/group_by_sort.lua:205: in main chunk
+	[C]: in function 'table.concat'
+	/workspace/mochi/tests/machine/x/lua/group_by_sort.lua:220: in main chunk
 	[C]: in ?
 

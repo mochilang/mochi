@@ -91,9 +91,8 @@ function __query(src, joins, opts)
             end
             for ri, right in ipairs(jitems) do
                 if not matched[ri] then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -122,9 +121,8 @@ function __query(src, joins, opts)
                     end
                 end
                 if not m then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -237,4 +235,4 @@ end)()))}
   end
   return _res
 end)()
-(function(lst) for i,v in ipairs(lst) do io.write(v) if i < #lst then io.write(" ") end end io.write("\n") end)(result)
+print(table.concat(result, " "))

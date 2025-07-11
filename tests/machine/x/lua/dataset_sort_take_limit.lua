@@ -1,11 +1,3 @@
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 products = {{["name"]="Laptop", ["price"]=1500}, {["name"]="Smartphone", ["price"]=900}, {["name"]="Tablet", ["price"]=600}, {["name"]="Monitor", ["price"]=300}, {["name"]="Keyboard", ["price"]=100}, {["name"]="Mouse", ["price"]=50}, {["name"]="Headphones", ["price"]=200}}
 expensive = (function()
   local _res = {}
@@ -30,8 +22,8 @@ expensive = (function()
   _res = items
   return _res
 end)()
-__print("--- Top products (excluding most expensive) ---")
+print("--- Top products (excluding most expensive) ---")
 for _, item in ipairs(expensive) do
-  __print(item.name, "costs $", item.price)
+  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(item.name, "costs $", item.price)
   ::__continue0::
 end

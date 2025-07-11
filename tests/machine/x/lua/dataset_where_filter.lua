@@ -1,11 +1,3 @@
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 people = {{["name"]="Alice", ["age"]=30}, {["name"]="Bob", ["age"]=15}, {["name"]="Charlie", ["age"]=65}, {["name"]="Diana", ["age"]=45}}
 adults = (function()
   local _res = {}
@@ -16,9 +8,9 @@ adults = (function()
   end
   return _res
 end)()
-__print("--- Adults ---")
+print("--- Adults ---")
 for _, person in ipairs(adults) do
-  __print(person.name, "is", person.age, (function()
+  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(person.name, "is", person.age, (function()
   if person.is_senior then
     return " (senior)"
   else
