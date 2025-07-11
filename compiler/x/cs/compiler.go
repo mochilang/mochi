@@ -2969,7 +2969,7 @@ func csType(t *parser.TypeRef) string {
 	if t.Simple != nil {
 		switch *t.Simple {
 		case "int":
-			return "long"
+			return "int"
 		case "float":
 			return "double"
 		case "string":
@@ -3219,7 +3219,7 @@ func listElemType(e *parser.Expr) string {
 	lit := pv.Target.Lit
 	switch {
 	case lit.Int != nil:
-		return "long"
+		return "int"
 	case lit.Float != nil:
 		return "double"
 	case lit.Str != nil:

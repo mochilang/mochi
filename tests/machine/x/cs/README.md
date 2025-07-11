@@ -130,3 +130,13 @@ Checklist:
 - [ ] Add support for .NET interactive notebooks
 - [ ] Provide integration with build systems (MSBuild, etc.)
 - [ ] Document runtime API usage with examples
+- [ ] Add cross-platform path handling
+- [ ] Support customizing generated namespaces
+- [ ] Provide interactive REPL for generated code
+- [ ] Integrate static analysis for generated projects
+- [ ] Support generics in query comprehensions
+- [ ] Improve CLI output colorization
+- [ ] Offer VS Code extension integration
+- [ ] Publish Docker image for compiled apps
+- [ ] Add integration tests for runtime helpers
+- [ ] Package compiled code as a NuGet library
