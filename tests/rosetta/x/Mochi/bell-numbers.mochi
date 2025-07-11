@@ -1,0 +1,44 @@
+// Mochi implementation of Rosetta "Bell numbers" task
+
+fun bellTriangle(n: int): list<list<bigint>> {
+  var tri: list<list<bigint>> = []
+  var i = 0
+  while i < n {
+    var row: list<bigint> = []
+    var j = 0
+    while j < i {
+      row = append(row, 0 as bigint)
+      j = j + 1
+    }
+    tri = append(tri, row)
+    i = i + 1
+  }
+  tri[1][0] = 1
+  i = 2
+  while i < n {
+    tri[i][0] = tri[i-1][i-2]
+    var j = 1
+    while j < i {
+      tri[i][j] = tri[i][j-1] + tri[i-1][j-1]
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return tri
+}
+
+fun main() {
+  let bt = bellTriangle(51)
+  print("First fifteen and fiftieth Bell numbers:")
+  for i in 1..16 {
+    print("" + str(i).padStart(2, " ") + ": " + str(bt[i][0]))
+  }
+  print("50: " + str(bt[50][0]))
+  print("")
+  print("The first ten rows of Bell's triangle:")
+  for i in 1..11 {
+    print(bt[i])
+  }
+}
+
+main()
