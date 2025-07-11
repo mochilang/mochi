@@ -1,21 +1,43 @@
-let epsilon = 1.0e-15
-fun absf(x: float): float { if x < 0.0 { return -x } return x }
-fun formatFloat(f: float, prec: int): string {
-  let s = str(f)
-  let idx = indexOf(s, ".")
-  if idx < 0 { return s }
-  let need = idx + 1 + prec
-  if len(s) > need { return substring(s, 0, need) }
-  return s
+let epsilon = 0.000000000000001
+
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
 }
-var fact = 1
+
+fun pow10(n: int): float {
+  var r: float = 1.0
+  var i = 0
+  while i < n {
+    r = r * 10.0
+    i = i + 1
+  }
+  return r
+}
+
+fun formatFloat(f: float, prec: int): string {
+  let scale = pow10(prec)
+  let scaled = (f * scale) + 0.5
+  var n = (scaled as int)
+  var digits = str(n)
+  while len(digits) <= prec {
+    digits = "0" + digits
+  }
+  let intPart = substring(digits, 0, len(digits)-prec)
+  let fracPart = substring(digits, len(digits)-prec, len(digits))
+  return intPart + "." + fracPart
+}
+
+var factval = 1
 var e: float = 2.0
 var n = 2
+var term: float = 1.0
 while true {
-  let e0 = e
-  fact = fact * n
+  factval = factval * n
   n = n + 1
-  e = e + 1.0 / (fact as float)
-  if absf(e - e0) < epsilon { break }
+  term = 1.0 / (factval as float)
+  e = e + term
+  if absf(term) < epsilon { break }
 }
+
 print("e = " + formatFloat(e, 15))
