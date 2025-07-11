@@ -4034,8 +4034,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 	switch call.Func {
 	case "print":
-		c.imports["fmt"] = true
-		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
