@@ -4128,7 +4128,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
+						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
+							fmtStr = "%.16g"
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {
@@ -5744,6 +5746,13 @@ func constFloatValue(e *parser.Expr) (float64, bool) {
 	default:
 		return 0, false
 	}
+}
+
+func looksLikeFloatConst(expr string) bool {
+	if strings.ContainsAny(expr, ".eE") && !strings.Contains(expr, "\"") {
+		return true
+	}
+	return false
 }
 
 func evalListIntUnary(u *parser.Unary) ([]int, bool) {
