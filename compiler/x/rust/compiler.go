@@ -1443,6 +1443,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					continue
 				}
 				if op.Op == "*" || op.Op == "/" || op.Op == "-" {
+					if _, ok := lt.(types.AnyType); ok && isInt(rt) {
+						res = fmt.Sprintf("(%s as f64)", res)
+						lt = types.FloatType{}
+					}
+					if _, ok := rt.(types.AnyType); ok && isInt(lt) {
+						r = fmt.Sprintf("%s as f64", r)
+						rt = types.FloatType{}
+					}
 					if _, ok := lt.(types.FloatType); ok {
 						if isInt(rt) {
 							r = fmt.Sprintf("%s as f64", r)
