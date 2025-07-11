@@ -1,9 +1,7 @@
 using System;
 
-class Program
-{
-    static void Main()
-    {
+class Program {
+    static void Main() {
         int a = (10 - 3);
         int b = (2 + 2);
         Console.WriteLine(a);

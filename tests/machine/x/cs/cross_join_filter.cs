@@ -2,41 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-class Program
-{
-    static void Main()
-    {
+class Program {
+    static void Main() {
         List<int> nums = new List<int> { 1, 2, 3 };
         List<string> letters = new List<string> { "A", "B" };
-        List<Pair> pairs = new Func<List<dynamic>>(() =>
-        {
-            var _res = new List<dynamic>();
-            foreach (var n in nums)
-            {
-                if (!(((n % 2) == 0))) continue;
-                foreach (var l in letters)
-                {
-                    if (((n % 2) == 0))
-                    {
-                        _res.Add(new Pair { n = n, l = l });
-                    }
-                }
+        List<Pair> pairs = new Func<List<Pair>>(() => {
+    var _res = new List<Pair>();
+    foreach (var n in nums) {
+        if (!(((n % 2) == 0))) continue;
+        foreach (var l in letters) {
+            if (((n % 2) == 0)) {
+                _res.Add(new Pair { n = n, l = l });
             }
-            return _res;
-        })();
-        Console.WriteLine("--- Even pairs ---");
-        foreach (var p in pairs)
-        {
-            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(p.n), Convert.ToString(p.l) }));
         }
     }
-    public class Pair
-    {
-        public int n;
-        public dynamic l;
+    return _res;
+})();
+        Console.WriteLine("--- Even pairs ---");
+        foreach (var p in pairs) {
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString(p.n), Convert.ToString(p.l) }));
+        }
     }
-
-
-
-
+    public class Pair {
+        public int n;
+        public string l;
+    }
+    
+    
+    
 }

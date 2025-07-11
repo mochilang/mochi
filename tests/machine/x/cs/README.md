@@ -108,4 +108,4 @@ Checklist:
 - [x] while_loop
 
 ## Remaining work
-- [ ] Refine struct field type inference to remove remaining dynamic fields
+- [ ] Improve LINQ query formatting for complex joins

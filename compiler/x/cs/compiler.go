@@ -2415,6 +2415,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				if def, ok := c.env.GetStruct(pascalCase(base)); ok {
 					st.Name = def.Name
+				} else if name, ok := c.findStructByFields(st); ok {
+					st.Name = name
 				} else {
 					st.Name = c.newStructName(base)
 					c.extraStructs = append(c.extraStructs, st)
@@ -2447,6 +2449,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if def, ok := c.env.GetStruct(pascalCase(base)); ok {
 					name = def.Name
 					st.Name = name
+				} else if n, ok := c.findStructByFields(st); ok {
+					name = n
+					st.Name = n
 				} else {
 					name = c.newStructName(base)
 					st.Name = name

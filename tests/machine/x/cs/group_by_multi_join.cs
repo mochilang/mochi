@@ -4,26 +4,60 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        var nations = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 1 }, { "name", "A" } }, new Dictionary<dynamic, dynamic> { { "id", 2 }, { "name", "B" } } };
-        var suppliers = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 1 }, { "nation", 1 } }, new Dictionary<dynamic, dynamic> { { "id", 2 }, { "nation", 2 } } };
-        var partsupp = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "part", 100 }, { "supplier", 1 }, { "cost", 10.000000 }, { "qty", 2 } }, new Dictionary<dynamic, dynamic> { { "part", 100 }, { "supplier", 2 }, { "cost", 20.000000 }, { "qty", 1 } }, new Dictionary<dynamic, dynamic> { { "part", 200 }, { "supplier", 1 }, { "cost", 5.000000 }, { "qty", 3 } } };
-        var filtered = new Func<List<dynamic>>(() => {
-    var _res = new List<dynamic>();
+        List<Nation> nations = new List<Nation> { new Nation { id = 1, name = "A" }, new Nation { id = 2, name = "B" } };
+        List<Supplier> suppliers = new List<Supplier> { new Supplier { id = 1, nation = 1 }, new Supplier { id = 2, nation = 2 } };
+        List<Partsupp> partsupp = new List<Partsupp> { new Partsupp { part = 100, supplier = 1, cost = 10.000000, qty = 2 }, new Partsupp { part = 100, supplier = 2, cost = 20.000000, qty = 1 }, new Partsupp { part = 200, supplier = 1, cost = 5.000000, qty = 3 } };
+        List<Filtered> filtered = new Func<List<Filtered>>(() => {
+    var _res = new List<Filtered>();
     foreach (var ps in partsupp) {
         foreach (var s in suppliers) {
             if (!((s.id == ps.supplier))) continue;
             foreach (var n in nations) {
                 if (!((n.id == s.nation))) continue;
                 if (!((n["name"] == "A"))) continue;
-                _res.Add(new Dictionary<dynamic, dynamic> { { "part", ps.part }, { "value", (ps.cost * ps.qty) } });
+                _res.Add(new Filtered { part = ps.part, value = (ps.cost * ps.qty) });
             }
         }
     }
     return _res;
 })();
-        var grouped = _group_by(filtered, x => x.part).Select(g => new Dictionary<dynamic, dynamic> { { "part", g.Key }, { "total", _sum(g.Items.Select(r => r.value).ToArray()) } }).ToList();
+        List<Grouped> grouped = _group_by(filtered, x => x.part).Select(g => new Grouped { part = g.Key, total = _sum(g.Items.Select(r => r.value).ToArray()) }).ToList();
         Console.WriteLine(JsonSerializer.Serialize(grouped));
     }
+    public class Nation {
+        public int id;
+        public string name;
+    }
+    
+    
+    public class Supplier {
+        public int id;
+        public int nation;
+    }
+    
+    
+    public class Partsupp {
+        public int part;
+        public int supplier;
+        public double cost;
+        public int qty;
+    }
+    
+    
+    public class Filtered {
+        public int part;
+        public double value;
+    }
+    
+    
+    
+    public class Grouped {
+        public int part;
+        public int total;
+    }
+    
+    
+    
     static double _sum(dynamic v) {
         if (v == null) return 0.0;
         double _sum = 0;

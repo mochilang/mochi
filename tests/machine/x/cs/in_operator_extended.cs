@@ -8,13 +8,18 @@ class Program {
         List<int> ys = xs.Where(x => ((x % 2) == 1)).Select(x => x).ToArray();
         Console.WriteLine(ys.Contains(1));
         Console.WriteLine(ys.Contains(2));
-        var m = new Dictionary<dynamic, dynamic> { { "a", 1 } };
+        M m = new M { a = 1 };
         Console.WriteLine(_in("a", m));
         Console.WriteLine(_in("b", m));
         string s = "hello";
         Console.WriteLine(s.Contains("ell"));
         Console.WriteLine(s.Contains("foo"));
     }
+    public class M {
+        public int a;
+    }
+    
+    
     static bool _in(dynamic item, dynamic col) {
         if (col is string s && item is string sub) {
             return s.Contains(sub);

@@ -12,12 +12,24 @@ public struct Person {
 
 class Program {
     static void Main() {
-        List<Person> people = _load("../interpreter/valid/people.yaml", new Dictionary<dynamic, dynamic> { { "format", "yaml" } }).Select(e => _cast<Person>(e)).ToList();
-        var adults = people.Where(p => (p.age >= 18)).Select(p => new Dictionary<dynamic, dynamic> { { "name", p.name }, { "email", p.email } }).ToArray();
+        List<Person> people = _load("../interpreter/valid/people.yaml", new People { format = "yaml" }).Select(e => _cast<Person>(e)).ToList();
+        List<Adult> adults = people.Where(p => (p.age >= 18)).Select(p => new Adult { name = p.name, email = p.email }).ToArray();
         foreach (var a in adults) {
             Console.WriteLine(string.Join(" ", new [] { Convert.ToString(a.name), Convert.ToString(a.email) }));
         }
     }
+    public class People {
+        public string format;
+    }
+    
+    
+    public class Adult {
+        public string name;
+        public string email;
+    }
+    
+    
+    
     static List<dynamic> _load(string path, Dictionary<string, object> opts) {
         var format = opts != null && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv";
         var header = opts != null && opts.ContainsKey("header") ? Convert.ToBoolean(opts["header"]) : true;

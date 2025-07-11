@@ -5,9 +5,20 @@ using System.IO;
 
 class Program {
     static void Main() {
-        var people = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<dynamic, dynamic> { { "name", "Bob" }, { "age", 25 } } };
-        _save(people, "-", new Dictionary<dynamic, dynamic> { { "format", "jsonl" } });
+        List<People> people = new List<People> { new People { name = "Alice", age = 30 }, new People { name = "Bob", age = 25 } };
+        _save(people, "-", new Item { format = "jsonl" });
     }
+    public class People {
+        public string name;
+        public int age;
+    }
+    
+    
+    public class Item {
+        public string format;
+    }
+    
+    
     static void _save(dynamic src, string path, Dictionary<string, object> opts) {
         var rows = src as IEnumerable<dynamic>; if (rows == null) return;
         var format = opts != null && opts.ContainsKey("format") ? Convert.ToString(opts["format"]) : "csv";
