@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 
 
-def add(a: int, b: int) -> int:
+def add(a, b):
     return a + b
 
 

@@ -105,7 +105,7 @@ Compiled programs: 100/100 successful.
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-- [ ] Compare generated code with reference implementations
+- [x] Compare generated code with reference implementations
 - [ ] Add benchmarks for large datasets
 - [ ] Improve error reporting for runtime failures
 - [ ] Support optional type annotations
