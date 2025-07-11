@@ -1,0 +1,14 @@
+// Mochi implementation of Rosetta "Arithmetic/Integer" task (big integer variant)
+// Translated from Go version in tests/rosetta/x/Go/arithmetic-integer-2.go
+
+fun main() {
+  let a = 12345678
+  let b = 98765
+  print(str(a) + " + " + str(b) + " = " + str(a + b))
+  print(str(a) + " - " + str(b) + " = " + str(a - b))
+  print(str(a) + " * " + str(b) + " = " + str(a * b))
+  print(str(a) + " quo " + str(b) + " = " + str((a / b) as int))
+  print(str(a) + " rem " + str(b) + " = " + str(a % b))
+}
+
+main()
