@@ -72,7 +72,7 @@ func main() {
 			pairs[idx] = pair{item: it, key: -_sum(func() []any {
 				results := []any{}
 				for _, x := range g.Items {
-					results = append(results, (x).(map[string]any)["val"])
+					results = append(results, _toAnyMap(x)["val"])
 				}
 				return results
 			}())}
@@ -110,7 +110,7 @@ func main() {
 				Total: _sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
-						results = append(results, (x).(map[string]any)["val"])
+						results = append(results, _toAnyMap(x)["val"])
 					}
 					return results
 				}()),

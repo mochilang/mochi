@@ -108,8 +108,8 @@ func main() {
 				Count: len(func() []any {
 					results := []any{}
 					for _, r := range g.Items {
-						if _exists((r).(map[string]any)["o"]) {
-							if _exists((r).(map[string]any)["o"]) {
+						if _exists(_toAnyMap(r)["o"]) {
+							if _exists(_toAnyMap(r)["o"]) {
 								results = append(results, r)
 							}
 						}
