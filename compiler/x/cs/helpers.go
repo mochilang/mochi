@@ -206,3 +206,47 @@ func isFetchExpr(e *parser.Expr) bool {
 	}
 	return p.Fetch != nil
 }
+
+func pascalCase(s string) string {
+	parts := strings.FieldsFunc(s, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' ' || r == '.'
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + strings.ToLower(p[1:])
+	}
+	return sanitizeName(strings.Join(parts, ""))
+}
+
+func singular(s string) string {
+	if strings.HasSuffix(s, "s") && len(s) > 1 {
+		return s[:len(s)-1]
+	}
+	return s
+}
+
+func titleCase(s string) string {
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
+func (c *Compiler) newStructName(base string) string {
+	name := pascalCase(base)
+	if name == "" {
+		name = "Auto"
+	}
+	if _, ok := c.structs[name]; !ok {
+		return name
+	}
+	for {
+		c.structCount++
+		candidate := fmt.Sprintf("%s%d", name, c.structCount)
+		if _, ok := c.structs[candidate]; !ok {
+			return candidate
+		}
+	}
+}

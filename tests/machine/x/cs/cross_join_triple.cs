@@ -9,7 +9,7 @@ class Program
         List<int> nums = new List<int> { 1, 2 };
         List<string> letters = new List<string> { "A", "B" };
         List<bool> bools = new List<bool> { true, false };
-        var combos = new Func<List<dynamic>>(() =>
+        List<Combo> combos = new Func<List<dynamic>>(() =>
         {
             var _res = new List<dynamic>();
             foreach (var n in nums)
@@ -18,7 +18,7 @@ class Program
                 {
                     foreach (var b in bools)
                     {
-                        _res.Add(new Dictionary<dynamic, dynamic> { { "n", n }, { "l", l }, { "b", b } });
+                        _res.Add(new Combo { n = n, l = l, b = b });
                     }
                 }
             }
@@ -30,4 +30,14 @@ class Program
             Console.WriteLine(string.Join(" ", new[] { Convert.ToString(c.n), Convert.ToString(c.l), Convert.ToString(c.b) }));
         }
     }
+    public class Combo
+    {
+        public int n;
+        public dynamic l;
+        public dynamic b;
+    }
+
+
+
+
 }
