@@ -164,7 +164,7 @@ func _exists(v any) bool {
 	case reflect.Pointer:
 		return !rv.IsNil()
 	case reflect.Struct:
-		return true
+		return !rv.IsZero()
 	}
 	return false
 }
