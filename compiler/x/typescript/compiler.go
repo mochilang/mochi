@@ -56,6 +56,110 @@ func (c *Compiler) newTmp() string {
 	return fmt.Sprintf("_tmp%d", c.tmp)
 }
 
+func tsTypeRef(t *parser.TypeRef) string {
+	if t == nil {
+		return "any"
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int", "float":
+			return "number"
+		case "string":
+			return "string"
+		case "bool":
+			return "boolean"
+		case "void":
+			return "void"
+		default:
+			return *t.Simple
+		}
+	}
+	if t.Generic != nil {
+		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+			return tsTypeRef(t.Generic.Args[0]) + "[]"
+		}
+		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
+			return fmt.Sprintf("Record<%s, %s>", tsTypeRef(t.Generic.Args[0]), tsTypeRef(t.Generic.Args[1]))
+		}
+		parts := make([]string, len(t.Generic.Args))
+		for i, a := range t.Generic.Args {
+			parts[i] = tsTypeRef(a)
+		}
+		return fmt.Sprintf("%s<%s>", t.Generic.Name, strings.Join(parts, ", "))
+	}
+	if t.Struct != nil {
+		fields := make([]string, len(t.Struct.Fields))
+		for i, f := range t.Struct.Fields {
+			fields[i] = fmt.Sprintf("%s: %s", f.Name, tsTypeRef(f.Type))
+		}
+		return fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
+	}
+	if t.Fun != nil {
+		params := make([]string, len(t.Fun.Params))
+		for i, p := range t.Fun.Params {
+			params[i] = tsTypeRef(p)
+		}
+		ret := "void"
+		if t.Fun.Return != nil {
+			ret = tsTypeRef(t.Fun.Return)
+		}
+		return fmt.Sprintf("(%s) => %s", strings.Join(params, ", "), ret)
+	}
+	return "any"
+}
+
+func queryResultType(q *parser.QueryExpr) string {
+	if q.Select == nil {
+		return "any[]"
+	}
+	if names := selectMapFields(q.Select); names != nil {
+		fields := make([]string, len(names))
+		for i, n := range names {
+			fields[i] = fmt.Sprintf("%s: any", n)
+		}
+		return fmt.Sprintf("Array<{ %s }>", strings.Join(fields, "; "))
+	}
+	if name := selectStructName(q.Select); name != "" {
+		return fmt.Sprintf("%s[]", name)
+	}
+	return "any[]"
+}
+
+func selectMapFields(e *parser.Expr) []string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	if u.Value.Target == nil || u.Value.Target.Map == nil {
+		return nil
+	}
+	m := u.Value.Target.Map
+	fields := make([]string, 0, len(m.Items))
+	for _, it := range m.Items {
+		if name := getIdent(it.Key); name != "" {
+			fields = append(fields, name)
+		}
+	}
+	return fields
+}
+
+func selectStructName(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return ""
+	}
+	if u.Value.Target == nil || u.Value.Target.Struct == nil {
+		return ""
+	}
+	return u.Value.Target.Struct.Name
+}
+
 // detectAggCall returns the name and argument of a simple aggregator call like
 // sum(x) or count(x). If the expression is not such a call, ok is false.
 func detectAggCall(e *parser.Expr) (name string, arg *parser.Expr, ok bool) {
@@ -184,24 +288,32 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
+		typ := ""
+		if s.Let.Type != nil {
+			typ = ": " + tsTypeRef(s.Let.Type)
+		}
 		if s.Let.Value == nil {
-			c.writeln(fmt.Sprintf("const %s = null;", s.Let.Name))
+			c.writeln(fmt.Sprintf("const %s%s = null;", s.Let.Name, typ))
 		} else {
 			val, err := c.expr(s.Let.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("const %s = %s;", s.Let.Name, val))
+			c.writeln(fmt.Sprintf("const %s%s = %s;", s.Let.Name, typ, val))
 		}
 	case s.Var != nil:
+		typ := ""
+		if s.Var.Type != nil {
+			typ = ": " + tsTypeRef(s.Var.Type)
+		}
 		if s.Var.Value == nil {
-			c.writeln(fmt.Sprintf("let %s = null;", s.Var.Name))
+			c.writeln(fmt.Sprintf("let %s%s = null;", s.Var.Name, typ))
 		} else {
 			val, err := c.expr(s.Var.Value)
 			if err != nil {
 				return err
 			}
-			c.writeln(fmt.Sprintf("let %s = %s;", s.Var.Name, val))
+			c.writeln(fmt.Sprintf("let %s%s = %s;", s.Var.Name, typ, val))
 		}
 	case s.Return != nil:
 		val, err := c.expr(s.Return.Value)
@@ -359,7 +471,7 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 		fields := make([]string, 0, len(td.Members))
 		for _, m := range td.Members {
 			if m.Field != nil {
-				fields = append(fields, fmt.Sprintf("%s: any;", m.Field.Name))
+				fields = append(fields, fmt.Sprintf("%s: %s;", m.Field.Name, tsTypeRef(m.Field.Type)))
 			}
 		}
 		c.writeln(fmt.Sprintf("type %s = { %s };", td.Name, strings.Join(fields, " ")))
@@ -370,7 +482,7 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 		for i, v := range td.Variants {
 			fields := []string{fmt.Sprintf("kind: %q", strings.ToLower(v.Name))}
 			for _, f := range v.Fields {
-				fields = append(fields, fmt.Sprintf("%s: any", f.Name))
+				fields = append(fields, fmt.Sprintf("%s: %s", f.Name, tsTypeRef(f.Type)))
 			}
 			parts[i] = fmt.Sprintf("{ %s }", strings.Join(fields, "; "))
 		}
@@ -694,6 +806,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	res := c.newTmp()
 	writeln("(() => {")
 	indent++
+	_, _, aggOK := detectAggCall(q.Select)
+	if !(aggOK && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil) {
+		writeln(fmt.Sprintf("const %s: %s = [];", res, queryResultType(q)))
+	}
 
 	if q.Group != nil {
 		if len(q.Group.Exprs) != 1 {
@@ -750,7 +866,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		indent--
 		writeln("}")
-		writeln("let res = [];")
+		// result array declared above
 		writeln("for (const _k in groups) {")
 		indent++
 		writeln("const g = groups[_k];")
@@ -814,7 +930,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				}
 			} else {
 				// fallback generic
-				writeln("const " + res + " = [];")
+				// result array already declared above
 				writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
 				indent++
 				for i, fs := range fromSrcs {
@@ -844,10 +960,10 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				indent--
 				writeln("}")
-				writeln("let res = " + res + ";")
+				// result already collected in res
 			}
 		} else {
-			writeln("const " + res + " = [];")
+			// result array already declared above
 			writeln(fmt.Sprintf("for (const %s of %s) {", q.Var, src))
 			indent++
 			for i, fs := range fromSrcs {
@@ -877,7 +993,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			indent--
 			writeln("}")
-			writeln("let res = " + res + ";")
+			// result already collected in res
 		}
 	}
 
