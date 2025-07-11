@@ -1,0 +1,205 @@
+// Mochi translation of Rosetta "Bitwise IO" example 2
+
+fun pow2(n: int): int {
+  var v = 1
+  var i = 0
+  while i < n { v = v * 2; i = i + 1 }
+  return v
+}
+fun lshift(x: int, n: int): int { return x * pow2(n) }
+fun rshift(x: int, n: int): int { return x / pow2(n) }
+
+type Writer {
+  order: string
+  bits: int
+  nbits: int
+  data: list<int>
+}
+fun NewWriter(order: string): Writer { return Writer{ order: order, bits:0, nbits:0, data: [] } }
+fun writeBitsLSB(w: Writer, c: int, width: int): Writer {
+  w.bits = w.bits + lshift(c, w.nbits)
+  w.nbits = w.nbits + width
+  while w.nbits >= 8 {
+    let b = w.bits % 256
+    w.data = append(w.data, b)
+    w.bits = rshift(w.bits, 8)
+    w.nbits = w.nbits - 8
+  }
+  return w
+}
+fun writeBitsMSB(w: Writer, c: int, width: int): Writer {
+  w.bits = w.bits + lshift(c, 32 - width - w.nbits)
+  w.nbits = w.nbits + width
+  while w.nbits >= 8 {
+    let b = rshift(w.bits, 24) % 256
+    w.data = append(w.data, b)
+    w.bits = (w.bits % pow2(24)) * 256
+    w.nbits = w.nbits - 8
+  }
+  return w
+}
+fun WriteBits(w: Writer, c: int, width: int): Writer {
+  if w.order == "LSB" { return writeBitsLSB(w,c,width) }
+  return writeBitsMSB(w,c,width)
+}
+fun CloseWriter(w: Writer): Writer {
+  if w.nbits > 0 {
+    if w.order == "MSB" { w.bits = rshift(w.bits,24) }
+    w.data = append(w.data, w.bits % 256)
+  }
+  w.bits = 0
+  w.nbits = 0
+  return w
+}
+
+type Reader {
+  order: string
+  data: list<int>
+  idx: int
+  bits: int
+  nbits: int
+}
+fun NewReader(data: list<int>, order: string): Reader {
+  return Reader{ order: order, data: data, idx:0, bits:0, nbits:0 }
+}
+fun readBitsLSB(r: Reader, width: int): map<string,any> {
+  while r.nbits < width {
+    if r.idx >= len(r.data) { return {"val":0, "eof":true} }
+    let b = r.data[r.idx]
+    r.idx = r.idx + 1
+    r.bits = r.bits + lshift(b, r.nbits)
+    r.nbits = r.nbits + 8
+  }
+  let mask = pow2(width) - 1
+  let out = r.bits % (mask + 1)
+  r.bits = rshift(r.bits, width)
+  r.nbits = r.nbits - width
+  return {"val": out, "eof": false}
+}
+fun readBitsMSB(r: Reader, width: int): map<string,any> {
+  while r.nbits < width {
+    if r.idx >= len(r.data) { return {"val":0, "eof":true} }
+    let b = r.data[r.idx]
+    r.idx = r.idx + 1
+    r.bits = r.bits + lshift(b, 24 - r.nbits)
+    r.nbits = r.nbits + 8
+  }
+  let out = rshift(r.bits, 32 - width)
+  r.bits = (r.bits * pow2(width)) % pow2(32)
+  r.nbits = r.nbits - width
+  return {"val": out, "eof": false}
+}
+fun ReadBits(r: Reader, width: int): map<string,any> {
+  if r.order == "LSB" { return readBitsLSB(r,width) }
+  return readBitsMSB(r,width)
+}
+
+fun toBinary(n: int, bits: int): string {
+  var b = ""
+  var val = n
+  var i = 0
+  while i < bits {
+    b = str(val % 2) + b
+    val = val / 2
+    i = i + 1
+  }
+  return b
+}
+fun bytesToBits(bs: list<int>): string {
+  var out = "["
+  var i = 0
+  while i < len(bs) {
+    out = out + toBinary(bs[i],8)
+    if i + 1 < len(bs) { out = out + " " }
+    i = i + 1
+  }
+  out = out + "]"
+  return out
+}
+fun bytesToHex(bs: list<int>): string {
+  let digits = "0123456789ABCDEF"
+  var out = ""
+  var i = 0
+  while i < len(bs) {
+    let b = bs[i]
+    let hi = b / 16
+    let lo = b % 16
+    out = out + digits[hi:hi+1] + digits[lo:lo+1]
+    if i + 1 < len(bs) { out = out + " " }
+    i = i + 1
+  }
+  return out
+}
+fun ord(ch: string): int {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var idx = indexOf(upper, ch)
+  if idx >= 0 { return 65 + idx }
+  idx = indexOf(lower, ch)
+  if idx >= 0 { return 97 + idx }
+  if ch >= "0" && ch <= "9" { return 48 + parseIntStr(ch) }
+  if ch == " " { return 32 }
+  if ch == "." { return 46 }
+  return 0
+}
+fun chr(n: int): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  if n >= 48 && n < 58 {
+    let digits = "0123456789"
+    return digits[n-48:n-47]
+  }
+  if n == 32 { return " " }
+  if n == 46 { return "." }
+  return "?"
+}
+fun bytesOfStr(s: string): list<int> {
+  var bs: list<int> = []
+  var i = 0
+  while i < len(s) {
+    bs = append(bs, ord(s[i:i+1]))
+    i = i + 1
+  }
+  return bs
+}
+fun bytesToDec(bs: list<int>): string {
+  var out = ""
+  var i = 0
+  while i < len(bs) {
+    out = out + str(bs[i])
+    if i + 1 < len(bs) { out = out + " " }
+    i = i + 1
+  }
+  return out
+}
+
+fun Example() {
+  let message = "This is a test."
+  let msgBytes = bytesOfStr(message)
+  print("\"" + message + "\" as bytes: " + bytesToDec(msgBytes))
+  print("    original bits: " + bytesToBits(msgBytes))
+
+  var bw = NewWriter("MSB")
+  var i = 0
+  while i < len(msgBytes) {
+    bw = WriteBits(bw, msgBytes[i], 7)
+    i = i + 1
+  }
+  bw = CloseWriter(bw)
+  print("Written bitstream: " + bytesToBits(bw.data))
+  print("Written bytes: " + bytesToHex(bw.data))
+
+  var br = NewReader(bw.data, "MSB")
+  var result = ""
+  while true {
+    let r = ReadBits(br, 7)
+    if r["eof"] { break }
+    let v = r["val"] as int
+    if v != 0 { result = result + chr(v) }
+  }
+  print("Read back as \"" + result + "\"")
+}
+
+Example()
