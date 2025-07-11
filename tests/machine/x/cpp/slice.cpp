@@ -5,8 +5,7 @@
 int main() {
   {
     auto __tmp1 = ([&](auto v) {
-      return std::vector<decltype(std::vector<int>{1, 2, 3}[0])>(v.begin() + 1,
-                                                                 v.begin() + 3);
+      return std::vector<int>(v.begin() + 1, v.begin() + 3);
     })(std::vector<int>{1, 2, 3});
     bool first = true;
     for (const auto &_x : __tmp1) {
@@ -19,8 +18,7 @@ int main() {
   }
   {
     auto __tmp2 = ([&](auto v) {
-      return std::vector<decltype(std::vector<int>{1, 2, 3}[0])>(v.begin() + 0,
-                                                                 v.begin() + 2);
+      return std::vector<int>(v.begin() + 0, v.begin() + 2);
     })(std::vector<int>{1, 2, 3});
     bool first = true;
     for (const auto &_x : __tmp2) {

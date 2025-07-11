@@ -5,9 +5,29 @@
 #include <utility>
 #include <vector>
 
+struct __struct1 {
+  decltype(std::string("a")) tag;
+  decltype(1) val;
+};
+inline bool operator==(const __struct1 &a, const __struct1 &b) {
+  return a.tag == b.tag && a.val == b.val;
+}
+inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+  return !(a == b);
+}
+struct __struct2 {
+  decltype(d.tag) key;
+  std::vector<__struct1> items;
+};
+inline bool operator==(const __struct2 &a, const __struct2 &b) {
+  return a.key == b.key && a.items == b.items;
+}
+inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+  return !(a == b);
+}
 struct __struct3 {
-  decltype(g.key) tag;
-  decltype(total) total;
+  decltype(std::declval<__struct1>().key) tag;
+  int total;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.tag == b.tag && a.total == b.total;
@@ -21,25 +41,14 @@ std::vector<T> __append(const std::vector<T> &v, const U &x) {
   r.push_back(x);
   return r;
 }
-y == b.key &&a.items == b.items;
-}
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
-  return !(a == b);
-}
-template <typename T, typename U>
-std::vector<T> __append(const std::vector<T> &v, const U &x) {
-  auto r = v;
-  r.push_back(x);
-  return r;
-}
 int main() {
-  auto data = std::vector<__struct1>{__struct1{std::string("a"), 1},
-                                     __struct1{std::string("a"), 2},
-                                     __struct1{std::string("b"), 3}};
+  std::vector<__struct1> data = std::vector<__struct1>{
+      __struct1{std::string("a"), 1}, __struct1{std::string("a"), 2},
+      __struct1{std::string("b"), 3}};
   auto groups = ([&]() {
-    std::map<decltype(d.tag), std::vector<auto>> __groups;
+    std::map<decltype(d.tag), std::vector<__struct1>> __groups;
     for (auto d : data) {
-      __groups[d.tag].push_back(auto{d});
+      __groups[d.tag].push_back(__struct1{d});
     }
     std::vector<__struct2> __items;
     for (auto &kv : __groups) {
@@ -47,7 +56,7 @@ int main() {
     }
     return __items;
   })();
-  std::vector<__struct3> tmp = std::vector<__struct3>{};
+  std::vector<int> tmp = std::vector<int>{};
   for (auto g : groups) {
     auto total = 0;
     for (auto x : g.items) {

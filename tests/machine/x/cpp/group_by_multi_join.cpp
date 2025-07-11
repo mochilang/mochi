@@ -37,8 +37,9 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
 struct __struct4 {
-  decltype(ps.part) part;
-  decltype((ps.cost * ps.qty)) value;
+  decltype(std::declval<__struct3>().part) part;
+  decltype((std::declval<__struct3>().cost *
+            std::declval<__struct3>().qty)) value;
 };
 inline bool operator==(const __struct4 &a, const __struct4 &b) {
   return a.part == b.part && a.value == b.value;
@@ -67,10 +68,11 @@ inline bool operator!=(const __struct6 &a, const __struct6 &b) {
   return !(a == b);
 }
 int main() {
-  auto nations = std::vector<__struct1>{__struct1{1, std::string("A")},
-                                        __struct1{2, std::string("B")}};
-  auto suppliers = std::vector<__struct2>{__struct2{1, 1}, __struct2{2, 2}};
-  auto partsupp =
+  std::vector<__struct1> nations = std::vector<__struct1>{
+      __struct1{1, std::string("A")}, __struct1{2, std::string("B")}};
+  std::vector<__struct2> suppliers =
+      std::vector<__struct2>{__struct2{1, 1}, __struct2{2, 2}};
+  std::vector<__struct3> partsupp =
       std::vector<__struct3>{__struct3{100, 1, 10, 2}, __struct3{100, 2, 20, 1},
                              __struct3{200, 1, 5, 3}};
   auto filtered = ([&]() {

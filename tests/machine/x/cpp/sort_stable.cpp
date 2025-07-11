@@ -15,17 +15,19 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 int main() {
-  auto items = std::vector<__struct1>{__struct1{1, std::string("a")},
-                                      __struct1{1, std::string("b")},
-                                      __struct1{2, std::string("c")}};
+  std::vector<__struct1> items = std::vector<__struct1>{
+      __struct1{1, std::string("a")}, __struct1{1, std::string("b")},
+      __struct1{2, std::string("c")}};
   auto result = ([&]() {
-    std::vector<std::pair<decltype(i.n), decltype(i.v)>> __items;
+    std::vector<std::pair<decltype(std::declval<__struct1>().n),
+                          decltype(std::declval<__struct1>().v)>>
+        __items;
     for (auto i : items) {
       __items.push_back({i.n, i.v});
     }
     std::sort(__items.begin(), __items.end(),
               [](auto &a, auto &b) { return a.first < b.first; });
-    std::vector<decltype(i.v)> __res;
+    std::vector<decltype(std::declval<__struct1>().v)> __res;
     for (auto &p : __items)
       __res.push_back(p.second);
     return __res;

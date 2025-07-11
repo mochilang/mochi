@@ -24,8 +24,8 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
 struct __struct3 {
-  decltype(o) order;
-  decltype(c) customer;
+  __struct2 order;
+  __struct1 customer;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.order == b.order && a.customer == b.customer;
@@ -34,10 +34,10 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
 int main() {
-  auto customers = std::vector<__struct1>{
+  std::vector<__struct1> customers = std::vector<__struct1>{
       __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
       __struct1{3, std::string("Charlie")}, __struct1{4, std::string("Diana")}};
-  auto orders =
+  std::vector<__struct2> orders =
       std::vector<__struct2>{__struct2{100, 1, 250}, __struct2{101, 2, 125},
                              __struct2{102, 1, 300}, __struct2{103, 5, 80}};
   auto result = ([&]() {
@@ -61,8 +61,8 @@ int main() {
   })();
   std::cout << std::string("--- Outer Join using syntax ---") << std::endl;
   for (auto row : result) {
-    if (row.order) {
-      if (row.customer) {
+    if ((row.order != __struct2{})) {
+      if ((row.customer != __struct1{})) {
         {
           std::cout << std::string("Order");
           std::cout << ' ';

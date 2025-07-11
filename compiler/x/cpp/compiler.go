@@ -2413,6 +2413,25 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 						t = t[:idx]
 					}
 					keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+				} else if typ, ok := c.vars[v]; ok {
+					switch typ {
+					case "string":
+						keyType = "std::string"
+					case "int", "double", "bool":
+						keyType = typ
+					}
+				}
+			}
+			if strings.Contains(keyType, q.Var+".") {
+				if t := c.varStruct[q.Var]; t != "" {
+					keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", strings.TrimSuffix(t, "{}")))
+				} else if typ, ok := c.vars[q.Var]; ok {
+					switch typ {
+					case "string":
+						keyType = "std::string"
+					case "int", "double", "bool":
+						keyType = typ
+					}
 				}
 			}
 
@@ -2568,6 +2587,26 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				t = t[:idx]
 			}
 			keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+		} else if typ, ok := c.vars[v]; ok {
+			switch typ {
+			case "string":
+				keyType = "std::string"
+			case "int", "double", "bool":
+				keyType = typ
+			}
+		}
+	}
+	if keyType == fmt.Sprintf("decltype(%s)", keyExpr) {
+		if dot := strings.Index(keyExpr, "."); dot != -1 {
+			v := keyExpr[:dot]
+			if typ, ok := c.vars[v]; ok {
+				switch typ {
+				case "string":
+					keyType = "std::string"
+				case "int", "double", "bool":
+					keyType = typ
+				}
+			}
 		}
 	}
 
@@ -2586,6 +2625,9 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	}
 	if itemStruct == "" {
 		itemStruct = c.structFromVars(itemVars)
+	}
+	if strings.Contains(keyType, q.Var+".") && itemStruct != "" {
+		keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", strings.TrimSuffix(itemStruct, "{}")))
 	}
 	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 	c.structCount++
@@ -3000,17 +3042,29 @@ func extractVectorStruct(expr string) string {
 			}
 		}
 	}
-	start := strings.Index(expr, "std::vector<decltype(")
+	start := strings.Index(expr, "std::vector<")
 	if start == -1 {
 		return ""
 	}
-	start += len("std::vector<decltype(")
-	end := strings.Index(expr[start:], "{")
+	start += len("std::vector<")
+	end := strings.Index(expr[start:], ">")
 	if end == -1 {
 		return ""
 	}
 	inner := expr[start : start+end]
+	if strings.HasPrefix(inner, "decltype(") {
+		inner = strings.TrimSuffix(strings.TrimPrefix(inner, "decltype("), ")")
+		if inner == "true" || inner == "false" {
+			return "bool"
+		}
+	}
+	if idx := strings.Index(inner, "{"); idx != -1 {
+		inner = inner[:idx]
+	}
 	if strings.HasPrefix(inner, "__struct") {
+		return inner
+	}
+	if inner == "int" || inner == "double" || inner == "bool" {
 		return inner
 	}
 	return ""
@@ -3050,27 +3104,28 @@ func extractVectorElemType(expr string) string {
 	typ := inner[:idx]
 	if strings.HasPrefix(typ, "decltype(") {
 		texpr := strings.TrimSuffix(strings.TrimPrefix(typ, "decltype("), ")")
-		if strings.HasPrefix(texpr, "__struct") {
-			if idx := strings.Index(texpr, "{"); idx != -1 {
-				texpr = texpr[:idx]
-			}
-			return texpr
+		if idx := strings.Index(texpr, "{"); idx != -1 {
+			texpr = texpr[:idx]
 		}
-		if strings.Contains(texpr, "std::string") {
-			return "std::string"
-		}
-		if strings.Contains(texpr, "true") || strings.Contains(texpr, "false") {
+		if texpr == "true" || texpr == "false" {
 			return "bool"
 		}
-		if _, err := strconv.Atoi(texpr); err == nil {
-			return "int"
-		}
+		typ = texpr
+	}
+	if strings.HasPrefix(typ, "__struct") {
+		return typ
+	}
+	if typ == "int" || typ == "double" || typ == "bool" {
+		return typ
 	}
 	if strings.Contains(typ, "std::string") {
 		return "std::string"
 	}
 	if strings.Contains(typ, "bool") {
 		return "bool"
+	}
+	if _, err := strconv.Atoi(typ); err == nil {
+		return "int"
 	}
 	return ""
 }
@@ -3100,6 +3155,13 @@ func (c *Compiler) structFromVars(names []string) string {
 				t = t[:idx]
 			}
 			fieldType = t
+		} else if typ, ok := c.vars[n]; ok {
+			switch typ {
+			case "string":
+				fieldType = "std::string"
+			case "int", "double", "bool":
+				fieldType = typ
+			}
 		}
 		info.Types[i] = fieldType
 	}

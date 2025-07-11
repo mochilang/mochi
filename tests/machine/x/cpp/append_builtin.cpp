@@ -8,7 +8,7 @@ std::vector<T> __append(const std::vector<T> &v, const U &x) {
   return r;
 }
 int main() {
-  auto a = std::vector<int>{1, 2};
+  std::vector<int> a = std::vector<int>{1, 2};
   {
     auto __tmp1 = __append(a, 3);
     bool first = true;
