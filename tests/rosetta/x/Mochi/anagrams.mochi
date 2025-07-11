@@ -1,0 +1,94 @@
+fun sortRunes(s: string): string {
+  var arr: list<string> = []
+  var i = 0
+  while i < len(s) {
+    arr = append(arr, s[i:i+1])
+    i = i + 1
+  }
+  var n = len(arr)
+  var m = 0
+  while m < n {
+    var j = 0
+    while j < n - 1 {
+      if arr[j] > arr[j+1] {
+        let tmp = arr[j]
+        arr[j] = arr[j+1]
+        arr[j+1] = tmp
+      }
+      j = j + 1
+    }
+    m = m + 1
+  }
+  var out = ""
+  i = 0
+  while i < n {
+    out = out + arr[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun sortStrings(xs: list<string>): list<string> {
+  var res: list<string> = []
+  var tmp = xs
+  while len(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var i = 1
+    while i < len(tmp) {
+      if tmp[i] < min {
+        min = tmp[i]
+        idx = i
+      }
+      i = i + 1
+    }
+    res = append(res, min)
+    var out: list<string> = []
+    var j = 0
+    while j < len(tmp) {
+      if j != idx {
+        out = append(out, tmp[j])
+      }
+      j = j + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun main() {
+  let words = ["abel","able","bale","bela","elba","alger","glare","lager","large","regal","angel","angle","galen","glean","lange","caret","carte","cater","crate","trace","elan","lane","lean","lena","neal","evil","levi","live","veil","vile"]
+  var groups: map<string, list<string>> = {}
+  var maxLen = 0
+  for w in words {
+    let k = sortRunes(w)
+    if !(k in groups) {
+      groups[k] = [w]
+    } else {
+      groups[k] = append(groups[k], w)
+    }
+    if len(groups[k]) > maxLen {
+      maxLen = len(groups[k])
+    }
+  }
+  var printed: map<string, bool> = {}
+  for w in words {
+    let k = sortRunes(w)
+    if len(groups[k]) == maxLen {
+      if !(k in printed) {
+        var g = sortStrings(groups[k])
+        var line = "[" + g[0]
+        var i = 1
+        while i < len(g) {
+          line = line + " " + g[i]
+          i = i + 1
+        }
+        line = line + "]"
+        print(line)
+        printed[k] = true
+      }
+    }
+  }
+}
+
+main()
