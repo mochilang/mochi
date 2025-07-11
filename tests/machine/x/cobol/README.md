@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (55/97 compiled)
+# Mochi to COBOL Machine Translations (56/97 compiled)
 
 Generated using `go run -tags slow scripts/compile_cobol.go`.
 
@@ -96,7 +96,7 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
 - [ ] update_stmt.mochi
-- [ ] user_type_literal.mochi
+- [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
@@ -105,3 +105,11 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [ ] Add support for dataset queries and join operations
 - [ ] Implement map and record assignment features
 - [ ] Handle pattern matching and advanced list operations
+- [ ] Support closures and anonymous functions
+- [ ] Enable dynamic list and map indexing with assignment
+- [ ] Implement slice operations on strings and lists
+- [ ] Add group-by aggregation features
+- [ ] Support various join types (inner, left, right, outer)
+- [ ] Implement YAML loading utilities
+- [ ] Provide stable sort for collections
+- [ ] Allow arithmetic with user-defined structs
