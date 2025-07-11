@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsouter_join2087392884/001/OuterJoin.java:79: error: incompatible types: Object cannot be converted to IdCustomerIdTotal
+/tmp/TestCompileValidProgramsouter_join73912813/001/OuterJoin.java:79: error: incompatible types: Object cannot be converted to IdCustomerIdTotal
             _res0.add(new OrderCustomer(o, c));
                                         ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

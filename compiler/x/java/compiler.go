@@ -1835,12 +1835,13 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	}
 	expr := left
 	usingSB := false
+	useSB := c.needsStringBuilder(b)
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "+" && (isStringVal(expr, c) || isStringVal(right, c) || usingSB) {
+		if op.Op == "+" && useSB && (isStringVal(expr, c) || isStringVal(right, c) || usingSB) {
 			if !usingSB {
 				expr = fmt.Sprintf("new StringBuilder(String.valueOf(%s))", expr)
 				usingSB = true
@@ -1932,6 +1933,23 @@ func isStringVal(s string, c *Compiler) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Compiler) needsStringBuilder(b *parser.BinaryExpr) bool {
+	plus := 0
+	hasStr := false
+	if c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}) == "String" {
+		hasStr = true
+	}
+	for _, op := range b.Right {
+		if op.Op == "+" {
+			plus++
+		}
+		if c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}) == "String" {
+			hasStr = true
+		}
+	}
+	return plus > 1 && hasStr
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
