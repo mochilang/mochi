@@ -1,59 +1,67 @@
-line 8: ../../../tests/machine/x/cpp/group_items_iteration.cpp:8:12: error: ‘g’ was not declared in this scope
-    8 |   decltype(g.key) tag;
+line 9: ../../../tests/machine/x/cpp/group_items_iteration.cpp:9:12: error: ‘g’ was not declared in this scope
+    9 |   decltype(g.key) tag;
       |            ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:8:12: error: ‘g’ was not declared in this scope
-../../../tests/machine/x/cpp/group_items_iteration.cpp:9:12: error: ‘total’ was not declared in this scope
-    9 |   decltype(total) total;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:9:12: error: ‘g’ was not declared in this scope
+../../../tests/machine/x/cpp/group_items_iteration.cpp:10:12: error: ‘total’ was not declared in this scope
+   10 |   decltype(total) total;
       |            ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:9:12: error: ‘total’ was not declared in this scope
-../../../tests/machine/x/cpp/group_items_iteration.cpp:23:1: error: ‘st’ does not name a type
-   23 | st __struct2 &b){ return a.key==b.key && a.items==b.items; }
-      | ^~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:24:30: error: ‘__struct2’ does not name a type; did you mean ‘__struct3’?
-   24 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:10:12: error: ‘total’ was not declared in this scope
+../../../tests/machine/x/cpp/group_items_iteration.cpp:24:1: error: ‘a’ does not name a type
+   24 | a.key == b.key &&a.items == b.items;
+      | ^
+../../../tests/machine/x/cpp/group_items_iteration.cpp:25:1: error: expected declaration before ‘}’ token
+   25 | }
+      | ^
+../../../tests/machine/x/cpp/group_items_iteration.cpp:26:30: error: ‘__struct2’ does not name a type; did you mean ‘__struct3’?
+   26 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
       |                              ^~~~~~~~~
       |                              __struct3
-../../../tests/machine/x/cpp/group_items_iteration.cpp:24:50: error: ‘__struct2’ does not name a type; did you mean ‘__struct3’?
-   24 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:26:50: error: ‘__struct2’ does not name a type; did you mean ‘__struct3’?
+   26 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
       |                                                  ^~~~~~~~~
       |                                                  __struct3
-../../../tests/machine/x/cpp/group_items_iteration.cpp:24:13: error: ‘bool operator!=(const int&, const int&)’ must have an argument of class or enumerated type
-   24 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:26:13: error: ‘bool operator!=(const int&, const int&)’ must have an argument of class or enumerated type
+   26 | inline bool operator!=(const __struct2 &a, const __struct2 &b) {
       |             ^~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:28:16: error: redefinition of ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’
-   28 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:30:16: error: redefinition of ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’
+   30 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
       |                ^~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:18:16: note: ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’ previously declared here
-   18 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:19:16: note: ‘template<class T, class U> std::vector<T> __append(const std::vector<T>&, const U&)’ previously declared here
+   19 | std::vector<T> __append(const std::vector<T> &v, const U &x) {
       |                ^~~~~~~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:34:15: error: ‘__struct1’ was not declared in this scope; did you mean ‘__struct3’?
-   34 |   std::vector<__struct1> data =
+../../../tests/machine/x/cpp/group_items_iteration.cpp:36:15: error: ‘__struct1’ was not declared in this scope; did you mean ‘__struct3’?
+   36 |   std::vector<__struct1> data =
       |               ^~~~~~~~~
       |               __struct3
-../../../tests/machine/x/cpp/group_items_iteration.cpp:34:24: error: template argument 1 is invalid
-   34 |   std::vector<__struct1> data =
+../../../tests/machine/x/cpp/group_items_iteration.cpp:36:24: error: template argument 1 is invalid
+   36 |   std::vector<__struct1> data =
       |                        ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:34:24: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:35:37: error: expected ‘)’ before ‘{’ token
-   35 |       std::vector<decltype(__struct1{std::string("a"), 1})>{
+../../../tests/machine/x/cpp/group_items_iteration.cpp:36:24: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:37:37: error: expected ‘)’ before ‘{’ token
+   37 |       std::vector<decltype(__struct1{std::string("a"), 1})>{
       |                           ~         ^
       |                                     )
-../../../tests/machine/x/cpp/group_items_iteration.cpp:35:59: error: template argument 1 is invalid
-   35 |       std::vector<decltype(__struct1{std::string("a"), 1})>{
+../../../tests/machine/x/cpp/group_items_iteration.cpp:37:59: error: template argument 1 is invalid
+   37 |       std::vector<decltype(__struct1{std::string("a"), 1})>{
       |                                                           ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:35:59: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:37:59: error: template argument 2 is invalid
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:39:17: error: ‘__struct2’ was not declared in this scope; did you mean ‘__struct3’?
-   39 |     std::vector<__struct2> __groups;
-      |                 ^~~~~~~~~
-      |                 __struct3
-../../../tests/machine/x/cpp/group_items_iteration.cpp:39:26: error: template argument 1 is invalid
-   39 |     std::vector<__struct2> __groups;
-      |                          ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:39:26: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:40:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   40 |     for (auto d : data) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:23: error: ‘d’ was not declared in this scope
+   41 |     std::map<decltype(d.tag), std::vector<__struct1>> __groups;
+      |                       ^
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:43: error: template argument 1 is invalid
+   41 |     std::map<decltype(d.tag), std::vector<__struct1>> __groups;
+      |                                           ^~~~~~~~~
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:43: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:52: error: template argument 1 is invalid
+   41 |     std::map<decltype(d.tag), std::vector<__struct1>> __groups;
+      |                                                    ^~
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:52: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:52: error: template argument 3 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:41:52: error: template argument 4 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:42:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   42 |     for (auto d : data) {
       |                   ^~~~
       |                   std::begin
 In file included from /usr/include/c++/13/string:53,
@@ -66,154 +74,58 @@ In file included from /usr/include/c++/13/string:53,
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:40:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   40 |     for (auto d : data) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:42:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   42 |     for (auto d : data) {
       |                   ^~~~
       |                   std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:43:24: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   43 |       for (auto &__g : __groups) {
-      |                        ^~~~~~~~
-      |                        std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:43:24: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   43 |       for (auto &__g : __groups) {
-      |                        ^~~~~~~~
-      |                        std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:51:18: error: request for member ‘push_back’ in ‘__groups’, which is of non-class type ‘int’
-   51 |         __groups.push_back(
-      |                  ^~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:52:22: error: expected ‘)’ before ‘{’ token
-   52 |             __struct2{__key, std::vector<__struct1>{__struct1{d}}});
-      |                      ^
-      |                      )
-../../../tests/machine/x/cpp/group_items_iteration.cpp:51:27: note: to match this ‘(’
-   51 |         __groups.push_back(
-      |                           ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:55:26: error: template argument 2 is invalid
-   55 |     std::vector<__struct2> __items;
+../../../tests/machine/x/cpp/group_items_iteration.cpp:45:17: error: ‘__struct2’ was not declared in this scope; did you mean ‘__struct3’?
+   45 |     std::vector<__struct2> __items;
+      |                 ^~~~~~~~~
+      |                 __struct3
+../../../tests/machine/x/cpp/group_items_iteration.cpp:45:26: error: template argument 1 is invalid
+   45 |     std::vector<__struct2> __items;
       |                          ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:56:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   56 |     for (auto &g : __groups) {
-      |                    ^~~~~~~~
-      |                    std::begin
+../../../tests/machine/x/cpp/group_items_iteration.cpp:45:26: error: template argument 2 is invalid
+../../../tests/machine/x/cpp/group_items_iteration.cpp:46:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   46 |     for (auto &kv : __groups) {
+      |                     ^~~~~~~~
+      |                     std::begin
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:56:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   56 |     for (auto &g : __groups) {
-      |                    ^~~~~~~~
-      |                    std::end
+../../../tests/machine/x/cpp/group_items_iteration.cpp:46:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   46 |     for (auto &kv : __groups) {
+      |                     ^~~~~~~~
+      |                     std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:57:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-   57 |       __items.push_back(g);
+../../../tests/machine/x/cpp/group_items_iteration.cpp:47:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   47 |       __items.push_back(__struct2{kv.first, kv.second});
       |               ^~~~~~~~~
+../../../tests/machine/x/cpp/group_items_iteration.cpp:47:34: error: expected ‘)’ before ‘{’ token
+   47 |       __items.push_back(__struct2{kv.first, kv.second});
+      |                        ~         ^
+      |                                  )
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:15: error: ‘__tmp_type’ was not declared in this scope
-   61 |   std::vector<__tmp_type> tmp = std::vector<__tmp_type>{};
-      |               ^~~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:25: error: template argument 1 is invalid
-   61 |   std::vector<__tmp_type> tmp = std::vector<__tmp_type>{};
-      |                         ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:25: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:61:55: error: template argument 2 is invalid
-   61 |   std::vector<__tmp_type> tmp = std::vector<__tmp_type>{};
-      |                                                       ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:62:17: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   62 |   for (auto g : groups) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:52:17: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+   52 |   for (auto g : groups) {
       |                 ^~~~~~
       |                 std::begin
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:62:17: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   62 |   for (auto g : groups) {
+../../../tests/machine/x/cpp/group_items_iteration.cpp:52:17: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+   52 |   for (auto g : groups) {
       |                 ^~~~~~
       |                 std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:70:36: error: ‘r’ was not declared in this scope
-   70 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
-      |                                    ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:70:44: error: template argument 1 is invalid
-   70 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
-      |                                            ^~~~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:70:44: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:70:55: error: template argument 1 is invalid
-   70 |     std::vector<std::pair<decltype(r.tag), decltype(r)>> __items;
-      |                                                       ^~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:70:55: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:71:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   71 |     for (auto r : tmp) {
-      |                   ^~~
-      |                   std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:71:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   71 |     for (auto r : tmp) {
-      |                   ^~~
-      |                   std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:72:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-   72 |       __items.push_back({r.tag, r});
-      |               ^~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:74:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
-   74 |     std::sort(__items.begin(), __items.end(),
-      |                       ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:74:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
-   74 |     std::sort(__items.begin(), __items.end(),
-      |                                        ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:76:28: error: template argument 1 is invalid
-   76 |     std::vector<decltype(r)> __res;
-      |                            ^
-../../../tests/machine/x/cpp/group_items_iteration.cpp:76:28: error: template argument 2 is invalid
-../../../tests/machine/x/cpp/group_items_iteration.cpp:77:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   77 |     for (auto &p : __items)
-      |                    ^~~~~~~
-      |                    std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:77:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   77 |     for (auto &p : __items)
-      |                    ^~~~~~~
-      |                    std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:78:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
-   78 |       __res.push_back(p.second);
-      |             ^~~~~~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:84:27: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
-   84 |     for (const auto &_x : __tmp1) {
-      |                           ^~~~~~
-      |                           std::begin
-/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
-  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
-      |                                     ^~~~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:84:27: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
-   84 |     for (const auto &_x : __tmp1) {
-      |                           ^~~~~~
-      |                           std::end
-/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
-  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
-      |                                     ^~~
 
-  7 | struct __struct3 {
-  8 |   decltype(g.key) tag;
-  9 |   decltype(total) total;
+  8 | struct __struct3 {
+  9 |   decltype(g.key) tag;
+ 10 |   decltype(total) total;

@@ -106,7 +106,3 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## TODO
-- [x] Avoid global variables when not needed
-- [x] Simplify builtin operations like `append` and `avg`
