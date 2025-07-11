@@ -1,0 +1,62 @@
+// Mochi implementation of Rosetta "Balanced brackets" task
+// Translated from Go version in tests/rosetta/x/Go/balanced-brackets.go
+
+fun generate(n: int): string {
+  var arr: list<string> = []
+  var i = 0
+  while i < n {
+    arr = append(arr, "[")
+    arr = append(arr, "]")
+    i = i + 1
+  }
+  var j = len(arr) - 1
+  while j > 0 {
+    let k = now() % (j + 1)
+    let tmp = arr[j]
+    arr[j] = arr[k]
+    arr[k] = tmp
+    j = j - 1
+  }
+  var out = ""
+  for ch in arr {
+    out = out + ch
+  }
+  return out
+}
+
+fun testBalanced(s: string) {
+  var open = 0
+  var i = 0
+  while i < len(s) {
+    let c = s[i:i+1]
+    if c == "[" {
+      open = open + 1
+    } else if c == "]" {
+      if open == 0 {
+        print(s + ": not ok")
+        return
+      }
+      open = open - 1
+    } else {
+      print(s + ": not ok")
+      return
+    }
+    i = i + 1
+  }
+  if open == 0 {
+    print(s + ": ok")
+  } else {
+    print(s + ": not ok")
+  }
+}
+
+fun main() {
+  var i = 0
+  while i < 10 {
+    testBalanced(generate(i))
+    i = i + 1
+  }
+  testBalanced("()")
+}
+
+main()
