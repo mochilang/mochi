@@ -32,6 +32,10 @@ type BigIntType struct{}
 
 func (BigIntType) String() string { return "bigint" }
 
+type BigRatType struct{}
+
+func (BigRatType) String() string { return "bigrat" }
+
 type StringType struct{}
 
 func (StringType) String() string { return "string" }
@@ -314,6 +318,14 @@ func unify(a, b Type, subst Subst) bool {
 			return false
 		}
 
+	case BigRatType:
+		switch b.(type) {
+		case BigRatType, FloatType, IntType, Int64Type, BigIntType:
+			return true
+		default:
+			return false
+		}
+
 	case FloatType:
 		_, ok := b.(FloatType)
 		return ok
@@ -469,6 +481,16 @@ func Check(prog *parser.Program, env *Env) []error {
 	env.SetVar("substr", FuncType{
 		Params: []Type{StringType{}, IntType{}, IntType{}},
 		Return: StringType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("num", FuncType{
+		Params: []Type{AnyType{}},
+		Return: BigIntType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("denom", FuncType{
+		Params: []Type{AnyType{}},
+		Return: BigIntType{},
 		Pure:   true,
 	}, false)
 	env.SetVar("input", FuncType{
@@ -1183,6 +1205,8 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 			return FloatType{}
 		case "bigint":
 			return BigIntType{}
+		case "bigrat":
+			return BigRatType{}
 		case "string":
 			return StringType{}
 		case "bool":
@@ -2305,7 +2329,7 @@ func isQueryExpr(e *parser.Expr) bool {
 
 func isNumeric(t Type) bool {
 	switch t.(type) {
-	case IntType, Int64Type, FloatType, BigIntType:
+	case IntType, Int64Type, FloatType, BigIntType, BigRatType:
 		return true
 	default:
 		return false
@@ -2344,6 +2368,8 @@ var builtinArity = map[string]int{
 	"push":      2,
 	"first":     1,
 	"substring": 3,
+	"num":       1,
+	"denom":     1,
 }
 
 func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
@@ -2594,6 +2620,14 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 					return errArgTypeMismatch(pos, i, IntType{}, args[i])
 				}
 			}
+		}
+		return nil
+	case "num", "denom":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		if !isNumeric(args[0]) {
+			return fmt.Errorf("%s() expects numeric", name)
 		}
 		return nil
 	}

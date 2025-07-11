@@ -797,9 +797,16 @@ func equalTypes(a, b Type) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-func isInt64(t Type) bool  { _, ok := t.(Int64Type); return ok }
-func isInt(t Type) bool    { _, ok := t.(IntType); return ok }
-func isFloat(t Type) bool  { _, ok := t.(FloatType); return ok }
+func isInt64(t Type) bool { _, ok := t.(Int64Type); return ok }
+func isInt(t Type) bool   { _, ok := t.(IntType); return ok }
+func isFloat(t Type) bool {
+	_, ok := t.(FloatType)
+	if ok {
+		return true
+	}
+	_, ok2 := t.(BigRatType)
+	return ok2
+}
 func isBool(t Type) bool   { _, ok := t.(BoolType); return ok }
 func isString(t Type) bool { _, ok := t.(StringType); return ok }
 func isList(t Type) bool   { _, ok := t.(ListType); return ok }

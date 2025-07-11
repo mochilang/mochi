@@ -14,6 +14,7 @@ const (
 	ValueInt
 	ValueBigInt
 	ValueFloat
+	ValueBigRat
 	ValueStr
 	ValueBool
 	ValueList
@@ -26,6 +27,7 @@ type Value struct {
 	Tag    ValueTag
 	Int    int
 	BigInt *big.Int
+	BigRat *big.Rat
 	Float  float64
 	Str    string
 	Bool   bool
@@ -43,6 +45,8 @@ func (v Value) Truthy() bool {
 		return v.Int != 0
 	case ValueBigInt:
 		return v.BigInt != nil && v.BigInt.Sign() != 0
+	case ValueBigRat:
+		return v.BigRat != nil && v.BigRat.Sign() != 0
 	case ValueFloat:
 		return v.Float != 0
 	case ValueStr:
@@ -69,6 +73,11 @@ func (v Value) ToAny() any {
 		return new(big.Int).Set(v.BigInt)
 	case ValueFloat:
 		return v.Float
+	case ValueBigRat:
+		if v.BigRat == nil {
+			return (*big.Rat)(nil)
+		}
+		return new(big.Rat).Set(v.BigRat)
 	case ValueBool:
 		return v.Bool
 	case ValueStr:
@@ -128,6 +137,15 @@ func FromAny(v any) Value {
 		tmp := new(big.Int)
 		tmp.Set(&val)
 		return Value{Tag: ValueBigInt, BigInt: tmp}
+	case *big.Rat:
+		if val == nil {
+			return Value{Tag: ValueBigRat}
+		}
+		return Value{Tag: ValueBigRat, BigRat: new(big.Rat).Set(val)}
+	case big.Rat:
+		tmp := new(big.Rat)
+		tmp.Set(&val)
+		return Value{Tag: ValueBigRat, BigRat: tmp}
 	case float64:
 		return Value{Tag: ValueFloat, Float: val}
 	case float32:
