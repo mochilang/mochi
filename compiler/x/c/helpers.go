@@ -49,6 +49,14 @@ func isString(t types.Type) bool {
 	return ok
 }
 
+func sanitizeTypeName(name string) string {
+	s := sanitizeName(name)
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
+}
+
 func cTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.BoolType:
@@ -58,9 +66,9 @@ func cTypeFromType(t types.Type) string {
 	case types.StringType:
 		return "char*"
 	case types.UnionType:
-		return sanitizeName(tt.Name)
+		return sanitizeTypeName(tt.Name)
 	case types.StructType:
-		return sanitizeName(tt.Name)
+		return sanitizeTypeName(tt.Name)
 	case types.ListType:
 		if _, ok := tt.Elem.(types.AnyType); ok {
 			return "list_int"
@@ -82,7 +90,7 @@ func cTypeFromType(t types.Type) string {
 			return "list_group_int"
 		}
 		if st, ok := tt.Elem.(types.StructType); ok {
-			return "list_" + sanitizeName(st.Name)
+			return "list_" + sanitizeTypeName(st.Name)
 		}
 	case types.MapType:
 		if isMapIntBoolType(tt) {
@@ -208,7 +216,7 @@ func defaultCValue(t types.Type) string {
 	case types.FloatType, types.IntType, types.BoolType:
 		return "0"
 	case types.StructType:
-		return fmt.Sprintf("(%s){0}", sanitizeName(tt.Name))
+		return fmt.Sprintf("(%s){0}", sanitizeTypeName(tt.Name))
 	default:
 		return "0"
 	}
