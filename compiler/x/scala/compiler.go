@@ -26,6 +26,7 @@ type Compiler struct {
 	autoStructs map[string]types.StructType
 	structKeys  map[string]string
 	autoCount   int
+	structHint  string
 }
 
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
@@ -60,6 +61,7 @@ func New(env *types.Env) *Compiler {
 		updates:     make(map[string]bool),
 		autoStructs: make(map[string]types.StructType),
 		structKeys:  make(map[string]string),
+		structHint:  "",
 	}
 }
 
@@ -327,6 +329,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
+	oldHint := c.structHint
+	c.structHint = s.Name
+	defer func() { c.structHint = oldHint }()
 	mutable := c.updates[s.Name]
 	rhs := "0"
 	if s.Value != nil {
@@ -406,6 +411,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
+	oldHint := c.structHint
+	c.structHint = s.Name
+	defer func() { c.structHint = oldHint }()
 	rhs := "0"
 	if s.Value != nil {
 		var err error
@@ -2085,6 +2093,23 @@ func structKey(st types.StructType) string {
 	return strings.Join(parts, ";")
 }
 
+func deriveStructName(base string) string {
+	if base == "" {
+		return ""
+	}
+	if strings.HasSuffix(base, "s") && len(base) > 1 {
+		base = base[:len(base)-1]
+	}
+	parts := strings.Split(base, "_")
+	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
 func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	if st.Name != "" {
 		return st
@@ -2094,8 +2119,17 @@ func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 		st.Name = name
 		return st
 	}
-	c.autoCount++
-	name := fmt.Sprintf("Auto%d", c.autoCount)
+	var name string
+	if hint := deriveStructName(c.structHint); hint != "" {
+		name = hint
+		if _, ok := c.autoStructs[name]; ok {
+			c.autoCount++
+			name = fmt.Sprintf("%s%d", hint, c.autoCount)
+		}
+	} else {
+		c.autoCount++
+		name = fmt.Sprintf("Auto%d", c.autoCount)
+	}
 	st.Name = name
 	c.autoStructs[name] = st
 	c.structKeys[key] = name
