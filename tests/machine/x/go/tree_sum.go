@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
 type Tree interface{ isTree() }
@@ -42,7 +43,7 @@ var t Node
 
 func main() {
 	t = Node{Left: _cast[Tree](Leaf{}), Value: 1, Right: Node{Left: _cast[Tree](Leaf{}), Value: 2, Right: _cast[Tree](Leaf{})}}
-	fmt.Println(sum_tree(t))
+	fmt.Println(_fmt(sum_tree(t)))
 }
 
 func _cast[T any](v any) T {
@@ -103,4 +104,28 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }

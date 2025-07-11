@@ -1,0 +1,10 @@
+Error on line 0: output mismatch
+-- got --
+<nil>
+<nil>
+<nil>
+-- want --
+5
+3.14
+42
+1: //go:build ignore

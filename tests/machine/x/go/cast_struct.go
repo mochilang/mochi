@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
 type Todo struct {
@@ -12,9 +13,13 @@ type Todo struct {
 }
 
 func main() {
-	var todo Todo = Todo{Title: "hi"}
+	type Todo1 struct {
+		Title string `json:"title"`
+	}
+
+	var todo Todo1 = Todo1{Title: "hi"}
 	_ = todo
-	fmt.Println(todo.Title)
+	fmt.Println(_fmt(todo.Title))
 }
 
 func _cast[T any](v any) T {
@@ -75,4 +80,28 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }

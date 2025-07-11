@@ -12,24 +12,35 @@ import (
 )
 
 func main() {
-	var items []map[string]any = []map[string]any{map[string]any{
-		"cat":  "a",
-		"val":  10,
-		"flag": true,
-	}, map[string]any{
-		"cat":  "a",
-		"val":  5,
-		"flag": false,
-	}, map[string]any{
-		"cat":  "b",
-		"val":  20,
-		"flag": true,
+	type ItemsItem struct {
+		Cat  string `json:"cat"`
+		Val  int    `json:"val"`
+		Flag bool   `json:"flag"`
+	}
+
+	var items []ItemsItem = []ItemsItem{ItemsItem{
+		Cat:  "a",
+		Val:  10,
+		Flag: true,
+	}, ItemsItem{
+		Cat:  "a",
+		Val:  5,
+		Flag: false,
+	}, ItemsItem{
+		Cat:  "b",
+		Val:  20,
+		Flag: true,
 	}}
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		Cat   any     `json:"cat"`
+		Share float64 `json:"share"`
+	}
+
+	var result []Result = func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
-			key := i["cat"]
+			key := i.Cat
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -83,31 +94,34 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"cat": g.Key, "share": (_sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, func() any {
-						if _exists(_cast[map[string]any](x)["flag"]) {
-							return _cast[map[string]any](x)["val"]
-						} else {
-							return 0
-						}
-					}())
-				}
-				return _res
-			}()) / _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["val"])
-				}
-				return _res
-			}()))})
+			_res = append(_res, Result{
+				Cat: g.Key,
+				Share: (float64(_sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, func() any {
+							if _exists(_cast[map[string]any](x)["flag"]) {
+								return _cast[map[string]any](x)["val"]
+							} else {
+								return 0
+							}
+						}())
+					}
+					return _res
+				}())) / float64(_sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["val"])
+					}
+					return _res
+				}()))),
+			})
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(result), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -193,10 +207,43 @@ func _exists(v any) bool {
 		return len([]rune(s)) > 0
 	}
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		return rv.Len() > 0
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return false
+		}
+		rv = rv.Elem()
 	}
-	return false
+	switch rv.Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return rv.Len() > 0
+	case reflect.Struct:
+		return !rv.IsZero()
+	}
+	return rv.IsValid()
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

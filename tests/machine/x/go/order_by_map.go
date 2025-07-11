@@ -5,38 +5,61 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var _data []map[string]int = []map[string]int{map[string]int{"a": 1, "b": 2}, map[string]int{"a": 1, "b": 1}, map[string]int{"a": 0, "b": 5}}
-	var sorted []map[string]int = func() []map[string]int {
+	type _dataItem struct {
+		A int `json:"a"`
+		B int `json:"b"`
+	}
+
+	var _data []_dataItem = []_dataItem{_dataItem{
+		A: 1,
+		B: 2,
+	}, _dataItem{
+		A: 1,
+		B: 1,
+	}, _dataItem{
+		A: 0,
+		B: 5,
+	}}
+	type _ struct {
+		A int `json:"a"`
+		B int `json:"b"`
+	}
+
+	var sorted []_dataItem = func() []_dataItem {
 		src := _toAnySlice(_data)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var x map[string]int
+			var x _dataItem
 			if _tmp0 != nil {
-				x = _cast[map[string]int](_tmp0)
+				x = _cast[_dataItem](_tmp0)
 			}
 			_ = x
 			return x
 		}, sortKey: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var x map[string]int
+			var x _dataItem
 			if _tmp0 != nil {
-				x = _cast[map[string]int](_tmp0)
+				x = _cast[_dataItem](_tmp0)
 			}
 			_ = x
-			return map[string]int{"a": x["a"], "b": x["b"]}
+			return _{
+				A: x.A,
+				B: x.B,
+			}
 		}, skip: -1, take: -1})
-		out := make([]map[string]int, len(resAny))
+		out := make([]_dataItem, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]int](v)
+			out[i] = _cast[_dataItem](v)
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(sorted), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(sorted), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -97,6 +120,30 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 type _joinSpec struct {

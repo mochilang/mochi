@@ -58,8 +58,17 @@ const (
 		"    case string: return len([]rune(s)) > 0\n" +
 		"    }\n" +
 		"    rv := reflect.ValueOf(v)\n" +
-		"    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array { return rv.Len() > 0 }\n" +
-		"    return false\n" +
+		"    if rv.Kind() == reflect.Pointer {\n" +
+		"        if rv.IsNil() { return false }\n" +
+		"        rv = rv.Elem()\n" +
+		"    }\n" +
+		"    switch rv.Kind() {\n" +
+		"    case reflect.Slice, reflect.Array, reflect.Map:\n" +
+		"        return rv.Len() > 0\n" +
+		"    case reflect.Struct:\n" +
+		"        return !rv.IsZero()\n" +
+		"    }\n" +
+		"    return rv.IsValid()\n" +
 		"}\n"
 
 	helperAvg = "func _avg(v any) float64 {\n" +
@@ -835,6 +844,24 @@ const (
 		"    if take >= 0 && take < len(src) { src = src[:take] }\n" +
 		"    return src\n" +
 		"}\n"
+
+	helperFmt = "func _fmt(v any) string {\n" +
+		"    if v == nil { return \"<nil>\" }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if rv.Kind() == reflect.Pointer {\n" +
+		"        if rv.IsNil() { return \"<nil>\" }\n" +
+		"        v = rv.Elem().Interface()\n" +
+		"        rv = reflect.ValueOf(v)\n" +
+		"    }\n" +
+		"    if rv.Kind() == reflect.Struct {\n" +
+		"        if rv.IsZero() { return \"<nil>\" }\n" +
+		"        b, _ := json.Marshal(v)\n" +
+		"        var m map[string]any\n" +
+		"        _ = json.Unmarshal(b, &m)\n" +
+		"        return fmt.Sprint(m)\n" +
+		"    }\n" +
+		"    return fmt.Sprint(v)\n" +
+		"}\n"
 )
 
 var helperMap = map[string]string{
@@ -880,6 +907,7 @@ var helperMap = map[string]string{
 	"_load":          helperLoad,
 	"_save":          helperSave,
 	"_toMapSlice":    helperToMapSlice,
+	"_fmt":           helperFmt,
 }
 
 func (c *Compiler) use(name string) {
@@ -892,6 +920,11 @@ func (c *Compiler) use(name string) {
 	}
 	if name == "_toMapSlice" {
 		c.imports["encoding/json"] = true
+		c.imports["reflect"] = true
+	}
+	if name == "_fmt" {
+		c.imports["encoding/json"] = true
+		c.imports["fmt"] = true
 		c.imports["reflect"] = true
 	}
 	if name == "_lower" || name == "_upper" {

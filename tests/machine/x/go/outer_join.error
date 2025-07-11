@@ -1,7 +1,18 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/outer_join.go:43:43: cannot use func() []map[string]any {…}() (value of type []map[string]any) as []map[string]map[string]int value in variable declaration
-../../../tests/machine/x/go/outer_join.go:92:11: cannot convert row["order"] (map index expression of type map[string]int) to type bool
-../../../tests/machine/x/go/outer_join.go:93:12: cannot convert row["customer"] (map index expression of type map[string]int) to type bool
-
+Error on line 0: output mismatch
+-- got --
+--- Outer Join using syntax ---
+Customer Alice has no orders
+Customer Bob has no orders
+Customer Alice has no orders
+Customer  has no orders
+Customer Charlie has no orders
+Customer Diana has no orders
+-- want --
+--- Outer Join using syntax ---
+Order 100 by Alice - $ 250
+Order 101 by Bob - $ 125
+Order 102 by Alice - $ 300
+Order 103 by Unknown - $ 80
+Customer Charlie has no orders
+Customer Diana has no orders
 1: //go:build ignore

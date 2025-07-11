@@ -5,38 +5,53 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var items []map[string]any = []map[string]any{map[string]any{"n": 1, "v": "a"}, map[string]any{"n": 1, "v": "b"}, map[string]any{"n": 2, "v": "c"}}
-	var result []any = func() []any {
+	type ItemsItem struct {
+		N int    `json:"n"`
+		V string `json:"v"`
+	}
+
+	var items []ItemsItem = []ItemsItem{ItemsItem{
+		N: 1,
+		V: "a",
+	}, ItemsItem{
+		N: 1,
+		V: "b",
+	}, ItemsItem{
+		N: 2,
+		V: "c",
+	}}
+	var result []string = func() []string {
 		src := _toAnySlice(items)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var i map[string]any
+			var i ItemsItem
 			if _tmp0 != nil {
-				i = _cast[map[string]any](_tmp0)
+				i = _cast[ItemsItem](_tmp0)
 			}
 			_ = i
-			return i["v"]
+			return i.V
 		}, sortKey: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var i map[string]any
+			var i ItemsItem
 			if _tmp0 != nil {
-				i = _cast[map[string]any](_tmp0)
+				i = _cast[ItemsItem](_tmp0)
 			}
 			_ = i
-			return i["n"]
+			return i.N
 		}, skip: -1, take: -1})
-		out := make([]any, len(resAny))
+		out := make([]string, len(resAny))
 		for i, v := range resAny {
-			out[i] = v
+			out[i] = _cast[string](v)
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(result), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -97,6 +112,30 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 type _joinSpec struct {

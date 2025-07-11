@@ -11,106 +11,142 @@ import (
 )
 
 func main() {
-	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}}
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var customers []CustomersItem = []CustomersItem{CustomersItem{
+		Id:   1,
+		Name: "Alice",
+	}, CustomersItem{
+		Id:   2,
+		Name: "Bob",
+	}}
 	_ = customers
-	var orders []map[string]int = []map[string]int{map[string]int{"id": 100, "customerId": 1}, map[string]int{"id": 101, "customerId": 2}}
-	var items []map[string]any = []map[string]any{map[string]any{"orderId": 100, "sku": "a"}}
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+	}
+
+	var orders []OrdersItem = []OrdersItem{OrdersItem{
+		Id:         100,
+		CustomerId: 1,
+	}, OrdersItem{
+		Id:         101,
+		CustomerId: 2,
+	}}
+	type ItemsItem struct {
+		OrderId int    `json:"orderId"`
+		Sku     string `json:"sku"`
+	}
+
+	var items []ItemsItem = []ItemsItem{ItemsItem{
+		OrderId: 100,
+		Sku:     "a",
+	}}
 	_ = items
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		OrderId any `json:"orderId"`
+		Name    any `json:"name"`
+		Item    any `json:"item"`
+	}
+
+	var result []Result = func() []Result {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {
 				_tmp0 := _a[0]
-				var o map[string]int
+				var o OrdersItem
 				if _tmp0 != nil {
-					o = _cast[map[string]int](_tmp0)
+					o = _cast[OrdersItem](_tmp0)
 				}
 				_ = o
 				_tmp1 := _a[1]
-				var c map[string]any
+				var c CustomersItem
 				if _tmp1 != nil {
-					c = _cast[map[string]any](_tmp1)
+					c = _cast[CustomersItem](_tmp1)
 				}
 				_ = c
-				return _equal(o["customerId"], c["id"])
+				return (o.CustomerId == c.Id)
 			}, leftKey: func(_a ...any) any {
 				_tmp0 := _a[0]
-				var o map[string]int
+				var o OrdersItem
 				if _tmp0 != nil {
-					o = _cast[map[string]int](_tmp0)
+					o = _cast[OrdersItem](_tmp0)
 				}
 				_ = o
-				return o["customerId"]
-			}, rightKey: func(_v any) any { c := _cast[map[string]any](_v); _ = c; return c["id"] }},
+				return o.CustomerId
+			}, rightKey: func(_v any) any { c := _cast[CustomersItem](_v); _ = c; return c.Id }},
 			{items: _toAnySlice(items), on: func(_a ...any) bool {
 				_tmp0 := _a[0]
-				var o map[string]int
+				var o OrdersItem
 				if _tmp0 != nil {
-					o = _cast[map[string]int](_tmp0)
+					o = _cast[OrdersItem](_tmp0)
 				}
 				_ = o
 				_tmp1 := _a[1]
-				var c map[string]any
+				var c CustomersItem
 				if _tmp1 != nil {
-					c = _cast[map[string]any](_tmp1)
+					c = _cast[CustomersItem](_tmp1)
 				}
 				_ = c
 				_tmp2 := _a[2]
-				var i map[string]any
+				var i ItemsItem
 				if _tmp2 != nil {
-					i = _cast[map[string]any](_tmp2)
+					i = _cast[ItemsItem](_tmp2)
 				}
 				_ = i
-				return _equal(o["id"], i["orderId"])
+				return (o.Id == i.OrderId)
 			}, leftKey: func(_a ...any) any {
 				_tmp0 := _a[0]
-				var o map[string]int
+				var o OrdersItem
 				if _tmp0 != nil {
-					o = _cast[map[string]int](_tmp0)
+					o = _cast[OrdersItem](_tmp0)
 				}
 				_ = o
 				_tmp1 := _a[1]
-				var c map[string]any
+				var c CustomersItem
 				if _tmp1 != nil {
-					c = _cast[map[string]any](_tmp1)
+					c = _cast[CustomersItem](_tmp1)
 				}
 				_ = c
-				return o["id"]
-			}, rightKey: func(_v any) any { i := _cast[map[string]any](_v); _ = i; return i["orderId"] }, left: true},
+				return o.Id
+			}, rightKey: func(_v any) any { i := _cast[ItemsItem](_v); _ = i; return i.OrderId }, left: true},
 		}, _queryOpts{selectFn: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var o map[string]int
+			var o OrdersItem
 			if _tmp0 != nil {
-				o = _cast[map[string]int](_tmp0)
+				o = _cast[OrdersItem](_tmp0)
 			}
 			_ = o
 			_tmp1 := _a[1]
-			var c map[string]any
+			var c CustomersItem
 			if _tmp1 != nil {
-				c = _cast[map[string]any](_tmp1)
+				c = _cast[CustomersItem](_tmp1)
 			}
 			_ = c
 			_tmp2 := _a[2]
-			var i map[string]any
+			var i ItemsItem
 			if _tmp2 != nil {
-				i = _cast[map[string]any](_tmp2)
+				i = _cast[ItemsItem](_tmp2)
 			}
 			_ = i
-			return map[string]any{
-				"orderId": o["id"],
-				"name":    c["name"],
-				"item":    i,
+			return Result{
+				OrderId: o.Id,
+				Name:    c.Name,
+				Item:    i,
 			}
 		}, skip: -1, take: -1})
-		out := make([]map[string]any, len(resAny))
+		out := make([]Result, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]any](v)
+			out[i] = _cast[Result](v)
 		}
 		return out
 	}()
-	fmt.Println("--- Left Join Multi ---")
+	fmt.Println(_fmt("--- Left Join Multi ---"))
 	for _, r := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(r["orderId"]), fmt.Sprint(r["name"]), fmt.Sprint(r["item"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_fmt(r.OrderId), _fmt(r.Name), _fmt(r.Item)}, " "), " "))
 	}
 }
 
@@ -174,40 +210,28 @@ func _convertMapAny(m map[any]any) map[string]any {
 	return out
 }
 
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
 		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
 		}
-		return true
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
 	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
+	return fmt.Sprint(v)
 }
 
 type _joinSpec struct {

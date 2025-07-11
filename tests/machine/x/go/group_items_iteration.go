@@ -6,17 +6,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var _data []map[string]any = []map[string]any{map[string]any{"tag": "a", "val": 1}, map[string]any{"tag": "a", "val": 2}, map[string]any{"tag": "b", "val": 3}}
+	type _dataItem struct {
+		Tag string `json:"tag"`
+		Val int    `json:"val"`
+	}
+
+	var _data []_dataItem = []_dataItem{_dataItem{
+		Tag: "a",
+		Val: 1,
+	}, _dataItem{
+		Tag: "a",
+		Val: 2,
+	}, _dataItem{
+		Tag: "b",
+		Val: 3,
+	}}
 	var groups []*data.Group = func() []*data.Group {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, d := range _data {
-			key := d["tag"]
+			key := d.Tag
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -36,10 +51,18 @@ func main() {
 	var tmp []any = []any{}
 	for _, g := range groups {
 		var total int = 0
-		for _, x := range _toAnySlice(g.Items) {
-			total = _cast[int](_cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"]))))
+		for _, x := range g.Items {
+			total = (total + x.Val)
 		}
-		tmp = append(tmp, map[string]any{"tag": g.Key, "total": total})
+		type _ struct {
+			Tag   string `json:"tag"`
+			Total int    `json:"total"`
+		}
+
+		tmp = append(tmp, _{
+			Tag:   g.Key,
+			Total: total,
+		})
 	}
 	var result []any = func() []any {
 		src := tmp
@@ -50,7 +73,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(result), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -111,6 +134,30 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 type _joinSpec struct {
@@ -315,12 +362,4 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
-}
-
-func _toAnySlice[T any](s []T) []any {
-	out := []any{}
-	for _, v := range s {
-		out = append(out, v)
-	}
-	return out
 }

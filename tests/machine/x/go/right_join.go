@@ -12,79 +12,110 @@ import (
 )
 
 func main() {
-	var customers []map[string]any = []map[string]any{
-		map[string]any{"id": 1, "name": "Alice"},
-		map[string]any{"id": 2, "name": "Bob"},
-		map[string]any{"id": 3, "name": "Charlie"},
-		map[string]any{"id": 4, "name": "Diana"},
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
 	}
-	var orders []map[string]int = []map[string]int{map[string]int{
-		"id":         100,
-		"customerId": 1,
-		"total":      250,
-	}, map[string]int{
-		"id":         101,
-		"customerId": 2,
-		"total":      125,
-	}, map[string]int{
-		"id":         102,
-		"customerId": 1,
-		"total":      300,
+
+	var customers []CustomersItem = []CustomersItem{
+		CustomersItem{
+			Id:   1,
+			Name: "Alice",
+		},
+		CustomersItem{
+			Id:   2,
+			Name: "Bob",
+		},
+		CustomersItem{
+			Id:   3,
+			Name: "Charlie",
+		},
+		CustomersItem{
+			Id:   4,
+			Name: "Diana",
+		},
+	}
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+		Total      int `json:"total"`
+	}
+
+	var orders []OrdersItem = []OrdersItem{OrdersItem{
+		Id:         100,
+		CustomerId: 1,
+		Total:      250,
+	}, OrdersItem{
+		Id:         101,
+		CustomerId: 2,
+		Total:      125,
+	}, OrdersItem{
+		Id:         102,
+		CustomerId: 1,
+		Total:      300,
 	}}
 	_ = orders
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		CustomerName any `json:"customerName"`
+		Order        any `json:"order"`
+	}
+
+	var result []Result = func() []Result {
 		src := _toAnySlice(customers)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(orders), on: func(_a ...any) bool {
 				_tmp0 := _a[0]
-				var c map[string]any
+				var c CustomersItem
 				if _tmp0 != nil {
-					c = _cast[map[string]any](_tmp0)
+					c = _cast[CustomersItem](_tmp0)
 				}
 				_ = c
 				_tmp1 := _a[1]
-				var o map[string]int
+				var o OrdersItem
 				if _tmp1 != nil {
-					o = _cast[map[string]int](_tmp1)
+					o = _cast[OrdersItem](_tmp1)
 				}
 				_ = o
-				return _equal(o["customerId"], c["id"])
+				return (o.CustomerId == c.Id)
 			}, leftKey: func(_a ...any) any {
 				_tmp0 := _a[0]
-				var c map[string]any
+				var c CustomersItem
 				if _tmp0 != nil {
-					c = _cast[map[string]any](_tmp0)
+					c = _cast[CustomersItem](_tmp0)
 				}
 				_ = c
-				return c["id"]
-			}, rightKey: func(_v any) any { o := _cast[map[string]int](_v); _ = o; return o["customerId"] }, right: true},
+				return c.Id
+			}, rightKey: func(_v any) any { o := _cast[OrdersItem](_v); _ = o; return o.CustomerId }, right: true},
 		}, _queryOpts{selectFn: func(_a ...any) any {
 			_tmp0 := _a[0]
-			var c map[string]any
+			var c CustomersItem
 			if _tmp0 != nil {
-				c = _cast[map[string]any](_tmp0)
+				c = _cast[CustomersItem](_tmp0)
 			}
 			_ = c
 			_tmp1 := _a[1]
-			var o map[string]int
+			var o OrdersItem
 			if _tmp1 != nil {
-				o = _cast[map[string]int](_tmp1)
+				o = _cast[OrdersItem](_tmp1)
 			}
 			_ = o
-			return map[string]any{"customerName": c["name"], "order": o}
+			return Result{
+				CustomerName: c.Name,
+				Order:        o,
+			}
 		}, skip: -1, take: -1})
-		out := make([]map[string]any, len(resAny))
+		out := make([]Result, len(resAny))
 		for i, v := range resAny {
-			out[i] = _cast[map[string]any](v)
+			out[i] = _cast[Result](v)
 		}
 		return out
 	}()
-	fmt.Println("--- Right Join using syntax ---")
+	fmt.Println(_fmt("--- Right Join using syntax ---"))
 	for _, entry := range result {
-		if _exists(entry["order"]) {
-			fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Customer"), fmt.Sprint(entry["customerName"]), fmt.Sprint("has order"), fmt.Sprint(_cast[map[string]any](entry["order"])["id"]), fmt.Sprint("- $"), fmt.Sprint(_cast[map[string]any](entry["order"])["total"])}, " "), " "))
+		if _exists(entry.Order) {
+			fmt.Println(strings.TrimRight(strings.Join([]string{_fmt("Customer"), _fmt(entry.CustomerName), _fmt("has order"), _fmt(_cast[map[string]any](entry.Order)["id"]), _fmt("- $"), _fmt(_cast[map[string]any](entry.Order)["total"])}, " "), " "))
 		} else {
-			fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Customer"), fmt.Sprint(entry["customerName"]), fmt.Sprint("has no orders")}, " "), " "))
+			fmt.Println(strings.TrimRight(strings.Join([]string{_fmt("Customer"), _fmt(entry.CustomerName), _fmt("has no orders")}, " "), " "))
 		}
 	}
 }
@@ -149,42 +180,6 @@ func _convertMapAny(m map[any]any) map[string]any {
 	return out
 }
 
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
-}
-
 func _exists(v any) bool {
 	if g, ok := v.(*data.Group); ok {
 		return len(g.Items) > 0
@@ -208,10 +203,43 @@ func _exists(v any) bool {
 		return len([]rune(s)) > 0
 	}
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		return rv.Len() > 0
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return false
+		}
+		rv = rv.Elem()
 	}
-	return false
+	switch rv.Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return rv.Len() > 0
+	case reflect.Struct:
+		return !rv.IsZero()
+	}
+	return rv.IsValid()
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 type _joinSpec struct {

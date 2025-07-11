@@ -6,13 +6,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
+	"strings"
 
 	"golang.org/x/exp/constraints"
 )
 
 func main() {
 	var nums []int = []int{1, 2, 3}
-	var result float64 = _cast[float64](_sumOrdered[int](func() []int {
+	var result []int = _sumOrdered[int](func() []int {
 		_res := []int{}
 		for _, n := range nums {
 			if n > 1 {
@@ -22,68 +24,32 @@ func main() {
 			}
 		}
 		return _res
-	}()))
-	fmt.Println(result)
+	}())
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(result), "["), "]"))
 }
 
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
 		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
 		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
 	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

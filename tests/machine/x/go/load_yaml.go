@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -17,27 +18,39 @@ type Person struct {
 }
 
 func main() {
+	type _ struct {
+		Format string `json:"format"`
+	}
+
 	var people []Person = func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(map[string]string{"format": "yaml"}))
+		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(_{Format: "yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
 			out[i] = _cast[Person](r)
 		}
 		return out
 	}()
-	var adults []map[string]string = func() []map[string]string {
-		_res := []map[string]string{}
+	type Adults struct {
+		Name  any `json:"name"`
+		Email any `json:"email"`
+	}
+
+	var adults []Adults = func() []Adults {
+		_res := []Adults{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
-					_res = append(_res, map[string]string{"name": p.Name, "email": p.Email})
+					_res = append(_res, Adults{
+						Name:  p.Name,
+						Email: p.Email,
+					})
 				}
 			}
 		}
 		return _res
 	}()
 	for _, a := range adults {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(a["name"]), fmt.Sprint(a["email"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_fmt(a.Name), _fmt(a.Email)}, " "), " "))
 	}
 }
 
@@ -99,6 +112,30 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 func _load(path string, opts map[string]any) []map[string]any {

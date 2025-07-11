@@ -6,22 +6,45 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var items []map[string]any = []map[string]any{
-		map[string]any{"cat": "a", "val": 3},
-		map[string]any{"cat": "a", "val": 1},
-		map[string]any{"cat": "b", "val": 5},
-		map[string]any{"cat": "b", "val": 2},
+	type ItemsItem struct {
+		Cat string `json:"cat"`
+		Val int    `json:"val"`
 	}
-	var grouped []map[string]any = func() []map[string]any {
+
+	var items []ItemsItem = []ItemsItem{
+		ItemsItem{
+			Cat: "a",
+			Val: 3,
+		},
+		ItemsItem{
+			Cat: "a",
+			Val: 1,
+		},
+		ItemsItem{
+			Cat: "b",
+			Val: 5,
+		},
+		ItemsItem{
+			Cat: "b",
+			Val: 2,
+		},
+	}
+	type Grouped struct {
+		Cat   any `json:"cat"`
+		Total int `json:"total"`
+	}
+
+	var grouped []Grouped = func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
-			key := i["cat"]
+			key := i.Cat
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -81,19 +104,22 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Grouped{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"cat": g.Key, "total": _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["val"])
-				}
-				return _res
-			}())})
+			_res = append(_res, Grouped{
+				Cat: g.Key,
+				Total: _sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, _cast[map[string]any](x)["val"])
+					}
+					return _res
+				}()),
+			})
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_fmt(grouped), "["), "]"))
 }
 
 func _cast[T any](v any) T {
@@ -154,6 +180,30 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

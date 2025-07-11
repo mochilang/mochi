@@ -3,7 +3,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"strings"
 )
 
@@ -34,8 +36,32 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println("--- Cross Join of three lists ---")
+	fmt.Println(_fmt("--- Cross Join of three lists ---"))
 	for _, c := range combos {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(c.N), fmt.Sprint(c.L), fmt.Sprint(c.B)}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_fmt(c.N), _fmt(c.L), _fmt(c.B)}, " "), " "))
 	}
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }

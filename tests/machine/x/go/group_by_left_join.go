@@ -11,20 +11,53 @@ import (
 )
 
 func main() {
-	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}, map[string]any{"id": 3, "name": "Charlie"}}
-	var orders []map[string]int = []map[string]int{map[string]int{"id": 100, "customerId": 1}, map[string]int{"id": 101, "customerId": 1}, map[string]int{"id": 102, "customerId": 2}}
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var customers []CustomersItem = []CustomersItem{CustomersItem{
+		Id:   1,
+		Name: "Alice",
+	}, CustomersItem{
+		Id:   2,
+		Name: "Bob",
+	}, CustomersItem{
+		Id:   3,
+		Name: "Charlie",
+	}}
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+	}
+
+	var orders []OrdersItem = []OrdersItem{OrdersItem{
+		Id:         100,
+		CustomerId: 1,
+	}, OrdersItem{
+		Id:         101,
+		CustomerId: 1,
+	}, OrdersItem{
+		Id:         102,
+		CustomerId: 2,
+	}}
 	_ = orders
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		Name  any `json:"name"`
+		Count int `json:"count"`
+	}
+
+	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customers {
 			matched := false
 			for _, o := range orders {
-				if !(_equal(o["customerId"], c["id"])) {
+				if !(o.CustomerId == c.Id) {
 					continue
 				}
 				matched = true
-				key := c["name"]
+				key := c.Name
 				ks := fmt.Sprint(key)
 				g, ok := groups[ks]
 				if !ok {
@@ -44,8 +77,8 @@ func main() {
 				g.Items = append(g.Items, _item)
 			}
 			if !matched {
-				var o map[string]int
-				key := c["name"]
+				var o OrdersItem
+				key := c.Name
 				ks := fmt.Sprint(key)
 				g, ok := groups[ks]
 				if !ok {
@@ -69,25 +102,28 @@ func main() {
 		for _, ks := range order {
 			items = append(items, groups[ks])
 		}
-		_res := []map[string]any{}
+		_res := []Stats{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"name": g.Key, "count": len(func() []any {
-				_res := []any{}
-				for _, r := range g.Items {
-					if _exists(_cast[map[string]any](r)["o"]) {
+			_res = append(_res, Stats{
+				Name: g.Key,
+				Count: len(func() []any {
+					_res := []any{}
+					for _, r := range g.Items {
 						if _exists(_cast[map[string]any](r)["o"]) {
-							_res = append(_res, r)
+							if _exists(_cast[map[string]any](r)["o"]) {
+								_res = append(_res, r)
+							}
 						}
 					}
-				}
-				return _res
-			}())})
+					return _res
+				}()),
+			})
 		}
 		return _res
 	}()
-	fmt.Println("--- Group Left Join ---")
+	fmt.Println(_fmt("--- Group Left Join ---"))
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s["name"]), fmt.Sprint("orders:"), fmt.Sprint(s["count"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_fmt(s.Name), _fmt("orders:"), _fmt(s.Count)}, " "), " "))
 	}
 }
 
@@ -151,42 +187,6 @@ func _convertMapAny(m map[any]any) map[string]any {
 	return out
 }
 
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
-}
-
 func _exists(v any) bool {
 	if g, ok := v.(*data.Group); ok {
 		return len(g.Items) > 0
@@ -210,8 +210,41 @@ func _exists(v any) bool {
 		return len([]rune(s)) > 0
 	}
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
-		return rv.Len() > 0
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return false
+		}
+		rv = rv.Elem()
 	}
-	return false
+	switch rv.Kind() {
+	case reflect.Slice, reflect.Array, reflect.Map:
+		return rv.Len() > 0
+	case reflect.Struct:
+		return !rv.IsZero()
+	}
+	return rv.IsValid()
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }

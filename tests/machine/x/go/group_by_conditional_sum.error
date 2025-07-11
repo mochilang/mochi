@@ -1,6 +1,6 @@
 Error on line 0: output mismatch
 -- got --
-map[cat:a share:0] map[cat:b share:0]
+{a 1} {b 1}
 -- want --
 map[cat:a share:0.6666666666666666] map[cat:b share:1]
 1: //go:build ignore

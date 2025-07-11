@@ -1,0 +1,6 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/partial_application.go:17:17: cannot use func(p0 int) int {…} (value of type func(p0 int) int) as int value in variable declaration
+../../../tests/machine/x/go/partial_application.go:18:19: invalid operation: cannot call non-function add5 (variable of type int)
+
+1: //go:build ignore

@@ -6,47 +6,60 @@ import (
 	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"strings"
 )
 
 func main() {
-	var people []map[string]any = []map[string]any{
-		map[string]any{
-			"name": "Alice",
-			"age":  30,
-			"city": "Paris",
+	type PeopleItem struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+		City string `json:"city"`
+	}
+
+	var people []PeopleItem = []PeopleItem{
+		PeopleItem{
+			Name: "Alice",
+			Age:  30,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Bob",
-			"age":  15,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Bob",
+			Age:  15,
+			City: "Hanoi",
 		},
-		map[string]any{
-			"name": "Charlie",
-			"age":  65,
-			"city": "Paris",
+		PeopleItem{
+			Name: "Charlie",
+			Age:  65,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Diana",
-			"age":  45,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Diana",
+			Age:  45,
+			City: "Hanoi",
 		},
-		map[string]any{
-			"name": "Eve",
-			"age":  70,
-			"city": "Paris",
+		PeopleItem{
+			Name: "Eve",
+			Age:  70,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Frank",
-			"age":  22,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Frank",
+			Age:  22,
+			City: "Hanoi",
 		},
 	}
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		City    any     `json:"city"`
+		Count   int     `json:"count"`
+		Avg_age float64 `json:"avg_age"`
+	}
+
+	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, person := range people {
-			key := person["city"]
+			key := person.City
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -56,13 +69,13 @@ func main() {
 			}
 			g.Items = append(g.Items, person)
 		}
-		_res := []map[string]any{}
+		_res := []Stats{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, map[string]any{
-				"city":  g.Key,
-				"count": len(g.Items),
-				"avg_age": _avg(func() []any {
+			_res = append(_res, Stats{
+				City:  g.Key,
+				Count: len(g.Items),
+				Avg_age: _avg(func() []any {
 					_res := []any{}
 					for _, p := range g.Items {
 						_res = append(_res, _cast[map[string]any](p)["age"])
@@ -73,9 +86,9 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println("--- People grouped by city ---")
+	fmt.Println(_fmt("--- People grouped by city ---"))
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s["city"]), fmt.Sprint(": count ="), fmt.Sprint(s["count"]), fmt.Sprint(", avg_age ="), fmt.Sprint(s["avg_age"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_fmt(s.City), _fmt(": count ="), _fmt(s.Count), _fmt(", avg_age ="), _fmt(s.Avg_age)}, " "), " "))
 	}
 }
 
@@ -188,4 +201,28 @@ func _convertMapAny(m map[any]any) map[string]any {
 		}
 	}
 	return out
+}
+
+func _fmt(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Pointer {
+		if rv.IsNil() {
+			return "<nil>"
+		}
+		v = rv.Elem().Interface()
+		rv = reflect.ValueOf(v)
+	}
+	if rv.Kind() == reflect.Struct {
+		if rv.IsZero() {
+			return "<nil>"
+		}
+		b, _ := json.Marshal(v)
+		var m map[string]any
+		_ = json.Unmarshal(b, &m)
+		return fmt.Sprint(m)
+	}
+	return fmt.Sprint(v)
 }
