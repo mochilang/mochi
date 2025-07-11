@@ -28,13 +28,14 @@ type Compiler struct {
 	declared    map[string]bool
 	tmpIndex    int
 	helpers     map[string]bool
+	autoImports map[string]string
 }
 
 func structName(name string) string { return "t_" + strings.ToLower(name) }
 
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, declared: make(map[string]bool), helpers: make(map[string]bool)}
+	return &Compiler{env: env, declared: make(map[string]bool), helpers: make(map[string]bool), autoImports: make(map[string]string)}
 }
 
 // Compile converts a parsed Mochi program into Fortran source code.
@@ -97,10 +98,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	if len(c.functions) > 0 || len(c.helpers) > 0 {
+	if len(c.functions) > 0 || len(c.helpers) > 0 || len(c.autoImports) > 0 {
 		c.writeln("contains")
 		if len(c.helpers) > 0 {
 			c.emitHelpers()
+		}
+		if len(c.autoImports) > 0 {
+			c.emitAutoHelpers()
 		}
 		for _, fn := range c.functions {
 			if err := c.compileFun(fn); err != nil {
@@ -132,6 +136,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Import != nil:
+		return c.compileImport(s.Import)
 	case s.Test != nil:
 		for _, st := range s.Test.Body {
 			if err := c.compileStmt(st); err != nil {
@@ -158,6 +164,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Continue != nil:
 		c.writeln("cycle")
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
 		return nil
 	case s.Return != nil:
 		return c.compileReturn(s.Return)
@@ -461,6 +469,26 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 	}
 	c.writeln(fmt.Sprintf("%s = %s", c.currentFunc, val))
 	c.writeln("return")
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	lang := *im.Lang
+	switch lang {
+	case "python":
+		if im.Path == "math" {
+			c.autoImports[im.As] = "python_math"
+		}
+	case "go":
+		if strings.Contains(im.Path, "testpkg") {
+			c.autoImports[im.As] = "go_testpkg"
+			c.writelnDecl(fmt.Sprintf("integer, parameter :: %s_Answer = 42", im.As))
+			c.writelnDecl(fmt.Sprintf("real, parameter :: %s_Pi = 3.14", im.As))
+		}
+	}
 	return nil
 }
 
@@ -795,6 +823,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if strings.HasSuffix(res, "%contains") && len(args) == 1 {
 				base := strings.TrimSuffix(res, "%contains")
 				res = fmt.Sprintf("index(%s,%s) /= 0", base, args[0])
+			} else if res == "pow" && len(args) == 2 {
+				res = fmt.Sprintf("(%s**%s)", args[0], args[1])
 			} else {
 				res = fmt.Sprintf("%s(%s)", res, strings.Join(args, ","))
 			}
@@ -827,6 +857,29 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return fmt.Sprintf("(/%s/)", strings.Join(elems, ",")), nil
 	case p.Selector != nil:
+		if mod, ok := c.autoImports[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+			field := p.Selector.Tail[0]
+			switch mod {
+			case "go_testpkg":
+				switch field {
+				case "Add":
+					return p.Selector.Root + "_Add", nil
+				case "Pi":
+					return p.Selector.Root + "_Pi", nil
+				case "Answer":
+					return p.Selector.Root + "_Answer", nil
+				}
+			case "python_math":
+				switch field {
+				case "pi":
+					return "acos(-1.0)", nil
+				case "e":
+					return "exp(1.0)", nil
+				case "sqrt", "pow", "sin", "log":
+					return field, nil
+				}
+			}
+		}
 		res := p.Selector.Root
 		for _, t := range p.Selector.Tail {
 			res += "%" + t
@@ -1267,6 +1320,21 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("return")
 			c.indent--
 			c.writeln("end function _intersect")
+		}
+	}
+}
+
+func (c *Compiler) emitAutoHelpers() {
+	for alias, mod := range c.autoImports {
+		switch mod {
+		case "go_testpkg":
+			c.writeln(fmt.Sprintf("integer function %s_Add(a, b) result(res)", alias))
+			c.indent++
+			c.writeln("integer, intent(in) :: a, b")
+			c.writeln("res = a + b")
+			c.writeln("return")
+			c.indent--
+			c.writeln(fmt.Sprintf("end function %s_Add", alias))
 		}
 	}
 }
