@@ -52,4 +52,5 @@ function _load($path = null, $opts = []) {
         return $rows;
     }
     return [];
-}?>
+}
+?>
