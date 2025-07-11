@@ -980,7 +980,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 	if stmt.Type != nil {
 		t = resolveTypeRef(stmt.Type, c.env)
 		if stmt.Value != nil {
-			if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+			if st, ok := castMapToStruct(stmt.Value, c.env); ok {
+				t = st
+			} else if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
 				if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 					t = types.ListType{Elem: st}
 					if c.env != nil {
@@ -1012,7 +1014,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				t = ut
 			}
 		}
-		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+		if st, ok := castMapToStruct(stmt.Value, c.env); ok {
+			t = st
+		} else if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
 			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 				t = types.ListType{Elem: st}
 				if c.env != nil {
@@ -1257,7 +1261,9 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		}
 	} else if stmt.Value != nil {
 		t = c.exprType(stmt.Value)
-		if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
+		if st, ok := castMapToStruct(stmt.Value, c.env); ok {
+			t = st
+		} else if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
 			if st, ok := c.inferStructFromList(ll, stmt.Name); ok {
 				t = types.ListType{Elem: st}
 				if c.env != nil {
@@ -5063,6 +5069,25 @@ func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 		return nil
 	}
 	return e.Binary.Left.Value.Target.Map
+}
+
+// castMapToStruct detects expressions of the form `{...} as StructName` and
+// returns the target struct type. It only matches a direct cast applied to a
+// map literal with no additional operators.
+func castMapToStruct(e *parser.Expr, env *types.Env) (types.StructType, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return types.StructType{}, false
+	}
+	u := e.Binary.Left
+	if u.Value == nil || u.Value.Target == nil || u.Value.Target.Map == nil {
+		return types.StructType{}, false
+	}
+	if len(u.Value.Ops) != 1 || u.Value.Ops[0].Cast == nil {
+		return types.StructType{}, false
+	}
+	t := resolveTypeRef(u.Value.Ops[0].Cast.Type, env)
+	st, ok := t.(types.StructType)
+	return st, ok
 }
 
 func asFetchExpr(e *parser.Expr) *parser.FetchExpr {

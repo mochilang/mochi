@@ -1,8 +1,0 @@
-line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/cast_struct.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/cast_struct.c:25:19: error: invalid initializer
-   25 |   todoItem todo = (Todo){.title = "hi"};
-      |                   ^
-
-   1: #include <stdio.h>
