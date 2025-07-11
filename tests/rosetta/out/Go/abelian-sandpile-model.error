@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:12:20: invalid argument: p (variable of type *[][]int) for built-in len
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:13:6: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:14:4: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:16:5: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:17:8: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:22:5: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:23:8: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:28:5: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:29:8: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:34:5: invalid operation: cannot index p (variable of type *[][]int)
+../../tests/rosetta/out/Go/abelian-sandpile-model.go:34:5: too many errors

@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/anonymous-recursion-2.go:53:6: main redeclared in this block
+	../../tests/rosetta/out/Go/anonymous-recursion-2.go:30:6: other declaration of main

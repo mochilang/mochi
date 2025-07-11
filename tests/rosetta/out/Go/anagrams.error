@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/anagrams.go:17:9: cannot use append(_convSlice[string, any](arr), _sliceString(s, i, (i + 1))) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams.go:73:9: cannot use append(_convSlice[string, any](res), min) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams.go:81:11: cannot use append(_convSlice[string, any](out), tmp[j]) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams.go:134:16: cannot use append(_convSlice[string, any](groups[k]), w) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams.go:166:6: main redeclared in this block
+	../../tests/rosetta/out/Go/anagrams.go:91:6: other declaration of main

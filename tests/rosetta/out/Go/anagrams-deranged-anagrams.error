@@ -1,0 +1,6 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/anagrams-deranged-anagrams.go:17:9: cannot use append(_convSlice[string, any](arr), _sliceString(s, i, (i + 1))) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams-deranged-anagrams.go:97:10: cannot use append(_convSlice[string, any](m[k]), w) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/anagrams-deranged-anagrams.go:102:6: main redeclared in this block
+	../../tests/rosetta/out/Go/anagrams-deranged-anagrams.go:71:6: other declaration of main

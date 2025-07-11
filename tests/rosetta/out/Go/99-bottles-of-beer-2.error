@@ -1,0 +1,7 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/99-bottles-of-beer-2.go:22:13: cannot use append(_convSlice[string, any](words), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/99-bottles-of-beer-2.go:31:11: cannot use append(_convSlice[string, any](words), cur) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/99-bottles-of-beer-2.go:135:7: cannot use append(_convSlice[string, any](a), _sliceString(p, i, (i + 1))) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/99-bottles-of-beer-2.go:182:6: main redeclared in this block
+	../../tests/rosetta/out/Go/99-bottles-of-beer-2.go:168:6: other declaration of main

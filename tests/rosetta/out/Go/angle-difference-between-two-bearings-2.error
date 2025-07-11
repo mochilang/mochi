@@ -1,0 +1,3 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/angle-difference-between-two-bearings-2.go:12:14: invalid operation: operator % not defined on diff (variable of type float64)

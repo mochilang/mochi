@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:11:10: invalid operation: operator % not defined on d (variable of type float64)
+../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:16:10: invalid operation: operator % not defined on g (variable of type float64)
+../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:21:10: invalid operation: operator % not defined on m (variable of type float64)
+../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:26:10: invalid operation: operator % not defined on r (variable of type float64)
+../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:123:6: main redeclared in this block
+	../../tests/rosetta/out/Go/angles-geometric-normalization-and-conversion.go:90:6: other declaration of main

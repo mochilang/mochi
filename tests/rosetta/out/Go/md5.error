@@ -1,0 +1,35 @@
+output mismatch
+-- got --
+MD5 fail
+  for string,
+  expected:   d41d8cd98f00b204e9800998ecf8427e
+  got:        <nil>
+MD5 fail
+  for string, a
+  expected:   0cc175b9c0f1b6a831c399e269772661
+  got:        <nil>
+MD5 fail
+  for string, abc
+  expected:   900150983cd24fb0d6963f7d28e17f72
+  got:        <nil>
+MD5 fail
+  for string, message digest
+  expected:   f96b697d7cb7938d525a2f31aaf161d0
+  got:        <nil>
+MD5 fail
+  for string, abcdefghijklmnopqrstuvwxyz
+  expected:   c3fcd3d76192e4007dfb496cca67e13b
+  got:        <nil>
+MD5 fail
+  for string, ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
+  expected:   d174ab98d277d9f5a5611c2c9f419d9f
+  got:        <nil>
+MD5 fail
+  for string, 12345678901234567890123456789012345678901234567890123456789012345678901234567890
+  expected:   57edf4a22be3c955ac49da2e2107b67a
+  got:        <nil>
+MD5 fail
+  for string, The quick brown fox jumped over the lazy dog's back
+  expected:   e38ca1d920c4b8b8d3946b2c72f01680
+  got:        <nil>
+-- want --

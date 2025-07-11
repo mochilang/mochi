@@ -243,6 +243,11 @@ out
 # Keep SLT golden files
 !tests/dataset/slt/out
 !tests/dataset/slt/out/**
+# Keep Rosetta Go output
+!tests/rosetta/out
+!tests/rosetta/out/**
+!tests/rosetta/out/Go
+!tests/rosetta/out/Go/*
 
 # Nuxt.js build / generate output
 .nuxt

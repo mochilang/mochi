@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:34:12: cannot use append(_convSlice[int, any](digits), (n % 10)) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:58:9: cannot use append(_convSlice[int, any](res), (s % 10)) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:86:9: cannot use append(_convSlice[int, any](res), diff) (value of type []any) as []int value in assignment
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:130:10: cannot use append(_convSlice[[]int, any](row), bigAdd(row[(len(row) - 1)], val)) (value of type []any) as [][]int value in assignment
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:133:11: cannot use append(_convSlice[[][]int, any](cache), row) (value of type []any) as [][][]int value in assignment
+../../tests/rosetta/out/Go/9-billion-names-of-god-the-integer.go:149:9: cannot use append(_convSlice[string, any](out), bigToString(diff)) (value of type []any) as []string value in assignment

@@ -1,0 +1,3 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/100-doors.go:22:18: invalid operation: operator ! not defined on doors[idx] (variable of interface type any)
