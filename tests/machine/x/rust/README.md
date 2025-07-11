@@ -110,13 +110,13 @@ Compiled programs: 99/100
 
 - [ ] Implement support for dataset joins that currently fail to compile
 - [ ] Handle loading and saving external data
-- [ ] Improve numeric type inference for arithmetic expressions
-- [ ] Support async IO bindings
-- [ ] Implement pattern matching optimizations
-- [ ] Generate documentation comments in output code
-- [ ] Reduce redundant clones in generated loops
-- [ ] Add option to emit cargo project scaffolding
-- [ ] Support streaming large datasets
-- [ ] Implement error handling translation
-- [ ] Support generic functions in Mochi programs
-- [ ] Expand test coverage for edge cases
+- [ ] Improve error messages for complex pattern matches
+- [ ] Add support for generics in function definitions
+- [ ] Optimize tail-recursive calls
+- [ ] Implement module system for multi-file programs
+- [ ] Integrate with Cargo for dependency management
+- [ ] Support async/await syntax
+- [ ] Provide standard library for common utilities
+- [ ] Enhance type inference for nested structs
+- [ ] Implement benchmarking harness
+- [ ] Add code formatting similar to rustfmt
