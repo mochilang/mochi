@@ -2,7 +2,7 @@
 
 This directory contains Python code generated from the Mochi programs in `tests/vm/valid` using the Python compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 99/100 successful.
+Compiled programs: 100/100 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -25,7 +25,7 @@ Compiled programs: 99/100 successful.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+ - [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -103,3 +103,6 @@ Compiled programs: 99/100 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+- [ ] Compare generated code with reference implementations
