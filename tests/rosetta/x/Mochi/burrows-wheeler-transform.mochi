@@ -1,0 +1,123 @@
+// Mochi implementation of Rosetta "Burrows-Wheeler transform" task
+
+let stx = "\002"
+let etx = "\003"
+
+fun contains(s: string, ch: string): bool {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun sortStrings(xs: list<string>): list<string> {
+  var arr = xs
+  var n = len(arr)
+  var i = 0
+  while i < n {
+    var j = 0
+    while j < n - 1 {
+      if arr[j] > arr[j+1] {
+        let tmp = arr[j]
+        arr[j] = arr[j+1]
+        arr[j+1] = tmp
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return arr
+}
+
+fun bwt(s: string): map<string, any> {
+  if contains(s, stx) || contains(s, etx) {
+    return {"err": true, "res": ""}
+  }
+  s = stx + s + etx
+  let le = len(s)
+  var table: list<string> = []
+  var i = 0
+  while i < le {
+    let rot = substring(s, i, le) + substring(s, 0, i)
+    table = append(table, rot)
+    i = i + 1
+  }
+  table = sortStrings(table)
+  var last = ""
+  i = 0
+  while i < le {
+    last = last + substring(table[i], le-1, le)
+    i = i + 1
+  }
+  return {"err": false, "res": last}
+}
+
+fun ibwt(r: string): string {
+  let le = len(r)
+  var table: list<string> = []
+  var i = 0
+  while i < le {
+    table = append(table, "")
+    i = i + 1
+  }
+  var n = 0
+  while n < le {
+    i = 0
+    while i < le {
+      table[i] = substring(r, i, i+1) + table[i]
+      i = i + 1
+    }
+    table = sortStrings(table)
+    n = n + 1
+  }
+  i = 0
+  while i < le {
+    if substring(table[i], le-1, le) == etx {
+      return substring(table[i], 1, le-1)
+    }
+    i = i + 1
+  }
+  return ""
+}
+
+fun makePrintable(s: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == stx { out = out + "^" }
+    else if ch == etx { out = out + "|" }
+    else { out = out + ch }
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let examples = [
+    "banana",
+    "appellee",
+    "dogwood",
+    "TO BE OR NOT TO BE OR WANT TO BE OR NOT?",
+    "SIX.MIXED.PIXIES.SIFT.SIXTY.PIXIE.DUST.BOXES",
+    "\002ABC\003",
+  ]
+  for t in examples {
+    print(makePrintable(t))
+    let res = bwt(t)
+    if res["err"] {
+      print(" --> ERROR: String can't contain STX or ETX")
+      print(" -->")
+    } else {
+      let enc = res["res"] as string
+      print(" --> " + makePrintable(enc))
+      let r = ibwt(enc)
+      print(" --> " + r)
+    }
+    print("")
+  }
+}
+
+main()
