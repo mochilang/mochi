@@ -1,0 +1,26 @@
+fun removeKey(m: map<string, int>, k: string): map<string, int> {
+  var out: map<string, int> = {}
+  for key in m {
+    if key != k {
+      out[key] = m[key]
+    }
+  }
+  return out
+}
+
+fun main() {
+  var x: map<string, int> = null
+  x = {}
+  x["foo"] = 3
+
+  let y1 = x["bar"]
+  let ok = "bar" in x
+  print(y1)
+  print(ok)
+
+  x = removeKey(x, "foo")
+  x = {"foo": 2, "bar": 42, "baz": -1}
+  print(x["foo"], x["bar"], x["baz"])
+}
+
+main()
