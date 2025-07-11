@@ -481,7 +481,13 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for (let %s = %s; %s < %s; %s++) {", f.Name, src, f.Name, end, f.Name))
 	} else {
-		c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
+		if isSimpleIterable(f.Source) {
+			c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
+		} else {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("const %s = %s;", tmp, src))
+			c.writeln(fmt.Sprintf("for (const %s of (Array.isArray(%s) || typeof %s === \"string\" ? %s : Object.keys(%s))) {", f.Name, tmp, tmp, tmp, tmp))
+		}
 	}
 	c.indent++
 	for _, st := range f.Body {
@@ -821,6 +827,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	var whereStr, sortStr, skipStr, takeStr string
+	mutableRes := "const"
 	if q.Where != nil {
 		whereStr, err = c.expr(q.Where)
 		if err != nil {
@@ -845,6 +852,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
+	if sortStr != "" || skipStr != "" || takeStr != "" {
+		mutableRes = "let"
+	}
 
 	if code, ok := c.simpleChainQuery(q, q.Select, src, sel, whereStr, sortStr, skipStr, takeStr); ok {
 		return code, nil
@@ -864,7 +874,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	indent++
 	_, _, aggOK := detectAggCall(q.Select)
 	if !(aggOK && len(q.Froms) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Group == nil) {
-		writeln(fmt.Sprintf("const %s: %s = [];", res, queryResultType(q)))
+		writeln(fmt.Sprintf("%s %s: %s = [];", mutableRes, res, queryResultType(q)))
 	}
 
 	if q.Group != nil {
@@ -1054,7 +1064,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	if sortStr != "" {
-		writeln(fmt.Sprintf("%s = %s.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);", res, res))
+		cmp := "a.key < b.key ? -1 : a.key > b.key ? 1 : 0"
+		if q.Sort != nil && isLiteralComplexUnary(q.Sort.Binary.Left) {
+			cmp = "JSON.stringify(a.key) < JSON.stringify(b.key) ? -1 : JSON.stringify(a.key) > JSON.stringify(b.key) ? 1 : 0"
+		}
+		writeln(fmt.Sprintf("%s = %s.sort((a,b)=> %s).map(x=>x.item);", res, res, cmp))
 	}
 	if skipStr != "" || takeStr != "" {
 		start := "0"
@@ -1702,8 +1716,6 @@ func isSimpleIterable(e *parser.Expr) bool {
 		return true
 	case p.Lit != nil && p.Lit.Str != nil:
 		return true
-	case p.Selector != nil:
-		return true
 	}
 	return false
 }
@@ -1748,8 +1760,12 @@ func (c *Compiler) simpleChainQuery(q *parser.QueryExpr, selExpr *parser.Expr, s
 		pat := regexp.MustCompile(`\b` + regexp.QuoteMeta(q.Var) + `\b`)
 		as := pat.ReplaceAllString(sortStr, "a")
 		bs := pat.ReplaceAllString(sortStr, "b")
+		cmp := as + " < " + bs + " ? -1 : " + as + " > " + bs + " ? 1 : 0"
+		if isLiteralComplexUnary(q.Sort.Binary.Left) {
+			cmp = fmt.Sprintf("JSON.stringify(%s) < JSON.stringify(%s) ? -1 : JSON.stringify(%s) > JSON.stringify(%s) ? 1 : 0", as, bs, as, bs)
+		}
 		b.WriteString(".slice().sort((a,b)=> ")
-		b.WriteString(as + " < " + bs + " ? -1 : " + as + " > " + bs + " ? 1 : 0")
+		b.WriteString(cmp)
 		b.WriteString(")")
 	}
 	if whereStr != "" {

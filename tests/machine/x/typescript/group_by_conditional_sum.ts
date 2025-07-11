@@ -16,7 +16,7 @@ const items = [
 }
 ];
 const result = (() => {
-  const _tmp1: Array<{ cat: any; share: any }> = [];
+  let _tmp1: Array<{ cat: any; share: any }> = [];
   const groups = {};
   for (const i of items) {
     const _k = JSON.stringify(i.cat);

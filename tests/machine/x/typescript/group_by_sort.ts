@@ -5,7 +5,7 @@ const items = [
   {cat: "b", val: 2}
 ];
 const grouped = (() => {
-  const _tmp1: Array<{ cat: any; total: number }> = [];
+  let _tmp1: Array<{ cat: any; total: number }> = [];
   const groups = {};
   for (const i of items) {
     const _k = JSON.stringify(i.cat);
