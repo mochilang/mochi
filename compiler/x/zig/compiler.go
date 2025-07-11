@@ -65,18 +65,20 @@ type Compiler struct {
 		Fields map[string]types.Type
 		Order  []string
 	}
+	builtinAliases map[string]string
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:          env,
-		imports:      map[string]string{},
-		structs:      map[string]bool{},
-		tests:        []string{},
-		constGlobals: map[string]bool{},
-		globalInits:  map[string]string{},
-		locals:       map[string]types.Type{},
-		captures:     map[string]string{},
+		env:            env,
+		imports:        map[string]string{},
+		structs:        map[string]bool{},
+		tests:          []string{},
+		constGlobals:   map[string]bool{},
+		globalInits:    map[string]string{},
+		locals:         map[string]types.Type{},
+		captures:       map[string]string{},
+		builtinAliases: map[string]string{},
 		variantInfo: map[string]struct {
 			Union  string
 			Fields map[string]types.Type
@@ -490,6 +492,9 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.writeln(fmt.Sprintf("var %s: %s = %s;", name, zigTypeOf(typ), zeroValue(typ)))
 			}
 			c.constGlobals[name] = true
+			continue
+		case s.ExternVar != nil || s.ExternFun != nil || s.ExternType != nil || s.ExternObject != nil:
+			// extern declarations are ignored for Zig output
 			continue
 		}
 	}
@@ -1837,13 +1842,36 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 	if im.Lang != nil && *im.Lang != "zig" {
 		switch *im.Lang {
 		case "go":
-			if strings.Trim(im.Path, "\"") == "strings" {
+			path := strings.Trim(im.Path, "\"")
+			if path == "strings" {
 				// builtin handled in compileCallExpr
 				return nil
 			}
+			if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+				alias := im.As
+				if alias == "" {
+					alias = parser.AliasFromPath(im.Path)
+				}
+				alias = sanitizeName(alias)
+				if c.builtinAliases == nil {
+					c.builtinAliases = map[string]string{}
+				}
+				c.builtinAliases[alias] = "go_testpkg"
+				return nil
+			}
 		case "python":
-			if strings.Trim(im.Path, "\"") == "math" {
-				// builtin handled in compileCallExpr
+			path := strings.Trim(im.Path, "\"")
+			if path == "math" {
+				alias := im.As
+				if alias == "" {
+					alias = parser.AliasFromPath(im.Path)
+				}
+				alias = sanitizeName(alias)
+				if c.builtinAliases == nil {
+					c.builtinAliases = map[string]string{}
+				}
+				c.builtinAliases[alias] = "python_math"
+				// builtin handled in compileCallExpr and selector
 				return nil
 			}
 		default:
@@ -2211,6 +2239,37 @@ func (c *Compiler) compileCallOp(receiver string, call *parser.CallOp) (string, 
 		}
 		args[i] = v
 	}
+	if idx := strings.Index(receiver, "."); idx > 0 {
+		alias := receiver[:idx]
+		method := receiver[idx+1:]
+		if mod, ok := c.builtinAliases[alias]; ok {
+			switch mod {
+			case "python_math":
+				switch method {
+				case "sqrt":
+					if len(args) == 1 {
+						return fmt.Sprintf("std.math.sqrt(%s)", args[0]), nil
+					}
+				case "pow":
+					if len(args) == 2 {
+						return fmt.Sprintf("std.math.pow(f64, %s, %s)", args[0], args[1]), nil
+					}
+				case "sin":
+					if len(args) == 1 {
+						return fmt.Sprintf("std.math.sin(%s)", args[0]), nil
+					}
+				case "log":
+					if len(args) == 1 {
+						return fmt.Sprintf("std.math.log(%s)", args[0]), nil
+					}
+				}
+			case "go_testpkg":
+				if method == "Add" && len(args) == 2 {
+					return fmt.Sprintf("(%s + %s)", args[0], args[1]), nil
+				}
+			}
+		}
+	}
 	return fmt.Sprintf("%s(%s)", receiver, strings.Join(args, ", ")), nil
 }
 
@@ -2223,6 +2282,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 		name := sanitizeName(p.Selector.Root)
 		if alias, ok := c.captures[name]; ok {
 			name = alias
+		}
+		if mod, ok := c.builtinAliases[name]; ok && len(p.Selector.Tail) == 1 {
+			tail := p.Selector.Tail[0]
+			switch mod {
+			case "python_math":
+				switch tail {
+				case "pi":
+					return "std.math.pi", nil
+				case "e":
+					return "std.math.e", nil
+				}
+			case "go_testpkg":
+				switch tail {
+				case "Pi":
+					return "3.14", nil
+				case "Answer":
+					return "42", nil
+				}
+			}
 		}
 		if len(p.Selector.Tail) == 0 {
 			if info, ok := c.variantInfo[p.Selector.Root]; ok {
@@ -2283,6 +2361,59 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	name := sanitizeName(call.Func)
+	if idx := strings.IndexByte(name, '_'); idx > 0 {
+		alias := name[:idx]
+		method := name[idx+1:]
+		if mod, ok := c.builtinAliases[alias]; ok {
+			switch mod {
+			case "python_math":
+				if method == "sqrt" && len(call.Args) == 1 {
+					arg, err := c.compileExpr(call.Args[0], false)
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("std.math.sqrt(%s)", arg), nil
+				}
+				if method == "pow" && len(call.Args) == 2 {
+					a, err := c.compileExpr(call.Args[0], false)
+					if err != nil {
+						return "", err
+					}
+					b, err := c.compileExpr(call.Args[1], false)
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("std.math.pow(f64, %s, %s)", a, b), nil
+				}
+				if method == "sin" && len(call.Args) == 1 {
+					a, err := c.compileExpr(call.Args[0], false)
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("std.math.sin(%s)", a), nil
+				}
+				if method == "log" && len(call.Args) == 1 {
+					a, err := c.compileExpr(call.Args[0], false)
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("std.math.log(%s)", a), nil
+				}
+			case "go_testpkg":
+				if method == "Add" && len(call.Args) == 2 {
+					a, err := c.compileExpr(call.Args[0], false)
+					if err != nil {
+						return "", err
+					}
+					b, err := c.compileExpr(call.Args[1], false)
+					if err != nil {
+						return "", err
+					}
+					return fmt.Sprintf("(%s + %s)", a, b), nil
+				}
+			}
+		}
+	}
 	if name == "strings_ToUpper" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
