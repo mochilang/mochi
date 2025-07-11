@@ -1,6 +1,6 @@
 fn main() {
     fn boom() -> bool {
-        println!("{}", "boom");
+        println!("boom");
         return true;
     }
     println!("{}", (1 < 2) && (2 < 3) && (3 < 4));
