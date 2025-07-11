@@ -1,0 +1,8 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/best-shuffle.go:22:11: cannot use append(_convSlice[string, any](chars), _sliceString(s, i, (i + 1))) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/best-shuffle.go:58:16: invalid argument: t (variable of interface type any) for built-in len
+../../tests/rosetta/out/Go/best-shuffle.go:61:9: cannot use append(_convSlice[string, any](arr), _sliceString((t).(string), i, (i + 1))) (value of type []any) as []string value in assignment
+../../tests/rosetta/out/Go/best-shuffle.go:125:11: invalid operation: ((r[1]).(int)) (comma, ok expression of type int) is not an interface
+../../tests/rosetta/out/Go/best-shuffle.go:132:6: main redeclared in this block
+	../../tests/rosetta/out/Go/best-shuffle.go:108:6: other declaration of main

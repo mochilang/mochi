@@ -1,0 +1,86 @@
+fun nextRand(seed: int): int {
+  return (seed * 1664525 + 1013904223) % 2147483647
+}
+
+fun shuffleChars(s: string, seed: int): list<any> {
+  var chars: list<string> = []
+  var i = 0
+  while i < len(s) {
+    chars = append(chars, substring(s, i, i + 1))
+    i = i + 1
+  }
+  var sd = seed
+  var idx = len(chars) - 1
+  while idx > 0 {
+    sd = nextRand(sd)
+    var j = sd % (idx + 1)
+    let tmp = chars[idx]
+    chars[idx] = chars[j]
+    chars[j] = tmp
+    idx = idx - 1
+  }
+  var res = ""
+  i = 0
+  while i < len(chars) {
+    res = res + chars[i]
+    i = i + 1
+  }
+  return [res, sd]
+}
+
+fun bestShuffle(s: string, seed: int): list<any> {
+  let r = shuffleChars(s, seed)
+  var t = r[0]
+  var sd = r[1]
+  var arr: list<string> = []
+  var i = 0
+  while i < len(t) {
+    arr = append(arr, substring(t, i, i + 1))
+    i = i + 1
+  }
+  i = 0
+  while i < len(arr) {
+    var j = 0
+    while j < len(arr) {
+      if i != j && arr[i] != substring(s, j, j + 1) && arr[j] != substring(s, i, i + 1) {
+        let tmp = arr[i]
+        arr[i] = arr[j]
+        arr[j] = tmp
+        break
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  var count = 0
+  i = 0
+  while i < len(arr) {
+    if arr[i] == substring(s, i, i + 1) {
+      count = count + 1
+    }
+    i = i + 1
+  }
+  var out = ""
+  i = 0
+  while i < len(arr) {
+    out = out + arr[i]
+    i = i + 1
+  }
+  return [out, sd, count]
+}
+
+fun main() {
+  let ts = ["abracadabra", "seesaw", "elk", "grrrrrr", "up", "a"]
+  var seed = 1
+  var i = 0
+  while i < len(ts) {
+    let r = bestShuffle(ts[i], seed)
+    let shuf = r[0]
+    seed = r[1]
+    let cnt = r[2]
+    print(ts[i] + " -> " + shuf + " (" + str(cnt) + ")")
+    i = i + 1
+  }
+}
+
+main()
