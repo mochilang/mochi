@@ -165,6 +165,44 @@ func isMapType(t types.Type) bool {
 	return ok
 }
 
+func formatList(elems []string) string {
+	if len(elems) <= 1 {
+		return "[" + strings.Join(elems, ", ") + "]"
+	}
+	var b strings.Builder
+	b.WriteString("[\n")
+	for i, e := range elems {
+		ind := strings.ReplaceAll(e, "\n", "\n    ")
+		b.WriteString("    " + ind)
+		if i < len(elems)-1 {
+			b.WriteString(",\n")
+		} else {
+			b.WriteString("\n")
+		}
+	}
+	b.WriteString("]")
+	return b.String()
+}
+
+func formatMap(items []string) string {
+	if len(items) <= 1 {
+		return "[" + strings.Join(items, ", ") + "]"
+	}
+	var b strings.Builder
+	b.WriteString("[\n")
+	for i, it := range items {
+		ind := strings.ReplaceAll(it, "\n", "\n    ")
+		b.WriteString("    " + ind)
+		if i < len(items)-1 {
+			b.WriteString(",\n")
+		} else {
+			b.WriteString("\n")
+		}
+	}
+	b.WriteString("]")
+	return b.String()
+}
+
 func (c *Compiler) use(name string) {
 	if c.helpers == nil {
 		c.helpers = map[string]bool{}

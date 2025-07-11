@@ -1,7 +1,31 @@
 <?php
-$customers = [["id" => 1, "name" => "Alice"], ["id" => 2, "name" => "Bob"]];
-$orders = [["id" => 100, "customerId" => 1, "total" => 250], ["id" => 101, "customerId" => 3, "total" => 80]];
-$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return ["orderId" => $o['id'], "customer" => $c, "total" => $o['total']];} ]);
+$customers = [
+    [
+        "id" => 1,
+        "name" => "Alice"
+    ],
+    [
+        "id" => 2,
+        "name" => "Bob"
+    ]
+];
+$orders = [
+    [
+        "id" => 100,
+        "customerId" => 1,
+        "total" => 250
+    ],
+    [
+        "id" => 101,
+        "customerId" => 3,
+        "total" => 80
+    ]
+];
+$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return [
+    "orderId" => $o['id'],
+    "customer" => $c,
+    "total" => $o['total']
+];} ]);
 var_dump("--- Left Join ---");
 foreach ($result as $entry) {
     var_dump("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);

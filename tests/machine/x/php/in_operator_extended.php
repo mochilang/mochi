@@ -1,5 +1,9 @@
 <?php
-$xs = [1, 2, 3];
+$xs = [
+    1,
+    2,
+    3
+];
 $ys = (function() use ($xs) {
     $result = [];
     foreach ($xs as $x) {
