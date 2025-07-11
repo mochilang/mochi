@@ -2,7 +2,7 @@ using System;
 
 class Program {
     static void test_addition_works() {
-        long x = (1 + 2);
+        int x = (1 + 2);
         expect((x == 3));
     }
     

@@ -4,32 +4,32 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        var customers = new dynamic[] { new Dictionary<string, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<string, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<string, dynamic> { { "id", 3 }, { "name", "Charlie" } }, new Dictionary<string, dynamic> { { "id", 4 }, { "name", "Diana" } } };
-        var orders = new dynamic[] { new Dictionary<string, long> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<string, long> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<string, long> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } }, new Dictionary<string, long> { { "id", 103 }, { "customerId", 5 }, { "total", 80 } } };
-        var result = new Func<List<Dictionary<string, dynamic>>>(() => {
-    var _res = new List<Dictionary<string, dynamic>>();
+        var customers = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 1 }, { "name", "Alice" } }, new Dictionary<dynamic, dynamic> { { "id", 2 }, { "name", "Bob" } }, new Dictionary<dynamic, dynamic> { { "id", 3 }, { "name", "Charlie" } }, new Dictionary<dynamic, dynamic> { { "id", 4 }, { "name", "Diana" } } };
+        var orders = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "id", 100 }, { "customerId", 1 }, { "total", 250 } }, new Dictionary<dynamic, dynamic> { { "id", 101 }, { "customerId", 2 }, { "total", 125 } }, new Dictionary<dynamic, dynamic> { { "id", 102 }, { "customerId", 1 }, { "total", 300 } }, new Dictionary<dynamic, dynamic> { { "id", 103 }, { "customerId", 5 }, { "total", 80 } } };
+        var result = new Func<List<dynamic>>(() => {
+    var _res = new List<dynamic>();
     foreach (var o in orders) {
-        var _joinItems = new List<Dictionary<string, dynamic>>(customers);
+        var _joinItems = new List<dynamic>(customers);
         var _matched = new bool[_joinItems.Count];
         foreach (var o in orders) {
             bool _m = false;
             for (int i = 0; i < _joinItems.Count; i++) {
                 var c = _joinItems[i];
-                if (!((o["customerId"] == c["id"]))) continue;
+                if (!((o.customerId == c.id))) continue;
                 _m = true;
                 _matched[i] = true;
-                _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } });
+                _res.Add(new Dictionary<dynamic, dynamic> { { "order", o }, { "customer", c } });
             }
             if (!_m) {
-                Dictionary<string, dynamic> c = default;
-                _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } });
+                dynamic c = default;
+                _res.Add(new Dictionary<dynamic, dynamic> { { "order", o }, { "customer", c } });
             }
         }
         for (int i = 0; i < _joinItems.Count; i++) {
             if (!_matched[i]) {
-                Dictionary<string, long> o = default;
+                dynamic o = default;
                 var c = _joinItems[i];
-                _res.Add(new Dictionary<string, dynamic> { { "order", o }, { "customer", c } });
+                _res.Add(new Dictionary<dynamic, dynamic> { { "order", o }, { "customer", c } });
             }
         }
     }
@@ -37,14 +37,14 @@ class Program {
 })();
         Console.WriteLine("--- Outer Join using syntax ---");
         foreach (var row in result) {
-            if (row["order"]) {
-                if (row["customer"]) {
-                    Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(row["order"].id), Convert.ToString("by"), Convert.ToString(row["customer"].name), Convert.ToString("- $"), Convert.ToString(row["order"].total) }));
+            if (row.order) {
+                if (row.customer) {
+                    Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(row.order.id), Convert.ToString("by"), Convert.ToString(row.customer.name), Convert.ToString("- $"), Convert.ToString(row.order.total) }));
                 } else {
-                    Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(row["order"].id), Convert.ToString("by"), Convert.ToString("Unknown"), Convert.ToString("- $"), Convert.ToString(row["order"].total) }));
+                    Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Order"), Convert.ToString(row.order.id), Convert.ToString("by"), Convert.ToString("Unknown"), Convert.ToString("- $"), Convert.ToString(row.order.total) }));
                 }
             } else {
-                Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Customer"), Convert.ToString(row["customer"].name), Convert.ToString("has no orders") }));
+                Console.WriteLine(string.Join(" ", new [] { Convert.ToString("Customer"), Convert.ToString(row.customer.name), Convert.ToString("has no orders") }));
             }
         }
     }

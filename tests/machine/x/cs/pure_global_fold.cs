@@ -6,7 +6,7 @@ class Program {
     }
     
     static void Main() {
-        long k = 2;
+        int k = 2;
         Console.WriteLine(inc(3));
     }
 }

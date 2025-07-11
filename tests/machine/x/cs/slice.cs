@@ -4,8 +4,8 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        Console.WriteLine(string.Join(" ", _sliceList(new long[] { 1, 2, 3 }, 1, 3)));
-        Console.WriteLine(string.Join(" ", _sliceList(new long[] { 1, 2, 3 }, 0, 2)));
+        Console.WriteLine("[" + string.Join(", ", _sliceList(new List<int> { 1, 2, 3 }, 1, 3)) + "]");
+        Console.WriteLine("[" + string.Join(", ", _sliceList(new List<int> { 1, 2, 3 }, 0, 2)) + "]");
         Console.WriteLine(_sliceString("hello", 1, 4));
     }
     static List<dynamic> _sliceList(dynamic l, long i, long j) {

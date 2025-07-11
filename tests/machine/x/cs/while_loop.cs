@@ -2,7 +2,7 @@ using System;
 
 class Program {
     static void Main() {
-        long i = 0;
+        int i = 0;
         while (i < 3) {
             Console.WriteLine(i);
             i = (i + 1);

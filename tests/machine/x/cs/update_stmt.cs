@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 public struct Person {
     public string name;
@@ -8,11 +9,11 @@ public struct Person {
 
 class Program {
     static void test_update_adult_status() {
-        expect((people == new Person[] { new Person { name = "Alice", age = 17, status = "minor" }, new Person { name = "Bob", age = 26, status = "adult" }, new Person { name = "Charlie", age = 19, status = "adult" }, new Person { name = "Diana", age = 16, status = "minor" } }));
+        expect((people == new List<Person> { new Person { name = "Alice", age = 17, status = "minor" }, new Person { name = "Bob", age = 26, status = "adult" }, new Person { name = "Charlie", age = 19, status = "adult" }, new Person { name = "Diana", age = 16, status = "minor" } }));
     }
     
     static void Main() {
-        Person[] people = new Person[] { new Person { name = "Alice", age = 17, status = "minor" }, new Person { name = "Bob", age = 25, status = "unknown" }, new Person { name = "Charlie", age = 18, status = "unknown" }, new Person { name = "Diana", age = 16, status = "minor" } };
+        List<Person> people = new List<Person> { new Person { name = "Alice", age = 17, status = "minor" }, new Person { name = "Bob", age = 25, status = "unknown" }, new Person { name = "Charlie", age = 18, status = "unknown" }, new Person { name = "Diana", age = 16, status = "minor" } };
         for (int _tmp0 = 0; _tmp0 < people.Length; _tmp0++) {
             var _tmp1 = people[_tmp0];
             var name = _tmp1.name;

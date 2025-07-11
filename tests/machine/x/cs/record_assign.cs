@@ -1,19 +1,15 @@
 using System;
 
-public struct Counter
-{
+public struct Counter {
     public long n;
 }
 
-class Program
-{
-    static void inc(Counter c)
-    {
+class Program {
+    static void inc(Counter c) {
         c.n = (c.n + 1);
     }
-
-    static void Main()
-    {
+    
+    static void Main() {
         Counter c = new Counter { n = 0 };
         inc(c);
         Console.WriteLine(c.n);
