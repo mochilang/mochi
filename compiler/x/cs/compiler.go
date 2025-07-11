@@ -34,6 +34,7 @@ type Compiler struct {
 	structHint   string
 	extraStructs []types.StructType
 	structCount  int
+	Namespace    string
 }
 
 // New creates a new C# compiler.
@@ -51,6 +52,7 @@ func New(env *types.Env) *Compiler {
 		structHint:   "",
 		extraStructs: nil,
 		structCount:  0,
+		Namespace:    "",
 	}
 }
 
@@ -87,8 +89,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("using System.Data;")
 	}
 	c.writeln("")
-	if prog.Package != "" {
-		c.writeln("namespace " + sanitizeName(prog.Package) + " {")
+	ns := c.Namespace
+	if ns == "" {
+		ns = prog.Package
+	}
+	if ns != "" {
+		c.writeln("namespace " + sanitizeName(ns) + " {")
 		c.indent++
 	}
 	// Compile Mochi package imports
@@ -223,7 +229,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.indent--
 	c.writeln("}")
-	if prog.Package != "" {
+	ns = c.Namespace
+	if ns == "" {
+		ns = prog.Package
+	}
+	if ns != "" {
 		c.indent--
 		c.writeln("}")
 	}

@@ -40,7 +40,11 @@ func main() {
 			os.Remove(csPath)
 			continue
 		}
-		code, err := cscode.New(env).Compile(prog)
+		comp := cscode.New(env)
+		if ns := os.Getenv("CS_NAMESPACE"); ns != "" {
+			comp.Namespace = ns
+		}
+		code, err := comp.Compile(prog)
 		if err != nil {
 			os.WriteFile(errPath, []byte(err.Error()), 0644)
 			os.Remove(csPath)
