@@ -16,7 +16,7 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 struct __struct2 {
-  decltype(d.tag) key;
+  decltype(std::declval<__struct1>().tag) key;
   std::vector<__struct1> items;
 };
 inline bool operator==(const __struct2 &a, const __struct2 &b) {
@@ -46,7 +46,8 @@ int main() {
       __struct1{std::string("a"), 1}, __struct1{std::string("a"), 2},
       __struct1{std::string("b"), 3}};
   auto groups = ([&]() {
-    std::map<decltype(d.tag), std::vector<__struct1>> __groups;
+    std::map<decltype(std::declval<__struct1>().tag), std::vector<__struct1>>
+        __groups;
     for (auto d : data) {
       __groups[d.tag].push_back(__struct1{d});
     }
