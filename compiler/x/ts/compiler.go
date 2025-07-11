@@ -1334,6 +1334,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	operands := []string{first}
+	nodes := []interface{}{b.Left}
 	typesList := []types.Type{c.inferUnaryType(b.Left)}
 	ops := []string{}
 
@@ -1343,12 +1344,41 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
+		nodes = append(nodes, part.Right)
 		typesList = append(typesList, c.inferPostfixType(part.Right))
 		op := part.Op
 		if part.All {
 			op = op + "_all"
 		}
 		ops = append(ops, op)
+	}
+
+	if len(ops) > 0 && allPlus(ops) && hasString(typesList) {
+		var bldr strings.Builder
+		bldr.WriteByte('`')
+		for i, opnd := range operands {
+			if u, ok := nodes[i].(*parser.Unary); ok {
+				if s, ok2 := stringLiteralFromUnary(u); ok2 {
+					esc := strings.ReplaceAll(s, "`", "\\`")
+					esc = strings.ReplaceAll(esc, "${", "\\${")
+					bldr.WriteString(esc)
+					continue
+				}
+			}
+			if p, ok := nodes[i].(*parser.PostfixExpr); ok {
+				if s, ok2 := stringLiteralFromPostfix(p); ok2 {
+					esc := strings.ReplaceAll(s, "`", "\\`")
+					esc = strings.ReplaceAll(esc, "${", "\\${")
+					bldr.WriteString(esc)
+					continue
+				}
+			}
+			bldr.WriteString("${")
+			bldr.WriteString(opnd)
+			bldr.WriteString("}")
+		}
+		bldr.WriteByte('`')
+		return bldr.String(), nil
 	}
 
 	levels := [][]string{
