@@ -1,0 +1,128 @@
+// Mochi implementation of Rosetta "Averages - Mean time of day" task
+// Computes the circular mean of times given as HH:MM:SS strings.
+
+let PI = 3.141592653589793
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n) * (2*n + 1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n - 1) * (2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun abs(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun atanApprox(x: float): float {
+  if x > 1.0 { return PI/2.0 - x/(x*x + 0.28) }
+  if x < (-1.0) { return -PI/2.0 - x/(x*x + 0.28) }
+  return x/(1.0 + 0.28*x*x)
+}
+
+fun atan2Approx(y: float, x: float): float {
+  if x > 0.0 { return atanApprox(y / x) }
+  if x < 0.0 {
+    if y >= 0.0 { return atanApprox(y / x) + PI }
+    return atanApprox(y / x) - PI
+  }
+  if y > 0.0 { return PI/2.0 }
+  if y < 0.0 { return -PI/2.0 }
+  return 0.0
+}
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && substring(str, 0, 1) == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[substring(str, i, i+1)]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun parseTwo(s: string, idx: int): int {
+  return parseIntStr(substring(s, idx, idx+2))
+}
+
+fun parseTimeSec(s: string): float {
+  let h = parseTwo(s, 0)
+  let m = parseTwo(s, 3)
+  let sec = parseTwo(s, 6)
+  return ((h*60 + m)*60 + sec) as float
+}
+
+fun pad2zero(n: int): string {
+  let s = str(n)
+  if n < 10 { return "0" + s }
+  return s
+}
+
+fun meanTime(times: list<string>): string {
+  var ssum = 0.0
+  var csum = 0.0
+  var i = 0
+  while i < len(times) {
+    let sec = parseTimeSec(times[i])
+    let angle = sec * PI / (12.0 * 60.0 * 60.0)
+    ssum = ssum + sinApprox(angle)
+    csum = csum + cosApprox(angle)
+    i = i + 1
+  }
+  if ssum == 0.0 && csum == 0.0 { return "" }
+  var theta = atan2Approx(ssum, csum)
+  var frac = theta / (2.0 * PI) + 1.0
+  while frac >= 1.0 { frac = frac - 1.0 }
+  while frac < 0.0 { frac = frac + 1.0 }
+  let total = frac * 24.0 * 60.0 * 60.0
+  let secsInt = total as int
+  let h = (secsInt / 3600) as int
+  let m = ((secsInt % 3600) / 60) as int
+  let s = (secsInt % 60) as int
+  return pad2zero(h) + ":" + pad2zero(m) + ":" + pad2zero(s)
+}
+
+fun main() {
+  let inputs = ["23:00:17", "23:40:20", "00:12:45", "00:17:19"]
+  print(meanTime(inputs))
+}
+
+main()
