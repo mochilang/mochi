@@ -5,6 +5,7 @@ package pycode
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -36,6 +37,7 @@ type Compiler struct {
 	structKeys   map[string]string
 	autoCount    int
 	typeHints    bool
+	logger       *log.Logger
 }
 
 func New(env *types.Env) *Compiler {
@@ -55,6 +57,18 @@ func New(env *types.Env) *Compiler {
 		structKeys:   make(map[string]string),
 		autoCount:    0,
 		typeHints:    true,
+		logger:       nil,
+	}
+}
+
+// SetLogger sets the logger used for debug output during compilation.
+func (c *Compiler) SetLogger(l *log.Logger) {
+	c.logger = l
+}
+
+func (c *Compiler) logf(format string, args ...any) {
+	if c.logger != nil {
+		c.logger.Printf(format, args...)
 	}
 }
 
@@ -204,13 +218,16 @@ func (c *Compiler) emitAutoStructs() {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.logf("start compile: %d statements", len(prog.Statements))
 
 	// Collect Python imports first so they can be emitted at the top.
+	c.logf("collecting imports")
 	c.collectImports(prog.Statements)
 
 	// Function declarations
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
+			c.logf("compile function %s", s.Fun.Name)
 			if err := c.compileFunStmt(s.Fun); err != nil {
 				return nil, err
 			}
@@ -221,6 +238,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Type declarations
 	for _, s := range prog.Statements {
 		if s.Type != nil {
+			c.logf("compile type %s", s.Type.Name)
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
 			}
@@ -231,6 +249,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Test blocks
 	for _, s := range prog.Statements {
 		if s.Test != nil {
+			c.logf("compile test %s", s.Test.Name)
 			if err := c.compileTestBlock(s.Test); err != nil {
 				return nil, err
 			}
@@ -249,6 +268,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Fun != nil || s.Type != nil || s.Test != nil {
 			continue
 		}
+		c.logf("compile statement")
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
 		}
@@ -315,6 +335,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(body)
 
 	code := c.buf.Bytes()
+	c.logf("finished compilation")
 	return FormatPy(code), nil
 }
 
