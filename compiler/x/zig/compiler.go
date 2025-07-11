@@ -60,12 +60,23 @@ type Compiler struct {
 	locals            map[string]types.Type
 	funcRet           types.Type
 	captures          map[string]string
+	pointerVars       map[string]bool
 	variantInfo       map[string]struct {
 		Union  string
 		Fields map[string]types.Type
 		Order  []string
 	}
 	builtinAliases map[string]string
+}
+
+func (c *Compiler) pushPointerVars() map[string]bool {
+	old := c.pointerVars
+	c.pointerVars = map[string]bool{}
+	return old
+}
+
+func (c *Compiler) popPointerVars(old map[string]bool) {
+	c.pointerVars = old
 }
 
 func New(env *types.Env) *Compiler {
@@ -78,6 +89,7 @@ func New(env *types.Env) *Compiler {
 		globalInits:    map[string]string{},
 		locals:         map[string]types.Type{},
 		captures:       map[string]string{},
+		pointerVars:    map[string]bool{},
 		builtinAliases: map[string]string{},
 		variantInfo: map[string]struct {
 			Union  string
@@ -205,12 +217,17 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		return nil
 	}
 
+	oldPtr := c.pushPointerVars()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		typ := c.zigType(p.Type)
 		if p.Type != nil && p.Type.Simple != nil {
 			if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
 				typ = "*" + typ
+				c.pointerVars[p.Name] = true
+			} else if _, ok := c.env.GetStruct(*p.Type.Simple); ok {
+				typ = "*" + typ
+				c.pointerVars[p.Name] = true
 			}
 		}
 		params[i] = fmt.Sprintf("%s: %s", sanitizeName(p.Name), typ)
@@ -257,6 +274,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.locals = oldLocals
 	c.funcRet = oldRet
+	c.popPointerVars(oldPtr)
 	c.writeln("}")
 	return nil
 }
@@ -1973,6 +1991,9 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		return nil
 	}
 	lhs := name
+	for _, f := range st.Field {
+		lhs += "." + sanitizeName(f.Name)
+	}
 	if len(st.Index) == 1 && st.Index[0].Colon == nil && c.isMapVar(st.Name) {
 		key, err := c.compileExpr(st.Index[0].Start, false)
 		if err != nil {
@@ -2800,6 +2821,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		for i, p := range fn.Params {
 			if p.Type != nil && p.Type.Simple != nil {
 				if _, ok := c.env.GetUnion(*p.Type.Simple); ok {
+					args[i] = "&" + args[i]
+				} else if _, ok := c.env.GetStruct(*p.Type.Simple); ok {
 					args[i] = "&" + args[i]
 				}
 			}

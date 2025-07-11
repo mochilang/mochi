@@ -6,11 +6,11 @@ const Counter = struct {
 
 var c = Counter{ .n = 0 };
 
-fn inc(c: Counter) void {
-    c = (c.n + 1);
+fn inc(c: *Counter) void {
+    c.n = (c.n + 1);
 }
 
 pub fn main() void {
-    inc(c);
+    inc(&c);
     std.debug.print("{d}\n", .{c.n});
 }
