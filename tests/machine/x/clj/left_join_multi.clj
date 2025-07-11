@@ -87,7 +87,7 @@
   (_query _src [
     {:items customers :leftKey (fn [o] (:customerId o)) :rightKey (fn [c] (:id c))}
     {:items items :leftKey (fn [o c] (:id o)) :rightKey (fn [i] (:orderId i)) :left true}
-  ] { :select (fn [o c i] {:orderId (:id o) :name (:name c) :item i}) }))) ;; list of map of string to any
+  ] { :select (fn [o c i] {:orderId (:id o) :name (:name c) :item i}) }))) ;; list of 
   (println "--- Left Join Multi ---")
   (loop [_tmp0 (seq result)]
     (when _tmp0
@@ -113,3 +113,4 @@
 )
 
 (-main)
+)

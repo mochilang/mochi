@@ -32,7 +32,7 @@
 
 (defn -main []
   (def people [{:name "Alice" :age 30 :city "Paris"} {:name "Bob" :age 15 :city "Hanoi"} {:name "Charlie" :age 65 :city "Paris"} {:name "Diana" :age 45 :city "Hanoi"} {:name "Eve" :age 70 :city "Paris"} {:name "Frank" :age 22 :city "Hanoi"}]) ;; list of 
-  (def stats (map (fn [g] {:city (:key g) :count (count (:Items g)) :avg_age (_avg (vec (->> (for [p (:Items g)] (:age p)))))}) (_group_by people (fn [person] (:city person))))) ;; list of map of string to any
+  (def stats (map (fn [g] {:city (:key g) :count (count (:Items g)) :avg_age (_avg (vec (->> (for [p (:Items g)] (:age p)))))}) (_group_by people (fn [person] (:city person))))) ;; list of 
   (println "--- People grouped by city ---")
   (loop [_tmp0 (seq stats)]
     (when _tmp0
@@ -58,3 +58,4 @@
 )
 
 (-main)
+)

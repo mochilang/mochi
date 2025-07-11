@@ -3,6 +3,22 @@
     [clojure.data.json :as json]
   ))
 
+(defn _escape_json [s]
+  (-> s
+      (clojure.string/replace "\\" "\\\\")
+      (clojure.string/replace "\"" "\\\"")))
+
+(defn _to_json [v]
+  (cond
+    (nil? v) "null"
+    (string? v) (str "\"" (_escape_json v) "\"")
+    (number? v) (str v)
+    (boolean? v) (str v)
+    (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
+    (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
+                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+    :else (str "\"" (_escape_json (str v)) "\"")))
+
 (defn _save [rows path opts]
   (let [fmt (get opts :format "csv")
         header (get opts :header false)

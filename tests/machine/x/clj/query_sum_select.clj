@@ -12,7 +12,7 @@
 
 (defn -main []
   (def nums [1 2 3]) ;; list of int
-  (def result (_sum (vec (->> (for [n nums :when (> n 1)] n))))) ;; list of float
+  (def result (_sum (vec (->> (for [n nums :when (> n 1)] n))))) ;; list of int
   (println result)
 )
 

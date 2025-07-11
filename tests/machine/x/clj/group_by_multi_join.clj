@@ -32,9 +32,10 @@
   (def nations [{:id 1 :name "A"} {:id 2 :name "B"}]) ;; list of 
   (def suppliers [{:id 1 :nation 1} {:id 2 :nation 2}]) ;; list of 
   (def partsupp [{:part 100 :supplier 1 :cost 10.0 :qty 2} {:part 100 :supplier 2 :cost 20.0 :qty 1} {:part 200 :supplier 1 :cost 5.0 :qty 3}]) ;; list of 
-  (def filtered (vec (->> (for [ps partsupp s suppliers :when (= (:id s) (:supplier ps)) n nations :when (= (:id n) (:nation s)) :when (= (:name n) "A")] {:part (:part ps) :value (* (:cost ps) (:qty ps))})))) ;; list of map of string to any
-  (def grouped (map (fn [g] {:part (:key g) :total (_sum (vec (->> (for [r (:Items g)] (:value r)))))}) (_group_by filtered (fn [x] (:part x))))) ;; list of map of string to any
+  (def filtered (vec (->> (for [ps partsupp s suppliers :when (= (:id s) (:supplier ps)) n nations :when (= (:id n) (:nation s)) :when (= (:name n) "A")] {:part (:part ps) :value (* (:cost ps) (:qty ps))})))) ;; list of 
+  (def grouped (map (fn [g] {:part (:key g) :total (_sum (vec (->> (for [r (:Items g)] (:value r)))))}) (_group_by filtered (fn [x] (:part x))))) ;; list of 
   (println grouped)
 )
 
 (-main)
+)

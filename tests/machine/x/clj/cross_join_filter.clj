@@ -5,7 +5,7 @@
 (defn -main []
   (def nums [1 2 3]) ;; list of int
   (def letters ["A" "B"]) ;; list of string
-  (def pairs (vec (->> (for [n nums :when (= (mod n 2) 0) l letters] {:n n :l l})))) ;; list of map of string to any
+  (def pairs (vec (->> (for [n nums :when (= (mod n 2) 0) l letters] {:n n :l l})))) ;; list of 
   (println "--- Even pairs ---")
   (loop [_tmp0 (seq pairs)]
     (when _tmp0

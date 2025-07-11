@@ -5,7 +5,7 @@
 (defn -main []
   (def customers [{:id 1 :name "Alice"} {:id 2 :name "Bob"} {:id 3 :name "Charlie"}]) ;; list of 
   (def orders [{:id 100 :customerId 1 :total 250} {:id 101 :customerId 2 :total 125} {:id 102 :customerId 1 :total 300}]) ;; list of 
-  (def result (vec (->> (for [o orders c customers] {:orderId (:id o) :orderCustomerId (:customerId o) :pairedCustomerName (:name c) :orderTotal (:total o)})))) ;; list of map of string to any
+  (def result (vec (->> (for [o orders c customers] {:orderId (:id o) :orderCustomerId (:customerId o) :pairedCustomerName (:name c) :orderTotal (:total o)})))) ;; list of 
   (println "--- Cross Join: All order-customer pairs ---")
   (loop [_tmp0 (seq result)]
     (when _tmp0

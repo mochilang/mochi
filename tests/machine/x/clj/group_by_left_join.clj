@@ -106,7 +106,7 @@
       ] { :select (fn [c o] [c o]) })
       _groups (_group_by _rows (fn [c o] (:name c)))
       ]
-  (vec (map (fn [g] {:name (:key g) :count (count (vec (->> (for [r (:Items g) :when (:o r)] r))))}) _groups)))) ;; list of map of string to any
+  (vec (map (fn [g] {:name (:key g) :count (count (vec (->> (for [r (:Items g) :when (:o r)] r))))}) _groups)))) ;; list of 
   (println "--- Group Left Join ---")
   (loop [_tmp0 (seq stats)]
     (when _tmp0
@@ -132,3 +132,5 @@
 )
 
 (-main)
+)
+)

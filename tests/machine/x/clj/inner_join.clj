@@ -5,7 +5,7 @@
 (defn -main []
   (def customers [{:id 1 :name "Alice"} {:id 2 :name "Bob"} {:id 3 :name "Charlie"}]) ;; list of 
   (def orders [{:id 100 :customerId 1 :total 250} {:id 101 :customerId 2 :total 125} {:id 102 :customerId 1 :total 300} {:id 103 :customerId 4 :total 80}]) ;; list of 
-  (def result (vec (->> (for [o orders c customers :when (= (:customerId o) (:id c))] {:orderId (:id o) :customerName (:name c) :total (:total o)})))) ;; list of map of string to any
+  (def result (vec (->> (for [o orders c customers :when (= (:customerId o) (:id c))] {:orderId (:id o) :customerName (:name c) :total (:total o)})))) ;; list of 
   (println "--- Orders with customer info ---")
   (loop [_tmp0 (seq result)]
     (when _tmp0
