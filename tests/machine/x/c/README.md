@@ -139,3 +139,13 @@ Checklist:
 - [ ] Allow inline assembly blocks
 - [ ] Support 64-bit integer types
 - [ ] Generate debug symbols for gdb
+- [ ] Improve constant folding for arithmetic expressions
+- [ ] Add support for struct method receivers
+- [ ] Implement union type pattern matching
+- [ ] Generate C99 designated initializers
+- [ ] Support builtin regex operations
+- [ ] Provide configuration for custom allocators
+- [ ] Implement dead code elimination pass
+- [ ] Add benchmarking harness for generated C
+- [ ] Support optional parameters in functions
+- [ ] Document runtime error handling conventions
