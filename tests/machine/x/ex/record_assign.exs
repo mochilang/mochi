@@ -7,7 +7,7 @@ defmodule Main do
   @spec inc(Counter) :: nil
   def inc(c) do
     try do
-      c = _structify(Counter, c.n + 1)
+      c = %{c | n: c.n + 1}
     catch
       {:return, v} -> v
     end
@@ -23,6 +23,9 @@ defmodule Main do
 
   defp _structify(mod, v) do
     cond do
+      is_struct(v) ->
+        v
+
       is_map(v) ->
         m =
           Enum.reduce(v, %{}, fn {k, val}, acc ->
