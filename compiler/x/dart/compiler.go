@@ -735,7 +735,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						return "", err
 					}
 				}
-				val = fmt.Sprintf("((%s is String) ? %s.substring(%s, %s) : (%s as List).sublist(%s, %s))", val, val, start, end, val, start, end)
+				switch tt := t.(type) {
+				case types.StringType:
+					val = fmt.Sprintf("%s.substring(%s, %s)", val, start, end)
+					t = types.StringType{}
+				case types.ListType:
+					val = fmt.Sprintf("%s.sublist(%s, %s)", val, start, end)
+					t = tt
+				default:
+					val = fmt.Sprintf("((%s is String) ? %s.substring(%s, %s) : (%s as List).sublist(%s, %s))", val, val, start, end, val, start, end)
+				}
 			} else {
 				if op.Index.Start == nil {
 					return "", fmt.Errorf("missing index expression")

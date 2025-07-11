@@ -116,3 +116,13 @@ Checklist:
 - [ ] Support generics for collections
 - [ ] Provide integration tests with Dart packages
 - [ ] Optimize string handling
+- [ ] Refactor code generation for readability
+- [ ] Add command-line tool for running compiled programs
+- [ ] Document compiler options and flags
+- [ ] Add support for custom operator overloading
+- [ ] Integrate with continuous integration pipeline
+- [ ] Improve performance of generated loops
+- [ ] Validate Unicode handling in strings
+- [ ] Implement detailed logging for compiler steps
+- [ ] Expand unit test coverage for the compiler
+- [ ] Explore interoperability with Flutter projects
