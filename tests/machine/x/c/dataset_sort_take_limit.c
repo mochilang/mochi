@@ -19,6 +19,20 @@ static list_ProductsItem list_ProductsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_productsItem(list_ProductsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ProductsItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("price:");
+    printf("%d", s.price);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   ProductsItem tmp1_data[] = {

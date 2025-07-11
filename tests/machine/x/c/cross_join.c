@@ -19,6 +19,20 @@ static list_CustomersItem list_CustomersItem_create(int len) {
   }
   return l;
 }
+static void _print_list_customersItem(list_CustomersItem v) {
+  for (int i = 0; i < v.len; i++) {
+    CustomersItem s = v.data[i];
+    printf("map[");
+    printf("id:");
+    printf("%d", s.id);
+    printf(" ");
+    printf("name:");
+    printf("%s", s.name);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int id;
@@ -38,6 +52,23 @@ static list_OrdersItem list_OrdersItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_ordersItem(list_OrdersItem v) {
+  for (int i = 0; i < v.len; i++) {
+    OrdersItem s = v.data[i];
+    printf("map[");
+    printf("id:");
+    printf("%d", s.id);
+    printf(" ");
+    printf("customerId:");
+    printf("%d", s.customerId);
+    printf(" ");
+    printf("total:");
+    printf("%d", s.total);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 typedef struct {
@@ -59,6 +90,26 @@ static list_ResultItem list_ResultItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_resultItem(list_ResultItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ResultItem s = v.data[i];
+    printf("map[");
+    printf("orderId:");
+    printf("%d", s.orderId);
+    printf(" ");
+    printf("orderCustomerId:");
+    printf("%d", s.orderCustomerId);
+    printf(" ");
+    printf("pairedCustomerName:");
+    printf("%s", s.pairedCustomerName);
+    printf(" ");
+    printf("orderTotal:");
+    printf("%d", s.orderTotal);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {

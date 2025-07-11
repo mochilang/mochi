@@ -1,7 +1,7 @@
 line: 0
 error: output mismatch
 -- got --
-2
+map[part:100 total:0] map[part:200 total:0]
 -- want --
 map[part:100 total:20] map[part:200 total:15]
    1: #include <stdio.h>

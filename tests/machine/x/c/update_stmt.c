@@ -22,6 +22,32 @@ static list_Person list_Person_create(int len) {
   }
   return l;
 }
+static void _print_list_Person(list_Person v) {
+  for (int i = 0; i < v.len; i++) {
+    Person s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf(" ");
+    printf("status:");
+    printf("%s", s.status);
+    printf(" ");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf(" ");
+    printf("status:");
+    printf("%s", s.status);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 static void test_update_adult_status() {
   Person tmp1_data[] = {

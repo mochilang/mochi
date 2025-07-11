@@ -73,6 +73,20 @@ static list_PeopleItem list_PeopleItem_create(int len) {
   }
   return l;
 }
+static void _print_list_peopleItem(list_PeopleItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PeopleItem s = v.data[i];
+    printf("map[");
+    printf("name:");
+    printf("%s", s.name);
+    printf(" ");
+    printf("age:");
+    printf("%d", s.age);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   PeopleItem tmp1_data[] = {(PeopleItem){.name = "Alice", .age = 30},

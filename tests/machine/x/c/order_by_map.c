@@ -71,6 +71,20 @@ static list_DataItem list_DataItem_create(int len) {
   }
   return l;
 }
+static void _print_list_dataItem(list_DataItem v) {
+  for (int i = 0; i < v.len; i++) {
+    DataItem s = v.data[i];
+    printf("map[");
+    printf("a:");
+    printf("%d", s.a);
+    printf(" ");
+    printf("b:");
+    printf("%d", s.b);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   DataItem tmp1_data[] = {(DataItem){.a = 1, .b = 2},
@@ -105,6 +119,7 @@ int main() {
     }
   }
   list_DataItem sorted = tmp2;
-  printf("%d\n", sorted);
+  _print_list_dataItem(sorted);
+  printf("\n");
   return 0;
 }

@@ -1,8 +1,8 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_having.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_having.c:217:13: error: incompatible type for argument 1 of ‘_json_int’
-  217 |   _json_int(big);
+/workspace/mochi/tests/machine/x/c/group_by_having.c:245:13: error: incompatible type for argument 1 of ‘_json_int’
+  245 |   _json_int(big);
       |             ^~~
       |             |
       |             list_BigItem

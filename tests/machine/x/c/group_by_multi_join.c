@@ -92,6 +92,20 @@ static list_NationsItem list_NationsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_nationsItem(list_NationsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    NationsItem s = v.data[i];
+    printf("map[");
+    printf("id:");
+    printf("%d", s.id);
+    printf(" ");
+    printf("name:");
+    printf("%s", s.name);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int id;
@@ -110,6 +124,20 @@ static list_SuppliersItem list_SuppliersItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_suppliersItem(list_SuppliersItem v) {
+  for (int i = 0; i < v.len; i++) {
+    SuppliersItem s = v.data[i];
+    printf("map[");
+    printf("id:");
+    printf("%d", s.id);
+    printf(" ");
+    printf("nation:");
+    printf("%d", s.nation);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 typedef struct {
@@ -132,6 +160,26 @@ static list_PartsuppItem list_PartsuppItem_create(int len) {
   }
   return l;
 }
+static void _print_list_partsuppItem(list_PartsuppItem v) {
+  for (int i = 0; i < v.len; i++) {
+    PartsuppItem s = v.data[i];
+    printf("map[");
+    printf("part:");
+    printf("%d", s.part);
+    printf(" ");
+    printf("supplier:");
+    printf("%d", s.supplier);
+    printf(" ");
+    printf("cost:");
+    printf("%g", s.cost);
+    printf(" ");
+    printf("qty:");
+    printf("%d", s.qty);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int part;
@@ -151,6 +199,20 @@ static list_FilteredItem list_FilteredItem_create(int len) {
   }
   return l;
 }
+static void _print_list_filteredItem(list_FilteredItem v) {
+  for (int i = 0; i < v.len; i++) {
+    FilteredItem s = v.data[i];
+    printf("map[");
+    printf("part:");
+    printf("%d", s.part);
+    printf(" ");
+    printf("value:");
+    printf("%g", s.value);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   int part;
@@ -169,6 +231,20 @@ static list_GroupedItem list_GroupedItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_groupedItem(list_GroupedItem v) {
+  for (int i = 0; i < v.len; i++) {
+    GroupedItem s = v.data[i];
+    printf("map[");
+    printf("part:");
+    printf("%d", s.part);
+    printf(" ");
+    printf("total:");
+    printf("%g", s.total);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {
@@ -251,6 +327,7 @@ int main() {
   }
   tmp14.len = tmp15;
   list_GroupedItem grouped = tmp14;
-  printf("%d\n", grouped);
+  _print_list_groupedItem(grouped);
+  printf("\n");
   return 0;
 }

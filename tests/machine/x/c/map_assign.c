@@ -18,6 +18,17 @@ static list_ScoresItem list_ScoresItem_create(int len) {
   }
   return l;
 }
+static void _print_list_scoresItem(list_ScoresItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ScoresItem s = v.data[i];
+    printf("map[");
+    printf("alice:");
+    printf("%d", s.alice);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   ScoresItem scores = (ScoresItem){.alice = 1};

@@ -69,6 +69,7 @@ type Compiler struct {
 	structs        map[string]bool
 	listStructs    map[string]bool
 	fetchStructs   map[string]bool
+	printStructs   map[string]bool
 	currentStruct  string
 	autoType       bool
 	captures       map[string]captureInfo
@@ -99,6 +100,7 @@ func New(env *types.Env) *Compiler {
 		structs:        map[string]bool{},
 		listStructs:    map[string]bool{},
 		fetchStructs:   map[string]bool{},
+		printStructs:   map[string]bool{},
 		externObjects:  []string{},
 		captures:       map[string]captureInfo{},
 		capturesByFun:  map[string][]string{},
@@ -787,6 +789,38 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 	c.writeln("return l;")
 	c.indent--
 	c.writeln("}")
+
+	name := "_print_list_" + sanitizeName(st.Name)
+	if !c.printStructs[name] {
+		c.printStructs[name] = true
+		c.writeln(fmt.Sprintf("static void %s(%s v){", name, listName))
+		c.indent++
+		c.writeln("for(int i=0;i<v.len;i++){")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s s=v.data[i];", sanitizeTypeName(st.Name)))
+		c.writeln("printf(\"map[\");")
+		for idx, fn := range st.Order {
+			if idx > 0 {
+				c.writeln("printf(\" \" );")
+			}
+			c.writeln(fmt.Sprintf("printf(\"%s:\");", fn))
+			fe := fmt.Sprintf("s.%s", sanitizeName(fn))
+			switch st.Fields[fn].(type) {
+			case types.IntType, types.BoolType:
+				c.writeln(fmt.Sprintf("printf(\"%%d\", %s);", fe))
+			case types.FloatType:
+				c.writeln(fmt.Sprintf("printf(\"%%g\", %s);", fe))
+			case types.StringType:
+				c.writeln(fmt.Sprintf("printf(\"%%s\", %s);", fe))
+			}
+		}
+		c.writeln("printf(\"]\");")
+		c.writeln("if(i<v.len-1) printf(\" \" );")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+	}
 }
 
 func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
@@ -4299,6 +4333,39 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\"\\n\");")
 					} else {
 						c.writeln("printf(\" \");")
+					}
+				} else if lt, ok := c.exprType(a).(types.ListType); ok {
+					if st, ok2 := lt.Elem.(types.StructType); ok2 {
+						c.compileStructListType(st)
+						name := "_print_list_" + sanitizeName(st.Name)
+						c.writeln(fmt.Sprintf("%s(%s);", name, argExpr))
+						if i == len(p.Call.Args)-1 {
+							c.writeln("printf(\"\\n\");")
+						} else {
+							c.writeln("printf(\" \");")
+						}
+					} else {
+						if isBoolArg(a, c.env) {
+							end := " "
+							if i == len(p.Call.Args)-1 {
+								end = "\\n"
+							}
+							c.writeln(fmt.Sprintf("printf(\"%%s%s\", (%s)?\"true\":\"false\");", end, argExpr))
+						} else {
+							fmtStr := "%d"
+							if isStringArg(a, c.env) {
+								fmtStr = "%s"
+							} else if isFloatArg(a, c.env) {
+								fmtStr = "%.16g"
+							} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
+								fmtStr = "%.16g"
+							}
+							end := " "
+							if i == len(p.Call.Args)-1 {
+								end = "\\n"
+							}
+							c.writeln(fmt.Sprintf("printf(\"%s%s\", %s);", fmtStr, end, argExpr))
+						}
 					}
 				} else {
 					if isBoolArg(a, c.env) {

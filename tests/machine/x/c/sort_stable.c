@@ -41,6 +41,20 @@ static list_ItemsItem list_ItemsItem_create(int len) {
   }
   return l;
 }
+static void _print_list_itemsItem(list_ItemsItem v) {
+  for (int i = 0; i < v.len; i++) {
+    ItemsItem s = v.data[i];
+    printf("map[");
+    printf("n:");
+    printf("%d", s.n);
+    printf(" ");
+    printf("v:");
+    printf("%s", s.v);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   ItemsItem tmp1_data[] = {(ItemsItem){.n = 1, .v = "a"},

@@ -18,6 +18,17 @@ static list_OuterItem list_OuterItem_create(int len) {
   }
   return l;
 }
+static void _print_list_outerItem(list_OuterItem v) {
+  for (int i = 0; i < v.len; i++) {
+    OuterItem s = v.data[i];
+    printf("map[");
+    printf("inner:");
+    printf("%d", s.inner);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 typedef struct {
   OuterItem outer;
@@ -35,6 +46,16 @@ static list_DataItem list_DataItem_create(int len) {
     exit(1);
   }
   return l;
+}
+static void _print_list_dataItem(list_DataItem v) {
+  for (int i = 0; i < v.len; i++) {
+    DataItem s = v.data[i];
+    printf("map[");
+    printf("outer:");
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
 }
 
 int main() {

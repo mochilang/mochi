@@ -49,6 +49,23 @@ static list_CombosItem list_CombosItem_create(int len) {
   }
   return l;
 }
+static void _print_list_combosItem(list_CombosItem v) {
+  for (int i = 0; i < v.len; i++) {
+    CombosItem s = v.data[i];
+    printf("map[");
+    printf("n:");
+    printf("%d", s.n);
+    printf(" ");
+    printf("l:");
+    printf("%s", s.l);
+    printf(" ");
+    printf("b:");
+    printf("%d", s.b);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   int tmp1_data[] = {1, 2};

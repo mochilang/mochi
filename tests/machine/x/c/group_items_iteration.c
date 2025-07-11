@@ -136,6 +136,20 @@ static list_DataItem list_DataItem_create(int len) {
   }
   return l;
 }
+static void _print_list_dataItem(list_DataItem v) {
+  for (int i = 0; i < v.len; i++) {
+    DataItem s = v.data[i];
+    printf("map[");
+    printf("tag:");
+    printf("%s", s.tag);
+    printf(" ");
+    printf("val:");
+    printf("%d", s.val);
+    printf("]");
+    if (i < v.len - 1)
+      printf(" ");
+  }
+}
 
 int main() {
   DataItem tmp1_data[] = {(DataItem){.tag = "a", .val = 1},
