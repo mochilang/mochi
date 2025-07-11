@@ -1422,7 +1422,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		elemType := "int"
 		if len(elems) > 0 {
-			elemType = fmt.Sprintf("decltype(%s)", elems[0])
+			if t := structLiteralType(elems[0]); t != "" {
+				elemType = t
+			} else if t := c.varStruct[elems[0]]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					elemType = t[:idx]
+				} else {
+					elemType = t
+				}
+			} else {
+				elemType = fmt.Sprintf("decltype(%s)", elems[0])
+			}
 		}
 		return fmt.Sprintf("std::vector<%s>{%s}", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:

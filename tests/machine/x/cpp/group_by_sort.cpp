@@ -16,63 +16,71 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 struct __struct2 {
-  decltype(std::declval<__struct1>().cat) key;
-  std::vector<__struct1> items;
+  decltype(i) i;
 };
 inline bool operator==(const __struct2 &a, const __struct2 &b) {
-  return a.key == b.key && a.items == b.items;
+  return a.i == b.i;
 }
 inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
 struct __struct3 {
-  decltype(std::declval<__struct2>().key) cat;
-  bool total;
+  decltype(i.cat) key;
+  std::vector<__struct2> items;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
-  return a.cat == b.cat && a.total == b.total;
+  return a.key == b.key && a.items == b.items;
 }
 inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
+struct __struct4 {
+  decltype(std::declval<__struct3>().key) cat;
+  bool total;
+};
+inline bool operator==(const __struct4 &a, const __struct4 &b) {
+  return a.cat == b.cat && a.total == b.total;
+}
+inline bool operator!=(const __struct4 &a, const __struct4 &b) {
+  return !(a == b);
+}
 int main() {
-  std::vector<__struct1> items =
-      std::vector<decltype(__struct1{std::string("a"), 3})>{
-          __struct1{std::string("a"), 3}, __struct1{std::string("a"), 1},
-          __struct1{std::string("b"), 5}, __struct1{std::string("b"), 2}};
+  auto items = std::vector<__struct1>{
+      __struct1{std::string("a"), 3}, __struct1{std::string("a"), 1},
+      __struct1{std::string("b"), 5}, __struct1{std::string("b"), 2}};
   auto grouped = ([&]() {
-    std::vector<__struct2> __groups;
+    std::vector<__struct3> __groups;
     for (auto i : items) {
       auto __key = i.cat;
       bool __found = false;
       for (auto &__g : __groups) {
         if (__g.key == __key) {
-          __g.items.push_back(__struct1{i});
+          __g.items.push_back(__struct2{i});
           __found = true;
           break;
         }
       }
       if (!__found) {
         __groups.push_back(
-            __struct2{__key, std::vector<__struct1>{__struct1{i}}});
+            __struct3{__key, std::vector<__struct2>{__struct2{i}}});
       }
     }
-    std::vector<std::pair<double, __struct3>> __items;
+    std::vector<std::pair<double, __struct4>> __items;
     for (auto &g : __groups) {
       __items.push_back(
           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
                ([&]() {
-                 std::vector<decltype(std::declval<__struct1>().val)> __items;
+                 std::vector<decltype(std::declval<__struct2>().val)> __items;
                  for (auto x : g.items) {
                    __items.push_back(x.val);
                  }
                  return __items;
                })())),
-           __struct3{
+           __struct4{
                g.key, ([&](auto v) {
                  return std::accumulate(v.begin(), v.end(), 0);
                })(([&]() {
-                 std::vector<decltype(std::declval<__struct1>().val)> __items;
+                 std::vector<decltype(std::declval<__struct2>().val)> __items;
                  for (auto x : g.items) {
                    __items.push_back(x.val);
                  }
@@ -81,7 +89,7 @@ int main() {
     }
     std::sort(__items.begin(), __items.end(),
               [](auto &a, auto &b) { return a.first < b.first; });
-    std::vector<__struct3> __res;
+    std::vector<__struct4> __res;
     for (auto &p : __items)
       __res.push_back(p.second);
     return __res;
