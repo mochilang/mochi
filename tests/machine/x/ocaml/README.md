@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 68/97 successful.
+Compiled programs: 68/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
@@ -26,6 +26,7 @@ Compiled programs: 68/97 successful.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
+- [ ] go_auto.mochi
 - [ ] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
@@ -73,6 +74,8 @@ Compiled programs: 68/97 successful.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
 - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
 - [ ] right_join.mochi
@@ -107,3 +110,13 @@ Compiled programs: 68/97 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
+- [ ] Optimize tail recursion to loops
+- [ ] Support OCaml modules for multi-file outputs
+- [ ] Generate variant types for union constructs
+- [ ] Improve runtime error messages with context
+- [ ] Comment code with inferred types
+- [ ] Provide CLI tool `mochi-ocaml` for users
+- [ ] Offer interactive REPL using OCaml backend
+- [ ] Add property-based tests for compiler output
+- [ ] Document mapping between Mochi and OCaml
+- [ ] Benchmark compiled code performance

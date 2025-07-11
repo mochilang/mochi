@@ -23,7 +23,7 @@ type record2 = { mutable c_custkey : int; mutable c_name : string; mutable c_acc
 type record3 = { mutable o_orderkey : int; mutable o_custkey : int; mutable o_orderdate : string }
 type record4 = { mutable l_orderkey : int; mutable l_returnflag : string; mutable l_extendedprice : float; mutable l_discount : float }
 type record5 = { mutable c_custkey : Obj.t; mutable c_name : Obj.t; mutable c_acctbal : Obj.t; mutable c_address : Obj.t; mutable c_phone : Obj.t; mutable c_comment : Obj.t; mutable n_name : Obj.t }
-type record6 = { mutable c_custkey : Obj.t; mutable c_name : Obj.t; mutable revenue : float; mutable c_acctbal : Obj.t; mutable n_name : Obj.t; mutable c_address : Obj.t; mutable c_phone : Obj.t; mutable c_comment : Obj.t }
+type record6 = { mutable c_custkey : Obj.t; mutable c_name : Obj.t; mutable revenue : int; mutable c_acctbal : Obj.t; mutable n_name : Obj.t; mutable c_address : Obj.t; mutable c_phone : Obj.t; mutable c_comment : Obj.t }
 
 let nation : record1 list = [{ n_nationkey = 1; n_name = "BRAZIL" }]
 let customer : record2 list = [{ c_custkey = 1; c_name = "Alice"; c_acctbal = 100; c_nationkey = 1; c_address = "123 St"; c_phone = "123-456"; c_comment = "Loyal" }]
@@ -31,7 +31,7 @@ let orders : record3 list = [{ o_orderkey = 1000; o_custkey = 1; o_orderdate = "
 let lineitem : record4 list = [{ l_orderkey = 1000; l_returnflag = "R"; l_extendedprice = 1000; l_discount = 0.1 };{ l_orderkey = 2000; l_returnflag = "N"; l_extendedprice = 500; l_discount = 0 }]
 let start_date : string = "1993-10-01"
 let end_date : string = "1994-01-01"
-let result : (string * Obj.t) list list = (let __groups0 = ref [] in
+let result : record6 list = (let __groups0 = ref [] in
   List.iter (fun c ->
       List.iter (fun o ->
             List.iter (fun l ->

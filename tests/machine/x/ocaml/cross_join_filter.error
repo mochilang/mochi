@@ -1,16 +1,15 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/cross_join_filter.ml", line 33, characters 0-16:
-33 | List.rev !__res0)
-     ^^^^^^^^^^^^^^^^
+File "/workspace/mochi/tests/machine/x/ocaml/cross_join_filter.ml", line 47, characters 16-21:
+47 |     try __loop1 pairs with Break -> ()
+                     ^^^^^
 Error: This expression has type record1 list
        but an expression was expected of type (string * Obj.t) list list
        Type record1 is not compatible with type (string * Obj.t) list 
 
 
-Context (around line 33):
-  31 |       ) letters;
-  32 |   ) nums;
-  33 | List.rev !__res0)
-  34 | 
-  35 | 
+Context (around line 47):
+  45 |         ; __loop1 rest
+  46 |     in
+  47 |     try __loop1 pairs with Break -> ()
+  48 | 

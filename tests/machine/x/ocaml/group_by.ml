@@ -24,7 +24,7 @@
   type record2 = { mutable city : Obj.t; mutable count : int; mutable avg_age : float }
 
 let people : record1 list = [{ name = "Alice"; age = 30; city = "Paris" };{ name = "Bob"; age = 15; city = "Hanoi" };{ name = "Charlie"; age = 65; city = "Paris" };{ name = "Diana"; age = 45; city = "Hanoi" };{ name = "Eve"; age = 70; city = "Paris" };{ name = "Frank"; age = 22; city = "Hanoi" }]
-let stats : (string * Obj.t) list list = (let __groups0 = ref [] in
+let stats : record2 list = (let __groups0 = ref [] in
   List.iter (fun person ->
       let key = Obj.obj (List.assoc "city" person) in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in

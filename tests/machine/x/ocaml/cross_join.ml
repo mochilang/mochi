@@ -25,7 +25,7 @@
 
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" }]
 let orders : record2 list = [{ id = 100; customerId = 1; total = 250 };{ id = 101; customerId = 2; total = 125 };{ id = 102; customerId = 1; total = 300 }]
-let result : (string * Obj.t) list list = (let __res0 = ref [] in
+let result : record3 list = (let __res0 = ref [] in
   List.iter (fun o ->
       List.iter (fun c ->
               __res0 := { orderId = Obj.obj (List.assoc "id" o); orderCustomerId = Obj.obj (List.assoc "customerId" o); pairedCustomerName = Obj.obj (List.assoc "name" c); orderTotal = Obj.obj (List.assoc "total" o) } :: !__res0;

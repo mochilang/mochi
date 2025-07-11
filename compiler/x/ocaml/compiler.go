@@ -1995,7 +1995,11 @@ func (c *Compiler) ocamlType(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("(%s * Obj.t) list", c.ocamlType(tt.Key))
 	case types.GroupType:
-		return c.ocamlType(tt.Elem) + " list"
+		key := c.ocamlType(tt.Key)
+		if key == "" {
+			key = "Obj.t"
+		}
+		return fmt.Sprintf("(%s,%s) group", key, c.ocamlType(tt.Elem))
 	case types.StructType:
 		name := tt.Name
 		if name == "" {

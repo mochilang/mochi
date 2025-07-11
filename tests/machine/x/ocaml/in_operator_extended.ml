@@ -26,7 +26,7 @@ let ys : int list = (let __res0 = ref [] in
   ) xs;
 List.rev !__res0)
 
-let m : (string * Obj.t) list = { a = 1 }
+let m : record1 = { a = 1 }
 let s : string = "hello"
 
 let () =

@@ -18,7 +18,7 @@ let rec __show v =
 let sum lst = List.fold_left (+) 0 lst
 
 let nums : int list = [1;2;3]
-let result : float list = (let __res0 = ref [] in
+let result : int list = (let __res0 = ref [] in
   List.iter (fun n ->
       if (n > 1) then
     __res0 := (sum n) :: !__res0;

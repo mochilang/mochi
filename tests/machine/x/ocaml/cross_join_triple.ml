@@ -24,7 +24,7 @@
 let nums : int list = [1;2]
 let letters : string list = ["A";"B"]
 let bools : bool list = [true;false]
-let combos : (string * Obj.t) list list = (let __res0 = ref [] in
+let combos : record1 list = (let __res0 = ref [] in
   List.iter (fun n ->
       List.iter (fun l ->
             List.iter (fun b ->

@@ -1,16 +1,16 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/group_by_having.ml", line 12, characters 4-10:
-12 |   ) people;
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_having.ml", line 13, characters 4-10:
+13 |   ) people;
          ^^^^^^
 Error: This expression has type record1 list
        but an expression was expected of type (string * Obj.t) list list
        Type record1 is not compatible with type (string * Obj.t) list 
 
 
-Context (around line 12):
-  10 |       let cur = try List.assoc key !__groups0 with Not_found -> [] in
-  11 |       __groups0 := (key, p :: cur) :: List.remove_assoc key !__groups0;
-  12 |   ) people;
-  13 |   let __res0 = ref [] in
-  14 |   List.iter (fun (gKey,gItems) ->
+Context (around line 13):
+  11 |       let cur = try List.assoc key !__groups0 with Not_found -> [] in
+  12 |       __groups0 := (key, p :: cur) :: List.remove_assoc key !__groups0;
+  13 |   ) people;
+  14 |   let __res0 = ref [] in
+  15 |   List.iter (fun (gKey,gItems) ->

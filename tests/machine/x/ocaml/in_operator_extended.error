@@ -1,15 +1,15 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/in_operator_extended.ml", line 29, characters 32-41:
-29 | let m : (string * Obj.t) list = { a = 1 }
-                                     ^^^^^^^^^
-Error: This expression should not be a record, the expected type is
-       (string * Obj.t) list
+File "/workspace/mochi/tests/machine/x/ocaml/in_operator_extended.ml", line 35, characters 36-37:
+35 |   print_endline (List.mem_assoc "a" m);
+                                         ^
+Error: This expression has type record1
+       but an expression was expected of type (string * 'a) list
 
 
-Context (around line 29):
-  27 | List.rev !__res0)
-  28 | 
-  29 | let m : (string * Obj.t) list = { a = 1 }
-  30 | let s : string = "hello"
-  31 | 
+Context (around line 35):
+  33 |   print_endline (__show ((List.mem 1 ys)));
+  34 |   print_endline (__show ((List.mem 2 ys)));
+  35 |   print_endline (List.mem_assoc "a" m);
+  36 |   print_endline (List.mem_assoc "b" m);
+  37 |   print_endline (List.mem "ell" s);
