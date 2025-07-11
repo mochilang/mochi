@@ -1,4 +1,4 @@
-# Mochi to COBOL Machine Translations (58/97 compiled)
+# Mochi to COBOL Machine Translations (60/97 compiled)
 
 Generated using `go run -tags slow scripts/compile_cobol.go`.
 
@@ -50,7 +50,7 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [x] let_and_print.mochi
 - [x] list_assign.mochi
 - [x] list_index.mochi
-- [ ] list_nested_assign.mochi
+ - [x] list_nested_assign.mochi
 - [ ] list_set_ops.mochi
 - [ ] load_yaml.mochi
 - [x] map_assign.mochi
@@ -59,7 +59,7 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [x] map_int_key.mochi
 - [x] map_literal_dynamic.mochi
 - [x] map_membership.mochi
-- [ ] map_nested_assign.mochi
+ - [x] map_nested_assign.mochi
 - [ ] match_expr.mochi
 - [ ] match_full.mochi
 - [x] math_ops.mochi
@@ -124,3 +124,14 @@ Generated using `go run -tags slow scripts/compile_cobol.go`.
 - [ ] Parse command line arguments
 - [ ] Improve error messages for unsupported features
 - [ ] Support file input and output utilities
+- [ ] Add error-handling for division by zero
+- [ ] Provide string interpolation helpers
+- [ ] Implement asynchronous execution primitives
+- [ ] Add binary file IO support
+- [ ] Support generic functions and types
+- [ ] Implement map merging utilities
+- [ ] Provide date and time built-in functions
+- [ ] Add support for enumerated types
+- [ ] Implement logging facilities
+- [ ] Expand standard math library coverage
+- [ ] Allow optional runtime type assertions
