@@ -238,6 +238,28 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 			typ = mt.Value
 		}
 	}
+	for i, fld := range s.Field {
+		rest := make([]string, len(s.Field[i:]))
+		for j, f := range s.Field[i:] {
+			rest[j] = f.Name
+		}
+		switch t := typ.(type) {
+		case types.StructType:
+			if ft, ok := t.Fields[fld.Name]; ok {
+				lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(fld.Name))
+				typ = ft
+				continue
+			}
+		case types.UnionType:
+			if ft, ok := unionFieldPathType(t, rest); ok {
+				lhs = fmt.Sprintf("%s.%s", lhs, sanitizeName(fld.Name))
+				typ = ft
+				continue
+			}
+		}
+		lhs = fmt.Sprintf("getattr(%s, %q)", lhs, sanitizeName(fld.Name))
+		typ = types.AnyType{}
+	}
 	value := ""
 	if len(s.Index) == 0 {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
