@@ -207,7 +207,9 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pycode.New(env).Compile(prog)
+			c := pycode.New(env)
+			c.SetTypeHints(false)
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
@@ -259,7 +261,9 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pycode.New(env).Compile(prog)
+			c := pycode.New(env)
+			c.SetTypeHints(false)
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
@@ -314,7 +318,9 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pycode.New(env).Compile(prog)
+			c := pycode.New(env)
+			c.SetTypeHints(false)
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
@@ -368,7 +374,9 @@ func TestPyCompiler_SLTCases(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pycode.New(env).Compile(prog)
+			c := pycode.New(env)
+			c.SetTypeHints(false)
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
@@ -416,7 +424,9 @@ func TestPyCompiler_SLTQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
-			code, err := pycode.New(env).Compile(prog)
+			c := pycode.New(env)
+			c.SetTypeHints(false)
+			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
@@ -521,7 +531,9 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 		writeError(t, outDir, name, string(data), fmt.Errorf("type error: %v", errs[0]))
 		return
 	}
-	code, err := pycode.New(env).Compile(prog)
+	c := pycode.New(env)
+	c.SetTypeHints(false)
+	code, err := c.Compile(prog)
 	if err != nil {
 		writeError(t, outDir, name, string(data), err)
 		return

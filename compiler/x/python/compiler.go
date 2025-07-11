@@ -193,9 +193,20 @@ func (c *Compiler) emitAutoStructs() {
 					}
 					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
 				} else {
-					c.writeln(sanitizeName(f))
+					c.imports["typing"] = "typing"
+					c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f)))
 				}
 			}
+			c.writeln("")
+			c.writeln("def __getitem__(self, key):")
+			c.indent++
+			c.writeln("return getattr(self, key)")
+			c.indent--
+			c.writeln("")
+			c.writeln("def __repr__(self):")
+			c.indent++
+			c.writeln("return str(self.__dict__)")
+			c.indent--
 		}
 		c.indent--
 		c.writeln("")
