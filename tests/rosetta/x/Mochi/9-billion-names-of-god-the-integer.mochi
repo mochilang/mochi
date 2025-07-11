@@ -1,2 +1,124 @@
-import go "mochi/runtime/ffi/go/testpkg" as testpkg auto
-print(testpkg.NineBillionExample())
+// Pure Mochi implementation of "9 billion names of God the integer"
+
+fun bigTrim(a: list<int>): list<int> {
+  var n = count(a)
+  while n > 1 && a[n-1] == 0 {
+    a = a[0:n-1]
+    n = n - 1
+  }
+  return a
+}
+
+fun bigFromInt(x: int): list<int> {
+  if x == 0 { return [0] }
+  var digits: list<int> = []
+  var n = x
+  while n > 0 {
+    digits = append(digits, n % 10)
+    n = n / 10
+  }
+  return digits
+}
+
+fun bigAdd(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var carry = 0
+  var i = 0
+  while i < count(a) || i < count(b) || carry > 0 {
+    var av = 0
+    if i < count(a) { av = a[i] }
+    var bv = 0
+    if i < count(b) { bv = b[i] }
+    var s = av + bv + carry
+    res = append(res, s % 10)
+    carry = s / 10
+    i = i + 1
+  }
+  return bigTrim(res)
+}
+
+fun bigSub(a: list<int>, b: list<int>): list<int> {
+  var res: list<int> = []
+  var borrow = 0
+  var i = 0
+  while i < count(a) {
+    var av = a[i]
+    var bv = 0
+    if i < count(b) { bv = b[i] }
+    var diff = av - bv - borrow
+    if diff < 0 {
+      diff = diff + 10
+      borrow = 1
+    } else {
+      borrow = 0
+    }
+    res = append(res, diff)
+    i = i + 1
+  }
+  return bigTrim(res)
+}
+
+fun bigToString(a: list<int>): string {
+  var s = ""
+  var i = count(a) - 1
+  while i >= 0 {
+    s = s + str(a[i])
+    i = i - 1
+  }
+  return s
+}
+
+fun minInt(a: int, b: int): int {
+  if a < b { return a } else { return b }
+}
+
+fun cumu(n: int): list<list<int>> {
+  var cache: list<list<list<int>>> = [[bigFromInt(1)]]
+  var y = 1
+  while y <= n {
+    var row: list<list<int>> = [bigFromInt(0)]
+    var x = 1
+    while x <= y {
+      let val = cache[y - x][minInt(x, y - x)]
+      row = append(row, bigAdd(row[count(row)-1], val))
+      x = x + 1
+    }
+    cache = append(cache, row)
+    y = y + 1
+  }
+  return cache[n]
+}
+
+fun row(n: int): list<string> {
+  let e = cumu(n)
+  var out: list<string> = []
+  var i = 0
+  while i < n {
+    let diff = bigSub(e[i+1], e[i])
+    out = append(out, bigToString(diff))
+    i = i + 1
+  }
+  return out
+}
+
+print("rows:")
+var x = 1
+while x < 11 {
+  let r = row(x)
+  var line = ""
+  var i = 0
+  while i < count(r) {
+    line = line + " " + r[i] + " "
+    i = i + 1
+  }
+  print(line)
+  x = x + 1
+}
+print("")
+
+print("sums:")
+for num in [23, 123, 1234] {
+  let r = cumu(num)
+  print(str(num) + " " + bigToString(r[count(r)-1]))
+}
+
