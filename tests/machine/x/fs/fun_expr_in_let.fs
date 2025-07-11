@@ -1,4 +1,4 @@
 open System
 
-let square = fun x -> x * x
+let square: obj = fun x -> x * x
 printfn "%A" (square 6)

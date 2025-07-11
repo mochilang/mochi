@@ -229,6 +229,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		if p := rootPrimary(l.Value); p != nil && p.Map != nil {
 			c.maps[l.Name] = true
+			if typ == "" {
+				typ = c.mapLiteralType(p.Map)
+			}
 		}
 		val, err = c.compileExpr(l.Value)
 		if err != nil {
@@ -241,6 +244,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 				elemT := c.inferQueryElemType(p.Query)
 				typ = fmt.Sprintf("%s list", elemT)
 			}
+		}
+		if typ == "" {
+			typ = c.inferType(l.Value)
 		}
 		// infer type from cast expression
 		if typ == "" {
@@ -292,6 +298,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 				val = "[|" + strings.Join(elems, "; ") + "|]"
 			} else if p.Map != nil {
 				c.maps[v.Name] = true
+				if typ == "" {
+					typ = c.mapLiteralType(p.Map)
+				}
 				val, err = c.compileMap(p.Map)
 				if err != nil {
 					return err
@@ -314,6 +323,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 		if typ == "" && c.isStringExpr(v.Value) {
 			typ = "string"
+		}
+		if typ == "" {
+			typ = c.inferType(v.Value)
 		}
 		if typ == "" {
 			if p := rootPostfix(v.Value); p != nil {
@@ -1121,6 +1133,51 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
 	return "dict [" + strings.Join(items, "; ") + "]", nil
+}
+
+func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
+	names := make([]string, len(m.Items))
+	types := make([]string, len(m.Items))
+	allSimple := true
+	sameType := true
+	var valueType string
+	typeMap := make(map[string]string)
+	for i, it := range m.Items {
+		name, ok := c.simpleIdentifier(it.Key)
+		if !ok {
+			allSimple = false
+		} else {
+			names[i] = sanitizeIdent(name)
+		}
+		t := c.inferType(it.Value)
+		types[i] = t
+		typeMap[sanitizeIdent(name)] = t
+		if valueType == "" {
+			valueType = t
+		} else if valueType != t {
+			sameType = false
+		}
+	}
+	if allSimple {
+		key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
+		typ, ok := c.anon[key]
+		if !ok {
+			c.anonCnt++
+			typ = fmt.Sprintf("Anon%d", c.anonCnt)
+			c.anon[key] = typ
+			c.structs[typ] = typeMap
+			c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
+			for i, n := range names {
+				c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
+			}
+			c.prelude.WriteString("}\n")
+		}
+		return typ
+	}
+	if sameType && valueType != "" {
+		return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s>", valueType)
+	}
+	return ""
 }
 
 func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {

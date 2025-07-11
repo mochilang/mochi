@@ -12,9 +12,9 @@ type Anon3 = {
     name: obj
     count: obj
 }
-let customers = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }]
-let orders = [{ id = 100; customerId = 1 }; { id = 101; customerId = 1 }; { id = 102; customerId = 2 }]
-let stats = [ for gKey, gItems in [ for o in orders do 
+let customers: obj list = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }]
+let orders: obj list = [{ id = 100; customerId = 1 }; { id = 101; customerId = 1 }; { id = 102; customerId = 2 }]
+let stats: obj list = [ for gKey, gItems in [ for o in orders do 
   for c in customers do if o.customerId = c.id then yield (o, c) ] |> List.groupBy (fun (o, c) -> c.name) do
     let g = {| key = gKey; items = gItems |}
     yield { name = g.key; count = List.length g.items } ]

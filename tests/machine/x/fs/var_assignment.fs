@@ -1,5 +1,5 @@
 open System
 
-let mutable x = 1
+let mutable x: int = 1
 x <- 2
-printfn "%A" (x)
+printfn "%d" (x)

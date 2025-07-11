@@ -5,7 +5,7 @@ type Person = {
     mutable age: int
     mutable status: string
 }
-let people = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 25; status = "unknown" }; { name = "Charlie"; age = 18; status = "unknown" }; { name = "Diana"; age = 16; status = "minor" }]
+let people: obj list = [{ name = "Alice"; age = 17; status = "minor" }; { name = "Bob"; age = 25; status = "unknown" }; { name = "Charlie"; age = 18; status = "unknown" }; { name = "Diana"; age = 16; status = "minor" }]
 for item in people do
     if item.age >= 18 then
         item.status <- "adult"

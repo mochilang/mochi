@@ -4,6 +4,7 @@ This directory contains generated F# code from the Mochi examples found in `test
 Each Mochi file is compiled using `compiler/x/fs` and executed with `mono`.
 The resulting source is saved with a `.fs` extension and any program output goes in a matching `.out` file.
 Compilation failures are recorded with an `.error` file.
+The compiler now infers types for simple map literals so generated code is closer to the hand-written examples.
 
 ## Compilation Status
 
@@ -117,7 +118,7 @@ Compiled programs: 100/100
 - [ ] Compare generated code with reference implementations
 - [ ] Improve dataset query support
 - [ ] Handle FFI imports beyond built-in modules
-- [ ] Add type inference for map literals
+- [x] Add type inference for map literals
 - [ ] Support pattern matching on tuples
 - [ ] Implement option type helpers
 - [ ] Provide clearer errors for unsupported constructs

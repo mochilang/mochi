@@ -3,5 +3,5 @@ open System
 type Todo = {
     mutable title: string
 }
-let todo: Todo = { title = "hi" }
-printfn "%s" todo.title
+let todo: System.Collections.Generic.IDictionary<string, string> = { title = "hi" }
+printfn "%A" (todo.title)

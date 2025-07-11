@@ -1,4 +1,4 @@
 open System
 
 let y: int = 0
-printfn "%A" (y)
+printfn "%d" (y)

@@ -17,10 +17,10 @@ type Anon4 = {
     name: obj
     item: obj
 }
-let customers = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }]
-let orders = [{ id = 100; customerId = 1 }; { id = 101; customerId = 2 }]
-let items = [{ orderId = 100; sku = "a" }]
-let result = [ for o in orders do 
+let customers: obj list = [{ id = 1; name = "Alice" }; { id = 2; name = "Bob" }]
+let orders: obj list = [{ id = 100; customerId = 1 }; { id = 101; customerId = 2 }]
+let items: obj list = [{ orderId = 100; sku = "a" }]
+let result: obj list = [ for o in orders do 
   for c in customers do 
   let i = List.tryFind (fun i -> o.id = i.orderId) items if o.customerId = c.id then yield { orderId = o.id; name = c.name; item = i } ]
 printfn "%s" "--- Left Join Multi ---"

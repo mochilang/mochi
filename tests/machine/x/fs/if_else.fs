@@ -1,6 +1,6 @@
 open System
 
-let x = 5
+let x: int = 5
 if x > 3 then
     printfn "%s" "big"
 else
