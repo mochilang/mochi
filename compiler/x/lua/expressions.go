@@ -397,6 +397,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf(";(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		if len(args) == 1 {
+			if v, ok := literalValue(call.Args[0]); ok {
+				return strconv.Quote(fmt.Sprint(v)), nil
+			}
 			return fmt.Sprintf("tostring(%s)", args[0]), nil
 		}
 		return fmt.Sprintf("tostring(%s)", argStr), nil
