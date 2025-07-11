@@ -3,6 +3,6 @@
 
 int main() {
   printf("%d\n", 4);
-  printf("%d\n", 3.141592653589793);
+  printf("%.16g\n", 3.141592653589793);
   return 0;
 }
