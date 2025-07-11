@@ -24,11 +24,11 @@ public class InOperatorExtended {
 		return false;
 	}
 	public static void main(String[] args) {
-	System.out.println(inOp(1, ys));
-	System.out.println(inOp(2, ys));
+	System.out.println(ys.contains(1));
+	System.out.println(ys.contains(2));
 	System.out.println(inOp("a", m));
 	System.out.println(inOp("b", m));
-	System.out.println(inOp("ell", s));
-	System.out.println(inOp("foo", s));
+	System.out.println(s.contains(String.valueOf("ell")));
+	System.out.println(s.contains(String.valueOf("foo")));
 	}
 }
