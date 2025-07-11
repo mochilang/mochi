@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static long sum_rec(long n, long acc) {
+    static int sum_rec(int n, int acc) {
         if (n == 0) {
             return acc;
         }

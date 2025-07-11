@@ -2,7 +2,7 @@ using System;
 
 public record struct Person {
     public string name;
-    public long age;
+    public int age;
 }
 
 public record struct Book {

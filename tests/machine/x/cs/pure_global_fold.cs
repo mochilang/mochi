@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static long inc(long x) {
+    static int inc(int x) {
         return (x + k);
     }
     

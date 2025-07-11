@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static long add(long a, long b) {
+    static int add(int a, int b) {
         return (a + b);
     }
     

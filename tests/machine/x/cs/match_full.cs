@@ -1,7 +1,7 @@
 using System;
 
 class Program {
-    static string classify(long n) {
+    static string classify(int n) {
         return new Func<string>(() => {
         var _t = n;
         if (_equal(_t, 0)) return "zero";

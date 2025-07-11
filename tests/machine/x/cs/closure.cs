@@ -1,8 +1,8 @@
 using System;
 
 class Program {
-    static Func<long, long> makeAdder(long n) {
-        return new Func<long, long>((long x) => {
+    static Func<int, int> makeAdder(int n) {
+        return new Func<int, int>((int x) => {
     return (x + n);
 });
     }

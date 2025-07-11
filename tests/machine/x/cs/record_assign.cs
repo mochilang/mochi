@@ -1,7 +1,7 @@
 using System;
 
 public record struct Counter {
-    public long n;
+    public int n;
 }
 
 class Program {
