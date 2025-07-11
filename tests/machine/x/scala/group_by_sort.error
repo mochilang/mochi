@@ -1,0 +1,13 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:6: error: value map is not a member of (String, List[group_by_sort.Item])
+  val grouped = (((for { i <- items } yield (i.cat, (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).sortBy(g => -(for { x <- g } yield x.`val`).sum)).map{ case(gKey,gItems) => { val g = (gKey, gItems); Grouped(cat = g._1, total = (for { x <- g._2 } yield x.`val`).sum) } }.toList
+                                                                                                                                                    ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:6: error: type mismatch;
+ found   : Any
+ required: String
+  val grouped = (((for { i <- items } yield (i.cat, (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).sortBy(g => -(for { x <- g } yield x.`val`).sum)).map{ case(gKey,gItems) => { val g = (gKey, gItems); Grouped(cat = g._1, total = (for { x <- g._2 } yield x.`val`).sum) } }.toList
+                                                                                                                                                                                                                                                 ^
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:6: error: value map is not a member of Any
+  val grouped = (((for { i <- items } yield (i.cat, (i))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).sortBy(g => -(for { x <- g } yield x.`val`).sum)).map{ case(gKey,gItems) => { val g = (gKey, gItems); Grouped(cat = g._1, total = (for { x <- g._2 } yield x.`val`).sum) } }.toList
+                                                                                                                                                                                                                                                                           ^
+three errors found
