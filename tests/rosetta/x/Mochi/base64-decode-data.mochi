@@ -1,0 +1,6 @@
+let msg = "Rosetta Code Base64 decode data task"
+print("Original :", msg)
+let enc = b64encode(msg)
+print("\nEncoded  :", enc)
+let dec = b64decode(enc)
+print("\nDecoded  :", dec)

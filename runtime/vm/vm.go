@@ -2,6 +2,7 @@ package vm
 
 import (
 	"bufio"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -91,6 +92,8 @@ const (
 	OpUpper
 	OpLower
 	OpReverse
+	OpB64Encode
+	OpB64Decode
 	OpInput
 	OpFirst
 	OpCount
@@ -223,6 +226,10 @@ func (op Op) String() string {
 		return "Lower"
 	case OpReverse:
 		return "Reverse"
+	case OpB64Encode:
+		return "B64Encode"
+	case OpB64Decode:
+		return "B64Decode"
 	case OpInput:
 		return "Input"
 	case OpFirst:
@@ -475,6 +482,8 @@ func (p *Program) Disassemble(src string) string {
 			case OpLower:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpReverse:
+				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
+			case OpB64Encode, OpB64Decode:
 				fmt.Fprintf(&b, "%s, %s", formatReg(ins.A), formatReg(ins.B))
 			case OpInput:
 				fmt.Fprintf(&b, "%s", formatReg(ins.A))
@@ -1454,6 +1463,22 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			default:
 				return Value{}, m.newError(fmt.Errorf("reverse expects list or string"), trace, ins.Line)
 			}
+		case OpB64Encode:
+			b := fr.regs[ins.B]
+			if b.Tag != ValueStr {
+				return Value{}, m.newError(fmt.Errorf("b64encode expects string"), trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: base64.StdEncoding.EncodeToString([]byte(b.Str))}
+		case OpB64Decode:
+			b := fr.regs[ins.B]
+			if b.Tag != ValueStr {
+				return Value{}, m.newError(fmt.Errorf("b64decode expects string"), trace, ins.Line)
+			}
+			data, err := base64.StdEncoding.DecodeString(b.Str)
+			if err != nil {
+				return Value{}, m.newError(err, trace, ins.Line)
+			}
+			fr.regs[ins.A] = Value{Tag: ValueStr, Str: string(data)}
 		case OpInput:
 			line, err := m.reader.ReadString('\n')
 			if err != nil && err != io.EOF {
@@ -2349,7 +2374,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
-	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpInput, OpFirst:
+	case OpAppend, OpStr, OpUpper, OpLower, OpReverse, OpB64Encode, OpB64Decode, OpInput, OpFirst:
 		fc.tags[i.A] = tagUnknown
 	case OpLoad:
 		fc.tags[i.A] = tagUnknown
@@ -3497,6 +3522,16 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpReverse, A: dst, B: arg})
+			return dst
+		case "b64encode":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpB64Encode, A: dst, B: arg})
+			return dst
+		case "b64decode":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpB64Decode, A: dst, B: arg})
 			return dst
 		case "distinct":
 			arg := fc.compileExpr(p.Call.Args[0])
@@ -6634,6 +6669,27 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 				out[i], out[j] = out[j], out[i]
 			}
 			return Value{Tag: ValueList, List: out}, true
+		}
+		return Value{}, false
+	case "b64encode":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: base64.StdEncoding.EncodeToString([]byte(v.Str))}, true
+		}
+		return Value{}, false
+	case "b64decode":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		if v.Tag == ValueStr {
+			data, err := base64.StdEncoding.DecodeString(v.Str)
+			if err == nil {
+				return Value{Tag: ValueStr, Str: string(data)}, true
+			}
 		}
 		return Value{}, false
 	case "substring":

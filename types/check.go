@@ -441,6 +441,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("b64encode", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("b64decode", FuncType{
+		Params: []Type{StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("trim", FuncType{
 		Params: []Type{StringType{}},
 		Return: StringType{},
@@ -2323,6 +2333,8 @@ var builtinArity = map[string]int{
 	"reverse":   1,
 	"distinct":  1,
 	"trim":      1,
+	"b64encode": 1,
+	"b64decode": 1,
 	"contains":  2,
 	"split":     2,
 	"join":      2,
@@ -2353,7 +2365,7 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			return errArgCount(pos, name, 0, len(args))
 		}
 		return nil
-	case "json", "to_json", "str", "upper", "lower", "eval":
+	case "json", "to_json", "str", "upper", "lower", "b64encode", "b64decode", "eval":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))
 		}

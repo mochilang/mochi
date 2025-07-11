@@ -1,6 +1,7 @@
 package vm
 
 import (
+	"encoding/base64"
 	"fmt"
 	"math"
 	"sort"
@@ -609,7 +610,7 @@ func constFold(fn *Function) bool {
 			} else {
 				consts[ins.A] = cinfo{}
 			}
-		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpUpper, OpLower, OpFirst, OpLen,
+		case OpNeg, OpNegInt, OpNegFloat, OpNot, OpStr, OpUpper, OpLower, OpB64Encode, OpB64Decode, OpFirst, OpLen,
 			OpCount, OpExists, OpAvg, OpSum, OpMin, OpMax, OpValues, OpSort:
 			b := consts[ins.B]
 			if b.known {
@@ -790,6 +791,17 @@ func evalUnaryConst(op Op, v Value) (Value, bool) {
 			return Value{Tag: ValueStr, Str: strings.ToLower(v.Str)}, true
 		}
 		return Value{Tag: ValueStr, Str: strings.ToLower(fmt.Sprint(v.ToAny()))}, true
+	case OpB64Encode:
+		if v.Tag == ValueStr {
+			return Value{Tag: ValueStr, Str: base64.StdEncoding.EncodeToString([]byte(v.Str))}, true
+		}
+	case OpB64Decode:
+		if v.Tag == ValueStr {
+			data, err := base64.StdEncoding.DecodeString(v.Str)
+			if err == nil {
+				return Value{Tag: ValueStr, Str: string(data)}, true
+			}
+		}
 	case OpFirst:
 		if lst, ok := toList(v); ok {
 			if len(lst) > 0 {

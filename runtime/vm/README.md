@@ -24,7 +24,7 @@ The VM supports a small but useful subset of Mochi:
 * Function definitions
 * Function calls with any number of arguments
 * Anonymous function expressions
-* Built‑ins `len`, `print` (up to two arguments), `append`, `concat`, `first`, `str`, `json`, `now`, `input`, `count`, `exists`, `avg`, `min`, `max`, `substring`, `substr`, `upper` and `lower`
+* Built‑ins `len`, `print` (up to two arguments), `append`, `concat`, `first`, `str`, `json`, `now`, `input`, `count`, `exists`, `avg`, `min`, `max`, `substring`, `substr`, `upper`, `lower`, `b64encode` and `b64decode`
 * Dataset loading with `load` (optionally casting rows to a type) and saving with `save`
 * HTTP requests using the `fetch` expression
 * Loops internally use specialised integer instructions for indexing to improve performance
