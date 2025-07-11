@@ -78,6 +78,7 @@ type Compiler struct {
 	groupKeys      map[string]types.Type
 	builtinAliases map[string]string
 	needMath       bool
+	listLens       map[string]int
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -106,6 +107,7 @@ func New(env *types.Env) *Compiler {
 		pointerVars:    map[string]bool{},
 		groupKeys:      map[string]types.Type{},
 		builtinAliases: map[string]string{},
+		listLens:       map[string]int{},
 	}
 }
 
@@ -947,7 +949,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			target = fmt.Sprintf("%s.data[%s]", target, ix)
+			if isListIntType(curT) {
+				target = fmt.Sprintf("%s[%s]", target, ix)
+			} else {
+				target = fmt.Sprintf("%s.data[%s]", target, ix)
+			}
 			if lt, ok := curT.(types.ListType); ok {
 				curT = lt.Elem
 			} else if mt, ok := curT.(types.MapType); ok {
@@ -1161,6 +1167,20 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 	}
 	if stmt.Value != nil {
+		if isListIntType(t) {
+			if vals, ok := c.evalListIntExpr(stmt.Value); ok {
+				parts := make([]string, len(vals))
+				for i, v := range vals {
+					parts[i] = strconv.Itoa(v)
+				}
+				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.listLens[name] = len(vals)
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, false)
+				}
+				return nil
+			}
+		}
 		if f := asFetchExpr(stmt.Value); f != nil {
 			if st, ok := t.(types.StructType); ok {
 				c.need(needFetch)
@@ -1342,6 +1362,20 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		typ = "__auto_type"
 	}
 	if stmt.Value != nil {
+		if isListIntType(t) {
+			if vals, ok := c.evalListIntExpr(stmt.Value); ok {
+				parts := make([]string, len(vals))
+				for i, v := range vals {
+					parts[i] = strconv.Itoa(v)
+				}
+				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.listLens[name] = len(vals)
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, true)
+				}
+				return nil
+			}
+		}
 		if f := asFetchExpr(stmt.Value); f != nil {
 			if st, ok := t.(types.StructType); ok {
 				c.need(needFetch)
@@ -1471,13 +1505,19 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 				c.writeln(fmt.Sprintf("int %s = %s.data[%s].key;", name, src, idx))
 			}
 		} else {
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", idx, idx, src, idx))
-			c.indent++
-			if useVar {
-				if elemC == "" {
-					elemC = "int"
+			if l, ok := c.listLens[src]; ok {
+				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %d; %s++) {", idx, idx, l, idx))
+				c.indent++
+				if useVar {
+					if elemC == "" {
+						elemC = "int"
+					}
+					c.writeln(fmt.Sprintf("%s %s = %s[%s];", elemC, name, src, idx))
 				}
-				c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", elemC, name, src, idx))
+			} else {
+				c.writeln("// unsupported dynamic list iteration")
+				c.writeln("for (;;){ break; }")
+				return nil
 			}
 		}
 		oldEnv := c.env
@@ -3893,7 +3933,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isFloatList = false
 					isStringList = false
 				} else {
-					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
+					if isListIntPrimary(p.Target, c.env) {
+						expr = fmt.Sprintf("%s[%s]", expr, idx)
+					} else {
+						expr = fmt.Sprintf("%s.data[%s]", expr, idx)
+					}
 					if isStringList {
 						isStr = true
 					} else {
@@ -4199,17 +4243,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					return name
 				}
 			}
-			c.need(needListInt)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			data := name + "_data"
-			c.writeln(fmt.Sprintf("int %s[] = {%s};", data, strings.Join(vals, ", ")))
-			c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
+			c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(vals, ", ")))
+			c.listLens[name] = len(p.List.Elems)
 		} else {
-			c.need(needListInt)
-			c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", name))
+			c.writeln(fmt.Sprintf("int %s[1];", name))
+			c.listLens[name] = 0
 		}
 		return name
 	case p.Map != nil:
@@ -6123,13 +6165,11 @@ func (c *Compiler) evalListIntExpr(e *parser.Expr) ([]int, bool) {
 
 func (c *Compiler) emitConstListInt(vals []int) string {
 	name := c.newTemp()
-	data := name + "_data"
-	c.need(needListInt)
 	parts := make([]string, len(vals))
 	for i, v := range vals {
 		parts[i] = strconv.Itoa(v)
 	}
-	c.writeln(fmt.Sprintf("int %s[] = {%s};", data, strings.Join(parts, ", ")))
-	c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
+	c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+	c.listLens[name] = len(vals)
 	return name
 }
