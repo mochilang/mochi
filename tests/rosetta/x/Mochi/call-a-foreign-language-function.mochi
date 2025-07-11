@@ -1,4 +1,12 @@
-fun strdup(s: string): string { return s + "" }
+
+// Mochi implementation of Rosetta "Call a foreign language function" task
+// Translated from tests/rosetta/x/Go/call-a-foreign-language-function.go
+// The Go version duplicates a string using the C library function strdup.
+// Here we implement the same behavior directly without FFI.
+fun strdup(s: string): string {
+  // return a new copy of the string
+  return s + ""
+}
 
 fun main() {
   let go1 = "hello C"
