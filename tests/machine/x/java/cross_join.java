@@ -29,7 +29,7 @@ class ResultOrderCustomerIdOrderIdOrderTotalPairedCustomerName {
 		this.orderTotal = orderTotal;
 	}
 }
-public class Main {
+public class CrossJoin {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob"), new CustomersIdName(3, "Charlie")));
 	static List<OrdersCustomerIdIdTotal> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdIdTotal(100, 1, 250), new OrdersCustomerIdIdTotal(101, 2, 125), new OrdersCustomerIdIdTotal(102, 1, 300)));
 	static List<ResultOrderCustomerIdOrderIdOrderTotalPairedCustomerName> result = (new java.util.function.Supplier<List<ResultOrderCustomerIdOrderIdOrderTotalPairedCustomerName>>(){public List<ResultOrderCustomerIdOrderIdOrderTotalPairedCustomerName> get(){

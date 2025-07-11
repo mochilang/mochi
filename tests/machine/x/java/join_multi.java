@@ -31,7 +31,7 @@ class ResultNameSku {
 		this.sku = sku;
 	}
 }
-public class Main {
+public class JoinMulti {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob")));
 	static List<OrdersCustomerIdId> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdId(100, 1), new OrdersCustomerIdId(101, 2)));
 	static List<ItemsOrderIdSku> items = new ArrayList<>(Arrays.asList(new ItemsOrderIdSku(100, "a"), new ItemsOrderIdSku(101, "b")));

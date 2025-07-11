@@ -1,6 +1,6 @@
 import java.util.*;
 import java.util.function.*;
-public class Main {
+public class PartialApplication {
 	static IntUnaryOperator add5 = b -> add(5, b);
 	static int add(int a, int b) {
 		return a + b;

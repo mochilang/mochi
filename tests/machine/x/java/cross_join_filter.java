@@ -7,7 +7,7 @@ class PairsLN {
 		this.l = l;
 	}
 }
-public class Main {
+public class CrossJoinFilter {
 	static List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2, 3));
 	static List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
 	static List<PairsLN> pairs = (new java.util.function.Supplier<List<PairsLN>>(){public List<PairsLN> get(){

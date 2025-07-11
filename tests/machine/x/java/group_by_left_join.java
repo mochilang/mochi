@@ -31,7 +31,7 @@ class CO {
 		this.o = o;
 	}
 }
-public class Main {
+public class GroupByLeftJoin {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob"), new CustomersIdName(3, "Charlie")));
 	static List<OrdersCustomerIdId> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdId(100, 1), new OrdersCustomerIdId(101, 1), new OrdersCustomerIdId(102, 2)));
 	static List<StatsCountName> stats = (new java.util.function.Supplier<List<StatsCountName>>(){public List<StatsCountName> get(){

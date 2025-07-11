@@ -15,7 +15,7 @@ class BigCityNum {
 		this.num = num;
 	}
 }
-public class Main {
+public class GroupByHaving {
 	static List<PeopleCityName> people = new ArrayList<>(Arrays.asList(new PeopleCityName("Alice", "Paris"), new PeopleCityName("Bob", "Hanoi"), new PeopleCityName("Charlie", "Paris"), new PeopleCityName("Diana", "Hanoi"), new PeopleCityName("Eve", "Paris"), new PeopleCityName("Frank", "Hanoi"), new PeopleCityName("George", "Paris")));
 	static List<BigCityNum> big = (new java.util.function.Supplier<List<BigCityNum>>(){public List<BigCityNum> get(){
 	List<BigCityNum> _res5 = new ArrayList<>();

@@ -5,7 +5,7 @@ class MA {
 		this.a = a;
 	}
 }
-public class Main {
+public class InOperatorExtended {
 	static List<Integer> xs = new ArrayList<>(Arrays.asList(1, 2, 3));
 	static List<Integer> ys = (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res1 = new ArrayList<>();

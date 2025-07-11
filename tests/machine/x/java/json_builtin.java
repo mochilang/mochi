@@ -7,7 +7,7 @@ class MAB {
 		this.b = b;
 	}
 }
-public class Main {
+public class JsonBuiltin {
 	static MAB m = new MAB(1, 2);
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {

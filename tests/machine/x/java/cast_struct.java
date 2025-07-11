@@ -19,7 +19,7 @@ class TodoTitle {
 		this.title = title;
 	}
 }
-public class Main {
+public class CastStruct {
 	static Todo todo = new Todo("hi");
 	public static void main(String[] args) {
 	System.out.println(todo.title);

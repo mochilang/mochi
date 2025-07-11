@@ -26,7 +26,7 @@ class AdultsEmailName {
 		this.email = email;
 	}
 }
-public class Main {
+public class LoadYaml {
 	static List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
 	static List<AdultsEmailName> adults = (new java.util.function.Supplier<List<AdultsEmailName>>(){public List<AdultsEmailName> get(){
 	List<AdultsEmailName> _res1 = new ArrayList<>();

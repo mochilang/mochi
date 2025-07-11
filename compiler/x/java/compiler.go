@@ -31,6 +31,7 @@ type Compiler struct {
 	dataClassOrder    []string
 	srcDir            string
 	curVar            string
+	className         string
 }
 
 type dataClass struct {
@@ -60,6 +61,7 @@ func New() *Compiler {
 		dataClasses:       make(map[string]*dataClass),
 		dataClassOrder:    []string{},
 		curVar:            "",
+		className:         "",
 	}
 }
 
@@ -74,6 +76,11 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// compile main body first so we know which helpers are needed
 	c.srcDir = filepath.Dir(prog.Pos.Filename)
+	base := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
+	c.className = classNameFromVar(base)
+	if c.className == "" {
+		c.className = "Main"
+	}
 	body := new(bytes.Buffer)
 	origBuf := c.buf
 	c.buf = body
@@ -169,7 +176,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	c.writeln("public class Main {")
+	c.writeln(fmt.Sprintf("public class %s {", c.className))
 	c.indent++
 	// global declarations
 	for _, s := range prog.Statements {

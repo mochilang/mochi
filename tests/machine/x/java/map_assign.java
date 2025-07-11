@@ -5,7 +5,7 @@ class ScoresAlice {
 		this.alice = alice;
 	}
 }
-public class Main {
+public class MapAssign {
 	static ScoresAlice scores = new ScoresAlice(1);
 	public static void main(String[] args) {
 	scores.bob = 2;

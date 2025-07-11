@@ -1,6 +1,6 @@
 import java.util.*;
 import java.util.function.*;
-public class Main {
+public class Closure {
 	static IntUnaryOperator add10 = makeAdder(10);
 	static IntUnaryOperator makeAdder(int n) {
 		return x -> x + n;

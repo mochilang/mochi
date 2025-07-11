@@ -25,7 +25,7 @@ class ResultCustomerOrder {
 		this.customer = customer;
 	}
 }
-public class Main {
+public class OuterJoin {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob"), new CustomersIdName(3, "Charlie"), new CustomersIdName(4, "Diana")));
 	static List<OrdersCustomerIdIdTotal> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdIdTotal(100, 1, 250), new OrdersCustomerIdIdTotal(101, 2, 125), new OrdersCustomerIdIdTotal(102, 1, 300), new OrdersCustomerIdIdTotal(103, 5, 80)));
 	static List<ResultCustomerOrder> result = (new java.util.function.Supplier<List<ResultCustomerOrder>>(){public List<ResultCustomerOrder> get(){

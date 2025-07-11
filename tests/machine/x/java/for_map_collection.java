@@ -7,7 +7,7 @@ class MAB {
 		this.b = b;
 	}
 }
-public class Main {
+public class ForMapCollection {
 	static MAB m = new MAB(1, 2);
 	public static void main(String[] args) {
 	for (String k : Arrays.asList("a", "b")) {

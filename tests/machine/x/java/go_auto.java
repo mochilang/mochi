@@ -4,7 +4,7 @@ class testpkg {
 	static double Pi = 3.14;
 	static int Answer = 42;
 }
-public class Main {
+public class GoAuto {
 	public static void main(String[] args) {
 	System.out.println(testpkg.Add(2, 3));
 	System.out.println(testpkg.Pi);

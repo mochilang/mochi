@@ -7,7 +7,7 @@ class MAB {
 		this.b = b;
 	}
 }
-public class Main {
+public class MapLiteralDynamic {
 	static int x = 3;
 	static int y = 4;
 	static MAB m = new MAB(x, y);

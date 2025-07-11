@@ -7,7 +7,7 @@ class DataAB {
 		this.b = b;
 	}
 }
-public class Main {
+public class OrderByMap {
 	static List<DataAB> data = new ArrayList<>(Arrays.asList(new DataAB(1, 2), new DataAB(1, 1), new DataAB(0, 5)));
 	static List<DataAB> sorted = (new java.util.function.Supplier<List<DataAB>>(){public List<DataAB> get(){
 	List<DataAB> _res1 = new ArrayList<>();

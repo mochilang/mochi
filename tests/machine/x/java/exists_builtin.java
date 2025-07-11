@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class ExistsBuiltin {
 	static List<Integer> data = new ArrayList<>(Arrays.asList(1, 2));
 	static Object flag = data.stream().anyMatch(x -> Objects.equals(x, 1));
 	public static void main(String[] args) {

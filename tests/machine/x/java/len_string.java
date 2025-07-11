@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class LenString {
 	public static void main(String[] args) {
 	System.out.println("mochi".length());
 	}

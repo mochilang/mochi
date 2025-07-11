@@ -7,7 +7,7 @@ class PeopleAgeName {
 		this.age = age;
 	}
 }
-public class Main {
+public class SaveJsonlStdout {
 	static List<PeopleAgeName> people = new ArrayList<>(Arrays.asList(new PeopleAgeName("Alice", 30), new PeopleAgeName("Bob", 25)));
 	static void saveJsonl(List<Map<?,?>> list) {
 		for (Map<?,?> m : list) {

@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class FunThreeArgs {
 	static int sum3(int a, int b, int c) {
 		return a + b + c;
 	}

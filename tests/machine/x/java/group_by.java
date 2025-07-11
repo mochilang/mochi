@@ -19,7 +19,7 @@ class StatsAvgAgeCityCount {
 		this.avg_age = avg_age;
 	}
 }
-public class Main {
+public class GroupBy {
 	static List<PeopleAgeCityName> people = new ArrayList<>(Arrays.asList(new PeopleAgeCityName("Alice", 30, "Paris"), new PeopleAgeCityName("Bob", 15, "Hanoi"), new PeopleAgeCityName("Charlie", 65, "Paris"), new PeopleAgeCityName("Diana", 45, "Hanoi"), new PeopleAgeCityName("Eve", 70, "Paris"), new PeopleAgeCityName("Frank", 22, "Hanoi")));
 	static List<StatsAvgAgeCityCount> stats = (new java.util.function.Supplier<List<StatsAvgAgeCityCount>>(){public List<StatsAvgAgeCityCount> get(){
 	List<StatsAvgAgeCityCount> _res6 = new ArrayList<>();

@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class FunCall {
 	static int add(int a, int b) {
 		return a + b;
 	}

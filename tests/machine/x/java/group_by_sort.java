@@ -15,7 +15,7 @@ class GroupedCatTotal {
 		this.total = total;
 	}
 }
-public class Main {
+public class GroupBySort {
 	static List<ItemsCatVal> items = new ArrayList<>(Arrays.asList(new ItemsCatVal("a", 3), new ItemsCatVal("a", 1), new ItemsCatVal("b", 5), new ItemsCatVal("b", 2)));
 	static List<GroupedCatTotal> grouped = (new java.util.function.Supplier<List<GroupedCatTotal>>(){public List<GroupedCatTotal> get(){
 	List<GroupedCatTotal> _res6 = new ArrayList<>();

@@ -7,7 +7,7 @@ class math {
 	static double sin(double x) { return Math.sin(x); }
 	static double log(double x) { return Math.log(x); }
 }
-public class Main {
+public class PythonAuto {
 	public static void main(String[] args) {
 	System.out.println(math.sqrt(16.000000));
 	System.out.println(math.pi);

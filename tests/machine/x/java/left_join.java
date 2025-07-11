@@ -27,7 +27,7 @@ class ResultCustomerOrderIdTotal {
 		this.total = total;
 	}
 }
-public class Main {
+public class LeftJoin {
 	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob")));
 	static List<OrdersCustomerIdIdTotal> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdIdTotal(100, 1, 250), new OrdersCustomerIdIdTotal(101, 3, 80)));
 	static List<ResultCustomerOrderIdTotal> result = (new java.util.function.Supplier<List<ResultCustomerOrderIdTotal>>(){public List<ResultCustomerOrderIdTotal> get(){

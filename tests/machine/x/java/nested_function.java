@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class NestedFunction {
 	static int outer(int x) {
 		java.util.function.IntUnaryOperator inner = y -> {
 			return x + y;

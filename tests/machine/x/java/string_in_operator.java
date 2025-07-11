@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class StringInOperator {
 	static String s = "catch";
 	static boolean inOp(Object item, Object collection) {
 		if (collection instanceof Map<?,?> m) return m.containsKey(item);

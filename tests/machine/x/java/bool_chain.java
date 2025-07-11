@@ -1,5 +1,5 @@
 import java.util.*;
-public class Main {
+public class BoolChain {
 	static boolean boom() {
 		System.out.println("boom");
 		return true;

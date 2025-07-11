@@ -7,7 +7,7 @@ class AB {
 		this.b = b;
 	}
 }
-public class Main {
+public class LenMap {
 	public static void main(String[] args) {
 	System.out.println(new AB(1, 2).size());
 	}

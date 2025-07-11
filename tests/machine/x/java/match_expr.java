@@ -1,6 +1,6 @@
 import java.util.*;
 import java.util.function.*;
-public class Main {
+public class MatchExpr {
 	static int x = 2;
 	static Object label = (new java.util.function.Supplier<String>(){public String get(){
 	var _t1 = x;
