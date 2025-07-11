@@ -1259,6 +1259,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if c.env != nil {
 				rt := types.TypeOfPostfix(op.Right, c.env)
 				switch {
+				case op.Right.Target != nil && op.Right.Target.Map != nil:
+					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+				case op.Right.Target != nil && op.Right.Target.List != nil:
+					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+				case op.Right.Target != nil && op.Right.Target.Lit != nil && op.Right.Target.Lit.Str != nil && c.unaryIsString(leftAST):
+					res = fmt.Sprintf("%s.contains(%s)", r, res)
 				case types.IsStringType(rt):
 					if !c.unaryIsString(leftAST) {
 						return "", fmt.Errorf("in type mismatch")
@@ -1280,19 +1286,27 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						}
 						res = fmt.Sprintf("%s.contains(%s)", r, res)
 					default:
-						return "", fmt.Errorf("in unsupported")
+						// assume list membership by default
+						res = fmt.Sprintf("%s.contains(&%s)", r, res)
 					}
 				}
 			} else {
 				switch {
+				case op.Right.Target != nil && op.Right.Target.Map != nil:
+					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+				case op.Right.Target != nil && op.Right.Target.List != nil:
+					res = fmt.Sprintf("%s.contains(&%s)", r, res)
 				case c.postfixIsMap(op.Right):
 					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
 				case c.postfixIsList(op.Right):
 					res = fmt.Sprintf("%s.contains(&%s)", r, res)
 				case c.postfixIsString(op.Right) && c.unaryIsString(leftAST):
 					res = fmt.Sprintf("%s.contains(%s)", r, res)
+				case c.postfixIsString(op.Right):
+					res = fmt.Sprintf("%s.contains(%s)", r, res)
 				default:
-					return "", fmt.Errorf("in unsupported")
+					// best effort assume list membership
+					res = fmt.Sprintf("%s.contains(&%s)", r, res)
 				}
 			}
 		case "+":
