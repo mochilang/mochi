@@ -3,7 +3,7 @@
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
 Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
 
-Compiled programs: 97/97
+Compiled programs: 100/100
 
 Checklist:
 - [x] append_builtin
@@ -28,6 +28,7 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -75,6 +76,8 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -103,3 +106,15 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+- [ ] Compare generated code with reference implementations
+- [ ] Handle advanced dataset operations
+- [ ] Support agent initialization with field values
+- [ ] Implement extern object declarations
+- [ ] Add YAML dataset saving support
+- [ ] Enable right and outer joins in queries
+- [ ] Implement try/catch error handling
+- [ ] Add concurrency primitives like channels
+- [ ] Optimize generated code formatting
+- [ ] Expand LLM helper coverage
