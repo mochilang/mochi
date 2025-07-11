@@ -1,4 +1,0 @@
-line 0: compile error: unsupported statement at line 1
-
-  1| import python "math" as math auto
-  2| 

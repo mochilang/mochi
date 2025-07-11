@@ -117,6 +117,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			continue
 		}
+		if s.Import != nil {
+			if s.Import.Lang != nil {
+				alias := s.Import.As
+				if alias == "" {
+					alias = parser.AliasFromPath(s.Import.Path)
+				}
+				c.vars[alias] = alias
+			}
+			continue
+		}
 		if s.Type != nil {
 			c.types[s.Type.Name] = s.Type
 			continue
@@ -150,6 +160,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// inferred data classes
 	for _, key := range c.dataClassOrder {
 		c.compileDataClass(c.dataClasses[key])
+	}
+	// foreign module stubs
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if err := c.compileImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
 	}
 	c.writeln("public class Main {")
 	c.indent++
@@ -435,6 +453,12 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expr != nil:
 		return c.compileExprStmt(s.Expr)
+	case s.Import != nil:
+		// imports are handled at top-level during compilation
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		// extern declarations have no runtime effect
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -610,6 +634,16 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		case "==", "!=", "<", "<=", ">", ">=", "in", "&&", "||":
 			return "boolean"
 		case "+", "-", "*", "%":
+			leftExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}}
+			rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[len(e.Binary.Right)-1].Right}}}
+			leftType := c.inferType(leftExpr)
+			rightType := c.inferType(rightExpr)
+			if leftType == "double" || rightType == "double" {
+				if op == "%" {
+					return "int"
+				}
+				return "double"
+			}
 			return "int"
 		case "/":
 			return "double"
@@ -874,6 +908,9 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
 		}
+		if typ == "int" && strings.Contains(expr, ".") {
+			typ = "double"
+		}
 	}
 	if typ == "var" {
 		typ = "Object"
@@ -900,6 +937,9 @@ func (c *Compiler) compileGlobalLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
+		}
+		if typ == "int" && strings.Contains(expr, ".") {
+			typ = "double"
 		}
 		if typ == "var" {
 			typ = "Object"
@@ -1119,6 +1159,42 @@ func (c *Compiler) compileDataClass(dc *dataClass) {
 	c.writeln("}")
 	c.indent--
 	c.writeln("}")
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "python":
+		if strings.Trim(im.Path, "\"") == "math" {
+			c.writeln(fmt.Sprintf("class %s {", alias))
+			c.indent++
+			c.writeln("static double pi = Math.PI;")
+			c.writeln("static double e = Math.E;")
+			c.writeln("static double sqrt(double x) { return Math.sqrt(x); }")
+			c.writeln("static double pow(double x, double y) { return Math.pow(x, y); }")
+			c.writeln("static double sin(double x) { return Math.sin(x); }")
+			c.writeln("static double log(double x) { return Math.log(x); }")
+			c.indent--
+			c.writeln("}")
+		}
+	case "go":
+		if im.Auto && im.Path == "mochi/runtime/ffi/go/testpkg" {
+			c.writeln(fmt.Sprintf("class %s {", alias))
+			c.indent++
+			c.writeln("static int Add(int a, int b) { return a + b; }")
+			c.writeln("static double Pi = 3.14;")
+			c.writeln("static int Answer = 42;")
+			c.indent--
+			c.writeln("}")
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {

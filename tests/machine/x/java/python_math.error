@@ -1,4 +1,0 @@
-line 0: compile error: unsupported statement at line 2
-
-  1| // math_import_extern_fun.mochi
-  2| import python "math" as math
