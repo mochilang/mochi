@@ -14,54 +14,55 @@ import (
 
 // Compiler translates a Mochi AST into Zig source code (very small subset).
 type Compiler struct {
-	buf               bytes.Buffer
-	indent            int
-	env               *types.Env
-	tmpCount          int
-	imports           map[string]string
-	structs           map[string]bool
-	needsAvgInt       bool
-	needsAvgFloat     bool
-	needsSumInt       bool
-	needsSumFloat     bool
-	needsMinInt       bool
-	needsMinFloat     bool
-	needsMinString    bool
-	needsMaxInt       bool
-	needsMaxFloat     bool
-	needsMaxString    bool
-	needsInListInt    bool
-	needsInListString bool
-	needsSetOps       bool
-	needsConcatList   bool
-	needsConcatString bool
-	needsSplitString  bool
-	needsJoinString   bool
-	needsJSON         bool
-	needsIndex        bool
-	needsIndexString  bool
-	needsSlice        bool
-	needsSliceString  bool
-	needsReduce       bool
-	needsEqual        bool
-	needsMapKeys      bool
-	needsMapValues    bool
-	needsLoadJSON     bool
-	needsSaveJSON     bool
-	needsFetch        bool
-	needsFetchJSON    bool
-	needsExpect       bool
-	needsAppend       bool
-	needsPrintList    bool
-	tests             []string
-	constGlobals      map[string]bool
-	globalInits       map[string]string
-	labelCount        int
-	locals            map[string]types.Type
-	funcRet           types.Type
-	captures          map[string]string
-	pointerVars       map[string]bool
-	variantInfo       map[string]struct {
+	buf                   bytes.Buffer
+	indent                int
+	env                   *types.Env
+	tmpCount              int
+	imports               map[string]string
+	structs               map[string]bool
+	needsAvgInt           bool
+	needsAvgFloat         bool
+	needsSumInt           bool
+	needsSumFloat         bool
+	needsMinInt           bool
+	needsMinFloat         bool
+	needsMinString        bool
+	needsMaxInt           bool
+	needsMaxFloat         bool
+	needsMaxString        bool
+	needsInListInt        bool
+	needsInListString     bool
+	needsSetOps           bool
+	needsConcatList       bool
+	needsConcatString     bool
+	needsConcatManyString bool
+	needsSplitString      bool
+	needsJoinString       bool
+	needsJSON             bool
+	needsIndex            bool
+	needsIndexString      bool
+	needsSlice            bool
+	needsSliceString      bool
+	needsReduce           bool
+	needsEqual            bool
+	needsMapKeys          bool
+	needsMapValues        bool
+	needsLoadJSON         bool
+	needsSaveJSON         bool
+	needsFetch            bool
+	needsFetchJSON        bool
+	needsExpect           bool
+	needsAppend           bool
+	needsPrintList        bool
+	tests                 []string
+	constGlobals          map[string]bool
+	globalInits           map[string]string
+	labelCount            int
+	locals                map[string]types.Type
+	funcRet               types.Type
+	captures              map[string]string
+	pointerVars           map[string]bool
+	variantInfo           map[string]struct {
 		Union  string
 		Fields map[string]types.Type
 		Order  []string
@@ -2148,6 +2149,28 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 		}
 		operands = append(operands, o)
 		ops[i] = op
+	}
+
+	allPlus := true
+	strCount := 0
+	for i, op := range ops {
+		if op.Op != "+" {
+			allPlus = false
+		}
+		if operands[i].isStr {
+			strCount++
+		}
+	}
+	if operands[len(operands)-1].isStr {
+		strCount++
+	}
+	if allPlus && strCount > 0 && len(operands) > 2 {
+		parts := make([]string, len(operands))
+		for i, o := range operands {
+			parts[i] = o.expr
+		}
+		c.needsConcatManyString = true
+		return fmt.Sprintf("_concat_many_string(&[_][]const u8{ %s })", strings.Join(parts, ", ")), nil
 	}
 
 	levels := [][]string{

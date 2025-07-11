@@ -389,6 +389,17 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("}")
 		c.writeln("")
 	}
+	if c.needsConcatManyString {
+		c.writeln("fn _concat_many_string(parts: []const []const u8) []const u8 {")
+		c.indent++
+		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
+		c.writeln("defer res.deinit();")
+		c.writeln("for (parts) |p| { res.appendSlice(p) catch unreachable; }")
+		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("")
+	}
 	if c.needsSplitString {
 		c.writeln("fn _split_string(s: []const u8, sep: []const u8) []const []const u8 {")
 		c.indent++
