@@ -273,6 +273,22 @@ func isStringMapLike(t types.Type) bool {
 	return false
 }
 
+// isStringAnyMapLike reports whether t is or resolves to a map[string]any.
+func isStringAnyMapLike(t types.Type) bool {
+	if isStringAnyMap(t) {
+		return true
+	}
+	if ut, ok := t.(types.UnionType); ok {
+		for _, v := range ut.Variants {
+			if !isStringAnyMap(v) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func isMap(t types.Type) bool {
 	_, ok := t.(types.MapType)
 	return ok
