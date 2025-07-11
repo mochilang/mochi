@@ -71,6 +71,7 @@ const (
 	OpJump
 	OpJumpIfFalse
 	OpLen
+	OpCap
 	OpIndex
 	OpSlice
 	OpSetIndex
@@ -183,6 +184,8 @@ func (op Op) String() string {
 		return "JumpIfFalse"
 	case OpLen:
 		return "Len"
+	case OpCap:
+		return "Cap"
 	case OpIndex:
 		return "Index"
 	case OpSlice:
@@ -1028,6 +1031,16 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
 			default:
 				return Value{}, m.newError(fmt.Errorf("invalid len operand"), trace, ins.Line)
+			}
+		case OpCap:
+			v := fr.regs[ins.B]
+			switch v.Tag {
+			case ValueList:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: cap(v.List)}
+			case ValueNull:
+				fr.regs[ins.A] = Value{Tag: ValueInt, Int: 0}
+			default:
+				return Value{}, m.newError(fmt.Errorf("invalid cap operand"), trace, ins.Line)
 			}
 		case OpIndex:
 			src := fr.regs[ins.B]
@@ -2383,7 +2396,7 @@ func (fc *funcCompiler) emit(pos lexer.Position, i Instr) {
 		OpLess, OpLessEq, OpLessInt, OpLessFloat, OpLessEqInt, OpLessEqFloat,
 		OpIn, OpNot:
 		fc.tags[i.A] = tagBool
-	case OpLen, OpNow:
+	case OpLen, OpCap, OpNow:
 		fc.tags[i.A] = tagInt
 	case OpJSON, OpPrint, OpPrint2, OpPrintN:
 		// no result
@@ -3362,6 +3375,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 			arg := fc.compileExpr(p.Call.Args[0])
 			dst := fc.newReg()
 			fc.emit(p.Pos, Instr{Op: OpLen, A: dst, B: arg})
+			return dst
+		case "cap":
+			arg := fc.compileExpr(p.Call.Args[0])
+			dst := fc.newReg()
+			fc.emit(p.Pos, Instr{Op: OpCap, A: dst, B: arg})
 			return dst
 		case "now":
 			dst := fc.newReg()
@@ -6638,6 +6656,17 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			return Value{Tag: ValueInt, Int: len([]rune(v.Str))}, true
 		case ValueMap:
 			return Value{Tag: ValueInt, Int: len(v.Map)}, true
+		case ValueNull:
+			return Value{Tag: ValueInt, Int: 0}, true
+		}
+	case "cap":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		v := args[0]
+		switch v.Tag {
+		case ValueList:
+			return Value{Tag: ValueInt, Int: cap(v.List)}, true
 		case ValueNull:
 			return Value{Tag: ValueInt, Int: 0}, true
 		}
