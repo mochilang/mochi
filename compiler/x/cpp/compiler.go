@@ -2393,6 +2393,21 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			if err != nil {
 				return "", err
 			}
+			if t := c.varStruct[src]; t != "" {
+				c.varStruct[q.Var] = t
+			}
+			if et := c.elemType[src]; et != "" {
+				switch {
+				case strings.Contains(et, "std::string"):
+					c.vars[q.Var] = "string"
+				case et == "int":
+					c.vars[q.Var] = "int"
+				case et == "bool":
+					c.vars[q.Var] = "bool"
+				case strings.HasPrefix(et, "__struct"):
+					c.varStruct[q.Var] = et
+				}
+			}
 			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
 			if err != nil {
 				return "", err
@@ -2447,6 +2462,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 
 			groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 			c.structCount++
+			c.varStruct[q.Group.Name] = groupStruct
+			c.elemType[q.Group.Name+".items"] = itemStruct
 			info := &structInfo{Name: groupStruct, Fields: []string{"key", "items"}, Types: []string{keyType, "std::vector<" + itemStruct + ">"}}
 			c.defineStruct(info)
 
