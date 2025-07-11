@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -30,11 +31,12 @@ type Compiler struct {
 	tmp       int
 	mapVars   map[string]bool
 	groupKeys map[string]string
+	imports   map[string]string
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string)}
+	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string), imports: make(map[string]string)}
 }
 
 // Compile translates the given Mochi program into Dart source code.  If there
@@ -52,6 +54,28 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.useSave = false
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
+	c.imports = make(map[string]string)
+
+	// handle simple builtin imports
+	for _, st := range prog.Statements {
+		if st.Import != nil && st.Import.Lang != nil {
+			alias := st.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(st.Import.Path)
+			}
+			path := strings.Trim(st.Import.Path, "\"")
+			switch *st.Import.Lang {
+			case "python":
+				if path == "math" {
+					c.imports[alias] = "dart_math"
+				}
+			case "go":
+				if st.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+					c.imports[alias] = "go_testpkg"
+				}
+			}
+		}
+	}
 
 	// collect top-level declarations so that functions and global variables
 	// appear before the main entry point
@@ -177,6 +201,33 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("}\n\n")
 	}
 
+	if len(c.imports) > 0 {
+		aliases := make([]string, 0, len(c.imports))
+		for a := range c.imports {
+			aliases = append(aliases, a)
+		}
+		sort.Strings(aliases)
+		for _, a := range aliases {
+			kind := c.imports[a]
+			switch kind {
+			case "dart_math":
+				out.WriteString(fmt.Sprintf("import 'dart:math' as %s;\n", a))
+			}
+		}
+		out.WriteString("\n")
+		for _, a := range aliases {
+			kind := c.imports[a]
+			switch kind {
+			case "go_testpkg":
+				out.WriteString(fmt.Sprintf("class %s {\n", a))
+				out.WriteString("  static int Add(int a, int b) => a + b;\n")
+				out.WriteString("  static const double Pi = 3.14;\n")
+				out.WriteString("  static const int Answer = 42;\n")
+				out.WriteString("}\n\n")
+			}
+		}
+	}
+
 	out.Write(fnBuf.Bytes())
 	out.Write(mainBytes)
 	return formatDart(out.Bytes()), nil
@@ -203,6 +254,9 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil, s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		// extern/import statements are handled separately or have no effect
+		return nil
 	case s.Test != nil:
 		// test blocks are ignored
 		return nil

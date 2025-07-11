@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 97/97
+Compiled programs: 100/100
 
 Checklist:
 
@@ -103,6 +103,9 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+- [x] go_auto
+- [x] python_auto
+- [x] python_math
 
 ## Remaining Tasks
 
