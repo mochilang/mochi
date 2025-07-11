@@ -8,7 +8,7 @@ type
   generic TArray<T> = array of T;
 
 type
-  TFunc0 = function (p0: integer): integer;
+  TFunc0 = function (p0: integer): integer is nested;
 
 
 function makeAdder(n: integer): TFunc0;
@@ -24,7 +24,7 @@ begin
 end;
 
 var
-  add10: function (p0: integer): integer;
+  add10: function (p0: integer): integer is nested;
 
 begin
   add10 := makeAdder(10);

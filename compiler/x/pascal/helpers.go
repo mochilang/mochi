@@ -409,6 +409,10 @@ func contains(list []string, s string) bool {
 }
 
 func parsePasType(s string) types.Type {
+	s = strings.TrimSpace(s)
+	if strings.HasSuffix(s, " is nested") {
+		s = strings.TrimSpace(strings.TrimSuffix(s, " is nested"))
+	}
 	switch s {
 	case "integer":
 		return types.IntType{}

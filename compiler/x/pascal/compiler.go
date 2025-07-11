@@ -576,6 +576,17 @@ func (c *Compiler) compileIfExpr(expr *parser.IfExpr) (string, error) {
 	typ := "integer"
 	if c.expected != nil {
 		typ = typeString(c.expected)
+	} else {
+		if t := types.TypeOfExpr(expr.Then, c.env); t != nil {
+			typ = typeString(t)
+		}
+		if expr.Else != nil {
+			if t := types.TypeOfExpr(expr.Else, c.env); t != nil {
+				if tt := typeString(t); tt != typ {
+					typ = tt
+				}
+			}
+		}
 	}
 	tmp := c.newTypedVar(typ)
 
@@ -950,9 +961,9 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		ret := c.typeRef(t.Fun.Return)
 		var decl string
 		if ret == "" || ret == "void" {
-			decl = fmt.Sprintf("procedure(%s)", strings.Join(declParts, "; "))
+			decl = fmt.Sprintf("procedure(%s) is nested", strings.Join(declParts, "; "))
 		} else {
-			decl = fmt.Sprintf("function(%s): %s", strings.Join(declParts, "; "), ret)
+			decl = fmt.Sprintf("function(%s): %s is nested", strings.Join(declParts, "; "), ret)
 		}
 		for name, d := range c.funcTypes {
 			if d == decl {
@@ -1009,9 +1020,9 @@ func typeString(t types.Type) string {
 			params[i] = fmt.Sprintf("p%d: %s", i, typeString(p))
 		}
 		if tt.Return == nil || tt.Return == (types.VoidType{}) {
-			return fmt.Sprintf("procedure(%s)", strings.Join(params, "; "))
+			return fmt.Sprintf("procedure(%s) is nested", strings.Join(params, "; "))
 		}
-		return fmt.Sprintf("function(%s): %s", strings.Join(params, "; "), typeString(tt.Return))
+		return fmt.Sprintf("function(%s): %s is nested", strings.Join(params, "; "), typeString(tt.Return))
 	default:
 		return "integer"
 	}
