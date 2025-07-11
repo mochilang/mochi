@@ -5728,6 +5728,38 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 		c.indent--
 		c.writeln("}")
 		c.writeln("printf(\"]\");")
+	} else if t, ok := c.exprType(e).(types.ListType); ok {
+		if st, ok2 := t.Elem.(types.StructType); ok2 {
+			loop := c.newLoopVar()
+			c.writeln("printf(\"[\");")
+			c.writeln(fmt.Sprintf("for(int %s=0; %s<%s.len; %s++){", loop, loop, argExpr, loop))
+			c.indent++
+			c.writeln(fmt.Sprintf("if(%s>0) printf(\",\");", loop))
+			c.writeln(fmt.Sprintf("%s it = %s.data[%s];", sanitizeTypeName(st.Name), argExpr, loop))
+			c.writeln("printf(\"{\");")
+			for i, field := range st.Order {
+				if i > 0 {
+					c.writeln("printf(\",\");")
+				}
+				c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
+				c.writeln("printf(\":\");")
+				fe := fmt.Sprintf("it.%s", sanitizeName(field))
+				switch st.Fields[field].(type) {
+				case types.IntType, types.BoolType:
+					c.writeln(fmt.Sprintf("_json_int(%s);", fe))
+				case types.FloatType:
+					c.writeln(fmt.Sprintf("_json_float(%s);", fe))
+				case types.StringType:
+					c.writeln(fmt.Sprintf("_json_string(%s);", fe))
+				}
+			}
+			c.writeln("printf(\"}\");")
+			c.indent--
+			c.writeln("}")
+			c.writeln("printf(\"]\");")
+		} else {
+			c.writeln(fmt.Sprintf("_json_int(%s.len);", argExpr))
+		}
 	} else if isFloatArg(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
 	} else if isStringArg(e, c.env) {
