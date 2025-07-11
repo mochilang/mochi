@@ -103,6 +103,14 @@ func (c *Compiler) writeIndent() {
 
 // Compile converts a Mochi program to Zig.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	// collect imports first so that builtin aliases are registered
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if err := c.addImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
+	}
 	// compile type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -134,6 +142,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil || s.Type != nil {
+			continue
+		}
+		if s.ExternVar != nil || s.ExternFun != nil || s.ExternType != nil || s.ExternObject != nil {
+			// extern declarations do not produce code in main
 			continue
 		}
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
@@ -843,6 +855,9 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		}
 		c.needsExpect = true
 		c.writeln(fmt.Sprintf("expect(%s);", expr))
+		return nil
+	case s.ExternVar != nil || s.ExternFun != nil || s.ExternType != nil || s.ExternObject != nil:
+		// extern declarations have no direct Zig equivalent at runtime
 		return nil
 	default:
 		return fmt.Errorf("unsupported statement")
