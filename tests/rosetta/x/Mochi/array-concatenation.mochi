@@ -1,0 +1,30 @@
+// Mochi implementation of Rosetta "Array concatenation" task
+
+fun concatInts(a: list<int>, b: list<int>): list<int> {
+  var out: list<int> = []
+  for v in a { out = append(out, v) }
+  for v in b { out = append(out, v) }
+  return out
+}
+
+fun concatAny(a: list<any>, b: list<any>): list<any> {
+  var out: list<any> = []
+  for v in a { out = append(out, v) }
+  for v in b { out = append(out, v) }
+  return out
+}
+
+// Example 1
+var a = [1, 2, 3]
+var b = [7, 12, 60]
+print(str(concatInts(a, b)))
+
+// Example 2
+var i: list<any> = [1, 2, 3]
+var j: list<any> = ["Crosby", "Stills", "Nash", "Young"]
+print(str(concatAny(i, j)))
+
+// Example 3
+var l = [1, 2, 3]
+var m = [7, 12, 60]
+print(str(concatInts(l, m)))
