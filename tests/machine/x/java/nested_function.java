@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.function.*;
 public class NestedFunction {
 	static int outer(int x) {
 		java.util.function.IntUnaryOperator inner = y -> {

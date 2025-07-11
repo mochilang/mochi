@@ -1,4 +1,3 @@
-import java.util.*;
 public class BoolChain {
 	static boolean boom() {
 		System.out.println("boom");

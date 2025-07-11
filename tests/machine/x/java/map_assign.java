@@ -1,4 +1,3 @@
-import java.util.*;
 class ScoresAlice {
 	int alice;
 	ScoresAlice(int alice) {

@@ -1,4 +1,3 @@
-import java.util.*;
 public class BasicCompare {
 	static int a = 10 - 3;
 	static int b = 2 + 2;

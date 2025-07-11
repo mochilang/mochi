@@ -1,4 +1,3 @@
-import java.util.*;
 import java.util.function.*;
 public class PartialApplication {
 	static IntUnaryOperator add5 = b -> add(5, b);

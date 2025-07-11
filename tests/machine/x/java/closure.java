@@ -1,4 +1,3 @@
-import java.util.*;
 import java.util.function.*;
 public class Closure {
 	static IntUnaryOperator add10 = makeAdder(10);

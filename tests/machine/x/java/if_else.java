@@ -1,4 +1,3 @@
-import java.util.*;
 public class IfElse {
 	static int x = 5;
 	public static void main(String[] args) {

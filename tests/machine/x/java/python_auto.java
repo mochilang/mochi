@@ -1,4 +1,3 @@
-import java.util.*;
 class math {
 	static double pi = Math.PI;
 	static double e = Math.E;

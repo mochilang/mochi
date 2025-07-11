@@ -22,6 +22,7 @@ type Compiler struct {
 	funSigs           map[string]*funSig
 	types             map[string]*parser.TypeDecl
 	needFuncImports   bool
+	needUtilImports   bool
 	tmpCount          int
 	groupKeys         map[string]string
 	variantOf         map[string]string
@@ -62,6 +63,7 @@ func New() *Compiler {
 		dataClassOrder:    []string{},
 		curVar:            "",
 		className:         "",
+		needUtilImports:   false,
 	}
 }
 
@@ -151,13 +153,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf = origBuf
 	c.buf.Reset()
 	c.indent = 0
-	c.writeln("import java.util.*;")
-	if c.helpers["load_yaml"] {
-		c.writeln("import java.io.*;")
-	}
-	if c.needFuncImports {
-		c.writeln("import java.util.function.*;")
-	}
+
+	classBuf := new(bytes.Buffer)
+	c.buf = classBuf
 	// user defined types
 	for _, tdecl := range c.types {
 		if err := c.compileTypeDecl(tdecl); err != nil {
@@ -415,6 +413,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("}")
 	c.indent--
 	c.writeln("}")
+
+	code := classBuf.String()
+
+	if needsUtilImports(code) {
+		c.needUtilImports = true
+	}
+
+	finalBuf := new(bytes.Buffer)
+	c.buf = finalBuf
+	if c.needUtilImports {
+		c.writeln("import java.util.*;")
+	}
+	if c.helpers["load_yaml"] {
+		c.writeln("import java.io.*;")
+	}
+	if c.needFuncImports {
+		c.writeln("import java.util.function.*;")
+	}
+	c.buf.WriteString(code)
 	return c.buf.Bytes(), nil
 }
 
@@ -2773,4 +2790,14 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		return fmt.Sprintf("saveJsonl((List<Map<?,?>>)(List<?>)%s)", src), nil
 	}
 	return "", fmt.Errorf("save only supports stdout")
+}
+
+func needsUtilImports(code string) bool {
+	patterns := []string{"List<", "Map<", "Set<", "HashMap", "ArrayList", "LinkedHashMap", "LinkedHashSet", "Arrays.", "Objects."}
+	for _, p := range patterns {
+		if strings.Contains(code, p) {
+			return true
+		}
+	}
+	return false
 }

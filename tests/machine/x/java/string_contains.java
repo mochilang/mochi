@@ -1,4 +1,3 @@
-import java.util.*;
 public class StringContains {
 	static String s = "catch";
 	public static void main(String[] args) {

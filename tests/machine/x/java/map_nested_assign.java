@@ -1,4 +1,3 @@
-import java.util.*;
 class DataInner {
 	int inner;
 	DataInner(int inner) {

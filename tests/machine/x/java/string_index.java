@@ -1,4 +1,3 @@
-import java.util.*;
 public class StringIndex {
 	static String s = "mochi";
 	public static void main(String[] args) {
