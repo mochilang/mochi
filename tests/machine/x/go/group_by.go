@@ -3,50 +3,62 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"strings"
 )
 
 func main() {
-	var people []map[string]any = []map[string]any{
-		map[string]any{
-			"name": "Alice",
-			"age":  30,
-			"city": "Paris",
+	type PeopleItem struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+		City string `json:"city"`
+	}
+
+	var people []PeopleItem = []PeopleItem{
+		PeopleItem{
+			Name: "Alice",
+			Age:  30,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Bob",
-			"age":  15,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Bob",
+			Age:  15,
+			City: "Hanoi",
 		},
-		map[string]any{
-			"name": "Charlie",
-			"age":  65,
-			"city": "Paris",
+		PeopleItem{
+			Name: "Charlie",
+			Age:  65,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Diana",
-			"age":  45,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Diana",
+			Age:  45,
+			City: "Hanoi",
 		},
-		map[string]any{
-			"name": "Eve",
-			"age":  70,
-			"city": "Paris",
+		PeopleItem{
+			Name: "Eve",
+			Age:  70,
+			City: "Paris",
 		},
-		map[string]any{
-			"name": "Frank",
-			"age":  22,
-			"city": "Hanoi",
+		PeopleItem{
+			Name: "Frank",
+			Age:  22,
+			City: "Hanoi",
 		},
 	}
-	var stats []map[string]any = func() []map[string]any {
+	type Stats struct {
+		City    any     `json:"city"`
+		Count   int     `json:"count"`
+		Avg_age float64 `json:"avg_age"`
+	}
+
+	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, person := range people {
-			key := person["city"]
+			key := person.City
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -56,16 +68,16 @@ func main() {
 			}
 			g.Items = append(g.Items, person)
 		}
-		_res := []map[string]any{}
+		_res := []Stats{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, map[string]any{
-				"city":  g.Key,
-				"count": len(g.Items),
-				"avg_age": _avg(func() []any {
+			_res = append(_res, Stats{
+				City:  g.Key,
+				Count: len(g.Items),
+				Avg_age: _avg(func() []any {
 					_res := []any{}
 					for _, p := range g.Items {
-						_res = append(_res, _cast[map[string]any](p)["age"])
+						_res = append(_res, (p).(map[string]any)["age"])
 					}
 					return _res
 				}()),
@@ -73,9 +85,9 @@ func main() {
 		}
 		return _res
 	}()
-	fmt.Println("--- People grouped by city ---")
+	fmt.Println(_sprint("--- People grouped by city ---"))
 	for _, s := range stats {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint(s["city"]), fmt.Sprint(": count ="), fmt.Sprint(s["count"]), fmt.Sprint(", avg_age ="), fmt.Sprint(s["avg_age"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint(s.City), _sprint(": count ="), _sprint(s.Count), _sprint(", avg_age ="), _sprint(s.Avg_age)}, " "), " "))
 	}
 }
 
@@ -130,62 +142,13 @@ func _avg(v any) float64 {
 	return sum / float64(len(items))
 }
 
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
 	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
+	return fmt.Sprint(v)
 }

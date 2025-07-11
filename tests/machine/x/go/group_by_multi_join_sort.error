@@ -1,15 +1,12 @@
 Error on line 0: run error: exit status 1
-panic: interface conversion: interface {} is int, not float64
-
-goroutine 1 [running]:
-main._cast[...](...)
-	/workspace/mochi/tests/machine/x/go/group_by_multi_join_sort.go:175
-main.main.func1.1(...)
-	/workspace/mochi/tests/machine/x/go/group_by_multi_join_sort.go:119
-main.main.func1({0xc00024bf10, 0x1, 0xc000048708?}, {0xc00024bf00, 0x2, 0x200000003?}, {0xc00024bef0, 0x2, 0x6d1fb1?}, {0xc00024bf18, ...}, ...)
-	/workspace/mochi/tests/machine/x/go/group_by_multi_join_sort.go:122 +0x1065
-main.main()
-	/workspace/mochi/tests/machine/x/go/group_by_multi_join_sort.go:170 +0x7e5
-exit status 2
+# command-line-arguments
+../../../tests/machine/x/go/group_by_multi_join_sort.go:118:15: cannot use _ as value or type
+../../../tests/machine/x/go/group_by_multi_join_sort.go:135:26: invalid operation: c (variable of struct type CustomerItem) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:139:26: invalid operation: o (variable of struct type OrdersItem) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:143:26: invalid operation: l (variable of struct type LineitemItem) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:147:26: invalid operation: n (variable of struct type NationItem) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:171:105: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:207:14: cannot use _sum(func() []any {…}()) (value of type float64) as int value in struct literal
+../../../tests/machine/x/go/group_by_multi_join_sort.go:210:106: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
 
 1: //go:build ignore

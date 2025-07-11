@@ -3,7 +3,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
@@ -11,40 +10,77 @@ import (
 )
 
 func main() {
-	var nations []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "A"}, map[string]any{"id": 2, "name": "B"}}
-	_ = nations
-	var suppliers []map[string]int = []map[string]int{map[string]int{"id": 1, "nation": 1}, map[string]int{"id": 2, "nation": 2}}
-	_ = suppliers
-	var partsupp []map[string]any = []map[string]any{map[string]any{
-		"part":     100,
-		"supplier": 1,
-		"cost":     10.0,
-		"qty":      2,
-	}, map[string]any{
-		"part":     100,
-		"supplier": 2,
-		"cost":     20.0,
-		"qty":      1,
-	}, map[string]any{
-		"part":     200,
-		"supplier": 1,
-		"cost":     5.0,
-		"qty":      3,
+	type NationsItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var nations []NationsItem = []NationsItem{NationsItem{
+		Id:   1,
+		Name: "A",
+	}, NationsItem{
+		Id:   2,
+		Name: "B",
 	}}
-	var filtered []map[string]any = func() []map[string]any {
-		_res := []map[string]any{}
+	_ = nations
+	type SuppliersItem struct {
+		Id     int `json:"id"`
+		Nation int `json:"nation"`
+	}
+
+	var suppliers []SuppliersItem = []SuppliersItem{SuppliersItem{
+		Id:     1,
+		Nation: 1,
+	}, SuppliersItem{
+		Id:     2,
+		Nation: 2,
+	}}
+	_ = suppliers
+	type PartsuppItem struct {
+		Part     int     `json:"part"`
+		Supplier int     `json:"supplier"`
+		Cost     float64 `json:"cost"`
+		Qty      int     `json:"qty"`
+	}
+
+	var partsupp []PartsuppItem = []PartsuppItem{PartsuppItem{
+		Part:     100,
+		Supplier: 1,
+		Cost:     10.0,
+		Qty:      2,
+	}, PartsuppItem{
+		Part:     100,
+		Supplier: 2,
+		Cost:     20.0,
+		Qty:      1,
+	}, PartsuppItem{
+		Part:     200,
+		Supplier: 1,
+		Cost:     5.0,
+		Qty:      3,
+	}}
+	type Filtered struct {
+		Part  any `json:"part"`
+		Value any `json:"value"`
+	}
+
+	var filtered []Filtered = func() []Filtered {
+		_res := []Filtered{}
 		for _, ps := range partsupp {
 			for _, s := range suppliers {
-				if !(_equal(s["id"], ps["supplier"])) {
+				if !(s.Id == ps.Supplier) {
 					continue
 				}
 				for _, n := range nations {
-					if !(_equal(n["id"], s["nation"])) {
+					if !(n.Id == s.Nation) {
 						continue
 					}
-					if _equal(n["name"], "A") {
-						if _equal(n["name"], "A") {
-							_res = append(_res, map[string]any{"part": ps["part"], "value": (_cast[float64](ps["cost"]) * _cast[float64](ps["qty"]))})
+					if n.Name == "A" {
+						if n.Name == "A" {
+							_res = append(_res, Filtered{
+								Part:  ps.Part,
+								Value: (ps.Cost * float64(ps.Qty)),
+							})
 						}
 					}
 				}
@@ -52,11 +88,16 @@ func main() {
 		}
 		return _res
 	}()
-	var grouped []map[string]any = func() []map[string]any {
+	type Grouped struct {
+		Part  any `json:"part"`
+		Total int `json:"total"`
+	}
+
+	var grouped []Grouped = func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, x := range filtered {
-			key := x["part"]
+			key := x.Part
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -66,116 +107,34 @@ func main() {
 			}
 			g.Items = append(g.Items, x)
 		}
-		_res := []map[string]any{}
+		_res := []Grouped{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, map[string]any{"part": g.Key, "total": _sum(func() []any {
-				_res := []any{}
-				for _, r := range g.Items {
-					_res = append(_res, _cast[map[string]any](r)["value"])
-				}
-				return _res
-			}())})
+			_res = append(_res, Grouped{
+				Part: g.Key,
+				Total: _sum(func() []any {
+					_res := []any{}
+					for _, r := range g.Items {
+						_res = append(_res, (r).(map[string]any)["value"])
+					}
+					return _res
+				}()),
+			})
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(grouped), "["), "]"))
 }
 
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
 	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
-}
-
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
-		}
-		return true
-	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

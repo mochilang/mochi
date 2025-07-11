@@ -4,14 +4,15 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 
 	"golang.org/x/exp/constraints"
 )
 
 func main() {
 	var nums []int = []int{3, 1, 4}
-	fmt.Println(_minOrdered[int](nums))
-	fmt.Println(_maxOrdered[int](nums))
+	fmt.Println(_sprint(_minOrdered[int](nums)))
+	fmt.Println(_sprint(_maxOrdered[int](nums)))
 }
 
 func _maxOrdered[T constraints.Ordered](s []T) T {
@@ -40,4 +41,15 @@ func _minOrdered[T constraints.Ordered](s []T) T {
 		}
 	}
 	return m
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

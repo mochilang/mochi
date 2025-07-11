@@ -3,20 +3,34 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strings"
 )
 
 func main() {
-	var _data []map[string]any = []map[string]any{map[string]any{"tag": "a", "val": 1}, map[string]any{"tag": "a", "val": 2}, map[string]any{"tag": "b", "val": 3}}
+	type _dataItem struct {
+		Tag string `json:"tag"`
+		Val int    `json:"val"`
+	}
+
+	var _data []_dataItem = []_dataItem{_dataItem{
+		Tag: "a",
+		Val: 1,
+	}, _dataItem{
+		Tag: "a",
+		Val: 2,
+	}, _dataItem{
+		Tag: "b",
+		Val: 3,
+	}}
 	var groups []*data.Group = func() []*data.Group {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, d := range _data {
-			key := d["tag"]
+			key := d.Tag
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -36,81 +50,29 @@ func main() {
 	var tmp []any = []any{}
 	for _, g := range groups {
 		var total int = 0
-		for _, x := range _toAnySlice(g.Items) {
-			total = _cast[int](_cast[int]((float64(total) + _cast[float64](_cast[map[string]any](x)["val"]))))
+		for _, x := range g.Items {
+			total = (total + x.Val)
 		}
-		tmp = append(tmp, map[string]any{"tag": g.Key, "total": total})
+		type _ struct {
+			Tag   string `json:"tag"`
+			Total int    `json:"total"`
+		}
+
+		tmp = append(tmp, _{
+			Tag:   g.Key,
+			Total: total,
+		})
 	}
 	var result []any = func() []any {
 		src := tmp
-		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { r := _a[0]; _ = r; return r }, sortKey: func(_a ...any) any { r := _a[0]; _ = r; return _cast[map[string]any](r)["tag"] }, skip: -1, take: -1})
+		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { r := _a[0]; _ = r; return r }, sortKey: func(_a ...any) any { r := _a[0]; _ = r; return (r).(map[string]any)["tag"] }, skip: -1, take: -1})
 		out := make([]any, len(resAny))
 		for i, v := range resAny {
 			out[i] = v
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
-}
-
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(result), "["), "]"))
 }
 
 type _joinSpec struct {
@@ -317,10 +279,13 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 	return res
 }
 
-func _toAnySlice[T any](s []T) []any {
-	out := []any{}
-	for _, v := range s {
-		out = append(out, v)
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	return out
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

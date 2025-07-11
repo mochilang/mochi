@@ -9,84 +9,85 @@ import (
 )
 
 func main() {
-	var customers []map[string]any = []map[string]any{map[string]any{"id": 1, "name": "Alice"}, map[string]any{"id": 2, "name": "Bob"}, map[string]any{"id": 3, "name": "Charlie"}}
+	type CustomersItem struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var customers []CustomersItem = []CustomersItem{CustomersItem{
+		Id:   1,
+		Name: "Alice",
+	}, CustomersItem{
+		Id:   2,
+		Name: "Bob",
+	}, CustomersItem{
+		Id:   3,
+		Name: "Charlie",
+	}}
 	_ = customers
-	var orders []map[string]int = []map[string]int{
-		map[string]int{
-			"id":         100,
-			"customerId": 1,
-			"total":      250,
+	type OrdersItem struct {
+		Id         int `json:"id"`
+		CustomerId int `json:"customerId"`
+		Total      int `json:"total"`
+	}
+
+	var orders []OrdersItem = []OrdersItem{
+		OrdersItem{
+			Id:         100,
+			CustomerId: 1,
+			Total:      250,
 		},
-		map[string]int{
-			"id":         101,
-			"customerId": 2,
-			"total":      125,
+		OrdersItem{
+			Id:         101,
+			CustomerId: 2,
+			Total:      125,
 		},
-		map[string]int{
-			"id":         102,
-			"customerId": 1,
-			"total":      300,
+		OrdersItem{
+			Id:         102,
+			CustomerId: 1,
+			Total:      300,
 		},
-		map[string]int{
-			"id":         103,
-			"customerId": 4,
-			"total":      80,
+		OrdersItem{
+			Id:         103,
+			CustomerId: 4,
+			Total:      80,
 		},
 	}
-	var result []map[string]int = func() []map[string]any {
-		_res := []map[string]any{}
+	type Result struct {
+		OrderId      any `json:"orderId"`
+		CustomerName any `json:"customerName"`
+		Total        any `json:"total"`
+	}
+
+	var result []Result = func() []Result {
+		_res := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {
-				if !(_equal(o["customerId"], c["id"])) {
+				if !(o.CustomerId == c.Id) {
 					continue
 				}
-				_res = append(_res, map[string]any{
-					"orderId":      o["id"],
-					"customerName": c["name"],
-					"total":        o["total"],
+				_res = append(_res, Result{
+					OrderId:      o.Id,
+					CustomerName: c.Name,
+					Total:        o.Total,
 				})
 			}
 		}
 		return _res
 	}()
-	fmt.Println("--- Orders with customer info ---")
+	fmt.Println(_sprint("--- Orders with customer info ---"))
 	for _, entry := range result {
-		fmt.Println(strings.TrimRight(strings.Join([]string{fmt.Sprint("Order"), fmt.Sprint(entry["orderId"]), fmt.Sprint("by"), fmt.Sprint(entry["customerName"]), fmt.Sprint("- $"), fmt.Sprint(entry["total"])}, " "), " "))
+		fmt.Println(strings.TrimRight(strings.Join([]string{_sprint("Order"), _sprint(entry.OrderId), _sprint("by"), _sprint(entry.CustomerName), _sprint("- $"), _sprint(entry.Total)}, " "), " "))
 	}
 }
 
-func _equal(a, b any) bool {
-	av := reflect.ValueOf(a)
-	bv := reflect.ValueOf(b)
-	if av.Kind() == reflect.Slice && bv.Kind() == reflect.Slice {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for i := 0; i < av.Len(); i++ {
-			if !_equal(av.Index(i).Interface(), bv.Index(i).Interface()) {
-				return false
-			}
-		}
-		return true
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
 	}
-	if av.Kind() == reflect.Map && bv.Kind() == reflect.Map {
-		if av.Len() != bv.Len() {
-			return false
-		}
-		for _, k := range av.MapKeys() {
-			bvVal := bv.MapIndex(k)
-			if !bvVal.IsValid() {
-				return false
-			}
-			if !_equal(av.MapIndex(k).Interface(), bvVal.Interface()) {
-				return false
-			}
-		}
-		return true
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
 	}
-	if (av.Kind() == reflect.Int || av.Kind() == reflect.Int64 || av.Kind() == reflect.Float64) &&
-		(bv.Kind() == reflect.Int || bv.Kind() == reflect.Int64 || bv.Kind() == reflect.Float64) {
-		return av.Convert(reflect.TypeOf(float64(0))).Float() == bv.Convert(reflect.TypeOf(float64(0))).Float()
-	}
-	return reflect.DeepEqual(a, b)
+	return fmt.Sprint(v)
 }

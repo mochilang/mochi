@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 // line 1
@@ -26,6 +27,17 @@ func main() {
 		11,
 		15,
 	}, 9)
-	fmt.Println(result[0])
-	fmt.Println(result[1])
+	fmt.Println(_sprint(result[0]))
+	fmt.Println(_sprint(result[1]))
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

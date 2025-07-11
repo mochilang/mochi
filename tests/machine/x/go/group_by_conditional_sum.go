@@ -3,7 +3,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
@@ -12,24 +11,35 @@ import (
 )
 
 func main() {
-	var items []map[string]any = []map[string]any{map[string]any{
-		"cat":  "a",
-		"val":  10,
-		"flag": true,
-	}, map[string]any{
-		"cat":  "a",
-		"val":  5,
-		"flag": false,
-	}, map[string]any{
-		"cat":  "b",
-		"val":  20,
-		"flag": true,
+	type ItemsItem struct {
+		Cat  string `json:"cat"`
+		Val  int    `json:"val"`
+		Flag bool   `json:"flag"`
+	}
+
+	var items []ItemsItem = []ItemsItem{ItemsItem{
+		Cat:  "a",
+		Val:  10,
+		Flag: true,
+	}, ItemsItem{
+		Cat:  "a",
+		Val:  5,
+		Flag: false,
+	}, ItemsItem{
+		Cat:  "b",
+		Val:  20,
+		Flag: true,
 	}}
-	var result []map[string]any = func() []map[string]any {
+	type Result struct {
+		Cat   any     `json:"cat"`
+		Share float64 `json:"share"`
+	}
+
+	var result []Result = func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {
-			key := i["cat"]
+			key := i.Cat
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
 			if !ok {
@@ -38,7 +48,7 @@ func main() {
 				order = append(order, ks)
 			}
 			_item := map[string]any{}
-			for k, v := range _cast[map[string]any](i) {
+			for k, v := range i.(map[string]any) {
 				_item[k] = v
 			}
 			_item["i"] = i
@@ -83,91 +93,34 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []map[string]any{}
+		_res := []Result{}
 		for _, g := range items {
-			_res = append(_res, map[string]any{"cat": g.Key, "share": (_sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, func() any {
-						if _exists(_cast[map[string]any](x)["flag"]) {
-							return _cast[map[string]any](x)["val"]
-						} else {
-							return 0
-						}
-					}())
-				}
-				return _res
-			}()) / _sum(func() []any {
-				_res := []any{}
-				for _, x := range g.Items {
-					_res = append(_res, _cast[map[string]any](x)["val"])
-				}
-				return _res
-			}()))})
+			_res = append(_res, Result{
+				Cat: g.Key,
+				Share: (float64(_sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, func() any {
+							if _exists((x).(map[string]any)["flag"]) {
+								return (x).(map[string]any)["val"]
+							} else {
+								return 0
+							}
+						}())
+					}
+					return _res
+				}())) / float64(_sum(func() []any {
+					_res := []any{}
+					for _, x := range g.Items {
+						_res = append(_res, (x).(map[string]any)["val"])
+					}
+					return _res
+				}()))),
+			})
 		}
 		return _res
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
-}
-
-func _cast[T any](v any) T {
-	if tv, ok := v.(T); ok {
-		return tv
-	}
-	var out T
-	switch any(out).(type) {
-	case int:
-		switch vv := v.(type) {
-		case int:
-			return any(vv).(T)
-		case float64:
-			return any(int(vv)).(T)
-		case float32:
-			return any(int(vv)).(T)
-		}
-	case float64:
-		switch vv := v.(type) {
-		case int:
-			return any(float64(vv)).(T)
-		case float64:
-			return any(vv).(T)
-		case float32:
-			return any(float64(vv)).(T)
-		}
-	case float32:
-		switch vv := v.(type) {
-		case int:
-			return any(float32(vv)).(T)
-		case float64:
-			return any(float32(vv)).(T)
-		case float32:
-			return any(vv).(T)
-		}
-	}
-	if m, ok := v.(map[any]any); ok {
-		v = _convertMapAny(m)
-	}
-	data, err := json.Marshal(v)
-	if err != nil {
-		panic(err)
-	}
-	if err := json.Unmarshal(data, &out); err != nil {
-		panic(err)
-	}
-	return out
-}
-
-func _convertMapAny(m map[any]any) map[string]any {
-	out := make(map[string]any, len(m))
-	for k, v := range m {
-		key := fmt.Sprint(k)
-		if sub, ok := v.(map[any]any); ok {
-			out[key] = _convertMapAny(sub)
-		} else {
-			out[key] = v
-		}
-	}
-	return out
+	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(_sprint(result), "["), "]"))
 }
 
 func _exists(v any) bool {
@@ -189,14 +142,34 @@ func _exists(v any) bool {
 		return len(s) > 0
 	case map[string]any:
 		return len(s) > 0
+	case map[string]int:
+		return len(s) > 0
 	case string:
 		return len([]rune(s)) > 0
 	}
 	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array {
+	switch rv.Kind() {
+	case reflect.Slice, reflect.Array:
 		return rv.Len() > 0
+	case reflect.Map:
+		return !rv.IsNil() && rv.Len() > 0
+	case reflect.Pointer:
+		return !rv.IsNil()
+	case reflect.Struct:
+		return true
 	}
 	return false
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

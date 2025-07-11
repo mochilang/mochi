@@ -55,10 +55,16 @@ const (
 		"    case []bool: return len(s) > 0\n" +
 		"    case []map[string]any: return len(s) > 0\n" +
 		"    case map[string]any: return len(s) > 0\n" +
+		"    case map[string]int: return len(s) > 0\n" +
 		"    case string: return len([]rune(s)) > 0\n" +
 		"    }\n" +
 		"    rv := reflect.ValueOf(v)\n" +
-		"    if rv.Kind() == reflect.Slice || rv.Kind() == reflect.Array { return rv.Len() > 0 }\n" +
+		"    switch rv.Kind() {\n" +
+		"    case reflect.Slice, reflect.Array: return rv.Len() > 0\n" +
+		"    case reflect.Map: return !rv.IsNil() && rv.Len() > 0\n" +
+		"    case reflect.Pointer: return !rv.IsNil()\n" +
+		"    case reflect.Struct: return true\n" +
+		"    }\n" +
 		"    return false\n" +
 		"}\n"
 
@@ -507,6 +513,13 @@ const (
 		"    return strings.ToUpper(fmt.Sprint(v))\n" +
 		"}\n"
 
+	helperSprint = "func _sprint(v any) string {\n" +
+		"    if v == nil { return \"<nil>\" }\n" +
+		"    rv := reflect.ValueOf(v)\n" +
+		"    if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() { return \"<nil>\" }\n" +
+		"    return fmt.Sprint(v)\n" +
+		"}\n"
+
 	helperValues = "func _values(v any) []any {\n" +
 		"    switch m := v.(type) {\n" +
 		"    case map[string]any:\n" +
@@ -869,6 +882,7 @@ var helperMap = map[string]string{
 	"_reverseString": helperReverseString,
 	"_lower":         helperLower,
 	"_upper":         helperUpper,
+	"_sprint":        helperSprint,
 	"_values":        helperValues,
 	"_except":        helperExcept,
 	"_intersect":     helperIntersect,
@@ -897,6 +911,10 @@ func (c *Compiler) use(name string) {
 	if name == "_lower" || name == "_upper" {
 		c.imports["fmt"] = true
 		c.imports["strings"] = true
+	}
+	if name == "_sprint" {
+		c.imports["fmt"] = true
+		c.imports["reflect"] = true
 	}
 	if name == "_contains" {
 		c.imports["fmt"] = true
