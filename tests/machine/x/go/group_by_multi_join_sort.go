@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strings"
 )
@@ -165,11 +166,11 @@ func main() {
 		for idx, it := range items {
 			g := it
 			pairs[idx] = pair{item: it, key: -_sum(func() []any {
-				_res := []any{}
+				results := []any{}
 				for _, x := range g.Items {
-					_res = append(_res, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
+					results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
 				}
-				return _res
+				return results
 			}())}
 		}
 		sort.Slice(pairs, func(i, j int) bool {
@@ -198,17 +199,17 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []Result{}
+		results := []Result{}
 		for _, g := range items {
-			_res = append(_res, Result{
+			results = append(results, Result{
 				C_custkey: (g.Key).(map[string]any)["c_custkey"],
 				C_name:    (g.Key).(map[string]any)["c_name"],
 				Revenue: _sum(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
+						results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
 					}
-					return _res
+					return results
 				}()),
 				C_acctbal: (g.Key).(map[string]any)["c_acctbal"],
 				N_name:    (g.Key).(map[string]any)["n_name"],
@@ -217,7 +218,7 @@ func main() {
 				C_comment: (g.Key).(map[string]any)["c_comment"],
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
@@ -273,6 +274,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }

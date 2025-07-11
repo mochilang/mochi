@@ -37,11 +37,11 @@ func main() {
 	}
 
 	var adults []Adults = func() []Adults {
-		_res := []Adults{}
+		results := []Adults{}
 		for _, person := range people {
 			if person.Age >= 18 {
 				if person.Age >= 18 {
-					_res = append(_res, Adults{
+					results = append(results, Adults{
 						Name:      person.Name,
 						Age:       person.Age,
 						Is_senior: (person.Age >= 60),
@@ -49,7 +49,7 @@ func main() {
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Adults ---")
 	for _, person := range adults {

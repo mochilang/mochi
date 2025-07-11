@@ -61,8 +61,8 @@ func main() {
 		if _equal(_t, false) {
 			return "denied"
 		}
-		var _zero string
-		return _zero
+		var zeroVal string
+		return zeroVal
 	}()
 	fmt.Println(status)
 	fmt.Println(classify(0))

@@ -39,12 +39,12 @@ func main() {
 			}
 			g.Items = append(g.Items, d)
 		}
-		_res := []*data.Group{}
+		results := []*data.Group{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, g)
+			results = append(results, g)
 		}
-		return _res
+		return results
 	}()
 	var tmp []any = []any{}
 	for _, g := range groups {

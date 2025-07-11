@@ -63,18 +63,18 @@ func main() {
 			}
 			g.Items = append(g.Items, p)
 		}
-		_res := []Big{}
+		results := []Big{}
 		for _, ks := range order {
 			g := groups[ks]
 			if !(len(g.Items) >= 4) {
 				continue
 			}
-			_res = append(_res, Big{
+			results = append(results, Big{
 				City: g.Key,
 				Num:  len(g.Items),
 			})
 		}
-		return _res
+		return results
 	}()
 	func() { b, _ := json.Marshal(big); fmt.Println(string(b)) }()
 }

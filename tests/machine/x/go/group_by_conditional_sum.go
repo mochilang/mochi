@@ -93,14 +93,14 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []Result{}
+		results := []Result{}
 		for _, g := range items {
-			_res = append(_res, Result{
+			results = append(results, Result{
 				Cat: g.Key,
 				Share: (float64(_sum(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, func() any {
+						results = append(results, func() any {
 							if _exists((x).(map[string]any)["flag"]) {
 								return (x).(map[string]any)["val"]
 							} else {
@@ -108,17 +108,17 @@ func main() {
 							}
 						}())
 					}
-					return _res
+					return results
 				}())) / float64(_sum(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, (x).(map[string]any)["val"])
+						results = append(results, (x).(map[string]any)["val"])
 					}
-					return _res
+					return results
 				}()))),
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }
@@ -156,7 +156,7 @@ func _exists(v any) bool {
 	case reflect.Pointer:
 		return !rv.IsNil()
 	case reflect.Struct:
-		return true
+		return !rv.IsZero()
 	}
 	return false
 }
@@ -212,6 +212,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }

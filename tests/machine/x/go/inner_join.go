@@ -58,20 +58,20 @@ func main() {
 	}
 
 	var result []Result = func() []Result {
-		_res := []Result{}
+		results := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {
 				if !(o.CustomerId == c.Id) {
 					continue
 				}
-				_res = append(_res, Result{
+				results = append(results, Result{
 					OrderId:      o.Id,
 					CustomerName: c.Name,
 					Total:        o.Total,
 				})
 			}
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Orders with customer info ---")
 	for _, entry := range result {

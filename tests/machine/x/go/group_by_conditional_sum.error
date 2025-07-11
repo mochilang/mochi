@@ -1,13 +1,6 @@
-Error on line 0: run error: exit status 1
-panic: sum() expects numbers
-
-goroutine 1 [running]:
-main._sum({0x207ca60?, 0xc00021ff10?})
-	/workspace/mochi/tests/machine/x/go/group_by_conditional_sum.go:198 +0x2ac
-main.main.func1(...)
-	/workspace/mochi/tests/machine/x/go/group_by_conditional_sum.go:112
-main.main()
-	/workspace/mochi/tests/machine/x/go/group_by_conditional_sum.go:122 +0x8da
-exit status 2
-
+Error on line 0: output mismatch
+-- got --
+{a 0} {b 0}
+-- want --
+map[cat:a share:0.6666666666666666] map[cat:b share:1]
 1: //go:build ignore

@@ -237,6 +237,17 @@ func containsAny(t types.Type) bool {
 	return false
 }
 
+func isStringAnyMap(t types.Type) bool {
+	if mt, ok := t.(types.MapType); ok {
+		if isString(mt.Key) {
+			if _, ok := mt.Value.(types.AnyType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func isMap(t types.Type) bool {
 	_, ok := t.(types.MapType)
 	return ok

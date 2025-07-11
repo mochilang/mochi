@@ -2366,8 +2366,12 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+		if isStringAnyMap(c.inferExprType(f.With)) {
+			withStr = w
+		} else {
+			c.use("_toAnyMap")
+			withStr = fmt.Sprintf("_toAnyMap(%s)", w)
+		}
 	} else {
 		withStr = "nil"
 	}
@@ -2460,8 +2464,12 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		if isStringAnyMap(c.inferExprType(l.With)) {
+			opts = v
+		} else {
+			c.use("_toAnyMap")
+			opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		}
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -2508,8 +2516,12 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		c.use("_toAnyMap")
-		opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		if isStringAnyMap(c.inferExprType(s.With)) {
+			opts = v
+		} else {
+			c.use("_toAnyMap")
+			opts = fmt.Sprintf("_toAnyMap(%s)", v)
+		}
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -2613,26 +2625,31 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		elemType = lt.Elem
 		directRange = true
 	}
+	elemIsMap := isStringAnyMap(elemType)
 	original := c.env
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
 	// Add cross join variables to environment
-	for _, f := range q.Froms {
+	fromIsMap := make([]bool, len(q.Froms))
+	for i, f := range q.Froms {
 		ft := c.inferExprType(f.Src)
 		var felem types.Type = types.AnyType{}
 		if lt, ok := ft.(types.ListType); ok {
 			felem = lt.Elem
 		}
 		child.SetVar(f.Var, felem, true)
+		fromIsMap[i] = isStringAnyMap(felem)
 	}
 	// Add join variables to environment
-	for _, j := range q.Joins {
+	joinIsMap := make([]bool, len(q.Joins))
+	for i, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
 		var jelem types.Type = types.AnyType{}
 		if lt, ok := jt.(types.ListType); ok {
 			jelem = lt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
+		joinIsMap[i] = isStringAnyMap(jelem)
 	}
 
 	var groupKey string
@@ -2906,17 +2923,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(indent + "}\n")
 		itemVar := "_item"
 		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-		c.use("_toAnyMap")
-		buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
-		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
-		for _, f := range q.Froms {
+		if elemIsMap {
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+		} else {
 			c.use("_toAnyMap")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+		}
+		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
+		for i, f := range q.Froms {
+			if fromIsMap[i] {
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			} else {
+				c.use("_toAnyMap")
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			}
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 		}
-		for _, j := range q.Joins {
-			c.use("_toAnyMap")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+		for i, j := range q.Joins {
+			if joinIsMap[i] {
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			} else {
+				c.use("_toAnyMap")
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			}
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 		}
 		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
@@ -2944,17 +2973,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(indent + "}\n")
 			itemVar := "_item"
 			buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-			c.use("_toAnyMap")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
-			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
-			for _, f := range q.Froms {
+			if elemIsMap {
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			} else {
 				c.use("_toAnyMap")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			}
+			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
+			for i, f := range q.Froms {
+				if fromIsMap[i] {
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				} else {
+					c.use("_toAnyMap")
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				}
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 			}
-			for _, j := range q.Joins {
-				c.use("_toAnyMap")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			for i, j := range q.Joins {
+				if joinIsMap[i] {
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				} else {
+					c.use("_toAnyMap")
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				}
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))

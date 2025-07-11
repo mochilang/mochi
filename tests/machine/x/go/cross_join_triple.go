@@ -19,11 +19,11 @@ func main() {
 	}
 
 	var combos []Combos = func() []Combos {
-		_res := []Combos{}
+		results := []Combos{}
 		for _, n := range nums {
 			for _, l := range letters {
 				for _, b := range bools {
-					_res = append(_res, Combos{
+					results = append(results, Combos{
 						N: n,
 						L: l,
 						B: b,
@@ -31,7 +31,7 @@ func main() {
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Cross Join of three lists ---")
 	for _, c := range combos {

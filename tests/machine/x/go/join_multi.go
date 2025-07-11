@@ -51,7 +51,7 @@ func main() {
 	}
 
 	var result []Result = func() []Result {
-		_res := []Result{}
+		results := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {
 				if !(o.CustomerId == c.Id) {
@@ -61,14 +61,14 @@ func main() {
 					if !(o.Id == i.OrderId) {
 						continue
 					}
-					_res = append(_res, Result{
+					results = append(results, Result{
 						Name: c.Name,
 						Sku:  i.Sku,
 					})
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Multi Join ---")
 	for _, r := range result {
