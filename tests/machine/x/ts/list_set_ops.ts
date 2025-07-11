@@ -2,121 +2,91 @@
 
 function main(): void {
   console.log(
-    Array.isArray(_union([
-        1,
-        2,
-      ], [
-        2,
-        3,
-      ]))
-      ? _union([
-        1,
-        2,
-      ], [
-        2,
-        3,
-      ]).join(" ")
-      : _union([
-        1,
-        2,
-      ], [
-        2,
-        3,
-      ]),
+    Array.isArray(Array.from(
+        new Set([...[
+          1,
+          2,
+        ], ...[
+          2,
+          3,
+        ]]),
+      ))
+      ? Array.from(
+        new Set([...[
+          1,
+          2,
+        ], ...[
+          2,
+          3,
+        ]]),
+      ).join(" ")
+      : Array.from(
+        new Set([...[
+          1,
+          2,
+        ], ...[
+          2,
+          3,
+        ]]),
+      ),
   );
   console.log(
-    Array.isArray(_except([
+    Array.isArray([
         1,
         2,
         3,
-      ], [2]))
-      ? _except([
+      ].filter((v) => ![2].includes(v)))
+      ? [
         1,
         2,
         3,
-      ], [2]).join(" ")
-      : _except([
+      ].filter((v) => ![2].includes(v)).join(" ")
+      : [
         1,
         2,
         3,
-      ], [2]),
+      ].filter((v) => ![2].includes(v)),
   );
   console.log(
-    Array.isArray(_intersect([
+    Array.isArray([
         1,
         2,
         3,
-      ], [
-        2,
-        4,
-      ]))
-      ? _intersect([
+      ].filter((v) =>
+        [
+          2,
+          4,
+        ].includes(v)
+      ))
+      ? [
         1,
         2,
         3,
-      ], [
-        2,
-        4,
-      ]).join(" ")
-      : _intersect([
+      ].filter((v) =>
+        [
+          2,
+          4,
+        ].includes(v)
+      ).join(" ")
+      : [
         1,
         2,
         3,
-      ], [
-        2,
-        4,
-      ]),
+      ].filter((v) =>
+        [
+          2,
+          4,
+        ].includes(v)
+      ),
   );
   console.log(
-    _union_all([
+    [
       1,
       2,
-    ], [
+    ].concat([
       2,
       3,
     ]).length,
   );
 }
-function _except<T>(a: T[], b: T[]): T[] {
-  const remove = new Set<T>(b);
-  const res: T[] = [];
-  for (const it of a) if (!remove.has(it)) res.push(it);
-  return res;
-}
-
-function _intersect<T>(a: T[], b: T[]): T[] {
-  const keep = new Set<T>(b);
-  const res: T[] = [];
-  const seen = new Set<T>();
-  for (const it of a) {
-    if (keep.has(it) && !seen.has(it)) {
-      seen.add(it);
-      res.push(it);
-    }
-  }
-  return res;
-}
-
-function _union<T>(a: T[], b: T[]): T[] {
-  const res: T[] = [];
-  const seen = new Set<T>();
-  for (const it of a) {
-    if (!seen.has(it)) {
-      seen.add(it);
-      res.push(it);
-    }
-  }
-  for (const it of b) {
-    if (!seen.has(it)) {
-      seen.add(it);
-      res.push(it);
-    }
-  }
-  return res;
-}
-
-function _union_all<T>(a: T[], b: T[]): T[] {
-  return a.concat(b);
-}
-
 main();
