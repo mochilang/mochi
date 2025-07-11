@@ -1,0 +1,73 @@
+// Mochi implementation of Rosetta "Averages/Simple moving average" task
+// Translated from Go version in tests/rosetta/x/Go/averages-simple-moving-average.go
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmt3(x: float): string {
+  var y = ((x * 1000.0) + 0.5) as int as float / 1000.0
+  var s = str(y)
+  var dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + ".000"
+  } else {
+    var decs = len(s) - dot - 1
+    if decs > 3 {
+      s = substring(s, 0, dot + 4)
+    } else {
+      while decs < 3 {
+        s = s + "0"
+        decs = decs + 1
+      }
+    }
+  }
+  return s
+}
+
+fun pad(s: string, width: int): string {
+  var out = s
+  while len(out) < width {
+    out = " " + out
+  }
+  return out
+}
+
+fun smaSeries(xs: list<float>, period: int): list<float> {
+  var res: list<float> = []
+  var sum = 0.0
+  var i = 0
+  while i < len(xs) {
+    sum = sum + xs[i]
+    if i >= period {
+      sum = sum - xs[i - period]
+    }
+    var denom = i + 1
+    if denom > period { denom = period }
+    res = append(res, sum / (denom as float))
+    i = i + 1
+  }
+  return res
+}
+
+fun main() {
+  var xs = [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0]
+  var sma3 = smaSeries(xs, 3)
+  var sma5 = smaSeries(xs, 5)
+  print("x       sma3   sma5")
+  var i = 0
+  while i < len(xs) {
+    let line = pad(fmt3(xs[i]), 5) + "  " + pad(fmt3(sma3[i]), 5) + "  " + pad(fmt3(sma5[i]), 5)
+    print(line)
+    i = i + 1
+  }
+}
+
+main()
