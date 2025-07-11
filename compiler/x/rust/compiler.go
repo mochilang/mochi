@@ -37,6 +37,32 @@ type Compiler struct {
 	modules        map[string]bool
 }
 
+// exprFieldPath attempts to extract a root identifier and field path from an
+// expression representing nested field access like `a.b.c`.
+// It returns the root name and slice of field names if successful.
+func exprFieldPath(e *parser.Expr) (string, []string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || u.Value.Target.Selector == nil {
+		return "", nil, false
+	}
+	root := u.Value.Target.Selector.Root
+	fields := append([]string{}, u.Value.Target.Selector.Tail...)
+	for _, op := range u.Value.Ops {
+		if op.Field != nil {
+			fields = append(fields, op.Field.Name)
+		} else {
+			return "", nil, false
+		}
+	}
+	if len(fields) == 0 {
+		return "", nil, false
+	}
+	return root, fields, true
+}
+
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 	if name, arg, ok := c.aggCall(e); ok {
 		at := types.ExprType(arg, c.env)
@@ -88,27 +114,36 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 		}
 		return types.ExprType(e, c.env)
 	}
-	u := e.Binary.Left
-	if len(u.Ops) != 0 || u.Value == nil {
-		return types.TypeOfExprBasic(e, c.env)
-	}
-	pf := u.Value
-	var root, field string
-	switch {
-	case len(pf.Ops) == 1 && pf.Ops[0].Field != nil && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 0:
-		root = pf.Target.Selector.Root
-		field = pf.Ops[0].Field.Name
-	case len(pf.Ops) == 0 && pf.Target != nil && pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1:
-		root = pf.Target.Selector.Root
-		field = pf.Target.Selector.Tail[0]
-	default:
-		return types.TypeOfExprBasic(e, c.env)
-	}
-	if structName, ok := c.listVars[root]; ok {
-		if st, ok2 := c.structs[structName]; ok2 {
-			if t, ok3 := st.Fields[field]; ok3 {
-				return t
+	if root, fields, ok := exprFieldPath(e); ok {
+		var t types.Type
+		if structName, ok := c.listVars[root]; ok {
+			if st, ok2 := c.structs[structName]; ok2 {
+				t = st
 			}
+		}
+		if t == nil && c.env != nil {
+			if vt, err := c.env.GetVar(root); err == nil {
+				t = vt
+			}
+		}
+		for _, f := range fields {
+			switch tt := t.(type) {
+			case types.StructType:
+				nt, ok := tt.Fields[f]
+				if !ok {
+					return types.TypeOfExprBasic(e, c.env)
+				}
+				t = nt
+			case types.ListType:
+				t = tt.Elem
+			case types.MapType:
+				t = tt.Value
+			default:
+				return types.TypeOfExprBasic(e, c.env)
+			}
+		}
+		if t != nil {
+			return t
 		}
 	}
 	return types.TypeOfExprBasic(e, c.env)
@@ -1359,6 +1394,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if c.env != nil {
 					lt := types.TypeOfUnary(leftAST, c.env)
 					rt := types.TypeOfPostfix(op.Right, c.env)
+					if _, ok := lt.(types.AnyType); ok && c.unaryHasFloat(leftAST) {
+						lt = types.FloatType{}
+					}
+					if _, ok := rt.(types.AnyType); ok && c.postfixHasFloat(op.Right) {
+						rt = types.FloatType{}
+					}
 					if _, ok := lt.(types.FloatType); ok {
 						if _, ok2 := rt.(types.IntType); ok2 {
 							r = fmt.Sprintf("%s as f64", r)
@@ -1401,7 +1442,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					leftAST = &parser.Unary{Value: op.Right}
 					continue
 				}
-				if op.Op == "*" || op.Op == "/" {
+				if op.Op == "*" || op.Op == "/" || op.Op == "-" {
 					if _, ok := lt.(types.FloatType); ok {
 						if isInt(rt) {
 							r = fmt.Sprintf("%s as f64", r)
@@ -2030,14 +2071,14 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		if eqHash {
 			b.WriteString(" });")
 		} else {
-			b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
 			for i, n := range names {
 				if i > 0 {
 					b.WriteString(", ")
 				}
 				b.WriteString(n + ": " + loopVal(n, child))
 			}
-			b.WriteString(" }); }")
+			b.WriteString(" }] }); }")
 		}
 		b.WriteString(" }")
 		b.WriteString(" if !" + matched + " {")
@@ -2062,7 +2103,7 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 				}
 				b.WriteString(n + ": " + loopVal(n, child))
 			}
-			b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
 			for i, n := range names {
 				if i > 0 {
 					b.WriteString(", ")
@@ -2099,14 +2140,14 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		if eqHash {
 			b.WriteString(" });")
 		} else {
-			b.WriteString(" }); } else { " + groupVec + ".push(" + itemStruct + " {")
+			b.WriteString(" }); } else { " + groupVec + ".push(" + groupStruct + " { key: key, items: vec![" + itemStruct + " {")
 			for i, n := range names {
 				if i > 0 {
 					b.WriteString(", ")
 				}
 				b.WriteString(n + ": " + loopVal(n, child))
 			}
-			b.WriteString(" }); }")
+			b.WriteString(" }] }); }")
 		}
 		for range joinSrcs {
 			b.WriteString(" }")
