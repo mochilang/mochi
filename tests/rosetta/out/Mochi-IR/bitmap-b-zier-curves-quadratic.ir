@@ -1,0 +1,446 @@
+func main (regs=28)
+  // let b2Seg = 20
+  Const        r0, 20
+  // var b = newBitmap(400, 300)
+  Const        r3, 400
+  Move         r1, r3
+  Const        r4, 300
+  Move         r2, r4
+  Call2        r5, newBitmap, r1, r2
+  Move         r6, r5
+  // fillRgb(b, 14614575) // 0xdfffef
+  Move         r7, r6
+  Const        r9, 14614575
+  Move         r8, r9
+  Call2        r10, fillRgb, r7, r8
+  // bezier2(b, 20, 150, 500, -100, 300, 280, pixelFromRgb(4165615))
+  Move         r11, r6
+  Const        r0, 20
+  Move         r12, r0
+  Const        r19, 150
+  Move         r13, r19
+  Const        r20, 500
+  Move         r14, r20
+  Const        r21, 100
+  Const        r22, -100
+  Move         r15, r22
+  Const        r4, 300
+  Move         r16, r4
+  Const        r23, 280
+  Move         r17, r23
+  Const        r25, 4165615
+  Move         r24, r25
+  Call         r26, pixelFromRgb, r24
+  Move         r18, r26
+  Call         r27, bezier2, r11, r12, r13, r14, r15, r16, r17, r18
+  Return       r0
+
+  // fun pixelFromRgb(rgb: int): Pixel {
+func pixelFromRgb (regs=20)
+  // let r = ((rgb / 65536) % 256) as int
+  Const        r1, 65536
+  Div          r2, r0, r1
+  Const        r3, 256
+  Mod          r4, r2, r3
+  Cast         r5, r4, int
+  // let g = ((rgb / 256) % 256) as int
+  Const        r3, 256
+  Div          r6, r0, r3
+  Const        r3, 256
+  Mod          r7, r6, r3
+  Cast         r8, r7, int
+  // let b = (rgb % 256) as int
+  Const        r3, 256
+  Mod          r9, r0, r3
+  Cast         r10, r9, int
+  // return Pixel{ r: r, g: g, b: b }
+  Const        r11, "__name"
+  Const        r12, "Pixel"
+  Const        r13, "r"
+  Move         r14, r5
+  Const        r15, "g"
+  Move         r16, r8
+  Const        r17, "b"
+  Move         r18, r10
+  MakeMap      r19, 4, r11
+  Return       r19
+
+  // fun newBitmap(cols: int, rows: int): map<string, any> {
+func newBitmap (regs=34)
+  // var d: list<list<Pixel>> = []
+  Const        r2, []
+  Move         r3, r2
+  // var y = 0
+  Const        r4, 0
+  Move         r5, r4
+L3:
+  // while y < rows {
+  Less         r6, r5, r1
+  JumpIfFalse  r6, L0
+  // var row: list<Pixel> = []
+  Const        r2, []
+  Move         r7, r2
+  // var x = 0
+  Const        r4, 0
+  Move         r8, r4
+L2:
+  // while x < cols {
+  Less         r9, r8, r0
+  JumpIfFalse  r9, L1
+  // row = append(row, Pixel{ r: 0, g: 0, b: 0 })
+  Const        r4, 0
+  Const        r4, 0
+  Const        r4, 0
+  Const        r10, "__name"
+  Const        r11, "Pixel"
+  Const        r12, "r"
+  Move         r13, r4
+  Const        r14, "g"
+  Move         r15, r4
+  Const        r16, "b"
+  Move         r17, r4
+  MakeMap      r18, 4, r10
+  Append       r19, r7, r18
+  Move         r7, r19
+  // x = x + 1
+  Const        r20, 1
+  AddInt       r21, r8, r20
+  Move         r8, r21
+  // while x < cols {
+  Jump         L2
+L1:
+  // d = append(d, row)
+  Append       r22, r3, r7
+  Move         r3, r22
+  // y = y + 1
+  Const        r20, 1
+  AddInt       r23, r5, r20
+  Move         r5, r23
+  // while y < rows {
+  Jump         L3
+L0:
+  // return {"cols": cols, "rows": rows, "data": d}
+  Const        r24, "cols"
+  Const        r25, "rows"
+  Const        r26, "data"
+  Move         r27, r24
+  Move         r28, r0
+  Move         r29, r25
+  Move         r30, r1
+  Move         r31, r26
+  Move         r32, r3
+  MakeMap      r33, 3, r27
+  Return       r33
+
+  // fun setPx(b: map<string, any>, x: int, y: int, p: Pixel) {
+func setPx (regs=19)
+  // let cols = b["cols"] as int
+  Const        r4, "cols"
+  Index        r5, r0, r4
+  Cast         r6, r5, int
+  // let rows = b["rows"] as int
+  Const        r7, "rows"
+  Index        r8, r0, r7
+  Cast         r9, r8, int
+  // if x >= 0 && x < cols && y >= 0 && y < rows {
+  Const        r10, 0
+  LessEq       r11, r10, r1
+  Less         r12, r1, r6
+  Const        r10, 0
+  LessEq       r13, r10, r2
+  Less         r14, r2, r9
+  Move         r15, r11
+  JumpIfFalse  r15, L0
+  Move         r15, r12
+  JumpIfFalse  r15, L0
+  Move         r15, r13
+  JumpIfFalse  r15, L0
+  Move         r15, r14
+L0:
+  JumpIfFalse  r15, L1
+  // b["data"][y][x] = p
+  Const        r16, "data"
+  Index        r17, r0, r16
+  Index        r18, r17, r2
+  SetIndex     r18, r1, r3
+L1:
+  Return       r0
+
+  // fun fill(b: map<string, any>, p: Pixel) {
+func fill (regs=19)
+  // let cols = b["cols"] as int
+  Const        r2, "cols"
+  Index        r3, r0, r2
+  Cast         r4, r3, int
+  // let rows = b["rows"] as int
+  Const        r5, "rows"
+  Index        r6, r0, r5
+  Cast         r7, r6, int
+  // var y = 0
+  Const        r8, 0
+  Move         r9, r8
+L3:
+  // while y < rows {
+  Less         r10, r9, r7
+  JumpIfFalse  r10, L0
+  // var x = 0
+  Const        r8, 0
+  Move         r11, r8
+L2:
+  // while x < cols {
+  Less         r12, r11, r4
+  JumpIfFalse  r12, L1
+  // b["data"][y][x] = p
+  Const        r13, "data"
+  Index        r14, r0, r13
+  Index        r15, r14, r9
+  SetIndex     r15, r11, r1
+  // x = x + 1
+  Const        r16, 1
+  AddInt       r17, r11, r16
+  Move         r11, r17
+  // while x < cols {
+  Jump         L2
+L1:
+  // y = y + 1
+  Const        r16, 1
+  AddInt       r18, r9, r16
+  Move         r9, r18
+  // while y < rows {
+  Jump         L3
+L0:
+  Return       r0
+
+  // fun fillRgb(b: map<string, any>, rgb: int) { fill(b, pixelFromRgb(rgb)) }
+func fillRgb (regs=7)
+  // fun fillRgb(b: map<string, any>, rgb: int) { fill(b, pixelFromRgb(rgb)) }
+  Move         r2, r0
+  Move         r4, r1
+  Call         r5, pixelFromRgb, r4
+  Move         r3, r5
+  Call2        r6, fill, r2, r3
+  Return       r0
+
+  // fun line(b: map<string, any>, x0: int, y0: int, x1: int, y1: int, p: Pixel) {
+func line (regs=42)
+  // var dx = x1 - x0
+  Sub          r6, r3, r1
+  Move         r7, r6
+  // if dx < 0 { dx = -dx }
+  Const        r8, 0
+  Less         r9, r7, r8
+  JumpIfFalse  r9, L0
+  Neg          r10, r7
+  Move         r7, r10
+L0:
+  // var dy = y1 - y0
+  Sub          r11, r4, r2
+  Move         r12, r11
+  // if dy < 0 { dy = -dy }
+  Const        r8, 0
+  Less         r13, r12, r8
+  JumpIfFalse  r13, L1
+  Neg          r14, r12
+  Move         r12, r14
+L1:
+  // var sx = -1
+  Const        r15, 1
+  NegInt       r16, r15
+  Move         r17, r16
+  // if x0 < x1 { sx = 1 }
+  Less         r18, r1, r3
+  JumpIfFalse  r18, L2
+  Const        r15, 1
+  Move         r17, r15
+L2:
+  // var sy = -1
+  Const        r15, 1
+  NegInt       r19, r15
+  Move         r20, r19
+  // if y0 < y1 { sy = 1 }
+  Less         r21, r2, r4
+  JumpIfFalse  r21, L3
+  Const        r15, 1
+  Move         r20, r15
+L3:
+  // var err = dx - dy
+  Sub          r22, r7, r12
+  Move         r23, r22
+L8:
+  // while true {
+  Const        r24, true
+  // setPx(b, x0, y0, p)
+  Move         r25, r0
+  Move         r26, r1
+  Move         r27, r2
+  Move         r28, r5
+  Call         r29, setPx, r25, r26, r27, r28
+  // if x0 == x1 && y0 == y1 { break }
+  Equal        r30, r1, r3
+  Equal        r31, r2, r4
+  Move         r32, r30
+  JumpIfFalse  r32, L4
+  Move         r32, r31
+L4:
+  JumpIfFalse  r32, L5
+  Jump         L6
+L5:
+  // let e2 = 2 * err
+  Const        r33, 2
+  Mul          r34, r33, r23
+  // if e2 > (0 - dy) {
+  Const        r8, 0
+  Sub          r35, r8, r12
+  Less         r36, r35, r34
+  JumpIfFalse  r36, L7
+  // err = err - dy
+  Sub          r37, r23, r12
+  Move         r23, r37
+  // x0 = x0 + sx
+  Add          r38, r1, r17
+  Move         r1, r38
+L7:
+  // if e2 < dx {
+  Less         r39, r34, r7
+  JumpIfFalse  r39, L8
+  // err = err + dx
+  Add          r40, r23, r7
+  Move         r23, r40
+  // y0 = y0 + sy
+  Add          r41, r2, r20
+  Move         r2, r41
+  // while true {
+  Jump         L8
+L6:
+  Return       r0
+
+  // fun bezier2(b: map<string, any>,
+func bezier2 (regs=71)
+  // var px: list<int> = []
+  Const        r8, []
+  Move         r9, r8
+  // var py: list<int> = []
+  Const        r8, []
+  Move         r10, r8
+  // var i = 0
+  Const        r11, 0
+  Move         r12, r11
+L1:
+  // while i <= b2Seg {
+  LessEq       r14, r12, r13
+  JumpIfFalse  r14, L0
+  // px = append(px, 0)
+  Const        r11, 0
+  Append       r15, r9, r11
+  Move         r9, r15
+  // py = append(py, 0)
+  Const        r11, 0
+  Append       r16, r10, r11
+  Move         r10, r16
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r12, r17
+  Move         r12, r18
+  // while i <= b2Seg {
+  Jump         L1
+L0:
+  // let fx1 = x1 as float
+  Cast         r19, r1, float
+  // let fy1 = y1 as float
+  Cast         r20, r2, float
+  // let fx2 = x2 as float
+  Cast         r21, r3, float
+  // let fy2 = y2 as float
+  Cast         r22, r4, float
+  // let fx3 = x3 as float
+  Cast         r23, r5, float
+  // let fy3 = y3 as float
+  Cast         r24, r6, float
+  // i = 0
+  Const        r11, 0
+  Move         r12, r11
+L3:
+  // while i <= b2Seg {
+  LessEq       r26, r12, r25
+  JumpIfFalse  r26, L2
+  // let c = (i as float) / (b2Seg as float)
+  Cast         r27, r12, float
+  Cast         r29, r28, float
+  Div          r30, r27, r29
+  // var a = 1.0 - c
+  Const        r31, 1.0
+  SubFloat     r32, r31, r30
+  Move         r33, r32
+  // var a2 = a * a
+  MulFloat     r34, r33, r33
+  Move         r35, r34
+  // var b2 = 2.0 * c * a
+  Const        r36, 2.0
+  MulFloat     r37, r36, r30
+  MulFloat     r38, r37, r33
+  Move         r39, r38
+  // var c2 = c * c
+  Mul          r40, r30, r30
+  Move         r41, r40
+  // px[i] = (a2*fx1 + b2*fx2 + c2*fx3) as int
+  MulFloat     r42, r35, r19
+  MulFloat     r43, r39, r21
+  Mul          r44, r41, r23
+  AddFloat     r45, r42, r43
+  AddFloat     r46, r45, r44
+  Cast         r47, r46, int
+  SetIndex     r9, r12, r47
+  // py[i] = (a2*fy1 + b2*fy2 + c2*fy3) as int
+  MulFloat     r48, r35, r20
+  MulFloat     r49, r39, r22
+  Mul          r50, r41, r24
+  AddFloat     r51, r48, r49
+  AddFloat     r52, r51, r50
+  Cast         r53, r52, int
+  SetIndex     r10, r12, r53
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r54, r12, r17
+  Move         r12, r54
+  // while i <= b2Seg {
+  Jump         L3
+L2:
+  // var x0 = px[0]
+  Const        r11, 0
+  Index        r55, r9, r11
+  Move         r56, r55
+  // var y0 = py[0]
+  Const        r11, 0
+  Index        r57, r10, r11
+  Move         r58, r57
+  // i = 1
+  Const        r17, 1
+  Move         r12, r17
+L5:
+  // while i <= b2Seg {
+  LessEq       r60, r12, r59
+  JumpIfFalse  r60, L4
+  // let x = px[i]
+  Index        r61, r9, r12
+  // let y = py[i]
+  Index        r62, r10, r12
+  // line(b, x0, y0, x, y, p)
+  Move         r63, r0
+  Move         r64, r56
+  Move         r65, r58
+  Move         r66, r61
+  Move         r67, r62
+  Move         r68, r7
+  Call         r69, line, r63, r64, r65, r66, r67, r68
+  // x0 = x
+  Move         r56, r61
+  // y0 = y
+  Move         r58, r62
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r70, r12, r17
+  Move         r12, r70
+  // while i <= b2Seg {
+  Jump         L5
+L4:
+  Return       r0

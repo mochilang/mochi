@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:13:19: invalid operation: operator % not defined on (float64(rgb) / float64(65536)) (value of type float64)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:14:19: invalid operation: operator % not defined on (float64(rgb) / float64(256)) (value of type float64)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:33:10: cannot use append(_convSlice[Pixel, any](row), Pixel{…}) (value of type []any) as []Pixel value in assignment
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:36:7: cannot use append(_convSlice[[]Pixel, any](d), row) (value of type []any) as [][]Pixel value in assignment
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:48:19: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:49:19: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:51:4: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:57:19: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:58:19: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:69:5: invalid operation: cannot index b (variable of type *map[string]any)
+../../tests/rosetta/out/Go/bitmap-b-zier-curves-quadratic.go:69:5: too many errors
