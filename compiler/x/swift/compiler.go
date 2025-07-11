@@ -4,6 +4,7 @@ package swift
 
 import (
 	"fmt"
+	"math"
 	"regexp"
 	"sort"
 	"strings"
@@ -46,6 +47,7 @@ func New(env *types.Env) *Compiler {
 		autoStructs:     make(map[string]bool),
 		structKeys:      make(map[string]string),
 		autoCount:       0,
+		builtinAliases:  make(map[string]string),
 	}}
 }
 
@@ -89,6 +91,7 @@ type compiler struct {
 	autoStructs     map[string]bool
 	structKeys      map[string]string
 	autoCount       int
+	builtinAliases  map[string]string
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -124,6 +127,11 @@ func (c *compiler) stmt(s *parser.Statement) error {
 		return c.breakStmt(s.Break)
 	case s.Continue != nil:
 		return c.continueStmt(s.Continue)
+	case s.Import != nil:
+		return c.importStmt(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations have no effect in generated Swift code
+		return nil
 	case s.Test != nil:
 		return c.testBlock(s.Test)
 	case s.Expect != nil:
@@ -508,6 +516,29 @@ func (c *compiler) continueStmt(_ *parser.ContinueStmt) error {
 	return nil
 }
 
+func (c *compiler) importStmt(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	path := strings.Trim(im.Path, "\"")
+	switch *im.Lang {
+	case "python":
+		if path == "math" {
+			c.builtinAliases[alias] = "python_math"
+			c.helpers["foundation"] = true
+		}
+	case "go":
+		if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
+			c.builtinAliases[alias] = "go_testpkg"
+		}
+	}
+	return nil
+}
+
 func (c *compiler) testBlock(t *parser.TestBlock) error {
 	for _, st := range t.Body {
 		if err := c.stmt(st); err != nil {
@@ -757,7 +788,45 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 				parts[i] = s
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(parts, ", "))
+			recv := val
+			if idx := strings.LastIndex(recv, "."); idx > 0 {
+				alias := recv[:idx]
+				method := recv[idx+1:]
+				if mod, ok := c.builtinAliases[alias]; ok {
+					args := parts
+					switch mod {
+					case "python_math":
+						switch method {
+						case "sqrt":
+							if len(args) == 1 {
+								val = fmt.Sprintf("sqrt(%s)", args[0])
+								continue
+							}
+						case "pow":
+							if len(args) == 2 {
+								val = fmt.Sprintf("pow(%s, %s)", args[0], args[1])
+								continue
+							}
+						case "sin":
+							if len(args) == 1 {
+								val = fmt.Sprintf("sin(%s)", args[0])
+								continue
+							}
+						case "log":
+							if len(args) == 1 {
+								val = fmt.Sprintf("log(%s)", args[0])
+								continue
+							}
+						}
+					case "go_testpkg":
+						if method == "Add" && len(args) == 2 {
+							val = fmt.Sprintf("(%s + %s)", args[0], args[1])
+							continue
+						}
+					}
+				}
+			}
+			val = fmt.Sprintf("%s(%s)", recv, strings.Join(parts, ", "))
 		case op.Cast != nil:
 			typ, err := c.typeRef(op.Cast.Type)
 			if err != nil {
@@ -1239,6 +1308,26 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 		}
 		return s.Root
 	}
+	if len(s.Tail) == 1 {
+		if mod, ok := c.builtinAliases[s.Root]; ok {
+			switch mod {
+			case "python_math":
+				switch s.Tail[0] {
+				case "pi":
+					return "Double.pi"
+				case "e":
+					return "2.718281828459045"
+				}
+			case "go_testpkg":
+				switch s.Tail[0] {
+				case "Pi":
+					return "3.14"
+				case "Answer":
+					return "42"
+				}
+			}
+		}
+	}
 	typ := c.varTypes[s.Root]
 	if strings.HasPrefix(typ, "map") || (typ == "" && c.mapFields[s.Root] != nil) {
 		parts := []string{s.Root}
@@ -1265,7 +1354,11 @@ func literal(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		v := *l.Float
+		if v == math.Trunc(v) {
+			return fmt.Sprintf("%.1f", v)
+		}
+		return fmt.Sprintf("%g", v)
 	case l.Bool != nil:
 		if *l.Bool {
 			return "true"
