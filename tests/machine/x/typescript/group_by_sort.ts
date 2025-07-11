@@ -1,5 +1,11 @@
-const items = [{cat: "a", val: 3}, {cat: "a", val: 1}, {cat: "b", val: 5}, {cat: "b", val: 2}];
+const items = [
+  {cat: "a", val: 3},
+  {cat: "a", val: 1},
+  {cat: "b", val: 5},
+  {cat: "b", val: 2}
+];
 const grouped = (() => {
+  const _tmp1: Array<{ cat: any; total: any }> = [];
   const groups = {};
   for (const i of items) {
     const _k = JSON.stringify(i.cat);
@@ -7,26 +13,12 @@ const grouped = (() => {
     if (!g) { g = []; g.key = i.cat; g.items = g; groups[_k] = g; }
     g.push(i);
   }
-  let res = [];
   for (const _k in groups) {
     const g = groups[_k];
-    res.push({item: {cat: g.key, total: ((() => {
-  const _tmp32 = [];
-  for (const x of g) {
-    _tmp32.push(x.val);
-  }
-  let res = _tmp32;
-  return res;
-})()
-.reduce((a,b)=>a+b,0))}, key: (-((() => {
-  const _tmp33 = [];
-  for (const x of g) {
-    _tmp33.push(x.val);
-  }
-  let res = _tmp33;
-  return res;
-})()
-.reduce((a,b)=>a+b,0)))});
+    res.push({item: {
+  cat: g.key,
+  total: (g.map((x) => x.val).reduce((a,b)=>a+b,0))
+}, key: (-(g.map((x) => x.val).reduce((a,b)=>a+b,0)))});
   }
   res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
   return res;

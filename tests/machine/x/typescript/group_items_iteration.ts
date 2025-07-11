@@ -1,5 +1,10 @@
-const data = [{tag: "a", val: 1}, {tag: "a", val: 2}, {tag: "b", val: 3}];
+const data = [
+  {tag: "a", val: 1},
+  {tag: "a", val: 2},
+  {tag: "b", val: 3}
+];
 const groups = (() => {
+  const _tmp1: any[] = [];
   const groups = {};
   for (const d of data) {
     const _k = JSON.stringify(d.tag);
@@ -7,7 +12,6 @@ const groups = (() => {
     if (!g) { g = []; g.key = d.tag; g.items = g; groups[_k] = g; }
     g.push(d);
   }
-  let res = [];
   for (const _k in groups) {
     const g = groups[_k];
     res.push(g);
@@ -16,23 +20,12 @@ const groups = (() => {
 })()
 ;
 let tmp = [];
-const _tmp36 = groups;
-for (const g of (Array.isArray(_tmp36) ? _tmp36 : Object.keys(_tmp36))) {
+for (const g of groups) {
   let total = 0;
-  const _tmp37 = g.items;
-  for (const x of (Array.isArray(_tmp37) ? _tmp37 : Object.keys(_tmp37))) {
+  for (const x of g.items) {
     total = (total + x.val);
   }
   tmp = [...tmp, {tag: g.key, total: total}];
 }
-const result = (() => {
-  const _tmp38 = [];
-  for (const r of tmp) {
-    _tmp38.push({item: r, key: r.tag});
-  }
-  let res = _tmp38;
-  res = res.sort((a,b)=> a.key < b.key ? -1 : a.key > b.key ? 1 : 0).map(x=>x.item);
-  return res;
-})()
-;
+const result = tmp.slice().sort((a,b)=> a.tag < b.tag ? -1 : a.tag > b.tag ? 1 : 0);
 console.log(result);

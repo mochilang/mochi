@@ -1,6 +1,14 @@
-const customers = [{id: 1, name: "Alice"}, {id: 2, name: "Bob"}];
-const orders = [{id: 100, customerId: 1}, {id: 101, customerId: 1}, {id: 102, customerId: 2}];
+const customers = [
+  {id: 1, name: "Alice"},
+  {id: 2, name: "Bob"}
+];
+const orders = [
+  {id: 100, customerId: 1},
+  {id: 101, customerId: 1},
+  {id: 102, customerId: 2}
+];
 const stats = (() => {
+  const _tmp1: Array<{ count: any; name: any }> = [];
   const groups = {};
   for (const o of orders) {
     for (const c of customers) {
@@ -11,7 +19,6 @@ const stats = (() => {
       g.push(o);
     }
   }
-  let res = [];
   for (const _k in groups) {
     const g = groups[_k];
     res.push({name: g.key, count: g.length});
@@ -20,7 +27,6 @@ const stats = (() => {
 })()
 ;
 console.log("--- Orders per customer ---");
-const _tmp22 = stats;
-for (const s of (Array.isArray(_tmp22) ? _tmp22 : Object.keys(_tmp22))) {
+for (const s of stats) {
   console.log(s.name, "orders:", s.count);
 }

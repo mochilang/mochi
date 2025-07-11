@@ -1,8 +1,8 @@
 const x = 2;
 const label = (() => {
-  const _tmp51 = x;
+  const _tmp1 = x;
   let _res;
-  switch (_tmp51) {
+  switch (_tmp1) {
     case 1:
       _res = "one";
       break;
@@ -22,9 +22,9 @@ const label = (() => {
 console.log(label);
 const day = "sun";
 const mood = (() => {
-  const _tmp52 = day;
+  const _tmp2 = day;
   let _res;
-  switch (_tmp52) {
+  switch (_tmp2) {
     case "mon":
       _res = "tired";
       break;
@@ -44,9 +44,9 @@ const mood = (() => {
 console.log(mood);
 const ok = true;
 const status = (() => {
-  const _tmp53 = ok;
+  const _tmp3 = ok;
   let _res;
-  switch (_tmp53) {
+  switch (_tmp3) {
     case true:
       _res = "confirmed";
       break;
@@ -63,9 +63,9 @@ const status = (() => {
 console.log(status);
 function classify(n) {
   return (() => {
-  const _tmp54 = n;
+  const _tmp4 = n;
   let _res;
-  switch (_tmp54) {
+  switch (_tmp4) {
     case 0:
       _res = "zero";
       break;
