@@ -2,7 +2,7 @@
 
 let letters: string[];
 let nums: number[];
-let pairs: { [key: string]: any }[];
+let pairs: _[];
 
 function main(): void {
   nums = [

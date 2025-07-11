@@ -2,7 +2,7 @@
 
 let customers: _[];
 let orders: _[];
-let stats: { [key: string]: any }[];
+let stats: _[];
 
 function main(): void {
   customers = [

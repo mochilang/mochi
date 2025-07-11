@@ -2,7 +2,7 @@
 
 let customers: _[];
 let orders: _[];
-let result: { [key: string]: any }[];
+let result: _[];
 
 function main(): void {
   customers = [
@@ -59,7 +59,7 @@ function main(): void {
       "Order",
       entry.orderId,
       "customer",
-      entry.customer,
+      JSON.stringify(entry.customer),
       "total",
       entry.total,
     );
