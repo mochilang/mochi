@@ -1,0 +1,54 @@
+// Mochi implementation of Rosetta "Animate a pendulum" task.
+// Prints the bob position over time using a simple small-angle approximation.
+
+let PI = 3.141592653589793
+
+fun sinApprox(x: float): float {
+  var term = x
+  var sum = x
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n)*(2*n+1)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun cosApprox(x: float): float {
+  var term = 1.0
+  var sum = 1.0
+  var n = 1
+  while n <= 10 {
+    let denom = ((2*n-1)*(2*n)) as float
+    term = -term * x * x / denom
+    sum = sum + term
+    n = n + 1
+  }
+  return sum
+}
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 10 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+let L = 10.0
+let G = 9.81
+let dt = 0.2
+let phi0 = PI / 4.0
+let omega = sqrtApprox(G / L)
+var t = 0.0
+
+for step in 0..10 {
+  let phi = phi0 * cosApprox(omega * t)
+  let pos = (10.0 * sinApprox(phi) + 0.5) as int
+  print(str(pos))
+  t = t + dt
+}
