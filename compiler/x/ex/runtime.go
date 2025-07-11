@@ -95,7 +95,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperIter = "defp _iter(v) do\n  if is_map(v) do\n    Map.keys(v)\n  else\n    v\n  end\nend\n"
 
-	helperStructify = "defp _structify(mod, v) do\n  cond do\n    is_map(v) ->\n      m = Enum.reduce(v, %{}, fn {k,val}, acc -> Map.put(acc, String.to_atom(to_string(k)), _structify(nil, val)) end)\n      if mod, do: struct(mod, m), else: m\n    is_list(v) -> Enum.map(v, &_structify(nil, &1))\n    true -> v\n  end\nend\n"
+	helperStructify = "defp _structify(mod, v) do\n  cond do\n    is_struct(v) -> v\n    is_map(v) ->\n      m = Enum.reduce(v, %{}, fn {k,val}, acc -> Map.put(acc, String.to_atom(to_string(k)), _structify(nil, val)) end)\n      if mod, do: struct(mod, m), else: m\n    is_list(v) -> Enum.map(v, &_structify(nil, &1))\n    true -> v\n  end\nend\n"
 
 	helperQuery = "defp _query(src, joins, opts \\\\ %{}) do\n" +
 		"  where = Map.get(opts, :where)\n" +

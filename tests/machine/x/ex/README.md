@@ -2,7 +2,7 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 90/97
+Compiled programs: 100/100
 
 Checklist:
 
@@ -32,11 +32,11 @@ Checklist:
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join
+- [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
+- [x] group_by_multi_join_sort
+- [x] group_by_sort
+- [x] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -55,7 +55,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -76,7 +76,7 @@ Checklist:
 - [x] pure_fold
 - [x] pure_global_fold
 - [x] query_sum_select
-- [ ] record_assign
+- [x] record_assign
 - [x] right_join
 - [x] save_jsonl_stdout
 - [x] short_circuit
@@ -98,17 +98,21 @@ Checklist:
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
+- [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
 
 ### Remaining tasks
-- [ ] group_by_left_join
-- [ ] group_by_multi_join_sort
-- [ ] group_by_sort
-- [ ] group_items_iteration
-- [ ] load_yaml
-- [ ] record_assign
-- [ ] update_stmt
+- [ ] implement macros
+- [ ] optimize Enum usage
+- [ ] support concurrency features
+- [ ] enhance pattern matching
+- [ ] add more dataset tests
+- [ ] implement generics
+- [ ] custom protocols
+- [ ] richer type annotations
+- [ ] advanced error handling
+- [ ] integrate with ExUnit
+- [ ] packaging as Mix project

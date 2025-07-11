@@ -696,9 +696,18 @@ func (c *Compiler) compileAssign(stmt *parser.AssignStmt) error {
 		if t, err2 := c.env.GetVar(stmt.Name); err2 == nil {
 			if st, ok := t.(types.StructType); ok {
 				c.ensureStruct(st)
-				c.use("_structify")
-				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
+				if len(stmt.Field) == 0 {
+					c.use("_structify")
+					value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
+				}
 			}
+		}
+	}
+	if len(stmt.Field) > 0 && len(stmt.Index) == 0 {
+		if len(stmt.Field) == 1 {
+			field := sanitizeName(stmt.Field[0].Name)
+			c.writeln(fmt.Sprintf("%s = %%{%s | %s: %s}", name, name, field, value))
+			return nil
 		}
 	}
 	if len(stmt.Index) > 0 {
