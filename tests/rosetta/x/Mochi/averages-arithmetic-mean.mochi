@@ -1,0 +1,32 @@
+fun mean(v: list<float>): map<string, any> {
+  if len(v) == 0 { return {"ok": false} }
+  var sum = 0.0
+  var i = 0
+  while i < len(v) {
+    sum = sum + v[i]
+    i = i + 1
+  }
+  return {"ok": true, "mean": sum / (len(v) as float)}
+}
+
+fun main() {
+  let sets = [
+    [],
+    [3.0, 1.0, 4.0, 1.0, 5.0, 9.0],
+    [100000000000000000000.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -100000000000000000000.0],
+    [10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.11],
+    [10.0, 20.0, 30.0, 40.0, 50.0, -100.0, 4.7, -1100.0],
+  ]
+  for v in sets {
+    print("Vector: " + str(v))
+    let r = mean(v)
+    if r["ok"] {
+      print("Mean of " + str(len(v)) + " numbers is " + str(r["mean"]))
+    } else {
+      print("Mean undefined")
+    }
+    print("")
+  }
+}
+
+main()
