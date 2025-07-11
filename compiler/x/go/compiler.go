@@ -2237,6 +2237,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				ok = true
 			}
 		}
+		if ok && len(p.Struct.Fields) == len(st.Order) {
+			pos := true
+			for i, f := range p.Struct.Fields {
+				if f.Name != st.Order[i] {
+					pos = false
+					break
+				}
+			}
+			if pos {
+				for i, f := range p.Struct.Fields {
+					v, err := c.compileExprHint(f.Value, st.Fields[f.Name])
+					if err != nil {
+						return "", err
+					}
+					parts[i] = v
+				}
+				c.compileStructType(st)
+				return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+			}
+		}
 		for i, f := range p.Struct.Fields {
 			var v string
 			var err error
@@ -3876,6 +3896,28 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 		if e.Binary != nil && len(e.Binary.Right) == 0 {
 			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
 				parts := make([]string, len(ml.Items))
+				if len(ml.Items) == len(st.Order) {
+					pos := true
+					for i, item := range ml.Items {
+						key, ok2 := simpleStringKey(item.Key)
+						if !ok2 || key != st.Order[i] {
+							pos = false
+							break
+						}
+					}
+					if pos {
+						for i, item := range ml.Items {
+							ft := st.Fields[st.Order[i]]
+							v, err := c.compileExprHint(item.Value, ft)
+							if err != nil {
+								return "", err
+							}
+							parts[i] = v
+						}
+						c.compileStructType(st)
+						return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil
+					}
+				}
 				for i, item := range ml.Items {
 					key, ok2 := simpleStringKey(item.Key)
 					if !ok2 {
