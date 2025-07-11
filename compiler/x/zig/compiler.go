@@ -2048,6 +2048,14 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	for _, f := range st.Field {
 		lhs += "." + sanitizeName(f.Name)
 	}
+	if add, ok := c.isSelfAdd(st); ok {
+		v, err := c.compilePostfix(add, false)
+		if err != nil {
+			return err
+		}
+		c.writeln(fmt.Sprintf("%s += %s;", lhs, v))
+		return nil
+	}
 	if len(st.Index) == 1 && st.Index[0].Colon == nil && c.isMapVar(st.Name) {
 		key, err := c.compileExpr(st.Index[0].Start, false)
 		if err != nil {
@@ -3436,6 +3444,71 @@ func isSelfAppend(st *parser.AssignStmt) (*parser.Expr, bool) {
 		return nil, false
 	}
 	return r.Target.List.Elems[0], true
+}
+
+// isSelfAdd checks for simple addition assignments like `x = x + y` or
+// `x = y + x`. It returns the value being added to x when the pattern matches.
+func (c *Compiler) isSelfAdd(st *parser.AssignStmt) (*parser.PostfixExpr, bool) {
+	if st == nil || st.Value == nil || st.Value.Binary == nil {
+		return nil, false
+	}
+	if len(st.Index) != 0 {
+		return nil, false
+	}
+	b := st.Value.Binary
+	if len(b.Right) != 1 || b.Right[0].Op != "+" {
+		return nil, false
+	}
+	left := b.Left
+	right := b.Right[0].Right
+
+	sameVar := func(u *parser.Unary) bool {
+		if u == nil || len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+			return false
+		}
+		sel := u.Value.Target.Selector
+		if sel == nil || sel.Root != st.Name {
+			return false
+		}
+		if len(sel.Tail) != len(st.Field) {
+			return false
+		}
+		for i, f := range st.Field {
+			if sel.Tail[i] != f.Name {
+				return false
+			}
+		}
+		return true
+	}
+
+	samePostfix := func(p *parser.PostfixExpr) bool {
+		if p == nil || len(p.Ops) > 0 || p.Target == nil {
+			return false
+		}
+		sel := p.Target.Selector
+		if sel == nil || sel.Root != st.Name {
+			return false
+		}
+		if len(sel.Tail) != len(st.Field) {
+			return false
+		}
+		for i, f := range st.Field {
+			if sel.Tail[i] != f.Name {
+				return false
+			}
+		}
+		return true
+	}
+
+	if sameVar(left) && samePostfix(right) {
+		// x = x + y
+		return right, true
+	}
+	if samePostfix(right) && sameVar(left) {
+		// x = y + x
+		return left.Value, true
+	}
+	return nil, false
 }
 
 func (c *Compiler) isStringUnary(u *parser.Unary) bool {
