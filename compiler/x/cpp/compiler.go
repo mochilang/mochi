@@ -1092,12 +1092,13 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		switch typ {
 		case "vector":
 			tmp := c.newTmp()
-			c.buf.WriteString("auto " + tmp + " = " + s + "; ")
+			c.buf.WriteString("auto " + tmp + " = " + s + "; bool first=true; for(const auto &_x : " + tmp + "){ if(!first) std::cout<<' '; first=false; ")
 			if et := c.elemType[s]; et != "" && strings.HasPrefix(et, "__struct") {
-				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << \"<struct>\"; } ")
+				c.buf.WriteString("std::cout<<\"<struct>\";")
 			} else {
-				c.buf.WriteString("for(size_t i=0;i<" + tmp + ".size();++i){ if(i) std::cout<<' '; std::cout << std::boolalpha << " + tmp + "[i]; } ")
+				c.buf.WriteString("std::cout<<std::boolalpha<<_x;")
 			}
+			c.buf.WriteString(" } ")
 		case "bool":
 			c.buf.WriteString("std::cout << std::boolalpha << (" + s + "); ")
 		case "int", "double", "string":

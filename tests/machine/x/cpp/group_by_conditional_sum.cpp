@@ -96,9 +96,11 @@ auto result = ([]() {
 int main() {
   {
     auto __tmp1 = result;
-    for (size_t i = 0; i < __tmp1.size(); ++i) {
-      if (i)
+    bool first = true;
+    for (const auto &_x : __tmp1) {
+      if (!first)
         std::cout << ' ';
+      first = false;
       std::cout << "<struct>";
     }
     std::cout << std::endl;
