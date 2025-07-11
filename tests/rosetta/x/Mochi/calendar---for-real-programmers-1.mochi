@@ -1,0 +1,55 @@
+let daysInMonth = [31,28,31,30,31,30,31,31,30,31,30,31]
+let start = [3,6,6,2,4,0,2,5,1,3,6,1]  // 0=Sun
+let months = [" January ", " February", "  March  ", "  April  ",
+              "   May   ", "   June  ", "   July  ", "  August ",
+              "September", " October ", " November", " December"]
+let days = ["Su","Mo","Tu","We","Th","Fr","Sa"]
+
+print("                                [SNOOPY]\n")
+print("                                  1969\n")
+
+var qtr = 0
+while qtr < 4 {
+  var mi = 0
+  while mi < 3 {
+    print("      " + months[qtr*3+mi] + "           ", end="")
+    mi = mi + 1
+  }
+  print("")
+  mi = 0
+  while mi < 3 {
+    var d = 0
+    while d < 7 {
+      print(" " + days[d], end="")
+      d = d + 1
+    }
+    print("     ", end="")
+    mi = mi + 1
+  }
+  print("")
+  var week = 0
+  while week < 6 {
+    mi = 0
+    while mi < 3 {
+      var day = 0
+      while day < 7 {
+        let m = qtr*3 + mi
+        let val = week*7 + day - start[m] + 1
+        if val >= 1 && val <= daysInMonth[m] {
+          let s = str(val)
+          if len(s) == 1 { s = " " + s }
+          print(" " + s, end="")
+        } else {
+          print("   ", end="")
+        }
+        day = day + 1
+      }
+      print("     ", end="")
+      mi = mi + 1
+    }
+    print("")
+    week = week + 1
+  }
+  print("")
+  qtr = qtr + 1
+}

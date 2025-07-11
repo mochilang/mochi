@@ -1,0 +1,17 @@
+var rows: list<list<string>> = [
+  ["A", "B", "C"],
+  ["1", "2", "3"],
+  ["4", "5", "6"],
+  ["7", "8", "9"],
+]
+
+rows[0] = append(rows[0], "SUM")
+var i = 1
+while i < len(rows) {
+  var sum = 0
+  for s in rows[i] { sum = sum + parseIntStr(s) }
+  rows[i] = append(rows[i], str(sum))
+  i = i + 1
+}
+
+for r in rows { print(join(r, ",")) }

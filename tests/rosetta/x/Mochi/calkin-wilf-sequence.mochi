@@ -1,0 +1,86 @@
+fun bigrat(a: int, b: int): bigrat { return (a as bigrat) / (b as bigrat) }
+
+fun calkinWilf(n: int): list<bigrat> {
+  var seq: list<bigrat> = []
+  seq = append(seq, bigrat(1,1))
+  var i = 1
+  while i < n {
+    var prev = seq[i-1]
+    let a = num(prev)
+    let b = denom(prev)
+    let f = a / b
+    var t: bigrat = bigrat(f,1)
+    t = t * (2 as bigrat)
+    t = t - prev
+    t = t + (1 as bigrat)
+    t = (1 as bigrat) / t
+    seq = append(seq, t)
+    i = i + 1
+  }
+  return seq
+}
+
+fun toContinued(r: bigrat): list<int> {
+  var a = num(r)
+  var b = denom(r)
+  var res: list<int> = []
+  while true {
+    res = append(res, (a / b) as int)
+    let t = a % b
+    a = b
+    b = t
+    if a == 1 { break }
+  }
+  if len(res) % 2 == 0 {
+    res[len(res)-1] = res[len(res)-1] - 1
+    res = append(res, 1)
+  }
+  return res
+}
+
+fun termNumber(cf: list<int>): int {
+  var b = ""
+  var d = "1"
+  for n in cf {
+    b = repeat(d, n) + b
+    if d == "1" { d = "0" } else { d = "1" }
+  }
+  return parseIntStr(b, 2)
+}
+
+fun commatize(n: int): string {
+  var s = str(n)
+  var out = ""
+  var i = 0
+  var cnt = 0
+  var neg = false
+  if s[0:1] == "-" { neg = true; s = s[1:] }
+  i = len(s)-1
+  while i >= 0 {
+    out = s[i:i+1] + out
+    cnt = cnt + 1
+    if cnt == 3 && i != 0 { out = "," + out; cnt = 0 }
+    i = i - 1
+  }
+  if neg { out = "-" + out }
+  return out
+}
+
+fun main() {
+  let cw = calkinWilf(20)
+  print("The first 20 terms of the Calkin-Wilf sequnence are:")
+  var i = 0
+  while i < 20 {
+    let r = cw[i]
+    let s = str(num(r))
+    if denom(r) != 1 { s = s + "/" + str(denom(r)) }
+    print((i+1 as int).padStart(2, " ") + ": " + s)
+    i = i + 1
+  }
+  let r = bigrat(83116, 51639)
+  let cf = toContinued(r)
+  let tn = termNumber(cf)
+  print("" + str(num(r)) + "/" + str(denom(r)) + " is the " + commatize(tn) + "th term of the sequence.")
+}
+
+main()
