@@ -1,0 +1,108 @@
+let PI = 3.141592653589793
+
+fun conv2d(img: list<list<float>>, k: list<list<float>>): list<list<float>> {
+  let h = len(img)
+  let w = len(img[0])
+  let n = len(k)
+  let half = n / 2
+  var out: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      var sum = 0.0
+      var j = 0
+      while j < n {
+        var i = 0
+        while i < n {
+          var yy = y + j - half
+          if yy < 0 { yy = 0 }
+          if yy >= h { yy = h - 1 }
+          var xx = x + i - half
+          if xx < 0 { xx = 0 }
+          if xx >= w { xx = w - 1 }
+          sum = sum + img[yy][xx] * k[j][i]
+          i = i + 1
+        }
+        j = j + 1
+      }
+      row = append(row, sum)
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun gradient(img: list<list<float>>): list<list<float>> {
+  let hx = [[-1.0,0.0,1.0],[-2.0,0.0,2.0],[-1.0,0.0,1.0]]
+  let hy = [[1.0,2.0,1.0],[0.0,0.0,0.0],[-1.0,-2.0,-1.0]]
+  var gx = conv2d(img, hx)
+  var gy = conv2d(img, hy)
+  var h = len(img)
+  var w = len(img[0])
+  var out: list<list<float>> = []
+  var y = 0
+  while y < h {
+    var row: list<float> = []
+    var x = 0
+    while x < w {
+      let g = gx[y][x]*gx[y][x] + gy[y][x]*gy[y][x]
+      row = append(row, g)
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun threshold(g: list<list<float>>, t: float): list<list<int>> {
+  var h = len(g)
+  var w = len(g[0])
+  var out: list<list<int>> = []
+  var y = 0
+  while y < h {
+    var row: list<int> = []
+    var x = 0
+    while x < w {
+      if g[y][x] >= t { row = append(row, 1) } else { row = append(row, 0) }
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun printMatrix(m: list<list<int>>) {
+  var y = 0
+  while y < len(m) {
+    var line = ""
+    var x = 0
+    while x < len(m[0]) {
+      line = line + str(m[y][x])
+      if x < len(m[0]) - 1 { line = line + " " }
+      x = x + 1
+    }
+    print(line)
+    y = y + 1
+  }
+}
+
+fun main() {
+  let img = [
+    [0.0,0.0,0.0,0.0,0.0],
+    [0.0,255.0,255.0,255.0,0.0],
+    [0.0,255.0,255.0,255.0,0.0],
+    [0.0,255.0,255.0,255.0,0.0],
+    [0.0,0.0,0.0,0.0,0.0]
+  ]
+  let g = gradient(img)
+  let edges = threshold(g, 1020.0*1020.0)  // compare squared magnitude
+  printMatrix(edges)
+}
+
+main()
