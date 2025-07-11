@@ -129,6 +129,15 @@ func updateReadme() {
 	buf.WriteString("- [ ] Better handling of date comparisons and sorting when running JOB benchmarks\n")
 	buf.WriteString("- [ ] More efficient dataset grouping and aggregation\n")
 	buf.WriteString("- [ ] Support for concurrent agents and streaming primitives\n")
+	buf.WriteString("- [ ] Improve macro support for generated Scheme code\n")
+	buf.WriteString("- [ ] Add pattern matching for union types\n")
+	buf.WriteString("- [ ] Implement async/await semantics\n")
+	buf.WriteString("- [ ] Optimize tail-call recursion\n")
+	buf.WriteString("- [ ] Enhance foreign function interface bindings\n")
+	buf.WriteString("- [ ] Provide REPL mode for compiled programs\n")
+	buf.WriteString("- [ ] Add generic type parameter compilation\n")
+	buf.WriteString("- [ ] Extend dataset query language with window functions\n")
+	buf.WriteString("- [ ] Improve error messages for invalid constructs\n")
 	if compiled == total {
 		buf.WriteString("\nAll programs executed successfully.\n")
 	}

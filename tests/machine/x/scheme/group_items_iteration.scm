@@ -79,17 +79,30 @@
          (out (if (or (not path) (string=? path "") (string=? path "-"))
                   (current-output-port)
                   (open-output-file path))))
-    (cond ((string=? fmt "jsonl")
+  (cond ((string=? fmt "jsonl")
            (for-each (lambda (r) (write-string (json->string r) out) (newline out)) rows))
           (else
            (write-string (json->string rows) out)))
     (when (not (eq? out (current-output-port)))
       (close-output-port out))))
 
+(define (_date_number s)
+  (let ((parts (string-split s #\-)))
+    (if (= (length parts) 3)
+        (+ (* (string->number (list-ref parts 0)) 10000)
+           (* (string->number (list-ref parts 1)) 100)
+           (string->number (list-ref parts 2)))
+        #f)))
+
 (define (_lt a b)
   (cond
     ((and (number? a) (number? b)) (< a b))
-    ((and (string? a) (string? b)) (string<? a b))
+    ((and (string? a) (string? b))
+      (let ((da (_date_number a))
+            (db (_date_number b)))
+        (if (and da db)
+            (< da db)
+            (string<? a b))))
     ((and (pair? a) (pair? b))
       (cond
         ((null? a) (not (null? b)))

@@ -1,4 +1,3 @@
-(define testpkg (list (cons 'Add (lambda (a b) (+ a b))) (cons 'Pi 3.14) (cons 'Answer 42)))
 (define (map-get m k)
     (let ((p (assoc k m)))
         (if p (cdr p) '()))
@@ -10,6 +9,7 @@
             (cons (cons k v) m)))
 )
 
+(define testpkg (list (cons 'Add (lambda (a b) (+ a b))) (cons 'Pi 3.14) (cons 'Answer 42)))
 (begin (display ((map-get testpkg 'Add) 2 3)) (newline))
 (begin (display (map-get testpkg 'Pi)) (newline))
 (begin (display (map-get testpkg 'Answer)) (newline))
