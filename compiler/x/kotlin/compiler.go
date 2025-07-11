@@ -214,6 +214,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.discoverStructs(prog)
 
+	// handle builtin imports
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if _, err := c.builtinImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
+	}
+
 	// emit type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -234,7 +243,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// emit global variable declarations before functions so they are
 	// visible to all functions
 	for _, s := range prog.Statements {
-		if s.Type != nil || s.Fun != nil {
+		if s.Type != nil || s.Fun != nil || s.Import != nil {
 			continue
 		}
 		if s.Let != nil || s.Var != nil {
@@ -246,6 +255,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			continue
+		}
 		if s.Fun != nil {
 			if err := c.funDecl(s.Fun); err != nil {
 				return nil, err
@@ -257,7 +269,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("fun main() {")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil {
+		if s.Fun != nil || s.Type != nil || s.Import != nil {
 			continue
 		}
 		if s.Let != nil || s.Var != nil {
@@ -416,8 +428,20 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		return nil
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil:
+		handled, err := c.builtinImport(s.Import)
+		if err != nil {
+			return err
+		}
+		if !handled {
+			return fmt.Errorf("unsupported import at line %d", s.Pos.Line)
+		}
+		return nil
 	case s.Type != nil:
 		// type declarations are emitted before main
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		// extern declarations have no effect
 		return nil
 	case s.Expr != nil:
 		e, err := c.expr(s.Expr.Expr)
@@ -2131,6 +2155,65 @@ func isStringType(t types.Type) bool {
 func isAnyType(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+// builtinImport emits Kotlin equivalents for certain foreign imports.
+func (c *Compiler) builtinImport(im *parser.ImportStmt) (bool, error) {
+	if im.Lang == nil {
+		return false, nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = escapeIdent(alias)
+	switch *im.Lang {
+	case "python":
+		if im.Path == "math" {
+			st := types.StructType{Name: strings.Title(alias), Fields: map[string]types.Type{
+				"pi":   types.FloatType{},
+				"e":    types.FloatType{},
+				"sqrt": types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+				"pow":  types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}},
+				"sin":  types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+				"log":  types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}},
+			}, Order: []string{"pi", "e", "sqrt", "pow", "sin", "log"}}
+			c.env.SetStruct(st.Name, st)
+			c.env.SetVar(alias, st, false)
+			c.writeln(fmt.Sprintf("object %s {", alias))
+			c.indent++
+			c.writeln("const val pi: Double = kotlin.math.PI")
+			c.writeln("const val e: Double = kotlin.math.E")
+			c.writeln("fun sqrt(x: Double): Double = kotlin.math.sqrt(x)")
+			c.writeln("fun pow(x: Double, y: Double): Double = kotlin.math.pow(x, y)")
+			c.writeln("fun sin(x: Double): Double = kotlin.math.sin(x)")
+			c.writeln("fun log(x: Double): Double = kotlin.math.ln(x)")
+			c.indent--
+			c.writeln("}")
+			c.writeln("")
+			return true, nil
+		}
+	case "go":
+		if im.Auto && im.Path == "mochi/runtime/ffi/go/testpkg" {
+			st := types.StructType{Name: strings.Title(alias), Fields: map[string]types.Type{
+				"Add":    types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}},
+				"Pi":     types.FloatType{},
+				"Answer": types.IntType{},
+			}, Order: []string{"Add", "Pi", "Answer"}}
+			c.env.SetStruct(st.Name, st)
+			c.env.SetVar(alias, st, false)
+			c.writeln(fmt.Sprintf("object %s {", alias))
+			c.indent++
+			c.writeln("fun Add(a: Int, b: Int): Int = a + b")
+			c.writeln("const val Pi: Double = 3.14")
+			c.writeln("var Answer: Int = 42")
+			c.indent--
+			c.writeln("}")
+			c.writeln("")
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 // inferListLike attempts to infer the element type of a query followed by

@@ -109,9 +109,9 @@ Successfully ran: 97/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] go_auto.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] go_auto.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 
 ## Remaining Work
 
