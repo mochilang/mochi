@@ -15,9 +15,9 @@ func main() {
 	}
 
 	var m M = M{
-		A: 1,
-		B: 2,
-		C: 3,
+		1,
+		2,
+		3,
 	}
 	fmt.Println(_values(m))
 }

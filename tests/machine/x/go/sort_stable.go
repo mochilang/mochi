@@ -14,14 +14,14 @@ func main() {
 	}
 
 	var items []ItemsItem = []ItemsItem{ItemsItem{
-		N: 1,
-		V: "a",
+		1,
+		"a",
 	}, ItemsItem{
-		N: 1,
-		V: "b",
+		1,
+		"b",
 	}, ItemsItem{
-		N: 2,
-		V: "c",
+		2,
+		"c",
 	}}
 	var result []string = func() []string {
 		src := _toAnySlice(items)

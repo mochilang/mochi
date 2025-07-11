@@ -18,17 +18,17 @@ func main() {
 	}
 
 	var items []ItemsItem = []ItemsItem{ItemsItem{
-		Cat:  "a",
-		Val:  10,
-		Flag: true,
+		"a",
+		10,
+		true,
 	}, ItemsItem{
-		Cat:  "a",
-		Val:  5,
-		Flag: false,
+		"a",
+		5,
+		false,
 	}, ItemsItem{
-		Cat:  "b",
-		Val:  20,
-		Flag: true,
+		"b",
+		20,
+		true,
 	}}
 	type Result struct {
 		Cat   any     `json:"cat"`
@@ -96,8 +96,8 @@ func main() {
 		results := []Result{}
 		for _, g := range items {
 			results = append(results, Result{
-				Cat: g.Key,
-				Share: (float64(_sum(func() []any {
+				g.Key,
+				(float64(_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, func() any {

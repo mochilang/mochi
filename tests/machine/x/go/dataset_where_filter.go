@@ -14,20 +14,20 @@ func main() {
 
 	var people []PeopleItem = []PeopleItem{
 		PeopleItem{
-			Name: "Alice",
-			Age:  30,
+			"Alice",
+			30,
 		},
 		PeopleItem{
-			Name: "Bob",
-			Age:  15,
+			"Bob",
+			15,
 		},
 		PeopleItem{
-			Name: "Charlie",
-			Age:  65,
+			"Charlie",
+			65,
 		},
 		PeopleItem{
-			Name: "Diana",
-			Age:  45,
+			"Diana",
+			45,
 		},
 	}
 	type Adults struct {
@@ -42,9 +42,9 @@ func main() {
 			if person.Age >= 18 {
 				if person.Age >= 18 {
 					results = append(results, Adults{
-						Name:      person.Name,
-						Age:       person.Age,
-						Is_senior: (person.Age >= 60),
+						person.Name,
+						person.Age,
+						(person.Age >= 60),
 					})
 				}
 			}

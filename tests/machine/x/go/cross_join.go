@@ -13,14 +13,14 @@ func main() {
 	}
 
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}, CustomersItem{
-		Id:   3,
-		Name: "Charlie",
+		3,
+		"Charlie",
 	}}
 	_ = customers
 	type OrdersItem struct {
@@ -30,17 +30,17 @@ func main() {
 	}
 
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-		Total:      125,
+		101,
+		2,
+		125,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 1,
-		Total:      300,
+		102,
+		1,
+		300,
 	}}
 	type Result struct {
 		OrderId            any `json:"orderId"`
@@ -54,10 +54,10 @@ func main() {
 		for _, o := range orders {
 			for _, c := range customers {
 				results = append(results, Result{
-					OrderId:            o.Id,
-					OrderCustomerId:    o.CustomerId,
-					PairedCustomerName: c.Name,
-					OrderTotal:         o.Total,
+					o.Id,
+					o.CustomerId,
+					c.Name,
+					o.Total,
 				})
 			}
 		}

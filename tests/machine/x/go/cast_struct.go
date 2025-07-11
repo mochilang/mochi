@@ -15,7 +15,7 @@ func main() {
 		Title string `json:"title"`
 	}
 
-	var todo Todo1 = Todo1{Title: "hi"}
+	var todo Todo1 = Todo1{"hi"}
 	_ = todo
 	fmt.Println(todo.Title)
 }

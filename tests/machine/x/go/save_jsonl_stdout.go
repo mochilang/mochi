@@ -17,17 +17,17 @@ func main() {
 	}
 
 	var people []PeopleItem = []PeopleItem{PeopleItem{
-		Name: "Alice",
-		Age:  30,
+		"Alice",
+		30,
 	}, PeopleItem{
-		Name: "Bob",
-		Age:  25,
+		"Bob",
+		25,
 	}}
 	type v struct {
 		Format string `json:"format"`
 	}
 
-	_save(people, "-", _toAnyMap(v{Format: "jsonl"}))
+	_save(people, "-", _toAnyMap(v{"jsonl"}))
 }
 
 func _save(src any, path string, opts map[string]any) {
