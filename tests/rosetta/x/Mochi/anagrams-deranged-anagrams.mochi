@@ -1,0 +1,197 @@
+// Mochi implementation of Rosetta "Anagrams-Deranged-anagrams" task
+// Translated from Go version in tests/rosetta/x/Go/anagrams-deranged-anagrams.go
+
+fun sortLetters(s: string): string {
+  var letters: list<string> = []
+  var i = 0
+  while i < len(s) {
+    letters = append(letters, s[i:i+1])
+    i = i + 1
+  }
+  var n = len(letters)
+  var m = 0
+  while m < n {
+    var j = 0
+    while j < n - 1 {
+      if letters[j] > letters[j+1] {
+        let tmp = letters[j]
+        letters[j] = letters[j+1]
+        letters[j+1] = tmp
+      }
+      j = j + 1
+    }
+    m = m + 1
+  }
+  var out = ""
+  i = 0
+  while i < n {
+    out = out + letters[i]
+    i = i + 1
+  }
+  return out
+}
+
+fun deranged(a: string, b: string): bool {
+  if len(a) != len(b) { return false }
+  var i = 0
+  while i < len(a) {
+    if a[i:i+1] == b[i:i+1] { return false }
+    i = i + 1
+  }
+  return true
+}
+
+fun main() {
+  var m: map<string, list<string>> = {}
+  var bestLen = 0
+  var w1 = ""
+  var w2 = ""
+  var i = 0
+  let words: list<string> = [
+    "10th",
+    "1st",
+    "2nd",
+    "3rd",
+    "4th",
+    "5th",
+    "6th",
+    "7th",
+    "8th",
+    "9th",
+    "a",
+    "a&m",
+    "a&p",
+    "a's",
+    "aaa",
+    "aaas",
+    "aarhus",
+    "aaron",
+    "aau",
+    "aba",
+    "ababa",
+    "aback",
+    "abacus",
+    "abalone",
+    "abandon",
+    "abase",
+    "abash",
+    "abate",
+    "abater",
+    "abbas",
+    "abbe",
+    "abbey",
+    "abbot",
+    "abbott",
+    "abbreviate",
+    "abc",
+    "abdicate",
+    "abdomen",
+    "abdominal",
+    "abduct",
+    "abe",
+    "abed",
+    "abel",
+    "abelian",
+    "abelson",
+    "aberdeen",
+    "abernathy",
+    "aberrant",
+    "aberrate",
+    "abet",
+    "abetted",
+    "abetting",
+    "abeyance",
+    "abeyant",
+    "abhorred",
+    "abhorrent",
+    "abide",
+    "abidjan",
+    "abigail",
+    "abject",
+    "ablate",
+    "ablaze",
+    "able",
+    "ablution",
+    "abner",
+    "abnormal",
+    "abo",
+    "aboard",
+    "abode",
+    "abolish",
+    "abolition",
+    "abominable",
+    "abominate",
+    "aboriginal",
+    "aborigine",
+    "aborning",
+    "abort",
+    "abound",
+    "about",
+    "above",
+    "aboveboard",
+    "aboveground",
+    "abovementioned",
+    "abrade",
+    "abraham",
+    "abram",
+    "abramson",
+    "abrasion",
+    "abrasive",
+    "abreact",
+    "abreast",
+    "abridge",
+    "abridgment",
+    "abroad",
+    "abrogate",
+    "abrupt",
+    "abscess",
+    "abscissa",
+    "abscissae",
+    "absence",
+    "exchequer",
+    "excisable",
+    "excise",
+    "excision",
+    "excitation",
+    "excitatory",
+    "excite",
+    "exciton",
+    "intone",
+    "intoxicant",
+    "intoxicate",
+    "intractable",
+    "intramolecular",
+    "intransigent",
+    "intransitive",
+    "intrepid"
+  ]
+  while i < len(words) {
+    let w = words[i]
+    if len(w) > bestLen {
+      let k = sortLetters(w)
+      if !(k in m) {
+        m[k] = [w]
+      } else {
+        var arr = m[k]
+        var j = 0
+        var found = false
+        while j < len(arr) {
+          let c = arr[j]
+          if deranged(w, c) {
+            bestLen = len(w)
+            w1 = c
+            w2 = w
+            found = true
+            break
+          }
+          j = j + 1
+        }
+        m[k] = append(arr, w)
+      }
+    }
+    i = i + 1
+  }
+  print(w1 + " " + w2 + " : Length " + str(bestLen))
+}
+
+main()
