@@ -1,0 +1,141 @@
+// Mochi implementation of Bifid cipher task
+
+fun square_to_maps(square: list<list<string>>): map<string, any> {
+  var emap: map<string, list<int>> = {}
+  var dmap: map<string, string> = {}
+  var x = 0
+  while x < len(square) {
+    let row = square[x]
+    var y = 0
+    while y < len(row) {
+      let ch = row[y]
+      emap[ch] = [x, y]
+      dmap[str(x) + "," + str(y)] = ch
+      y = y + 1
+    }
+    x = x + 1
+  }
+  return {"e": emap, "d": dmap}
+}
+
+fun remove_space(text: string, emap: map<string, list<int>>): string {
+  let s = upper(text)
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch != " " && ch in emap { out = out + ch }
+    i = i + 1
+  }
+  return out
+}
+
+fun encrypt(text: string, emap: map<string,list<int>>, dmap: map<string,string>): string {
+  text = remove_space(text, emap)
+  var row0: list<int> = []
+  var row1: list<int> = []
+  var i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    let xy = emap[ch]
+    row0 = append(row0, xy[0])
+    row1 = append(row1, xy[1])
+    i = i + 1
+  }
+  for v in row1 { row0 = append(row0, v) }
+  var res = ""
+  var j = 0
+  while j < len(row0) {
+    let key = str(row0[j]) + "," + str(row0[j+1])
+    res = res + dmap[key]
+    j = j + 2
+  }
+  return res
+}
+
+fun decrypt(text: string, emap: map<string,list<int>>, dmap: map<string,string>): string {
+  text = remove_space(text, emap)
+  var coords: list<int> = []
+  var i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    let xy = emap[ch]
+    coords = append(coords, xy[0])
+    coords = append(coords, xy[1])
+    i = i + 1
+  }
+  var half = len(coords) / 2
+  var k1: list<int> = []
+  var k2: list<int> = []
+  var idx = 0
+  while idx < half {
+    k1 = append(k1, coords[idx])
+    idx = idx + 1
+  }
+  while idx < len(coords) {
+    k2 = append(k2, coords[idx])
+    idx = idx + 1
+  }
+  var res = ""
+  var j = 0
+  while j < half {
+    let key = str(k1[j]) + "," + str(k2[j])
+    res = res + dmap[key]
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let squareRosetta = [
+    ["A","B","C","D","E"],
+    ["F","G","H","I","K"],
+    ["L","M","N","O","P"],
+    ["Q","R","S","T","U"],
+    ["V","W","X","Y","Z"],
+    ["J","1","2","3","4"],
+  ]
+  let squareWikipedia = [
+    ["B","G","W","K","Z"],
+    ["Q","P","N","D","S"],
+    ["I","O","A","X","E"],
+    ["F","C","L","U","M"],
+    ["T","H","Y","V","R"],
+    ["J","1","2","3","4"],
+  ]
+  let textRosetta = "0ATTACKATDAWN"
+  let textWikipedia = "FLEEATONCE"
+  let textTest = "The invasion will start on the first of January"
+
+  var maps = square_to_maps(squareRosetta)
+  var emap = maps["e"]
+  var dmap = maps["d"]
+  print("from Rosettacode")
+  print("original:\t " + textRosetta)
+  var s = encrypt(textRosetta, emap, dmap)
+  print("codiert:\t " + s)
+  s = decrypt(s, emap, dmap)
+  print("and back:\t " + s)
+
+  maps = square_to_maps(squareWikipedia)
+  emap = maps["e"]
+  dmap = maps["d"]
+  print("from Wikipedia")
+  print("original:\t " + textWikipedia)
+  s = encrypt(textWikipedia, emap, dmap)
+  print("codiert:\t " + s)
+  s = decrypt(s, emap, dmap)
+  print("and back:\t " + s)
+
+  maps = square_to_maps(squareWikipedia)
+  emap = maps["e"]
+  dmap = maps["d"]
+  print("from Rosettacode long part")
+  print("original:\t " + textTest)
+  s = encrypt(textTest, emap, dmap)
+  print("codiert:\t " + s)
+  s = decrypt(s, emap, dmap)
+  print("and back:\t " + s)
+}
+
+main()
