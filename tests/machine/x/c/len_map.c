@@ -21,8 +21,11 @@ static map_string_int map_string_int_create(int cap) {
   map_string_int m;
   m.len = 0;
   m.cap = cap;
-  m.data =
-      cap ? (pair_string_int *)malloc(sizeof(pair_string_int) * cap) : NULL;
+  m.data = cap ? calloc(cap, sizeof(pair_string_int)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_string_int_put(map_string_int *m, char *k, int v) {
@@ -51,9 +54,9 @@ static int map_string_int_contains(map_string_int m, const char *k) {
   return 0;
 }
 int main() {
-  map_string_int _t1 = map_string_int_create(2);
-  map_string_int_put(&_t1, "a", 1);
-  map_string_int_put(&_t1, "b", 2);
-  printf("%d\n", _t1.len);
+  map_string_int tmp1 = map_string_int_create(2);
+  map_string_int_put(&tmp1, "a", 1);
+  map_string_int_put(&tmp1, "b", 2);
+  printf("%.16g\n", tmp1.len);
   return 0;
 }

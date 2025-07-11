@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -27,8 +35,11 @@ typedef struct {
   int value;
 } map_int_bool_item;
 static map_int_bool_item *map_int_bool_item_new(int key, int value) {
-  map_int_bool_item *it =
-      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+  map_int_bool_item *it = calloc(1, sizeof(map_int_bool_item));
+  if (!it) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   it->key = key;
   it->value = value;
   return it;
@@ -42,8 +53,11 @@ static map_int_bool map_int_bool_create(int cap) {
   map_int_bool m;
   m.len = 0;
   m.cap = cap;
-  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
-               : NULL;
+  m.data = cap ? calloc(cap, sizeof(map_int_bool_item *)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_int_bool_put(map_int_bool *m, int key, int value) {
@@ -115,84 +129,88 @@ typedef struct {
 static list_dataItem list_dataItem_create(int len) {
   list_dataItem l;
   l.len = len;
-  l.data = (dataItem *)malloc(sizeof(dataItem) * len);
+  l.data = calloc(len, sizeof(dataItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  dataItem _t1_data[] = {(dataItem){.tag = "a", .val = 1},
-                         (dataItem){.tag = "a", .val = 2},
-                         (dataItem){.tag = "b", .val = 3}};
-  list_dataItem _t1 = {3, _t1_data};
-  list_dataItem data = _t1;
-  list_dataItem _t2 = list_dataItem_create(data.len);
-  list_string _t3 = list_string_create(data.len);
-  int _t4 = 0;
+  dataItem tmp1_data[] = {(dataItem){.tag = "a", .val = 1},
+                          (dataItem){.tag = "a", .val = 2},
+                          (dataItem){.tag = "b", .val = 3}};
+  list_dataItem tmp1 = {3, tmp1_data};
+  list_dataItem data = tmp1;
+  list_dataItem tmp2 = list_dataItem_create(data.len);
+  list_string tmp3 = list_string_create(data.len);
+  int tmp4 = 0;
   for (int i = 0; i < data.len; i++) {
     dataItem d = data.data[i];
-    _t2.data[_t4] = d;
-    _t3.data[_t4] = d.tag;
-    _t4++;
+    tmp2.data[tmp4] = d;
+    tmp3.data[tmp4] = d.tag;
+    tmp4++;
   }
-  _t2.len = _t4;
-  _t3.len = _t4;
-  list_group_string _t5 = _group_by_string(_t3);
-  list_int _t6 = list_int_create(_t5.len);
-  int _t7 = 0;
-  for (int gi = 0; gi < _t5.len; gi++) {
-    _GroupString _gp = _t5.data[gi];
-    list_dataItem _t8 = list_dataItem_create(_gp.items.len);
+  tmp2.len = tmp4;
+  tmp3.len = tmp4;
+  list_group_string tmp5 = _group_by_string(tmp3);
+  list_int tmp6 = list_int_create(tmp5.len);
+  int tmp7 = 0;
+  for (int gi = 0; gi < tmp5.len; gi++) {
+    _GroupString _gp = tmp5.data[gi];
+    list_dataItem tmp8 = list_dataItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
-      _t8.data[j] = _t2.data[_gp.items.data[j]];
+      tmp8.data[j] = tmp2.data[_gp.items.data[j]];
     }
-    _t8.len = _gp.items.len;
+    tmp8.len = _gp.items.len;
     struct {
       char *key;
       list_dataItem items;
-    } g = {_gp.key, _t8};
-    _t6.data[_t7] = g;
-    _t7++;
+    } g = {_gp.key, tmp8};
+    tmp6.data[tmp7] = g;
+    tmp7++;
   }
-  _t6.len = _t7;
-  list_int groups = _t6;
-  int _t9_data[] = {};
-  list_int _t9 = {0, _t9_data};
-  list_int tmp = _t9;
-  for (int _t10 = 0; _t10 < groups.len; _t10++) {
-    int g = groups.data[_t10];
+  tmp6.len = tmp7;
+  list_int groups = tmp6;
+  int tmp9_data[] = {};
+  list_int tmp9 = {0, tmp9_data};
+  list_int tmp = tmp9;
+  for (int tmp10 = 0; tmp10 < groups.len; tmp10++) {
+    int g = groups.data[tmp10];
     int total = 0;
-    for (int _t11 = 0; _t11 < g.items.len; _t11++) {
-      dataItem x = g.items.data[_t11];
+    for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
+      dataItem x = g.items.data[tmp11];
       total = total + x.val;
     }
-    map_int_bool _t12 = map_int_bool_create(2);
-    map_int_bool_put(&_t12, "tag", g.key);
-    map_int_bool_put(&_t12, "total", total);
+    map_int_bool tmp12 = map_int_bool_create(2);
+    map_int_bool_put(&tmp12, "tag", g.key);
+    map_int_bool_put(&tmp12, "total", total);
     tmp = 0;
   }
-  list_int _t13 = list_int_create(tmp.len);
-  int *_t16 = (int *)malloc(sizeof(int) * tmp.len);
-  int _t14 = 0;
-  for (int _t15 = 0; _t15 < tmp.len; _t15++) {
-    int r = tmp.data[_t15];
-    _t13.data[_t14] = r;
-    _t16[_t14] = r.tag;
-    _t14++;
+  list_int tmp13 = list_int_create(tmp.len);
+  int *tmp16 = (int *)malloc(sizeof(int) * tmp.len);
+  int tmp14 = 0;
+  for (int tmp15 = 0; tmp15 < tmp.len; tmp15++) {
+    int r = tmp.data[tmp15];
+    tmp13.data[tmp14] = r;
+    tmp16[tmp14] = r.tag;
+    tmp14++;
   }
-  _t13.len = _t14;
-  for (int i = 0; i < _t14 - 1; i++) {
-    for (int j = i + 1; j < _t14; j++) {
-      if (_t16[i] > _t16[j]) {
-        int _t17 = _t16[i];
-        _t16[i] = _t16[j];
-        _t16[j] = _t17;
-        int _t18 = _t13.data[i];
-        _t13.data[i] = _t13.data[j];
-        _t13.data[j] = _t18;
+  tmp13.len = tmp14;
+  for (int i = 0; i < tmp14 - 1; i++) {
+    for (int j = i + 1; j < tmp14; j++) {
+      if (tmp16[i] > tmp16[j]) {
+        int tmp17 = tmp16[i];
+        tmp16[i] = tmp16[j];
+        tmp16[j] = tmp17;
+        int tmp18 = tmp13.data[i];
+        tmp13.data[i] = tmp13.data[j];
+        tmp13.data[j] = tmp18;
       }
     }
   }
-  list_int result = _t13;
-  printf("%d\n", result);
+  list_int result = tmp13;
+  printf("%.16g\n", result);
   return 0;
 }

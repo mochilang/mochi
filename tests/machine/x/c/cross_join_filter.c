@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -33,36 +41,40 @@ typedef struct {
 static list_pairsItem list_pairsItem_create(int len) {
   list_pairsItem l;
   l.len = len;
-  l.data = (pairsItem *)malloc(sizeof(pairsItem) * len);
+  l.data = calloc(len, sizeof(pairsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  int _t1_data[] = {1, 2, 3};
-  list_int _t1 = {3, _t1_data};
-  list_int nums = _t1;
-  char *_t2_data[] = {"A", "B"};
-  list_string _t2 = {2, _t2_data};
-  list_string letters = _t2;
-  list_pairsItem _t3 = list_pairsItem_create(nums.len * letters.len);
-  int _t4 = 0;
-  for (int _t5 = 0; _t5 < nums.len; _t5++) {
-    int n = nums.data[_t5];
-    for (int _t6 = 0; _t6 < letters.len; _t6++) {
-      char *l = letters.data[_t6];
+  int tmp1_data[] = {1, 2, 3};
+  list_int tmp1 = {3, tmp1_data};
+  list_int nums = tmp1;
+  char *tmp2_data[] = {"A", "B"};
+  list_string tmp2 = {2, tmp2_data};
+  list_string letters = tmp2;
+  list_pairsItem tmp3 = list_pairsItem_create(nums.len * letters.len);
+  int tmp4 = 0;
+  for (int n_idx = 0; n_idx < nums.len; n_idx++) {
+    int n = nums.data[n_idx];
+    for (int l_idx = 0; l_idx < letters.len; l_idx++) {
+      char *l = letters.data[l_idx];
       if (!(n % 2 == 0)) {
         continue;
       }
-      _t3.data[_t4] = (pairsItem){.n = n, .l = l};
-      _t4++;
+      tmp3.data[tmp4] = (pairsItem){.n = n, .l = l};
+      tmp4++;
     }
   }
-  _t3.len = _t4;
-  list_pairsItem pairs = _t3;
+  tmp3.len = tmp4;
+  list_pairsItem pairs = tmp3;
   printf("%s\n", "--- Even pairs ---");
-  for (int _t7 = 0; _t7 < pairs.len; _t7++) {
-    pairsItem p = pairs.data[_t7];
-    printf("%d ", p.n);
+  for (int tmp5 = 0; tmp5 < pairs.len; tmp5++) {
+    pairsItem p = pairs.data[tmp5];
+    printf("%.16g ", p.n);
     printf("%s\n", p.l);
   }
   return 0;

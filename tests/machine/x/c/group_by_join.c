@@ -12,7 +12,11 @@ typedef struct {
 static list_customersItem list_customersItem_create(int len) {
   list_customersItem l;
   l.len = len;
-  l.data = (customersItem *)malloc(sizeof(customersItem) * len);
+  l.data = calloc(len, sizeof(customersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -27,7 +31,11 @@ typedef struct {
 static list_ordersItem list_ordersItem_create(int len) {
   list_ordersItem l;
   l.len = len;
-  l.data = (ordersItem *)malloc(sizeof(ordersItem) * len);
+  l.data = calloc(len, sizeof(ordersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -42,27 +50,31 @@ typedef struct {
 static list_statsItem list_statsItem_create(int len) {
   list_statsItem l;
   l.len = len;
-  l.data = (statsItem *)malloc(sizeof(statsItem) * len);
+  l.data = calloc(len, sizeof(statsItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  customersItem _t1_data[] = {(customersItem){.id = 1, .name = "Alice"},
-                              (customersItem){.id = 2, .name = "Bob"}};
-  list_customersItem _t1 = {2, _t1_data};
-  list_customersItem customers = _t1;
-  ordersItem _t2_data[] = {(ordersItem){.id = 100, .customerId = 1},
-                           (ordersItem){.id = 101, .customerId = 1},
-                           (ordersItem){.id = 102, .customerId = 2}};
-  list_ordersItem _t2 = {3, _t2_data};
-  list_ordersItem orders = _t2;
+  customersItem tmp1_data[] = {(customersItem){.id = 1, .name = "Alice"},
+                               (customersItem){.id = 2, .name = "Bob"}};
+  list_customersItem tmp1 = {2, tmp1_data};
+  list_customersItem customers = tmp1;
+  ordersItem tmp2_data[] = {(ordersItem){.id = 100, .customerId = 1},
+                            (ordersItem){.id = 101, .customerId = 1},
+                            (ordersItem){.id = 102, .customerId = 2}};
+  list_ordersItem tmp2 = {3, tmp2_data};
+  list_ordersItem orders = tmp2;
   list_statsItem stats = 0;
   printf("%s\n", "--- Orders per customer ---");
-  for (int _t3 = 0; _t3 < stats.len; _t3++) {
-    statsItem s = stats.data[_t3];
+  for (int tmp3 = 0; tmp3 < stats.len; tmp3++) {
+    statsItem s = stats.data[tmp3];
     printf("%s ", s.name);
     printf("%s ", "orders:");
-    printf("%d\n", s.count);
+    printf("%.16g\n", s.count);
   }
   return 0;
 }

@@ -2,8 +2,8 @@ line: 0
 error: output mismatch
 -- got --
 --- Left Join Multi ---
-100 Alice 100
-101 Bob 0
+5.16069376482911e-311 Alice 5.16069376482911e-311
+5.16069376482911e-311 Bob 5.16069376482911e-311
 -- want --
 --- Left Join Multi ---
 100 Alice map[orderId:100 sku:a]

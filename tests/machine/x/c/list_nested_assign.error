@@ -1,0 +1,7 @@
+line: 0
+error: output mismatch
+-- got --
+5.435216169899553e-320
+-- want --
+5
+   1: #include <stdio.h>

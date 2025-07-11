@@ -1,11 +1,11 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/map_assign.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/map_assign.c:20:9: error: ‘scoresItem’ has no member named ‘data’
-   20 |   scores.data["bob"] = 2;
+/workspace/mochi/tests/machine/x/c/map_assign.c:24:9: error: ‘scoresItem’ has no member named ‘data’
+   24 |   scores.data["bob"] = 2;
       |         ^
-/workspace/mochi/tests/machine/x/c/map_assign.c:21:24: error: ‘scoresItem’ has no member named ‘data’
-   21 |   printf("%d\n", scores.data["bob"]);
+/workspace/mochi/tests/machine/x/c/map_assign.c:25:24: error: ‘scoresItem’ has no member named ‘data’
+   25 |   printf("%d\n", scores.data["bob"]);
       |                        ^
 
    1: #include <stdio.h>

@@ -76,7 +76,7 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
- - [x] python_auto
+- [x] python_auto
 - [ ] python_math
 - [x] query_sum_select
 - [x] record_assign

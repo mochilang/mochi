@@ -8,7 +8,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static int contains_list_int(list_int v, int item) {
@@ -29,26 +33,30 @@ typedef struct {
 static list_mItem list_mItem_create(int len) {
   list_mItem l;
   l.len = len;
-  l.data = (mItem *)malloc(sizeof(mItem) * len);
+  l.data = calloc(len, sizeof(mItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
-  int _t1_data[] = {1, 2, 3};
-  list_int _t1 = {3, _t1_data};
-  list_int xs = _t1;
-  list_int _t2 = list_int_create(xs.len);
-  int _t3 = 0;
-  for (int _t4 = 0; _t4 < xs.len; _t4++) {
-    int x = xs.data[_t4];
+  int tmp1_data[] = {1, 2, 3};
+  list_int tmp1 = {3, tmp1_data};
+  list_int xs = tmp1;
+  list_int tmp2 = list_int_create(xs.len);
+  int tmp3 = 0;
+  for (int tmp4 = 0; tmp4 < xs.len; tmp4++) {
+    int x = xs.data[tmp4];
     if (!(x % 2 == 1)) {
       continue;
     }
-    _t2.data[_t3] = x;
-    _t3++;
+    tmp2.data[tmp3] = x;
+    tmp3++;
   }
-  _t2.len = _t3;
-  list_int ys = _t2;
+  tmp2.len = tmp3;
+  list_int ys = tmp2;
   printf("%s\n", (contains_list_int(ys, 1)) ? "true" : "false");
   printf("%s\n", (contains_list_int(ys, 2)) ? "true" : "false");
   mItem m = (mItem){.a = 1};

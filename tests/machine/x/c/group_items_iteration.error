@@ -1,44 +1,45 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:153:21: error: incompatible types when assigning to type ‘int’ from type ‘struct <anonymous>’
-  153 |     _t6.data[_t7] = g;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:171:23: error: incompatible types when assigning to type ‘int’ from type ‘struct <anonymous>’
+  171 |     tmp6.data[tmp7] = g;
+      |                       ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:182:34: error: request for member ‘items’ in something not a structure or union
+  182 |     for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:183:21: error: request for member ‘items’ in something not a structure or union
+  183 |       dataItem x = g.items.data[tmp11];
       |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:164:32: error: request for member ‘items’ in something not a structure or union
-  164 |     for (int _t11 = 0; _t11 < g.items.len; _t11++) {
-      |                                ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:165:21: error: request for member ‘items’ in something not a structure or union
-  165 |       dataItem x = g.items.data[_t11];
-      |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:169:37: error: request for member ‘key’ in something not a structure or union
-  169 |     map_int_bool_put(&_t12, "tag", g.key);
-      |                                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:169:29: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  169 |     map_int_bool_put(&_t12, "tag", g.key);
-      |                             ^~~~~
-      |                             |
-      |                             char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:49:51: note: expected ‘int’ but argument is of type ‘char *’
-   49 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:187:38: error: request for member ‘key’ in something not a structure or union
+  187 |     map_int_bool_put(&tmp12, "tag", g.key);
+      |                                      ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:187:30: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+  187 |     map_int_bool_put(&tmp12, "tag", g.key);
+      |                              ^~~~~
+      |                              |
+      |                              char *
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:63:51: note: expected ‘int’ but argument is of type ‘char *’
+   63 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:170:29: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  170 |     map_int_bool_put(&_t12, "total", total);
-      |                             ^~~~~~~
-      |                             |
-      |                             char *
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:49:51: note: expected ‘int’ but argument is of type ‘char *’
-   49 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:188:30: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
+  188 |     map_int_bool_put(&tmp12, "total", total);
+      |                              ^~~~~~~
+      |                              |
+      |                              char *
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:63:51: note: expected ‘int’ but argument is of type ‘char *’
+   63 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:171:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  171 |     tmp = 0;
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:189:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  189 |     tmp = 0;
       |           ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:179:19: error: request for member ‘tag’ in something not a structure or union
-  179 |     _t16[_t14] = r.tag;
-      |                   ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:196:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
-  196 |   printf("%d\n", result);
-      |           ~^     ~~~~~~
-      |            |     |
-      |            int   list_int
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:197:21: error: request for member ‘tag’ in something not a structure or union
+  197 |     tmp16[tmp14] = r.tag;
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:214:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_int’ [-Wformat=]
+  214 |   printf("%.16g\n", result);
+      |           ~~~~^     ~~~~~~
+      |               |     |
+      |               |     list_int
+      |               double
 
    1: #include <stdio.h>

@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 static char *slice_string(char *s, int start, int end) {
@@ -63,17 +71,17 @@ static void _print_list_int(list_int v) {
   }
 }
 int main() {
-  int _t1_data[] = {1, 2, 3};
-  list_int _t1 = {3, _t1_data};
-  list_int _t2 = slice_list_int(_t1, 1, 3);
-  _print_list_int(_t2);
+  int tmp1_data[] = {1, 2, 3};
+  list_int tmp1 = {3, tmp1_data};
+  list_int tmp2 = slice_list_int(tmp1, 1, 3);
+  _print_list_int(tmp2);
   printf("\n");
-  int _t3_data[] = {1, 2, 3};
-  list_int _t3 = {3, _t3_data};
-  list_int _t4 = slice_list_int(_t3, 0, 2);
-  _print_list_int(_t4);
+  int tmp3_data[] = {1, 2, 3};
+  list_int tmp3 = {3, tmp3_data};
+  list_int tmp4 = slice_list_int(tmp3, 0, 2);
+  _print_list_int(tmp4);
   printf("\n");
-  char *_t5 = slice_string("hello", 1, 4);
-  printf("%s\n", _t5);
+  char *tmp5 = slice_string("hello", 1, 4);
+  printf("%s\n", tmp5);
   return 0;
 }

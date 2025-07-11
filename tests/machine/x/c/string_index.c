@@ -4,6 +4,6 @@
 static char *s = "mochi";
 
 int main() {
-  printf("%d\n", s.data[1]);
+  printf("%.16g\n", s.data[1]);
   return 0;
 }

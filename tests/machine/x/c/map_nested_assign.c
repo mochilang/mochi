@@ -11,7 +11,11 @@ typedef struct {
 static list_outerItem list_outerItem_create(int len) {
   list_outerItem l;
   l.len = len;
-  l.data = (outerItem *)malloc(sizeof(outerItem) * len);
+  l.data = calloc(len, sizeof(outerItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -25,13 +29,17 @@ typedef struct {
 static list_dataItem list_dataItem_create(int len) {
   list_dataItem l;
   l.len = len;
-  l.data = (dataItem *)malloc(sizeof(dataItem) * len);
+  l.data = calloc(len, sizeof(dataItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
   dataItem data = (dataItem){.outer = (outerItem){.inner = 1}};
   data.outer.inner = 2;
-  printf("%d\n", data.outer.inner);
+  printf("%.16g\n", data.outer.inner);
   return 0;
 }

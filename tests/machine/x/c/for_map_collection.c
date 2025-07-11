@@ -12,14 +12,18 @@ typedef struct {
 static list_mItem list_mItem_create(int len) {
   list_mItem l;
   l.len = len;
-  l.data = (mItem *)malloc(sizeof(mItem) * len);
+  l.data = calloc(len, sizeof(mItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 int main() {
   mItem m = (mItem){.a = 1, .b = 2};
-  for (int _t1 = 0; _t1 < m.len; _t1++) {
-    int k = m.data[_t1];
+  for (int tmp1 = 0; tmp1 < m.len; tmp1++) {
+    int k = m.data[tmp1];
     printf("%d\n", k);
   }
   return 0;

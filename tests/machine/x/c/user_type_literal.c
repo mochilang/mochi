@@ -15,7 +15,11 @@ typedef struct {
 static list_Person list_Person_create(int len) {
   list_Person l;
   l.len = len;
-  l.data = (Person *)malloc(sizeof(Person) * len);
+  l.data = calloc(len, sizeof(Person));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
@@ -30,7 +34,11 @@ typedef struct {
 static list_Book list_Book_create(int len) {
   list_Book l;
   l.len = len;
-  l.data = (Book *)malloc(sizeof(Book) * len);
+  l.data = calloc(len, sizeof(Book));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 

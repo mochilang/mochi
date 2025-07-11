@@ -1,0 +1,11 @@
+line: 0
+error: output mismatch
+-- got --
+--- People grouped by city ---
+Paris : count = 4.940656458412465e-324 , avg_age = 55
+Hanoi : count = 55 , avg_age = 27.33333333333333
+-- want --
+--- People grouped by city ---
+Paris : count = 3 , avg_age = 55
+Hanoi : count = 3 , avg_age = 27.333333333333332
+   1: #include <stdio.h>

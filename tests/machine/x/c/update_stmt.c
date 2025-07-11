@@ -15,44 +15,48 @@ typedef struct {
 static list_Person list_Person_create(int len) {
   list_Person l;
   l.len = len;
-  l.data = (Person *)malloc(sizeof(Person) * len);
+  l.data = calloc(len, sizeof(Person));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 
 static void test_update_adult_status() {
-  Person _t1_data[] = {
+  Person tmp1_data[] = {
       (Person){.name = "Alice", .age = 17, .status = "minor"},
       (Person){.name = "Bob", .age = 26, .status = "adult"},
       (Person){.name = "Charlie", .age = 19, .status = "adult"},
       (Person){.name = "Diana", .age = 16, .status = "minor"}};
-  list_Person _t1 = {4, _t1_data};
-  if (!(people == _t1)) {
+  list_Person tmp1 = {4, tmp1_data};
+  if (!(people == tmp1)) {
     fprintf(stderr, "expect failed\n");
     exit(1);
   }
 }
 
 int main() {
-  Person _t2_data[] = {
+  Person tmp2_data[] = {
       (Person){.name = "Alice", .age = 17, .status = "minor"},
       (Person){.name = "Bob", .age = 25, .status = "unknown"},
       (Person){.name = "Charlie", .age = 18, .status = "unknown"},
       (Person){.name = "Diana", .age = 16, .status = "minor"}};
-  list_Person _t2 = {4, _t2_data};
-  list_Person people = _t2;
-  for (int _t3 = 0; _t3 < people.len; _t3++) {
-    Person _t4 = people.data[_t3];
-    char *name = _t4.name;
-    int age = _t4.age;
-    char *status = _t4.status;
-    char *name = _t4.name;
-    int age = _t4.age;
-    char *status = _t4.status;
-    if (_t4.age >= 18) {
-      _t4.status = "adult";
-      _t4.age = _t4.age + 1;
+  list_Person tmp2 = {4, tmp2_data};
+  list_Person people = tmp2;
+  for (int tmp3 = 0; tmp3 < people.len; tmp3++) {
+    Person tmp4 = people.data[tmp3];
+    char *name = tmp4.name;
+    int age = tmp4.age;
+    char *status = tmp4.status;
+    char *name = tmp4.name;
+    int age = tmp4.age;
+    char *status = tmp4.status;
+    if (tmp4.age >= 18) {
+      tmp4.status = "adult";
+      tmp4.age = tmp4.age + 1;
     }
-    people.data[_t3] = _t4;
+    people.data[tmp3] = tmp4;
   }
   printf("%s\n", "ok");
   test_update_adult_status();

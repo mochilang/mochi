@@ -1,0 +1,11 @@
+line: 0
+error: output mismatch
+-- got --
+--- Even pairs ---
+6.952628381192691e-310 A
+6.952628381192691e-310 B
+-- want --
+--- Even pairs ---
+2 A
+2 B
+   1: #include <stdio.h>
