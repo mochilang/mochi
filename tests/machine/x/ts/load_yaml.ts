@@ -6,7 +6,7 @@ type Person = {
   email: string;
 };
 
-let adults: _[];
+let adults: any[];
 let people: Person[];
 
 function main(): void {
