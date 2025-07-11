@@ -1,0 +1,41 @@
+
+Nucleotide counts for TAAGAA:
+
+         A           4
+         C           0
+         G           1
+         T           1
+     Other           0
+  ____________________
+  Total length       6
+
+Nucleotide counts for CATTAGGG:
+
+         A           2
+         C           1
+         G           3
+         T           2
+     Other           0
+  ____________________
+  Total length       8
+
+Nucleotide counts for AAGAUGGAGCGCAUCGCAAUAAGGA:
+
+         A          10
+         C           4
+         G           8
+         T           0
+     Other           3
+  ____________________
+  Total length      25
+
+Nucleotide counts for CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA:
+
+         A          74
+         C          57
+         G          75
+         T          94
+     Other           0
+  ____________________
+  Total length     300
+

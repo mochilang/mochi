@@ -1,0 +1,200 @@
+// Mochi implementation of Rosetta "Bioinformatics - Global alignment" task
+// Translated from Go version in tests/rosetta/x/Go/bioinformatics-global-alignment.go
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 {
+    res = res + " "
+    n = n - 1
+  }
+  return res + s
+}
+
+fun indexOfFrom(s: string, ch: string, start: int): int {
+  var i = start
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun containsStr(s: string, sub: string): bool {
+  var i = 0
+  let sl = len(s)
+  let subl = len(sub)
+  while i <= sl - subl {
+    if substring(s, i, i + subl) == sub { return true }
+    i = i + 1
+  }
+  return false
+}
+
+fun distinct(slist: list<string>): list<string> {
+  var res: list<string> = []
+  for s in slist {
+    var found = false
+    for r in res {
+      if r == s {
+        found = true
+        break
+      }
+    }
+    if !found { res = append(res, s) }
+  }
+  return res
+}
+
+fun permutations(xs: list<string>): list<list<string>> {
+  if len(xs) <= 1 { return [xs] }
+  var res: list<list<string>> = []
+  var i = 0
+  while i < len(xs) {
+    var rest: list<string> = []
+    var j = 0
+    while j < len(xs) {
+      if j != i { rest = append(rest, xs[j]) }
+      j = j + 1
+    }
+    let subs = permutations(rest)
+    for p in subs {
+      var perm: list<string> = [xs[i]]
+      var k = 0
+      while k < len(p) {
+        perm = append(perm, p[k])
+        k = k + 1
+      }
+      res = append(res, perm)
+    }
+    i = i + 1
+  }
+  return res
+}
+
+fun headTailOverlap(s1: string, s2: string): int {
+  var start = 0
+  while true {
+    let ix = indexOfFrom(s1, s2[0:1], start)
+    if ix == 0 - 1 { return 0 }
+    start = ix
+    if substring(s2, 0, len(s1) - start) == substring(s1, start, len(s1)) {
+      return len(s1) - start
+    }
+    start = start + 1
+  }
+}
+
+fun deduplicate(slist: list<string>): list<string> {
+  let arr = distinct(slist)
+  var filtered: list<string> = []
+  var i = 0
+  while i < len(arr) {
+    let s1 = arr[i]
+    var within = false
+    var j = 0
+    while j < len(arr) {
+      if j != i && containsStr(arr[j], s1) {
+        within = true
+        break
+      }
+      j = j + 1
+    }
+    if !within { filtered = append(filtered, s1) }
+    i = i + 1
+  }
+  return filtered
+}
+
+fun joinAll(ss: list<string>): string {
+  var out = ""
+  for s in ss { out = out + s }
+  return out
+}
+
+fun shortestCommonSuperstring(slist: list<string>): string {
+  let ss = deduplicate(slist)
+  var shortest = joinAll(ss)
+  let perms = permutations(ss)
+  var idx = 0
+  while idx < len(perms) {
+    let perm = perms[idx]
+    var sup = perm[0]
+    var i = 0
+    while i < len(ss) - 1 {
+      let ov = headTailOverlap(perm[i], perm[i+1])
+      sup = sup + substring(perm[i+1], ov, len(perm[i+1]))
+      i = i + 1
+    }
+    if len(sup) < len(shortest) { shortest = sup }
+    idx = idx + 1
+  }
+  return shortest
+}
+
+fun printCounts(seq: string) {
+  var a = 0
+  var c = 0
+  var g = 0
+  var t = 0
+  var i = 0
+  while i < len(seq) {
+    let ch = substring(seq, i, i + 1)
+    if ch == "A" {
+      a = a + 1
+    } else {
+      if ch == "C" {
+        c = c + 1
+      } else {
+        if ch == "G" {
+          g = g + 1
+        } else {
+          if ch == "T" {
+            t = t + 1
+          }
+        }
+      }
+    }
+    i = i + 1
+  }
+  let total = len(seq)
+  print("\nNucleotide counts for " + seq + ":\n")
+  print(padLeft("A", 10) + padLeft(str(a), 12))
+  print(padLeft("C", 10) + padLeft(str(c), 12))
+  print(padLeft("G", 10) + padLeft(str(g), 12))
+  print(padLeft("T", 10) + padLeft(str(t), 12))
+  print(padLeft("Other", 10) + padLeft(str(total - (a+c+g+t)), 12))
+  print("  ____________________")
+  print(padLeft("Total length", 14) + padLeft(str(total), 8))
+}
+
+fun main() {
+  let tests: list<list<string>> = [
+    ["TA", "AAG", "TA", "GAA", "TA"],
+    ["CATTAGGG", "ATTAG", "GGG", "TA"],
+    ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"],
+    [
+      "ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT",
+      "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT",
+      "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA",
+      "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC",
+      "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT",
+      "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC",
+      "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT",
+      "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC",
+      "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC",
+      "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT",
+      "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC",
+      "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA",
+      "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA",
+    ],
+  ]
+  for seqs in tests {
+    let scs = shortestCommonSuperstring(seqs)
+    printCounts(scs)
+  }
+}
+
+main()
