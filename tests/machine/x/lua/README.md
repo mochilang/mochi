@@ -106,7 +106,6 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
 ## Remaining Tasks
 - [ ] Compare generated code with reference implementations
 - [ ] Handle advanced dataset operations
@@ -128,3 +127,13 @@ Checklist:
 - [ ] Provide CLI for running compiled Lua
 - [ ] Implement incremental compilation caching
 - [ ] Add automated regression tests for Lua compiler
+- [ ] Implement constant folding optimization
+- [ ] Integrate static analysis tools
+- [ ] Allow custom Lua module paths
+- [ ] Add debugging support with breakpoints
+- [ ] Support cross-compilation to LuaJIT
+- [ ] Document compiler internals for contributors
+- [ ] Provide VSCode extension for syntax highlighting
+- [ ] Add support for optional strict typing
+- [ ] Optimize tail-call elimination
+- [ ] Generate LuaDoc comments automatically
