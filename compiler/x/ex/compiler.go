@@ -1612,7 +1612,15 @@ func (c *Compiler) ensureStruct(st types.StructType) {
 	}
 	c.structs[st.Name] = st
 	var b strings.Builder
-	b.WriteString(fmt.Sprintf("defmodule %s do\n", sanitizeName(st.Name)))
+	modName := sanitizeName(st.Name)
+	b.WriteString(fmt.Sprintf("defmodule %s do\n", modName))
+	// emit @type t :: %__MODULE__{field: type, ...}
+	typeFields := make([]string, len(st.Order))
+	for i, f := range st.Order {
+		ft := c.typeSpec(st.Fields[f])
+		typeFields[i] = fmt.Sprintf("%s: %s", sanitizeName(f), ft)
+	}
+	b.WriteString("  @type t :: %__MODULE__{" + strings.Join(typeFields, ", ") + "}\n")
 	if len(st.Order) == 0 {
 		b.WriteString("  defstruct []\n")
 	} else {

@@ -1,9 +1,16 @@
 warning: default values for the optional arguments in _save/3 are never used
-  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:9
+    │
+  9 │   defp _save(data, path, opts \\ nil) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:9:8: Main (module)
 
 30,Alice
-25,Bobwarning: Jason.encode!/1 is undefined (module Jason is not available or is yet to be defined)
-Invalid call found at 3 locations:
-  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:21: Main._save/3
-  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:22: Main._save/3
-  /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:46: Main._to_csv/3
+25,Bob    warning: Jason.encode!/1 is undefined (module Jason is not available or is yet to be defined). Make sure the module name is correct and has been specified in full (or that an alias has been defined)
+    │
+ 21 │         "json" -> Jason.encode!(rows)
+    │                         ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:21:25: Main._save/3
+    └─ /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:46:52: Main._to_csv/3
+    └─ /workspace/mochi/tests/machine/x/ex/save_jsonl_stdout.exs:22:42: Main._save/3
