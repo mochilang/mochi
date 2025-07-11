@@ -1,35 +1,5 @@
 import java.util.*;
 public class GroupByConditionalSum {
-	static List<Map<String,Object>> items = new ArrayList<>(Arrays.asList(mapOfEntries(entry("cat", "a"), entry("val", 10), entry("flag", true)), mapOfEntries(entry("cat", "a"), entry("val", 5), entry("flag", false)), mapOfEntries(entry("cat", "b"), entry("val", 20), entry("flag", true))));
-	static List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res7 = new ArrayList<>();
-	Map<Object,List<Map<String,Object>>> _groups8 = new LinkedHashMap<>();
-	for (var i : items) {
-		var _row9 = i;
-		Object _key10 = ((Map)i).get("cat");
-		List<Map<String,Object>> _b11 = _groups8.get(_key10);
-		if (_b11 == null) { _b11 = new ArrayList<>(); _groups8.put(_key10, _b11); }
-		_b11.add(_row9);
-	}
-	for (var __e : _groups8.entrySet()) {
-		Object g_key = __e.getKey();
-		List<Map<String,Object>> g = __e.getValue();
-		_res7.add(mapOfEntries(entry("cat", g_key), entry("share", ((Number)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res12 = new ArrayList<>();
-	for (var x : g) {
-		_res12.add((((Map)x).get("flag") != null ? ((Map)x).get("val") : 0));
-	}
-	return _res12;
-}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue() / ((Number)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res13 = new ArrayList<>();
-	for (var x : g) {
-		_res13.add(((Map)x).get("val"));
-	}
-	return _res13;
-}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue())));
-	}
-	return _res7;
-}}).get();
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
 	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
 		LinkedHashMap<K,V> m = new LinkedHashMap<>();
@@ -37,6 +7,36 @@ public class GroupByConditionalSum {
 		return m;
 	}
 	public static void main(String[] args) {
+	List<Map<String,Object>> items = new ArrayList<>(Arrays.asList(mapOfEntries(entry("cat", "a"), entry("val", 10), entry("flag", true)), mapOfEntries(entry("cat", "a"), entry("val", 5), entry("flag", false)), mapOfEntries(entry("cat", "b"), entry("val", 20), entry("flag", true))));
+	List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res0 = new ArrayList<>();
+	Map<Object,List<Map<String,Object>>> _groups1 = new LinkedHashMap<>();
+	for (var i : items) {
+		var _row2 = i;
+		Object _key3 = ((Map)i).get("cat");
+		List<Map<String,Object>> _b4 = _groups1.get(_key3);
+		if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
+		_b4.add(_row2);
+	}
+	for (Map.Entry<Object,List<Map<String,Object>>> __e : _groups1.entrySet()) {
+		Object g_key = __e.getKey();
+		List<Map<String,Object>> g = __e.getValue();
+		_res0.add(mapOfEntries(entry("cat", g_key), entry("share", ((Number)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res5 = new ArrayList<>();
+	for (var x : g) {
+		_res5.add((((Map)x).get("flag") != null ? ((Map)x).get("val") : 0));
+	}
+	return _res5;
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue() / ((Number)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res6 = new ArrayList<>();
+	for (var x : g) {
+		_res6.add(((Map)x).get("val"));
+	}
+	return _res6;
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue())));
+	}
+	return _res0;
+}}).get();
 	System.out.println(result);
 	}
 }

@@ -18,8 +18,8 @@ class Person {
 	}
 }
 public class UpdateStmt {
-	static List<Person> people = Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 25, "unknown"), new Person("Charlie", 18, "unknown"), new Person("Diana", 16, "minor"));
 	public static void main(String[] args) {
+	List<Person> people = Arrays.asList(new Person("Alice", 17, "minor"), new Person("Bob", 25, "unknown"), new Person("Charlie", 18, "unknown"), new Person("Diana", 16, "minor"));
 	for (Person _it0 : people) {
 		if (!(_it0.age >= 18)) continue;
 		_it0.status = "adult";

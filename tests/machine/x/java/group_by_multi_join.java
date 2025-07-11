@@ -1,45 +1,5 @@
 import java.util.*;
 public class GroupByMultiJoin {
-	static List<Map<String,Object>> nations = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "A")), mapOfEntries(entry("id", 2), entry("name", "B"))));
-	static List<Map<String,Integer>> suppliers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("nation", 1)), mapOfEntries(entry("id", 2), entry("nation", 2))));
-	static List<Map<String,Object>> partsupp = new ArrayList<>(Arrays.asList(mapOfEntries(entry("part", 100), entry("supplier", 1), entry("cost", 10.000000), entry("qty", 2)), mapOfEntries(entry("part", 100), entry("supplier", 2), entry("cost", 20.000000), entry("qty", 1)), mapOfEntries(entry("part", 200), entry("supplier", 1), entry("cost", 5.000000), entry("qty", 3))));
-	static List<Map<String,Object>> filtered = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res7 = new ArrayList<>();
-	for (var ps : partsupp) {
-		for (var s : suppliers) {
-			if (!(Objects.equals(((Map)s).get("id"), ((Map)ps).get("supplier")))) continue;
-			for (var n : nations) {
-				if (!(Objects.equals(((Map)n).get("id"), ((Map)s).get("nation")))) continue;
-				if (!(Objects.equals(((Map)n).get("name"), "A"))) continue;
-				_res7.add(mapOfEntries(entry("part", ((Map)ps).get("part")), entry("value", ((Number)((Map)ps).get("cost")).doubleValue() * ((Number)((Map)ps).get("qty")).doubleValue())));
-			}
-		}
-	}
-	return _res7;
-}}).get();
-	static List<Map<String,Object>> grouped = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res8 = new ArrayList<>();
-	Map<Object,List<Map<String,Object>>> _groups9 = new LinkedHashMap<>();
-	for (var x : filtered) {
-		var _row10 = x;
-		Object _key11 = ((Map)x).get("part");
-		List<Map<String,Object>> _b12 = _groups9.get(_key11);
-		if (_b12 == null) { _b12 = new ArrayList<>(); _groups9.put(_key11, _b12); }
-		_b12.add(_row10);
-	}
-	for (var __e : _groups9.entrySet()) {
-		Object g_key = __e.getKey();
-		List<Map<String,Object>> g = __e.getValue();
-		_res8.add(mapOfEntries(entry("part", g_key), entry("total", (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res13 = new ArrayList<>();
-	for (var r : g) {
-		_res13.add(((Map)r).get("value"));
-	}
-	return _res13;
-}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum())));
-	}
-	return _res8;
-}}).get();
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
 	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
 		LinkedHashMap<K,V> m = new LinkedHashMap<>();
@@ -47,6 +7,46 @@ public class GroupByMultiJoin {
 		return m;
 	}
 	public static void main(String[] args) {
+	List<Map<String,Object>> nations = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "A")), mapOfEntries(entry("id", 2), entry("name", "B"))));
+	List<Map<String,Integer>> suppliers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("nation", 1)), mapOfEntries(entry("id", 2), entry("nation", 2))));
+	List<Map<String,Object>> partsupp = new ArrayList<>(Arrays.asList(mapOfEntries(entry("part", 100), entry("supplier", 1), entry("cost", 10.000000), entry("qty", 2)), mapOfEntries(entry("part", 100), entry("supplier", 2), entry("cost", 20.000000), entry("qty", 1)), mapOfEntries(entry("part", 200), entry("supplier", 1), entry("cost", 5.000000), entry("qty", 3))));
+	List<Map<String,Object>> filtered = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res0 = new ArrayList<>();
+	for (var ps : partsupp) {
+		for (var s : suppliers) {
+			if (!(Objects.equals(((Map)s).get("id"), ((Map)ps).get("supplier")))) continue;
+			for (var n : nations) {
+				if (!(Objects.equals(((Map)n).get("id"), ((Map)s).get("nation")))) continue;
+				if (!(Objects.equals(((Map)n).get("name"), "A"))) continue;
+				_res0.add(mapOfEntries(entry("part", ((Map)ps).get("part")), entry("value", ((Number)((Map)ps).get("cost")).doubleValue() * ((Number)((Map)ps).get("qty")).doubleValue())));
+			}
+		}
+	}
+	return _res0;
+}}).get();
+	List<Map<String,Object>> grouped = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res1 = new ArrayList<>();
+	Map<Object,List<Map<String,Object>>> _groups2 = new LinkedHashMap<>();
+	for (var x : filtered) {
+		var _row3 = x;
+		Object _key4 = ((Map)x).get("part");
+		List<Map<String,Object>> _b5 = _groups2.get(_key4);
+		if (_b5 == null) { _b5 = new ArrayList<>(); _groups2.put(_key4, _b5); }
+		_b5.add(_row3);
+	}
+	for (Map.Entry<Object,List<Map<String,Object>>> __e : _groups2.entrySet()) {
+		Object g_key = __e.getKey();
+		List<Map<String,Object>> g = __e.getValue();
+		_res1.add(mapOfEntries(entry("part", g_key), entry("total", (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res6 = new ArrayList<>();
+	for (var r : g) {
+		_res6.add(((Map)r).get("value"));
+	}
+	return _res6;
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum())));
+	}
+	return _res1;
+}}).get();
 	System.out.println(grouped);
 	}
 }

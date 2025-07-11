@@ -1,31 +1,5 @@
 import java.util.*;
 public class GroupItemsIteration {
-	static List<Map<String,Object>> data = new ArrayList<>(Arrays.asList(mapOfEntries(entry("tag", "a"), entry("val", 1)), mapOfEntries(entry("tag", "a"), entry("val", 2)), mapOfEntries(entry("tag", "b"), entry("val", 3))));
-	static List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res6 = new ArrayList<>();
-	Map<Object,List<Map<String,Object>>> _groups7 = new LinkedHashMap<>();
-	for (var d : data) {
-		var _row8 = d;
-		Object _key9 = ((Map)d).get("tag");
-		List<Map<String,Object>> _b10 = _groups7.get(_key9);
-		if (_b10 == null) { _b10 = new ArrayList<>(); _groups7.put(_key9, _b10); }
-		_b10.add(_row8);
-	}
-	for (var __e : _groups7.entrySet()) {
-		Object g_key = __e.getKey();
-		List<Map<String,Object>> g = __e.getValue();
-		_res6.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("key", g_key), Map.entry("items", g))));
-	}
-	return _res6;
-}}).get();
-	static List<Object> tmp = new ArrayList<>(Arrays.asList());
-	static List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res11 = new ArrayList<>();
-	for (var r : tmp) {
-		_res11.add(r);
-	}
-	return _res11;
-}}).get();
 	static <T> List<T> append(List<T> list, T item) {
 		List<T> res = new ArrayList<>(list);
 		res.add(item);
@@ -38,6 +12,25 @@ public class GroupItemsIteration {
 		return m;
 	}
 	public static void main(String[] args) {
+	List<Map<String,Object>> data = new ArrayList<>(Arrays.asList(mapOfEntries(entry("tag", "a"), entry("val", 1)), mapOfEntries(entry("tag", "a"), entry("val", 2)), mapOfEntries(entry("tag", "b"), entry("val", 3))));
+	List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res0 = new ArrayList<>();
+	Map<Object,List<Map<String,Object>>> _groups1 = new LinkedHashMap<>();
+	for (var d : data) {
+		var _row2 = d;
+		Object _key3 = ((Map)d).get("tag");
+		List<Map<String,Object>> _b4 = _groups1.get(_key3);
+		if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
+		_b4.add(_row2);
+	}
+	for (Map.Entry<Object,List<Map<String,Object>>> __e : _groups1.entrySet()) {
+		Object g_key = __e.getKey();
+		List<Map<String,Object>> g = __e.getValue();
+		_res0.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("key", g_key), Map.entry("items", g))));
+	}
+	return _res0;
+}}).get();
+	List<Object> tmp = new ArrayList<>(Arrays.asList());
 	for (Object g : groups) {
 		int total = 0;
 		for (Object x : (List)((Map)g).get("items")) {
@@ -45,6 +38,13 @@ public class GroupItemsIteration {
 		}
 		tmp = append(tmp, mapOfEntries(entry("tag", ((Map)g).get("key")), entry("total", total)));
 	}
+	List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+	List<Object> _res5 = new ArrayList<>();
+	for (var r : tmp) {
+		_res5.add(r);
+	}
+	return _res5;
+}}).get();
 	System.out.println(result);
 	}
 }

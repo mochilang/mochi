@@ -1,15 +1,15 @@
 import java.util.*;
 import java.util.function.*;
 public class MatchExpr {
-	static int x = 2;
-	static Object label = (new java.util.function.Supplier<String>(){public String get(){
-	var _t1 = x;
-	if (Objects.equals(_t1, 1)) return "one";
-	else if (Objects.equals(_t1, 2)) return "two";
-	else if (Objects.equals(_t1, 3)) return "three";
+	public static void main(String[] args) {
+	int x = 2;
+	Object label = (new java.util.function.Supplier<String>(){public String get(){
+	var _t0 = x;
+	if (Objects.equals(_t0, 1)) return "one";
+	else if (Objects.equals(_t0, 2)) return "two";
+	else if (Objects.equals(_t0, 3)) return "three";
 	return "unknown";
 }}).get();
-	public static void main(String[] args) {
 	System.out.println(label);
 	}
 }
