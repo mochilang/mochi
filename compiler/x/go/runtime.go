@@ -753,6 +753,28 @@ const (
 		"    for i, v := range src { items[i] = []any{v} }\n" +
 		"    for _, j := range joins {\n" +
 		"        if j.leftKey != nil && j.rightKey != nil {\n" +
+		"            if j.right && !j.left {\n" +
+		"                lmap := map[string][]int{}\n" +
+		"                for li, l := range items { key := fmt.Sprint(j.leftKey(l...)); lmap[key] = append(lmap[key], li) }\n" +
+		"                joined := [][]any{}\n" +
+		"                for _, right := range j.items {\n" +
+		"                    key := fmt.Sprint(j.rightKey(right))\n" +
+		"                    if is, ok := lmap[key]; ok {\n" +
+		"                        for _, li := range is {\n" +
+		"                            left := items[li]\n" +
+		"                            keep := true\n" +
+		"                            if j.on != nil { args := append(append([]any(nil), left...), right); keep = j.on(args...) }\n" +
+		"                            if !keep { continue }\n" +
+		"                            joined = append(joined, append(append([]any(nil), left...), right))\n" +
+		"                        }\n" +
+		"                    } else {\n" +
+		"                        undef := make([]any, len(items[0]))\n" +
+		"                        joined = append(joined, append(undef, right))\n" +
+		"                    }\n" +
+		"                }\n" +
+		"                items = joined\n" +
+		"                continue\n" +
+		"            }\n" +
 		"            rmap := map[string][]int{}\n" +
 		"            for ri, r := range j.items { key := fmt.Sprint(j.rightKey(r)); rmap[key] = append(rmap[key], ri) }\n" +
 		"            joined := [][]any{}\n" +
