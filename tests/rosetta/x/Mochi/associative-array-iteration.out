@@ -1,0 +1,9 @@
+key = !, value = 71
+key = hello, value = 13
+key = world, value = 31
+key = !
+key = hello
+key = world
+value = 71
+value = 13
+value = 31
