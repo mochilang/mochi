@@ -1,4 +1,3 @@
-import java.util.*;
 public class FunCall {
 	static int add(int a, int b) {
 		return a + b;

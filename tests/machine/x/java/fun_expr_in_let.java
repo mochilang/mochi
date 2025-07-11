@@ -1,4 +1,3 @@
-import java.util.*;
 import java.util.function.*;
 public class FunExprInLet {
 	static IntUnaryOperator square = x -> x * x;

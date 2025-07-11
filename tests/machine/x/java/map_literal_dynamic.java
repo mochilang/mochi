@@ -1,4 +1,3 @@
-import java.util.*;
 class MAB {
 	int a;
 	int b;

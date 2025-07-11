@@ -1,4 +1,3 @@
-import java.util.*;
 public class PureFold {
 	static int triple(int x) {
 		return x * 3;

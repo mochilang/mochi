@@ -1,4 +1,3 @@
-import java.util.*;
 class AB {
 	int a;
 	int b;

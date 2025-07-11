@@ -1,4 +1,4 @@
-import java.util.*;
+import java.util.function.*;
 class Tree {
 	static class Leaf extends Tree {}
 	static class Node extends Tree {
