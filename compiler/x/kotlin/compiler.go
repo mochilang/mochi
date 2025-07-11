@@ -482,7 +482,11 @@ func (c *Compiler) funDecl(f *parser.FunStmt) error {
 	if f.Return != nil {
 		ret = c.typeName(f.Return)
 	}
-	c.writeln(fmt.Sprintf("fun %s(%s): %s {", f.Name, strings.Join(params, ", "), ret))
+	prefix := ""
+	if isTailRecursive(f) {
+		prefix = "tailrec "
+	}
+	c.writeln(fmt.Sprintf("%sfun %s(%s): %s {", prefix, f.Name, strings.Join(params, ", "), ret))
 	oldEnv := c.env
 	c.env = types.NewEnv(c.env)
 	for _, p := range f.Params {
@@ -2177,6 +2181,37 @@ func isStringType(t types.Type) bool {
 func isAnyType(t types.Type) bool {
 	_, ok := t.(types.AnyType)
 	return ok
+}
+
+// isSelfCall reports whether e is a call expression invoking the function
+// named name with no additional operations.
+func isSelfCall(e *parser.Expr, name string) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return false
+	}
+	return p.Target.Call.Func == name
+}
+
+// isTailRecursive checks for the simple pattern where the last statement of
+// the function body is `return f(...)` and marks the function eligible for
+// Kotlin's `tailrec` modifier.
+func isTailRecursive(f *parser.FunStmt) bool {
+	if len(f.Body) == 0 {
+		return false
+	}
+	last := f.Body[len(f.Body)-1]
+	if last.Return == nil {
+		return false
+	}
+	return isSelfCall(last.Return.Value, f.Name)
 }
 
 // builtinImport emits Kotlin equivalents for certain foreign imports.
