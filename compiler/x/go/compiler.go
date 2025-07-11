@@ -2058,8 +2058,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					val = fmt.Sprintf("%s[%s]", val, keyExpr)
 					typ = tt.Value
 				case types.StringType:
-					c.use("_indexString")
-					val = fmt.Sprintf("_indexString(%s, %s)", val, key)
+					val = fmt.Sprintf("string([]rune(%s)[%s])", val, key)
 					typ = types.StringType{}
 				default:
 					return "", fmt.Errorf("cannot index into type %s", typ)
@@ -2091,8 +2090,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if idx.End == nil {
 						end = fmt.Sprintf("len([]rune(%s))", val)
 					}
-					c.use("_sliceString")
-					val = fmt.Sprintf("_sliceString(%s, %s, %s)", val, start, end)
+					val = fmt.Sprintf("string([]rune(%s)[%s:%s])", val, start, end)
 				default:
 					if idx.End == nil {
 						end = fmt.Sprintf("len(%s)", val)
@@ -4057,8 +4055,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
-		c.use("_sliceString")
-		return fmt.Sprintf("_sliceString(%s)", argStr), nil
+		return fmt.Sprintf("string([]rune(%s)[%s:%s])", args[0], args[1], args[2]), nil
 	case "avg":
 		if len(call.Args) == 1 {
 			at := c.inferExprType(call.Args[0])
