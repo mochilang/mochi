@@ -29,8 +29,8 @@ class PartsuppCostPartQtySupplier {
 }
 class FilteredPartValue {
 	int part;
-	int value;
-	FilteredPartValue(int part, int value) {
+	double value;
+	FilteredPartValue(int part, double value) {
 		this.part = part;
 		this.value = value;
 	}
@@ -74,8 +74,8 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		int g_key = __e.getKey();
 		List<FilteredPartValue> g = __e.getValue();
-		_res8.add(new GroupedPartTotal(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-	List<Integer> _res13 = new ArrayList<>();
+		_res8.add(new GroupedPartTotal(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+	List<Double> _res13 = new ArrayList<>();
 	for (var r : g) {
 		_res13.add(r.value);
 	}
