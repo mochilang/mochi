@@ -1,0 +1,38 @@
+fun cart2(a: list<int>, b: list<int>): list<list<int>> {
+  var p: list<list<int>> = []
+  for x in a {
+    for y in b {
+      p = append(p, [x, y])
+    }
+  }
+  return p
+}
+
+fun llStr(lst: list<list<int>>): string {
+  var s = "["
+  var i = 0
+  while i < len(lst) {
+    var row = lst[i]
+    s = s + "["
+    var j = 0
+    while j < len(row) {
+      s = s + str(row[j])
+      if j < len(row) - 1 { s = s + " " }
+      j = j + 1
+    }
+    s = s + "]"
+    if i < len(lst) - 1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  print(llStr(cart2([1,2], [3,4])))
+  print(llStr(cart2([3,4], [1,2])))
+  print(llStr(cart2([1,2], [])))
+  print(llStr(cart2([], [1,2])))
+}
+
+main()
