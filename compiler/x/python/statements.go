@@ -215,10 +215,18 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
 				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
-				if needsTyping(typStr) {
-					c.imports["typing"] = "typing"
+				if c.typeHints {
+					if c.typeHints {
+						if needsTyping(typStr) {
+							c.imports["typing"] = "typing"
+						}
+						value = typStr
+					} else {
+						value = "{}"
+					}
+				} else {
+					value = "{}"
 				}
-				value = typStr
 			}
 		}
 		if value == "None" {
@@ -248,12 +256,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	}
 	explicit := s.Type != nil
 	useAnn := explicit
-	if useAnn {
+	if useAnn && c.typeHints {
 		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
 		if needsTyping(typStr) {
 			c.imports["typing"] = "typing"
 		}
 		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
+	} else if useAnn {
+		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	} else {
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	}
@@ -287,10 +297,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
 				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
-				if needsTyping(typStr) {
-					c.imports["typing"] = "typing"
+				if c.typeHints {
+					if needsTyping(typStr) {
+						c.imports["typing"] = "typing"
+					}
+					value = typStr
+				} else {
+					value = "{}"
 				}
-				value = typStr
 			}
 		}
 		if value == "None" {
@@ -319,11 +333,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if s.Type != nil {
-		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
-		if needsTyping(typStr) {
-			c.imports["typing"] = "typing"
+		if c.typeHints {
+			typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
+			if needsTyping(typStr) {
+				c.imports["typing"] = "typing"
+			}
+			c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
+		} else {
+			c.writeln(fmt.Sprintf("%s = %s", name, value))
 		}
-		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	} else {
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	}
@@ -378,10 +396,14 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
 				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
-				if needsTyping(typStr) {
-					c.imports["typing"] = "typing"
+				if c.typeHints {
+					if needsTyping(typStr) {
+						c.imports["typing"] = "typing"
+					}
+					value = typStr
+				} else {
+					value = "{}"
 				}
-				value = typStr
 			}
 		}
 	}
@@ -629,7 +651,7 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 			}
 		}
 	}
-	if needTyping {
+	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
 	return nil
@@ -654,10 +676,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			} else {
 				for _, f := range v.Fields {
 					typStr := pyType(c.namedType(c.resolveTypeRef(f.Type)))
-					if needsTyping(typStr) {
-						needTyping = true
+					if c.typeHints {
+						if needsTyping(typStr) {
+							needTyping = true
+						}
+						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
+					} else {
+						c.writeln(sanitizeName(f.Name))
 					}
-					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
 				}
 			}
 			c.indent--
@@ -686,10 +712,14 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			for _, m := range t.Members {
 				if m.Field != nil {
 					typStr := pyType(c.namedType(c.resolveTypeRef(m.Field.Type)))
-					if needsTyping(typStr) {
-						needTyping = true
+					if c.typeHints {
+						if needsTyping(typStr) {
+							needTyping = true
+						}
+						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
+					} else {
+						c.writeln(sanitizeName(m.Field.Name))
 					}
-					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
 				}
 			}
 			for _, m := range t.Members {
@@ -703,7 +733,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		c.indent--
 	}
-	if needTyping {
+	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
 	return nil
@@ -924,11 +954,13 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
-			typStr := pyType(c.namedType(typ))
-			if needsTyping(typStr) {
-				needTyping = true
+			if c.typeHints {
+				typStr := pyType(c.namedType(typ))
+				if needsTyping(typStr) {
+					needTyping = true
+				}
+				c.buf.WriteString(": " + typStr)
 			}
-			c.buf.WriteString(": " + typStr)
 		} else {
 			typ = types.AnyType{}
 		}
@@ -940,10 +972,14 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	} else if fun.Return != nil {
 		retType = pyType(c.namedType(c.resolveTypeRef(fun.Return)))
 	}
-	if needsTyping(retType) {
+	if c.typeHints && needsTyping(retType) {
 		needTyping = true
 	}
-	c.buf.WriteString(") -> " + retType + ":\n")
+	if c.typeHints {
+		c.buf.WriteString(") -> " + retType + ":\n")
+	} else {
+		c.buf.WriteString("):\n")
+	}
 	child := types.NewEnv(c.env)
 	for i, p := range fun.Params {
 		if i < len(paramTypes) {
@@ -969,6 +1005,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	origEnv := c.env
 	c.env = child
 	c.indent++
+	c.writeln(fmt.Sprintf("\"\"\"%s.\"\"\"", name))
 	for _, n := range nonlocals {
 		c.writeln("nonlocal " + n)
 	}
@@ -980,7 +1017,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	}
 	c.indent--
 	c.env = origEnv
-	if needTyping {
+	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
 	return nil
@@ -1072,11 +1109,13 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 			typ = c.resolveTypeRef(p.Type)
 		}
 		if typ != nil {
-			typStr := pyType(c.namedType(typ))
-			if needsTyping(typStr) {
-				needTyping = true
+			if c.typeHints {
+				typStr := pyType(c.namedType(typ))
+				if needsTyping(typStr) {
+					needTyping = true
+				}
+				c.buf.WriteString(": " + typStr)
 			}
-			c.buf.WriteString(": " + typStr)
 		} else {
 			typ = types.AnyType{}
 		}
@@ -1088,10 +1127,14 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 	} else if fun.Return != nil {
 		retType = pyType(c.namedType(c.resolveTypeRef(fun.Return)))
 	}
-	if needsTyping(retType) {
+	if c.typeHints && needsTyping(retType) {
 		needTyping = true
 	}
-	c.buf.WriteString(") -> " + retType + ":\n")
+	if c.typeHints {
+		c.buf.WriteString(") -> " + retType + ":\n")
+	} else {
+		c.buf.WriteString("):\n")
+	}
 	child := types.NewEnv(env)
 	if c.env != nil {
 		if st, ok := c.env.GetStruct(structName); ok {
@@ -1109,6 +1152,7 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 	orig := c.env
 	c.env = child
 	c.indent++
+	c.writeln(fmt.Sprintf("\"\"\"%s.%s\"\"\"", structName, name))
 	for _, s := range fun.Body {
 		if err := c.compileStmt(s); err != nil {
 			c.env = orig
@@ -1119,7 +1163,7 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 	c.indent--
 	c.env = orig
 	c.methodFields = nil
-	if needTyping {
+	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
 	return nil

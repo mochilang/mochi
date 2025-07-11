@@ -35,6 +35,7 @@ type Compiler struct {
 	autoStructs  map[string]types.StructType
 	structKeys   map[string]string
 	autoCount    int
+	typeHints    bool
 }
 
 func New(env *types.Env) *Compiler {
@@ -53,7 +54,13 @@ func New(env *types.Env) *Compiler {
 		autoStructs:  make(map[string]types.StructType),
 		structKeys:   make(map[string]string),
 		autoCount:    0,
+		typeHints:    true,
 	}
+}
+
+// SetTypeHints enables or disables type annotations in generated code.
+func (c *Compiler) SetTypeHints(v bool) {
+	c.typeHints = v
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -180,10 +187,14 @@ func (c *Compiler) emitAutoStructs() {
 		} else {
 			for _, f := range st.Order {
 				typStr := pyType(c.namedType(st.Fields[f]))
-				if needsTyping(typStr) {
-					c.imports["typing"] = "typing"
+				if c.typeHints {
+					if needsTyping(typStr) {
+						c.imports["typing"] = "typing"
+					}
+					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
+				} else {
+					c.writeln(sanitizeName(f))
 				}
-				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
 			}
 		}
 		c.indent--

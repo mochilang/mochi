@@ -115,3 +115,13 @@ Compiled programs: 100/100 successful.
 - [ ] Expand test coverage for edge cases
 - [ ] Reduce external module dependencies
 - [ ] Document compiler flags and environment setup
+- [ ] Add concurrency support
+- [ ] Provide CLI for custom output directory
+- [ ] Implement caching for compiled modules
+- [ ] Support incremental compilation
+- [ ] Add logging for compiler phases
+- [ ] Enhance error messages with line numbers
+- [ ] Provide option to suppress runtime imports
+- [ ] Add plugin architecture for new targets
+- [ ] Provide integration tests with dataset examples
+- [ ] Document embedding compiled code in larger projects
