@@ -32,7 +32,7 @@ const result = (() => {
 });
     }
   }
-  return res;
+  return _tmp1;
 })()
 ;
 console.log("--- Cross Join: All order-customer pairs ---");

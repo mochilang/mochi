@@ -1,6 +1,6 @@
 # Machine-generated TypeScript Programs
 
-This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler. The compiler now emits simpler `from` query loops with explicit result types and generates type annotations for variables without initial values.
+This directory contains TypeScript code compiled from Mochi programs in `tests/vm/valid` using the experimental compiler. The compiler generates simpler `from` query loops and adds basic type annotations for query results.
 
 ## Progress
 
@@ -108,9 +108,11 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
 ## Remaining Tasks
 
 - Integrate with Node runtime for dataset queries and joins
 - Support asynchronous `fetch` statements
 - Finish improving formatting to match human examples
 - Improve type inference for query results
+
