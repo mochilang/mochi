@@ -1,0 +1,30 @@
+// Demonstrate boolean values and basic comparisons in Mochi
+fun parseBool(s: string): bool {
+  let l = lower(s)
+  if l == "1" || l == "t" || l == "true" || l == "yes" || l == "y" {
+    return true
+  }
+  return false
+}
+
+fun main() {
+  var n = true
+  print(n)
+  print("bool")
+  n = !n
+  print(n)
+
+  let x = 5
+  let y = 8
+  print("x == y:", x == y)
+  print("x < y:", x < y)
+
+  print("\nConvert String into Boolean Data type\n")
+  let str1 = "japan"
+  print("Before :", "string")
+  let bolStr = parseBool(str1)
+  // value not printed, just show resulting type
+  print("After :", "bool")
+}
+
+main()
