@@ -1,6 +1,17 @@
-// Placeholder for gif.Encode example; Mochi has no GIF library.
+// Mochi translation of Rosetta "Call a function" task variant 4.
+// The original Go example calls gif.Encode with a struct literal
+// parameter.  Mochi doesn't provide an image or GIF library, so we
+// simulate the call with a stub function that accepts the same types
+// of arguments.
+
+fun gifEncode(out: any, img: any, opts: map<string,int>) {
+  // pretend to encode a GIF using the options provided
+}
+
 fun main() {
-  // Would call gif.Encode here
+  var opts: map<string,int> = {}
+  opts["NumColors"] = 16
+  gifEncode(null, null, opts)
 }
 
 main()
