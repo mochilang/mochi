@@ -1,0 +1,79 @@
+// Mochi translation of Rosetta "Ackermann function" task using big integers
+
+// exponentiation by squaring for bigints
+fun pow_big(base: bigint, exp: int): bigint {
+  var result: bigint = 1
+  var b: bigint = base
+  var e = exp
+  while e > 0 {
+    if e % 2 == 1 { result = result * b }
+    b = b * b
+    e = (e / 2) as int
+  }
+  return result
+}
+
+fun bit_len(x: bigint): int {
+  var n: bigint = x
+  var c = 0
+  while n > 0 {
+    n = n / 2
+    c = c + 1
+  }
+  return c
+}
+
+var err = ""
+
+fun ackermann2(m: bigint, n: bigint): bigint {
+  if err != "" { return 0 as bigint }
+  if m <= 3 {
+    let mi = int(m)
+    if mi == 0 { return n + 1 }
+    if mi == 1 { return n + 2 }
+    if mi == 2 { return 2 * n + 3 }
+    if mi == 3 {
+      let nb = bit_len(n)
+      if nb > 64 {
+        err = "A(m,n) had n of " + str(nb) + " bits; too large"
+        return 0 as bigint
+      }
+      let r = pow_big(2 as bigint, int(n))
+      return 8 * r - 3
+    }
+  }
+  if bit_len(n) == 0 {
+    return ackermann2(m - 1, 1 as bigint)
+  }
+  return ackermann2(m - 1, ackermann2(m, n - 1))
+}
+
+fun show(m: int, n: int) {
+  err = ""
+  let res = ackermann2(m as bigint, n as bigint)
+  if err != "" {
+    print("A(" + str(m) + ", " + str(n) + ") = Error: " + err)
+    return
+  }
+  if bit_len(res) <= 256 {
+    print("A(" + str(m) + ", " + str(n) + ") = " + str(res))
+  } else {
+    let s = str(res)
+    let pre = substring(s, 0, 20)
+    let suf = substring(s, len(s)-20, len(s))
+    print("A(" + str(m) + ", " + str(n) + ") = " + str(len(s)) + " digits starting/ending with: " + pre + "..." + suf)
+  }
+}
+
+fun main() {
+  show(0, 0)
+  show(1, 2)
+  show(2, 4)
+  show(3, 100)
+  show(3, 1000000)
+  show(4, 1)
+  show(4, 2)
+  show(4, 3)
+}
+
+main()
