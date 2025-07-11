@@ -109,3 +109,4 @@ Checklist:
 
 ## Remaining work
 - [x] Improve automatic class generation for complex nested structures
+- [ ] Refine struct field type inference to remove remaining dynamic fields
