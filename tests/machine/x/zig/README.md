@@ -108,7 +108,7 @@ Compiled programs: 100/100
 
 ## Remaining Tasks
 
-- Keep generated outputs in sync with compiler improvements.
+- [x] Keep generated outputs in sync with compiler improvements.
 - [x] Add more idiomatic mappings for built-in functions (e.g. string concatenation).
 - [x] Improve idiomatic mappings for Zig built-ins.
 - [x] Generate named structs from constant map literals for readability.
