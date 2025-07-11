@@ -1,7 +1,0 @@
-run: exit status 1
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/order_by_map.py", line 27, in <module>
-    for x in sorted(
-             ^^^^^^^
-TypeError: '<' not supported between instances of 'Auto1' and 'Auto1'
-

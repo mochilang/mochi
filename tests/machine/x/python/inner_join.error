@@ -1,8 +1,0 @@
-run: exit status 1
---- Orders with customer info ---
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/inner_join.py", line 119, in <module>
-    print("Order", entry["orderId"], "by", entry["customerName"], "- $", entry["total"])
-                   ~~~~~^^^^^^^^^^^
-TypeError: 'Auto1' object is not subscriptable
-
