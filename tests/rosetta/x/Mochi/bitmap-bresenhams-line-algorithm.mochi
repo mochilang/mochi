@@ -1,0 +1,50 @@
+# Mochi implementation of Bresenham's line algorithm
+
+fun absi(x: int): int {
+  if x < 0 { return -x }
+  return x
+}
+
+type Point {
+  x: int
+  y: int
+}
+
+fun bresenham(x0: int, y0: int, x1: int, y1: int): list<Point> {
+  var dx = absi(x1 - x0)
+  var dy = absi(y1 - y0)
+  var sx = -1
+  if x0 < x1 { sx = 1 }
+  var sy = -1
+  if y0 < y1 { sy = 1 }
+  var err = dx - dy
+  var pts: list<Point> = []
+  while true {
+    pts = append(pts, Point{x: x0, y: y0})
+    if x0 == x1 && y0 == y1 {
+      break
+    }
+    var e2 = 2 * err
+    if e2 > -dy {
+      err = err - dy
+      x0 = x0 + sx
+    }
+    if e2 < dx {
+      err = err + dx
+      y0 = y0 + sy
+    }
+  }
+  return pts
+}
+
+fun main() {
+  let pts = bresenham(0, 0, 6, 4)
+  var i = 0
+  while i < len(pts) {
+    let p = pts[i]
+    print("(" + str(p.x) + "," + str(p.y) + ")")
+    i = i + 1
+  }
+}
+
+main()
