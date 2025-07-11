@@ -132,12 +132,12 @@ func (c *Compiler) writeIndent() {
 }
 
 func (c *Compiler) newTemp() string {
-        return c.newTempPrefix("tmp")
+	return c.newTempPrefix("tmp")
 }
 
 func (c *Compiler) newTempPrefix(prefix string) string {
-        c.tmp++
-        return fmt.Sprintf("%s%d", prefix, c.tmp)
+	c.tmp++
+	return fmt.Sprintf("%s%d", prefix, c.tmp)
 }
 
 func (c *Compiler) need(key string) {
@@ -707,7 +707,7 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 }
 
 func (c *Compiler) compileStructType(st types.StructType) {
-	name := sanitizeName(st.Name)
+	name := sanitizeTypeName(st.Name)
 	if c.structs[name] {
 		return
 	}
@@ -748,7 +748,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileStructListType(st types.StructType) {
-	listName := "list_" + sanitizeName(st.Name)
+	listName := "list_" + sanitizeTypeName(st.Name)
 	if c.listStructs[listName] {
 		return
 	}
@@ -758,12 +758,12 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		oldIndent := c.indent
 		c.buf = bytes.Buffer{}
 		c.indent = 0
-		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
 		c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
 		c.indent++
 		c.writeln(fmt.Sprintf("%s l;", listName))
 		c.writeln("l.len = len;")
-		c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+		c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeTypeName(st.Name)))
 		c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 		c.writeln("return l;")
 		c.indent--
@@ -773,12 +773,12 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		c.indent = oldIndent
 		return
 	}
-	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeName(st.Name), listName))
+	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
 	c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s l;", listName))
 	c.writeln("l.len = len;")
-	c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeName(st.Name)))
+	c.writeln(fmt.Sprintf("l.data = calloc(len, sizeof(%s));", sanitizeTypeName(st.Name)))
 	c.writeln("if (!l.data && len > 0) { fprintf(stderr, \"alloc failed\\n\"); exit(1); }")
 	c.writeln("return l;")
 	c.indent--
@@ -795,10 +795,10 @@ func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
 	oldIndent := c.indent
 	c.buf = bytes.Buffer{}
 	c.indent = 0
-	c.writeln(fmt.Sprintf("static %s %s(const char* url, void* opts){", sanitizeName(st.Name), name))
+	c.writeln(fmt.Sprintf("static %s %s(const char* url, void* opts){", sanitizeTypeName(st.Name), name))
 	c.indent++
 	c.writeln("map_string row = _fetch(url, opts);")
-	c.writeln(fmt.Sprintf("%s out;", sanitizeName(st.Name)))
+	c.writeln(fmt.Sprintf("%s out;", sanitizeTypeName(st.Name)))
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
 		field := sanitizeName(fn)
@@ -1220,7 +1220,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := c.structLits[ml]; ok {
-							typ = "list_" + sanitizeName(st.Name)
+							typ = "list_" + sanitizeTypeName(st.Name)
 							t = types.ListType{Elem: st}
 						}
 					}
@@ -1232,7 +1232,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 				if ml := asMapLiteral(q.Select); ml != nil {
 					if st, ok := c.structLits[ml]; ok {
-						typ = "list_" + sanitizeName(st.Name)
+						typ = "list_" + sanitizeTypeName(st.Name)
 						t = types.ListType{Elem: st}
 					}
 				}
@@ -2680,6 +2680,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 			val := c.compileExpr(q.Select)
 			retT := c.exprType(q.Select)
+			if ml := asMapLiteral(q.Select); ml != nil {
+				if st, ok := c.structLits[ml]; ok {
+					retT = st
+				}
+			}
 			retList := types.ListType{Elem: retT}
 			listC := cTypeFromType(retList)
 			if listC == "list_string" {
@@ -2728,6 +2733,127 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.writeln("}")
 			c.indent--
 			c.writeln("}")
+			c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+			if c.env != nil {
+				c.env = oldEnv
+			}
+			return res
+		}
+		if j.Side != nil && *j.Side == "outer" {
+			leftExpr := c.compileExpr(q.Source)
+			leftT := c.exprType(q.Source)
+			leftLt, ok := leftT.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			rightExpr := c.compileExpr(j.Src)
+			rightT := c.exprType(j.Src)
+			rightLt, ok := rightT.(types.ListType)
+			if !ok {
+				return "0"
+			}
+			joinOn := c.compileExpr(j.On)
+
+			oldEnv := c.env
+			if c.env != nil {
+				c.env = types.NewEnv(c.env)
+				c.env.SetVar(j.Var, rightLt.Elem, true)
+				c.env.SetVar(q.Var, leftLt.Elem, true)
+			}
+
+			var cond string
+			if q.Where != nil {
+				cond = c.compileExpr(q.Where)
+			}
+
+			if ml := asMapLiteral(q.Select); ml != nil {
+				if _, ok := c.structLits[ml]; !ok {
+					if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+						c.structLits[ml] = st
+						c.compileStructType(st)
+						c.compileStructListType(st)
+					}
+				}
+			}
+
+			val := c.compileExpr(q.Select)
+			retT := c.exprType(q.Select)
+			if ml := asMapLiteral(q.Select); ml != nil {
+				if st, ok := c.structLits[ml]; ok {
+					retT = st
+				}
+			}
+			retList := types.ListType{Elem: retT}
+			listC := cTypeFromType(retList)
+			if listC == "list_string" {
+				c.need(needListString)
+			} else if listC == "list_float" {
+				c.need(needListFloat)
+			} else if listC == "list_list_int" {
+				c.need(needListListInt)
+			}
+
+			res := c.newTemp()
+			idx := c.newTemp()
+			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len * %s.len + %s.len + %s.len);", listC, res, listC, leftExpr, rightExpr, leftExpr, rightExpr))
+			c.writeln(fmt.Sprintf("int %s = 0;", idx))
+			leftMatched := c.newTemp()
+			rightMatched := c.newTemp()
+			c.writeln(fmt.Sprintf("int *%s = calloc(%s.len, sizeof(int));", leftMatched, leftExpr))
+			c.writeln(fmt.Sprintf("int *%s = calloc(%s.len, sizeof(int));", rightMatched, rightExpr))
+			iterL := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			iterR := c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.indent++
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", joinOn))
+			c.writeln(fmt.Sprintf("%s[%s] = 1;", leftMatched, iterL))
+			c.writeln(fmt.Sprintf("%s[%s] = 1;", rightMatched, iterR))
+			if cond != "" {
+				c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+			}
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+			c.writeln(fmt.Sprintf("%s++;", idx))
+			c.indent--
+			c.writeln("}")
+			c.indent--
+			c.writeln("}")
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.indent++
+			c.writeln(fmt.Sprintf("if (%s[%s]) continue;", leftMatched, iterL))
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), defaultCValue(rightLt.Elem)))
+			if cond != "" {
+				c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
+				c.indent++
+				c.writeln("}")
+				c.indent--
+			}
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+			c.writeln(fmt.Sprintf("%s++;", idx))
+			c.indent--
+			c.writeln("}")
+			iterR = c.newTemp()
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.indent++
+			c.writeln(fmt.Sprintf("if (%s[%s]) continue;", rightMatched, iterR))
+			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), defaultCValue(leftLt.Elem)))
+			if cond != "" {
+				c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
+				c.indent++
+				c.writeln("}")
+				c.indent--
+			}
+			c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+			c.writeln(fmt.Sprintf("%s++;", idx))
+			c.indent--
+			c.writeln("}")
+			c.writeln(fmt.Sprintf("free(%s);", leftMatched))
+			c.writeln(fmt.Sprintf("free(%s);", rightMatched))
 			c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
 			if c.env != nil {
 				c.env = oldEnv
@@ -3642,7 +3768,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				val := c.compileExpr(it.Value)
 				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
 			}
-			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
 	}
 
@@ -3766,7 +3892,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					val := c.compileExpr(it.Value)
 					parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
 				}
-				expr = fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+				expr = fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 				isStr = false
 				isFloatList = false
 				isStringList = false
@@ -3969,21 +4095,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
-					listName := "list_" + sanitizeName(st.Name)
+					listName := "list_" + sanitizeTypeName(st.Name)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
 						vals[i] = c.compileExpr(el)
 					}
 					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
 				stName := sl.Name
 				if st, ok := c.env.GetStruct(stName); ok {
-					listName := "list_" + sanitizeName(st.Name)
+					listName := "list_" + sanitizeTypeName(st.Name)
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
@@ -3991,7 +4117,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						vals[i] = c.compileExpr(el)
 					}
 					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeName(st.Name), data, strings.Join(vals, ", ")))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
 					return name
 				}
@@ -4017,7 +4143,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				v := c.compileExpr(it.Value)
 				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
 			}
-			return fmt.Sprintf("(%s){%s}", sanitizeName(st.Name), strings.Join(parts, ", "))
+			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
 		name := c.newTemp()
 		if isMapStringIntLiteral(p.Map, c.env) {

@@ -1,35 +1,31 @@
-line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/outer_join.c:94:9: error: used struct type value where scalar is required
-   94 |     if (row.order) {
+tests/machine/x/c/outer_join.c: In function ‘main’:
+tests/machine/x/c/outer_join.c:117:9: error: used struct type value where scalar is required
+  117 |     if (row.order) {
       |         ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:95:11: error: used struct type value where scalar is required
-   95 |       if (row.customer) {
+tests/machine/x/c/outer_join.c:118:11: error: used struct type value where scalar is required
+  118 |       if (row.customer) {
       |           ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:97:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
-   97 |         printf("%.16g ", row.order.id);
+tests/machine/x/c/outer_join.c:120:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  120 |         printf("%.16g ", row.order.id);
       |                 ~~~~^    ~~~~~~~~~~~~
       |                     |             |
       |                     double        int
       |                 %.16d
-/workspace/mochi/tests/machine/x/c/outer_join.c:101:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
-  101 |         printf("%.16g\n", row.order.total);
+tests/machine/x/c/outer_join.c:124:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  124 |         printf("%.16g\n", row.order.total);
       |                 ~~~~^     ~~~~~~~~~~~~~~~
       |                     |              |
       |                     double         int
       |                 %.16d
-/workspace/mochi/tests/machine/x/c/outer_join.c:104:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
-  104 |         printf("%.16g ", row.order.id);
+tests/machine/x/c/outer_join.c:127:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  127 |         printf("%.16g ", row.order.id);
       |                 ~~~~^    ~~~~~~~~~~~~
       |                     |             |
       |                     double        int
       |                 %.16d
-/workspace/mochi/tests/machine/x/c/outer_join.c:108:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
-  108 |         printf("%.16g\n", row.order.total);
+tests/machine/x/c/outer_join.c:131:21: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘int’ [-Wformat=]
+  131 |         printf("%.16g\n", row.order.total);
       |                 ~~~~^     ~~~~~~~~~~~~~~~
       |                     |              |
       |                     double         int
       |                 %.16d
-
-   1: #include <stdio.h>
