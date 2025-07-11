@@ -1815,10 +1815,24 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = oldEnv
 				return "", err
 			}
-			expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
+			if q.Sort != nil {
+				// sort before projecting so sort key can reference original record
+				base := fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), q.Var)
+				c.inSort = true
+				key, err := c.compileExpr(q.Sort)
+				c.inSort = false
+				if err != nil {
+					c.env = oldEnv
+					return "", err
+				}
+				expr = fmt.Sprintf("(%s).sortBy(%s => %s).map(%s => %s)", base, q.Var, key, q.Var, sel)
+			} else {
+				expr = fmt.Sprintf("for { %s } yield %s", strings.Join(parts, "; "), sel)
+			}
 		}
 	}
-	if q.Sort != nil && q.Group == nil {
+	if q.Sort != nil && q.Group == nil && expr != "" && !strings.Contains(expr, ".sortBy(") {
+		// handles queries where sort is specified but select clause triggered early exit
 		c.inSort = true
 		key, err := c.compileExpr(q.Sort)
 		c.inSort = false
