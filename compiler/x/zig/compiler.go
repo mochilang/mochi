@@ -1995,8 +1995,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 
 		if opName == "+" {
 			if left.isStr || right.isStr {
-				c.needsConcatString = true
-				expr = fmt.Sprintf("_concat_string(%s, %s)", left.expr, right.expr)
+				if c.isStringLiteralUnary(left.unary) && c.isStringLiteralPostfix(right.postfix) {
+					lit1 := *left.unary.Value.Target.Lit.Str
+					lit2 := *right.postfix.Target.Lit.Str
+					expr = strconv.Quote(lit1 + lit2)
+				} else {
+					c.needsConcatString = true
+					expr = fmt.Sprintf("_concat_string(%s, %s)", left.expr, right.expr)
+				}
 				isStr = true
 				return operand{expr: expr, isStr: true}, nil
 			}
@@ -3127,6 +3133,20 @@ func (c *Compiler) isStringLiteralExpr(e *parser.Expr) bool {
 		return false
 	}
 	return u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil
+}
+
+func (c *Compiler) isStringLiteralUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) > 0 {
+		return false
+	}
+	return c.isStringLiteralPostfix(u.Value)
+}
+
+func (c *Compiler) isStringLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) > 0 || p.Target == nil {
+		return false
+	}
+	return p.Target.Lit != nil && p.Target.Lit.Str != nil
 }
 
 func (c *Compiler) isMapExpr(e *parser.Expr) bool {
