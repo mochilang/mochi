@@ -1,3 +1,5 @@
+// Mochi implementation of Rosetta "4 rings or 4 squares" puzzle
+
 fun validComb(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
   let square1 = a + b
   let square2 = b + c + d
