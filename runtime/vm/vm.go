@@ -3190,16 +3190,36 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		nameVal := fc.freshConst(p.Pos, Value{Tag: ValueStr, Str: p.Struct.Name})
 		regs[0] = nameKey
 		regs[1] = nameVal
+		fieldRegs := make(map[string]int)
 		for i, f := range p.Struct.Fields {
 			kreg := fc.freshConst(f.Pos, Value{Tag: ValueStr, Str: f.Name})
 			vreg := fc.newReg()
 			fc.emit(f.Pos, Instr{Op: OpMove, A: vreg, B: vals[i]})
 			regs[i*2+2] = kreg
 			regs[i*2+3] = vreg
+			fieldRegs[f.Name] = vreg
+		}
+		// attach methods as closures capturing field values
+		if st, ok := fc.comp.env.GetStruct(p.Struct.Name); ok {
+			for _, m := range st.Methods {
+				idx := fc.comp.fnIndex[st.Name+"."+m.Decl.Name]
+				caps := make([]int, len(st.Order))
+				for i, name := range st.Order {
+					caps[i] = fieldRegs[name]
+				}
+				startCap := 0
+				if len(caps) > 0 {
+					startCap = caps[0]
+				}
+				clReg := fc.newReg()
+				fc.emit(p.Pos, Instr{Op: OpMakeClosure, A: clReg, B: idx, C: len(caps), D: startCap})
+				kreg := fc.freshConst(m.Decl.Pos, Value{Tag: ValueStr, Str: m.Decl.Name})
+				regs = append(regs, kreg, clReg)
+			}
 		}
 		dst := fc.newReg()
 		start := regs[0]
-		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(p.Struct.Fields) + 1, C: start})
+		fc.emit(p.Pos, Instr{Op: OpMakeMap, A: dst, B: len(regs) / 2, C: start})
 		return dst
 	}
 
