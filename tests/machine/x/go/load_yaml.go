@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"os"
+	"reflect"
+	"strings"
 )
 
 type Person struct {
@@ -33,18 +35,18 @@ func main() {
 	}
 
 	var adults []Adults = func() []Adults {
-		_res := []Adults{}
+		results := []Adults{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
-					_res = append(_res, Adults{
+					results = append(results, Adults{
 						Name:  p.Name,
 						Email: p.Email,
 					})
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	for _, a := range adults {
 		fmt.Println(a.Name, a.Email)
@@ -114,6 +116,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }

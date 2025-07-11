@@ -9,15 +9,15 @@ import (
 func main() {
 	var dataVar []int = []int{1, 2}
 	var flag bool = len(func() []int {
-		_res := []int{}
+		results := []int{}
 		for _, x := range dataVar {
 			if x == 1 {
 				if x == 1 {
-					_res = append(_res, x)
+					results = append(results, x)
 				}
 			}
 		}
-		return _res
+		return results
 	}()) > 0
 	fmt.Println(flag)
 }

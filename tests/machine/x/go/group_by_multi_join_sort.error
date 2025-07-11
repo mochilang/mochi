@@ -1,7 +1,7 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_multi_join_sort.go:170:105: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
-../../../tests/machine/x/go/group_by_multi_join_sort.go:206:14: cannot use _sum(func() []any {…}()) (value of type float64) as int value in struct literal
-../../../tests/machine/x/go/group_by_multi_join_sort.go:209:106: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:171:111: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:207:14: cannot use _sum(func() []any {…}()) (value of type float64) as int value in struct literal
+../../../tests/machine/x/go/group_by_multi_join_sort.go:210:112: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
 
 1: //go:build ignore

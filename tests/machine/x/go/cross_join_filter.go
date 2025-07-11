@@ -16,18 +16,18 @@ func main() {
 	}
 
 	var pairs []Pairs = func() []Pairs {
-		_res := []Pairs{}
+		results := []Pairs{}
 		for _, n := range nums {
 			if (n % 2) == 0 {
 				for _, l := range letters {
-					_res = append(_res, Pairs{
+					results = append(results, Pairs{
 						N: n,
 						L: l,
 					})
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Even pairs ---")
 	for _, p := range pairs {

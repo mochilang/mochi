@@ -7,6 +7,7 @@ import (
 	"mochi/runtime/data"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func main() {
@@ -94,6 +95,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }

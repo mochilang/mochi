@@ -64,7 +64,7 @@ func main() {
 	}
 
 	var filtered []Filtered = func() []Filtered {
-		_res := []Filtered{}
+		results := []Filtered{}
 		for _, ps := range partsupp {
 			for _, s := range suppliers {
 				if !(s.Id == ps.Supplier) {
@@ -76,7 +76,7 @@ func main() {
 					}
 					if n.Name == "A" {
 						if n.Name == "A" {
-							_res = append(_res, Filtered{
+							results = append(results, Filtered{
 								Part:  ps.Part,
 								Value: (ps.Cost * float64(ps.Qty)),
 							})
@@ -85,7 +85,7 @@ func main() {
 				}
 			}
 		}
-		return _res
+		return results
 	}()
 	type Grouped struct {
 		Part  any `json:"part"`
@@ -106,21 +106,21 @@ func main() {
 			}
 			g.Items = append(g.Items, x)
 		}
-		_res := []Grouped{}
+		results := []Grouped{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, Grouped{
+			results = append(results, Grouped{
 				Part: g.Key,
 				Total: _sum(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, r := range g.Items {
-						_res = append(_res, (r).(map[string]any)["value"])
+						results = append(results, (r).(map[string]any)["value"])
 					}
-					return _res
+					return results
 				}()),
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
 }

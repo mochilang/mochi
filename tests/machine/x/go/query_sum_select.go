@@ -13,15 +13,15 @@ import (
 func main() {
 	var nums []int = []int{1, 2, 3}
 	var result []int = _sumOrdered[int](func() []int {
-		_res := []int{}
+		results := []int{}
 		for _, n := range nums {
 			if n > 1 {
 				if n > 1 {
-					_res = append(_res, n)
+					results = append(results, n)
 				}
 			}
 		}
-		return _res
+		return results
 	}())
 	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(result), "["), "]"))
 }

@@ -66,22 +66,22 @@ func main() {
 			}
 			g.Items = append(g.Items, person)
 		}
-		_res := []Stats{}
+		results := []Stats{}
 		for _, ks := range order {
 			g := groups[ks]
-			_res = append(_res, Stats{
+			results = append(results, Stats{
 				City:  g.Key,
 				Count: len(g.Items),
 				Avg_age: _avg(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, p := range g.Items {
-						_res = append(_res, (p).(map[string]any)["age"])
+						results = append(results, (p).(map[string]any)["age"])
 					}
-					return _res
+					return results
 				}()),
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- People grouped by city ---")
 	for _, s := range stats {

@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"mochi/runtime/data"
+	"reflect"
 	"sort"
 	"strings"
 )
@@ -69,11 +70,11 @@ func main() {
 		for idx, it := range items {
 			g := it
 			pairs[idx] = pair{item: it, key: -_sum(func() []any {
-				_res := []any{}
+				results := []any{}
 				for _, x := range g.Items {
-					_res = append(_res, (x).(map[string]any)["val"])
+					results = append(results, (x).(map[string]any)["val"])
 				}
-				return _res
+				return results
 			}())}
 		}
 		sort.Slice(pairs, func(i, j int) bool {
@@ -102,20 +103,20 @@ func main() {
 		for idx, p := range pairs {
 			items[idx] = p.item
 		}
-		_res := []Grouped{}
+		results := []Grouped{}
 		for _, g := range items {
-			_res = append(_res, Grouped{
+			results = append(results, Grouped{
 				Cat: g.Key,
 				Total: _sum(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, x := range g.Items {
-						_res = append(_res, (x).(map[string]any)["val"])
+						results = append(results, (x).(map[string]any)["val"])
 					}
-					return _res
+					return results
 				}()),
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(grouped), "["), "]"))
 }
@@ -171,6 +172,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }
