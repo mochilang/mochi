@@ -683,6 +683,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: b.Str + c.Str}
 			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
+			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
+				br := new(big.Rat).Add(toRat(b), toRat(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
 				bi := new(big.Int).Add(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
@@ -716,6 +719,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
+			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
+				br := new(big.Rat).Sub(toRat(b), toRat(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
 				bi := new(big.Int).Sub(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
@@ -746,6 +752,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			} else if b.Tag == ValueBigRat {
+				br := new(big.Rat).Neg(toRat(b))
+				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt {
 				bi := new(big.Int).Neg(toBigInt(b))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
@@ -776,6 +785,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
+			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
+				br := new(big.Rat).Mul(toRat(b), toRat(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
 				bi := new(big.Int).Mul(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
@@ -812,6 +824,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
+			} else if b.Tag == ValueBigRat || c.Tag == ValueBigRat {
+				br := new(big.Rat).Quo(toRat(b), toRat(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigRat, BigRat: br}
 			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
 				bi := new(big.Int).Quo(toBigInt(b), toBigInt(c))
 				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: bi}
@@ -6662,6 +6677,18 @@ func (fc *funcCompiler) foldCallValue(call *parser.CallExpr) (Value, bool) {
 			lo, hi := clampSlice(len(r), start.Int, end.Int)
 			return Value{Tag: ValueStr, Str: string(r[lo:hi])}, true
 		}
+	case "num":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		r := toRat(args[0])
+		return Value{Tag: ValueBigInt, BigInt: new(big.Int).Set(r.Num())}, true
+	case "denom":
+		if len(args) != 1 {
+			return Value{}, false
+		}
+		r := toRat(args[0])
+		return Value{Tag: ValueBigInt, BigInt: new(big.Int).Set(r.Denom())}, true
 	case "count":
 		if len(args) != 1 {
 			return Value{}, false
@@ -7339,6 +7366,12 @@ func toFloat(v Value) float64 {
 			return f
 		}
 		return 0
+	case ValueBigRat:
+		if v.BigRat != nil {
+			f, _ := new(big.Float).SetRat(v.BigRat).Float64()
+			return f
+		}
+		return 0
 	case ValueStr:
 		if f, err := strconv.ParseFloat(v.Str, 64); err == nil {
 			return f
@@ -7369,6 +7402,12 @@ func toInt(v Value) int {
 	case ValueBigInt:
 		if v.BigInt != nil {
 			return int(v.BigInt.Int64())
+		}
+		return 0
+	case ValueBigRat:
+		if v.BigRat != nil {
+			f, _ := new(big.Float).SetRat(v.BigRat).Float64()
+			return int(f)
 		}
 		return 0
 	case ValueStr:
@@ -7406,11 +7445,42 @@ func toBigInt(v Value) *big.Int {
 	return big.NewInt(0)
 }
 
+func toRat(v Value) *big.Rat {
+	switch v.Tag {
+	case ValueBigRat:
+		if v.BigRat != nil {
+			return new(big.Rat).Set(v.BigRat)
+		}
+		return new(big.Rat)
+	case ValueBigInt:
+		if v.BigInt != nil {
+			return new(big.Rat).SetInt(v.BigInt)
+		}
+		return new(big.Rat)
+	case ValueInt:
+		return new(big.Rat).SetInt64(int64(v.Int))
+	case ValueFloat:
+		return new(big.Rat).SetFloat64(v.Float)
+	case ValueBool:
+		if v.Bool {
+			return big.NewRat(1, 1)
+		}
+		return big.NewRat(0, 1)
+	case ValueStr:
+		if r, ok := new(big.Rat).SetString(v.Str); ok {
+			return r
+		}
+	}
+	return new(big.Rat)
+}
+
 func valTag(v Value) regTag {
 	switch v.Tag {
 	case ValueInt:
 		return tagInt
 	case ValueBigInt:
+		return tagUnknown
+	case ValueBigRat:
 		return tagUnknown
 	case ValueFloat:
 		return tagFloat
@@ -7427,6 +7497,9 @@ func valuesEqual(a, b Value) bool {
 	}
 	if a.Tag == ValueFloat || b.Tag == ValueFloat {
 		return toFloat(a) == toFloat(b)
+	}
+	if a.Tag == ValueBigRat || b.Tag == ValueBigRat {
+		return toRat(a).Cmp(toRat(b)) == 0
 	}
 	if a.Tag == ValueBigInt || b.Tag == ValueBigInt {
 		return toBigInt(a).Cmp(toBigInt(b)) == 0
@@ -7512,6 +7585,9 @@ func valueLess(a, b Value) bool {
 			return true
 		}
 		return false
+	}
+	if a.Tag == ValueBigRat || b.Tag == ValueBigRat {
+		return toRat(a).Cmp(toRat(b)) < 0
 	}
 	if a.Tag == ValueBigInt || b.Tag == ValueBigInt {
 		return toBigInt(a).Cmp(toBigInt(b)) < 0
