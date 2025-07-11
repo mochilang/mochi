@@ -282,6 +282,22 @@ func extractMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return u.Value.Target.Map
 }
 
+// extractListLiteral returns the list literal contained in the expression if
+// it is a simple literal expression. Returns nil otherwise.
+func extractListLiteral(e *parser.Expr) *parser.ListLiteral {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	return u.Value.Target.List
+}
+
 // mapLiteralStruct returns the Zig struct type and initialization for the map
 // literal if all keys are simple strings. The ok result will be false if the
 // map cannot be represented as a struct.

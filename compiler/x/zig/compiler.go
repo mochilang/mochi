@@ -431,6 +431,33 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 			}
 			if s.Let.Value != nil {
 				var v string
+				if ll := extractListLiteral(s.Let.Value); ll != nil && len(ll.Elems) > 0 && s.Let.Type == nil {
+					if extractMapLiteral(ll.Elems[0]) != nil {
+						structName := pascalCase(name) + "Item"
+						decl, init, err := c.compileNamedListLiteral(ll, true, structName)
+						if err == nil {
+							if !c.structs[structName] {
+								c.writeln(decl)
+								c.structs[structName] = true
+								if c.env != nil {
+									st, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName)
+									if ok {
+										c.env.SetStruct(structName, st)
+									}
+								}
+							}
+							v = init
+							if c.env != nil {
+								if st, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName); ok {
+									c.env.SetVar(s.Let.Name, types.ListType{Elem: st}, false)
+								}
+							}
+							c.writeln(fmt.Sprintf("const %s = %s;", name, v))
+							c.constGlobals[name] = true
+							continue
+						}
+					}
+				}
 				if ml := extractMapLiteral(s.Let.Value); ml != nil && s.Let.Type == nil {
 					structName := pascalCase(name)
 					decl, init, ok, err := c.mapLiteralStruct(ml, structName)
@@ -1902,6 +1929,33 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 		c.writeln(fmt.Sprintf("var %s = std.AutoHashMap(%s, %s).init(std.heap.page_allocator);", name, keyT, valT))
 		return nil
 	}
+	if st.Value != nil {
+		if ll := extractListLiteral(st.Value); ll != nil && len(ll.Elems) > 0 && st.Type == nil {
+			if extractMapLiteral(ll.Elems[0]) != nil {
+				structName := pascalCase(name) + "Item"
+				decl, init, err := c.compileNamedListLiteral(ll, true, structName)
+				if err == nil {
+					if !c.structs[structName] {
+						c.writeln(decl)
+						c.structs[structName] = true
+						if c.env != nil {
+							stype, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName)
+							if ok {
+								c.env.SetStruct(structName, stype)
+							}
+						}
+					}
+					if c.env != nil {
+						if stype, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName); ok {
+							c.env.SetVar(st.Name, types.ListType{Elem: stype}, true)
+						}
+					}
+					c.writeln(fmt.Sprintf("var %s = %s;", name, init))
+					return nil
+				}
+			}
+		}
+	}
 	val := "0"
 	if st.Value != nil {
 		if ml := extractMapLiteral(st.Value); ml != nil {
@@ -2928,6 +2982,66 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 		return fmt.Sprintf("&[_]%s{%s}", elemType, elems[0]), nil
 	}
 	return fmt.Sprintf("[_]%s{%s}", elemType, elems[0]), nil
+}
+
+// compileNamedListLiteral compiles a list literal whose elements are map
+// literals using the provided struct name for each element. It returns the
+// struct declaration and the expression for the list.
+func (c *Compiler) compileNamedListLiteral(list *parser.ListLiteral, asRef bool, structName string) (decl, expr string, err error) {
+	if len(list.Elems) == 0 {
+		if asRef {
+			expr = "&[]" + structName + "{}"
+		} else {
+			expr = "[]" + structName + "{}"
+		}
+		return "", expr, nil
+	}
+	ml := extractMapLiteral(list.Elems[0])
+	if ml == nil {
+		return "", "", fmt.Errorf("not a list of map literals")
+	}
+	d, init, ok, err := c.mapLiteralStruct(ml, structName)
+	if err != nil {
+		return "", "", err
+	}
+	if !ok {
+		return "", "", fmt.Errorf("inconsistent map literal")
+	}
+	elems := make([]string, len(list.Elems))
+	elems[0] = init
+	for i := 1; i < len(list.Elems); i++ {
+		ml2 := extractMapLiteral(list.Elems[i])
+		if ml2 == nil {
+			return "", "", fmt.Errorf("mixed list elements not supported")
+		}
+		_, init2, ok2, err2 := c.mapLiteralStruct(ml2, structName)
+		if err2 != nil {
+			return "", "", err2
+		}
+		if !ok2 {
+			return "", "", fmt.Errorf("inconsistent map literal")
+		}
+		elems[i] = init2
+	}
+	var b strings.Builder
+	if len(elems) > 1 {
+		if asRef {
+			b.WriteString("&[_]" + structName + "{\n    ")
+		} else {
+			b.WriteString("[_]" + structName + "{\n    ")
+		}
+		b.WriteString(strings.Join(elems, ",\n    "))
+		b.WriteString(",\n}")
+	} else {
+		if asRef {
+			b.WriteString(fmt.Sprintf("&[_]%s{%s}", structName, elems[0]))
+		} else {
+			b.WriteString(fmt.Sprintf("[_]%s{%s}", structName, elems[0]))
+		}
+	}
+	expr = b.String()
+	decl = d
+	return decl, expr, nil
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (string, error) {
