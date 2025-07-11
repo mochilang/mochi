@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -108,16 +109,46 @@ func tsTypeRef(t *parser.TypeRef) string {
 	return "any"
 }
 
+func simpleExprType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return "any"
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return "any"
+	}
+	p := u.Value.Target
+	if p == nil {
+		return "any"
+	}
+	if p.Lit != nil {
+		switch {
+		case p.Lit.Int != nil, p.Lit.Float != nil:
+			return "number"
+		case p.Lit.Str != nil:
+			return "string"
+		case p.Lit.Bool != nil:
+			return "boolean"
+		}
+	}
+	return "any"
+}
+
 func queryResultType(q *parser.QueryExpr) string {
 	if q.Select == nil {
 		return "any[]"
 	}
-	if names := selectMapFields(q.Select); names != nil {
-		fields := make([]string, len(names))
-		for i, n := range names {
-			fields[i] = fmt.Sprintf("%s: any", n)
+	if fields := selectMapFields(q.Select); fields != nil {
+		names := make([]string, 0, len(fields))
+		for n := range fields {
+			names = append(names, n)
 		}
-		return fmt.Sprintf("Array<{ %s }>", strings.Join(fields, "; "))
+		sort.Strings(names)
+		parts := make([]string, len(names))
+		for i, n := range names {
+			parts[i] = fmt.Sprintf("%s: %s", n, simpleExprType(fields[n]))
+		}
+		return fmt.Sprintf("Array<{ %s }>", strings.Join(parts, "; "))
 	}
 	if name := selectStructName(q.Select); name != "" {
 		return fmt.Sprintf("%s[]", name)
@@ -125,7 +156,7 @@ func queryResultType(q *parser.QueryExpr) string {
 	return "any[]"
 }
 
-func selectMapFields(e *parser.Expr) []string {
+func selectMapFields(e *parser.Expr) map[string]*parser.Expr {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
 		return nil
 	}
@@ -137,10 +168,10 @@ func selectMapFields(e *parser.Expr) []string {
 		return nil
 	}
 	m := u.Value.Target.Map
-	fields := make([]string, 0, len(m.Items))
+	fields := make(map[string]*parser.Expr)
 	for _, it := range m.Items {
 		if name := getIdent(it.Key); name != "" {
-			fields = append(fields, name)
+			fields[name] = it.Value
 		}
 	}
 	return fields
@@ -924,9 +955,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 				indent--
 				writeln("}")
 				if agg == "avg" {
-					writeln("let res = _count == 0 ? 0 : _sum / _count;")
+					writeln("return _count == 0 ? 0 : _sum / _count;")
 				} else {
-					writeln(fmt.Sprintf("let res = %s;", res))
+					writeln(fmt.Sprintf("return %s;", res))
 				}
 			} else {
 				// fallback generic
@@ -1645,6 +1676,8 @@ func isSimpleIterable(e *parser.Expr) bool {
 	case p.List != nil:
 		return true
 	case p.Lit != nil && p.Lit.Str != nil:
+		return true
+	case p.Selector != nil:
 		return true
 	}
 	return false
