@@ -406,7 +406,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if (o instanceof Map<?,?> mm) {")
 		c.indent++
 		c.writeln("LinkedHashMap<String,Object> m = new LinkedHashMap<>();")
-		c.writeln("for (var e : mm.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());")
+		c.writeln("for (Map.Entry<?,?> e : mm.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());")
 		c.writeln("return m;")
 		c.indent--
 		c.writeln("}")
@@ -421,7 +421,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("Map<String,Object> m = asMap(obj);")
 		c.writeln("List<String> parts = new ArrayList<>();")
-		c.writeln("for (var e : m.entrySet()) { parts.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue()); }")
+		c.writeln("for (Map.Entry<?,?> e : m.entrySet()) { parts.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue()); }")
 		c.writeln("System.out.println(\"{\" + String.join(\",\", parts) + \"}\");")
 		c.indent--
 		c.writeln("}")
@@ -434,7 +434,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if (o instanceof Map<?,?> m) {")
 		c.indent++
 		c.writeln("StringJoiner j = new StringJoiner(\",\", \"{\", \"}\");")
-		c.writeln("for (var e : m.entrySet()) j.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue());")
+		c.writeln("for (Map.Entry<?,?> e : m.entrySet()) j.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue());")
 		c.writeln("return j.toString();")
 		c.indent--
 		c.writeln("} else if (o instanceof Collection<?> c) {")
@@ -638,6 +638,28 @@ func mapValueType(t string) string {
 		case ',':
 			if depth == 0 {
 				return strings.TrimSpace(inner[i+1:])
+			}
+		}
+	}
+	return "Object"
+}
+
+func mapKeyType(t string) string {
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
+		return "Object"
+	}
+	inner := t[4 : len(t)-1]
+	depth := 0
+	for i := 0; i < len(inner); i++ {
+		switch inner[i] {
+		case '<':
+			depth++
+		case '>':
+			depth--
+		case ',':
+			if depth == 0 {
+				return strings.TrimSpace(inner[:i])
 			}
 		}
 	}
@@ -1558,7 +1580,27 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			return err
 		}
 		if c.exprIsMap(f.Source) {
-			c.writeln(fmt.Sprintf("for (var %s : %s.keySet()) {", f.Name, src))
+			keyType := mapKeyType(c.inferType(f.Source))
+			if keyType == "var" {
+				keyType = "Object"
+			}
+			c.writeln(fmt.Sprintf("for (%s %s : %s.keySet()) {", keyType, f.Name, src))
+			c.indent++
+			prev := c.vars[f.Name]
+			c.vars[f.Name] = keyType
+			for _, s := range f.Body {
+				if err := c.compileStmt(s); err != nil {
+					return err
+				}
+			}
+			if prev == "" {
+				delete(c.vars, f.Name)
+			} else {
+				c.vars[f.Name] = prev
+			}
+			c.indent--
+			c.writeln("}")
+			return nil
 		} else if dc := c.dataClassByName(c.inferType(f.Source)); dc != nil {
 			var keys []string
 			for _, k := range dc.fields {
@@ -2625,7 +2667,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			keyType = "Object"
 		}
 		c.vars[keyVar] = keyType
-		b.WriteString(fmt.Sprintf("\tfor (var __e : %s.entrySet()) {\n", groupsVar))
+		b.WriteString(fmt.Sprintf("\tfor (Map.Entry<%s,List<%s>> __e : %s.entrySet()) {\n", keyType, rowType, groupsVar))
 		b.WriteString(fmt.Sprintf("\t\t%[1]s %s = __e.getKey();\n", keyType, keyVar))
 		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", rowType, gName))
 		if q.Group.Having != nil {
@@ -2881,9 +2923,13 @@ func collectUsedGlobalsInStmts(stmts []*parser.Statement, globals map[string]boo
 			collectUsedGlobalsInExpr(s.Fetch.URL, globals, used)
 			collectUsedGlobalsInExpr(s.Fetch.With, globals, used)
 		case s.Update != nil:
-			collectUsedGlobalsInExpr(s.Update.Src, globals, used)
+			if globals[s.Update.Target] {
+				used[s.Update.Target] = true
+			}
+			for _, it := range s.Update.Set.Items {
+				collectUsedGlobalsInExpr(it.Value, globals, used)
+			}
 			collectUsedGlobalsInExpr(s.Update.Where, globals, used)
-			collectUsedGlobalsInExpr(s.Update.Value, globals, used)
 		}
 	}
 }

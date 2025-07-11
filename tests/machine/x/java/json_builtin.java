@@ -1,6 +1,5 @@
 import java.util.*;
 public class JsonBuiltin {
-	static Map<String,Integer> m = mapOfEntries(entry("a", 1), entry("b", 2));
 	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
 	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
 		LinkedHashMap<K,V> m = new LinkedHashMap<>();
@@ -10,7 +9,7 @@ public class JsonBuiltin {
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {
 			StringJoiner j = new StringJoiner(",", "{", "}");
-			for (var e : m.entrySet()) j.add("\"" + e.getKey() + "\":" + e.getValue());
+			for (Map.Entry<?,?> e : m.entrySet()) j.add("\"" + e.getKey() + "\":" + e.getValue());
 			return j.toString();
 		} else if (o instanceof Collection<?> c) {
 			StringJoiner j = new StringJoiner(",", "[", "]");
@@ -23,6 +22,7 @@ public class JsonBuiltin {
 	}
 	static void json(Object o) { System.out.println(toJson(o)); }
 	public static void main(String[] args) {
+	Map<String,Integer> m = new HashMap<>(mapOfEntries(entry("a", 1), entry("b", 2)));
 	json(m);
 	}
 }
