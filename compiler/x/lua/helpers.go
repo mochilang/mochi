@@ -5,6 +5,7 @@ package luacode
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -311,4 +312,35 @@ func toLuaLiteral(v any) string {
 		}
 		return fmt.Sprint(x)
 	}
+}
+
+// literalValue returns the Go value of a simple literal expression e.
+// It supports integers, floats, booleans, strings and nil.
+func literalValue(e *parser.Expr) (any, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil {
+		return nil, false
+	}
+	lit := p.Target.Lit
+	switch {
+	case lit.Int != nil:
+		return *lit.Int, true
+	case lit.Float != nil:
+		return *lit.Float, true
+	case lit.Bool != nil:
+		v := bool(*lit.Bool)
+		return v, true
+	case lit.Str != nil:
+		return *lit.Str, true
+	case lit.Null:
+		return nil, true
+	}
+	return nil, false
 }

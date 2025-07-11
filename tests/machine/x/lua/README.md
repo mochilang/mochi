@@ -127,7 +127,7 @@ Checklist:
 - [ ] Provide CLI for running compiled Lua
 - [ ] Implement incremental compilation caching
 - [ ] Add automated regression tests for Lua compiler
-- [ ] Implement constant folding optimization
+- [x] Implement constant folding optimization
 - [ ] Integrate static analysis tools
 - [ ] Allow custom Lua module paths
 - [ ] Add debugging support with breakpoints
