@@ -2,27 +2,25 @@
 #include <string>
 #include <vector>
 
-struct __struct1 {
+struct Pair {
   int n;
   std::string l;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Pair &a, const Pair &b) {
   return a.n == b.n && a.l == b.l;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Pair &a, const Pair &b) { return !(a == b); }
 int main() {
   std::vector<int> nums = std::vector<int>{1, 2, 3};
   std::vector<std::string> letters =
       std::vector<std::string>{std::string("A"), std::string("B")};
   auto pairs = ([&]() {
-    std::vector<__struct1> __items;
+    std::vector<Pair> __items;
     for (auto n : nums) {
       for (auto l : letters) {
         if (!(((n % 2) == 0)))
           continue;
-        __items.push_back(__struct1{n, l});
+        __items.push_back(Pair{n, l});
       }
     }
     return __items;

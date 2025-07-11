@@ -64,6 +64,8 @@ type Compiler struct {
 	future []*parser.Statement
 
 	placeholders map[string]string
+
+	nextStructName string
 }
 
 // Future sets the slice of upcoming statements used for type prediction.
@@ -72,25 +74,26 @@ func (c *Compiler) Future(stmts []*parser.Statement) { c.future = stmts }
 // New returns a new compiler instance.
 func New() *Compiler {
 	return &Compiler{
-		vars:         map[string]string{},
-		aliases:      map[string]string{},
-		structMap:    map[string]*structInfo{},
-		structByName: map[string]*structInfo{},
-		varStruct:    map[string]string{},
-		elemType:     map[string]string{},
-		funParams:    map[string]int{},
-		groups:       map[string]struct{}{},
-		usesJSON:     false,
-		usesIO:       false,
-		definedLoad:  false,
-		scope:        0,
-		unions:       map[string]*unionInfo{},
-		variants:     map[string]*variantInfo{},
-		packages:     map[string]struct{}{},
-		future:       nil,
-		placeholders: map[string]string{},
-		usesAppend:   false,
-		usesAvg:      false,
+		vars:           map[string]string{},
+		aliases:        map[string]string{},
+		structMap:      map[string]*structInfo{},
+		structByName:   map[string]*structInfo{},
+		varStruct:      map[string]string{},
+		elemType:       map[string]string{},
+		funParams:      map[string]int{},
+		groups:         map[string]struct{}{},
+		usesJSON:       false,
+		usesIO:         false,
+		definedLoad:    false,
+		scope:          0,
+		unions:         map[string]*unionInfo{},
+		variants:       map[string]*variantInfo{},
+		packages:       map[string]struct{}{},
+		future:         nil,
+		placeholders:   map[string]string{},
+		usesAppend:     false,
+		usesAvg:        false,
+		nextStructName: "",
 	}
 }
 
@@ -496,9 +499,12 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 
 func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	var exprStr string
+	prevHint := c.nextStructName
 	if st.Value != nil {
+		c.nextStructName = structNameFromVar(st.Name)
 		var err error
 		exprStr, err = c.compileExpr(st.Value)
+		c.nextStructName = prevHint
 		if err != nil {
 			return err
 		}
@@ -509,7 +515,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		return err
 	}
 	if st.Type == nil {
-		if et := extractVectorElemType(exprStr); et != "" {
+		if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 		}
 	}
@@ -544,12 +550,12 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := extractVectorStruct(exprStr); s != "" {
+	if s := c.extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
 	} else if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
 	}
-	if et := extractVectorElemType(exprStr); et != "" {
+	if et := c.extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
@@ -559,9 +565,12 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 
 func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	var exprStr string
+	prevHint := c.nextStructName
 	if st.Value != nil {
+		c.nextStructName = structNameFromVar(st.Name)
 		var err error
 		exprStr, err = c.compileExpr(st.Value)
+		c.nextStructName = prevHint
 		if err != nil {
 			return err
 		}
@@ -572,7 +581,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		return err
 	}
 	if st.Type == nil {
-		if et := extractVectorElemType(exprStr); et != "" {
+		if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 		} else if isEmptyListExpr(st.Value) {
 			if et := c.predictElemType(st.Name); et != "" {
@@ -623,12 +632,12 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 		}
 		c.vars[st.Name] = inferred
 	}
-	if s := extractVectorStruct(exprStr); s != "" {
+	if s := c.extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
 	} else if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
 	}
-	if et := extractVectorElemType(exprStr); et != "" {
+	if et := c.extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
 	} else if t := c.elemType[exprStr]; t != "" {
 		c.elemType[st.Name] = t
@@ -660,7 +669,7 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
 		if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
 			if arg, err2 := c.compileExpr(call.Args[1]); err2 == nil {
-				if t := structLiteralType(arg); t != "" {
+				if t := c.structLiteralType(arg); t != "" {
 					c.elemType[st.Name] = t
 					c.varStruct[st.Name] = t
 				} else if t := c.varStruct[arg]; t != "" {
@@ -674,12 +683,12 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	}
 	c.buf.WriteString(name + " = " + expr + ";\n")
 	if len(st.Index) == 0 && len(st.Field) == 0 {
-		if s := extractVectorStruct(expr); s != "" {
+		if s := c.extractVectorStruct(expr); s != "" {
 			c.varStruct[st.Name] = s
 		} else if t := c.varStruct[expr]; t != "" {
 			c.varStruct[st.Name] = t
 		}
-		if et := extractVectorElemType(expr); et != "" {
+		if et := c.extractVectorElemType(expr); et != "" {
 			c.elemType[st.Name] = et
 		} else if t := c.elemType[expr]; t != "" {
 			c.elemType[st.Name] = t
@@ -969,7 +978,7 @@ func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) str
 		case st.Assign != nil && st.Assign.Name == name:
 			exprStr, err := c.simulateExpr(st.Assign.Value)
 			if err == nil {
-				if et := extractVectorElemType(exprStr); et != "" {
+				if et := c.extractVectorElemType(exprStr); et != "" {
 					return et
 				}
 			}
@@ -1046,7 +1055,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		structType := ""
 		if t := c.varStruct[s]; t != "" {
 			structType = t
-		} else if t := structLiteralType(s); t != "" {
+		} else if t := c.structLiteralType(s); t != "" {
 			structType = t
 		}
 		if typ != "vector" {
@@ -1093,7 +1102,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 		structType := ""
 		if t := c.varStruct[s]; t != "" {
 			structType = t
-		} else if t := structLiteralType(s); t != "" {
+		} else if t := c.structLiteralType(s); t != "" {
 			structType = t
 		} else if dot := strings.Index(s, "."); dot != -1 {
 			base := s[:dot]
@@ -1332,7 +1341,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 					end = fmt.Sprintf("%s.size()", expr)
 				}
 				if c.isVectorType(expr) {
-					et := extractVectorElemType(expr)
+					et := c.extractVectorElemType(expr)
 					if et == "" {
 						et = fmt.Sprintf("decltype(%s[0])", expr)
 					}
@@ -1355,7 +1364,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			expr = fmt.Sprintf("%s.%s", expr, op.Field.Name)
 			t := c.varStruct[base]
 			if t == "" {
-				t = structLiteralType(base)
+				t = c.structLiteralType(base)
 			}
 			if idx := strings.Index(t, "{"); idx != -1 {
 				t = t[:idx]
@@ -1365,7 +1374,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 					if f == op.Field.Name && i < len(info.Types) {
 						ft := info.Types[i]
 						if strings.HasPrefix(ft, "std::vector<") {
-							if et := extractVectorElemType(ft); et != "" {
+							if et := c.extractVectorElemType(ft); et != "" {
 								c.elemType[expr] = et
 								if strings.HasPrefix(et, "__struct") {
 									c.varStruct[expr] = et
@@ -1422,7 +1431,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		elemType := "int"
 		if len(elems) > 0 {
-			if t := structLiteralType(elems[0]); t != "" {
+			if t := c.structLiteralType(elems[0]); t != "" {
 				elemType = t
 			} else if t := c.varStruct[elems[0]]; t != "" {
 				if idx := strings.Index(t, "{"); idx != -1 {
@@ -1525,10 +1534,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					fieldTypes = append(fieldTypes, ftype)
 				}
 				c.structCount++
-				info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: append([]string(nil), fieldTypes...)}
+				name := fmt.Sprintf("__struct%d", c.structCount)
+				if c.nextStructName != "" {
+					name = toPascalCase(c.nextStructName)
+				}
+				info = &structInfo{Name: name, Fields: append([]string(nil), names...), Types: append([]string(nil), fieldTypes...)}
 				c.structMap[sig] = info
 				c.structByName[info.Name] = info
 				c.defineStruct(info)
+				c.nextStructName = ""
 			}
 			return fmt.Sprintf("%s{%s}", info.Name, strings.Join(vals, ", ")), nil
 		}
@@ -1564,7 +1578,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				} else {
 					valType = vals[0]
 				}
-			} else if t := structLiteralType(vals[0]); t != "" {
+			} else if t := c.structLiteralType(vals[0]); t != "" {
 				valType = t
 			} else if c.vars[vals[0]] == "string" {
 				valType = "std::string"
@@ -1971,10 +1985,15 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 	info, ok := c.structMap[sig]
 	if !ok {
 		c.structCount++
-		info = &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), fieldNames...), Types: append([]string(nil), fieldTypes...)}
+		name := fmt.Sprintf("__struct%d", c.structCount)
+		if c.nextStructName != "" {
+			name = toPascalCase(c.nextStructName)
+		}
+		info = &structInfo{Name: name, Fields: append([]string(nil), fieldNames...), Types: append([]string(nil), fieldTypes...)}
 		c.structMap[sig] = info
 		c.structByName[info.Name] = info
 		c.defineStruct(info)
+		c.nextStructName = ""
 	}
 	return fmt.Sprintf("%s{%s}", info.Name, strings.Join(inits, ", ")), nil
 }
@@ -2154,7 +2173,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				itemType = "bool"
 			}
 		}
-	} else if t := structLiteralType(val); t != "" {
+	} else if t := c.structLiteralType(val); t != "" {
 		itemType = t
 	} else if t := c.varStruct[val]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
@@ -2181,7 +2200,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		keyType = fmt.Sprintf("decltype(%s)", key)
-		if t := structLiteralType(key); t != "" {
+		if t := c.structLiteralType(key); t != "" {
 			keyType = t
 		} else if strings.Contains(key, "std::accumulate") {
 			if strings.Contains(key, ".") {
@@ -2398,7 +2417,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 				return "", err
 			}
 			keyType := fmt.Sprintf("decltype(%s)", keyExpr)
-			if t := structLiteralType(keyExpr); t != "" {
+			if t := c.structLiteralType(keyExpr); t != "" {
 				keyType = t
 			} else if t := c.varStruct[keyExpr]; t != "" {
 				if idx := strings.Index(t, "{"); idx != -1 {
@@ -2566,7 +2585,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		return "", err
 	}
 	keyType := fmt.Sprintf("decltype(%s)", keyExpr)
-	if t := structLiteralType(keyExpr); t != "" {
+	if t := c.structLiteralType(keyExpr); t != "" {
 		keyType = t
 	} else if strings.Contains(keyExpr, "std::accumulate") {
 		if strings.Contains(keyExpr, ".") {
@@ -2680,7 +2699,7 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	}
 	if selectIsGroup {
 		itemType = groupStruct
-	} else if t := structLiteralType(valExpr); t != "" {
+	} else if t := c.structLiteralType(valExpr); t != "" {
 		itemType = t
 	} else if t := c.varStruct[valExpr]; t != "" {
 		if idx := strings.Index(t, "{"); idx != -1 {
@@ -3028,16 +3047,23 @@ func inferExprType(expr string) string {
 	return ""
 }
 
-func extractVectorStruct(expr string) string {
+func (c *Compiler) isStructName(name string) bool {
+	if _, ok := c.structByName[name]; ok {
+		return true
+	}
+	return strings.HasPrefix(name, "__struct")
+}
+
+func (c *Compiler) extractVectorStruct(expr string) string {
 	if idx := strings.Index(expr, "v.push_back("); idx != -1 {
 		inner := expr[idx+len("v.push_back("):]
 		end := strings.Index(inner, ")")
 		if end != -1 {
 			val := inner[:end]
-			if strings.HasPrefix(val, "__struct") {
-				if brace := strings.Index(val, "{"); brace != -1 {
-					return val[:brace]
-				}
+			if idx := strings.Index(val, "{"); idx != -1 {
+				val = val[:idx]
+			}
+			if c.isStructName(val) {
 				return val
 			}
 		}
@@ -3061,7 +3087,7 @@ func extractVectorStruct(expr string) string {
 	if idx := strings.Index(inner, "{"); idx != -1 {
 		inner = inner[:idx]
 	}
-	if strings.HasPrefix(inner, "__struct") {
+	if c.isStructName(inner) {
 		return inner
 	}
 	if inner == "int" || inner == "double" || inner == "bool" {
@@ -3070,16 +3096,16 @@ func extractVectorStruct(expr string) string {
 	return ""
 }
 
-func extractVectorElemType(expr string) string {
+func (c *Compiler) extractVectorElemType(expr string) string {
 	if strings.Contains(expr, "v.push_back(") {
 		inner := expr[strings.Index(expr, "v.push_back(")+len("v.push_back("):]
 		end := strings.Index(inner, ")")
 		if end != -1 {
 			val := inner[:end]
-			if strings.HasPrefix(val, "__struct") {
-				if idx := strings.Index(val, "{"); idx != -1 {
-					val = val[:idx]
-				}
+			if idx := strings.Index(val, "{"); idx != -1 {
+				val = val[:idx]
+			}
+			if c.isStructName(val) {
 				return val
 			}
 			if strings.HasPrefix(val, "std::string") {
@@ -3112,7 +3138,7 @@ func extractVectorElemType(expr string) string {
 		}
 		typ = texpr
 	}
-	if strings.HasPrefix(typ, "__struct") {
+	if c.isStructName(typ) {
 		return typ
 	}
 	if typ == "int" || typ == "double" || typ == "bool" {
@@ -3130,11 +3156,12 @@ func extractVectorElemType(expr string) string {
 	return ""
 }
 
-func structLiteralType(expr string) string {
-	if strings.HasPrefix(expr, "__struct") {
-		if idx := strings.Index(expr, "{"); idx != -1 {
-			return expr[:idx]
-		}
+func (c *Compiler) structLiteralType(expr string) string {
+	if idx := strings.Index(expr, "{"); idx != -1 {
+		expr = expr[:idx]
+	}
+	if c.isStructName(expr) {
+		return expr
 	}
 	return ""
 }
@@ -3145,7 +3172,11 @@ func (c *Compiler) structFromVars(names []string) string {
 		return info.Name
 	}
 	c.structCount++
-	info := &structInfo{Name: fmt.Sprintf("__struct%d", c.structCount), Fields: append([]string(nil), names...), Types: make([]string, len(names))}
+	name := fmt.Sprintf("__struct%d", c.structCount)
+	if c.nextStructName != "" {
+		name = toPascalCase(c.nextStructName)
+	}
+	info := &structInfo{Name: name, Fields: append([]string(nil), names...), Types: make([]string, len(names))}
 	c.structMap[sig] = info
 	c.structByName[info.Name] = info
 	for i, n := range names {
@@ -3166,6 +3197,7 @@ func (c *Compiler) structFromVars(names []string) string {
 		info.Types[i] = fieldType
 	}
 	c.defineStruct(info)
+	c.nextStructName = ""
 	return info.Name
 }
 
@@ -3322,7 +3354,7 @@ func (c *Compiler) ensureBool(expr string) string {
 			}
 		}
 	}
-	if t := structLiteralType(expr); t != "" {
+	if t := c.structLiteralType(expr); t != "" {
 		return fmt.Sprintf("(%s != %s{})", expr, t)
 	}
 	return expr
@@ -3335,7 +3367,7 @@ func (c *Compiler) isVectorType(expr string) bool {
 	if strings.HasPrefix(expr, "std::vector<") {
 		return true
 	}
-	if extractVectorElemType(expr) != "" {
+	if c.extractVectorElemType(expr) != "" {
 		return true
 	}
 	return false

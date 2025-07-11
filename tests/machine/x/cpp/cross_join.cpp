@@ -2,52 +2,48 @@
 #include <string>
 #include <vector>
 
-struct __struct1 {
+struct Customer {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Customer &a, const Customer &b) {
   return a.id == b.id && a.name == b.name;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+inline bool operator!=(const Customer &a, const Customer &b) {
   return !(a == b);
 }
-struct __struct2 {
+struct Order {
   decltype(100) id;
   decltype(1) customerId;
   decltype(250) total;
 };
-inline bool operator==(const __struct2 &a, const __struct2 &b) {
+inline bool operator==(const Order &a, const Order &b) {
   return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
 }
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
-  return !(a == b);
-}
-struct __struct3 {
-  decltype(std::declval<__struct2>().id) orderId;
-  decltype(std::declval<__struct2>().customerId) orderCustomerId;
-  decltype(std::declval<__struct1>().name) pairedCustomerName;
-  decltype(std::declval<__struct2>().total) orderTotal;
+inline bool operator!=(const Order &a, const Order &b) { return !(a == b); }
+struct Result {
+  decltype(std::declval<Order>().id) orderId;
+  decltype(std::declval<Order>().customerId) orderCustomerId;
+  decltype(std::declval<Customer>().name) pairedCustomerName;
+  decltype(std::declval<Order>().total) orderTotal;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Result &a, const Result &b) {
   return a.orderId == b.orderId && a.orderCustomerId == b.orderCustomerId &&
          a.pairedCustomerName == b.pairedCustomerName &&
          a.orderTotal == b.orderTotal;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Result &a, const Result &b) { return !(a == b); }
 int main() {
-  std::vector<__struct1> customers = std::vector<__struct1>{
-      __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-      __struct1{3, std::string("Charlie")}};
-  std::vector<__struct2> orders = std::vector<__struct2>{
-      __struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300}};
+  std::vector<Customer> customers = std::vector<Customer>{
+      Customer{1, std::string("Alice")}, Customer{2, std::string("Bob")},
+      Customer{3, std::string("Charlie")}};
+  std::vector<Order> orders = std::vector<Order>{
+      Order{100, 1, 250}, Order{101, 2, 125}, Order{102, 1, 300}};
   auto result = ([&]() {
-    std::vector<__struct3> __items;
+    std::vector<Result> __items;
     for (auto o : orders) {
       for (auto c : customers) {
-        __items.push_back(__struct3{o.id, o.customerId, c.name, o.total});
+        __items.push_back(Result{o.id, o.customerId, c.name, o.total});
       }
     }
     return __items;

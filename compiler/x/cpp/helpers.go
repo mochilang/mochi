@@ -1,6 +1,33 @@
 package cpp
 
-import "mochi/parser"
+import (
+	"strings"
+
+	"mochi/parser"
+)
+
+// toPascalCase converts snake_case or lowercase names to PascalCase.
+func toPascalCase(s string) string {
+	parts := strings.Split(s, "_")
+	for i, p := range parts {
+		if len(p) == 0 {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + p[1:]
+	}
+	return strings.Join(parts, "")
+}
+
+// structNameFromVar derives a struct name from a variable name using a simple
+// singularization heuristic.
+func structNameFromVar(name string) string {
+	if strings.HasSuffix(name, "ies") && len(name) > 3 {
+		name = name[:len(name)-3] + "y"
+	} else if strings.HasSuffix(name, "s") && len(name) > 1 {
+		name = name[:len(name)-1]
+	}
+	return toPascalCase(name)
+}
 
 func identName(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
