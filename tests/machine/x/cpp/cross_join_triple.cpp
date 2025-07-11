@@ -2,28 +2,26 @@
 #include <string>
 #include <vector>
 
-struct __struct1 {
+struct Combo {
   int n;
   std::string l;
   bool b;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Combo &a, const Combo &b) {
   return a.n == b.n && a.l == b.l && a.b == b.b;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Combo &a, const Combo &b) { return !(a == b); }
 int main() {
   std::vector<int> nums = std::vector<int>{1, 2};
   std::vector<std::string> letters =
       std::vector<std::string>{std::string("A"), std::string("B")};
   std::vector<bool> bools = std::vector<decltype(true)>{true, false};
   auto combos = ([&]() {
-    std::vector<__struct1> __items;
+    std::vector<Combo> __items;
     for (auto n : nums) {
       for (auto l : letters) {
         for (auto b : bools) {
-          __items.push_back(__struct1{n, l, b});
+          __items.push_back(Combo{n, l, b});
         }
       }
     }
