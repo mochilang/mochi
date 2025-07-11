@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 94/97 successful.
+Compiled programs: 95/100 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -25,6 +25,7 @@ Compiled programs: 94/97 successful.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
+- [ ] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -72,10 +73,12 @@ Compiled programs: 94/97 successful.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
+- [ ] python_auto.mochi
+- [ ] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
-- [ ] save_jsonl_stdout.mochi
+- [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
 - [x] sort_stable.mochi
@@ -102,7 +105,17 @@ Compiled programs: 94/97 successful.
 - [x] while_loop.mochi
 
 ## Status
-3 programs failed.
+5 programs failed.
 
 ## Remaining tasks
 - [ ] Fix failing examples
+- [ ] Improve path handling for data files
+- [ ] Reduce generated code size
+- [ ] Add more comments to generated code
+- [ ] Support macros in future versions
+- [ ] Investigate performance of query helper
+- [ ] Add tests for edge cases
+- [ ] Validate JSON/YAML helpers
+- [ ] Refactor runtime helpers
+- [ ] Verify Windows compatibility
+- [ ] Explore REPL integration

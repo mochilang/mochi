@@ -408,11 +408,11 @@ var helperOrder = []string{
 	"_max",
 	"_Group",
 	"_group_by",
-	"_parse_csv",
-	"_load",
-	"_save",
-	"_escape_json",
-	"_to_json",
+        "_parse_csv",
+        "_load",
+        "_escape_json",
+        "_to_json",
+        "_save",
 	"_json",
 	"_sort_key",
 	"_in",
@@ -432,10 +432,11 @@ var helperOrder = []string{
 // helperDeps lists transitive helper dependencies.
 // When a helper is used, its dependencies are also emitted.
 var helperDeps = map[string][]string{
-	"_json":             {"_to_json"},
-	"_to_json":          {"_escape_json"},
-	"_load":             {"_parse_csv"},
-	"_cast_struct_list": {"_cast_struct"},
+        "_json":             {"_to_json"},
+        "_to_json":          {"_escape_json"},
+        "_load":             {"_parse_csv"},
+        "_save":             {"_to_json"},
+        "_cast_struct_list": {"_cast_struct"},
 }
 
 func (c *Compiler) use(name string) {

@@ -85,7 +85,7 @@
   (def result (let [_src orders]
   (_query _src [
     {:items customers :leftKey (fn [o] (:customerId o)) :rightKey (fn [c] (:id c)) :left true :right true}
-  ] { :select (fn [o c] {:order o :customer c}) }))) ;; list of map of string to any
+  ] { :select (fn [o c] {:order o :customer c}) }))) ;; list of 
   (println "--- Outer Join using syntax ---")
   (loop [_tmp0 (seq result)]
     (when _tmp0
@@ -127,3 +127,4 @@
 )
 
 (-main)
+)

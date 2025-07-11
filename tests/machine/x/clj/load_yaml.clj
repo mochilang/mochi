@@ -54,7 +54,7 @@
 
 (defn -main []
   (def people (mapv Person (_load "../interpreter/valid/people.yaml" {:format "yaml"}))) ;; list of Person
-  (def adults (vec (->> (for [p people :when (>= (:age p) 18)] {:name (:name p) :email (:email p)})))) ;; list of map of string to string
+  (def adults (vec (->> (for [p people :when (>= (:age p) 18)] {:name (:name p) :email (:email p)})))) ;; list of 
   (loop [_tmp0 (seq adults)]
     (when _tmp0
       (let [a (clojure.core/first _tmp0)]

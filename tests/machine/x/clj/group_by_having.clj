@@ -41,8 +41,9 @@
 
 (defn -main []
   (def people [{:name "Alice" :city "Paris"} {:name "Bob" :city "Hanoi"} {:name "Charlie" :city "Paris"} {:name "Diana" :city "Hanoi"} {:name "Eve" :city "Paris"} {:name "Frank" :city "Hanoi"} {:name "George" :city "Paris"}]) ;; list of 
-  (def big (map (fn [g] {:city (:key g) :num (count (:Items g))}) (_group_by people (fn [p] (:city p))))) ;; list of map of string to any
+  (def big (map (fn [g] {:city (:key g) :num (count (:Items g))}) (_group_by people (fn [p] (:city p))))) ;; list of 
   (_json big)
 )
 
 (-main)
+)

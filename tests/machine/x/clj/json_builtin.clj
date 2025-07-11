@@ -22,7 +22,7 @@
 (declare m)
 
 (defn -main []
-  (def m {:a 1 :b 2}) ;; map of string to int
+  (def m {:a 1 :b 2}) ;; 
   (_json m)
 )
 
