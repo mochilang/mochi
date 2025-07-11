@@ -1,0 +1,108 @@
+// Mochi implementation of Rosetta "Box the compass" task
+// Computation done directly without global functions referencing.
+
+fun padStart(s: string, width: int, ch: string): string {
+  if len(s) >= width { return s }
+  var pad = ""
+  var i = 0
+  while i < width - len(s) {
+    pad = pad + ch
+    i = i + 1
+  }
+  return pad + s
+}
+
+fun padEnd(s: string, width: int, ch: string): string {
+  if len(s) >= width { return s }
+  var pad = ""
+  var i = 0
+  while i < width - len(s) {
+    pad = pad + ch
+    i = i + 1
+  }
+  return s + pad
+}
+
+fun repeat(ch: string, n: int): string {
+  var out = ""
+  var i = 0
+  while i < n {
+    out = out + ch
+    i = i + 1
+  }
+  return out
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmt2(f: float): string {
+  var s = str(f)
+  let idx = indexOf(s, ".")
+  if idx < 0 { return s + ".00" }
+  var need = idx + 3
+  if len(s) >= need { return substring(s, 0, need) }
+  return s + repeat("0", need - len(s))
+}
+
+var compassPoint = [
+  "North",
+  "North by east",
+  "North-northeast",
+  "Northeast by north",
+  "Northeast",
+  "Northeast by east",
+  "East-northeast",
+  "East by north",
+  "East",
+  "East by south",
+  "East-southeast",
+  "Southeast by east",
+  "Southeast",
+  "Southeast by south",
+  "South-southeast",
+  "South by east",
+  "South",
+  "South by west",
+  "South-southwest",
+  "Southwest by south",
+  "Southwest",
+  "Southwest by west",
+  "West-southwest",
+  "West by south",
+  "West",
+  "West by north",
+  "West-northwest",
+  "Northwest by west",
+  "Northwest",
+  "Northwest by north",
+  "North-northwest",
+  "North by west",
+]
+
+print("Index  Compass point         Degree")
+var idx = 1
+var headings = [0.0, 16.87, 16.88, 33.75, 50.62, 50.63, 67.5,
+                84.37, 84.38, 101.25, 118.12, 118.13, 135.0,
+                151.87, 151.88, 168.75, 185.62, 185.63, 202.5,
+                219.37, 219.38, 236.25, 253.12, 253.13, 270.0,
+                286.87, 286.88, 303.75, 320.62, 320.63, 337.5,
+                354.37, 354.38]
+for h in headings {
+  var f = (h / 11.25) + 0.5
+  var x = (f as int) % 32
+  if x < 0 { x = x + 32 }
+  var cp = compassPoint[x]
+  var idxStr = padStart(str(idx), 4, " ")
+  var cpStr = padEnd(cp, 19, " ")
+  var degStr = padStart(fmt2(h), 7, " ")
+  print(idxStr + "   " + cpStr + " " + degStr + "°")
+  idx = idx + 1
+  if idx == 33 { idx = 1 }
+}
