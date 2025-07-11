@@ -1,14 +1,14 @@
 class AB {
-	int a;
-	int b;
-	AB(int a, int b) {
-		this.a = a;
-		this.b = b;
-	}
-	int size() { return 2; }
+    int a;
+    int b;
+    AB(int a, int b) {
+        this.a = a;
+        this.b = b;
+    }
+    int size() { return 2; }
 }
 public class LenMap {
-	public static void main(String[] args) {
-	System.out.println(new AB(1, 2).size());
-	}
+    public static void main(String[] args) {
+    System.out.println(new AB(1, 2).size());
+    }
 }

@@ -469,17 +469,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	finalBuf := new(bytes.Buffer)
 	c.buf = finalBuf
+	importsWritten := false
 	if c.needUtilImports {
 		c.writeln("import java.util.*;")
+		importsWritten = true
 	}
 	if c.helpers["load_yaml"] {
 		c.writeln("import java.io.*;")
+		importsWritten = true
 	}
 	if c.needFuncImports {
 		c.writeln("import java.util.function.*;")
+		importsWritten = true
+	}
+	if importsWritten {
+		c.writeln("")
 	}
 	c.buf.WriteString(code)
-	return c.buf.Bytes(), nil
+	out := strings.ReplaceAll(c.buf.String(), "\t", "    ")
+	return []byte(out), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {

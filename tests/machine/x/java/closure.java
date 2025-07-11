@@ -1,10 +1,11 @@
 import java.util.function.*;
+
 public class Closure {
-	static IntUnaryOperator makeAdder(int n) {
-		return x -> x + n;
-	}
-	public static void main(String[] args) {
-	IntUnaryOperator add10 = makeAdder(10);
-	System.out.println(add10.applyAsInt(7));
-	}
+    static IntUnaryOperator makeAdder(int n) {
+        return x -> x + n;
+    }
+    public static void main(String[] args) {
+    IntUnaryOperator add10 = makeAdder(10);
+    System.out.println(add10.applyAsInt(7));
+    }
 }
