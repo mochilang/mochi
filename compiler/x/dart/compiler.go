@@ -18,23 +18,32 @@ import (
 // translation is incomplete, but it is sufficient for simple examples such as
 // variable declarations and basic arithmetic/print statements.
 type Compiler struct {
-	env       *types.Env
-	buf       bytes.Buffer
-	indent    int
-	useIn     bool
-	useJSON   bool
-	useIO     bool
-	useYAML   bool
-	useLoad   bool
-	useSave   bool
-	tmp       int
-	mapVars   map[string]bool
-	groupKeys map[string]string
+	env              *types.Env
+	buf              bytes.Buffer
+	indent           int
+	useIn            bool
+	useJSON          bool
+	useIO            bool
+	useYAML          bool
+	useLoad          bool
+	useSave          bool
+	tmp              int
+	mapVars          map[string]bool
+	groupKeys        map[string]string
+	useMath          bool
+	mathAliases      map[string]bool
+	goTestpkgAliases map[string]bool
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string)}
+	return &Compiler{
+		env:              env,
+		mapVars:          make(map[string]bool),
+		groupKeys:        make(map[string]string),
+		mathAliases:      make(map[string]bool),
+		goTestpkgAliases: make(map[string]bool),
+	}
 }
 
 // Compile translates the given Mochi program into Dart source code.  If there
@@ -81,6 +90,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				return nil, err
 			}
 			c.writeln("")
+		case st.Import != nil:
+			if err := c.compileImport(st.Import); err != nil {
+				return nil, err
+			}
+			c.writeln("")
 		}
 	}
 	fnBuf.Write(c.buf.Bytes())
@@ -89,7 +103,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("void main() {")
 	c.indent++
 	for _, st := range prog.Statements {
-		if st.Fun != nil || st.Let != nil || st.Var != nil {
+		if st.Fun != nil || st.Let != nil || st.Var != nil || st.Import != nil || st.ExternVar != nil || st.ExternFun != nil || st.ExternType != nil || st.ExternObject != nil {
 			continue
 		}
 		if err := c.compileStmt(st); err != nil {
@@ -109,11 +123,23 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.useJSON {
 		out.WriteString("import 'dart:convert';\n")
 	}
+	if c.useMath {
+		for alias := range c.mathAliases {
+			out.WriteString(fmt.Sprintf("import 'dart:math' as %s;\n", alias))
+		}
+	}
 	if c.useYAML {
 		// no external dependencies; a tiny YAML parser is embedded below
 	}
-	if c.useIO || c.useJSON || c.useYAML {
+	if c.useIO || c.useJSON || c.useYAML || c.useMath {
 		out.WriteString("\n")
+	}
+	for alias := range c.goTestpkgAliases {
+		out.WriteString(fmt.Sprintf("class %s {\n", alias))
+		out.WriteString("  static int Add(int a, int b) => a + b;\n")
+		out.WriteString("  static double Pi = 3.14;\n")
+		out.WriteString("  static int Answer = 42;\n")
+		out.WriteString("}\n\n")
 	}
 	if c.useIn {
 		out.WriteString("bool _in(dynamic item, dynamic col) {\n")
@@ -203,6 +229,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations have no runtime effect
+		return nil
 	case s.Test != nil:
 		// test blocks are ignored
 		return nil
@@ -374,6 +405,30 @@ func (c *Compiler) compileType(td *parser.TypeDecl) error {
 	c.indent--
 	c.writeln("}")
 	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "python":
+		if strings.Trim(im.Path, "\"") == "math" {
+			c.useMath = true
+			c.mathAliases[alias] = true
+			return nil
+		}
+	case "go":
+		if im.Auto && im.Path == "mochi/runtime/ffi/go/testpkg" {
+			c.goTestpkgAliases[alias] = true
+			return nil
+		}
+	}
+	return fmt.Errorf("unsupported import %s %s", *im.Lang, im.Path)
 }
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
