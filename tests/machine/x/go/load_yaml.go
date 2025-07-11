@@ -15,12 +15,12 @@ type Person struct {
 }
 
 func main() {
-	type _ struct {
+	type v struct {
 		Format string `json:"format"`
 	}
 
 	var people []Person = func() []Person {
-		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(_{Format: "yaml"}))
+		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(v{Format: "yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
 			out[i] = r.(Person)

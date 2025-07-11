@@ -1,5 +1,8 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/save_jsonl_stdout.go:29:31: cannot use _ as value or type
-
+Error on line 0: output mismatch
+-- got --
+30,Alice
+25,Bob
+-- want --
+{"age":30,"name":"Alice"}
+{"age":25,"name":"Bob"}
 1: //go:build ignore

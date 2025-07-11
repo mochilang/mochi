@@ -1,6 +1,6 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
 ../../../tests/machine/x/go/group_items_iteration.go:53:23: x.Val undefined (type any has no field or method Val)
-../../../tests/machine/x/go/group_items_iteration.go:60:21: cannot use _ as value or type
+../../../tests/machine/x/go/group_items_iteration.go:61:11: cannot use g.Key (variable of interface type any) as string value in struct literal: need type assertion
 
 1: //go:build ignore

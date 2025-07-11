@@ -1219,7 +1219,7 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 		}
 		loopVar := name
 		if !useVar {
-			loopVar = c.newVar()
+			loopVar = c.newNamedVar("i")
 		}
 		c.writeIndent()
 		c.buf.WriteString(fmt.Sprintf("for %s := %s; %s < %s; %s++ {\n", loopVar, start, loopVar, end, loopVar))
@@ -1306,8 +1306,8 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	listVar := sanitizeName(u.Target)
-	idxVar := c.newVar()
-	itemVar := c.newVar()
+	idxVar := c.newNamedVar("i")
+	itemVar := c.newNamedVar("v")
 
 	var elemType types.Type = types.AnyType{}
 	if c.env != nil {
@@ -1801,15 +1801,15 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		switch rightType.(type) {
 		case types.MapType:
 			mt := rightType.(types.MapType)
-			keyTemp := c.newVar()
-			mapTemp := c.newVar()
+			keyTemp := c.newNamedVar("key")
+			mapTemp := c.newNamedVar("m")
 			c.writeln(fmt.Sprintf("%s := %s", keyTemp, left))
 			c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
 			keyExpr := keyTemp
 			if !equalTypes(leftType, mt.Key) || isAny(leftType) {
 				keyExpr = fmt.Sprintf("(%s).(%s)", keyTemp, goType(mt.Key))
 			}
-			okVar := c.newVar()
+			okVar := c.newNamedVar("ok")
 			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyExpr))
 			expr = okVar
 			next = types.BoolType{}
@@ -3079,7 +3079,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 					typ = "any"
 				}
 				if typ != "any" {
-					tmp := fmt.Sprintf("_tmp%d", i)
+					tmp := fmt.Sprintf("tmp%d", i)
 					parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
 				} else {
 					parts[i] = fmt.Sprintf("%s := _a[%d]; _ = %s", n, i, n)
@@ -3529,7 +3529,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		if call, ok := callPattern(cse.Pattern); ok {
 			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
 				st := ut.Variants[call.Func]
-				varName := c.newVar()
+				varName := c.newNamedVar("tmp")
 				cond := fmt.Sprintf("%s, ok := _t.(%s); ok", varName, sanitizeName(call.Func))
 				buf.WriteString("\tif " + cond + " {\n")
 				for idx, arg := range call.Args {

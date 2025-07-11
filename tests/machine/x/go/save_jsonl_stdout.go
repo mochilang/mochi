@@ -22,11 +22,11 @@ func main() {
 		Name: "Bob",
 		Age:  25,
 	}}
-	type _ struct {
+	type v struct {
 		Format string `json:"format"`
 	}
 
-	_save(people, "-", _toAnyMap(_{Format: "jsonl"}))
+	_save(people, "-", _toAnyMap(v{Format: "jsonl"}))
 }
 
 func _save(src any, path string, opts map[string]any) {

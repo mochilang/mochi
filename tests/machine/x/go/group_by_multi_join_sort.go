@@ -87,7 +87,7 @@ func main() {
 		C_comment any `json:"c_comment"`
 	}
 
-	type _ struct {
+	type v struct {
 		C_custkey int     `json:"c_custkey"`
 		C_name    string  `json:"c_name"`
 		C_acctbal float64 `json:"c_acctbal"`
@@ -114,7 +114,7 @@ func main() {
 							continue
 						}
 						if ((o.O_orderdate >= start_date) && (o.O_orderdate < end_date)) && (l.L_returnflag == "R") {
-							key := _{
+							key := v{
 								C_custkey: c.C_custkey,
 								C_name:    c.C_name,
 								C_acctbal: c.C_acctbal,

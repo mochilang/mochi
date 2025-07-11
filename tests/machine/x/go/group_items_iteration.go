@@ -10,25 +10,25 @@ import (
 )
 
 func main() {
-	type _dataItem struct {
+	type DataVarItem struct {
 		Tag string `json:"tag"`
 		Val int    `json:"val"`
 	}
 
-	var _data []_dataItem = []_dataItem{_dataItem{
+	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
 		Tag: "a",
 		Val: 1,
-	}, _dataItem{
+	}, DataVarItem{
 		Tag: "a",
 		Val: 2,
-	}, _dataItem{
+	}, DataVarItem{
 		Tag: "b",
 		Val: 3,
 	}}
 	var groups []*data.Group = func() []*data.Group {
 		groups := map[string]*data.Group{}
 		order := []string{}
-		for _, d := range _data {
+		for _, d := range dataVar {
 			key := d.Tag
 			ks := fmt.Sprint(key)
 			g, ok := groups[ks]
@@ -52,12 +52,12 @@ func main() {
 		for _, x := range g.Items {
 			total = (total + x.Val)
 		}
-		type _ struct {
+		type v struct {
 			Tag   string `json:"tag"`
 			Total int    `json:"total"`
 		}
 
-		tmp = append(tmp, _{
+		tmp = append(tmp, v{
 			Tag:   g.Key,
 			Total: total,
 		})
