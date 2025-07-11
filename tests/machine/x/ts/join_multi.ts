@@ -3,7 +3,7 @@
 let customers: _[];
 let items: _[];
 let orders: _[];
-let result: { [key: string]: any }[];
+let result: _[];
 
 function main(): void {
   customers = [

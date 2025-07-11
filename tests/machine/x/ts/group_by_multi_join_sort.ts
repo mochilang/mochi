@@ -5,7 +5,7 @@ let end_date: string;
 let lineitem: _[];
 let nation: _[];
 let orders: _[];
-let result: { [key: string]: any }[];
+let result: _[];
 let start_date: string;
 
 function main(): void {

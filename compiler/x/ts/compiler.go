@@ -594,6 +594,41 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 		lhs = fmt.Sprintf("%s[%s]", lhs, iexpr)
 	}
+	if q, ok := queryExprOf(s.Value); ok {
+		expr, err := c.compileQueryExpr(q)
+		if err != nil {
+			return err
+		}
+		if strings.HasPrefix(expr, "(() => {") && strings.HasSuffix(expr, "})()") {
+			body := strings.TrimSuffix(strings.TrimPrefix(expr, "(() => {"), "})()")
+			body = strings.TrimSuffix(body, "\n")
+			lines := strings.Split(body, "\n")
+			if len(lines) > 0 && strings.TrimSpace(lines[0]) == "" {
+				lines = lines[1:]
+			}
+			for i, ln := range lines {
+				if strings.HasPrefix(ln, indentStr) {
+					lines[i] = strings.TrimPrefix(ln, indentStr)
+				}
+			}
+			if len(lines) > 0 {
+				last := strings.TrimSpace(lines[len(lines)-1])
+				if strings.HasPrefix(last, "return ") && strings.HasSuffix(last, ";") {
+					retVar := strings.TrimSuffix(strings.TrimPrefix(last, "return "), ";")
+					lines = lines[:len(lines)-1]
+					for _, ln := range lines {
+						c.writeln(ln)
+					}
+					c.writeln(fmt.Sprintf("%s = %s", lhs, retVar))
+					return nil
+				}
+			}
+			c.writeln(fmt.Sprintf("%s = %s", lhs, strings.TrimSpace(expr)))
+			return nil
+		}
+		c.writeln(fmt.Sprintf("%s = %s", lhs, expr))
+		return nil
+	}
 	value, err := c.compileExpr(s.Value)
 	if err != nil {
 		return err
@@ -3115,6 +3150,20 @@ func (c *Compiler) eqFilter(e *parser.Expr, varName string) (string, string, boo
 		}
 	}
 	return "", "", false
+}
+
+func queryExprOf(e *parser.Expr) (*parser.QueryExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return nil, false
+	}
+	if u.Value.Target == nil || u.Value.Target.Query == nil {
+		return nil, false
+	}
+	return u.Value.Target.Query, true
 }
 
 func fieldFromUnary(u *parser.Unary, varName string) (string, bool) {

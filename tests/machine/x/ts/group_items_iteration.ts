@@ -46,7 +46,7 @@ function main(): void {
   tmp = [];
   for (const g of groups) {
     var total = 0;
-    for (const x of _iter(g.items)) {
+    for (const x of g.items) {
       total = total + x.val;
     }
     tmp = _append(tmp, {
@@ -89,17 +89,6 @@ function _append<T>(lst: T[] | null, v: T): T[] {
   const out = lst ? lst.slice() : [];
   out.push(v);
   return out;
-}
-
-function _iter<T>(
-  v: Iterable<T> | { [key: string]: T } | any,
-): Iterable<T | string> {
-  if (
-    v && typeof v === "object" && !Array.isArray(v) && !(Symbol.iterator in v)
-  ) {
-    return Object.keys(v);
-  }
-  return v as Iterable<T>;
 }
 
 main();

@@ -3,7 +3,7 @@
 let customers: _[];
 let items: _[];
 let orders: _[];
-let result: { [key: string]: any }[];
+let result: _[];
 
 function main(): void {
   customers = [
@@ -47,7 +47,7 @@ function main(): void {
   })();
   console.log("--- Left Join Multi ---");
   for (const r of result) {
-    console.log(r.orderId, r.name, r.item);
+    console.log(r.orderId, r.name, JSON.stringify(r.item));
   }
 }
 function _query(src: any[], joins: any[], opts: any): any {
