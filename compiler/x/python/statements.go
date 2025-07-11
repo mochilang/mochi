@@ -10,6 +10,103 @@ import (
 	"mochi/types"
 )
 
+func toCamelCase(name string) string {
+	parts := strings.FieldsFunc(name, func(r rune) bool {
+		return r == '_' || r == '-' || r == ' '
+	})
+	for i, p := range parts {
+		if p == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(p[:1]) + strings.ToLower(p[1:])
+	}
+	return strings.Join(parts, "")
+}
+
+func dataclassNameFromVar(name string) string {
+	if name == "people" {
+		name = "person"
+	}
+	if strings.HasSuffix(name, "ies") {
+		name = name[:len(name)-3] + "y"
+	} else if strings.HasSuffix(name, "s") {
+		name = name[:len(name)-1]
+	}
+	return toCamelCase(name)
+}
+
+func (c *Compiler) registerAutoStruct(name string, st types.StructType) types.StructType {
+	key := structKey(st)
+	if n, ok := c.structKeys[key]; ok {
+		st.Name = n
+		return st
+	}
+	c.imports["dataclasses"] = "dataclasses"
+	st.Name = name
+	c.autoStructs[name] = st
+	c.structKeys[key] = name
+	if c.env != nil {
+		c.env.SetStruct(name, st)
+	}
+	return st
+}
+
+func (c *Compiler) listAsStruct(ll *parser.ListLiteral, varName string) (string, types.StructType, bool, error) {
+	if ll == nil || len(ll.Elems) == 0 {
+		return "", types.StructType{}, false, nil
+	}
+	firstMap := ll.Elems[0].Binary.Left.Value.Target.Map
+	if firstMap == nil {
+		return "", types.StructType{}, false, nil
+	}
+	keys := make([]string, len(firstMap.Items))
+	fields := make(map[string]types.Type, len(firstMap.Items))
+	for i, it := range firstMap.Items {
+		name, ok := identName(it.Key)
+		if !ok {
+			return "", types.StructType{}, false, nil
+		}
+		keys[i] = name
+		fields[name] = c.inferExprType(it.Value)
+	}
+	for _, el := range ll.Elems[1:] {
+		m := el.Binary.Left.Value.Target.Map
+		if m == nil || len(m.Items) != len(keys) {
+			return "", types.StructType{}, false, nil
+		}
+		for i, it := range m.Items {
+			name, ok := identName(it.Key)
+			if !ok || name != keys[i] {
+				return "", types.StructType{}, false, nil
+			}
+			t := c.inferExprType(it.Value)
+			if ft, ok := fields[name]; ok {
+				if !equalTypes(ft, t) {
+					fields[name] = types.AnyType{}
+				}
+			}
+		}
+	}
+	name := dataclassNameFromVar(varName)
+	st := types.StructType{Fields: fields, Order: keys}
+	st = c.registerAutoStruct(name, st)
+	elems := make([]string, len(ll.Elems))
+	for i, el := range ll.Elems {
+		m := el.Binary.Left.Value.Target.Map
+		parts := make([]string, len(m.Items))
+		for j, it := range m.Items {
+			name, _ := identName(it.Key)
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", types.StructType{}, false, err
+			}
+			parts[j] = fmt.Sprintf("%s=%s", sanitizeName(name), v)
+		}
+		elems[i] = fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(parts, ", "))
+	}
+	return "[" + strings.Join(elems, ", ") + "]", st, true, nil
+}
+
 // --- Statements ---
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
@@ -107,6 +204,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		typ = c.resolveTypeRef(s.Type)
 	}
 	if s.Value != nil {
+		if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+			if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
+				value = val
+				typ = types.ListType{Elem: st}
+			} else if err != nil {
+				return err
+			}
+		}
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
 				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
@@ -171,6 +276,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		typ = c.resolveTypeRef(s.Type)
 	}
 	if s.Value != nil {
+		if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+			if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
+				value = val
+				typ = types.ListType{Elem: st}
+			} else if err != nil {
+				return err
+			}
+		}
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if mt, ok := typ.(types.MapType); ok {
 				typStr := fmt.Sprintf("typing.cast(dict[%s, %s], {})", pyType(c.namedType(mt.Key)), pyType(c.namedType(mt.Value)))
