@@ -112,7 +112,7 @@ Compiled: 100/100 programs
 ## Remaining Tasks
 
 - [ ] Improve formatting of generated interfaces
-- [ ] Use template strings for string concatenation
+- [x] Use template strings for string concatenation
 - [x] Leverage built-in array helpers instead of manual loops
 - [ ] Add async function support for I/O operations
 - [ ] Preserve comments from source Mochi code

@@ -77,6 +77,41 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func stringLiteralFromUnary(u *parser.Unary) (string, bool) {
+	if u == nil || len(u.Ops) != 0 {
+		return "", false
+	}
+	return stringLiteralFromPostfix(u.Value)
+}
+
+func stringLiteralFromPostfix(p *parser.PostfixExpr) (string, bool) {
+	if p == nil || len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
+
+func allPlus(ops []string) bool {
+	for _, op := range ops {
+		if op != "+" {
+			return false
+		}
+	}
+	return true
+}
+
+func hasString(tps []types.Type) bool {
+	for _, t := range tps {
+		if isString(t) {
+			return true
+		}
+	}
+	return false
+}
+
 func (c *Compiler) compileStructType(st types.StructType) {
 	name := sanitizeName(st.Name)
 	if c.structs[name] {
