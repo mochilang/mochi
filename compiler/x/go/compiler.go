@@ -2370,7 +2370,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMapLike(c.inferExprType(f.With)) {
+		if isStringAnyMapLike(c.inferExprType(f.With)) {
 			withStr = w
 		} else {
 			c.use("_toAnyMap")
@@ -2468,7 +2468,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMapLike(c.inferExprType(l.With)) {
+		if isStringAnyMapLike(c.inferExprType(l.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
@@ -2520,7 +2520,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringMapLike(c.inferExprType(s.With)) {
+		if isStringAnyMapLike(c.inferExprType(s.With)) {
 			opts = v
 		} else {
 			c.use("_toAnyMap")
