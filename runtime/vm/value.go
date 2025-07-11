@@ -2,6 +2,7 @@ package vm
 
 import (
 	"fmt"
+	"math/big"
 	"reflect"
 )
 
@@ -11,6 +12,7 @@ type ValueTag uint8
 const (
 	ValueNull ValueTag = iota
 	ValueInt
+	ValueBigInt
 	ValueFloat
 	ValueStr
 	ValueBool
@@ -21,14 +23,15 @@ const (
 
 // Value is a tagged union used at runtime to avoid reflection.
 type Value struct {
-	Tag   ValueTag
-	Int   int
-	Float float64
-	Str   string
-	Bool  bool
-	List  []Value
-	Map   map[string]Value
-	Func  any
+	Tag    ValueTag
+	Int    int
+	BigInt *big.Int
+	Float  float64
+	Str    string
+	Bool   bool
+	List   []Value
+	Map    map[string]Value
+	Func   any
 }
 
 // Truthy returns the boolean interpretation of v.
@@ -38,6 +41,8 @@ func (v Value) Truthy() bool {
 		return v.Bool
 	case ValueInt:
 		return v.Int != 0
+	case ValueBigInt:
+		return v.BigInt != nil && v.BigInt.Sign() != 0
 	case ValueFloat:
 		return v.Float != 0
 	case ValueStr:
@@ -57,6 +62,11 @@ func (v Value) ToAny() any {
 	switch v.Tag {
 	case ValueInt:
 		return v.Int
+	case ValueBigInt:
+		if v.BigInt == nil {
+			return (*big.Int)(nil)
+		}
+		return new(big.Int).Set(v.BigInt)
 	case ValueFloat:
 		return v.Float
 	case ValueBool:
@@ -109,6 +119,15 @@ func FromAny(v any) Value {
 		return Value{Tag: ValueInt, Int: int(val)}
 	case uint8:
 		return Value{Tag: ValueInt, Int: int(val)}
+	case *big.Int:
+		if val == nil {
+			return Value{Tag: ValueBigInt}
+		}
+		return Value{Tag: ValueBigInt, BigInt: new(big.Int).Set(val)}
+	case big.Int:
+		tmp := new(big.Int)
+		tmp.Set(&val)
+		return Value{Tag: ValueBigInt, BigInt: tmp}
 	case float64:
 		return Value{Tag: ValueFloat, Float: val}
 	case float32:

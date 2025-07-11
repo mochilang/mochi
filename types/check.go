@@ -28,6 +28,10 @@ type FloatType struct{}
 
 func (FloatType) String() string { return "float" }
 
+type BigIntType struct{}
+
+func (BigIntType) String() string { return "bigint" }
+
 type StringType struct{}
 
 func (StringType) String() string { return "string" }
@@ -287,12 +291,24 @@ func unify(a, b Type, subst Subst) bool {
 		return unify(at.Return, bt.Return, subst)
 
 	case IntType:
-		_, ok := b.(IntType)
-		return ok
+		switch b.(type) {
+		case IntType, BigIntType:
+			return true
+		default:
+			return false
+		}
 
 	case Int64Type:
 		switch b.(type) {
 		case Int64Type, IntType:
+			return true
+		default:
+			return false
+		}
+
+	case BigIntType:
+		switch b.(type) {
+		case BigIntType, IntType, Int64Type:
 			return true
 		default:
 			return false
@@ -1165,6 +1181,8 @@ func resolveTypeRef(t *parser.TypeRef, env *Env) Type {
 			return IntType{}
 		case "float":
 			return FloatType{}
+		case "bigint":
+			return BigIntType{}
 		case "string":
 			return StringType{}
 		case "bool":
@@ -2287,7 +2305,7 @@ func isQueryExpr(e *parser.Expr) bool {
 
 func isNumeric(t Type) bool {
 	switch t.(type) {
-	case IntType, Int64Type, FloatType:
+	case IntType, Int64Type, FloatType, BigIntType:
 		return true
 	default:
 		return false
