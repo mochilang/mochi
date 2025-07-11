@@ -11,8 +11,8 @@ class ItemsCatFlagVal {
 }
 class ResultCatShare {
 	Object cat;
-	int share;
-	ResultCatShare(Object cat, int share) {
+	double share;
+	ResultCatShare(Object cat, double share) {
 		this.cat = cat;
 		this.share = share;
 	}
