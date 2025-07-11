@@ -14,7 +14,7 @@ var
   _tmp3: specialize TFPGMap<string, Variant>;
   _tmp4: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp5: specialize TFPGMap<string, Variant>;
-  _tmp6: integer;
+  _tmp6: string;
   adults: specialize TArray<specialize TFPGMap<string, Variant>>;
   people: specialize TArray<specialize TFPGMap<string, Variant>>;
   person: specialize TFPGMap<string, Variant>;
