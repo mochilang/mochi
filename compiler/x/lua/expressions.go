@@ -49,6 +49,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	ops := []string{}
 	strs := []bool{c.isStringUnary(b.Left)}
 	maps := []bool{c.isMapUnary(b.Left)}
+	nums := []bool{c.isNumberUnary(b.Left)}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -62,6 +63,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		operands = append(operands, right)
 		strs = append(strs, c.isStringPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
+		nums = append(nums, c.isNumberPostfix(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
@@ -73,6 +75,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				opstr := ops[i]
 				var expr string
 				resStr := false
+				resNum := false
 				switch opstr {
 				case "&&":
 					expr = fmt.Sprintf("(%s and %s)", l, r)
@@ -94,6 +97,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					if strs[i] && strs[i+1] {
 						expr = fmt.Sprintf("(%s .. %s)", l, r)
 						resStr = true
+					} else if nums[i] && nums[i+1] {
+						expr = fmt.Sprintf("(%s + %s)", l, r)
+						resNum = true
 					} else {
 						c.helpers["add"] = true
 						expr = fmt.Sprintf("__add(%s, %s)", l, r)
@@ -138,6 +144,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				strs = append(strs[:i+1], strs[i+2:]...)
 				maps[i] = false
 				maps = append(maps[:i+1], maps[i+2:]...)
+				nums[i] = resNum
+				nums = append(nums[:i+1], nums[i+2:]...)
 			} else {
 				i++
 			}
