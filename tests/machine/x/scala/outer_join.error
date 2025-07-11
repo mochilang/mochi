@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/outer_join.scala:28: error: value name is not a member of Any
-          println(("Order") + " " + (row.order.id) + " " + ("by") + " " + (row.customer.name) + " " + ("- $") + " " + (row.order.total))
-                                                                                        ^
-/workspace/mochi/tests/machine/x/scala/outer_join.scala:33: error: value name is not a member of Any
-        println(("Customer") + " " + (row.customer.name) + " " + ("has no orders"))
-                                                   ^
-two errors found

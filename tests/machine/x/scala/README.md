@@ -131,4 +131,14 @@ Executed successfully: 91
 - [ ] Support multi-module compilation.
 - [ ] Improve REPL integration tests.
 - [ ] Explore native-image compilation with GraalVM.
+- [ ] Implement Option type support in the type checker.
+- [ ] Add outer join helpers for Option results.
+- [ ] Improve error messages for joins.
+- [ ] Benchmark large dataset performance.
+- [ ] Add Scala version compatibility tests.
+- [ ] Document compilation steps in wiki.
+- [ ] Support customizable package names.
+- [ ] Add linter for generated Scala code.
+- [ ] Provide Dockerfile for Scala environment.
+- [ ] Experiment with typeclass derivation.
 

@@ -1234,6 +1234,14 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			return base
+		case types.OptionType:
+			base := fmt.Sprintf("%s.get", s.Root)
+			cur := tt.Elem
+			for _, f := range s.Tail {
+				base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
+			}
+			_ = cur
+			return base
 		case types.StructType:
 			if tt.Name == "" {
 				base := s.Root
@@ -1671,7 +1679,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			child.SetVar(j.Var, elemT, false)
 		} else {
 			parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
-			child.SetVar(j.Var, types.AnyType{}, false)
+			child.SetVar(j.Var, types.OptionType{Elem: elemT}, false)
 		}
 	}
 

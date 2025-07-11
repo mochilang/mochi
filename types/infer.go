@@ -302,6 +302,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 						cur = ft
 					case MapType:
 						cur = tt.Value
+					case OptionType:
+						cur = tt.Elem
 					case ListType:
 						if field == "contains" {
 							cur = FuncType{Params: []Type{tt.Elem}, Return: BoolType{}}
@@ -769,6 +771,11 @@ func equalTypes(a, b Type) bool {
 	if ma, ok := a.(MapType); ok {
 		if mb, ok := b.(MapType); ok {
 			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
+		}
+	}
+	if oa, ok := a.(OptionType); ok {
+		if ob, ok := b.(OptionType); ok {
+			return equalTypes(oa.Elem, ob.Elem)
 		}
 	}
 	if ua, ok := a.(UnionType); ok {
