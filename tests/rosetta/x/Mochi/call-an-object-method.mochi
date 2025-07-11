@@ -1,0 +1,20 @@
+// Mochi implementation of Rosetta "Call an object method" task
+// Translated from Go version in tests/rosetta/x/Go/call-an-object-method-3.go
+
+type Box {
+  Contents: string
+  secret: int
+
+  fun TellSecret(): int {
+    return secret
+  }
+}
+
+fun New(): Box {
+  var b = Box{ Contents: "rabbit", secret: 1 }
+  return b
+}
+
+var box = New()
+
+box.TellSecret()
