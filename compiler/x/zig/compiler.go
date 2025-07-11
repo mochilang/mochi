@@ -2735,7 +2735,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		b.WriteString("defer " + tmp + ".deinit(); ")
 		b.WriteString(tmp + ".appendSlice(" + listArg + ") catch unreachable; ")
 		b.WriteString(tmp + ".append(" + elemArg + ") catch unreachable; ")
-		b.WriteString("break :" + lbl + " " + tmp + ".toOwnedSlice() catch unreachable; }")
+		b.WriteString("break :" + lbl + " " + tmp + ".items; }")
 		return b.String(), nil
 	}
 	if name == "min" && len(call.Args) == 1 {

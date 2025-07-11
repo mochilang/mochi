@@ -120,3 +120,13 @@ Compiled programs: 100/100
 - [ ] Handle recursive type definitions.
 - [ ] Emit comments describing inferred variable types.
 - [ ] Provide CLI to compile individual Mochi programs.
+- [ ] Add benchmarks for Zig compiler output performance.
+- [ ] Refactor code generation to use templates for readability.
+- [ ] Investigate using Zig generics for map operations.
+- [ ] Document differences between Mochi semantics and Zig translations.
+- [ ] Add CI step to verify Zig code compiles.
+- [ ] Support streaming JSON encoding.
+- [ ] Improve error messages when compilation fails.
+- [ ] Add support for customizing allocator.
+- [ ] Introduce command line options for optimization levels.
+- [ ] Provide examples demonstrating interop with C libraries.
