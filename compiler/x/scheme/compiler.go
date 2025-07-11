@@ -14,7 +14,7 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(import (srfi 95) (chibi json) (chibi io) (chibi) (chibi string))
+const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chibi process) (chibi fmt) (chibi) (chibi string))
 
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
