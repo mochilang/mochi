@@ -130,3 +130,13 @@ Compiled programs: 100/100
 - [ ] Add support for customizing allocator.
 - [ ] Introduce command line options for optimization levels.
 - [ ] Provide examples demonstrating interop with C libraries.
+- [ ] Support customizable import paths.
+- [ ] Generate documentation comments for emitted functions.
+- [ ] Optionally disable runtime helpers for smaller binaries.
+- [ ] Unroll small-range loops for performance.
+- [ ] Capture closures across multiple modules.
+- [ ] Provide a linter for generated Zig code.
+- [ ] Add cross-platform build script for automated tests.
+- [ ] Auto-generate tests from `test` blocks in Mochi sources.
+- [ ] Cache compiled modules to speed up repeated builds.
+- [ ] Explore asynchronous IO support in generated code.
