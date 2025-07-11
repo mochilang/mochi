@@ -1,12 +1,4 @@
-fun sum(list: List<Any?>): Int {
-    var s = 0
-    for (n in list) s += toInt(n)
-    return s
-}
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Partsupp(var part: Int, var supplier: Int, var cost: Double, var qty: Int)
-
 data class Filtered(var part: Any?, var value: Any?)
 
 data class Grouped(var part: Any?, var total: Int)
@@ -14,6 +6,8 @@ data class Grouped(var part: Any?, var total: Int)
 data class Nation(var id: Int, var name: String)
 
 data class Supplier(var id: Int, var nation: Int)
+
+data class Partsupp(var part: Int, var supplier: Int, var cost: Double, var qty: Int)
 
 val nations = mutableListOf(Nation(id = 1, name = "A"), Nation(id = 2, name = "B"))
 
@@ -55,13 +49,13 @@ val grouped = run {
     val __res = mutableListOf<Grouped>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Grouped(part = g.key, total = sum(run {
+        __res.add(Grouped(part = g.key, total = run {
     val __res = mutableListOf<Any?>()
     for (r in g) {
         __res.add(r.value)
     }
     __res
-})))
+}.sumOf { toInt(it) }))
     }
     __res
 }

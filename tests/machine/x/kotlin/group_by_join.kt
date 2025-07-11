@@ -1,11 +1,9 @@
-fun count(list: Collection<Any?>): Int = list.size
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+data class Customer(var id: Int, var name: String)
+
 data class Order(var id: Int, var customerId: Int)
 
 data class Stat(var name: Any?, var count: Int)
-
-data class Customer(var id: Int, var name: String)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 
@@ -31,7 +29,7 @@ val stats = run {
     val __res = mutableListOf<Stat>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Stat(name = g.key, count = count(g)))
+        __res.add(Stat(name = g.key, count = g.size))
     }
     __res
 }

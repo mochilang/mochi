@@ -1,10 +1,3 @@
-fun len(v: Any?): Int = when (v) {
-    is String -> v.length
-    is Collection<*> -> v.size
-    is Map<*, *> -> v.size
-    else -> 0
-}
-
 fun <T> union(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     val res = a.toMutableList()
     for (x in b) if (!res.contains(x)) res.add(x)
@@ -26,5 +19,5 @@ fun main() {
     println(union(mutableListOf(1, 2).toMutableList(), mutableListOf(2, 3).toMutableList()))
     println(except(mutableListOf(1, 2, 3).toMutableList(), mutableListOf(2).toMutableList()))
     println(intersect(mutableListOf(1, 2, 3).toMutableList(), mutableListOf(2, 4).toMutableList()))
-    println(len(mutableListOf(1, 2).toMutableList().apply { addAll(mutableListOf(2, 3)) }))
+    println(mutableListOf(1, 2).toMutableList().apply { addAll(mutableListOf(2, 3)) }.size)
 }

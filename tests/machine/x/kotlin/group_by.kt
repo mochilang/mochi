@@ -1,12 +1,3 @@
-fun avg(list: List<Any?>): Double {
-    if (list.isEmpty()) return 0.0
-    var s = 0.0
-    for (n in list) s += toDouble(n)
-    return s / list.size
-}
-
-fun count(list: Collection<Any?>): Int = list.size
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class People(var name: String, var age: Int, var city: String)
 
@@ -30,13 +21,13 @@ val stats = run {
     val __res = mutableListOf<Stat>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Stat(city = g.key, count = count(g), avg_age = avg(run {
+        __res.add(Stat(city = g.key, count = g.size, avg_age = run {
     val __res = mutableListOf<Int>()
     for (p in g) {
         __res.add(p.age)
     }
     __res
-})))
+}.map{ toDouble(it) }.average()))
     }
     __res
 }

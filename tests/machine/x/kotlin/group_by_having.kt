@@ -1,5 +1,3 @@
-fun count(list: Collection<Any?>): Int = list.size
-
 fun json(v: Any?) {
     println(toJson(v))
 }
@@ -36,8 +34,8 @@ val big = run {
     val __res = mutableListOf<Big>()
     for (k in __order) {
         val g = __groups[k]!!
-        if (count(g) >= 4) {
-            __res.add(Big(city = g.key, num = count(g)))
+        if (g.size >= 4) {
+            __res.add(Big(city = g.key, num = g.size))
         }
     }
     __res

@@ -1041,9 +1041,6 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 }
 
 func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
-	if _, ok := runtimePieces[call.Func]; ok {
-		c.use(call.Func)
-	}
 	args := make([]string, len(call.Args))
 	var paramTypes []types.Type
 	if t, err := c.env.GetVar(call.Func); err == nil {
@@ -1065,6 +1062,12 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		args[i] = s
+	}
+	if code, ok := c.builtinCall(call, args); ok {
+		return code, nil
+	}
+	if _, ok := runtimePieces[call.Func]; ok {
+		c.use(call.Func)
 	}
 	if call.Func == "print" {
 		if len(args) == 1 {
@@ -1092,6 +1095,61 @@ func (c *Compiler) callExpr(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("{ %s -> %s }", strings.Join(params, ", "), body), nil
 	}
 	return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
+}
+
+// builtinCall rewrites calls to certain helper functions using idiomatic Kotlin.
+func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bool) {
+	switch call.Func {
+	case "count":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.size", args[0]), true
+		}
+	case "exists":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.isNotEmpty()", args[0]), true
+		}
+	case "len":
+		if len(args) == 1 {
+			t := types.TypeOfExprBasic(call.Args[0], c.env)
+			if types.IsStringType(t) {
+				return fmt.Sprintf("%s.length", args[0]), true
+			}
+			return fmt.Sprintf("%s.size", args[0]), true
+		}
+	case "avg":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.map{ toDouble(it) }.average()", args[0]), true
+		}
+	case "sum":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.sumOf { toInt(it) }", args[0]), true
+		}
+	case "max":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.maxOrNull() ?: 0", args[0]), true
+		}
+	case "min":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.minOrNull() ?: 0", args[0]), true
+		}
+	case "values":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.values.toMutableList()", args[0]), true
+		}
+	case "str":
+		if len(args) == 1 {
+			return fmt.Sprintf("%s.toString()", args[0]), true
+		}
+	case "substring":
+		if len(args) == 3 {
+			return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), true
+		}
+	case "append":
+		if len(args) == 2 {
+			return fmt.Sprintf("%s + %s", args[0], args[1]), true
+		}
+	}
+	return "", false
 }
 
 func (c *Compiler) literal(l *parser.Literal) string {

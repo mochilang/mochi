@@ -1,9 +1,3 @@
-fun sum(list: List<Any?>): Int {
-    var s = 0
-    for (n in list) s += toInt(n)
-    return s
-}
-
 fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
@@ -72,22 +66,22 @@ val result = run {
     val __res = mutableListOf<Result>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Result(c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = sum(run {
+        __res.add(Result(c_custkey = g.key.c_custkey, c_name = g.key.c_name, revenue = run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (x in g) {
         __res.add((toDouble((x as MutableMap<*, *>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
     }
     __res
-}), c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment))
+}.sumOf { toInt(it) }, c_acctbal = g.key.c_acctbal, n_name = g.key.n_name, c_address = g.key.c_address, c_phone = g.key.c_phone, c_comment = g.key.c_comment))
     }
     __res
-}.sortedByDescending { sum(run {
+}.sortedByDescending { run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (x in it) {
         __res.add((toDouble((x as MutableMap<*, *>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<*, *>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
     }
     __res
-}) as Comparable<Any> }
+}.sumOf { toInt(it) } as Comparable<Any> }
 
 fun main() {
     println(result)
