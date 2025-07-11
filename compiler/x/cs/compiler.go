@@ -528,13 +528,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		var static types.Type = types.AnyType{}
 		if s.Let.Value != nil {
 			var err error
-			c.structHint = singular(name)
-			expr, err = c.compileExpr(s.Let.Value)
-			c.structHint = ""
-			if err != nil {
-				return err
-			}
 			if s.Let.Type != nil {
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Let.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
+				}
 				typ = csType(s.Let.Type)
 				static = c.resolveTypeRef(s.Let.Type)
 				if isEmptyListLiteral(s.Let.Value) {
@@ -544,22 +544,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
+				if isFetchExpr(s.Let.Value) && typ != "" {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
-				static = inferredT
+				inferredT = c.assignTypeNames(inferredT, singular(name))
+				c.registerStructs(inferredT)
 				typ = csTypeOf(inferredT)
-				if st, ok := inferredT.(types.StructType); ok && st.Name == "" {
-					st.Name = c.newStructName(singular(name))
-					typ = st.Name
-					static = st
-					c.extraStructs = append(c.extraStructs, st)
-				} else if lt, ok := inferredT.(types.ListType); ok {
-					if st, ok := lt.Elem.(types.StructType); ok && st.Name == "" {
-						st.Name = c.newStructName(singular(name))
-						typ = fmt.Sprintf("List<%s>", st.Name)
-						static = types.ListType{Elem: st}
-						c.extraStructs = append(c.extraStructs, st)
-					}
+				static = inferredT
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Let.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
 				}
 				if isEmptyListLiteral(s.Let.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
 					if strings.HasPrefix(typ, "List<") {
@@ -568,10 +567,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
-			}
-			if s.Let.Type != nil && isFetchExpr(s.Let.Value) && typ != "" {
-				c.use("_cast")
-				expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				if isFetchExpr(s.Let.Value) && typ != "" {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				}
 			}
 		} else {
 			if s.Let.Type != nil {
@@ -597,13 +596,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		var static types.Type = types.AnyType{}
 		if s.Var.Value != nil {
 			var err error
-			c.structHint = singular(name)
-			expr, err = c.compileExpr(s.Var.Value)
-			c.structHint = ""
-			if err != nil {
-				return err
-			}
 			if s.Var.Type != nil {
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Var.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
+				}
 				typ = csType(s.Var.Type)
 				static = c.resolveTypeRef(s.Var.Type)
 				if isEmptyListLiteral(s.Var.Value) {
@@ -613,22 +612,21 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
+				if isFetchExpr(s.Var.Value) && typ != "" {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				}
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
-				static = inferredT
+				inferredT = c.assignTypeNames(inferredT, singular(name))
+				c.registerStructs(inferredT)
 				typ = csTypeOf(inferredT)
-				if st, ok := inferredT.(types.StructType); ok && st.Name == "" {
-					st.Name = c.newStructName(singular(name))
-					typ = st.Name
-					static = st
-					c.extraStructs = append(c.extraStructs, st)
-				} else if lt, ok := inferredT.(types.ListType); ok {
-					if st, ok := lt.Elem.(types.StructType); ok && st.Name == "" {
-						st.Name = c.newStructName(singular(name))
-						typ = fmt.Sprintf("List<%s>", st.Name)
-						static = types.ListType{Elem: st}
-						c.extraStructs = append(c.extraStructs, st)
-					}
+				static = inferredT
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Var.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
 				}
 				if isEmptyListLiteral(s.Var.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
 					if strings.HasPrefix(typ, "List<") {
@@ -637,10 +635,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 						expr = fmt.Sprintf("new %s { }", typ)
 					}
 				}
-			}
-			if s.Var.Type != nil && isFetchExpr(s.Var.Value) && typ != "" {
-				c.use("_cast")
-				expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				if isFetchExpr(s.Var.Value) && typ != "" {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				}
 			}
 		} else {
 			if s.Var.Type != nil {
@@ -2415,9 +2413,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if base == "" {
 					base = "Item"
 				}
-				st.Name = c.newStructName(base)
+				if def, ok := c.env.GetStruct(pascalCase(base)); ok {
+					st.Name = def.Name
+				} else {
+					st.Name = c.newStructName(base)
+					c.extraStructs = append(c.extraStructs, st)
+				}
 				lt.Elem = st
-				c.extraStructs = append(c.extraStructs, st)
 			}
 			elemType = csTypeOf(lt.Elem)
 		}
@@ -2442,9 +2444,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if base == "" {
 					base = "Item"
 				}
-				name = c.newStructName(base)
-				st.Name = name
-				c.extraStructs = append(c.extraStructs, st)
+				if def, ok := c.env.GetStruct(pascalCase(base)); ok {
+					name = def.Name
+					st.Name = name
+				} else {
+					name = c.newStructName(base)
+					st.Name = name
+					c.extraStructs = append(c.extraStructs, st)
+				}
 			}
 			items := make([]string, len(p.Map.Items))
 			for i, it := range p.Map.Items {
