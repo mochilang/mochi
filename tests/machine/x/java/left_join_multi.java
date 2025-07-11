@@ -7,6 +7,14 @@ class IdName {
         this.id = id;
         this.name = name;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdName other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, name);
+    }
     int size() { return 2; }
 }
 class IdCustomerId {
@@ -16,6 +24,14 @@ class IdCustomerId {
         this.id = id;
         this.customerId = customerId;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdCustomerId other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, customerId);
+    }
     int size() { return 2; }
 }
 class OrderIdSku {
@@ -24,6 +40,14 @@ class OrderIdSku {
     OrderIdSku(int orderId, String sku) {
         this.orderId = orderId;
         this.sku = sku;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderIdSku other)) return false;
+        return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.sku, other.sku);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(orderId, sku);
     }
     int size() { return 2; }
 }
@@ -35,6 +59,14 @@ class OrderIdNameItem {
         this.orderId = orderId;
         this.name = name;
         this.item = item;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderIdNameItem other)) return false;
+        return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.name, other.name) && Objects.equals(this.item, other.item);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(orderId, name, item);
     }
     int size() { return 3; }
 }

@@ -7,6 +7,14 @@ class NV {
         this.n = n;
         this.v = v;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NV other)) return false;
+        return Objects.equals(this.n, other.n) && Objects.equals(this.v, other.v);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(n, v);
+    }
     int size() { return 2; }
 }
 public class SortStable {

@@ -7,6 +7,14 @@ class IdName {
         this.id = id;
         this.name = name;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdName other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, name);
+    }
     int size() { return 2; }
 }
 class IdNation {
@@ -15,6 +23,14 @@ class IdNation {
     IdNation(int id, int nation) {
         this.id = id;
         this.nation = nation;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdNation other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.nation, other.nation);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, nation);
     }
     int size() { return 2; }
 }
@@ -29,6 +45,14 @@ class PartSupplierCostQty {
         this.cost = cost;
         this.qty = qty;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PartSupplierCostQty other)) return false;
+        return Objects.equals(this.part, other.part) && Objects.equals(this.supplier, other.supplier) && Objects.equals(this.cost, other.cost) && Objects.equals(this.qty, other.qty);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(part, supplier, cost, qty);
+    }
     int size() { return 4; }
 }
 class PartValue {
@@ -38,6 +62,14 @@ class PartValue {
         this.part = part;
         this.value = value;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PartValue other)) return false;
+        return Objects.equals(this.part, other.part) && Objects.equals(this.value, other.value);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(part, value);
+    }
     int size() { return 2; }
 }
 class PartTotal {
@@ -46,6 +78,14 @@ class PartTotal {
     PartTotal(Object part, int total) {
         this.part = part;
         this.total = total;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PartTotal other)) return false;
+        return Objects.equals(this.part, other.part) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(part, total);
     }
     int size() { return 2; }
 }

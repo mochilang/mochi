@@ -9,6 +9,14 @@ class CatValFlag {
         this.val = val;
         this.flag = flag;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CatValFlag other)) return false;
+        return Objects.equals(this.cat, other.cat) && Objects.equals(this.val, other.val) && Objects.equals(this.flag, other.flag);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(cat, val, flag);
+    }
     int size() { return 3; }
 }
 class CatShare {
@@ -17,6 +25,14 @@ class CatShare {
     CatShare(Object cat, double share) {
         this.cat = cat;
         this.share = share;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CatShare other)) return false;
+        return Objects.equals(this.cat, other.cat) && Objects.equals(this.share, other.share);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(cat, share);
     }
     int size() { return 2; }
 }

@@ -7,6 +7,14 @@ class NameAge {
         this.name = name;
         this.age = age;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NameAge other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, age);
+    }
     int size() { return 2; }
 }
 class NameAgeIsSenior {
@@ -17,6 +25,14 @@ class NameAgeIsSenior {
         this.name = name;
         this.age = age;
         this.is_senior = is_senior;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NameAgeIsSenior other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age) && Objects.equals(this.is_senior, other.is_senior);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, age, is_senior);
     }
     int size() { return 3; }
 }

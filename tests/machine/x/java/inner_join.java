@@ -7,6 +7,14 @@ class IdName {
         this.id = id;
         this.name = name;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdName other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, name);
+    }
     int size() { return 2; }
 }
 class IdCustomerIdTotal {
@@ -18,6 +26,14 @@ class IdCustomerIdTotal {
         this.customerId = customerId;
         this.total = total;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdCustomerIdTotal other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, customerId, total);
+    }
     int size() { return 3; }
 }
 class OrderIdCustomerNameTotal {
@@ -28,6 +44,14 @@ class OrderIdCustomerNameTotal {
         this.orderId = orderId;
         this.customerName = customerName;
         this.total = total;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderIdCustomerNameTotal other)) return false;
+        return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.customerName, other.customerName) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(orderId, customerName, total);
     }
     int size() { return 3; }
 }

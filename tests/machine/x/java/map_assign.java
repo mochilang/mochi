@@ -1,7 +1,17 @@
+import java.util.*;
+
 class Alice {
     int alice;
     Alice(int alice) {
         this.alice = alice;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Alice other)) return false;
+        return Objects.equals(this.alice, other.alice);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(alice);
     }
     int size() { return 1; }
 }

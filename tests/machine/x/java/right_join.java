@@ -7,6 +7,14 @@ class IdName {
         this.id = id;
         this.name = name;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdName other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, name);
+    }
     int size() { return 2; }
 }
 class IdCustomerIdTotal {
@@ -18,6 +26,14 @@ class IdCustomerIdTotal {
         this.customerId = customerId;
         this.total = total;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdCustomerIdTotal other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, customerId, total);
+    }
     int size() { return 3; }
 }
 class CustomerNameOrder {
@@ -26,6 +42,14 @@ class CustomerNameOrder {
     CustomerNameOrder(String customerName, IdCustomerIdTotal order) {
         this.customerName = customerName;
         this.order = order;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomerNameOrder other)) return false;
+        return Objects.equals(this.customerName, other.customerName) && Objects.equals(this.order, other.order);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(customerName, order);
     }
     int size() { return 2; }
 }

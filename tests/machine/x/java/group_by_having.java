@@ -7,6 +7,14 @@ class NameCity {
         this.name = name;
         this.city = city;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NameCity other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.city, other.city);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, city);
+    }
     int size() { return 2; }
 }
 class CityNum {
@@ -15,6 +23,14 @@ class CityNum {
     CityNum(Object city, int num) {
         this.city = city;
         this.num = num;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CityNum other)) return false;
+        return Objects.equals(this.city, other.city) && Objects.equals(this.num, other.num);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(city, num);
     }
     int size() { return 2; }
 }

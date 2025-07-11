@@ -9,6 +9,14 @@ class NLB {
         this.l = l;
         this.b = b;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NLB other)) return false;
+        return Objects.equals(this.n, other.n) && Objects.equals(this.l, other.l) && Objects.equals(this.b, other.b);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(n, l, b);
+    }
     int size() { return 3; }
 }
 public class CrossJoinTriple {
