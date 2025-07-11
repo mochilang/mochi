@@ -120,3 +120,13 @@ Checklist:
 - [ ] Use C# record types for structs when possible
 - [ ] Investigate Roslyn-based formatting
 - [ ] Add unit tests for generated code
+- [ ] Add benchmarking suite for compiled programs
+- [ ] Implement plugin system for custom code generators
+- [ ] Add support for generics in record types
+- [ ] Implement incremental compilation
+- [ ] Provide command-line interface for compiler
+- [ ] Support expression-bodied members for simple methods
+- [ ] Improve error messages for type mismatches
+- [ ] Add support for .NET interactive notebooks
+- [ ] Provide integration with build systems (MSBuild, etc.)
+- [ ] Document runtime API usage with examples

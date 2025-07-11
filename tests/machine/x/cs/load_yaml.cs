@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 
-public struct Person {
+public record struct Person {
     public string name;
     public long age;
     public string email;
