@@ -1136,23 +1136,23 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+				c.writeln(fmt.Sprintf("list_string %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
+				c.writeln(fmt.Sprintf("list_float %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				c.need(needListInt)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
 				c.need(needListInt)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
@@ -1317,22 +1317,22 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 			if isListStringType(t) {
 				c.need(needListString)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_string %s = list_string_create(0);", val))
+				c.writeln(fmt.Sprintf("list_string %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_float %s = list_float_create(0);", val))
+				c.writeln(fmt.Sprintf("list_float %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_list_int %s = list_list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isListIntType(t) {
 				c.need(needListInt)
 				val := c.newTemp()
-				c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", val))
+				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
@@ -3700,7 +3700,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
 		} else {
 			c.need(needListInt)
-			c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", name))
+			c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", name))
 		}
 		return name
 	case p.Map != nil:
