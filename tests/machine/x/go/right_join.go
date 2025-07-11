@@ -7,6 +7,7 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
+	"strings"
 )
 
 func main() {
@@ -111,7 +112,7 @@ func main() {
 	fmt.Println("--- Right Join using syntax ---")
 	for _, entry := range result {
 		if _exists(entry.Order) {
-			fmt.Println("Customer", entry.CustomerName, "has order", (entry.Order).(map[string]any)["id"], "- $", (entry.Order).(map[string]any)["total"])
+			fmt.Println("Customer", entry.CustomerName, "has order", _toAnyMap(entry.Order)["id"], "- $", _toAnyMap(entry.Order)["total"])
 		} else {
 			fmt.Println("Customer", entry.CustomerName, "has no orders")
 		}
@@ -358,6 +359,40 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _toAnyMap(m any) map[string]any {
+	switch v := m.(type) {
+	case map[string]any:
+		return v
+	case map[string]string:
+		out := make(map[string]any, len(v))
+		for k, vv := range v {
+			out[k] = vv
+		}
+		return out
+	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
+		return nil
+	}
 }
 
 func _toAnySlice[T any](s []T) []any {

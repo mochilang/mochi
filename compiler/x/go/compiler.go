@@ -2170,8 +2170,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						typ = types.AnyType{}
 					}
 				default:
-					// treat as dynamic map
-					base = fmt.Sprintf("(%s).(map[string]any)[%q]", base, field)
+					// treat as dynamic map using helper
+					c.use("_toAnyMap")
+					base = fmt.Sprintf("_toAnyMap(%s)[%q]", base, field)
 					typ = types.AnyType{}
 				}
 				if i == len(p.Selector.Tail)-1 {
