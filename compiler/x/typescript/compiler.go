@@ -519,7 +519,18 @@ func (c *Compiler) typeDecl(td *parser.TypeDecl) error {
 				fields = append(fields, fmt.Sprintf("%s: %s;", m.Field.Name, tsTypeRef(m.Field.Type)))
 			}
 		}
-		c.writeln(fmt.Sprintf("type %s = { %s };", td.Name, strings.Join(fields, " ")))
+		flat := fmt.Sprintf("interface %s { %s }", td.Name, strings.Join(fields, " "))
+		if len(fields) > 2 || len(flat) > 60 {
+			c.writeln(fmt.Sprintf("interface %s {", td.Name))
+			c.indent++
+			for _, f := range fields {
+				c.writeln(f)
+			}
+			c.indent--
+			c.writeln("}")
+		} else {
+			c.writeln(flat)
+		}
 		return nil
 	}
 	if len(td.Variants) > 0 {

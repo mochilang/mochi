@@ -108,3 +108,15 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+- [ ] Improve formatting of generated interfaces
+- [ ] Use template strings for string concatenation
+- [ ] Leverage built-in array helpers instead of manual loops
+- [ ] Add async function support for I/O operations
+- [ ] Preserve comments from source Mochi code
+- [ ] Generate discriminated union helpers
+- [ ] Optimize query translations to use map/reduce
+- [ ] Support optional chaining and nullish coalescing
+- [ ] Emit type annotations for loaded YAML data
+- [ ] Reduce temporary variables in simple expressions
