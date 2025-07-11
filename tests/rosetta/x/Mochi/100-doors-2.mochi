@@ -1,0 +1,17 @@
+// Alternative solution to the 100 doors problem
+// Mirrors the logic of 100-doors-2.go
+
+var door = 1
+var incrementer = 0
+
+for current in 1..101 {
+  var line = "Door " + str(current) + " "
+  if current == door {
+    line = line + "Open"
+    incrementer = incrementer + 1
+    door = door + 2 * incrementer + 1
+  } else {
+    line = line + "Closed"
+  }
+  print(line)
+}
