@@ -3,7 +3,7 @@
 This directory stores PHP code produced by the compiler tests. Each Mochi program from `tests/vm/valid` is compiled and executed. On success a `.out` file is written. Failures generate a `.error` file.
 
 ## Summary
-97/100 files compiled successfully
+100/100 files compiled successfully
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -28,7 +28,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -76,8 +76,8 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -106,10 +106,11 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
 ## Remaining Tasks
-- [ ] Implement FFI imports for Go packages
-- [ ] Implement automatic Python module imports
-- [ ] Support `extern` declarations in PHP output
+- [x] Implement FFI imports for Go packages
+- [x] Implement automatic Python module imports
+- [x] Support `extern` declarations in PHP output
 - [ ] Simplify dataset query translation
 - [ ] Optimize grouping and aggregation helpers
 - [ ] Improve runtime helper formatting
