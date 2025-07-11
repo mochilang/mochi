@@ -1613,11 +1613,18 @@ func (c *Compiler) unaryIsString(u *parser.Unary) bool {
 }
 
 func (c *Compiler) postfixIsString(pf *parser.PostfixExpr) bool {
-	if c.env == nil {
-		return false
+	if c.env != nil {
+		t := types.TypeOfPostfix(pf, c.env)
+		if types.IsStringType(t) {
+			return true
+		}
 	}
-	t := types.TypeOfPostfix(pf, c.env)
-	return types.IsStringType(t)
+	if id, ok := c.simplePostfixIdent(pf); ok {
+		if name, ok2 := c.listVars[id]; ok2 && name == "string" {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) unaryIsList(u *parser.Unary) bool {
@@ -1629,11 +1636,17 @@ func (c *Compiler) unaryIsList(u *parser.Unary) bool {
 }
 
 func (c *Compiler) postfixIsList(pf *parser.PostfixExpr) bool {
-	if c.env == nil {
-		return false
+	if c.env != nil {
+		if _, ok := types.TypeOfPostfix(pf, c.env).(types.ListType); ok {
+			return true
+		}
 	}
-	_, ok := types.TypeOfPostfix(pf, c.env).(types.ListType)
-	return ok
+	if id, ok := c.simplePostfixIdent(pf); ok {
+		if _, ok2 := c.listVars[id]; ok2 {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) unaryIsMap(u *parser.Unary) bool {
@@ -1645,11 +1658,24 @@ func (c *Compiler) unaryIsMap(u *parser.Unary) bool {
 }
 
 func (c *Compiler) postfixIsMap(pf *parser.PostfixExpr) bool {
-	if c.env == nil {
-		return false
+	if c.env != nil {
+		if _, ok := types.TypeOfPostfix(pf, c.env).(types.MapType); ok {
+			return true
+		}
 	}
-	_, ok := types.TypeOfPostfix(pf, c.env).(types.MapType)
-	return ok
+	if id, ok := c.simplePostfixIdent(pf); ok {
+		if _, ok2 := c.structs[id]; ok2 {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *Compiler) simplePostfixIdent(pf *parser.PostfixExpr) (string, bool) {
+	if pf == nil || len(pf.Ops) > 0 || pf.Target == nil || pf.Target.Selector == nil || len(pf.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return pf.Target.Selector.Root, true
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
