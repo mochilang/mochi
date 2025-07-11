@@ -1,0 +1,11 @@
+include "./call-a-function-1.mochi"
+
+fun main() {
+  f()
+  g(1, 2.0)
+  let res = f()
+  g(res[0], res[1])
+  g(g(1, 2.0), 3.0)
+}
+
+main()

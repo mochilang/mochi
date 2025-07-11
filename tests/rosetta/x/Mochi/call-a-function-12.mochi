@@ -1,0 +1,22 @@
+// Mochi translation of Rosetta "Call a function" task variant 12
+// Demonstrates closures and simple currying.
+
+fun mkAdd(a: int): fun(int): int {
+  return fun(b: int): int => a + b
+}
+
+fun mysum(x: int, y: int): int { return x + y }
+
+fun partialSum(x: int): fun(int): int {
+  return fun(y: int): int => mysum(x, y)
+}
+
+fun main() {
+  let add2 = mkAdd(2)
+  let add3 = mkAdd(3)
+  print(str(add2(5)) + " " + str(add3(6)))
+  let partial = partialSum(13)
+  print(str(partial(5)))
+}
+
+main()

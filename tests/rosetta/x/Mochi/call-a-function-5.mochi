@@ -1,0 +1,17 @@
+// Mochi translation of Rosetta "Call a function" task variant 5
+// Using a map to simulate named parameters.
+
+fun doIt(p: map<string,int>): int {
+  var b = 0
+  if "b" in p { b = p["b"] }
+  return p["a"] + b + p["c"]
+}
+
+fun main() {
+  var p: map<string,int> = {}
+  p["a"] = 1
+  p["c"] = 9
+  print(str(doIt(p)))
+}
+
+main()

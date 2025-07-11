@@ -1,0 +1,16 @@
+include "./call-a-function-1.mochi"
+
+fun main() {
+  let ab = f()
+  let a = ab[0]
+  let b = ab[1]
+  let cb = f()[1]
+  let d = g(a, cb)
+  let e = g(d, b)
+  let i = g(d, 2)
+  var list: list<int> = []
+  list = append(list, a, d, e, i)
+  i = len(list)
+}
+
+main()

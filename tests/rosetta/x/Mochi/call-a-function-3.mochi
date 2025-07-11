@@ -1,0 +1,11 @@
+include "./call-a-function-1.mochi"
+
+fun main() {
+  h("ex1", [])
+  h("ex2", [1,2])
+  h("ex3", [1,2,3,4])
+  let list = [1,2,3,4]
+  h("ex4", list)
+}
+
+main()

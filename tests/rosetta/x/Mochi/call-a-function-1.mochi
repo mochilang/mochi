@@ -1,0 +1,13 @@
+// Mochi functions used in other call-a-function examples.
+
+fun f(): list<any> {
+  return [0, 0.0]
+}
+
+fun g(a: int, b: float): int {
+  return 0
+}
+
+fun h(s: string, nums: list<int>) {
+  // variadic parameters simulated with list
+}

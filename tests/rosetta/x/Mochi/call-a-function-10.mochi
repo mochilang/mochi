@@ -1,0 +1,12 @@
+// Continuation of variant 9 demonstrating list append and len.
+fun main() {
+  var list: list<int> = []
+  var a = 1
+  var d = 2
+  var e = 3
+  var i = 4
+  list = append(list, a, d, e, i)
+  i = len(list)
+}
+
+main()
