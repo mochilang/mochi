@@ -1,57 +1,31 @@
 import java.util.*;
-class CustomersIdName {
-	int id;
-	String name;
-	CustomersIdName(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class OrdersCustomerIdId {
-	int id;
-	int customerId;
-	OrdersCustomerIdId(int id, int customerId) {
-		this.id = id;
-		this.customerId = customerId;
-	}
-}
-class ItemsOrderIdSku {
-	int orderId;
-	String sku;
-	ItemsOrderIdSku(int orderId, String sku) {
-		this.orderId = orderId;
-		this.sku = sku;
-	}
-}
-class ResultNameSku {
-	String name;
-	String sku;
-	ResultNameSku(String name, String sku) {
-		this.name = name;
-		this.sku = sku;
-	}
-}
 public class JoinMulti {
-	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob")));
-	static List<OrdersCustomerIdId> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdId(100, 1), new OrdersCustomerIdId(101, 2)));
-	static List<ItemsOrderIdSku> items = new ArrayList<>(Arrays.asList(new ItemsOrderIdSku(100, "a"), new ItemsOrderIdSku(101, "b")));
-	static List<ResultNameSku> result = (new java.util.function.Supplier<List<ResultNameSku>>(){public List<ResultNameSku> get(){
-	List<ResultNameSku> _res1 = new ArrayList<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 2))));
+	static List<Map<String,Object>> items = new ArrayList<>(Arrays.asList(mapOfEntries(entry("orderId", 100), entry("sku", "a")), mapOfEntries(entry("orderId", 101), entry("sku", "b"))));
+	static List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res1 = new ArrayList<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(Objects.equals(o.customerId, c.id))) continue;
+			if (!(Objects.equals(((Map)o).get("customerId"), ((Map)c).get("id")))) continue;
 			for (var i : items) {
-				if (!(Objects.equals(o.id, i.orderId))) continue;
-				_res1.add(new ResultNameSku(c.name, i.sku));
+				if (!(Objects.equals(((Map)o).get("id"), ((Map)i).get("orderId")))) continue;
+				_res1.add(mapOfEntries(entry("name", ((Map)c).get("name")), entry("sku", ((Map)i).get("sku"))));
 			}
 		}
 	}
 	return _res1;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Multi Join ---");
-	for (ResultNameSku r : result) {
-		System.out.println(r.name + " " + "bought item" + " " + r.sku);
+	for (Map<String,Object> r : result) {
+		System.out.println(((Map)r).get("name") + " " + "bought item" + " " + ((Map)r).get("sku"));
 	}
 	}
 }

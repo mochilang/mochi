@@ -1,16 +1,14 @@
 import java.util.*;
-class MAB {
-	int a;
-	int b;
-	MAB(int a, int b) {
-		this.a = a;
-		this.b = b;
-	}
-}
 public class ForMapCollection {
-	static MAB m = new MAB(1, 2);
+	static Map<String,Integer> m = mapOfEntries(entry("a", 1), entry("b", 2));
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
-	for (String k : Arrays.asList("a", "b")) {
+	for (var k : m.keySet()) {
 		System.out.println(k);
 	}
 	}

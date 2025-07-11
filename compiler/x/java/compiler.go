@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"regexp"
-	"sort"
 	"strings"
 
 	"mochi/parser"
@@ -33,7 +32,6 @@ type Compiler struct {
 	srcDir            string
 	curVar            string
 	className         string
-	forceMapLiteral   bool
 }
 
 type dataClass struct {
@@ -65,7 +63,6 @@ func New() *Compiler {
 		curVar:            "",
 		className:         "",
 		needUtilImports:   false,
-		forceMapLiteral:   false,
 	}
 }
 
@@ -949,11 +946,7 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
-	if ml := isMapLiteral(v.Value); ml != nil && v.Type == nil {
-		c.forceMapLiteral = true
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.forceMapLiteral = false
 	c.curVar = orig
 	if err != nil {
 		return err
@@ -1100,50 +1093,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
-	if c.forceMapLiteral {
-		return ""
-	}
-	var keys []string
-	for _, it := range m.Items {
-		s, ok := simpleStringKey(it.Key)
-		if !ok {
-			return ""
-		}
-		keys = append(keys, s)
-	}
-	sort.Strings(keys)
-	shape := strings.Join(keys, ";")
-	if dc, ok := c.dataClasses[shape]; ok {
-		return dc.name
-	}
-	name := fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
-	base := c.curVar
-	if base != "" {
-		base = base + "_" + strings.Join(keys, "_")
-		if n := classNameFromVar(base); n != "" {
-			if c.dataClassByName(n) == nil {
-				name = n
-			}
-		}
-	} else if n := classNameFromVar(strings.Join(keys, "_")); n != "" {
-		if c.dataClassByName(n) == nil {
-			name = n
-		}
-	}
-	var fields []string
-	var types []string
-	for _, it := range m.Items {
-		s, _ := simpleStringKey(it.Key)
-		fields = append(fields, s)
-		typ := c.inferType(it.Value)
-		if typ == "var" {
-			typ = c.litType(it.Value)
-		}
-		types = append(types, typ)
-	}
-	c.dataClasses[shape] = &dataClass{name: name, fields: fields, types: types}
-	c.dataClassOrder = append(c.dataClassOrder, shape)
-	return name
+	// Disable generation of data classes for map literals to keep code simple
+	return ""
 }
 
 func (c *Compiler) dataClassByName(name string) *dataClass {
@@ -1269,24 +1220,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	if !c.forceMapLiteral {
-		if name := c.dataClassFor(m); name != "" {
-			var args []string
-			origVar := c.curVar
-			for _, it := range m.Items {
-				if s, ok := simpleStringKey(it.Key); ok {
-					c.curVar = origVar + "_" + s
-				}
-				v, err := c.compileExpr(it.Value)
-				c.curVar = origVar
-				if err != nil {
-					return "", err
-				}
-				args = append(args, v)
-			}
-			return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
-		}
-	}
+	// Always emit standard map literals for readability
 	c.helpers["map_of_entries"] = true
 	var entries []string
 	for _, it := range m.Items {
@@ -1435,11 +1369,7 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
-	if ml := isMapLiteral(v.Value); ml != nil && v.Type == nil {
-		c.forceMapLiteral = true
-	}
 	expr, err := c.compileExpr(v.Value)
-	c.forceMapLiteral = false
 	c.curVar = orig
 	if err != nil {
 		return err
@@ -2125,7 +2055,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("java.util.stream.Stream.concat(%s.stream(), java.util.stream.Stream.of(%s)).collect(java.util.stream.Collectors.toList())", a1, a2), nil
+			c.helpers["append"] = true
+			return fmt.Sprintf("append(%s, %s)", a1, a2), nil
 		case "count":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("count expects 1 argument at line %d", p.Pos.Line)

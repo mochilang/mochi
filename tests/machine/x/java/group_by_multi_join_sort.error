@@ -1,10 +1,17 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1036556409/001/GroupByMultiJoinSort.java:117: error: bad operand types for binary operator '&&'
-					if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag, "R"))) continue;
-					                                                                                                             ^
-  first type:  boolean
-  second type: String
-1 error
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1249710583/001/GroupByMultiJoinSort.java:48: error: cannot find symbol
+		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
+		              ^
+  symbol:   variable l_extendedprice
+  location: variable l of type Map<String,Object>
+/tmp/TestCompileValidProgramsgroup_by_multi_join_sort1249710583/001/GroupByMultiJoinSort.java:48: error: cannot find symbol
+		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
+		                                         ^
+  symbol:   variable l_discount
+  location: variable l of type Map<String,Object>
+Note: /tmp/TestCompileValidProgramsgroup_by_multi_join_sort1249710583/001/GroupByMultiJoinSort.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+2 errors
 
 
   1| let nation = [

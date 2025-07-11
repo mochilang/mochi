@@ -1,65 +1,37 @@
 import java.util.*;
-class CustomersIdName {
-	int id;
-	String name;
-	CustomersIdName(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class OrdersCustomerIdId {
-	int id;
-	int customerId;
-	OrdersCustomerIdId(int id, int customerId) {
-		this.id = id;
-		this.customerId = customerId;
-	}
-}
-class ItemsOrderIdSku {
-	int orderId;
-	String sku;
-	ItemsOrderIdSku(int orderId, String sku) {
-		this.orderId = orderId;
-		this.sku = sku;
-	}
-}
-class ResultItemNameOrderId {
-	int orderId;
-	String name;
-	ItemsOrderIdSku item;
-	ResultItemNameOrderId(int orderId, String name, ItemsOrderIdSku item) {
-		this.orderId = orderId;
-		this.name = name;
-		this.item = item;
-	}
-}
 public class LeftJoinMulti {
-	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob")));
-	static List<OrdersCustomerIdId> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdId(100, 1), new OrdersCustomerIdId(101, 2)));
-	static List<ItemsOrderIdSku> items = new ArrayList<>(Arrays.asList(new ItemsOrderIdSku(100, "a")));
-	static List<ResultItemNameOrderId> result = (new java.util.function.Supplier<List<ResultItemNameOrderId>>(){public List<ResultItemNameOrderId> get(){
-	List<ResultItemNameOrderId> _res3 = new ArrayList<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1)), mapOfEntries(entry("id", 101), entry("customerId", 2))));
+	static List<Map<String,Object>> items = new ArrayList<>(Arrays.asList(mapOfEntries(entry("orderId", 100), entry("sku", "a"))));
+	static List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res3 = new ArrayList<>();
 	for (var o : orders) {
 		for (var c : customers) {
-			if (!(Objects.equals(o.customerId, c.id))) continue;
-			List<Object> _tmp4 = new ArrayList<>();
+			if (!(Objects.equals(((Map)o).get("customerId"), ((Map)c).get("id")))) continue;
+			List<Map<String,Object>> _tmp4 = new ArrayList<>();
 			for (var _it5 : items) {
 				var i = _it5;
-				if (!(Objects.equals(o.id, i.orderId))) continue;
+				if (!(Objects.equals(((Map)o).get("id"), ((Map)i).get("orderId")))) continue;
 				_tmp4.add(_it5);
 			}
 			if (_tmp4.isEmpty()) _tmp4.add(null);
 			for (var i : _tmp4) {
-				_res3.add(new ResultItemNameOrderId(o.id, c.name, i));
+				_res3.add(mapOfEntries(entry("orderId", ((Map)o).get("id")), entry("name", ((Map)c).get("name")), entry("item", i)));
 			}
 		}
 	}
 	return _res3;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Left Join Multi ---");
-	for (ResultItemNameOrderId r : result) {
-		System.out.println(r.orderId + " " + r.name + " " + r.item);
+	for (Map<String,Object> r : result) {
+		System.out.println(((Map)r).get("orderId") + " " + ((Map)r).get("name") + " " + ((Map)r).get("item"));
 	}
 	}
 }

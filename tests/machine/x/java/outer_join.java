@@ -1,70 +1,50 @@
 import java.util.*;
-class CustomersIdName {
-	int id;
-	String name;
-	CustomersIdName(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-}
-class OrdersCustomerIdIdTotal {
-	int id;
-	int customerId;
-	int total;
-	OrdersCustomerIdIdTotal(int id, int customerId, int total) {
-		this.id = id;
-		this.customerId = customerId;
-		this.total = total;
-	}
-}
-class ResultCustomerOrder {
-	OrdersCustomerIdIdTotal order;
-	CustomersIdName customer;
-	ResultCustomerOrder(OrdersCustomerIdIdTotal order, CustomersIdName customer) {
-		this.order = order;
-		this.customer = customer;
-	}
-}
 public class OuterJoin {
-	static List<CustomersIdName> customers = new ArrayList<>(Arrays.asList(new CustomersIdName(1, "Alice"), new CustomersIdName(2, "Bob"), new CustomersIdName(3, "Charlie"), new CustomersIdName(4, "Diana")));
-	static List<OrdersCustomerIdIdTotal> orders = new ArrayList<>(Arrays.asList(new OrdersCustomerIdIdTotal(100, 1, 250), new OrdersCustomerIdIdTotal(101, 2, 125), new OrdersCustomerIdIdTotal(102, 1, 300), new OrdersCustomerIdIdTotal(103, 5, 80)));
-	static List<ResultCustomerOrder> result = (new java.util.function.Supplier<List<ResultCustomerOrder>>(){public List<ResultCustomerOrder> get(){
-	List<ResultCustomerOrder> _res3 = new ArrayList<>();
+	static List<Map<String,Object>> customers = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 1), entry("name", "Alice")), mapOfEntries(entry("id", 2), entry("name", "Bob")), mapOfEntries(entry("id", 3), entry("name", "Charlie")), mapOfEntries(entry("id", 4), entry("name", "Diana"))));
+	static List<Map<String,Integer>> orders = new ArrayList<>(Arrays.asList(mapOfEntries(entry("id", 100), entry("customerId", 1), entry("total", 250)), mapOfEntries(entry("id", 101), entry("customerId", 2), entry("total", 125)), mapOfEntries(entry("id", 102), entry("customerId", 1), entry("total", 300)), mapOfEntries(entry("id", 103), entry("customerId", 5), entry("total", 80))));
+	static List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
+	List<Map<String,Object>> _res3 = new ArrayList<>();
 	java.util.Set<Object> _matched = new java.util.HashSet<>();
 	for (var o : orders) {
-		List<Object> _tmp4 = new ArrayList<>();
+		List<Map<String,Object>> _tmp4 = new ArrayList<>();
 		for (var _it5 : customers) {
 			var c = _it5;
-			if (!(Objects.equals(o.customerId, c.id))) continue;
+			if (!(Objects.equals(((Map)o).get("customerId"), ((Map)c).get("id")))) continue;
 			_tmp4.add(_it5);
 			_matched.add(_it5);
 		}
 		if (_tmp4.isEmpty()) _tmp4.add(null);
 		for (var c : _tmp4) {
-			_res3.add(new ResultCustomerOrder(o, c));
+			_res3.add(mapOfEntries(entry("order", o), entry("customer", c)));
 		}
 	}
 	for (var c : customers) {
 		if (!_matched.contains(c)) {
 			Object o = null;
-			_res3.add(new ResultCustomerOrder(o, c));
+			_res3.add(mapOfEntries(entry("order", o), entry("customer", c)));
 		}
 	}
 	return _res3;
 }}).get();
+	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
+	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
+		LinkedHashMap<K,V> m = new LinkedHashMap<>();
+		for (var e : entries) m.put(e.getKey(), e.getValue());
+		return m;
+	}
 	public static void main(String[] args) {
 	System.out.println("--- Outer Join using syntax ---");
-	for (ResultCustomerOrder row : result) {
-		if (row.order) {
-			if (row.customer) {
-				System.out.println("Order" + " " + row.order.id + " " + "by" + " " + row.customer.name + " " + "- $" + " " + row.order.total);
+	for (Map<String,Object> row : result) {
+		if (((Map)row).get("order") != null) {
+			if (((Map)row).get("customer") != null) {
+				System.out.println("Order" + " " + ((Map)((Map)row).get("order")).get("id") + " " + "by" + " " + ((Map)((Map)row).get("customer")).get("name") + " " + "- $" + " " + ((Map)((Map)row).get("order")).get("total"));
 			}
 			else {
-				System.out.println("Order" + " " + row.order.id + " " + "by" + " " + "Unknown" + " " + "- $" + " " + row.order.total);
+				System.out.println("Order" + " " + ((Map)((Map)row).get("order")).get("id") + " " + "by" + " " + "Unknown" + " " + "- $" + " " + ((Map)((Map)row).get("order")).get("total"));
 			}
 		}
 		else {
-			System.out.println("Customer" + " " + row.customer.name + " " + "has no orders");
+			System.out.println("Customer" + " " + ((Map)((Map)row).get("customer")).get("name") + " " + "has no orders");
 		}
 	}
 	}
