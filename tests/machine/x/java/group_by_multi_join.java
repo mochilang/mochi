@@ -101,7 +101,7 @@ public class GroupByMultiJoin {
             if (!(Objects.equals(s.id, ps.supplier))) continue;
             for (var n : nations) {
                 if (!(Objects.equals(n.id, s.nation))) continue;
-                if (!(Objects.equals(n.name, "A") != null)) continue;
+                if (!(Objects.equals(n.name, "A"))) continue;
                 _res0.add(new PartValue(ps.part, ps.cost * ps.qty));
             }
         }
@@ -118,7 +118,7 @@ public class GroupByMultiJoin {
         if (_b5 == null) { _b5 = new ArrayList<>(); _groups2.put(_key4, _b5); }
         _b5.add(_row3);
     }
-    for (Map.Entry<int,List<PartValue>> __e : _groups2.entrySet()) {
+    for (Map.Entry<Integer,List<PartValue>> __e : _groups2.entrySet()) {
         int g_key = __e.getKey();
         List<PartValue> g = __e.getValue();
         _res1.add(new PartTotal(g_key, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){

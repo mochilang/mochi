@@ -75,7 +75,7 @@ public class OuterJoin {
     }
     for (var c : customers) {
         if (!_matched.contains(c)) {
-            Object o = null;
+            IdCustomerIdTotal o = null;
             _res0.add(new OrderCustomer(o, c));
         }
     }
