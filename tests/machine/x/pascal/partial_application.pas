@@ -2,7 +2,7 @@ program PartialApplication;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -14,7 +14,7 @@ begin
 end;
 
 var
-  add5: function (p0: p0__integer): integer;
+  add5: function (p0: integer): integer;
 
 begin
   add5 := add(5);

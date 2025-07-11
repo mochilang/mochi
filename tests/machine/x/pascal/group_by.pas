@@ -2,7 +2,7 @@ program GroupBy;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -74,7 +74,7 @@ var
   _tmp5: specialize TFPGMap<string, Variant>;
   _tmp6: specialize TArray<specialize TFPGMap<string, Variant>>;
   _tmp7: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
-  _tmp8: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp8: specialize TArray<_>;
   _tmp9: specialize TFPGMap<string, Variant>;
   p: integer;
   people: specialize TArray<specialize TFPGMap<string, Variant>>;

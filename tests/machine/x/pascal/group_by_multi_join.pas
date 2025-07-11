@@ -2,7 +2,7 @@ program GroupByMultiJoin;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -74,7 +74,7 @@ var
   _tmp0: specialize TFPGMap<string, Variant>;
   _tmp1: specialize TFPGMap<string, Variant>;
   _tmp10: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
-  _tmp11: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp11: specialize TArray<_>;
   _tmp12: specialize TFPGMap<string, Variant>;
   _tmp13: specialize TArray<Variant>;
   _tmp2: specialize TFPGMap<string, integer>;

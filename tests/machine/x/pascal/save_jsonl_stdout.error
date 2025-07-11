@@ -4,11 +4,8 @@ Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
 Compiling /workspace/mochi/tests/machine/x/pascal/save_jsonl_stdout.pas
-save_jsonl_stdout.pas(14,7) Error: Identifier not found "TJSONStreamer"
-save_jsonl_stdout.pas(14,20) Error: Error in type definition
-save_jsonl_stdout.pas(17,9) Error: Identifier not found "TJSONStreamer"
-save_jsonl_stdout.pas(21,19) Error: Illegal qualifier
-save_jsonl_stdout.pas(25,8) Error: Illegal qualifier
+save_jsonl_stdout.pas(21,60) Error: Wrong number of parameters specified for call to "ObjectToJSONString"
+fpjsonrtti.pp(922,24) Error: Found declaration: ObjectToJSONString(TObject):AnsiString;
 save_jsonl_stdout.pas(43,3) Error: Generics without specialization cannot be used as a type for a variable
 save_jsonl_stdout.pas(43,22) Fatal: illegal character "'"'" ($22)
 Fatal: Compilation aborted

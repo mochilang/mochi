@@ -2,7 +2,7 @@ program SortStable;
 {$mode objfpc}
 {$modeswitch nestedprocvars}
 
-uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
+uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser, fpjsonrtti;
 
 type
   generic TArray<T> = array of T;
@@ -46,7 +46,7 @@ var
   _tmp4: specialize TArray<Variant>;
   i: specialize TFPGMap<string, Variant>;
   items: specialize TArray<specialize TFPGMap<string, Variant>>;
-  _result: specialize TArray<Variant>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
 
 begin
   _tmp0 := specialize TFPGMap<string, Variant>.Create;
@@ -68,5 +68,5 @@ begin
     end;
   specialize _sortBy<Variant>(_tmp3, _tmp4);
   _result := _tmp3;
-  specialize _printList<Variant>(_result);
+  specialize _printList<specialize TFPGMap<string, Variant>>(_result);
 end.
