@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/arithmetic-geometric-mean-calculate-pi.go:58:6: main redeclared in this block
+	../../tests/rosetta/out/Go/arithmetic-geometric-mean-calculate-pi.go:54:6: other declaration of main
