@@ -141,4 +141,14 @@ Executed successfully: 91
 - [ ] Add linter for generated Scala code.
 - [ ] Provide Dockerfile for Scala environment.
 - [ ] Experiment with typeclass derivation.
+- [ ] Integrate scalafmt for formatting.
+- [ ] Support asynchronous joins.
+- [ ] Generate better match expressions.
+- [ ] Add CLI for dataset operations.
+- [ ] Provide wrapper for JSON parsing.
+- [ ] Improve Option handling in generated code.
+- [ ] Implement caching for compiled queries.
+- [ ] Add compile-time warnings for implicit casts.
+- [ ] Support generics in user-defined types.
+- [ ] Document runtime helpers.
 
