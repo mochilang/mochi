@@ -1,0 +1,970 @@
+func main (regs=11)
+  // let msg = "Rosetta Code Base64 decode data task"
+  Const        r0, "Rosetta Code Base64 decode data task"
+  // print("Original : " + msg)
+  Const        r1, "Original : "
+  Const        r0, "Rosetta Code Base64 decode data task"
+  Add          r2, r1, r0
+  Print        r2
+  // let enc = base64Encode(msg)
+  Const        r0, "Rosetta Code Base64 decode data task"
+  Move         r3, r0
+  Call         r4, base64Encode, r3
+  // print("\nEncoded  : " + enc)
+  Const        r5, "\nEncoded  : "
+  Add          r6, r5, r4
+  Print        r6
+  // let dec = base64Decode(enc)
+  Move         r7, r4
+  Call         r8, base64Decode, r7
+  // print("\nDecoded  : " + dec)
+  Const        r9, "\nDecoded  : "
+  Add          r10, r9, r8
+  Print        r10
+  Return       r0
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=11)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if s[i] == ch {
+  Index        r6, r0, r3
+  Equal        r7, r6, r1
+  JumpIfFalse  r7, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  Move         r3, r9
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r8, 1
+  NegInt       r10, r8
+  Return       r10
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=24)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Index        r7, r0, r1
+  Const        r8, "-"
+  Equal        r9, r7, r8
+  Move         r10, r6
+  JumpIfFalse  r10, L0
+  Move         r10, r9
+L0:
+  JumpIfFalse  r10, L1
+  // neg = true
+  Const        r11, true
+  Move         r4, r11
+  // i = 1
+  Const        r12, 1
+  Move         r2, r12
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r13, r1
+  // let digits = {
+  Const        r14, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+L3:
+  // while i < len(str) {
+  Len          r15, r0
+  LessInt      r16, r2, r15
+  JumpIfFalse  r16, L2
+  // n = n * 10 + digits[str[i]]
+  Const        r17, 10
+  MulInt       r18, r13, r17
+  Index        r19, r0, r2
+  Index        r20, r14, r19
+  Add          r21, r18, r20
+  Move         r13, r21
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r22, r2, r12
+  Move         r2, r22
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r23, r13
+  Move         r13, r23
+L4:
+  // return n
+  Return       r13
+
+  // fun ord(ch: string): int {
+func ord (regs=38)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r2, "abcdefghijklmnopqrstuvwxyz"
+  // var idx = indexOf(upper, ch)
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Move         r3, r1
+  Move         r4, r0
+  Call2        r5, indexOf, r3, r4
+  Move         r6, r5
+  // if idx >= 0 { return 65 + idx }
+  Const        r7, 0
+  LessEq       r8, r7, r6
+  JumpIfFalse  r8, L0
+  Const        r9, 65
+  Add          r10, r9, r6
+  Return       r10
+L0:
+  // idx = indexOf(lower, ch)
+  Const        r2, "abcdefghijklmnopqrstuvwxyz"
+  Move         r11, r2
+  Move         r12, r0
+  Call2        r13, indexOf, r11, r12
+  Move         r6, r13
+  // if idx >= 0 { return 97 + idx }
+  Const        r7, 0
+  LessEq       r14, r7, r6
+  JumpIfFalse  r14, L1
+  Const        r15, 97
+  Add          r16, r15, r6
+  Return       r16
+L1:
+  // if ch >= "0" && ch <= "9" { return 48 + parseIntStr(ch) }
+  Const        r17, "0"
+  LessEq       r18, r17, r0
+  Const        r19, "9"
+  LessEq       r20, r0, r19
+  Move         r21, r18
+  JumpIfFalse  r21, L2
+  Move         r21, r20
+L2:
+  JumpIfFalse  r21, L3
+  Const        r22, 48
+  Move         r23, r0
+  Call         r24, parseIntStr, r23
+  Add          r25, r22, r24
+  Return       r25
+L3:
+  // if ch == "+" { return 43 }
+  Const        r26, "+"
+  Equal        r27, r0, r26
+  JumpIfFalse  r27, L4
+  Const        r28, 43
+  Return       r28
+L4:
+  // if ch == "/" { return 47 }
+  Const        r29, "/"
+  Equal        r30, r0, r29
+  JumpIfFalse  r30, L5
+  Const        r31, 47
+  Return       r31
+L5:
+  // if ch == " " { return 32 }
+  Const        r32, " "
+  Equal        r33, r0, r32
+  JumpIfFalse  r33, L6
+  Const        r34, 32
+  Return       r34
+L6:
+  // if ch == "=" { return 61 }
+  Const        r35, "="
+  Equal        r36, r0, r35
+  JumpIfFalse  r36, L7
+  Const        r37, 61
+  Return       r37
+L7:
+  // return 0
+  Const        r7, 0
+  Return       r7
+
+  // fun chr(n: int): string {
+func chr (regs=49)
+  // let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  // let lower = "abcdefghijklmnopqrstuvwxyz"
+  Const        r2, "abcdefghijklmnopqrstuvwxyz"
+  // if n >= 65 && n < 91 { return upper[n-65:n-64] }
+  Const        r3, 65
+  LessEq       r4, r3, r0
+  Const        r5, 91
+  Less         r6, r0, r5
+  Move         r7, r4
+  JumpIfFalse  r7, L0
+  Move         r7, r6
+L0:
+  JumpIfFalse  r7, L1
+  Const        r3, 65
+  Sub          r9, r0, r3
+  Move         r8, r9
+  Const        r11, 64
+  Sub          r12, r0, r11
+  Move         r10, r12
+  Slice        r13, r1, r8, r10
+  Return       r13
+L1:
+  // if n >= 97 && n < 123 { return lower[n-97:n-96] }
+  Const        r14, 97
+  LessEq       r15, r14, r0
+  Const        r16, 123
+  Less         r17, r0, r16
+  Move         r18, r15
+  JumpIfFalse  r18, L2
+  Move         r18, r17
+L2:
+  JumpIfFalse  r18, L3
+  Const        r14, 97
+  Sub          r20, r0, r14
+  Move         r19, r20
+  Const        r22, 96
+  Sub          r23, r0, r22
+  Move         r21, r23
+  Slice        r24, r2, r19, r21
+  Return       r24
+L3:
+  // if n >= 48 && n < 58 {
+  Const        r25, 48
+  LessEq       r26, r25, r0
+  Const        r27, 58
+  Less         r28, r0, r27
+  Move         r29, r26
+  JumpIfFalse  r29, L4
+  Move         r29, r28
+L4:
+  JumpIfFalse  r29, L5
+  // let digits = "0123456789"
+  Const        r30, "0123456789"
+  // return digits[n-48:n-47]
+  Const        r25, 48
+  Sub          r32, r0, r25
+  Move         r31, r32
+  Const        r34, 47
+  Sub          r35, r0, r34
+  Move         r33, r35
+  Slice        r36, r30, r31, r33
+  Return       r36
+L5:
+  // if n == 43 { return "+" }
+  Const        r37, 43
+  Equal        r38, r0, r37
+  JumpIfFalse  r38, L6
+  Const        r39, "+"
+  Return       r39
+L6:
+  // if n == 47 { return "/" }
+  Const        r34, 47
+  Equal        r40, r0, r34
+  JumpIfFalse  r40, L7
+  Const        r41, "/"
+  Return       r41
+L7:
+  // if n == 32 { return " " }
+  Const        r42, 32
+  Equal        r43, r0, r42
+  JumpIfFalse  r43, L8
+  Const        r44, " "
+  Return       r44
+L8:
+  // if n == 61 { return "=" }
+  Const        r45, 61
+  Equal        r46, r0, r45
+  JumpIfFalse  r46, L9
+  Const        r47, "="
+  Return       r47
+L9:
+  // return "?" }
+  Const        r48, "?"
+  Return       r48
+
+  // fun toBinary(n: int, bits: int): string {
+func toBinary (regs=16)
+  // var b = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var val = n
+  Move         r4, r0
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L1:
+  // while i < bits {
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L0
+  // b = str(val % 2) + b
+  Const        r8, 2
+  Mod          r9, r4, r8
+  Str          r10, r9
+  Add          r11, r10, r3
+  Move         r3, r11
+  // val = (val / 2) as int
+  Const        r8, 2
+  Div          r12, r4, r8
+  Cast         r13, r12, int
+  Move         r4, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r6, r14
+  Move         r6, r15
+  // while i < bits {
+  Jump         L1
+L0:
+  // return b
+  Return       r3
+
+  // fun binToInt(bits: string): int {
+func binToInt (regs=17)
+  // var n = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var i = 0
+  Const        r1, 0
+  Move         r3, r1
+L1:
+  // while i < len(bits) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // n = n * 2 + parseIntStr(bits[i:i+1])
+  Const        r6, 2
+  MulInt       r7, r2, r6
+  Move         r9, r3
+  Const        r11, 1
+  AddInt       r12, r3, r11
+  Move         r10, r12
+  Slice        r13, r0, r9, r10
+  Move         r8, r13
+  Call         r14, parseIntStr, r8
+  Add          r15, r7, r14
+  Move         r2, r15
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r16, r3, r11
+  Move         r3, r16
+  // while i < len(bits) {
+  Jump         L1
+L0:
+  // return n
+  Return       r2
+
+  // fun base64Encode(text: string): string {
+func base64Encode (regs=65)
+  // let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  // var bin = ""
+  Const        r2, ""
+  Move         r3, r2
+  // for ch in text {
+  IterPrep     r4, r0
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // bin = bin + toBinary(ord(ch), 8)
+  Move         r12, r9
+  Call         r13, ord, r12
+  Move         r10, r13
+  Const        r14, 8
+  Move         r11, r14
+  Call2        r15, toBinary, r10, r11
+  Add          r16, r3, r15
+  Move         r3, r16
+  // for ch in text {
+  Const        r17, 1
+  AddInt       r18, r6, r17
+  Move         r6, r18
+  Jump         L1
+L0:
+  // while len(bin) % 6 != 0 { bin = bin + "0" }
+  Len          r19, r3
+  Const        r20, 6
+  ModInt       r21, r19, r20
+  Const        r22, 0
+  NotEqual     r23, r21, r22
+  JumpIfFalse  r23, L2
+  Const        r24, "0"
+  Add          r25, r3, r24
+  Move         r3, r25
+  Jump         L0
+L2:
+  // var out = ""
+  Const        r2, ""
+  Move         r26, r2
+  // var i = 0
+  Const        r22, 0
+  Move         r27, r22
+L4:
+  // while i < len(bin) {
+  Len          r28, r3
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L3
+  // let chunk = bin[i:i+6]
+  Move         r30, r27
+  Const        r20, 6
+  AddInt       r32, r27, r20
+  Move         r31, r32
+  Slice        r33, r3, r30, r31
+  // let val = binToInt(chunk)
+  Move         r34, r33
+  Call         r35, binToInt, r34
+  // out = out + alphabet[val:val+1]
+  Move         r36, r35
+  Const        r38, 1
+  Add          r39, r35, r38
+  Move         r37, r39
+  Slice        r40, r1, r36, r37
+  Add          r41, r26, r40
+  Move         r26, r41
+  // i = i + 6
+  Const        r20, 6
+  AddInt       r42, r27, r20
+  Move         r27, r42
+  // while i < len(bin) {
+  Jump         L4
+L3:
+  // let pad = (3 - (len(text) % 3)) % 3
+  Const        r43, 3
+  Len          r44, r0
+  Const        r43, 3
+  ModInt       r45, r44, r43
+  SubInt       r46, r43, r45
+  Const        r43, 3
+  ModInt       r47, r46, r43
+  // if pad == 1 { out = out[0:len(out)-1] + "=" }
+  Const        r38, 1
+  EqualInt     r48, r47, r38
+  JumpIfFalse  r48, L5
+  Const        r22, 0
+  Move         r49, r22
+  Len          r51, r26
+  Const        r38, 1
+  SubInt       r52, r51, r38
+  Move         r50, r52
+  Slice        r53, r26, r49, r50
+  Const        r54, "="
+  Add          r55, r53, r54
+  Move         r26, r55
+L5:
+  // if pad == 2 { out = out[0:len(out)-2] + "==" }
+  Const        r56, 2
+  EqualInt     r57, r47, r56
+  JumpIfFalse  r57, L6
+  Const        r22, 0
+  Move         r58, r22
+  Len          r60, r26
+  Const        r56, 2
+  SubInt       r61, r60, r56
+  Move         r59, r61
+  Slice        r62, r26, r58, r59
+  Const        r63, "=="
+  Add          r64, r62, r63
+  Move         r26, r64
+L6:
+  // return out
+  Return       r26
+
+  // fun base64Decode(enc: string): string {
+func base64Decode (regs=36)
+  // let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  // var bin = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(enc) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let ch = enc[i]
+  Index        r8, r0, r5
+  // if ch == "=" { break }
+  Const        r9, "="
+  Equal        r10, r8, r9
+  JumpIfFalse  r10, L1
+  Jump         L0
+L1:
+  // let idx = indexOf(alphabet, ch)
+  Const        r1, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  Move         r11, r1
+  Move         r12, r8
+  Call2        r13, indexOf, r11, r12
+  // bin = bin + toBinary(idx, 6)
+  Move         r14, r13
+  Const        r16, 6
+  Move         r15, r16
+  Call2        r17, toBinary, r14, r15
+  Add          r18, r3, r17
+  Move         r3, r18
+  // i = i + 1
+  Const        r19, 1
+  AddInt       r20, r5, r19
+  Move         r5, r20
+  // while i < len(enc) {
+  Jump         L2
+L0:
+  // var out = ""
+  Const        r2, ""
+  Move         r21, r2
+  // i = 0
+  Const        r4, 0
+  Move         r5, r4
+L4:
+  // while i + 8 <= len(bin) {
+  Const        r22, 8
+  AddInt       r23, r5, r22
+  Len          r24, r3
+  LessEqInt    r25, r23, r24
+  JumpIfFalse  r25, L3
+  // let chunk = bin[i:i+8]
+  Move         r26, r5
+  Const        r22, 8
+  AddInt       r28, r5, r22
+  Move         r27, r28
+  Slice        r29, r3, r26, r27
+  // let val = binToInt(chunk)
+  Move         r30, r29
+  Call         r31, binToInt, r30
+  // out = out + chr(val)
+  Move         r32, r31
+  Call         r33, chr, r32
+  Add          r34, r21, r33
+  Move         r21, r34
+  // i = i + 8
+  Const        r22, 8
+  AddInt       r35, r5, r22
+  Move         r5, r35
+  // while i + 8 <= len(bin) {
+  Jump         L4
+L3:
+  // return out
+  Return       r21
+
+-- function main (regs=11) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   1: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   2: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   3: Add          [0 0 0 0 0 0 0 0 0 0 0] 
+   4: Print        [0 0 0 0 0 0 0 0 0 0 0] 
+   5: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   6: Move         [0 0 0 0 0 0 0 0 0 0 0] 
+   7: Call         [0 0 0 0 0 0 0 0 0 0 0] 
+   8: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   9: Add          [0 0 0 0 0 0 0 0 0 0 0] 
+  10: Print        [0 0 0 0 0 0 0 0 0 0 0] 
+  11: Move         [0 0 0 0 0 0 0 0 0 0 0] 
+  12: Call         [0 0 0 0 0 0 0 0 0 0 0] 
+  13: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+  14: Add          [0 0 0 0 0 0 0 0 0 0 0] 
+  15: Print        [0 0 0 0 0 0 0 0 0 0 0] 
+  16: Return       [0 0 0 0 0 0 0 0 0 0 0] 
+
+-- function indexOf (regs=11) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0] 
+   1: Move         [0 0 1 0 0 0 0 0 0 0 0] 
+   2: Len          [0 0 1 1 1 3 0 3 1 1 0] 
+   3: LessInt      [0 0 1 1 1 3 0 3 1 1 0] 
+   4: JumpIfFalse  [0 0 1 1 1 3 0 3 1 1 0] 
+   5: Index        [0 0 1 1 1 3 0 3 1 1 0] 
+   6: Equal        [0 0 1 1 1 3 0 3 1 1 0] 
+   7: JumpIfFalse  [0 0 1 1 1 3 0 3 1 1 0] 
+   8: Return       [0 0 1 1 1 3 0 3 1 1 0] 
+   9: Const        [0 0 1 1 1 3 0 3 1 1 0] 
+  10: AddInt       [0 0 1 1 1 3 0 3 1 1 0] 
+  11: Move         [0 0 1 1 1 3 0 3 1 1 0] 
+  12: Jump         [0 0 1 1 1 3 0 3 1 1 0] 
+  13: Const        [0 0 1 1 1 3 0 3 1 1 0] 
+  14: NegInt       [0 0 1 1 1 3 0 3 1 1 0] 
+  15: Return       [0 0 1 1 1 3 0 3 1 1 1] 
+
+-- function parseIntStr (regs=24) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Move         [0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Const        [0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: Move         [0 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Len          [0 1 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   5: Const        [0 1 1 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   6: LessInt      [0 1 1 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   7: Const        [0 1 1 3 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   8: Index        [0 1 1 3 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   9: Const        [0 1 1 3 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  10: Equal        [0 1 1 3 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  11: Move         [0 1 1 3 3 1 3 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  12: JumpIfFalse  [0 1 1 3 3 1 3 0 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  13: Move         [0 1 1 3 3 1 3 0 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  14: JumpIfFalse  [0 1 1 3 3 1 3 0 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  15: Const        [0 1 1 3 3 1 3 0 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  16: Move         [0 1 1 3 3 1 3 0 0 3 3 3 0 0 0 0 0 0 0 0 0 0 0 0] 
+  17: Const        [0 1 1 3 3 1 3 0 0 3 3 3 0 0 0 0 0 0 0 0 0 0 0 0] 
+  18: Move         [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 0 0 0 0 0 0 0 0 0] 
+  19: Const        [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 0 0 0 0 0 0 0 0 0] 
+  20: Move         [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 0 0 0 0 0 0 0 0 0] 
+  21: Const        [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 0 0 0 0 0 0 0 0 0] 
+  22: Len          [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  23: LessInt      [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  24: JumpIfFalse  [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  25: Const        [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  26: MulInt       [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  27: Index        [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  28: Index        [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  29: Add          [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  30: Move         [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  31: Const        [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 1 3 1 1 0 0 0 1 0] 
+  32: AddInt       [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 1 3 1 1 0 0 0 1 0] 
+  33: Move         [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 1 3 1 1 0 0 0 1 0] 
+  34: Jump         [0 1 1 3 3 1 3 0 0 3 3 3 1 0 0 1 3 1 1 0 0 0 1 0] 
+  35: JumpIfFalse  [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  36: Neg          [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  37: Move         [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+  38: Return       [0 1 1 3 3 1 3 0 0 3 3 3 1 1 0 1 3 1 1 0 0 0 1 0] 
+
+-- function ord (regs=38) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   5: Call2        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   6: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   7: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   8: LessEq       [0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   9: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  10: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  11: Add          [0 0 0 0 0 0 0 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  12: Return       [0 0 0 0 0 0 0 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  13: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  14: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  15: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  16: Call2        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  17: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  18: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  19: LessEq       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  20: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  21: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  22: Add          [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  23: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  24: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  25: LessEq       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  26: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  27: LessEq       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  28: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  29: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  30: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  31: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  32: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  33: Move         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  34: Call         [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  35: Add          [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  36: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  37: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  38: Equal        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  39: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0] 
+  40: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0] 
+  41: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 1 0 0 0 0 0 0 0 0 0] 
+  42: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0] 
+  43: Equal        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 0 0 0 0 0 0 0 0] 
+  44: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 0 0 0 0 0] 
+  45: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 0 0 0 0 0] 
+  46: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 1 0 0 0 0 0 0] 
+  47: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 0 0 0 0 0] 
+  48: Equal        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 0 0 0 0 0] 
+  49: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 0 0] 
+  50: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 0 0] 
+  51: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 1 0 0 0] 
+  52: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 0 0] 
+  53: Equal        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 0 0] 
+  54: JumpIfFalse  [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 3 0] 
+  55: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 3 0] 
+  56: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 3 1] 
+  57: Const        [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 3 0] 
+  58: Return       [0 0 0 0 0 0 0 1 3 0 0 0 0 0 3 0 0 0 3 0 3 3 0 0 0 0 0 3 0 0 3 0 0 3 0 0 3 0] 
+
+-- function chr (regs=49) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: LessEq       [0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Const        [0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   5: Less         [0 0 0 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   6: Move         [0 0 0 1 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   7: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   8: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   9: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  10: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  11: Sub          [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  12: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  13: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  14: Sub          [0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  15: Move         [0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  16: Slice        [0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  17: Return       [0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  18: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  19: LessEq       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  20: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  21: Less         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  22: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  23: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  24: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  25: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  26: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  27: Sub          [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  28: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  29: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  30: Sub          [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  31: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  32: Slice        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  33: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  34: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  35: LessEq       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  36: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  37: Less         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  38: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  39: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  40: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  41: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  42: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  43: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  44: Sub          [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  45: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  46: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  47: Sub          [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  48: Move         [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  49: Slice        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  50: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  51: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  52: Equal        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0] 
+  53: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0] 
+  54: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0] 
+  55: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0] 
+  56: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 0 1 3 0 0 0 0 0 0 0 0 0 0] 
+  57: Equal        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 0 0 0 0 0 0 0 0 0] 
+  58: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 0 0 0 0 0 0 0] 
+  59: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 0 0 0 0 0 0 0] 
+  60: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 0 0 0 0 0 0 0] 
+  61: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 0 0 0 0 0 0 0] 
+  62: Equal        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 0 0 0 0 0 0] 
+  63: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 0 0 0 0] 
+  64: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 0 0 0 0] 
+  65: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 0 0 0 0] 
+  66: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 0 0 0 0] 
+  67: Equal        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 0 0 0] 
+  68: JumpIfFalse  [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 3 0 0] 
+  69: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 3 0 0] 
+  70: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 3 0 0] 
+  71: Const        [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 3 0 0] 
+  72: Return       [0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 0 0 1 3 1 3 3 0 0 0 0 1 0 0 1 3 0 3 0 1 3 0 1 3 0 0] 
+
+-- function toBinary (regs=16) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Move         [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0] 
+   5: Less         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+   6: JumpIfFalse  [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+   7: Const        [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+   8: Mod          [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+   9: Str          [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  10: Add          [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  11: Move         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  12: Const        [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  13: Div          [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  14: Cast         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  15: Move         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  16: Const        [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  17: AddInt       [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  18: Move         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  19: Jump         [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+  20: Return       [0 0 0 0 0 1 1 3 1 0 0 0 0 0 1 1] 
+
+-- function binToInt (regs=17) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Move         [0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Const        [0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: Move         [0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Len          [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+   5: LessInt      [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+   6: JumpIfFalse  [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+   7: Const        [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+   8: MulInt       [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+   9: Move         [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  10: Const        [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  11: AddInt       [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  12: Move         [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  13: Slice        [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  14: Move         [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  15: Call         [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  16: Add          [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  17: Move         [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  18: Const        [0 1 0 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  19: AddInt       [0 1 0 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  20: Move         [0 1 0 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  21: Jump         [0 1 0 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+  22: Return       [0 1 1 1 1 3 1 1 0 1 1 1 1 0 0 0 1] 
+
+-- function base64Encode (regs=65) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: IterPrep     [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Len          [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   5: Const        [0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   6: LessInt      [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   7: JumpIfFalse  [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   8: Index        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   9: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  10: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  11: Call         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  12: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  13: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  14: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  15: Call2        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  16: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  17: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  18: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  19: AddInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  20: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  21: Jump         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  22: Len          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  23: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  24: ModInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  25: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  26: NotEqual     [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  27: JumpIfFalse  [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  28: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  29: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  30: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  31: Jump         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  32: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  33: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  34: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  35: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  36: Len          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  37: LessInt      [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  38: JumpIfFalse  [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  39: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  40: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  41: AddInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  42: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  43: Slice        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  44: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  45: Call         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  46: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  47: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  48: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  49: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  50: Slice        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  51: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  52: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  53: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  54: AddInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  55: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  56: Jump         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  57: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  58: Len          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  59: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  60: ModInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  61: SubInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  62: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  63: ModInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  64: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  65: EqualInt     [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  66: JumpIfFalse  [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  67: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  68: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  69: Len          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  70: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  71: SubInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  72: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  73: Slice        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  74: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  75: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  76: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  77: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0] 
+  78: EqualInt     [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 0 0 0 0 0 0 0 0] 
+  79: JumpIfFalse  [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 0 0 0 0 0 0 0] 
+  80: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 0 0 0 0 0 0 0] 
+  81: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 0 0 0 0 0 0 0] 
+  82: Len          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 0 0 0 0 0 0] 
+  83: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 0 1 0 0 0 0] 
+  84: SubInt       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 0 1 0 0 0 0] 
+  85: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 0 1 1 0 0 0] 
+  86: Slice        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 1 1 1 0 0 0] 
+  87: Const        [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 1 1 1 0 0 0] 
+  88: Add          [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 1 1 1 0 0 0] 
+  89: Move         [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 1 1 1 0 0 0] 
+  90: Return       [0 0 0 0 0 1 1 3 0 0 0 1 0 0 1 0 0 1 1 1 1 1 1 3 0 0 0 1 1 3 1 1 1 0 0 0 0 0 1 0 0 0 1 1 1 1 1 1 3 1 1 1 1 0 0 0 1 3 1 1 1 1 0 0 0] 
+
+-- function base64Decode (regs=36) --
+   0: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   1: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   2: Move         [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   3: Const        [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   4: Move         [0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   5: Len          [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   6: LessInt      [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   7: JumpIfFalse  [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   8: Index        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+   9: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  10: Equal        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  11: JumpIfFalse  [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  12: Jump         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  13: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  14: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  15: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  16: Call2        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  17: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  18: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  19: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  20: Call2        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  21: Add          [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  22: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  23: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  24: AddInt       [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  25: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  26: Jump         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  27: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  28: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  29: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  30: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0] 
+  31: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  32: AddInt       [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  33: Len          [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  34: LessEqInt    [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  35: JumpIfFalse  [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  36: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  37: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  38: AddInt       [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  39: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  40: Slice        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  41: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  42: Call         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  43: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  44: Call         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  45: Add          [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  46: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  47: Const        [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  48: AddInt       [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  49: Move         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  50: Jump         [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
+  51: Return       [0 0 0 0 1 1 1 3 0 0 3 0 0 0 0 1 1 0 0 1 1 0 1 1 1 3 1 1 1 0 0 0 0 0 0 1] 
