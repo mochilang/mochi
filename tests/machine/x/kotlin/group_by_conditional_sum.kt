@@ -1,9 +1,3 @@
-fun sum(list: List<Any?>): Int {
-    var s = 0
-    for (n in list) s += toInt(n)
-    return s
-}
-
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
 data class Item(var cat: String, var val: Int, var flag: Boolean)
 
@@ -27,19 +21,19 @@ val result = run {
     val __res = mutableListOf<Result>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Result(cat = g.key, share = sum(run {
+        __res.add(Result(cat = g.key, share = run {
     val __res = mutableListOf<Any?>()
     for (x in g) {
         __res.add(if (x.flag) x.val else 0)
     }
     __res
-}) / sum(run {
+}.sumOf { toInt(it) } / run {
     val __res = mutableListOf<Int>()
     for (x in g) {
         __res.add(x.val)
     }
     __res
-})))
+}.sumOf { toInt(it) }))
     }
     __res
 }.sortedBy { it.key as Comparable<Any> }

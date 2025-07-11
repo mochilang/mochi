@@ -1,5 +1,3 @@
-fun count(list: Collection<Any?>): Int = list.size
-
 fun toBool(v: Any?): Boolean = when (v) {
     is Boolean -> v
     is Int -> v != 0
@@ -40,7 +38,7 @@ val stats = run {
     val __res = mutableListOf<Stat>()
     for (k in __order) {
         val g = __groups[k]!!
-        __res.add(Stat(name = g.key, count = count(run {
+        __res.add(Stat(name = g.key, count = run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (r in g) {
         if (toBool((r as MutableMap<*, *>)["o"])) {
@@ -48,7 +46,7 @@ val stats = run {
         }
     }
     __res
-})))
+}.size))
     }
     __res
 }

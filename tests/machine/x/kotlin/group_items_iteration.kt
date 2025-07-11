@@ -1,9 +1,3 @@
-fun <T> append(list: MutableList<T>, item: T): MutableList<T> {
-    val res = list.toMutableList()
-    res.add(item)
-    return res
-}
-
 fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
@@ -54,7 +48,7 @@ fun main() {
         for (x in g.items) {
             total = total + toInt((x as MutableMap<*, *>)["val"])
         }
-        tmp = append(tmp, mutableMapOf("tag" to g.key, "total" to total))
+        tmp = tmp + mutableMapOf("tag" to g.key, "total" to total)
     }
     println(result)
 }
