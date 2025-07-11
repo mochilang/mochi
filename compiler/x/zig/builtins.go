@@ -384,11 +384,7 @@ func (c *Compiler) writeBuiltins() {
 	if c.needsConcatString {
 		c.writeln("fn _concat_string(a: []const u8, b: []const u8) []const u8 {")
 		c.indent++
-		c.writeln("var res = std.ArrayList(u8).init(std.heap.page_allocator);")
-		c.writeln("defer res.deinit();")
-		c.writeln("res.appendSlice(a) catch unreachable;")
-		c.writeln("res.appendSlice(b) catch unreachable;")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b }) catch unreachable;")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
