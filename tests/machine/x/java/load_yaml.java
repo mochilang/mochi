@@ -26,6 +26,14 @@ class NameEmail {
         this.name = name;
         this.email = email;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NameEmail other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.email, other.email);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, email);
+    }
     int size() { return 2; }
 }
 public class LoadYaml {

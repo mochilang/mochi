@@ -1,7 +1,7 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramspython_math2176319866/001/PythonMath.java:12: error: incompatible types: possible lossy conversion from double to int
-	int area = math.pi * math.pow(r, 2.000000);
-	                   ^
+/tmp/TestCompileValidProgramspython_math2448320931/001/PythonMath.java:12: error: incompatible types: possible lossy conversion from double to int
+    int area = math.pi * math.pow(r, 2.000000);
+                       ^
 1 error
 
 

@@ -7,6 +7,14 @@ class IdName {
         this.id = id;
         this.name = name;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdName other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, name);
+    }
     int size() { return 2; }
 }
 class IdCustomerId {
@@ -15,6 +23,14 @@ class IdCustomerId {
     IdCustomerId(int id, int customerId) {
         this.id = id;
         this.customerId = customerId;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof IdCustomerId other)) return false;
+        return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(id, customerId);
     }
     int size() { return 2; }
 }
@@ -25,6 +41,14 @@ class NameCount {
         this.name = name;
         this.count = count;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NameCount other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.count, other.count);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, count);
+    }
     int size() { return 2; }
 }
 class CO {
@@ -33,6 +57,14 @@ class CO {
     CO(IdName c, IdCustomerId o) {
         this.c = c;
         this.o = o;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CO other)) return false;
+        return Objects.equals(this.c, other.c) && Objects.equals(this.o, other.o);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(c, o);
     }
     int size() { return 2; }
 }

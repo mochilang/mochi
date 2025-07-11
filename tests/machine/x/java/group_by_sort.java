@@ -7,6 +7,14 @@ class CatVal {
         this.cat = cat;
         this.val = val;
     }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CatVal other)) return false;
+        return Objects.equals(this.cat, other.cat) && Objects.equals(this.val, other.val);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(cat, val);
+    }
     int size() { return 2; }
 }
 class CatTotal {
@@ -15,6 +23,14 @@ class CatTotal {
     CatTotal(Object cat, int total) {
         this.cat = cat;
         this.total = total;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CatTotal other)) return false;
+        return Objects.equals(this.cat, other.cat) && Objects.equals(this.total, other.total);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(cat, total);
     }
     int size() { return 2; }
 }
