@@ -1,0 +1,79 @@
+func main (regs=29)
+  // let msg = "Hello World! "
+  Const        r0, "Hello World! "
+  // var shift = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var inc = 1
+  Const        r3, 1
+  Move         r4, r3
+  // var clicks = 0
+  Const        r1, 0
+  Move         r5, r1
+  // var frames = 0
+  Const        r1, 0
+  Move         r6, r1
+L3:
+  // while clicks < 5 {
+  Const        r7, 5
+  LessInt      r8, r5, r7
+  JumpIfFalse  r8, L0
+  // var line = ""
+  Const        r9, ""
+  Move         r10, r9
+  // var i = 0
+  Const        r1, 0
+  Move         r11, r1
+L2:
+  // while i < len(msg) {
+  Const        r12, 13
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // let idx = (shift + i) % len(msg)
+  AddInt       r14, r2, r11
+  Const        r12, 13
+  ModInt       r15, r14, r12
+  // line = line + msg[idx:idx+1]
+  Move         r16, r15
+  Const        r3, 1
+  AddInt       r18, r15, r3
+  Move         r17, r18
+  Slice        r19, r0, r16, r17
+  Add          r20, r10, r19
+  Move         r10, r20
+  // i = i + 1
+  Const        r3, 1
+  AddInt       r21, r11, r3
+  Move         r11, r21
+  // while i < len(msg) {
+  Jump         L2
+L1:
+  // print(line)
+  Print        r10
+  // shift = (shift + inc) % len(msg)
+  AddInt       r22, r2, r4
+  Const        r12, 13
+  ModInt       r23, r22, r12
+  Move         r2, r23
+  // frames = frames + 1
+  Const        r3, 1
+  AddInt       r24, r6, r3
+  Move         r6, r24
+  // if frames % len(msg) == 0 {
+  Const        r12, 13
+  ModInt       r25, r6, r12
+  Const        r1, 0
+  EqualInt     r26, r25, r1
+  JumpIfFalse  r26, L3
+  // inc = len(msg) - inc
+  Const        r12, 13
+  SubInt       r27, r12, r4
+  Move         r4, r27
+  // clicks = clicks + 1
+  Const        r3, 1
+  AddInt       r28, r5, r3
+  Move         r5, r28
+  // while clicks < 5 {
+  Jump         L3
+L0:
+  Return       r0

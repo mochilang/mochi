@@ -1,0 +1,37 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun connect(client: map<string, any>): bool {
+func connect (regs=5)
+  // return client["Host"] != ""
+  Const        r1, "Host"
+  Index        r2, r0, r1
+  Const        r3, ""
+  NotEqual     r4, r2, r3
+  Return       r4
+
+  // fun main() {
+func main (regs=9)
+  // let client = {
+  Const        r0, {"Attributes": ["givenName", "sn", "mail", "uid"], "Base": "dc=example,dc=com", "BindDN": "uid=readonlyuser,ou=People,dc=example,dc=com", "BindPassword": "readonlypassword", "GroupFilter": "(memberUid=%s)", "Host": "ldap.example.com", "Port": 389, "UseSSL": false, "UserFilter": "(uid=%s)"}
+  // if connect(client) {
+  Const        r2, {"Attributes": ["givenName", "sn", "mail", "uid"], "Base": "dc=example,dc=com", "BindDN": "uid=readonlyuser,ou=People,dc=example,dc=com", "BindPassword": "readonlypassword", "GroupFilter": "(memberUid=%s)", "Host": "ldap.example.com", "Port": 389, "UseSSL": false, "UserFilter": "(uid=%s)"}
+  Move         r1, r2
+  Call         r3, connect, r1
+  JumpIfFalse  r3, L0
+  // print("Connected to " + client["Host"])
+  Const        r4, "Connected to "
+  Const        r5, "Host"
+  Const        r6, "ldap.example.com"
+  Const        r7, "Connected to ldap.example.com"
+  Print        r7
+  // if connect(client) {
+  Jump         L1
+L0:
+  // print("Failed to connect")
+  Const        r8, "Failed to connect"
+  Print        r8
+L1:
+  Return       r0

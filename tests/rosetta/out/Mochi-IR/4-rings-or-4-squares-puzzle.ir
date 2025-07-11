@@ -1,0 +1,288 @@
+func main (regs=35)
+  // let r1 = getCombs(1, 7, true)
+  Const        r3, 1
+  Move         r0, r3
+  Const        r4, 7
+  Move         r1, r4
+  Const        r5, true
+  Move         r2, r5
+  Call         r6, getCombs, r0, r1, r2
+  // print(str(r1["count"]) + " unique solutions in 1 to 7")
+  Const        r7, "count"
+  Index        r8, r6, r7
+  Str          r9, r8
+  Const        r10, " unique solutions in 1 to 7"
+  Add          r11, r9, r10
+  Print        r11
+  // print(r1["list"])
+  Const        r12, "list"
+  Index        r13, r6, r12
+  Print        r13
+  // let r2 = getCombs(3, 9, true)
+  Const        r17, 3
+  Move         r14, r17
+  Const        r18, 9
+  Move         r15, r18
+  Const        r5, true
+  Move         r16, r5
+  Call         r19, getCombs, r14, r15, r16
+  // print(str(r2["count"]) + " unique solutions in 3 to 9")
+  Const        r7, "count"
+  Index        r20, r19, r7
+  Str          r21, r20
+  Const        r22, " unique solutions in 3 to 9"
+  Add          r23, r21, r22
+  Print        r23
+  // print(r2["list"])
+  Const        r12, "list"
+  Index        r24, r19, r12
+  Print        r24
+  // let r3 = getCombs(0, 9, false)
+  Const        r28, 0
+  Move         r25, r28
+  Const        r18, 9
+  Move         r26, r18
+  Const        r29, false
+  Move         r27, r29
+  Call         r30, getCombs, r25, r26, r27
+  // print(str(r3["count"]) + " non-unique solutions in 0 to 9")
+  Const        r7, "count"
+  Index        r31, r30, r7
+  Str          r32, r31
+  Const        r33, " non-unique solutions in 0 to 9"
+  Add          r34, r32, r33
+  Print        r34
+  Return       r0
+
+  // fun validComb(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
+func validComb (regs=17)
+  // let square1 = a + b
+  Add          r7, r0, r1
+  // let square2 = b + c + d
+  Add          r8, r1, r2
+  Add          r9, r8, r3
+  // let square3 = d + e + f
+  Add          r10, r3, r4
+  Add          r11, r10, r5
+  // let square4 = f + g
+  Add          r12, r5, r6
+  // return square1 == square2 && square2 == square3 && square3 == square4
+  Equal        r13, r7, r9
+  Equal        r14, r9, r11
+  Equal        r15, r11, r12
+  Move         r16, r13
+  JumpIfFalse  r16, L0
+  Move         r16, r14
+  JumpIfFalse  r16, L0
+  Move         r16, r15
+L0:
+  Return       r16
+
+  // fun isUnique(a: int, b: int, c: int, d: int, e: int, f: int, g: int): bool {
+func isUnique (regs=32)
+  // var nums = [a,b,c,d,e,f,g]
+  Move         r7, r0
+  Move         r8, r1
+  Move         r9, r2
+  Move         r10, r3
+  Move         r11, r4
+  Move         r12, r5
+  Move         r13, r6
+  MakeList     r14, 7, r7
+  Move         r15, r14
+  // var i = 0
+  Const        r16, 0
+  Move         r17, r16
+L4:
+  // while i < len(nums) {
+  Len          r18, r15
+  LessInt      r19, r17, r18
+  JumpIfFalse  r19, L0
+  // var j = i + 1
+  Const        r20, 1
+  AddInt       r21, r17, r20
+  Move         r22, r21
+L3:
+  // while j < len(nums) {
+  Len          r23, r15
+  LessInt      r24, r22, r23
+  JumpIfFalse  r24, L1
+  // if nums[i] == nums[j] { return false }
+  Index        r25, r15, r17
+  Index        r26, r15, r22
+  Equal        r27, r25, r26
+  JumpIfFalse  r27, L2
+  Const        r28, false
+  Return       r28
+L2:
+  // j = j + 1
+  Const        r20, 1
+  AddInt       r29, r22, r20
+  Move         r22, r29
+  // while j < len(nums) {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r30, r17, r20
+  Move         r17, r30
+  // while i < len(nums) {
+  Jump         L4
+L0:
+  // return true
+  Const        r31, true
+  Return       r31
+
+  // fun getCombs(low: int, high: int, unique: bool): map<string, any> {
+func getCombs (regs=75)
+  // var valid = []
+  Const        r3, []
+  Move         r4, r3
+  // var count = 0
+  Const        r5, 0
+  Move         r6, r5
+  // for b in low..(high + 1) {
+  Const        r7, 1
+  Add          r8, r1, r7
+  Move         r9, r0
+L17:
+  LessInt      r10, r9, r8
+  JumpIfFalse  r10, L0
+  // for c in low..(high + 1) {
+  Const        r7, 1
+  Add          r11, r1, r7
+  Move         r12, r0
+L16:
+  LessInt      r13, r12, r11
+  JumpIfFalse  r13, L1
+  // for d in low..(high + 1) {
+  Const        r7, 1
+  Add          r14, r1, r7
+  Move         r15, r0
+L15:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  // let s = b + c + d
+  Add          r17, r9, r12
+  Add          r18, r17, r15
+  // for e in low..(high + 1) {
+  Const        r7, 1
+  Add          r19, r1, r7
+  Move         r20, r0
+L14:
+  LessInt      r21, r20, r19
+  JumpIfFalse  r21, L3
+  // for f in low..(high + 1) {
+  Const        r7, 1
+  Add          r22, r1, r7
+  Move         r23, r0
+L13:
+  LessInt      r24, r23, r22
+  JumpIfFalse  r24, L4
+  // let a = s - b
+  Sub          r25, r18, r9
+  // let g = s - f
+  Sub          r26, r18, r23
+  // if a < low || a > high { continue }
+  Less         r27, r25, r0
+  Less         r28, r1, r25
+  Move         r29, r27
+  JumpIfTrue   r29, L5
+  Move         r29, r28
+L5:
+  JumpIfFalse  r29, L6
+  Jump         L7
+L6:
+  // if g < low || g > high { continue }
+  Less         r30, r26, r0
+  Less         r31, r1, r26
+  Move         r32, r30
+  JumpIfTrue   r32, L8
+  Move         r32, r31
+L8:
+  JumpIfFalse  r32, L9
+  Jump         L7
+L9:
+  // if d + e + f != s { continue }
+  Add          r33, r15, r20
+  Add          r34, r33, r23
+  NotEqual     r35, r34, r18
+  JumpIfFalse  r35, L10
+  Jump         L7
+L10:
+  // if f + g != s { continue }
+  Add          r36, r23, r26
+  NotEqual     r37, r36, r18
+  JumpIfFalse  r37, L11
+  Jump         L7
+L11:
+  // if !unique || isUnique(a,b,c,d,e,f,g) {
+  Not          r38, r2
+  Move         r39, r38
+  JumpIfTrue   r39, L12
+  Move         r40, r25
+  Move         r41, r9
+  Move         r42, r12
+  Move         r43, r15
+  Move         r44, r20
+  Move         r45, r23
+  Move         r46, r26
+  Call         r47, isUnique, r40, r41, r42, r43, r44, r45, r46
+  Move         r39, r47
+L12:
+  JumpIfFalse  r39, L7
+  // valid = append(valid, [a,b,c,d,e,f,g])
+  Move         r48, r25
+  Move         r49, r9
+  Move         r50, r12
+  Move         r51, r15
+  Move         r52, r20
+  Move         r53, r23
+  Move         r54, r26
+  MakeList     r55, 7, r48
+  Append       r56, r4, r55
+  Move         r4, r56
+  // count = count + 1
+  Const        r7, 1
+  AddInt       r57, r6, r7
+  Move         r6, r57
+L7:
+  // for f in low..(high + 1) {
+  Const        r58, 1
+  AddInt       r59, r23, r58
+  Move         r23, r59
+  Jump         L13
+L4:
+  // for e in low..(high + 1) {
+  Const        r60, 1
+  AddInt       r61, r20, r60
+  Move         r20, r61
+  Jump         L14
+L3:
+  // for d in low..(high + 1) {
+  Const        r62, 1
+  AddInt       r63, r15, r62
+  Move         r15, r63
+  Jump         L15
+L2:
+  // for c in low..(high + 1) {
+  Const        r64, 1
+  AddInt       r65, r12, r64
+  Move         r12, r65
+  Jump         L16
+L1:
+  // for b in low..(high + 1) {
+  Const        r66, 1
+  AddInt       r67, r9, r66
+  Move         r9, r67
+  Jump         L17
+L0:
+  // return {"count": count, "list": valid}
+  Const        r68, "count"
+  Const        r69, "list"
+  Move         r70, r68
+  Move         r71, r6
+  Move         r72, r69
+  Move         r73, r4
+  MakeMap      r74, 2, r70
+  Return       r74

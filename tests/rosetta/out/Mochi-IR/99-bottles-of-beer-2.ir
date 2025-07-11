@@ -1,0 +1,466 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fields(s: string): list<string> {
+func fields (regs=27)
+  // var words: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i + 1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Const        r12, " "
+  Equal        r13, r11, r12
+  Const        r14, "\n"
+  Equal        r15, r11, r14
+  Const        r16, "\t"
+  Equal        r17, r11, r16
+  Move         r18, r13
+  JumpIfTrue   r18, L1
+  Move         r18, r15
+  JumpIfTrue   r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // if len(cur) > 0 {
+  Len          r19, r4
+  Const        r5, 0
+  LessInt      r20, r5, r19
+  JumpIfFalse  r20, L3
+  // words = append(words, cur)
+  Append       r21, r2, r4
+  Move         r2, r21
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r22, r4, r11
+  Move         r4, r22
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r23, r6, r9
+  Move         r6, r23
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 {
+  Len          r24, r4
+  Const        r5, 0
+  LessInt      r25, r5, r24
+  JumpIfFalse  r25, L5
+  // words = append(words, cur)
+  Append       r26, r2, r4
+  Move         r2, r26
+L5:
+  // return words
+  Return       r2
+
+  // fun join(xs: list<string>, sep: string): string {
+func join (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 {
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  // res = res + sep
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun numberName(n: int): string {
+func numberName (regs=23)
+  // let small = [
+  Const        r1, ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+  // let tens = [
+  Const        r2, ["ones", "ten", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+  // if n < 0 { return "" }
+  Const        r3, 0
+  Less         r4, r0, r3
+  JumpIfFalse  r4, L0
+  Const        r5, ""
+  Return       r5
+L0:
+  // if n < 20 { return small[n] }
+  Const        r6, 20
+  Less         r7, r0, r6
+  JumpIfFalse  r7, L1
+  Index        r8, r1, r0
+  Return       r8
+L1:
+  // if n < 100 {
+  Const        r9, 100
+  Less         r10, r0, r9
+  JumpIfFalse  r10, L2
+  // var t = tens[(n / 10) as int]
+  Const        r11, 10
+  DivFloat     r12, r0, r11
+  Cast         r13, r12, int
+  Index        r14, r2, r13
+  Move         r15, r14
+  // var s = n % 10
+  Const        r11, 10
+  Mod          r16, r0, r11
+  Move         r17, r16
+  // if s > 0 {
+  Const        r3, 0
+  Less         r18, r3, r17
+  JumpIfFalse  r18, L3
+  // t = t + " " + small[s]
+  Const        r19, " "
+  Add          r20, r15, r19
+  Index        r21, r1, r17
+  Add          r22, r20, r21
+  Move         r15, r22
+L3:
+  // return t
+  Return       r15
+L2:
+  // return ""
+  Const        r5, ""
+  Return       r5
+
+  // fun pluralizeFirst(s: string, n: int): string {
+func pluralizeFirst (regs=16)
+  // if n == 1 { return s }
+  Const        r2, 1
+  Equal        r3, r1, r2
+  JumpIfFalse  r3, L0
+  Return       r0
+L0:
+  // let w = fields(s)
+  Move         r4, r0
+  Call         r5, fields, r4
+  // if len(w) > 0 {
+  Len          r6, r5
+  Const        r7, 0
+  LessInt      r8, r7, r6
+  JumpIfFalse  r8, L1
+  // w[0] = w[0] + "s"
+  Const        r7, 0
+  Index        r9, r5, r7
+  Const        r10, "s"
+  Add          r11, r9, r10
+  Const        r7, 0
+  SetIndex     r5, r7, r11
+L1:
+  // return join(w, " ")
+  Move         r12, r5
+  Const        r14, " "
+  Move         r13, r14
+  Call2        r15, join, r12, r13
+  Return       r15
+
+  // fun randInt(seed: int, n: int): int {
+func randInt (regs=9)
+  // let next = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r2, 1664525
+  Mul          r3, r0, r2
+  Const        r4, 1013904223
+  Add          r5, r3, r4
+  Const        r6, 2147483647
+  Mod          r7, r5, r6
+  // return next % n
+  Mod          r8, r7, r1
+  Return       r8
+
+  // fun slur(p: string, d: int): string {
+func slur (regs=55)
+  // if len(p) <= 2 { return p }
+  Len          r2, r0
+  Const        r3, 2
+  LessEqInt    r4, r2, r3
+  JumpIfFalse  r4, L0
+  Return       r0
+L0:
+  // var a: list<string> = []
+  Const        r5, []
+  Move         r6, r5
+  // var i = 1
+  Const        r7, 1
+  Move         r8, r7
+L2:
+  // while i < len(p) - 1 {
+  Len          r9, r0
+  Const        r7, 1
+  SubInt       r10, r9, r7
+  LessInt      r11, r8, r10
+  JumpIfFalse  r11, L1
+  // a = append(a, substring(p, i, i + 1))
+  Const        r7, 1
+  AddInt       r12, r8, r7
+  Slice        r13, r0, r8, r12
+  Append       r14, r6, r13
+  Move         r6, r14
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r15, r8, r7
+  Move         r8, r15
+  // while i < len(p) - 1 {
+  Jump         L2
+L1:
+  // var idx = len(a) - 1
+  Len          r16, r6
+  Const        r7, 1
+  SubInt       r17, r16, r7
+  Move         r18, r17
+  // var seed = d
+  Move         r19, r1
+L5:
+  // while idx >= 1 {
+  Const        r7, 1
+  LessEqInt    r20, r7, r18
+  JumpIfFalse  r20, L3
+  // seed = (seed * 1664525 + 1013904223) % 2147483647
+  Const        r21, 1664525
+  Mul          r22, r19, r21
+  Const        r23, 1013904223
+  Add          r24, r22, r23
+  Const        r25, 2147483647
+  Mod          r26, r24, r25
+  Move         r19, r26
+  // if seed % 100 >= d {
+  Const        r27, 100
+  Mod          r28, r19, r27
+  LessEq       r29, r1, r28
+  JumpIfFalse  r29, L4
+  // let j = seed % (idx + 1)
+  Const        r7, 1
+  AddInt       r30, r18, r7
+  Mod          r31, r19, r30
+  // let tmp = a[idx]
+  Index        r32, r6, r18
+  // a[idx] = a[j]
+  Index        r33, r6, r31
+  SetIndex     r6, r18, r33
+  // a[j] = tmp
+  SetIndex     r6, r31, r32
+L4:
+  // idx = idx - 1
+  Const        r7, 1
+  SubInt       r34, r18, r7
+  Move         r18, r34
+  // while idx >= 1 {
+  Jump         L5
+L3:
+  // var s = substring(p, 0, 1)
+  Const        r35, 0
+  Const        r7, 1
+  Slice        r36, r0, r35, r7
+  Move         r37, r36
+  // var k = 0
+  Const        r35, 0
+  Move         r38, r35
+L7:
+  // while k < len(a) {
+  Len          r39, r6
+  LessInt      r40, r38, r39
+  JumpIfFalse  r40, L6
+  // s = s + a[k]
+  Index        r41, r6, r38
+  Add          r42, r37, r41
+  Move         r37, r42
+  // k = k + 1
+  Const        r7, 1
+  AddInt       r43, r38, r7
+  Move         r38, r43
+  // while k < len(a) {
+  Jump         L7
+L6:
+  // s = s + substring(p, len(p) - 1, len(p))
+  Len          r44, r0
+  Const        r7, 1
+  SubInt       r45, r44, r7
+  Len          r46, r0
+  Slice        r47, r0, r45, r46
+  Add          r48, r37, r47
+  Move         r37, r48
+  // let w = fields(s)
+  Move         r49, r37
+  Call         r50, fields, r49
+  // return join(w, " ")
+  Move         r51, r50
+  Const        r53, " "
+  Move         r52, r53
+  Call2        r54, join, r51, r52
+  Return       r54
+
+  // fun main() {
+func main (regs=82)
+  // var i = 99
+  Const        r0, 99
+  Move         r1, r0
+L1:
+  // while i > 0 {
+  Const        r2, 0
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(slur(numberName(i), i) + " " +
+  Move         r6, r1
+  Call         r7, numberName, r6
+  Move         r4, r7
+  Move         r5, r1
+  Call2        r8, slur, r4, r5
+  Const        r9, " "
+  Add          r10, r8, r9
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Const        r15, "bottle of"
+  Move         r13, r15
+  Move         r14, r1
+  Call2        r16, slur, r13, r14
+  Move         r11, r16
+  Move         r12, r1
+  Call2        r17, pluralizeFirst, r11, r12
+  // print(slur(numberName(i), i) + " " +
+  Add          r18, r10, r17
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Const        r9, " "
+  Add          r19, r18, r9
+  // slur("beer on the wall", i))
+  Const        r22, "beer on the wall"
+  Move         r20, r22
+  Move         r21, r1
+  Call2        r23, slur, r20, r21
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Add          r24, r19, r23
+  // print(slur(numberName(i), i) + " " +
+  Print        r24
+  // print(slur(numberName(i), i) + " " +
+  Move         r27, r1
+  Call         r28, numberName, r27
+  Move         r25, r28
+  Move         r26, r1
+  Call2        r29, slur, r25, r26
+  Const        r9, " "
+  Add          r30, r29, r9
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Const        r15, "bottle of"
+  Move         r33, r15
+  Move         r34, r1
+  Call2        r35, slur, r33, r34
+  Move         r31, r35
+  Move         r32, r1
+  Call2        r36, pluralizeFirst, r31, r32
+  // print(slur(numberName(i), i) + " " +
+  Add          r37, r30, r36
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Const        r9, " "
+  Add          r38, r37, r9
+  // slur("beer", i))
+  Const        r41, "beer"
+  Move         r39, r41
+  Move         r40, r1
+  Call2        r42, slur, r39, r40
+  // pluralizeFirst(slur("bottle of", i), i) + " " +
+  Add          r43, r38, r42
+  // print(slur(numberName(i), i) + " " +
+  Print        r43
+  // print(slur("take one", i) + " " +
+  Const        r46, "take one"
+  Move         r44, r46
+  Move         r45, r1
+  Call2        r47, slur, r44, r45
+  Const        r9, " "
+  Add          r48, r47, r9
+  // slur("down", i) + " " +
+  Const        r51, "down"
+  Move         r49, r51
+  Move         r50, r1
+  Call2        r52, slur, r49, r50
+  // print(slur("take one", i) + " " +
+  Add          r53, r48, r52
+  // slur("down", i) + " " +
+  Const        r9, " "
+  Add          r54, r53, r9
+  // slur("pass it around", i))
+  Const        r57, "pass it around"
+  Move         r55, r57
+  Move         r56, r1
+  Call2        r58, slur, r55, r56
+  // slur("down", i) + " " +
+  Add          r59, r54, r58
+  // print(slur("take one", i) + " " +
+  Print        r59
+  // print(slur(numberName(i - 1), i) + " " +
+  Const        r63, 1
+  SubInt       r64, r1, r63
+  Move         r62, r64
+  Call         r65, numberName, r62
+  Move         r60, r65
+  Move         r61, r1
+  Call2        r66, slur, r60, r61
+  Const        r9, " "
+  Add          r67, r66, r9
+  // pluralizeFirst(slur("bottle of", i), i - 1) + " " +
+  Const        r15, "bottle of"
+  Move         r70, r15
+  Move         r71, r1
+  Call2        r72, slur, r70, r71
+  Move         r68, r72
+  Const        r63, 1
+  SubInt       r73, r1, r63
+  Move         r69, r73
+  Call2        r74, pluralizeFirst, r68, r69
+  // print(slur(numberName(i - 1), i) + " " +
+  Add          r75, r67, r74
+  // pluralizeFirst(slur("bottle of", i), i - 1) + " " +
+  Const        r9, " "
+  Add          r76, r75, r9
+  // slur("beer on the wall", i))
+  Const        r22, "beer on the wall"
+  Move         r77, r22
+  Move         r78, r1
+  Call2        r79, slur, r77, r78
+  // pluralizeFirst(slur("bottle of", i), i - 1) + " " +
+  Add          r80, r76, r79
+  // print(slur(numberName(i - 1), i) + " " +
+  Print        r80
+  // i = i - 1
+  Const        r63, 1
+  SubInt       r81, r1, r63
+  Move         r1, r81
+  // while i > 0 {
+  Jump         L1
+L0:
+  Return       r0

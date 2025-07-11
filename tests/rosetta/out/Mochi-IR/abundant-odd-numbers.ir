@@ -1,0 +1,297 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun divisors(n: int): list<int> {
+func divisors (regs=26)
+  // var divs: list<int> = [1]
+  Const        r1, [1]
+  Move         r2, r1
+  // var divs2: list<int> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 2
+  Const        r5, 2
+  Move         r6, r5
+L2:
+  // while i * i <= n {
+  MulInt       r7, r6, r6
+  LessEq       r8, r7, r0
+  JumpIfFalse  r8, L0
+  // if n % i == 0 {
+  Mod          r9, r0, r6
+  Const        r10, 0
+  Equal        r11, r9, r10
+  JumpIfFalse  r11, L1
+  // let j = (n / i) as int
+  DivFloat     r12, r0, r6
+  Cast         r13, r12, int
+  // divs = append(divs, i)
+  Append       r14, r2, r6
+  Move         r2, r14
+  // if i != j {
+  NotEqual     r15, r6, r13
+  JumpIfFalse  r15, L1
+  // divs2 = append(divs2, j)
+  Append       r16, r4, r13
+  Move         r4, r16
+L1:
+  // i = i + 1
+  Const        r17, 1
+  AddInt       r18, r6, r17
+  Move         r6, r18
+  // while i * i <= n {
+  Jump         L2
+L0:
+  // var j = len(divs2) - 1
+  Len          r19, r4
+  Const        r17, 1
+  SubInt       r20, r19, r17
+  Move         r21, r20
+L4:
+  // while j >= 0 {
+  Const        r10, 0
+  LessEqInt    r22, r10, r21
+  JumpIfFalse  r22, L3
+  // divs = append(divs, divs2[j])
+  Index        r23, r4, r21
+  Append       r24, r2, r23
+  Move         r2, r24
+  // j = j - 1
+  Const        r17, 1
+  SubInt       r25, r21, r17
+  Move         r21, r25
+  // while j >= 0 {
+  Jump         L4
+L3:
+  // return divs
+  Return       r2
+
+  // fun sum(xs: list<int>): int {
+func sum (regs=12)
+  // var tot = 0
+  Const        r1, 0
+  Move         r2, r1
+  // for v in xs {
+  IterPrep     r3, r0
+  Len          r4, r3
+  Const        r5, 0
+L1:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // tot = tot + v
+  Add          r9, r2, r8
+  Move         r2, r9
+  // for v in xs {
+  Const        r10, 1
+  AddInt       r11, r5, r10
+  Move         r5, r11
+  Jump         L1
+L0:
+  // return tot
+  Return       r2
+
+  // fun sumStr(xs: list<int>): string {
+func sumStr (regs=18)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(xs) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // s = s + str(xs[i]) + " + "
+  Index        r7, r0, r4
+  Str          r8, r7
+  Add          r9, r2, r8
+  Const        r10, " + "
+  Add          r11, r9, r10
+  Move         r2, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r4, r12
+  Move         r4, r13
+  // while i < len(xs) {
+  Jump         L1
+L0:
+  // return substring(s, 0, len(s) - 3)
+  Const        r3, 0
+  Len          r14, r2
+  Const        r15, 3
+  SubInt       r16, r14, r15
+  Slice        r17, r2, r3, r16
+  Return       r17
+
+  // fun pad2(n: int): string {
+func pad2 (regs=7)
+  // let s = str(n)
+  Str          r1, r0
+  // if len(s) < 2 { return " " + s }
+  Len          r2, r1
+  Const        r3, 2
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r5, r1
+  Return       r6
+L0:
+  // return s
+  Return       r1
+
+  // fun pad5(n: int): string {
+func pad5 (regs=8)
+  // var s = str(n)
+  Str          r1, r0
+  Move         r2, r1
+L1:
+  // while len(s) < 5 {
+  Len          r3, r2
+  Const        r4, 5
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r2
+  Move         r2, r7
+  // while len(s) < 5 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun abundantOdd(searchFrom: int, countFrom: int, countTo: int, printOne: bool): int {
+func abundantOdd (regs=41)
+  // var count = countFrom
+  Move         r4, r1
+  // var n = searchFrom
+  Move         r5, r0
+L4:
+  // while count < countTo {
+  Less         r6, r4, r2
+  JumpIfFalse  r6, L0
+  // let divs = divisors(n)
+  Move         r7, r5
+  Call         r8, divisors, r7
+  // let tot = sum(divs)
+  Sum          r9, r8
+  // if tot > n {
+  Less         r10, r5, r9
+  JumpIfFalse  r10, L1
+  // count = count + 1
+  Const        r11, 1
+  Add          r12, r4, r11
+  Move         r4, r12
+  // if printOne && count < countTo {
+  Less         r13, r4, r2
+  Move         r14, r3
+  JumpIfFalse  r14, L2
+  Move         r14, r13
+L2:
+  JumpIfFalse  r14, L3
+  // n = n + 2
+  Const        r15, 2
+  Add          r16, r5, r15
+  Move         r5, r16
+  // continue
+  Jump         L4
+L3:
+  // let s = sumStr(divs)
+  Move         r17, r8
+  Call         r18, sumStr, r17
+  // if !printOne {
+  Not          r19, r3
+  JumpIfFalse  r19, L5
+  // print(pad2(count) + ". " + pad5(n) + " < " + s + " = " + str(tot))
+  Move         r20, r4
+  Call         r21, pad2, r20
+  Const        r22, ". "
+  Add          r23, r21, r22
+  Move         r24, r5
+  Call         r25, pad5, r24
+  Add          r26, r23, r25
+  Const        r27, " < "
+  Add          r28, r26, r27
+  Add          r29, r28, r18
+  Const        r30, " = "
+  Add          r31, r29, r30
+  Str          r32, r9
+  Add          r33, r31, r32
+  Print        r33
+  // if !printOne {
+  Jump         L1
+L5:
+  // print(str(n) + " < " + s + " = " + str(tot))
+  Str          r34, r5
+  Const        r27, " < "
+  Add          r35, r34, r27
+  Add          r36, r35, r18
+  Const        r30, " = "
+  Add          r37, r36, r30
+  Str          r38, r9
+  Add          r39, r37, r38
+  Print        r39
+L1:
+  // n = n + 2
+  Const        r15, 2
+  Add          r40, r5, r15
+  Move         r5, r40
+  // while count < countTo {
+  Jump         L4
+L0:
+  // return n
+  Return       r5
+
+  // fun main() {
+func main (regs=29)
+  // let max = 25
+  Const        r0, 25
+  // print("The first " + str(max) + " abundant odd numbers are:")
+  Const        r1, "The first "
+  Const        r2, "25"
+  Const        r3, "The first 25"
+  Const        r4, " abundant odd numbers are:"
+  Const        r5, "The first 25 abundant odd numbers are:"
+  Print        r5
+  // let n = abundantOdd(1, 0, max, false)
+  Const        r10, 1
+  Move         r6, r10
+  Const        r11, 0
+  Move         r7, r11
+  Const        r0, 25
+  Move         r8, r0
+  Const        r12, false
+  Move         r9, r12
+  Call         r13, abundantOdd, r6, r7, r8, r9
+  // print("\nThe one thousandth abundant odd number is:")
+  Const        r14, "\nThe one thousandth abundant odd number is:"
+  Print        r14
+  // abundantOdd(n, max, 1000, true)
+  Move         r15, r13
+  Const        r0, 25
+  Move         r16, r0
+  Const        r19, 1000
+  Move         r17, r19
+  Const        r20, true
+  Move         r18, r20
+  Call         r21, abundantOdd, r15, r16, r17, r18
+  // print("\nThe first abundant odd number above one billion is:")
+  Const        r22, "\nThe first abundant odd number above one billion is:"
+  Print        r22
+  // abundantOdd(1000000001, 0, 1, true)
+  Const        r27, 1000000001
+  Move         r23, r27
+  Const        r11, 0
+  Move         r24, r11
+  Const        r10, 1
+  Move         r25, r10
+  Const        r20, true
+  Move         r26, r20
+  Call         r28, abundantOdd, r23, r24, r25, r26
+  Return       r0

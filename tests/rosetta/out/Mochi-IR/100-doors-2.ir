@@ -1,0 +1,56 @@
+func main (regs=25)
+  // var door = 1
+  Const        r0, 1
+  Move         r1, r0
+  // var incrementer = 0
+  Const        r2, 0
+  Move         r3, r2
+  // for current in 1..101 {
+  Const        r0, 1
+  Const        r4, 101
+  Move         r5, r0
+L3:
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // var line = "Door " + str(current) + " "
+  Const        r7, "Door "
+  Str          r8, r5
+  Add          r9, r7, r8
+  Const        r10, " "
+  Add          r11, r9, r10
+  Move         r12, r11
+  // if current == door {
+  EqualInt     r13, r5, r1
+  JumpIfFalse  r13, L1
+  // line = line + "Open"
+  Const        r14, "Open"
+  Add          r15, r12, r14
+  Move         r12, r15
+  // incrementer = incrementer + 1
+  Const        r0, 1
+  AddInt       r16, r3, r0
+  Move         r3, r16
+  // door = door + 2 * incrementer + 1
+  Const        r17, 2
+  MulInt       r18, r17, r3
+  AddInt       r19, r1, r18
+  Const        r0, 1
+  AddInt       r20, r19, r0
+  Move         r1, r20
+  // if current == door {
+  Jump         L2
+L1:
+  // line = line + "Closed"
+  Const        r21, "Closed"
+  Add          r22, r12, r21
+  Move         r12, r22
+L2:
+  // print(line)
+  Print        r12
+  // for current in 1..101 {
+  Const        r23, 1
+  AddInt       r24, r5, r23
+  Move         r5, r24
+  Jump         L3
+L0:
+  Return       r0

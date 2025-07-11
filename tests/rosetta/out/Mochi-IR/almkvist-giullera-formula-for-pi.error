@@ -1,0 +1,8 @@
+parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/almkvist-giullera-formula-for-pi.mochi:296:24: unexpected token "," (expected PostfixExpr)
+  --> /workspace/mochi/tests/rosetta/x/Mochi/almkvist-giullera-formula-for-pi.mochi:296:24
+
+296 |   let line = repeat("-", 89)
+    |                        ^
+
+help:
+  Parse error occurred. Check syntax near this location.

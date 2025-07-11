@@ -1,0 +1,341 @@
+func main (regs=104)
+  // print("Avalanche of topplings:\n")
+  Const        r0, "Avalanche of topplings:\n"
+  Print        r0
+  // var s4 = [4,3,3,3,1,2,0,2,3]
+  Const        r1, [4, 3, 3, 3, 1, 2, 0, 2, 3]
+  Move         r2, r1
+  // print(pileString(s4))
+  Move         r3, r2
+  Call         r4, pileString, r3
+  Print        r4
+L1:
+  // while !isStable(s4) {
+  Move         r5, r2
+  Call         r6, isStable, r5
+  Not          r7, r6
+  JumpIfFalse  r7, L0
+  // topple(s4)
+  Move         r8, r2
+  Call         r9, topple, r8
+  // print(pileString(s4))
+  Move         r10, r2
+  Call         r11, pileString, r10
+  Print        r11
+  // while !isStable(s4) {
+  Jump         L1
+L0:
+  // print("Commutative additions:\n")
+  Const        r12, "Commutative additions:\n"
+  Print        r12
+  // var s1 = [1,2,0,2,1,1,0,1,3]
+  Const        r13, [1, 2, 0, 2, 1, 1, 0, 1, 3]
+  Move         r14, r13
+  // var s2 = [2,1,3,1,0,1,0,1,0]
+  Const        r15, [2, 1, 3, 1, 0, 1, 0, 1, 0]
+  Move         r16, r15
+  // var s3_a = plus(s1, s2)
+  Move         r17, r14
+  Move         r18, r16
+  Call2        r19, plus, r17, r18
+  Move         r20, r19
+L3:
+  // while !isStable(s3_a) { topple(s3_a) }
+  Move         r21, r20
+  Call         r22, isStable, r21
+  Not          r23, r22
+  JumpIfFalse  r23, L2
+  Move         r24, r20
+  Call         r25, topple, r24
+  Jump         L3
+L2:
+  // var s3_b = plus(s2, s1)
+  Move         r26, r16
+  Move         r27, r14
+  Call2        r28, plus, r26, r27
+  Move         r29, r28
+L5:
+  // while !isStable(s3_b) { topple(s3_b) }
+  Move         r30, r29
+  Call         r31, isStable, r30
+  Not          r32, r31
+  JumpIfFalse  r32, L4
+  Move         r33, r29
+  Call         r34, topple, r33
+  Jump         L5
+L4:
+  // print(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a))
+  Move         r35, r14
+  Call         r36, pileString, r35
+  Const        r37, "\nplus\n\n"
+  Add          r38, r36, r37
+  Move         r39, r16
+  Call         r40, pileString, r39
+  Add          r41, r38, r40
+  Const        r42, "\nequals\n\n"
+  Add          r43, r41, r42
+  Move         r44, r20
+  Call         r45, pileString, r44
+  Add          r46, r43, r45
+  Print        r46
+  // print("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b))
+  Const        r47, "and\n\n"
+  Move         r48, r16
+  Call         r49, pileString, r48
+  Add          r50, r47, r49
+  Const        r37, "\nplus\n\n"
+  Add          r51, r50, r37
+  Move         r52, r14
+  Call         r53, pileString, r52
+  Add          r54, r51, r53
+  Const        r55, "\nalso equals\n\n"
+  Add          r56, r54, r55
+  Move         r57, r29
+  Call         r58, pileString, r57
+  Add          r59, r56, r58
+  Print        r59
+  // print("Addition of identity sandpile:\n")
+  Const        r60, "Addition of identity sandpile:\n"
+  Print        r60
+  // var s3 = [3,3,3,3,3,3,3,3,3]
+  Const        r61, [3, 3, 3, 3, 3, 3, 3, 3, 3]
+  Move         r62, r61
+  // var s3_id = [2,1,2,1,0,1,2,1,2]
+  Const        r63, [2, 1, 2, 1, 0, 1, 2, 1, 2]
+  Move         r64, r63
+  // var s4b = plus(s3, s3_id)
+  Move         r65, r62
+  Move         r66, r64
+  Call2        r67, plus, r65, r66
+  Move         r68, r67
+L7:
+  // while !isStable(s4b) { topple(s4b) }
+  Move         r69, r68
+  Call         r70, isStable, r69
+  Not          r71, r70
+  JumpIfFalse  r71, L6
+  Move         r72, r68
+  Call         r73, topple, r72
+  Jump         L7
+L6:
+  // print(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b))
+  Move         r74, r62
+  Call         r75, pileString, r74
+  Const        r37, "\nplus\n\n"
+  Add          r76, r75, r37
+  Move         r77, r64
+  Call         r78, pileString, r77
+  Add          r79, r76, r78
+  Const        r42, "\nequals\n\n"
+  Add          r80, r79, r42
+  Move         r81, r68
+  Call         r82, pileString, r81
+  Add          r83, r80, r82
+  Print        r83
+  // print("Addition of identities:\n")
+  Const        r84, "Addition of identities:\n"
+  Print        r84
+  // var s5 = plus(s3_id, s3_id)
+  Move         r85, r64
+  Move         r86, r64
+  Call2        r87, plus, r85, r86
+  Move         r88, r87
+L9:
+  // while !isStable(s5) { topple(s5) }
+  Move         r89, r88
+  Call         r90, isStable, r89
+  Not          r91, r90
+  JumpIfFalse  r91, L8
+  Move         r92, r88
+  Call         r93, topple, r92
+  Jump         L9
+L8:
+  // print(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5))
+  Move         r94, r64
+  Call         r95, pileString, r94
+  Const        r37, "\nplus\n\n"
+  Add          r96, r95, r37
+  Move         r97, r64
+  Call         r98, pileString, r97
+  Add          r99, r96, r98
+  Const        r42, "\nequals\n\n"
+  Add          r100, r99, r42
+  Move         r101, r88
+  Call         r102, pileString, r101
+  Add          r103, r100, r102
+  Print        r103
+  Return       r0
+
+  // fun neighborsList(): list<list<int>> {
+func neighborsList (regs=1)
+  // return [
+  Const        r0, [[1, 3], [0, 2, 4], [1, 5], [0, 4, 6], [1, 3, 5, 7], [2, 4, 8], [3, 7], [4, 6, 8], [5, 7]]
+  Return       r0
+
+  // fun plus(a: list<int>, b: list<int>): list<int> {
+func plus (regs=14)
+  // var res: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L1:
+  // while i < len(a) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // res = append(res, a[i] + b[i])
+  Index        r8, r0, r5
+  Index        r9, r1, r5
+  Add          r10, r8, r9
+  Append       r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(a) {
+  Jump         L1
+L0:
+  // return res
+  Return       r3
+
+  // fun isStable(p: list<int>): bool {
+func isStable (regs=13)
+  // for v in p {
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L2:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  // if v > 3 { return false }
+  Const        r7, 3
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L1
+  Const        r9, false
+  Return       r9
+L1:
+  // for v in p {
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  Jump         L2
+L0:
+  // return true
+  Const        r12, true
+  Return       r12
+
+  // fun topple(p: list<int>): int {
+func topple (regs=25)
+  // let neighbors = neighborsList()
+  Call         r1, neighborsList, 
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L4:
+  // while i < len(p) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if p[i] > 3 {
+  Index        r6, r0, r3
+  Const        r7, 3
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L1
+  // p[i] = p[i] - 4
+  Index        r9, r0, r3
+  Const        r10, 4
+  Sub          r11, r9, r10
+  SetIndex     r0, r3, r11
+  // let nbs = neighbors[i]
+  Index        r12, r1, r3
+  // for j in nbs {
+  IterPrep     r13, r12
+  Len          r14, r13
+  Const        r15, 0
+L3:
+  LessInt      r16, r15, r14
+  JumpIfFalse  r16, L2
+  Index        r17, r13, r15
+  Move         r18, r17
+  // p[j] = p[j] + 1
+  Index        r19, r0, r18
+  Const        r20, 1
+  Add          r21, r19, r20
+  SetIndex     r0, r18, r21
+  // for j in nbs {
+  Const        r22, 1
+  AddInt       r23, r15, r22
+  Move         r15, r23
+  Jump         L3
+L2:
+  // return 0
+  Const        r2, 0
+  Return       r2
+L1:
+  // i = i + 1
+  Const        r20, 1
+  AddInt       r24, r3, r20
+  Move         r3, r24
+  // while i < len(p) {
+  Jump         L4
+L0:
+  // return 0
+  Const        r2, 0
+  Return       r2
+
+  // fun pileString(p: list<int>): string {
+func pileString (regs=21)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var r = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while r < 3 {
+  Const        r5, 3
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // var c = 0
+  Const        r3, 0
+  Move         r7, r3
+L2:
+  // while c < 3 {
+  Const        r5, 3
+  LessInt      r8, r7, r5
+  JumpIfFalse  r8, L1
+  // s = s + str(p[3*r + c]) + " "
+  Const        r5, 3
+  MulInt       r9, r5, r4
+  AddInt       r10, r9, r7
+  Index        r11, r0, r10
+  Str          r12, r11
+  Add          r13, r2, r12
+  Const        r14, " "
+  Add          r15, r13, r14
+  Move         r2, r15
+  // c = c + 1
+  Const        r16, 1
+  AddInt       r17, r7, r16
+  Move         r7, r17
+  // while c < 3 {
+  Jump         L2
+L1:
+  // s = s + "\n"
+  Const        r18, "\n"
+  Add          r19, r2, r18
+  Move         r2, r19
+  // r = r + 1
+  Const        r16, 1
+  AddInt       r20, r4, r16
+  Move         r4, r20
+  // while r < 3 {
+  Jump         L3
+L0:
+  // return s
+  Return       r2
