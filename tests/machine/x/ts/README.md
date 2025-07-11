@@ -4,7 +4,7 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 ## Progress
 
-Compiled: 97/97 programs
+Compiled: 100/100 programs
 
 ## Checklist
 
@@ -30,6 +30,7 @@ Compiled: 97/97 programs
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -77,6 +78,8 @@ Compiled: 97/97 programs
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -105,9 +108,3 @@ Compiled: 97/97 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
-## Remaining Tasks
-
-- Integrate with Node runtime for dataset queries and joins
-- Support asynchronous `fetch` statements
-- Improve formatting to match human examples

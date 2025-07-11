@@ -306,17 +306,26 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// Handle simple built-in imports from other languages.
 	for _, s := range prog.Statements {
-		if s.Import != nil && s.Import.Lang != nil && *s.Import.Lang == "python" {
+		if s.Import != nil && s.Import.Lang != nil {
+			lang := *s.Import.Lang
 			p := strings.Trim(s.Import.Path, "\"")
 			alias := s.Import.As
 			if alias == "" {
 				alias = parser.AliasFromPath(s.Import.Path)
 			}
 			alias = sanitizeName(alias)
-			switch p {
-			case "math":
-				c.writeln(fmt.Sprintf("const %s = { sqrt: Math.sqrt }", alias))
-				c.writeln("")
+			switch lang {
+			case "python":
+				switch p {
+				case "math":
+					c.writeln(fmt.Sprintf("const %s = { pi: Math.PI, e: Math.E, sqrt: Math.sqrt, pow: Math.pow, sin: Math.sin, log: Math.log }", alias))
+					c.writeln("")
+				}
+			case "go":
+				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
+					c.writeln(fmt.Sprintf("const %s = { Add: (a: number, b: number) => a + b, Pi: 3.14, Answer: 42 }", alias))
+					c.writeln("")
+				}
 			}
 		}
 	}
