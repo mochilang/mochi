@@ -155,7 +155,8 @@ int main() {
   }
   _t6.len = _t7;
   list_int groups = _t6;
-  list_int _t9 = list_int_create(0);
+  int _t9_data[] = {};
+  list_int _t9 = {0, _t9_data};
   list_int tmp = _t9;
   for (int _t10 = 0; _t10 < groups.len; _t10++) {
     int g = groups.data[_t10];

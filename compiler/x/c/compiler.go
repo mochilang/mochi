@@ -3038,6 +3038,9 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
+	if vals, ok := evalListIntBinary(b); ok {
+		return c.emitConstListInt(vals)
+	}
 	left := c.compileUnary(b.Left)
 	leftType := c.unaryType(b.Left)
 	leftList := isListListUnary(b.Left, c.env)
@@ -3746,6 +3749,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 	case p.Call != nil:
 		if p.Call.Func == "len" {
 			isStr := isStringArg(p.Call.Args[0], c.env)
+			if vals, ok := c.evalListIntExpr(p.Call.Args[0]); ok {
+				return strconv.Itoa(len(vals))
+			}
 			arg := c.compileExpr(p.Call.Args[0])
 			if isStr {
 				c.need(needStringHeader)
@@ -5316,4 +5322,147 @@ func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
 	default:
 		return "", "", false
 	}
+}
+
+func listIntLiteralPrimary(p *parser.Primary) ([]int, bool) {
+	if p == nil || p.List == nil {
+		return nil, false
+	}
+	vals := make([]int, len(p.List.Elems))
+	for i, el := range p.List.Elems {
+		typ, val, ok := constLiteralTypeVal(el)
+		if !ok || typ != "int" {
+			return nil, false
+		}
+		iv, _ := strconv.Atoi(val)
+		vals[i] = iv
+	}
+	return vals, true
+}
+
+func listIntLiteralPostfix(p *parser.PostfixExpr) ([]int, bool) {
+	if p == nil || len(p.Ops) > 0 {
+		return nil, false
+	}
+	return listIntLiteralPrimary(p.Target)
+}
+
+func listIntLiteralUnary(u *parser.Unary) ([]int, bool) {
+	if u == nil || len(u.Ops) > 0 {
+		return nil, false
+	}
+	return listIntLiteralPostfix(u.Value)
+}
+
+func listIntLiteralExpr(e *parser.Expr) ([]int, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	return listIntLiteralUnary(e.Binary.Left)
+}
+
+func unionInts(a, b []int) []int {
+	res := []int{}
+	seen := map[int]bool{}
+	for _, v := range a {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	for _, v := range b {
+		if !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func exceptInts(a, b []int) []int {
+	mb := map[int]bool{}
+	for _, v := range b {
+		mb[v] = true
+	}
+	res := []int{}
+	for _, v := range a {
+		if !mb[v] {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func intersectInts(a, b []int) []int {
+	mb := map[int]bool{}
+	for _, v := range b {
+		mb[v] = true
+	}
+	res := []int{}
+	seen := map[int]bool{}
+	for _, v := range a {
+		if mb[v] && !seen[v] {
+			seen[v] = true
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func evalListIntUnary(u *parser.Unary) ([]int, bool) {
+	return listIntLiteralUnary(u)
+}
+
+func evalListIntPostfix(p *parser.PostfixExpr) ([]int, bool) {
+	return listIntLiteralPostfix(p)
+}
+
+func evalListIntBinary(b *parser.BinaryExpr) ([]int, bool) {
+	vals, ok := evalListIntUnary(b.Left)
+	if !ok {
+		return nil, false
+	}
+	for _, op := range b.Right {
+		rv, ok := evalListIntPostfix(op.Right)
+		if !ok {
+			return nil, false
+		}
+		switch op.Op {
+		case "+":
+			vals = append(vals, rv...)
+		case "union":
+			if op.All {
+				vals = append(vals, rv...)
+			} else {
+				vals = unionInts(vals, rv)
+			}
+		case "except":
+			vals = exceptInts(vals, rv)
+		case "intersect":
+			vals = intersectInts(vals, rv)
+		default:
+			return nil, false
+		}
+	}
+	return vals, true
+}
+
+func (c *Compiler) evalListIntExpr(e *parser.Expr) ([]int, bool) {
+	if e == nil || e.Binary == nil {
+		return nil, false
+	}
+	return evalListIntBinary(e.Binary)
+}
+
+func (c *Compiler) emitConstListInt(vals []int) string {
+	name := c.newTemp()
+	data := name + "_data"
+	c.need(needListInt)
+	parts := make([]string, len(vals))
+	for i, v := range vals {
+		parts[i] = strconv.Itoa(v)
+	}
+	c.writeln(fmt.Sprintf("int %s[] = {%s};", data, strings.Join(parts, ", ")))
+	c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
+	return name
 }
