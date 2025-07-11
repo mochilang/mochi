@@ -2728,8 +2728,15 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		elem := c.listElemTypeUnary(call.Args[0].Binary.Left)
-		c.needsAppend = true
-		return fmt.Sprintf("_append(%s, %s, %s)", elem, listArg, elemArg), nil
+		tmp := c.newTmp()
+		lbl := c.newLabel()
+		var b strings.Builder
+		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
+		b.WriteString("defer " + tmp + ".deinit(); ")
+		b.WriteString(tmp + ".appendSlice(" + listArg + ") catch unreachable; ")
+		b.WriteString(tmp + ".append(" + elemArg + ") catch unreachable; ")
+		b.WriteString("break :" + lbl + " " + tmp + ".toOwnedSlice() catch unreachable; }")
+		return b.String(), nil
 	}
 	if name == "min" && len(call.Args) == 1 {
 		arg, err := c.compileExpr(call.Args[0], false)

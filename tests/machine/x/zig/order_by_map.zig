@@ -1,38 +1,33 @@
 const std = @import("std");
 
-const data = (blk0: { const _tmp0 = struct {
+const DataItem = struct {
     a: i32,
     b: i32,
-}; const _arr = &[_]_tmp0{
-    _tmp0{
+};
+const data = &[_]DataItem{
+    DataItem{
     .a = 1,
     .b = 2,
 },
-    _tmp0{
+    DataItem{
     .a = 1,
     .b = 1,
 },
-    _tmp0{
+    DataItem{
     .a = 0,
     .b = 5,
 },
-}; break :blk0 _arr; });
-const sorted = blk1: { var _tmp1 = std.ArrayList(struct { item: struct {
+};
+const sorted = blk0: { var _tmp0 = std.ArrayList(struct { item: DataItem, key: struct {
     a: i32,
     b: i32,
-}, key: struct {
-    a: i32,
-    b: i32,
-} }).init(std.heap.page_allocator); for (data) |x| { _tmp1.append(.{ .item = x, .key = struct {
+} }).init(std.heap.page_allocator); for (data) |x| { _tmp0.append(.{ .item = x, .key = struct {
     a: i32,
     b: i32,
 }{
     .a = x.a,
     .b = x.b,
-} }) catch unreachable; } for (0.._tmp1.items.len) |i| { for (i+1.._tmp1.items.len) |j| { if (_tmp1.items[j].key < _tmp1.items[i].key) { const t = _tmp1.items[i]; _tmp1.items[i] = _tmp1.items[j]; _tmp1.items[j] = t; } } } var _tmp2 = std.ArrayList(struct {
-    a: i32,
-    b: i32,
-}).init(std.heap.page_allocator);for (_tmp1.items) |p| { _tmp2.append(p.item) catch unreachable; } const _tmp3 = _tmp2.toOwnedSlice() catch unreachable; break :blk1 _tmp3; };
+} }) catch unreachable; } for (0.._tmp0.items.len) |i| { for (i+1.._tmp0.items.len) |j| { if (_tmp0.items[j].key < _tmp0.items[i].key) { const t = _tmp0.items[i]; _tmp0.items[i] = _tmp0.items[j]; _tmp0.items[j] = t; } } } var _tmp1 = std.ArrayList(DataItem).init(std.heap.page_allocator);for (_tmp0.items) |p| { _tmp1.append(p.item) catch unreachable; } const _tmp2 = _tmp1.toOwnedSlice() catch unreachable; break :blk0 _tmp2; };
 
 pub fn main() void {
     std.debug.print("{any}\n", .{sorted});

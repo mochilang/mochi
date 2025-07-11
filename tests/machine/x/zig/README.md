@@ -108,7 +108,15 @@ Compiled programs: 100/100
 
 ## Remaining Tasks
 
-- [x] Keep generated outputs in sync with compiler improvements.
-- [x] Add more idiomatic mappings for built-in functions (e.g. string concatenation).
-- [x] Improve idiomatic mappings for Zig built-ins.
-- [x] Generate named structs from constant map literals for readability.
+- [ ] Keep generated outputs in sync with compiler improvements.
+- [ ] Add more idiomatic mappings for built-in functions (e.g. string concatenation).
+- [ ] Improve idiomatic mappings for Zig built-ins.
+- [ ] Generate named structs from constant map literals for readability.
+- [ ] Support union pattern matching using enums.
+- [ ] Implement iterators for list handling instead of ArrayList allocations.
+- [ ] Replace `catch unreachable` with proper error handling.
+- [ ] Optimize constant folding for arithmetic expressions.
+- [ ] Improve type inference for generic functions.
+- [ ] Handle recursive type definitions.
+- [ ] Emit comments describing inferred variable types.
+- [ ] Provide CLI to compile individual Mochi programs.

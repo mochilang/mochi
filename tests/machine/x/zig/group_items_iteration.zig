@@ -1,13 +1,5 @@
 const std = @import("std");
 
-fn _append(comptime T: type, v: []const T, x: T) []T {
-    var res = std.ArrayList(T).init(std.heap.page_allocator);
-    defer res.deinit();
-    res.appendSlice(v) catch unreachable;
-    res.append(x) catch unreachable;
-    return res.toOwnedSlice() catch unreachable;
-}
-
 fn _equal(a: anytype, b: anytype) bool {
     if (@TypeOf(a) != @TypeOf(b)) return false;
     return switch (@typeInfo(@TypeOf(a))) {
@@ -44,13 +36,13 @@ pub fn main() void {
         for (g.items) |x| {
             total = (total + x.val);
         }
-        tmp = _append(i32, tmp, struct {
+        tmp = blk2: { var _tmp8 = std.ArrayList(i32).init(std.heap.page_allocator); defer _tmp8.deinit(); _tmp8.appendSlice(tmp) catch unreachable; _tmp8.append(struct {
     tag: []const u8,
     total: i32,
 }{
     .tag = g.key,
     .total = total,
-});
+}) catch unreachable; break :blk2 _tmp8.toOwnedSlice() catch unreachable; };
     }
     std.debug.print("{any}\n", .{result});
 }
