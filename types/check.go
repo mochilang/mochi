@@ -408,6 +408,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: IntType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("cap", FuncType{
+		Params: []Type{ListType{Elem: AnyType{}}},
+		Return: IntType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("append", FuncType{
 		Params: []Type{ListType{Elem: AnyType{}}, AnyType{}},
 		Return: ListType{Elem: AnyType{}},
