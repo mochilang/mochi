@@ -79,6 +79,7 @@ type Compiler struct {
 	builtinAliases map[string]string
 	needMath       bool
 	listLens       map[string]int
+	listVals       map[string][]int
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -108,6 +109,7 @@ func New(env *types.Env) *Compiler {
 		groupKeys:      map[string]types.Type{},
 		builtinAliases: map[string]string{},
 		listLens:       map[string]int{},
+		listVals:       map[string][]int{},
 	}
 }
 
@@ -1175,6 +1177,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				}
 				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
 				c.listLens[name] = len(vals)
+				c.listVals[name] = vals
 				if c.env != nil {
 					c.env.SetVar(stmt.Name, t, false)
 				}
@@ -1370,6 +1373,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				}
 				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
 				c.listLens[name] = len(vals)
+				c.listVals[name] = vals
 				if c.env != nil {
 					c.env.SetVar(stmt.Name, t, true)
 				}
@@ -3514,7 +3518,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) string {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
-	if vals, ok := evalListIntBinary(b); ok {
+	if vals, ok := c.evalListIntBinary(b); ok {
 		return c.emitConstListInt(vals)
 	}
 	left := c.compileUnary(b.Left)
@@ -4431,6 +4435,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "append" {
 			if len(p.Call.Args) != 2 {
 				return "0"
+			}
+			if vals, ok := c.evalAppendInt(p.Call.Args[0], p.Call.Args[1]); ok {
+				return c.emitConstListInt(vals)
 			}
 			lst := c.compileExpr(p.Call.Args[0])
 			val := c.compileExpr(p.Call.Args[1])
@@ -6007,41 +6014,49 @@ func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
 	}
 }
 
-func listIntLiteralPrimary(p *parser.Primary) ([]int, bool) {
-	if p == nil || p.List == nil {
+func (c *Compiler) listIntLiteralPrimary(p *parser.Primary) ([]int, bool) {
+	if p == nil {
 		return nil, false
 	}
-	vals := make([]int, len(p.List.Elems))
-	for i, el := range p.List.Elems {
-		typ, val, ok := constLiteralTypeVal(el)
-		if !ok || typ != "int" {
-			return nil, false
+	if p.List != nil {
+		vals := make([]int, len(p.List.Elems))
+		for i, el := range p.List.Elems {
+			typ, val, ok := constLiteralTypeVal(el)
+			if !ok || typ != "int" {
+				return nil, false
+			}
+			iv, _ := strconv.Atoi(val)
+			vals[i] = iv
 		}
-		iv, _ := strconv.Atoi(val)
-		vals[i] = iv
+		return vals, true
 	}
-	return vals, true
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		if vals, ok := c.listVals[p.Selector.Root]; ok {
+			return vals, true
+		}
+	}
+	return nil, false
 }
 
-func listIntLiteralPostfix(p *parser.PostfixExpr) ([]int, bool) {
+func (c *Compiler) listIntLiteralPostfix(p *parser.PostfixExpr) ([]int, bool) {
 	if p == nil || len(p.Ops) > 0 {
 		return nil, false
 	}
-	return listIntLiteralPrimary(p.Target)
+	return c.listIntLiteralPrimary(p.Target)
 }
 
-func listIntLiteralUnary(u *parser.Unary) ([]int, bool) {
+func (c *Compiler) listIntLiteralUnary(u *parser.Unary) ([]int, bool) {
 	if u == nil || len(u.Ops) > 0 {
 		return nil, false
 	}
-	return listIntLiteralPostfix(u.Value)
+	return c.listIntLiteralPostfix(u.Value)
 }
 
-func listIntLiteralExpr(e *parser.Expr) ([]int, bool) {
+func (c *Compiler) listIntLiteralExpr(e *parser.Expr) ([]int, bool) {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return nil, false
 	}
-	return listIntLiteralUnary(e.Binary.Left)
+	return c.listIntLiteralUnary(e.Binary.Left)
 }
 
 func unionInts(a, b []int) []int {
@@ -6118,21 +6133,21 @@ func looksLikeFloatConst(expr string) bool {
 	return false
 }
 
-func evalListIntUnary(u *parser.Unary) ([]int, bool) {
-	return listIntLiteralUnary(u)
+func (c *Compiler) evalListIntUnary(u *parser.Unary) ([]int, bool) {
+	return c.listIntLiteralUnary(u)
 }
 
-func evalListIntPostfix(p *parser.PostfixExpr) ([]int, bool) {
-	return listIntLiteralPostfix(p)
+func (c *Compiler) evalListIntPostfix(p *parser.PostfixExpr) ([]int, bool) {
+	return c.listIntLiteralPostfix(p)
 }
 
-func evalListIntBinary(b *parser.BinaryExpr) ([]int, bool) {
-	vals, ok := evalListIntUnary(b.Left)
+func (c *Compiler) evalListIntBinary(b *parser.BinaryExpr) ([]int, bool) {
+	vals, ok := c.evalListIntUnary(b.Left)
 	if !ok {
 		return nil, false
 	}
 	for _, op := range b.Right {
-		rv, ok := evalListIntPostfix(op.Right)
+		rv, ok := c.evalListIntPostfix(op.Right)
 		if !ok {
 			return nil, false
 		}
@@ -6160,7 +6175,20 @@ func (c *Compiler) evalListIntExpr(e *parser.Expr) ([]int, bool) {
 	if e == nil || e.Binary == nil {
 		return nil, false
 	}
-	return evalListIntBinary(e.Binary)
+	return c.evalListIntBinary(e.Binary)
+}
+
+func (c *Compiler) evalAppendInt(listExpr, valExpr *parser.Expr) ([]int, bool) {
+	lst, ok := c.evalListIntExpr(listExpr)
+	if !ok {
+		return nil, false
+	}
+	typ, val, ok := constLiteralTypeVal(valExpr)
+	if !ok || typ != "int" {
+		return nil, false
+	}
+	iv, _ := strconv.Atoi(val)
+	return append(lst, iv), true
 }
 
 func (c *Compiler) emitConstListInt(vals []int) string {
@@ -6171,5 +6199,6 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 	}
 	c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
 	c.listLens[name] = len(vals)
+	c.listVals[name] = vals
 	return name
 }
