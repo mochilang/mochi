@@ -1,0 +1,75 @@
+fun listStr(xs: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(xs) {
+    s = s + str(xs[i])
+    if i < len(xs)-1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun llStr(lst: list<list<int>>): string {
+  var s = "["
+  var i = 0
+  while i < len(lst) {
+    s = s + listStr(lst[i])
+    if i < len(lst)-1 { s = s + " " }
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun cartN(lists: any): list<list<int>> {
+  if lists == null { return [] }
+  let a = lists as list<list<int>>
+  if len(a) == 0 { return [[]] }
+  var c = 1
+  for xs in a { c = c * len(xs) }
+  if c == 0 { return [] }
+  var res: list<list<int>> = []
+  var idx: list<int> = []
+  for _ in a { idx = append(idx, 0) }
+  var n = len(a)
+  var count = 0
+  while count < c {
+    var row: list<int> = []
+    var j = 0
+    while j < n {
+      row = append(row, a[j][idx[j]])
+      j = j + 1
+    }
+    res = append(res, row)
+    var k = n - 1
+    while k >= 0 {
+      idx[k] = idx[k] + 1
+      if idx[k] < len(a[k]) { break }
+      idx[k] = 0
+      k = k - 1
+    }
+    count = count + 1
+  }
+  return res
+}
+
+fun main() {
+  print(llStr(cartN([[1,2],[3,4]])))
+  print(llStr(cartN([[3,4],[1,2]])))
+  print(llStr(cartN([[1,2],[]])))
+  print(llStr(cartN([[],[1,2]])))
+  print("")
+  print("[")
+  for p in cartN([[1776,1789],[7,12],[4,14,23],[0,1]]) {
+    print(" "+listStr(p))
+  }
+  print("]")
+  print(llStr(cartN([[1,2,3],[30],[500,100]])))
+  print(llStr(cartN([[1,2,3],[],[500,100]])))
+  print("")
+  print(llStr(cartN(null)))
+  print(llStr(cartN([])))
+}
+
+main()
