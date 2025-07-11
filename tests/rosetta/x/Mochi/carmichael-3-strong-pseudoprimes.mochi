@@ -1,0 +1,52 @@
+// Mochi implementation of Rosetta "Carmichael 3 strong pseudoprimes" task
+// Translated from Go version in tests/rosetta/x/Go/carmichael-3-strong-pseudoprimes.go
+
+fun mod(n: int, m: int): int {
+  return ((n % m) + m) % m
+}
+
+fun isPrime(n: int): bool {
+  if n < 2 { return false }
+  if n % 2 == 0 { return n == 2 }
+  if n % 3 == 0 { return n == 3 }
+  var d = 5
+  while d * d <= n {
+    if n % d == 0 { return false }
+    d = d + 2
+    if n % d == 0 { return false }
+    d = d + 4
+  }
+  return true
+}
+
+fun pad(n: int, width: int): string {
+  var s = str(n)
+  while len(s) < width {
+    s = " " + s
+  }
+  return s
+}
+
+fun carmichael(p1: int) {
+  for h3 in 2..p1 {
+    for d in 1..(h3 + p1) {
+      if ((h3 + p1) * (p1 - 1)) % d == 0 && mod(-p1 * p1, h3) == d % h3 {
+        let p2 = 1 + ((p1 - 1) * (h3 + p1) / d)
+        if !isPrime(p2) { continue }
+        let p3 = 1 + (p1 * p2 / h3)
+        if !isPrime(p3) { continue }
+        if (p2 * p3) % (p1 - 1) != 1 { continue }
+        let c = p1 * p2 * p3
+        print(pad(p1, 2) + "   " + pad(p2, 4) + "   " + pad(p3, 5) + "     " + str(c))
+      }
+    }
+  }
+}
+
+print("The following are Carmichael munbers for p1 <= 61:\n")
+print("p1     p2      p3     product")
+print("==     ==      ==     =======")
+
+for p1 in 2..62 {
+  if isPrime(p1) { carmichael(p1) }
+}
