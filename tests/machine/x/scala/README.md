@@ -109,6 +109,6 @@ Executed successfully: 83
 
 ## Remaining Tasks
 - [x] Support automatic imports for Go/Python packages.
-- [ ] Implement dataset joins and YAML helpers.
+- [x] Implement dataset joins and YAML helpers.
 - [ ] Improve JSON saving helpers.
 

@@ -113,10 +113,30 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _except[T](a: List[T], b: List[T]): List[T] = { val remove = b.toSet; a.filterNot(remove) }\n")
 		case "_intersect":
 			out.WriteString(pad + "def _intersect[T](a: List[T], b: List[T]): List[T] = { val keep = b.toSet; val res = scala.collection.mutable.ListBuffer[T](); val seen = scala.collection.mutable.Set[T](); for(x <- a if keep(x) && !seen(x)) { seen += x; res += x }; res.toList }\n")
+		case "_inner_join":
+			out.WriteString(pad + "def _inner_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(A,B)] = for { x <- a; y <- b if cond(x,y) } yield (x,y)\n")
+		case "_left_join":
+			out.WriteString(pad + "def _left_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(A, Option[B])] = for(x <- a) yield (x, b.find(y => cond(x,y)))\n")
+		case "_right_join":
+			out.WriteString(pad + "def _right_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], B)] = for(y <- b) yield (a.find(x => cond(x,y)), y)\n")
 		case "_load_yaml":
-			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String, String]] = { val lines = scala.io.Source.fromFile(path).getLines().toList; lines.grouped(3).flatMap { case List(n,a,e) => Some(Map(\"name\"->n.split(':')(1).trim, \"age\"->a.split(':')(1).trim, \"email\"->e.split(':')(1).trim)); case _ => None }.toList }\n")
+			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String,String]] = {\n" +
+				pad + "  val lines = scala.io.Source.fromFile(path).getLines().toList\n" +
+				pad + "  val buf = scala.collection.mutable.ListBuffer[Map[String,String]]()\n" +
+				pad + "  var cur = Map[String,String]()\n" +
+				pad + "  for(l <- lines) {\n" +
+				pad + "    val line = l.trim\n" +
+				pad + "    if(line.startsWith(\"-\")) {\n" +
+				pad + "      if(cur.nonEmpty) buf += cur; cur = Map()\n" +
+				pad + "      val rest = line.dropWhile(_ == '-').trim\n" +
+				pad + "      if(rest.nonEmpty && rest.contains(\":\")) { val i = rest.indexOf(':'); cur += rest.take(i).trim -> rest.drop(i+1).trim }\n" +
+				pad + "    } else if(line.contains(\":\")) { val i = line.indexOf(':'); cur += line.take(i).trim -> line.drop(i+1).trim }\n" +
+				pad + "  }\n" +
+				pad + "  if(cur.nonEmpty) buf += cur\n" +
+				pad + "  buf.toList\n" +
+				pad + "}\n")
 		case "_save_jsonl":
-			out.WriteString(pad + "def _save_jsonl(rows: List[Map[String, Any]], path: String): Unit = { val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path); rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(r).toString())); if(out ne Console.out) out.close() }\n")
+			out.WriteString(pad + "def _save_jsonl(rows: List[Map[String, Any]], path: String): Unit = { val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path); rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(r).toString())); out.flush(); if(out ne Console.out) out.close() }\n")
 		case "_truthy":
 			out.WriteString(pad + "def _truthy(v: Any): Boolean = v match {\n" +
 				pad + "  case null => false\n" +
