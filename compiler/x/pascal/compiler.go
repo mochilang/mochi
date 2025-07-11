@@ -574,8 +574,22 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 
 func (c *Compiler) compileIfExpr(expr *parser.IfExpr) (string, error) {
 	typ := "integer"
-	if c.expected != nil {
-		typ = typeString(c.expected)
+	expected := c.expected
+	if expected != nil {
+		typ = typeString(expected)
+	} else {
+		tThen := types.TypeOfExpr(expr.Then, c.env)
+		tElse := types.TypeOfExpr(expr.Else, c.env)
+		if tThen != nil && tElse != nil && typeString(tThen) == typeString(tElse) {
+			expected = tThen
+			typ = typeString(tThen)
+		} else if tThen != nil {
+			expected = tThen
+			typ = typeString(tThen)
+		} else if tElse != nil {
+			expected = tElse
+			typ = typeString(tElse)
+		}
 	}
 	tmp := c.newTypedVar(typ)
 
@@ -1096,14 +1110,22 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 					}
 				}
 				if typ == "integer" {
-					typT := types.TypeOfExprBasic(s.For.Source, env)
-					typ = typeString(typT)
+					if t := types.TypeOfExprBasic(s.For.Source, env); t != nil {
+						switch tt := t.(type) {
+						case types.ListType:
+							typ = typeString(tt.Elem)
+						case types.MapType:
+							typ = typeString(tt.Key)
+						case types.StringType:
+							typ = "char"
+						default:
+							typ = typeString(t)
+						}
+					}
 				}
 				if strings.HasPrefix(typ, "specialize TArray<") {
 					inner := strings.TrimSuffix(strings.TrimPrefix(typ, "specialize TArray<"), ">")
 					typ = inner
-				} else if typ == "string" {
-					typ = "char"
 				}
 				vars[s.For.Name] = typ
 			}
