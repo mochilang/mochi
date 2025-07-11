@@ -546,9 +546,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		if mt, ok := t.(types.MapType); ok {
 			keyT := c.inferExprType(idx.Start)
 			if !equalTypes(keyT, mt.Key) || isAny(keyT) {
-				c.use("_cast")
-				c.imports["encoding/json"] = true
-				iexpr = fmt.Sprintf("_cast[%s](%s)", goType(mt.Key), iexpr)
+				iexpr = fmt.Sprintf("(%s).(%s)", iexpr, goType(mt.Key))
 			}
 			t = mt.Value
 		} else if lt, ok := t.(types.ListType); ok {
@@ -605,9 +603,7 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		exprGo := goType(exprT)
 		typGo := goType(finalTyp)
 		if typGo != "" && typGo != exprGo && (isAny(exprT) || !equalTypes(finalTyp, exprT)) {
-			if !strings.HasPrefix(value, fmt.Sprintf("_cast[%s](", typGo)) {
-				value = c.castExpr(value, exprT, finalTyp)
-			}
+			value = c.castExpr(value, exprT, finalTyp)
 		}
 	}
 	c.writeln(fmt.Sprintf("%s = %s", lhs, value))
@@ -1635,9 +1631,8 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 	switch op {
 	case "+", "-", "*", "/", "%":
 		if op != "+" && (isAny(leftType) || isAny(rightType)) {
-			c.use("_cast")
-			left = fmt.Sprintf("_cast[float64](%s)", left)
-			right = fmt.Sprintf("_cast[float64](%s)", right)
+			left = c.castExpr(left, leftType, types.FloatType{})
+			right = c.castExpr(right, rightType, types.FloatType{})
 			expr = fmt.Sprintf("(%s %s %s)", left, op, right)
 			next = types.FloatType{}
 			return expr, next, nil
@@ -1668,14 +1663,12 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isList(rightType):
 			rt := rightType.(types.ListType)
-			c.use("_cast")
-			left = fmt.Sprintf("_cast[%s](%s)", goType(rightType), left)
+			left = c.castExpr(left, leftType, rightType)
 			expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(rt.Elem), left, right)
 			next = rightType
 		case op == "+" && isList(leftType) && isAny(rightType):
 			lt := leftType.(types.ListType)
-			c.use("_cast")
-			right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
+			right = c.castExpr(right, rightType, leftType)
 			expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 			next = leftType
 		case op == "+" && isAny(leftType) && isString(rightType):
@@ -1700,8 +1693,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 					expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 					next = leftType
 				} else {
-					c.use("_cast")
-					right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
+					right = c.castExpr(right, rightType, leftType)
 					expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 					next = leftType
 				}
@@ -1727,31 +1719,26 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			expr = fmt.Sprintf("%s + %s", left, right)
 			next = types.StringType{}
 		case op == "+" && isInt(leftType) && isAny(rightType):
-			c.use("_cast")
 			left = fmt.Sprintf("float64(%s)", left)
-			right = fmt.Sprintf("_cast[float64](%s)", right)
+			right = c.castExpr(right, rightType, types.FloatType{})
 			expr = fmt.Sprintf("(%s + %s)", left, right)
 			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isInt(rightType):
-			c.use("_cast")
-			left = fmt.Sprintf("_cast[float64](%s)", left)
+			left = c.castExpr(left, leftType, types.FloatType{})
 			right = fmt.Sprintf("float64(%s)", right)
 			expr = fmt.Sprintf("(%s + %s)", left, right)
 			next = types.FloatType{}
 		case op == "+" && isFloat(leftType) && isAny(rightType):
-			c.use("_cast")
-			right = fmt.Sprintf("_cast[float64](%s)", right)
+			right = c.castExpr(right, rightType, types.FloatType{})
 			expr = fmt.Sprintf("(%s + %s)", left, right)
 			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isFloat(rightType):
-			c.use("_cast")
-			left = fmt.Sprintf("_cast[float64](%s)", left)
+			left = c.castExpr(left, leftType, types.FloatType{})
 			expr = fmt.Sprintf("(%s + %s)", left, right)
 			next = types.FloatType{}
 		case op == "+" && isAny(leftType) && isAny(rightType):
-			c.use("_cast")
-			left = fmt.Sprintf("_cast[float64](%s)", left)
-			right = fmt.Sprintf("_cast[float64](%s)", right)
+			left = c.castExpr(left, leftType, types.FloatType{})
+			right = c.castExpr(right, rightType, types.FloatType{})
 			expr = fmt.Sprintf("(%s + %s)", left, right)
 			next = types.FloatType{}
 		default:
@@ -1774,21 +1761,16 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			if isAny(leftType) || isAny(rightType) {
 				switch {
 				case isAny(leftType) && isAny(rightType):
-					c.use("_cast")
-					left = fmt.Sprintf("_cast[float64](%s)", left)
-					right = fmt.Sprintf("_cast[float64](%s)", right)
+					left = c.castExpr(left, leftType, types.FloatType{})
+					right = c.castExpr(right, rightType, types.FloatType{})
 				case isAny(leftType) && isString(rightType):
-					c.use("_cast")
-					left = fmt.Sprintf("_cast[string](%s)", left)
+					left = c.castExpr(left, leftType, types.StringType{})
 				case isString(leftType) && isAny(rightType):
-					c.use("_cast")
-					right = fmt.Sprintf("_cast[string](%s)", right)
+					right = c.castExpr(right, rightType, types.StringType{})
 				case isAny(leftType) && isNumeric(rightType):
-					c.use("_cast")
-					left = fmt.Sprintf("_cast[%s](%s)", goType(rightType), left)
+					left = c.castExpr(left, leftType, rightType)
 				case isNumeric(leftType) && isAny(rightType):
-					c.use("_cast")
-					right = fmt.Sprintf("_cast[%s](%s)", goType(leftType), right)
+					right = c.castExpr(right, rightType, leftType)
 				default:
 					return "", types.AnyType{}, fmt.Errorf("incompatible types in comparison: %s and %s", leftType, rightType)
 				}
@@ -1819,9 +1801,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			c.writeln(fmt.Sprintf("%s := %s", mapTemp, right))
 			keyExpr := keyTemp
 			if !equalTypes(leftType, mt.Key) || isAny(leftType) {
-				c.use("_cast")
-				c.imports["encoding/json"] = true
-				keyExpr = fmt.Sprintf("_cast[%s](%s)", goType(mt.Key), keyTemp)
+				keyExpr = fmt.Sprintf("(%s).(%s)", keyTemp, goType(mt.Key))
 			}
 			okVar := c.newVar()
 			c.writeln(fmt.Sprintf("_, %s := %s[%s]", okVar, mapTemp, keyExpr))
@@ -1832,9 +1812,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 			elemGo := goType(lt.Elem)
 			itemExpr := left
 			if !equalTypes(leftType, lt.Elem) || isAny(leftType) {
-				c.use("_cast")
-				c.imports["encoding/json"] = true
-				itemExpr = fmt.Sprintf("_cast[%s](%s)", elemGo, left)
+				itemExpr = fmt.Sprintf("(%s).(%s)", left, elemGo)
 			}
 			if !isAny(lt.Elem) && isComparableSimple(lt.Elem) {
 				c.imports["slices"] = true
@@ -1915,9 +1893,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		switch op {
 		case "-":
 			if isAny(t) {
-				c.imports["encoding/json"] = true
-				c.use("_cast")
-				val = fmt.Sprintf("_cast[float64](%s)", val)
+				val = c.castExpr(val, t, types.FloatType{})
 			}
 			val = fmt.Sprintf("-%s", val)
 		case "!":
@@ -2062,9 +2038,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					keyT := c.inferExprType(idx.Start)
 					keyExpr := key
 					if !equalTypes(keyT, tt.Key) || isAny(keyT) {
-						c.use("_cast")
-						c.imports["encoding/json"] = true
-						keyExpr = fmt.Sprintf("_cast[%s](%s)", goType(tt.Key), key)
+						keyExpr = fmt.Sprintf("(%s).(%s)", key, goType(tt.Key))
 					}
 					val = fmt.Sprintf("%s[%s]", val, keyExpr)
 					typ = tt.Value
@@ -2113,9 +2087,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Cast != nil:
 			t := c.resolveTypeRef(op.Cast.Type)
-			c.use("_cast")
-			c.imports["encoding/json"] = true
-			val = fmt.Sprintf("_cast[%s](%s)", goType(t), val)
+			val = c.castExpr(val, typ, t)
 			typ = t
 		}
 	}
@@ -2186,8 +2158,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					}
 				default:
 					// treat as dynamic map
-					c.use("_cast")
-					base = fmt.Sprintf("_cast[map[string]any](%s)[%q]", base, field)
+					base = fmt.Sprintf("(%s).(map[string]any)[%q]", base, field)
 					typ = types.AnyType{}
 				}
 				if i == len(p.Selector.Tail)-1 {
@@ -2489,10 +2460,6 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if goT == "" {
 			goT = "any"
 		}
-		c.use("_cast")
-		if goT != "any" {
-			c.imports["encoding/json"] = true
-		}
 		var buf bytes.Buffer
 		buf.WriteString(fmt.Sprintf("func() []%s {\n", goT))
 		buf.WriteString(fmt.Sprintf("\trows := _load(%s, %s)\n", path, opts))
@@ -2501,7 +2468,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if goT == "any" {
 			buf.WriteString("\t\tout[i] = r\n")
 		} else {
-			buf.WriteString(fmt.Sprintf("\t\tout[i] = _cast[%s](r)\n", goT))
+			buf.WriteString(fmt.Sprintf("\t\tout[i] = r.(%s)\n", goT))
 		}
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn out\n")
@@ -2558,8 +2525,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	}
 	thenType := c.inferExprType(ie.Then)
 	if retType != "any" && !equalTypes(retT, thenType) {
-		c.use("_cast")
-		thenExpr = fmt.Sprintf("_cast[%s](%s)", retType, thenExpr)
+		thenExpr = c.castExpr(thenExpr, thenType, retT)
 	} else if retType == "[]any" {
 		if lt, ok := thenType.(types.ListType); ok && !isAny(lt.Elem) {
 			c.use("_toAnySlice")
@@ -2581,8 +2547,7 @@ func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
 	}
 	if elseExpr != "" {
 		if retType != "any" && !equalTypes(retT, elseType) {
-			c.use("_cast")
-			elseExpr = fmt.Sprintf("_cast[%s](%s)", retType, elseExpr)
+			elseExpr = c.castExpr(elseExpr, elseType, retT)
 		} else if retType == "[]any" {
 			if lt, ok := elseType.(types.ListType); ok && !isAny(lt.Elem) {
 				c.use("_toAnySlice")
@@ -2925,18 +2890,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(indent + "\torder = append(order, ks)\n")
 		buf.WriteString(indent + "}\n")
 		itemVar := "_item"
-		c.use("_cast")
 		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-		buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+		buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 		for _, f := range q.Froms {
-			c.use("_cast")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 		}
 		for _, j := range q.Joins {
-			c.use("_cast")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 		}
 		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
@@ -2963,18 +2925,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(indent + "\torder = append(order, ks)\n")
 			buf.WriteString(indent + "}\n")
 			itemVar := "_item"
-			c.use("_cast")
 			buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 			for _, f := range q.Froms {
-				c.use("_cast")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 			}
 			for _, j := range q.Joins {
-				c.use("_cast")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _cast[map[string]any](%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
@@ -3100,8 +3059,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				}
 				if typ != "any" {
 					tmp := fmt.Sprintf("_tmp%d", i)
-					c.use("_cast")
-					parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = _cast[%s](%s) }; _ = %s", tmp, i, n, typ, tmp, n, typ, tmp, n)
+					parts[i] = fmt.Sprintf("%s := _a[%d]; var %s %s; if %s != nil { %s = %s.(%s) }; _ = %s", tmp, i, n, typ, tmp, n, tmp, typ, n)
 				} else {
 					parts[i] = fmt.Sprintf("%s := _a[%d]; _ = %s", n, i, n)
 				}
@@ -3122,8 +3080,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				lk := fmt.Sprintf("func(_a ...any) any { %s; return %s }", lkAssign, joinLeftKeys[i])
 				var rk string
 				if joinTypes[i] != "any" {
-					c.use("_cast")
-					rk = fmt.Sprintf("func(_v any) any { %s := _cast[%s](_v); _ = %s; return %s }", sanitizeName(q.Joins[i].Var), joinTypes[i], sanitizeName(q.Joins[i].Var), joinRightKeys[i])
+					rk = fmt.Sprintf("func(_v any) any { %s := _v.(%s); _ = %s; return %s }", sanitizeName(q.Joins[i].Var), joinTypes[i], sanitizeName(q.Joins[i].Var), joinRightKeys[i])
 				} else {
 					rk = fmt.Sprintf("func(_v any) any { %s := _v; _ = %s; return %s }", sanitizeName(q.Joins[i].Var), sanitizeName(q.Joins[i].Var), joinRightKeys[i])
 				}
@@ -3181,8 +3138,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if retElem == "any" {
 			buf.WriteString("\t\tout[i] = v\n")
 		} else {
-			c.use("_cast")
-			buf.WriteString(fmt.Sprintf("\t\tout[i] = _cast[%s](v)\n", retElem))
+			buf.WriteString(fmt.Sprintf("\t\tout[i] = v.(%s)\n", retElem))
 		}
 		buf.WriteString("\t}\n")
 		buf.WriteString("\treturn out\n")
@@ -3534,8 +3490,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 			return "", err
 		}
 		if retType != "any" && !equalTypes(retT, resType) {
-			c.use("_cast")
-			res = fmt.Sprintf("_cast[%s](%s)", retType, res)
+			res = c.castExpr(res, resType, retT)
 		} else if retType == "[]any" {
 			if lt, ok := resType.(types.ListType); ok && !isAny(lt.Elem) {
 				c.use("_toAnySlice")
@@ -3880,9 +3835,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 	hintGo := goType(hint)
 	exprGo := goType(exprT)
 	if hintGo != "" && hintGo != exprGo && (isAny(exprT) || !equalTypes(hint, exprT)) {
-		c.use("_cast")
-		c.imports["encoding/json"] = true
-		expr = fmt.Sprintf("_cast[%s](%s)", hintGo, expr)
+		expr = c.castExpr(expr, exprT, hint)
 	}
 	return expr, nil
 }
@@ -4537,8 +4490,7 @@ func (c *Compiler) scanPostfixImports(p *parser.PostfixExpr) {
 			c.scanExprImports(idx.Start)
 			c.scanExprImports(idx.End)
 		case op.Cast != nil:
-			c.imports["encoding/json"] = true
-			c.use("_cast")
+			// casting may require helper imports handled in castExpr
 		}
 	}
 }
