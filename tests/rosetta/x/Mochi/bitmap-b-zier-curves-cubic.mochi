@@ -1,0 +1,133 @@
+let b3Seg = 30
+
+type Pixel {
+  r: int
+  g: int
+  b: int
+}
+
+fun pixelFromRgb(rgb: int): Pixel {
+  let r = ((rgb / 65536) % 256) as int
+  let g = ((rgb / 256) % 256) as int
+  let b = (rgb % 256) as int
+  return Pixel{ r: r, g: g, b: b }
+}
+
+fun newBitmap(cols: int, rows: int): map<string, any> {
+  var d: list<list<Pixel>> = []
+  var y = 0
+  while y < rows {
+    var row: list<Pixel> = []
+    var x = 0
+    while x < cols {
+      row = append(row, Pixel{ r: 0, g: 0, b: 0 })
+      x = x + 1
+    }
+    d = append(d, row)
+    y = y + 1
+  }
+  return {"cols": cols, "rows": rows, "data": d}
+}
+
+fun setPx(b: map<string, any>, x: int, y: int, p: Pixel) {
+  let cols = b["cols"] as int
+  let rows = b["rows"] as int
+  if x >= 0 && x < cols && y >= 0 && y < rows {
+    b["data"][y][x] = p
+  }
+}
+
+fun fill(b: map<string, any>, p: Pixel) {
+  let cols = b["cols"] as int
+  let rows = b["rows"] as int
+  var y = 0
+  while y < rows {
+    var x = 0
+    while x < cols {
+      b["data"][y][x] = p
+      x = x + 1
+    }
+    y = y + 1
+  }
+}
+
+fun fillRgb(b: map<string, any>, rgb: int) { fill(b, pixelFromRgb(rgb)) }
+
+fun line(b: map<string, any>, x0: int, y0: int, x1: int, y1: int, p: Pixel) {
+  var dx = x1 - x0
+  if dx < 0 { dx = -dx }
+  var dy = y1 - y0
+  if dy < 0 { dy = -dy }
+  var sx = -1
+  if x0 < x1 { sx = 1 }
+  var sy = -1
+  if y0 < y1 { sy = 1 }
+  var err = dx - dy
+  while true {
+    setPx(b, x0, y0, p)
+    if x0 == x1 && y0 == y1 { break }
+    let e2 = 2 * err
+    if e2 > (0 - dy) {
+      err = err - dy
+      x0 = x0 + sx
+    }
+    if e2 < dx {
+      err = err + dx
+      y0 = y0 + sy
+    }
+  }
+}
+
+fun bezier3(b: map<string, any>,
+            x1: int, y1: int,
+            x2: int, y2: int,
+            x3: int, y3: int,
+            x4: int, y4: int,
+            p: Pixel) {
+  var px: list<int> = []
+  var py: list<int> = []
+  var i = 0
+  while i <= b3Seg {
+    px = append(px, 0)
+    py = append(py, 0)
+    i = i + 1
+  }
+  let fx1 = x1 as float
+  let fy1 = y1 as float
+  let fx2 = x2 as float
+  let fy2 = y2 as float
+  let fx3 = x3 as float
+  let fy3 = y3 as float
+  let fx4 = x4 as float
+  let fy4 = y4 as float
+  i = 0
+  while i <= b3Seg {
+    let d = (i as float) / (b3Seg as float)
+    var a = 1.0 - d
+    var bcoef = a * a
+    var ccoef = d * d
+    var a2 = a * bcoef
+    var b2 = 3.0 * bcoef * d
+    var c2 = 3.0 * a * ccoef
+    var d2 = ccoef * d
+    px[i] = (a2*fx1 + b2*fx2 + c2*fx3 + d2*fx4) as int
+    py[i] = (a2*fy1 + b2*fy2 + c2*fy3 + d2*fy4) as int
+    i = i + 1
+  }
+  var x0 = px[0]
+  var y0 = py[0]
+  i = 1
+  while i <= b3Seg {
+    let x = px[i]
+    let y = py[i]
+    line(b, x0, y0, x, y, p)
+    x0 = x
+    y0 = y
+    i = i + 1
+  }
+}
+
+// main logic
+var b = newBitmap(400, 300)
+fillRgb(b, 16773055)
+bezier3(b, 20, 200, 700, 50, -300, 50, 380, 150, pixelFromRgb(4165615))
