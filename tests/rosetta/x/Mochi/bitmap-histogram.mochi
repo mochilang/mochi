@@ -1,0 +1,102 @@
+// Mochi implementation of Rosetta "Bitmap Histogram" task
+// Demonstrates computing a grayscale histogram and applying a threshold
+
+const MAX_U16 = 65535
+
+type Grmap {
+  cols: int
+  rows: int
+  px: list<list<int>>
+}
+
+fun newGrmap(x: int, y: int): Grmap {
+  var data: list<list<int>> = []
+  var row = 0
+  while row < y {
+    var r: list<int> = []
+    var col = 0
+    while col < x {
+      r = append(r, 0)
+      col = col + 1
+    }
+    data = append(data, r)
+    row = row + 1
+  }
+  return Grmap{ cols: x, rows: y, px: data }
+}
+
+fun histogram(g: Grmap, bins: int): list<int> {
+  if bins <= 0 { bins = g.cols }
+  var h: list<int> = []
+  var i = 0
+  while i < bins {
+    h = append(h, 0)
+    i = i + 1
+  }
+  var y = 0
+  while y < g.rows {
+    var x = 0
+    while x < g.cols {
+      let p = g.px[y][x]
+      let idx = (p * (bins - 1)) / MAX_U16
+      h[idx] = h[idx] + 1
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return h
+}
+
+fun threshold(g: Grmap, t: int) {
+  var y = 0
+  while y < g.rows {
+    var x = 0
+    while x < g.cols {
+      if g.px[y][x] < t {
+        g.px[y][x] = 0
+      } else {
+        g.px[y][x] = MAX_U16
+      }
+      x = x + 1
+    }
+    y = y + 1
+  }
+}
+
+fun main() {
+  // build simple grayscale image
+  let g = newGrmap(4, 3)
+  var y = 0
+  while y < g.rows {
+    var x = 0
+    while x < g.cols {
+      g.px[y][x] = x * 20000
+      x = x + 1
+    }
+    y = y + 1
+  }
+
+  let hist = histogram(g, 0)
+  print(str(hist))
+
+  var lb = 0
+  var ub = len(hist) - 1
+  var lSum = 0
+  var uSum = 0
+  while lb <= ub {
+    if lSum + hist[lb] < uSum + hist[ub] {
+      lSum = lSum + hist[lb]
+      lb = lb + 1
+    } else {
+      uSum = uSum + hist[ub]
+      ub = ub - 1
+    }
+  }
+
+  let t = (ub * MAX_U16) / len(hist)
+  print("Threshold " + str(t))
+  threshold(g, t)
+  for row in g.px { print(str(row)) }
+}
+
+main()
