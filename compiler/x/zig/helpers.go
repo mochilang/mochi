@@ -428,6 +428,70 @@ func pascalCase(s string) string {
 	return sanitizeName(strings.Join(parts, ""))
 }
 
+// matchStructFromMapLiteral checks if the map literal matches any known struct
+// definition in the environment. It returns the struct name if a match is found.
+func (c *Compiler) matchStructFromMapLiteral(m *parser.MapLiteral) (string, bool) {
+	if c.env == nil {
+		return "", false
+	}
+	fields := map[string]types.Type{}
+	for _, it := range m.Items {
+		k, ok := simpleStringKey(it.Key)
+		if !ok {
+			return "", false
+		}
+		fields[sanitizeName(k)] = c.inferExprType(it.Value)
+	}
+	for name, st := range c.env.Structs() {
+		if len(st.Fields) != len(fields) {
+			continue
+		}
+		match := true
+		for _, f := range st.Order {
+			if t, ok := fields[f]; !ok || !equalTypes(t, st.Fields[f]) {
+				match = false
+				break
+			}
+		}
+		if match {
+			return name, true
+		}
+	}
+	return "", false
+}
+
+// structTypeFromExpr tries to derive a StructType from an expression that is a
+// map literal or a list of map literals with constant keys.
+func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if ml := u.Value.Target.Map; ml != nil {
+		st, ok := c.structTypeFromMapLiteral(ml, "")
+		if ok {
+			if name, ok2 := c.matchStructFromMapLiteral(ml); ok2 {
+				st.Name = name
+			}
+			return st, true
+		}
+	}
+	if ll := u.Value.Target.List; ll != nil && len(ll.Elems) > 0 {
+		if first := ll.Elems[0]; first.Binary != nil && first.Binary.Left != nil {
+			if ml := first.Binary.Left.Value.Target.Map; ml != nil {
+				st, ok := c.structTypeFromMapLiteral(ml, "")
+				if ok {
+					if name, ok2 := c.matchStructFromMapLiteral(ml); ok2 {
+						st.Name = name
+					}
+					return types.ListType{Elem: st}, true
+				}
+			}
+		}
+	}
+	return nil, false
+}
+
 // structTypeFromMapLiteral builds a StructType for a map literal with identifier keys.
 func (c *Compiler) structTypeFromMapLiteral(m *parser.MapLiteral, name string) (types.StructType, bool) {
 	st := types.StructType{Name: name, Fields: map[string]types.Type{}, Order: make([]string, len(m.Items))}

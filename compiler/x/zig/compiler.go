@@ -429,6 +429,25 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					typ = c.resolveTypeRef(s.Let.Type)
 				} else if s.Let.Value != nil {
 					typ = c.inferExprType(s.Let.Value)
+					if st, ok := c.structTypeFromExpr(s.Let.Value); ok {
+						switch tt := st.(type) {
+						case types.StructType:
+							if tt.Name == "" {
+								tt.Name = pascalCase(name)
+							}
+							c.env.SetStruct(tt.Name, tt)
+							typ = tt
+						case types.ListType:
+							if st2, ok2 := tt.Elem.(types.StructType); ok2 {
+								if st2.Name == "" {
+									st2.Name = pascalCase(name) + "Item"
+								}
+								c.env.SetStruct(st2.Name, st2)
+								tt.Elem = st2
+								typ = tt
+							}
+						}
+					}
 				} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
 					typ = old
 				}
@@ -1907,6 +1926,25 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 				typ = types.MapType{Key: keyT, Value: valT}
 			} else {
 				typ = c.inferExprType(st.Value)
+				if stype, ok := c.structTypeFromExpr(st.Value); ok {
+					switch tt := stype.(type) {
+					case types.StructType:
+						if tt.Name == "" {
+							tt.Name = pascalCase(name)
+						}
+						c.env.SetStruct(tt.Name, tt)
+						typ = tt
+					case types.ListType:
+						if st2, ok2 := tt.Elem.(types.StructType); ok2 {
+							if st2.Name == "" {
+								st2.Name = pascalCase(name) + "Item"
+							}
+							c.env.SetStruct(st2.Name, st2)
+							tt.Elem = st2
+							typ = tt
+						}
+					}
+				}
 			}
 		} else if old, err := c.env.GetVar(st.Name); err == nil {
 			typ = old
@@ -2966,6 +3004,35 @@ func (c *Compiler) compileListLiteral(list *parser.ListLiteral, asRef bool) (str
 	}
 
 	if ml := extractMapLiteral(list.Elems[0]); ml != nil {
+		if name, ok := c.matchStructFromMapLiteral(ml); ok {
+			elems[0], _ = c.compileMapLiteral(ml, false)
+			for i := 1; i < len(list.Elems); i++ {
+				ml2 := extractMapLiteral(list.Elems[i])
+				if ml2 == nil {
+					return "", fmt.Errorf("mixed list elements not supported")
+				}
+				v, err := c.compileMapLiteral(ml2, false)
+				if err != nil {
+					return "", err
+				}
+				elems[i] = v
+			}
+			if len(elems) > 1 {
+				var b strings.Builder
+				if asRef {
+					b.WriteString("&[_]" + sanitizeName(name) + "{\n    ")
+				} else {
+					b.WriteString("[_]" + sanitizeName(name) + "{\n    ")
+				}
+				b.WriteString(strings.Join(elems, ",\n    "))
+				b.WriteString(",\n}")
+				return b.String(), nil
+			}
+			if asRef {
+				return fmt.Sprintf("&[_]%s{%s}", sanitizeName(name), elems[0]), nil
+			}
+			return fmt.Sprintf("[_]%s{%s}", sanitizeName(name), elems[0]), nil
+		}
 		structName := c.newTmp()
 		decl, init, ok, err := c.mapLiteralStruct(ml, structName)
 		if ok && err == nil {
@@ -3096,6 +3163,25 @@ func (c *Compiler) compileNamedListLiteral(list *parser.ListLiteral, asRef bool,
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (string, error) {
 	if !forceMap {
+		if name, ok := c.matchStructFromMapLiteral(m); ok {
+			fields := make([]string, len(m.Items))
+			for i, it := range m.Items {
+				v, err := c.compileExpr(it.Value, false)
+				if err != nil {
+					return "", err
+				}
+				k, _ := simpleStringKey(it.Key)
+				fields[i] = fmt.Sprintf(".%s = %s", sanitizeName(k), v)
+			}
+			if len(fields) > 1 {
+				var b strings.Builder
+				b.WriteString(fmt.Sprintf("%s{\n    ", sanitizeName(name)))
+				b.WriteString(strings.Join(fields, ",\n    "))
+				b.WriteString(",\n}")
+				return b.String(), nil
+			}
+			return fmt.Sprintf("%s{ %s }", sanitizeName(name), fields[0]), nil
+		}
 		if _, init, ok, err := c.mapLiteralStruct(m, ""); ok {
 			if err != nil {
 				return "", err
