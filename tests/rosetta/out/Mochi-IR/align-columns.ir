@@ -1,0 +1,363 @@
+func main (regs=26)
+  // "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" +
+  Const        r0, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n"
+  // "are$delineated$by$a$single$'dollar'$character,$write$a$program\n" +
+  Const        r1, "are$delineated$by$a$single$'dollar'$character,$write$a$program\n"
+  // "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" +
+  Const        r2, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\n"
+  // "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n" +
+  Const        r3, "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n"
+  // "are$delineated$by$a$single$'dollar'$character,$write$a$program\n" +
+  Const        r4, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n"
+  // "column$are$separated$by$at$least$one$space.\n" +
+  Const        r5, "column$are$separated$by$at$least$one$space.\n"
+  // "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n" +
+  Const        r6, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\ncolumn$are$separated$by$at$least$one$space.\n"
+  // "Further,$allow$for$each$word$in$a$column$to$be$either$left\n" +
+  Const        r7, "Further,$allow$for$each$word$in$a$column$to$be$either$left\n"
+  // "column$are$separated$by$at$least$one$space.\n" +
+  Const        r8, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\ncolumn$are$separated$by$at$least$one$space.\nFurther,$allow$for$each$word$in$a$column$to$be$either$left\n"
+  // "justified,$right$justified,$or$center$justified$within$its$column."
+  Const        r9, "justified,$right$justified,$or$center$justified$within$its$column."
+  // "Further,$allow$for$each$word$in$a$column$to$be$either$left\n" +
+  Const        r10, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\ncolumn$are$separated$by$at$least$one$space.\nFurther,$allow$for$each$word$in$a$column$to$be$either$left\njustified,$right$justified,$or$center$justified$within$its$column."
+  // let f = newFormatter(text)
+  Const        r12, "Given$a$text$file$of$many$lines,$where$fields$within$a$line\nare$delineated$by$a$single$'dollar'$character,$write$a$program\nthat$aligns$each$column$of$fields$by$ensuring$that$words$in$each\ncolumn$are$separated$by$at$least$one$space.\nFurther,$allow$for$each$word$in$a$column$to$be$either$left\njustified,$right$justified,$or$center$justified$within$its$column."
+  Move         r11, r12
+  Call         r13, newFormatter, r11
+  // printFmt(f, 0)
+  Move         r14, r13
+  Const        r16, 0
+  Move         r15, r16
+  Call2        r17, printFmt, r14, r15
+  // printFmt(f, 1)
+  Move         r18, r13
+  Const        r20, 1
+  Move         r19, r20
+  Call2        r21, printFmt, r18, r19
+  // printFmt(f, 2)
+  Move         r22, r13
+  Const        r24, 2
+  Move         r23, r24
+  Call2        r25, printFmt, r22, r23
+  Return       r0
+
+  // fun split(s: string, sep: string): list<string> {
+func split (regs=30)
+  // var parts: list<string> = []
+  Const        r2, []
+  Move         r3, r2
+  // var cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L3:
+  // while i < len(s) {
+  Len          r8, r0
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Len          r10, r1
+  Len          r11, r1
+  AddInt       r12, r7, r11
+  Const        r6, 0
+  LessInt      r13, r6, r10
+  Len          r14, r0
+  LessEqInt    r15, r12, r14
+  Len          r16, r1
+  AddInt       r17, r7, r16
+  Slice        r18, r0, r7, r17
+  Equal        r19, r18, r1
+  Move         r20, r13
+  JumpIfFalse  r20, L1
+  Move         r20, r15
+  JumpIfFalse  r20, L1
+  Move         r20, r19
+L1:
+  JumpIfFalse  r20, L2
+  // parts = append(parts, cur)
+  Append       r21, r3, r5
+  Move         r3, r21
+  // cur = ""
+  Const        r4, ""
+  Move         r5, r4
+  // i = i + len(sep)
+  Len          r22, r1
+  AddInt       r23, r7, r22
+  Move         r7, r23
+  // if len(sep) > 0 && i+len(sep) <= len(s) && substring(s, i, i+len(sep)) == sep {
+  Jump         L3
+L2:
+  // cur = cur + substring(s, i, i+1)
+  Const        r24, 1
+  AddInt       r25, r7, r24
+  Slice        r26, r0, r7, r25
+  Add          r27, r5, r26
+  Move         r5, r27
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r28, r7, r24
+  Move         r7, r28
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // parts = append(parts, cur)
+  Append       r29, r3, r5
+  Move         r3, r29
+  // return parts
+  Return       r3
+
+  // fun rstripEmpty(words: list<string>): list<string> {
+func rstripEmpty (regs=15)
+  // var n = len(words)
+  Len          r1, r0
+  Move         r2, r1
+L2:
+  // while n > 0 && words[n-1] == "" {
+  Const        r3, 0
+  LessInt      r4, r3, r2
+  Const        r5, 1
+  SubInt       r6, r2, r5
+  Index        r7, r0, r6
+  Const        r8, ""
+  Equal        r9, r7, r8
+  Move         r10, r4
+  JumpIfFalse  r10, L0
+  Move         r10, r9
+L0:
+  JumpIfFalse  r10, L1
+  // n = n - 1
+  Const        r5, 1
+  SubInt       r11, r2, r5
+  Move         r2, r11
+  // while n > 0 && words[n-1] == "" {
+  Jump         L2
+L1:
+  // return words[:n]
+  Const        r12, nil
+  Move         r13, r2
+  Slice        r14, r0, r12, r13
+  Return       r14
+
+  // fun spaces(n: int): string {
+func spaces (regs=10)
+  // var out = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // out = out + " "
+  Const        r6, " "
+  Add          r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun pad(word: string, width: int, align: int): string {
+func pad (regs=26)
+  // let diff = width - len(word)
+  Len          r3, r0
+  Sub          r4, r1, r3
+  // if align == 0 { // left
+  Const        r5, 0
+  Equal        r6, r2, r5
+  JumpIfFalse  r6, L0
+  // return word + spaces(diff)
+  Move         r7, r4
+  Call         r8, spaces, r7
+  Add          r9, r0, r8
+  Return       r9
+L0:
+  // if align == 2 { // right
+  Const        r10, 2
+  Equal        r11, r2, r10
+  JumpIfFalse  r11, L1
+  // return spaces(diff) + word
+  Move         r12, r4
+  Call         r13, spaces, r12
+  Add          r14, r13, r0
+  Return       r14
+L1:
+  // var left = (diff / 2) as int
+  Const        r10, 2
+  DivFloat     r15, r4, r10
+  Cast         r16, r15, int
+  Move         r17, r16
+  // var right = diff - left
+  Sub          r18, r4, r17
+  Move         r19, r18
+  // return spaces(left) + word + spaces(right)
+  Move         r20, r17
+  Call         r21, spaces, r20
+  Add          r22, r21, r0
+  Move         r23, r19
+  Call         r24, spaces, r23
+  Add          r25, r22, r24
+  Return       r25
+
+  // fun newFormatter(text: string): map<string, any> {
+func newFormatter (regs=44)
+  // var lines = split(text, "\n")
+  Move         r1, r0
+  Const        r3, "\n"
+  Move         r2, r3
+  Call2        r4, split, r1, r2
+  Move         r5, r4
+  // var fmtLines: list<list<string>> = []
+  Const        r6, []
+  Move         r7, r6
+  // var width: list<int> = []
+  Const        r6, []
+  Move         r8, r6
+  // var i = 0
+  Const        r9, 0
+  Move         r10, r9
+L2:
+  // while i < len(lines) {
+  Len          r11, r5
+  LessInt      r12, r10, r11
+  JumpIfFalse  r12, L0
+  // if len(lines[i]) == 0 {
+  Index        r13, r5, r10
+  Len          r14, r13
+  Const        r9, 0
+  EqualInt     r15, r14, r9
+  JumpIfFalse  r15, L1
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r10, r16
+  Move         r10, r17
+  // continue
+  Jump         L2
+L1:
+  // var words = rstripEmpty(split(lines[i], "$"))
+  Index        r21, r5, r10
+  Move         r19, r21
+  Const        r22, "$"
+  Move         r20, r22
+  Call2        r23, split, r19, r20
+  Move         r18, r23
+  Call         r24, rstripEmpty, r18
+  Move         r25, r24
+  // fmtLines = append(fmtLines, words)
+  Append       r26, r7, r25
+  Move         r7, r26
+  // var j = 0
+  Const        r9, 0
+  Move         r27, r9
+L5:
+  // while j < len(words) {
+  Len          r28, r25
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L3
+  // let wlen = len(words[j])
+  Index        r30, r25, r27
+  Len          r31, r30
+  // if j == len(width) {
+  Len          r32, r8
+  EqualInt     r33, r27, r32
+  JumpIfFalse  r33, L4
+  // width = append(width, wlen)
+  Append       r34, r8, r31
+  Move         r8, r34
+L4:
+  // j = j + 1
+  Const        r16, 1
+  AddInt       r35, r27, r16
+  Move         r27, r35
+  // while j < len(words) {
+  Jump         L5
+L3:
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r36, r10, r16
+  Move         r10, r36
+  // while i < len(lines) {
+  Jump         L2
+L0:
+  // return {"text": fmtLines, "width": width}
+  Const        r37, "text"
+  Const        r38, "width"
+  Move         r39, r37
+  Move         r40, r7
+  Move         r41, r38
+  Move         r42, r8
+  MakeMap      r43, 2, r39
+  Return       r43
+
+  // fun printFmt(f: map<string, any>, align: int) {
+func printFmt (regs=30)
+  // let lines = f["text"] as list<list<string>>
+  Const        r2, "text"
+  Index        r3, r0, r2
+  Cast         r4, r3, [[string]]
+  // let width = f["width"] as list<int>
+  Const        r5, "width"
+  Index        r6, r0, r5
+  Cast         r7, r6, [int]
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L3:
+  // while i < len(lines) {
+  Len          r10, r4
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let words = lines[i]
+  Index        r12, r4, r9
+  // var line = ""
+  Const        r13, ""
+  Move         r14, r13
+  // var j = 0
+  Const        r8, 0
+  Move         r15, r8
+L2:
+  // while j < len(words) {
+  Len          r16, r12
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L1
+  // line = line + pad(words[j], width[j], align) + " "
+  Index        r21, r12, r15
+  Move         r18, r21
+  Index        r22, r7, r15
+  Move         r19, r22
+  Move         r20, r1
+  Call         r23, pad, r18, r19, r20
+  Add          r24, r14, r23
+  Const        r25, " "
+  Add          r26, r24, r25
+  Move         r14, r26
+  // j = j + 1
+  Const        r27, 1
+  AddInt       r28, r15, r27
+  Move         r15, r28
+  // while j < len(words) {
+  Jump         L2
+L1:
+  // print(line)
+  Print        r14
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r29, r9, r27
+  Move         r9, r29
+  // while i < len(lines) {
+  Jump         L3
+L0:
+  // print("")
+  Const        r13, ""
+  Print        r13
+  Return       r0
