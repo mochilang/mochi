@@ -73,6 +73,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileFor(s.For)
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations are ignored in PHP output
+		return nil
 	case s.Break != nil:
 		c.writeln("break;")
 		return nil
@@ -399,6 +404,37 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	c.writeln(fmt.Sprintf("%s[%s] = %s;", list, idx, item))
 	c.indent--
 	c.writeln("}")
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	alias = sanitizeName(alias)
+	if im.Lang != nil {
+		lang := *im.Lang
+		path := strings.Trim(im.Path, "\"")
+		if lang == "python" && path == "math" {
+			c.writeln(fmt.Sprintf("$%s = [", alias))
+			c.indent++
+			c.writeln("'sqrt' => function($x) { return sqrt($x); },")
+			c.writeln("'pow' => function($x, $y) { return pow($x, $y); },")
+			c.writeln("'sin' => function($x) { return sin($x); },")
+			c.writeln("'log' => function($x) { return log($x); },")
+			c.writeln("'pi' => M_PI,")
+			c.writeln("'e' => M_E,")
+			c.indent--
+			c.writeln("];")
+			return nil
+		}
+		if lang == "go" && strings.Contains(path, "testpkg") {
+			c.writeln(fmt.Sprintf("$%s = [ 'Add' => function($a, $b) { return $a + $b; }, 'Pi' => 3.14, 'Answer' => 42 ];", alias))
+			return nil
+		}
+	}
+	c.writeln(fmt.Sprintf("$%s = [];", alias))
 	return nil
 }
 

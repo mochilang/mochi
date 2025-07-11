@@ -1,0 +1,10 @@
+string(20) "Circle area with r ="
+int(3)
+string(2) "=>"
+float(28.274333882308138)
+string(18) "Square root of 49:"
+float(7)
+string(10) "sin(π/4):"
+float(0.7071067811865475)
+string(7) "log(e):"
+float(1)
