@@ -128,3 +128,13 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [ ] Improve error recovery in parser
 - [ ] Add support for PHP enums
 - [ ] Provide benchmarking harness for compiled programs
+- [ ] Generate PHPDoc comments from type info
+- [ ] Support namespaces and autoloaders
+- [ ] Add composer integration for dependencies
+- [ ] Optimize query execution using generators
+- [ ] Implement caching for compiled modules
+- [ ] Provide REPL for interactive execution
+- [ ] Add static analysis integration
+- [ ] Support union types in pattern matching
+- [ ] Implement linting of generated code
+- [ ] Build Docker images for running tests

@@ -166,8 +166,9 @@ func isMapType(t types.Type) bool {
 }
 
 func formatList(elems []string) string {
-	if len(elems) <= 1 {
-		return "[" + strings.Join(elems, ", ") + "]"
+	flat := "[" + strings.Join(elems, ", ") + "]"
+	if len(elems) <= 3 && len(flat) <= 40 {
+		return flat
 	}
 	var b strings.Builder
 	b.WriteString("[\n")
@@ -185,8 +186,9 @@ func formatList(elems []string) string {
 }
 
 func formatMap(items []string) string {
-	if len(items) <= 1 {
-		return "[" + strings.Join(items, ", ") + "]"
+	flat := "[" + strings.Join(items, ", ") + "]"
+	if len(items) <= 3 && len(flat) <= 40 {
+		return flat
 	}
 	var b strings.Builder
 	b.WriteString("[\n")

@@ -1,8 +1,5 @@
 <?php
-$data = [
-    1,
-    2
-];
+$data = [1, 2];
 $flag = count((function() use ($data) {
     $result = [];
     foreach ($data as $x) {

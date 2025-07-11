@@ -1,21 +1,9 @@
 <?php
 $items = [
-    [
-        "cat" => "a",
-        "val" => 3
-    ],
-    [
-        "cat" => "a",
-        "val" => 1
-    ],
-    [
-        "cat" => "b",
-        "val" => 5
-    ],
-    [
-        "cat" => "b",
-        "val" => 2
-    ]
+    ["cat" => "a", "val" => 3],
+    ["cat" => "a", "val" => 1],
+    ["cat" => "b", "val" => 5],
+    ["cat" => "b", "val" => 2]
 ];
 $grouped = (function() use ($items) {
     $groups = [];

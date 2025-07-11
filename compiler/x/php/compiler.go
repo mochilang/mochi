@@ -812,7 +812,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("(count(%[1]s) ? array_sum(%[1]s)/count(%[1]s) : 0)", args[0]), nil
+		c.use("_avg")
+		if name, ok := c.isGroupVarExpr(call.Args[0]); ok {
+			return fmt.Sprintf("_avg($%s['items'])", name), nil
+		}
+		return fmt.Sprintf("_avg(%s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")

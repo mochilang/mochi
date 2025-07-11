@@ -1,21 +1,9 @@
 <?php
 $customers = [
-    [
-        "id" => 1,
-        "name" => "Alice"
-    ],
-    [
-        "id" => 2,
-        "name" => "Bob"
-    ],
-    [
-        "id" => 3,
-        "name" => "Charlie"
-    ],
-    [
-        "id" => 4,
-        "name" => "Diana"
-    ]
+    ["id" => 1, "name" => "Alice"],
+    ["id" => 2, "name" => "Bob"],
+    ["id" => 3, "name" => "Charlie"],
+    ["id" => 4, "name" => "Diana"]
 ];
 $orders = [
     [
@@ -39,10 +27,7 @@ $orders = [
         "total" => 80
     ]
 ];
-$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return [
-    "order" => $o,
-    "customer" => $c
-];} ]);
+$result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return ["order" => $o, "customer" => $c];} ]);
 var_dump("--- Outer Join using syntax ---");
 foreach ($result as $row) {
     if ($row['order']) {

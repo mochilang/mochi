@@ -1,33 +1,12 @@
 <?php
 $people = [
-    [
-        "name" => "Alice",
-        "city" => "Paris"
-    ],
-    [
-        "name" => "Bob",
-        "city" => "Hanoi"
-    ],
-    [
-        "name" => "Charlie",
-        "city" => "Paris"
-    ],
-    [
-        "name" => "Diana",
-        "city" => "Hanoi"
-    ],
-    [
-        "name" => "Eve",
-        "city" => "Paris"
-    ],
-    [
-        "name" => "Frank",
-        "city" => "Hanoi"
-    ],
-    [
-        "name" => "George",
-        "city" => "Paris"
-    ]
+    ["name" => "Alice", "city" => "Paris"],
+    ["name" => "Bob", "city" => "Hanoi"],
+    ["name" => "Charlie", "city" => "Paris"],
+    ["name" => "Diana", "city" => "Hanoi"],
+    ["name" => "Eve", "city" => "Paris"],
+    ["name" => "Frank", "city" => "Hanoi"],
+    ["name" => "George", "city" => "Paris"]
 ];
 $big = (function() use ($people) {
     $groups = [];
