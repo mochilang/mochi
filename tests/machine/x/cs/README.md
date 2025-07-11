@@ -4,6 +4,8 @@ This directory holds C# source generated from the Mochi programs in `tests/vm/va
 
 Compiled programs: 100/100
 
+The namespace of generated files can be customized by setting the `CS_NAMESPACE` environment variable when running `scripts/compile_cs.go`.
+
 Checklist:
 
 - [x] append_builtin
@@ -131,7 +133,7 @@ Checklist:
 - [ ] Provide integration with build systems (MSBuild, etc.)
 - [ ] Document runtime API usage with examples
 - [ ] Add cross-platform path handling
-- [ ] Support customizing generated namespaces
+- [x] Support customizing generated namespaces
 - [ ] Provide interactive REPL for generated code
 - [ ] Integrate static analysis for generated projects
 - [ ] Support generics in query comprehensions
