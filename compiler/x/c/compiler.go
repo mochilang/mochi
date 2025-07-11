@@ -2172,6 +2172,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
 					c.writeln(fmt.Sprintf("struct {char* key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+					if q.Group.Having != nil {
+						cond := c.compileExpr(q.Group.Having)
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					}
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
 					if keyType != "" {
@@ -2340,6 +2344,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
 					c.writeln(fmt.Sprintf("struct {int key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+					if q.Group.Having != nil {
+						cond := c.compileExpr(q.Group.Having)
+						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					}
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
 					if keyType != "" {
@@ -2523,6 +2531,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln("}")
 						c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
 						c.writeln(fmt.Sprintf("struct { pair_string key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+						if q.Group.Having != nil {
+							cond := c.compileExpr(q.Group.Having)
+							c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+						}
 						val := c.compileExpr(q.Select)
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
 						if keyType != "" {

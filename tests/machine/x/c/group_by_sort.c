@@ -179,6 +179,18 @@ int main() {
     }
   }
   list_GroupedItem grouped = tmp7;
-  printf("%d\n", grouped);
+  for (int i22 = 0; i22 < grouped.len; i22++) {
+    GroupedItem it = grouped.data[i22];
+    if (i22 > 0)
+      printf(" ");
+    printf("map[");
+    printf("cat:");
+    printf("%s", it.cat);
+    printf(" ");
+    printf("total:");
+    printf("%.16g", it.total);
+    printf("]");
+  }
+  printf("\n");
   return 0;
 }

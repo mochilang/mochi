@@ -209,11 +209,29 @@ int main() {
       char *key;
       list_PeopleItem items;
     } g = {_gp.key, tmp9};
+    if (!(g.items.len >= 4)) {
+      continue;
+    }
     tmp7.data[tmp8] = (BigItem){.city = g.key, .num = g.items.len};
     tmp8++;
   }
   tmp7.len = tmp8;
   list_BigItem big = tmp7;
-  _json_int(big);
+  printf("[");
+  for (int i11 = 0; i11 < big.len; i11++) {
+    if (i11 > 0)
+      printf(",");
+    BigItem it = big.data[i11];
+    printf("{");
+    _json_string("city");
+    printf(":");
+    _json_string(it.city);
+    printf(",");
+    _json_string("num");
+    printf(":");
+    _json_int(it.num);
+    printf("}");
+  }
+  printf("]");
   return 0;
 }
