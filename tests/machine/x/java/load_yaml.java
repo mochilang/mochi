@@ -18,13 +18,16 @@ class Person {
 		return Objects.hash(name, age, email);
 	}
 }
-public class LoadYaml {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class NameEmail {
+	Object name;
+	Object email;
+	NameEmail(Object name, Object email) {
+		this.name = name;
+		this.email = email;
 	}
+	int size() { return 2; }
+}
+public class LoadYaml {
 	static List<Map<String,Object>> loadYaml(String path) {
 		if (!(new java.io.File(path)).isAbsolute()) {
 			java.io.File f = new java.io.File(path);
@@ -61,16 +64,16 @@ public class LoadYaml {
 	}
 	public static void main(String[] args) {
 	List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
-	List<Map<String,Object>> adults = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res0 = new ArrayList<>();
+	List<NameEmail> adults = (new java.util.function.Supplier<List<NameEmail>>(){public List<NameEmail> get(){
+	List<NameEmail> _res0 = new ArrayList<>();
 	for (var p : people) {
 		if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-		_res0.add(mapOfEntries(entry("name", ((Map)p).get("name")), entry("email", ((Map)p).get("email"))));
+		_res0.add(new NameEmail(((Map)p).get("name"), ((Map)p).get("email")));
 	}
 	return _res0;
 }}).get();
-	for (Map<String,Object> a : adults) {
-		System.out.println(((Map)a).get("name") + " " + ((Map)a).get("email"));
+	for (NameEmail a : adults) {
+		System.out.println(a.name + " " + a.email);
 	}
 	}
 }

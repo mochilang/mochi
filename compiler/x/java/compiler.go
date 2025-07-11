@@ -699,6 +699,20 @@ func maybeBool(c *Compiler, expr string) string {
 		}
 	}
 	if strings.Contains(expr, ".") {
+		parts := strings.Split(expr, ".")
+		root := parts[0]
+		if typ, ok := c.vars[root]; ok {
+			for _, f := range parts[1:] {
+				if strings.HasPrefix(typ, "Map<") {
+					typ = mapValueType(typ)
+				} else {
+					typ = c.fieldType(typ, f)
+				}
+			}
+			if typ == "boolean" || typ == "int" || typ == "double" {
+				return expr
+			}
+		}
 		if !strings.ContainsAny(expr, "<>=!+-*/%") && !strings.Contains(expr, "==") && !strings.Contains(expr, "!=") {
 			return fmt.Sprintf("%s != null", expr)
 		}
@@ -1148,8 +1162,40 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
-	// Disable generation of data classes for map literals to keep code simple
-	return ""
+	// create a data class when all keys are string literals
+	var keys []string
+	for _, it := range m.Items {
+		k, ok := simpleStringKey(it.Key)
+		if !ok {
+			return ""
+		}
+		keys = append(keys, k)
+	}
+	if len(keys) == 0 {
+		return ""
+	}
+	shape := "map|" + strings.Join(keys, ";")
+	if dc, ok := c.dataClasses[shape]; ok {
+		return dc.name
+	}
+	name := classNameFromVar(strings.Join(keys, "_"))
+	if name == "" || c.dataClassByName(name) != nil {
+		name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
+	}
+	var types []string
+	for _, it := range m.Items {
+		t := c.inferType(it.Value)
+		if t == "var" {
+			t = wrapperType(c.litType(it.Value))
+		}
+		if t == "" {
+			t = "Object"
+		}
+		types = append(types, t)
+	}
+	c.dataClasses[shape] = &dataClass{name: name, fields: keys, types: types}
+	c.dataClassOrder = append(c.dataClassOrder, shape)
+	return name
 }
 
 func (c *Compiler) dataClassByName(name string) *dataClass {
@@ -1275,7 +1321,18 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	// Always emit standard map literals for readability
+	if name := c.dataClassFor(m); name != "" {
+		var args []string
+		for _, it := range m.Items {
+			v, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			args = append(args, v)
+		}
+		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
+	}
+	// standard map literal
 	c.helpers["map_of_entries"] = true
 	if len(m.Items) == 0 {
 		return "new LinkedHashMap<>()", nil

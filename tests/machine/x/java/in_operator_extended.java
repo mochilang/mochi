@@ -1,10 +1,17 @@
 import java.util.*;
+class A {
+	int a;
+	A(int a) {
+		this.a = a;
+	}
+	int size() { return 1; }
+}
 public class InOperatorExtended {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+	static boolean inOp(Object item, Object collection) {
+		if (collection instanceof Map<?,?> m) return m.containsKey(item);
+		if (collection instanceof Collection<?> c) return c.contains(item);
+		if (collection instanceof String s) return s.contains(String.valueOf(item));
+		return false;
 	}
 	public static void main(String[] args) {
 	List<Integer> xs = new ArrayList<>(Arrays.asList(1, 2, 3));
@@ -18,9 +25,9 @@ public class InOperatorExtended {
 }}).get();
 	System.out.println(ys.contains(1));
 	System.out.println(ys.contains(2));
-	Map<String,Integer> m = new HashMap<>(mapOfEntries(entry("a", 1)));
-	System.out.println(m.containsKey("a"));
-	System.out.println(m.containsKey("b"));
+	A m = new A(1);
+	System.out.println(inOp("a", m));
+	System.out.println(inOp("b", m));
 	String s = "hello";
 	System.out.println(s.contains(String.valueOf("ell")));
 	System.out.println(s.contains(String.valueOf("foo")));

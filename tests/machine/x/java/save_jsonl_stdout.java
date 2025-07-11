@@ -1,11 +1,14 @@
 import java.util.*;
-public class SaveJsonlStdout {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class NameAge {
+	String name;
+	int age;
+	NameAge(String name, int age) {
+		this.name = name;
+		this.age = age;
 	}
+	int size() { return 2; }
+}
+public class SaveJsonlStdout {
 	static Map<String,Object> asMap(Object o) {
 		if (o instanceof Map<?,?> mm) {
 			LinkedHashMap<String,Object> m = new LinkedHashMap<>();
@@ -25,7 +28,7 @@ public class SaveJsonlStdout {
 		}
 	}
 	public static void main(String[] args) {
-	List<Map<String,Object>> people = new ArrayList<>(Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("age", 30)), mapOfEntries(entry("name", "Bob"), entry("age", 25))));
+	List<NameAge> people = new ArrayList<>(Arrays.asList(new NameAge("Alice", 30), new NameAge("Bob", 25)));
 	saveJsonl((List<?>)people);
 	}
 }
