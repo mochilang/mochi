@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 97/97
+Compiled programs: 100/100
 
 Checklist:
 
@@ -28,6 +28,7 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -75,6 +76,8 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -126,3 +129,13 @@ Checklist:
 - [ ] Implement detailed logging for compiler steps
 - [ ] Expand unit test coverage for the compiler
 - [ ] Explore interoperability with Flutter projects
+- [ ] Add FFI bindings for Go libraries
+- [ ] Implement FFI access to Python modules
+- [ ] Provide REPL mode for quick testing
+- [ ] Offer code coverage instrumentation
+- [ ] Support concurrency with isolates
+- [ ] Add CLI flags for output directories
+- [ ] Optimize memory usage in queries
+- [ ] Generate pubspec files for projects
+- [ ] Run lints on generated code
+- [ ] Support modular compilation units
