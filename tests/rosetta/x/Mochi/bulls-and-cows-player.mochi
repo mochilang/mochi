@@ -1,0 +1,127 @@
+// Mochi implementation of Rosetta "Bulls and cows/Player" task
+// Translated from Go version in tests/rosetta/x/Go/bulls-and-cows-player.go
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i + 1) == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fields(s: string): list<string> {
+  var words: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i + 1)
+    if ch == " " || ch == "\t" || ch == "\n" {
+      if len(cur) > 0 { words = append(words, cur); cur = "" }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { words = append(words, cur) }
+  return words
+}
+
+fun makePatterns(): list<string> {
+  let digits = ["1","2","3","4","5","6","7","8","9"]
+  var pats: list<string> = []
+  var i = 0
+  while i < len(digits) {
+    var j = 0
+    while j < len(digits) {
+      if j != i {
+        var k = 0
+        while k < len(digits) {
+          if k != i && k != j {
+            var l = 0
+            while l < len(digits) {
+              if l != i && l != j && l != k {
+                pats = append(pats, digits[i] + digits[j] + digits[k] + digits[l])
+              }
+              l = l + 1
+            }
+          }
+          k = k + 1
+        }
+      }
+      j = j + 1
+    }
+    i = i + 1
+  }
+  return pats
+}
+
+fun main() {
+  print("Cows and bulls/player\n" +
+        "You think of four digit number of unique digits in the range 1 to 9.\n" +
+        "I guess.  You score my guess:\n" +
+        "    A correct digit but not in the correct place is a cow.\n" +
+        "    A correct digit in the correct place is a bull.\n" +
+        "You give my score as two numbers separated with a space.")
+
+  var patterns = makePatterns()
+  while true {
+    if len(patterns) == 0 {
+      print("Oops, check scoring.")
+      return
+    }
+    let guess = patterns[0]
+    patterns = patterns[1:]
+
+    var cows = 0
+    var bulls = 0
+    while true {
+      print("My guess: " + guess + ".  Score? (c b) ")
+      let line = input()
+      let toks = fields(line)
+      if len(toks) == 2 {
+        let c = int(toks[0])
+        let b = int(toks[1])
+        if c >= 0 && c <= 4 && b >= 0 && b <= 4 && c + b <= 4 {
+          cows = c
+          bulls = b
+          break
+        }
+      }
+      print("Score guess as two numbers: cows bulls")
+    }
+
+    if bulls == 4 {
+      print("I did it. :)")
+      return
+    }
+
+    var next: list<string> = []
+    var idx = 0
+    while idx < len(patterns) {
+      let pat = patterns[idx]
+      var c = 0
+      var b = 0
+      var i = 0
+      while i < 4 {
+        let cg = substring(guess, i, i + 1)
+        let cp = substring(pat, i, i + 1)
+        if cg == cp {
+          b = b + 1
+        } else if indexOf(pat, cg) >= 0 {
+          c = c + 1
+        }
+        i = i + 1
+      }
+      if c == cows && b == bulls {
+        next = append(next, pat)
+      }
+      idx = idx + 1
+    }
+    patterns = next
+  }
+}
+
+main()
