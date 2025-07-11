@@ -3,3 +3,21 @@ relaxed
 confirmed
 zero
 many
+    warning: the following clause will never match:
+
+        false
+
+    because it attempts to match on the result of:
+
+        t7
+
+    which has type:
+
+        true
+
+    typing violation found at:
+    │
+ 62 │            false -> "denied"
+    │            ~~~~~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/match_full.exs:62: Main.main/0

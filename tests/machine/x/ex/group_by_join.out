@@ -1,8 +1,16 @@
 warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
-  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:22: Main.main/0
+    │
+ 22 │          groups = _group_by(rows, fn [o, c] -> c.name end)
+    │                                       ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_join.exs:22:39: Main.main/0
 
-warning: default values for the optional arguments in _query/3 are never used
-  /workspace/mochi/tests/machine/x/ex/group_by_join.exs:97
+    warning: default values for the optional arguments in _query/3 are never used
+    │
+ 97 │   defp _query(src, joins, opts \\ %{}) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_join.exs:97:8: Main (module)
 
 --- Orders per customer ---
 "Alice" "orders:" 2

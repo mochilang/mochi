@@ -1,4 +1,8 @@
-warning: redefining module Node (current version loaded from /usr/lib/elixir/bin/../lib/elixir/ebin/Elixir.Node.beam)
-  /workspace/mochi/tests/machine/x/ex/tree_sum.exs:6
+warning: redefining module Node (current version loaded from /root/.local/share/mise/installs/elixir/1.18.3-otp-27/lib/elixir/ebin/Elixir.Node.beam)
+    │
+  7 │ defmodule Node do
+    │ ~~~~~~~~~~~~~~~~~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/tree_sum.exs:7: Node (module)
 
 3
