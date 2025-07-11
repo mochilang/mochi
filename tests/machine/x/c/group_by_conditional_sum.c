@@ -79,15 +79,15 @@ typedef struct {
   char *cat;
   int val;
   int flag;
-} itemsItem;
+} ItemsItem;
 typedef struct {
   int len;
-  itemsItem *data;
-} list_itemsItem;
-static list_itemsItem list_itemsItem_create(int len) {
-  list_itemsItem l;
+  ItemsItem *data;
+} list_ItemsItem;
+static list_ItemsItem list_ItemsItem_create(int len) {
+  list_ItemsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(itemsItem));
+  l.data = calloc(len, sizeof(ItemsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -98,15 +98,15 @@ static list_itemsItem list_itemsItem_create(int len) {
 typedef struct {
   char *cat;
   double share;
-} resultItem;
+} ResultItem;
 typedef struct {
   int len;
-  resultItem *data;
-} list_resultItem;
-static list_resultItem list_resultItem_create(int len) {
-  list_resultItem l;
+  ResultItem *data;
+} list_ResultItem;
+static list_ResultItem list_ResultItem_create(int len) {
+  list_ResultItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(resultItem));
+  l.data = calloc(len, sizeof(ResultItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -115,16 +115,16 @@ static list_resultItem list_resultItem_create(int len) {
 }
 
 int main() {
-  itemsItem tmp1_data[] = {(itemsItem){.cat = "a", .val = 10, .flag = 1},
-                           (itemsItem){.cat = "a", .val = 5, .flag = 0},
-                           (itemsItem){.cat = "b", .val = 20, .flag = 1}};
-  list_itemsItem tmp1 = {3, tmp1_data};
-  list_itemsItem items = tmp1;
-  list_itemsItem tmp2 = list_itemsItem_create(items.len);
+  ItemsItem tmp1_data[] = {(ItemsItem){.cat = "a", .val = 10, .flag = 1},
+                           (ItemsItem){.cat = "a", .val = 5, .flag = 0},
+                           (ItemsItem){.cat = "b", .val = 20, .flag = 1}};
+  list_ItemsItem tmp1 = {3, tmp1_data};
+  list_ItemsItem items = tmp1;
+  list_ItemsItem tmp2 = list_ItemsItem_create(items.len);
   list_string tmp3 = list_string_create(items.len);
   int tmp4 = 0;
   for (int i = 0; i < items.len; i++) {
-    itemsItem i = items.data[i];
+    ItemsItem i = items.data[i];
     tmp2.data[tmp4] = i;
     tmp3.data[tmp4] = i.cat;
     tmp4++;
@@ -132,24 +132,24 @@ int main() {
   tmp2.len = tmp4;
   tmp3.len = tmp4;
   list_group_string tmp5 = _group_by_string(tmp3);
-  list_resultItem tmp6 = list_resultItem_create(tmp5.len);
+  list_ResultItem tmp6 = list_ResultItem_create(tmp5.len);
   int *tmp8 = (int *)malloc(sizeof(int) * tmp5.len);
   int tmp7 = 0;
   for (int gi = 0; gi < tmp5.len; gi++) {
     _GroupString _gp = tmp5.data[gi];
-    list_itemsItem tmp9 = list_itemsItem_create(_gp.items.len);
+    list_ItemsItem tmp9 = list_ItemsItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
       tmp9.data[j] = tmp2.data[_gp.items.data[j]];
     }
     tmp9.len = _gp.items.len;
     struct {
       char *key;
-      list_itemsItem items;
+      list_ItemsItem items;
     } g = {_gp.key, tmp9};
     list_int tmp10 = list_int_create(g.items.len);
     int tmp11 = 0;
     for (int i = 0; i < g.items.len; i++) {
-      itemsItem x = g.items.data[i];
+      ItemsItem x = g.items.data[i];
       tmp10.data[tmp11] = (x.flag ? x.val : 0);
       tmp11++;
     }
@@ -157,13 +157,13 @@ int main() {
     list_int tmp12 = list_int_create(g.items.len);
     int tmp13 = 0;
     for (int i = 0; i < g.items.len; i++) {
-      itemsItem x = g.items.data[i];
+      ItemsItem x = g.items.data[i];
       tmp12.data[tmp13] = x.val;
       tmp13++;
     }
     tmp12.len = tmp13;
     tmp6.data[tmp7] =
-        (resultItem){.cat = g.key, .share = _sum_int(tmp10) / _sum_int(tmp12)};
+        (ResultItem){.cat = g.key, .share = _sum_int(tmp10) / _sum_int(tmp12)};
     tmp8[tmp7] = g.key;
     tmp7++;
   }
@@ -174,13 +174,13 @@ int main() {
         int tmp14 = tmp8[i];
         tmp8[i] = tmp8[j];
         tmp8[j] = tmp14;
-        resultItem tmp15 = tmp6.data[i];
+        ResultItem tmp15 = tmp6.data[i];
         tmp6.data[i] = tmp6.data[j];
         tmp6.data[j] = tmp15;
       }
     }
   }
-  list_resultItem result = tmp6;
-  printf("%.16g\n", result);
+  list_ResultItem result = tmp6;
+  printf("%d\n", result);
   return 0;
 }

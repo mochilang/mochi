@@ -121,15 +121,15 @@ static list_group_string _group_by_string(list_string src) {
 typedef struct {
   char *tag;
   int val;
-} dataItem;
+} DataItem;
 typedef struct {
   int len;
-  dataItem *data;
-} list_dataItem;
-static list_dataItem list_dataItem_create(int len) {
-  list_dataItem l;
+  DataItem *data;
+} list_DataItem;
+static list_DataItem list_DataItem_create(int len) {
+  list_DataItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(dataItem));
+  l.data = calloc(len, sizeof(DataItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -138,16 +138,16 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  dataItem tmp1_data[] = {(dataItem){.tag = "a", .val = 1},
-                          (dataItem){.tag = "a", .val = 2},
-                          (dataItem){.tag = "b", .val = 3}};
-  list_dataItem tmp1 = {3, tmp1_data};
-  list_dataItem data = tmp1;
-  list_dataItem tmp2 = list_dataItem_create(data.len);
+  DataItem tmp1_data[] = {(DataItem){.tag = "a", .val = 1},
+                          (DataItem){.tag = "a", .val = 2},
+                          (DataItem){.tag = "b", .val = 3}};
+  list_DataItem tmp1 = {3, tmp1_data};
+  list_DataItem data = tmp1;
+  list_DataItem tmp2 = list_DataItem_create(data.len);
   list_string tmp3 = list_string_create(data.len);
   int tmp4 = 0;
   for (int i = 0; i < data.len; i++) {
-    dataItem d = data.data[i];
+    DataItem d = data.data[i];
     tmp2.data[tmp4] = d;
     tmp3.data[tmp4] = d.tag;
     tmp4++;
@@ -159,14 +159,14 @@ int main() {
   int tmp7 = 0;
   for (int gi = 0; gi < tmp5.len; gi++) {
     _GroupString _gp = tmp5.data[gi];
-    list_dataItem tmp8 = list_dataItem_create(_gp.items.len);
+    list_DataItem tmp8 = list_DataItem_create(_gp.items.len);
     for (int j = 0; j < _gp.items.len; j++) {
       tmp8.data[j] = tmp2.data[_gp.items.data[j]];
     }
     tmp8.len = _gp.items.len;
     struct {
       char *key;
-      list_dataItem items;
+      list_DataItem items;
     } g = {_gp.key, tmp8};
     tmp6.data[tmp7] = g;
     tmp7++;
@@ -180,7 +180,7 @@ int main() {
     int g = groups.data[tmp10];
     int total = 0;
     for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
-      dataItem x = g.items.data[tmp11];
+      DataItem x = g.items.data[tmp11];
       total = total + x.val;
     }
     map_int_bool tmp12 = map_int_bool_create(2);
@@ -211,6 +211,6 @@ int main() {
     }
   }
   list_int result = tmp13;
-  printf("%.16g\n", result);
+  printf("%d\n", result);
   return 0;
 }

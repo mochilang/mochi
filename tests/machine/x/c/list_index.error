@@ -1,7 +1,0 @@
-line: 0
-error: output mismatch
--- got --
-2.486713817537428e-316
--- want --
-20
-   1: #include <stdio.h>

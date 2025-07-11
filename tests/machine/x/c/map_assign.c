@@ -3,15 +3,15 @@
 
 typedef struct {
   int alice;
-} scoresItem;
+} ScoresItem;
 typedef struct {
   int len;
-  scoresItem *data;
-} list_scoresItem;
-static list_scoresItem list_scoresItem_create(int len) {
-  list_scoresItem l;
+  ScoresItem *data;
+} list_ScoresItem;
+static list_ScoresItem list_ScoresItem_create(int len) {
+  list_ScoresItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(scoresItem));
+  l.data = calloc(len, sizeof(ScoresItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -20,7 +20,7 @@ static list_scoresItem list_scoresItem_create(int len) {
 }
 
 int main() {
-  scoresItem scores = (scoresItem){.alice = 1};
+  ScoresItem scores = (ScoresItem){.alice = 1};
   scores.data["bob"] = 2;
   printf("%d\n", scores.data["bob"]);
   return 0;

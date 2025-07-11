@@ -7,11 +7,10 @@ error: cc error: exit status 1
       |               |         |
       |               |         map_string_int
       |               map_string_int
-/workspace/mochi/tests/machine/x/c/order_by_map.c:108:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_dataItem’ [-Wformat=]
-  108 |   printf("%.16g\n", sorted);
-      |           ~~~~^     ~~~~~~
-      |               |     |
-      |               |     list_dataItem
-      |               double
+/workspace/mochi/tests/machine/x/c/order_by_map.c:108:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_DataItem’ [-Wformat=]
+  108 |   printf("%d\n", sorted);
+      |           ~^     ~~~~~~
+      |            |     |
+      |            int   list_DataItem
 
    1: #include <stdio.h>

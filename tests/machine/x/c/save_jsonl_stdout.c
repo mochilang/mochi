@@ -58,15 +58,15 @@ static void _save_json(list_map_string rows, const char *path) {
 typedef struct {
   char *name;
   int age;
-} peopleItem;
+} PeopleItem;
 typedef struct {
   int len;
-  peopleItem *data;
-} list_peopleItem;
-static list_peopleItem list_peopleItem_create(int len) {
-  list_peopleItem l;
+  PeopleItem *data;
+} list_PeopleItem;
+static list_PeopleItem list_PeopleItem_create(int len) {
+  list_PeopleItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(peopleItem));
+  l.data = calloc(len, sizeof(PeopleItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -75,10 +75,10 @@ static list_peopleItem list_peopleItem_create(int len) {
 }
 
 int main() {
-  peopleItem tmp1_data[] = {(peopleItem){.name = "Alice", .age = 30},
-                            (peopleItem){.name = "Bob", .age = 25}};
-  list_peopleItem tmp1 = {2, tmp1_data};
-  list_peopleItem people = tmp1;
+  PeopleItem tmp1_data[] = {(PeopleItem){.name = "Alice", .age = 30},
+                            (PeopleItem){.name = "Bob", .age = 25}};
+  list_PeopleItem tmp1 = {2, tmp1_data};
+  list_PeopleItem people = tmp1;
   _save_json(people, "-");
   return 0;
 }

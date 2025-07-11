@@ -8,7 +8,7 @@ error: cc error: exit status 1
   182 |     for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
       |                                  ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:183:21: error: request for member ‘items’ in something not a structure or union
-  183 |       dataItem x = g.items.data[tmp11];
+  183 |       DataItem x = g.items.data[tmp11];
       |                     ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:187:38: error: request for member ‘key’ in something not a structure or union
   187 |     map_int_bool_put(&tmp12, "tag", g.key);
@@ -35,11 +35,10 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:197:21: error: request for member ‘tag’ in something not a structure or union
   197 |     tmp16[tmp14] = r.tag;
       |                     ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:214:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_int’ [-Wformat=]
-  214 |   printf("%.16g\n", result);
-      |           ~~~~^     ~~~~~~
-      |               |     |
-      |               |     list_int
-      |               double
+/workspace/mochi/tests/machine/x/c/group_items_iteration.c:214:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
+  214 |   printf("%d\n", result);
+      |           ~^     ~~~~~~
+      |            |     |
+      |            int   list_int
 
    1: #include <stdio.h>

@@ -34,15 +34,15 @@ typedef struct {
   int n;
   char *l;
   int b;
-} combosItem;
+} CombosItem;
 typedef struct {
   int len;
-  combosItem *data;
-} list_combosItem;
-static list_combosItem list_combosItem_create(int len) {
-  list_combosItem l;
+  CombosItem *data;
+} list_CombosItem;
+static list_CombosItem list_CombosItem_create(int len) {
+  list_CombosItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(combosItem));
+  l.data = calloc(len, sizeof(CombosItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -60,8 +60,8 @@ int main() {
   int tmp3_data[] = {1, 0};
   list_int tmp3 = {2, tmp3_data};
   list_int bools = tmp3;
-  list_combosItem tmp4 =
-      list_combosItem_create(nums.len * letters.len * bools.len);
+  list_CombosItem tmp4 =
+      list_CombosItem_create(nums.len * letters.len * bools.len);
   int tmp5 = 0;
   for (int n_idx = 0; n_idx < nums.len; n_idx++) {
     int n = nums.data[n_idx];
@@ -69,17 +69,17 @@ int main() {
       char *l = letters.data[l_idx];
       for (int b_idx = 0; b_idx < bools.len; b_idx++) {
         int b = bools.data[b_idx];
-        tmp4.data[tmp5] = (combosItem){.n = n, .l = l, .b = b};
+        tmp4.data[tmp5] = (CombosItem){.n = n, .l = l, .b = b};
         tmp5++;
       }
     }
   }
   tmp4.len = tmp5;
-  list_combosItem combos = tmp4;
+  list_CombosItem combos = tmp4;
   printf("%s\n", "--- Cross Join of three lists ---");
   for (int tmp6 = 0; tmp6 < combos.len; tmp6++) {
-    combosItem c = combos.data[tmp6];
-    printf("%.16g ", c.n);
+    CombosItem c = combos.data[tmp6];
+    printf("%d ", c.n);
     printf("%s ", c.l);
     printf("%s\n", (c.b) ? "true" : "false");
   }

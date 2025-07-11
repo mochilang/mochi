@@ -1521,7 +1521,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
-	cond := c.compileExpr(stmt.Cond)
+	cond := c.boolExpr(stmt.Cond)
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent++
 	for _, st := range stmt.Then {
@@ -1552,7 +1552,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileWhile(w *parser.WhileStmt) error {
-	cond := c.compileExpr(w.Cond)
+	cond := c.boolExpr(w.Cond)
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent++
 	for _, st := range w.Body {
@@ -1630,13 +1630,34 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
-	cond := c.compileExpr(e.Value)
+	cond := c.boolExpr(e.Value)
 	c.writeln(fmt.Sprintf("if (!(%s)) { fprintf(stderr, \"expect failed\\n\"); exit(1); }", cond))
 	return nil
 }
 
+// boolExpr converts expression e to a boolean C expression.
+func (c *Compiler) boolExpr(e *parser.Expr) string {
+	expr := c.compileExpr(e)
+	t := c.exprType(e)
+	switch tt := t.(type) {
+	case types.BoolType:
+		return expr
+	case types.IntType, types.FloatType:
+		return fmt.Sprintf("(%s != 0)", expr)
+	case types.StringType:
+		c.need(needStringHeader)
+		return fmt.Sprintf("(%s && %s[0] != '\\0')", expr, expr)
+	case types.StructType:
+		c.need(needStringHeader)
+		zero := fmt.Sprintf("(%s){0}", sanitizeTypeName(tt.Name))
+		return fmt.Sprintf("memcmp(&%s, &%s, sizeof(%s)) != 0", expr, zero, sanitizeTypeName(tt.Name))
+	default:
+		return fmt.Sprintf("(%s)", expr)
+	}
+}
+
 func (c *Compiler) compileIfExpr(e *parser.IfExpr) string {
-	cond := c.compileExpr(e.Cond)
+	cond := c.boolExpr(e.Cond)
 	thenVal := c.compileExpr(e.Then)
 	elseVal := "0"
 	if e.ElseIf != nil {
@@ -2579,6 +2600,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			if _, ok := c.structLits[ml]; !ok {
 				if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
 					c.structLits[ml] = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
 					c.compileStructType(st)
 					c.compileStructListType(st)
 				}
@@ -2672,6 +2696,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				if _, ok := c.structLits[ml]; !ok {
 					if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
 						c.structLits[ml] = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
 						c.compileStructType(st)
 						c.compileStructListType(st)
 					}
@@ -2770,6 +2797,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				if _, ok := c.structLits[ml]; !ok {
 					if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
 						c.structLits[ml] = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
 						c.compileStructType(st)
 						c.compileStructListType(st)
 					}
@@ -5879,8 +5909,10 @@ func constFloatValue(e *parser.Expr) (float64, bool) {
 }
 
 func looksLikeFloatConst(expr string) bool {
-	if strings.ContainsAny(expr, ".eE") && !strings.Contains(expr, "\"") {
-		return true
+	if strings.ContainsAny(expr, ".eE") {
+		if _, err := strconv.ParseFloat(expr, 64); err == nil {
+			return true
+		}
 	}
 	return false
 }

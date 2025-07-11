@@ -4,15 +4,15 @@
 typedef struct {
   char *name;
   int age;
-} peopleItem;
+} PeopleItem;
 typedef struct {
   int len;
-  peopleItem *data;
-} list_peopleItem;
-static list_peopleItem list_peopleItem_create(int len) {
-  list_peopleItem l;
+  PeopleItem *data;
+} list_PeopleItem;
+static list_PeopleItem list_PeopleItem_create(int len) {
+  list_PeopleItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(peopleItem));
+  l.data = calloc(len, sizeof(PeopleItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -24,15 +24,15 @@ typedef struct {
   char *name;
   int age;
   int is_senior;
-} adultsItem;
+} AdultsItem;
 typedef struct {
   int len;
-  adultsItem *data;
-} list_adultsItem;
-static list_adultsItem list_adultsItem_create(int len) {
-  list_adultsItem l;
+  AdultsItem *data;
+} list_AdultsItem;
+static list_AdultsItem list_AdultsItem_create(int len) {
+  list_AdultsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(adultsItem));
+  l.data = calloc(len, sizeof(AdultsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -41,31 +41,31 @@ static list_adultsItem list_adultsItem_create(int len) {
 }
 
 int main() {
-  peopleItem tmp1_data[] = {(peopleItem){.name = "Alice", .age = 30},
-                            (peopleItem){.name = "Bob", .age = 15},
-                            (peopleItem){.name = "Charlie", .age = 65},
-                            (peopleItem){.name = "Diana", .age = 45}};
-  list_peopleItem tmp1 = {4, tmp1_data};
-  list_peopleItem people = tmp1;
+  PeopleItem tmp1_data[] = {(PeopleItem){.name = "Alice", .age = 30},
+                            (PeopleItem){.name = "Bob", .age = 15},
+                            (PeopleItem){.name = "Charlie", .age = 65},
+                            (PeopleItem){.name = "Diana", .age = 45}};
+  list_PeopleItem tmp1 = {4, tmp1_data};
+  list_PeopleItem people = tmp1;
   list_adultsItem tmp2 = list_adultsItem_create(people.len);
   int tmp3 = 0;
   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
-    peopleItem person = people.data[tmp4];
+    PeopleItem person = people.data[tmp4];
     if (!(person.age >= 18)) {
       continue;
     }
-    tmp2.data[tmp3] = (adultsItem){
+    tmp2.data[tmp3] = (AdultsItem){
         .name = person.name, .age = person.age, .is_senior = person.age >= 60};
     tmp3++;
   }
   tmp2.len = tmp3;
-  list_adultsItem adults = tmp2;
+  list_AdultsItem adults = tmp2;
   printf("%s\n", "--- Adults ---");
   for (int tmp5 = 0; tmp5 < adults.len; tmp5++) {
-    adultsItem person = adults.data[tmp5];
+    AdultsItem person = adults.data[tmp5];
     printf("%s ", person.name);
     printf("%s ", "is");
-    printf("%.16g ", person.age);
+    printf("%d ", person.age);
     printf("%s\n", (person.is_senior ? " (senior)" : ""));
   }
   return 0;

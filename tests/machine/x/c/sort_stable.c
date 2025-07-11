@@ -26,15 +26,15 @@ static void _print_list_string(list_string v) {
 typedef struct {
   int n;
   char *v;
-} itemsItem;
+} ItemsItem;
 typedef struct {
   int len;
-  itemsItem *data;
-} list_itemsItem;
-static list_itemsItem list_itemsItem_create(int len) {
-  list_itemsItem l;
+  ItemsItem *data;
+} list_ItemsItem;
+static list_ItemsItem list_ItemsItem_create(int len) {
+  list_ItemsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(itemsItem));
+  l.data = calloc(len, sizeof(ItemsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -43,16 +43,16 @@ static list_itemsItem list_itemsItem_create(int len) {
 }
 
 int main() {
-  itemsItem tmp1_data[] = {(itemsItem){.n = 1, .v = "a"},
-                           (itemsItem){.n = 1, .v = "b"},
-                           (itemsItem){.n = 2, .v = "c"}};
-  list_itemsItem tmp1 = {3, tmp1_data};
-  list_itemsItem items = tmp1;
+  ItemsItem tmp1_data[] = {(ItemsItem){.n = 1, .v = "a"},
+                           (ItemsItem){.n = 1, .v = "b"},
+                           (ItemsItem){.n = 2, .v = "c"}};
+  list_ItemsItem tmp1 = {3, tmp1_data};
+  list_ItemsItem items = tmp1;
   list_string tmp2 = list_string_create(items.len);
   int *tmp5 = (int *)malloc(sizeof(int) * items.len);
   int tmp3 = 0;
   for (int tmp4 = 0; tmp4 < items.len; tmp4++) {
-    itemsItem i = items.data[tmp4];
+    ItemsItem i = items.data[tmp4];
     tmp2.data[tmp3] = i.v;
     tmp5[tmp3] = i.n;
     tmp3++;

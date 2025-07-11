@@ -38,6 +38,6 @@ int main() {
   list_list_int tmp1 = {2, tmp1_data};
   list_list_int matrix = tmp1;
   matrix.data[1].data[0] = 5;
-  printf("%.16g\n", matrix.data[1].data[0]);
+  printf("%d\n", matrix.data[1].data[0]);
   return 0;
 }

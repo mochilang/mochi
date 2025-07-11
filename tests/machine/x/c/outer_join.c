@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int id;
@@ -114,21 +115,22 @@ int main() {
   printf("%s\n", "--- Outer Join using syntax ---");
   for (int tmp10 = 0; tmp10 < result.len; tmp10++) {
     ResultItem row = result.data[tmp10];
-    if (row.order) {
-      if (row.customer) {
+    if (memcmp(&row.order, &(OrdersItem){0}, sizeof(OrdersItem)) != 0) {
+      if (memcmp(&row.customer, &(CustomersItem){0}, sizeof(CustomersItem)) !=
+          0) {
         printf("%s ", "Order");
-        printf("%.16g ", row.order.id);
+        printf("%d ", row.order.id);
         printf("%s ", "by");
         printf("%s ", row.customer.name);
         printf("%s ", "- $");
-        printf("%.16g\n", row.order.total);
+        printf("%d\n", row.order.total);
       } else {
         printf("%s ", "Order");
-        printf("%.16g ", row.order.id);
+        printf("%d ", row.order.id);
         printf("%s ", "by");
         printf("%s ", "Unknown");
         printf("%s ", "- $");
-        printf("%.16g\n", row.order.total);
+        printf("%d\n", row.order.total);
       }
     } else {
       printf("%s ", "Customer");

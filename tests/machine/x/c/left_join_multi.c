@@ -4,15 +4,15 @@
 typedef struct {
   int id;
   char *name;
-} customersItem;
+} CustomersItem;
 typedef struct {
   int len;
-  customersItem *data;
-} list_customersItem;
-static list_customersItem list_customersItem_create(int len) {
-  list_customersItem l;
+  CustomersItem *data;
+} list_CustomersItem;
+static list_CustomersItem list_CustomersItem_create(int len) {
+  list_CustomersItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(customersItem));
+  l.data = calloc(len, sizeof(CustomersItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -23,15 +23,15 @@ static list_customersItem list_customersItem_create(int len) {
 typedef struct {
   int id;
   int customerId;
-} ordersItem;
+} OrdersItem;
 typedef struct {
   int len;
-  ordersItem *data;
-} list_ordersItem;
-static list_ordersItem list_ordersItem_create(int len) {
-  list_ordersItem l;
+  OrdersItem *data;
+} list_OrdersItem;
+static list_OrdersItem list_OrdersItem_create(int len) {
+  list_OrdersItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(ordersItem));
+  l.data = calloc(len, sizeof(OrdersItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -42,15 +42,15 @@ static list_ordersItem list_ordersItem_create(int len) {
 typedef struct {
   int orderId;
   char *sku;
-} itemsItem;
+} ItemsItem;
 typedef struct {
   int len;
-  itemsItem *data;
-} list_itemsItem;
-static list_itemsItem list_itemsItem_create(int len) {
-  list_itemsItem l;
+  ItemsItem *data;
+} list_ItemsItem;
+static list_ItemsItem list_ItemsItem_create(int len) {
+  list_ItemsItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(itemsItem));
+  l.data = calloc(len, sizeof(ItemsItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -61,16 +61,16 @@ static list_itemsItem list_itemsItem_create(int len) {
 typedef struct {
   int orderId;
   char *name;
-  itemsItem item;
-} resultItem;
+  ItemsItem item;
+} ResultItem;
 typedef struct {
   int len;
-  resultItem *data;
-} list_resultItem;
-static list_resultItem list_resultItem_create(int len) {
-  list_resultItem l;
+  ResultItem *data;
+} list_ResultItem;
+static list_ResultItem list_ResultItem_create(int len) {
+  list_ResultItem l;
   l.len = len;
-  l.data = calloc(len, sizeof(resultItem));
+  l.data = calloc(len, sizeof(ResultItem));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -79,54 +79,54 @@ static list_resultItem list_resultItem_create(int len) {
 }
 
 int main() {
-  customersItem tmp1_data[] = {(customersItem){.id = 1, .name = "Alice"},
-                               (customersItem){.id = 2, .name = "Bob"}};
-  list_customersItem tmp1 = {2, tmp1_data};
-  list_customersItem customers = tmp1;
-  ordersItem tmp2_data[] = {(ordersItem){.id = 100, .customerId = 1},
-                            (ordersItem){.id = 101, .customerId = 2}};
-  list_ordersItem tmp2 = {2, tmp2_data};
-  list_ordersItem orders = tmp2;
-  itemsItem tmp3_data[] = {(itemsItem){.orderId = 100, .sku = "a"}};
-  list_itemsItem tmp3 = {1, tmp3_data};
-  list_itemsItem items = tmp3;
-  list_resultItem tmp4 =
-      list_resultItem_create(orders.len * customers.len * items.len);
+  CustomersItem tmp1_data[] = {(CustomersItem){.id = 1, .name = "Alice"},
+                               (CustomersItem){.id = 2, .name = "Bob"}};
+  list_CustomersItem tmp1 = {2, tmp1_data};
+  list_CustomersItem customers = tmp1;
+  OrdersItem tmp2_data[] = {(OrdersItem){.id = 100, .customerId = 1},
+                            (OrdersItem){.id = 101, .customerId = 2}};
+  list_OrdersItem tmp2 = {2, tmp2_data};
+  list_OrdersItem orders = tmp2;
+  ItemsItem tmp3_data[] = {(ItemsItem){.orderId = 100, .sku = "a"}};
+  list_ItemsItem tmp3 = {1, tmp3_data};
+  list_ItemsItem items = tmp3;
+  list_ResultItem tmp4 =
+      list_ResultItem_create(orders.len * customers.len * items.len);
   int tmp5 = 0;
   for (int tmp6 = 0; tmp6 < orders.len; tmp6++) {
-    ordersItem o = orders.data[tmp6];
+    OrdersItem o = orders.data[tmp6];
     for (int tmp7 = 0; tmp7 < customers.len; tmp7++) {
-      customersItem c = customers.data[tmp7];
+      CustomersItem c = customers.data[tmp7];
       if (!(o.customerId == c.id)) {
         continue;
       }
       int tmp9 = 0;
       for (int tmp8 = 0; tmp8 < items.len; tmp8++) {
-        itemsItem i = items.data[tmp8];
+        ItemsItem i = items.data[tmp8];
         if (!(o.id == i.orderId)) {
           continue;
         }
         tmp9 = 1;
         tmp4.data[tmp5] =
-            (resultItem){.orderId = o.id, .name = c.name, .item = i};
+            (ResultItem){.orderId = o.id, .name = c.name, .item = i};
         tmp5++;
       }
       if (!tmp9) {
-        itemsItem i = (itemsItem){0};
+        ItemsItem i = (ItemsItem){0};
         tmp4.data[tmp5] =
-            (resultItem){.orderId = o.id, .name = c.name, .item = i};
+            (ResultItem){.orderId = o.id, .name = c.name, .item = i};
         tmp5++;
       }
     }
   }
   tmp4.len = tmp5;
-  list_resultItem result = tmp4;
+  list_ResultItem result = tmp4;
   printf("%s\n", "--- Left Join Multi ---");
   for (int tmp10 = 0; tmp10 < result.len; tmp10++) {
-    resultItem r = result.data[tmp10];
-    printf("%.16g ", r.orderId);
+    ResultItem r = result.data[tmp10];
+    printf("%d ", r.orderId);
     printf("%s ", r.name);
-    printf("%.16g\n", r.item);
+    printf("%d\n", r.item);
   }
   return 0;
 }

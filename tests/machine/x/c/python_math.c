@@ -18,7 +18,7 @@ int main() {
   printf("%s ", "Circle area with r =");
   printf("%d ", r);
   printf("%s ", "=>");
-  printf("%.16g\n", area);
+  printf("%d\n", area);
   printf("%s ", "Square root of 49:");
   printf("%.16g\n", root);
   printf("%s ", "sin(π/4):");

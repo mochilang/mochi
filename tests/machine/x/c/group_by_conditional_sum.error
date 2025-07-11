@@ -2,16 +2,15 @@ line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:127:29: error: array subscript is not an integer
-  127 |     itemsItem i = items.data[i];
+  127 |     ItemsItem i = items.data[i];
       |                             ^
 /workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:167:16: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
   167 |     tmp8[tmp7] = g.key;
       |                ^
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:184:15: warning: format ‘%g’ expects argument of type ‘double’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-  184 |   printf("%.16g\n", result);
-      |           ~~~~^     ~~~~~~
-      |               |     |
-      |               |     list_resultItem
-      |               double
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:184:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_ResultItem’ [-Wformat=]
+  184 |   printf("%d\n", result);
+      |           ~^     ~~~~~~
+      |            |     |
+      |            int   list_ResultItem
 
    1: #include <stdio.h>

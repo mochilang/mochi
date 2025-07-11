@@ -19,6 +19,6 @@ int main() {
   int tmp1_data[] = {10, 20, 30};
   list_int tmp1 = {3, tmp1_data};
   list_int xs = tmp1;
-  printf("%.16g\n", xs.data[1]);
+  printf("%d\n", xs.data[1]);
   return 0;
 }
