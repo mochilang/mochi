@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 100/100 programs
 
-Successfully ran: 97/100 programs
+Successfully ran: 100/100 programs
 
 ## Checklist
 
@@ -89,7 +89,7 @@ Successfully ran: 97/100 programs
 - [x] slice.mochi
  - [x] sort_stable.mochi
 - [x] str_builtin.mochi
- - [ ] string_compare.mochi
+ - [x] string_compare.mochi
 - [x] string_concat.mochi
 - [x] string_contains.mochi
 - [x] string_in_operator.mochi
@@ -97,14 +97,14 @@ Successfully ran: 97/100 programs
 - [x] string_prefix_slice.mochi
 - [x] substring_builtin.mochi
 - [x] sum_builtin.mochi
- - [ ] tail_recursion.mochi
- - [ ] test_block.mochi
+ - [x] tail_recursion.mochi
+ - [x] test_block.mochi
  - [x] tree_sum.mochi
- - [ ] two-sum.mochi
+ - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
 - [x] unary_neg.mochi
- - [ ] update_stmt.mochi
+ - [x] update_stmt.mochi
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
@@ -127,7 +127,7 @@ Successfully ran: 97/100 programs
 - [ ] Generate extension functions for common list operations
 - [ ] Reduce casting by tracking variable nullability
 - [ ] Support Kotlin coroutines for async features
-- [ ] Implement tail recursion optimization
+ - [x] Implement tail recursion optimization
 - [ ] Emit sealed interfaces for union types
 - [ ] Improve error reporting during compilation
 - [ ] Provide configuration for custom package names
