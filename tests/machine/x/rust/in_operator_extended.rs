@@ -4,8 +4,8 @@ fn main() {
     println!("{}", ys.contains(&1));
     println!("{}", ys.contains(&2));
     let m = { let mut m = std::collections::BTreeMap::new(); m.insert("a", 1); m };
-    println!("{:?}", m.clone().contains(&"a"));
-    println!("{:?}", m.clone().contains(&"b"));
+    println!("{:?}", m.contains_key(&"a"));
+    println!("{:?}", m.contains_key(&"b"));
     let s = "hello";
     println!("{}", s.contains("ell"));
     println!("{}", s.contains("foo"));
