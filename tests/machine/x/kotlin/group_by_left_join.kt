@@ -41,7 +41,7 @@ val stats = run {
         __res.add(Stat(name = g.key, count = run {
     val __res = mutableListOf<MutableMap<String, Any?>>()
     for (r in g) {
-        if (toBool((r as MutableMap<*, *>)["o"])) {
+        if (toBool((r as MutableMap<String, Any?>)["o"])) {
             __res.add((r as MutableMap<String, Any?>))
         }
     }
