@@ -27,6 +27,12 @@ const (
   (clojure.string/trim (read-line)))
 `
 
+	helperRelPath = `(defn _rel_path [p]
+  (let [base (.getParent (java.io.File. *file*))]
+    (-> (java.nio.file.Paths/get base (into-array String [p]))
+        .normalize
+        .toString)))`
+
 	helperCount = `(defn _count [v]
   (cond
     (sequential? v) (count v)
@@ -369,6 +375,7 @@ var helperMap = map[string]string{
 	"_indexString":      helperIndexString,
 	"_indexList":        helperIndexList,
 	"_input":            helperInput,
+	"_rel_path":         helperRelPath,
 	"_count":            helperCount,
 	"_avg":              helperAvg,
 	"_sum":              helperSum,
@@ -401,6 +408,7 @@ var helperOrder = []string{
 	"_indexString",
 	"_indexList",
 	"_input",
+	"_rel_path",
 	"_count",
 	"_avg",
 	"_sum",
