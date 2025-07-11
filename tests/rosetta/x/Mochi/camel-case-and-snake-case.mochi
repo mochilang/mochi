@@ -1,0 +1,145 @@
+// Mochi implementation of Rosetta "Camel case and snake case" task
+// Translated from Go version in tests/rosetta/x/Go/camel-case-and-snake-case.go
+
+fun trimSpace(s: string): string {
+  var start = 0
+  while start < len(s) && s[start:start+1] == " " {
+    start = start + 1
+  }
+  var end = len(s)
+  while end > start && s[end-1:end] == " " {
+    end = end - 1
+  }
+  return s[start:end]
+}
+
+fun isUpper(ch: string): bool {
+  return ch >= "A" && ch <= "Z"
+}
+
+fun padLeft(s: string, w: int): string {
+  var res = ""
+  var n = w - len(s)
+  while n > 0 {
+    res = res + " "
+    n = n - 1
+  }
+  return res + s
+}
+
+fun snakeToCamel(s: string): string {
+  s = trimSpace(s)
+  var out = ""
+  var up = false
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == "_" || ch == "-" || ch == " " || ch == "." {
+      up = true
+      i = i + 1
+      continue
+    }
+    if i == 0 {
+      out = out + lower(ch)
+      up = false
+      i = i + 1
+      continue
+    }
+    if up {
+      out = out + upper(ch)
+      up = false
+    } else {
+      out = out + ch
+    }
+    i = i + 1
+  }
+  return out
+}
+
+fun camelToSnake(s: string): string {
+  s = trimSpace(s)
+  var out = ""
+  var prevUnd = false
+  var i = 0
+  while i < len(s) {
+    let ch = s[i:i+1]
+    if ch == " " || ch == "-" || ch == "." {
+      if !prevUnd && len(out) > 0 {
+        out = out + "_"
+        prevUnd = true
+      }
+      i = i + 1
+      continue
+    }
+    if ch == "_" {
+      if !prevUnd && len(out) > 0 {
+        out = out + "_"
+        prevUnd = true
+      }
+      i = i + 1
+      continue
+    }
+    if isUpper(ch) {
+      if i > 0 && (!prevUnd) {
+        out = out + "_"
+      }
+      out = out + lower(ch)
+      prevUnd = false
+    } else {
+      out = out + lower(ch)
+      prevUnd = false
+    }
+    i = i + 1
+  }
+  // trim leading/trailing underscores
+  var start = 0
+  while start < len(out) && out[start:start+1] == "_" { start = start + 1 }
+  var end = len(out)
+  while end > start && out[end-1:end] == "_" { end = end - 1 }
+  out = out[start:end]
+
+  // remove duplicate underscores
+  var res = ""
+  var j = 0
+  var lastUnd = false
+  while j < len(out) {
+    let c = out[j:j+1]
+    if c == "_" {
+      if !lastUnd { res = res + c }
+      lastUnd = true
+    } else {
+      res = res + c
+      lastUnd = false
+    }
+    j = j + 1
+  }
+  return res
+}
+
+fun main() {
+  let samples = [
+    "snakeCase",
+    "snake_case",
+    "snake-case",
+    "snake case",
+    "snake CASE",
+    "snake.case",
+    "variable_10_case",
+    "variable10Case",
+    "ɛrgo rE tHis",
+    "hurry-up-joe!",
+    "c://my-docs/happy_Flag-Day/12.doc",
+    " spaces ",
+  ]
+  print("=== To snake_case ===")
+  for s in samples {
+    print(padLeft(s, 34) + " => " + camelToSnake(s))
+  }
+  print("")
+  print("=== To camelCase ===")
+  for s in samples {
+    print(padLeft(s, 34) + " => " + snakeToCamel(s))
+  }
+}
+
+main()
