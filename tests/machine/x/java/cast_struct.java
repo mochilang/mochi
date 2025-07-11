@@ -13,13 +13,14 @@ class Todo {
 		return Objects.hash(title);
 	}
 }
-public class CastStruct {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class Title {
+	String title;
+	Title(String title) {
+		this.title = title;
 	}
+	int size() { return 1; }
+}
+public class CastStruct {
 	public static void main(String[] args) {
 	Todo todo = new Todo("hi");
 	System.out.println(todo.title);

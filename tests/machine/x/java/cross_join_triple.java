@@ -1,29 +1,34 @@
 import java.util.*;
-public class CrossJoinTriple {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class NLB {
+	Integer n;
+	String l;
+	Boolean b;
+	NLB(Integer n, String l, Boolean b) {
+		this.n = n;
+		this.l = l;
+		this.b = b;
 	}
+	int size() { return 3; }
+}
+public class CrossJoinTriple {
 	public static void main(String[] args) {
 	List<Integer> nums = new ArrayList<>(Arrays.asList(1, 2));
 	List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
 	List<Boolean> bools = new ArrayList<>(Arrays.asList(true, false));
-	List<Map<Object,Object>> combos = (new java.util.function.Supplier<List<Map<Object,Object>>>(){public List<Map<Object,Object>> get(){
-	List<Map<Object,Object>> _res0 = new ArrayList<>();
+	List<NLB> combos = (new java.util.function.Supplier<List<NLB>>(){public List<NLB> get(){
+	List<NLB> _res0 = new ArrayList<>();
 	for (var n : nums) {
 		for (var l : letters) {
 			for (var b : bools) {
-				_res0.add(mapOfEntries(entry("n", n), entry("l", l), entry("b", b)));
+				_res0.add(new NLB(n, l, b));
 			}
 		}
 	}
 	return _res0;
 }}).get();
 	System.out.println("--- Cross Join of three lists ---");
-	for (Map<Object,Object> c : combos) {
-		System.out.println(((Map)c).get("n") + " " + ((Map)c).get("l") + " " + ((Map)c).get("b"));
+	for (NLB c : combos) {
+		System.out.println(c.n + " " + c.l + " " + c.b);
 	}
 	}
 }

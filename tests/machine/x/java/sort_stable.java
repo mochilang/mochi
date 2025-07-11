@@ -1,17 +1,20 @@
 import java.util.*;
-public class SortStable {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class NV {
+	int n;
+	String v;
+	NV(int n, String v) {
+		this.n = n;
+		this.v = v;
 	}
+	int size() { return 2; }
+}
+public class SortStable {
 	public static void main(String[] args) {
-	List<Map<String,Object>> items = new ArrayList<>(Arrays.asList(mapOfEntries(entry("n", 1), entry("v", "a")), mapOfEntries(entry("n", 1), entry("v", "b")), mapOfEntries(entry("n", 2), entry("v", "c"))));
-	List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-	List<Object> _res0 = new ArrayList<>();
+	List<NV> items = new ArrayList<>(Arrays.asList(new NV(1, "a"), new NV(1, "b"), new NV(2, "c")));
+	List<String> result = (new java.util.function.Supplier<List<String>>(){public List<String> get(){
+	List<String> _res0 = new ArrayList<>();
 	for (var i : items) {
-		_res0.add(((Map)i).get("v"));
+		_res0.add(i.v);
 	}
 	return _res0;
 }}).get();

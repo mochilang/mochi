@@ -1,15 +1,18 @@
 import java.util.*;
-public class OrderByMap {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class AB {
+	int a;
+	int b;
+	AB(int a, int b) {
+		this.a = a;
+		this.b = b;
 	}
+	int size() { return 2; }
+}
+public class OrderByMap {
 	public static void main(String[] args) {
-	List<Map<String,Integer>> data = new ArrayList<>(Arrays.asList(mapOfEntries(entry("a", 1), entry("b", 2)), mapOfEntries(entry("a", 1), entry("b", 1)), mapOfEntries(entry("a", 0), entry("b", 5))));
-	List<Map<String,Integer>> sorted = (new java.util.function.Supplier<List<Map<String,Integer>>>(){public List<Map<String,Integer>> get(){
-	List<Map<String,Integer>> _res0 = new ArrayList<>();
+	List<AB> data = new ArrayList<>(Arrays.asList(new AB(1, 2), new AB(1, 1), new AB(0, 5)));
+	List<AB> sorted = (new java.util.function.Supplier<List<AB>>(){public List<AB> get(){
+	List<AB> _res0 = new ArrayList<>();
 	for (var x : data) {
 		_res0.add(x);
 	}

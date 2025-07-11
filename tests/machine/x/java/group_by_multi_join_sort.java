@@ -1,10 +1,83 @@
 import java.util.*;
+class NNationkeyNName {
+	int n_nationkey;
+	String n_name;
+	NNationkeyNName(int n_nationkey, String n_name) {
+		this.n_nationkey = n_nationkey;
+		this.n_name = n_name;
+	}
+	int size() { return 2; }
+}
+class CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment {
+	int c_custkey;
+	String c_name;
+	double c_acctbal;
+	int c_nationkey;
+	String c_address;
+	String c_phone;
+	String c_comment;
+	CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment(int c_custkey, String c_name, double c_acctbal, int c_nationkey, String c_address, String c_phone, String c_comment) {
+		this.c_custkey = c_custkey;
+		this.c_name = c_name;
+		this.c_acctbal = c_acctbal;
+		this.c_nationkey = c_nationkey;
+		this.c_address = c_address;
+		this.c_phone = c_phone;
+		this.c_comment = c_comment;
+	}
+	int size() { return 7; }
+}
+class OOrderkeyOCustkeyOOrderdate {
+	int o_orderkey;
+	int o_custkey;
+	String o_orderdate;
+	OOrderkeyOCustkeyOOrderdate(int o_orderkey, int o_custkey, String o_orderdate) {
+		this.o_orderkey = o_orderkey;
+		this.o_custkey = o_custkey;
+		this.o_orderdate = o_orderdate;
+	}
+	int size() { return 3; }
+}
+class LOrderkeyLReturnflagLExtendedpriceLDiscount {
+	int l_orderkey;
+	String l_returnflag;
+	double l_extendedprice;
+	double l_discount;
+	LOrderkeyLReturnflagLExtendedpriceLDiscount(int l_orderkey, String l_returnflag, double l_extendedprice, double l_discount) {
+		this.l_orderkey = l_orderkey;
+		this.l_returnflag = l_returnflag;
+		this.l_extendedprice = l_extendedprice;
+		this.l_discount = l_discount;
+	}
+	int size() { return 4; }
+}
+class CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment {
+	Object c_custkey;
+	Object c_name;
+	int revenue;
+	Object c_acctbal;
+	Object n_name;
+	Object c_address;
+	Object c_phone;
+	Object c_comment;
+	CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment(Object c_custkey, Object c_name, int revenue, Object c_acctbal, Object n_name, Object c_address, Object c_phone, Object c_comment) {
+		this.c_custkey = c_custkey;
+		this.c_name = c_name;
+		this.revenue = revenue;
+		this.c_acctbal = c_acctbal;
+		this.n_name = n_name;
+		this.c_address = c_address;
+		this.c_phone = c_phone;
+		this.c_comment = c_comment;
+	}
+	int size() { return 8; }
+}
 class COLN {
-	Map<String,Object> c;
-	Map<String,Object> o;
-	Map<String,Object> l;
-	Map<String,Object> n;
-	COLN(Map<String,Object> c, Map<String,Object> o, Map<String,Object> l, Map<String,Object> n) {
+	CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment c;
+	OOrderkeyOCustkeyOOrderdate o;
+	LOrderkeyLReturnflagLExtendedpriceLDiscount l;
+	NNationkeyNName n;
+	COLN(CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment c, OOrderkeyOCustkeyOOrderdate o, LOrderkeyLReturnflagLExtendedpriceLDiscount l, NNationkeyNName n) {
 		this.c = c;
 		this.o = o;
 		this.l = l;
@@ -12,33 +85,46 @@ class COLN {
 	}
 	int size() { return 4; }
 }
-public class GroupByMultiJoinSort {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName {
+	int c_custkey;
+	String c_name;
+	double c_acctbal;
+	String c_address;
+	String c_phone;
+	String c_comment;
+	String n_name;
+	CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName(int c_custkey, String c_name, double c_acctbal, String c_address, String c_phone, String c_comment, String n_name) {
+		this.c_custkey = c_custkey;
+		this.c_name = c_name;
+		this.c_acctbal = c_acctbal;
+		this.c_address = c_address;
+		this.c_phone = c_phone;
+		this.c_comment = c_comment;
+		this.n_name = n_name;
 	}
+	int size() { return 7; }
+}
+public class GroupByMultiJoinSort {
 	public static void main(String[] args) {
-	List<Map<String,Object>> nation = new ArrayList<>(Arrays.asList(mapOfEntries(entry("n_nationkey", 1), entry("n_name", "BRAZIL"))));
-	List<Map<String,Object>> customer = new ArrayList<>(Arrays.asList(mapOfEntries(entry("c_custkey", 1), entry("c_name", "Alice"), entry("c_acctbal", 100.000000), entry("c_nationkey", 1), entry("c_address", "123 St"), entry("c_phone", "123-456"), entry("c_comment", "Loyal"))));
-	List<Map<String,Object>> orders = new ArrayList<>(Arrays.asList(mapOfEntries(entry("o_orderkey", 1000), entry("o_custkey", 1), entry("o_orderdate", "1993-10-15")), mapOfEntries(entry("o_orderkey", 2000), entry("o_custkey", 1), entry("o_orderdate", "1994-01-02"))));
-	List<Map<String,Object>> lineitem = new ArrayList<>(Arrays.asList(mapOfEntries(entry("l_orderkey", 1000), entry("l_returnflag", "R"), entry("l_extendedprice", 1000.000000), entry("l_discount", 0.100000)), mapOfEntries(entry("l_orderkey", 2000), entry("l_returnflag", "N"), entry("l_extendedprice", 500.000000), entry("l_discount", 0.000000))));
+	List<NNationkeyNName> nation = new ArrayList<>(Arrays.asList(new NNationkeyNName(1, "BRAZIL")));
+	List<CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment> customer = new ArrayList<>(Arrays.asList(new CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment(1, "Alice", 100.000000, 1, "123 St", "123-456", "Loyal")));
+	List<OOrderkeyOCustkeyOOrderdate> orders = new ArrayList<>(Arrays.asList(new OOrderkeyOCustkeyOOrderdate(1000, 1, "1993-10-15"), new OOrderkeyOCustkeyOOrderdate(2000, 1, "1994-01-02")));
+	List<LOrderkeyLReturnflagLExtendedpriceLDiscount> lineitem = new ArrayList<>(Arrays.asList(new LOrderkeyLReturnflagLExtendedpriceLDiscount(1000, "R", 1000.000000, 0.100000), new LOrderkeyLReturnflagLExtendedpriceLDiscount(2000, "N", 500.000000, 0.000000)));
 	String start_date = "1993-10-01";
 	String end_date = "1994-01-01";
-	List<Map<String,Object>> result = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res0 = new ArrayList<>();
-	Map<Map<String,Object>,List<COLN>> _groups1 = new LinkedHashMap<>();
+	List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> result = (new java.util.function.Supplier<List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment>>(){public List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> get(){
+	List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> _res0 = new ArrayList<>();
+	Map<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> _groups1 = new LinkedHashMap<>();
 	for (var c : customer) {
 		for (var o : orders) {
-			if (!(Objects.equals(((Map)o).get("o_custkey"), ((Map)c).get("c_custkey")))) continue;
+			if (!(Objects.equals(o.o_custkey, c.c_custkey))) continue;
 			for (var l : lineitem) {
-				if (!(Objects.equals(((Map)l).get("l_orderkey"), ((Map)o).get("o_orderkey")))) continue;
+				if (!(Objects.equals(l.l_orderkey, o.o_orderkey))) continue;
 				for (var n : nation) {
-					if (!(Objects.equals(((Map)n).get("n_nationkey"), ((Map)c).get("c_nationkey")))) continue;
-					if (!(Objects.equals(String.valueOf(String.valueOf(((Map)o).get("o_orderdate")).compareTo(String.valueOf(start_date)) >= 0 && ((Map)o).get("o_orderdate") != null).compareTo(String.valueOf(end_date)) < 0 && ((Map)l).get("l_returnflag") != null, "R"))) continue;
+					if (!(Objects.equals(n.n_nationkey, c.c_nationkey))) continue;
+					if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate != null).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag != null, "R"))) continue;
 					COLN _row2 = new COLN(c, o, l, n);
-					Map<String,Object> _key3 = mapOfEntries(entry("c_custkey", ((Map)c).get("c_custkey")), entry("c_name", ((Map)c).get("c_name")), entry("c_acctbal", ((Map)c).get("c_acctbal")), entry("c_address", ((Map)c).get("c_address")), entry("c_phone", ((Map)c).get("c_phone")), entry("c_comment", ((Map)c).get("c_comment")), entry("n_name", ((Map)n).get("n_name")));
+					CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName _key3 = new CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);
 					List<COLN> _b4 = _groups1.get(_key3);
 					if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
 					_b4.add(_row2);
@@ -46,16 +132,16 @@ public class GroupByMultiJoinSort {
 			}
 		}
 	}
-	for (Map.Entry<Map<String,Object>,List<COLN>> __e : _groups1.entrySet()) {
-		Map<String,Object> g_key = __e.getKey();
+	for (Map.Entry<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> __e : _groups1.entrySet()) {
+		CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName g_key = __e.getKey();
 		List<COLN> g = __e.getValue();
-		_res0.add(mapOfEntries(entry("c_custkey", ((Map)g_key).get("c_custkey")), entry("c_name", ((Map)g_key).get("c_name")), entry("revenue", (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-	List<Integer> _res5 = new ArrayList<>();
+		_res0.add(new CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment(g_key.c_custkey, g_key.c_name, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+	List<Double> _res5 = new ArrayList<>();
 	for (var x : g) {
 		_res5.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 	}
 	return _res5;
-}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()), entry("c_acctbal", ((Map)g_key).get("c_acctbal")), entry("n_name", ((Map)g_key).get("n_name")), entry("c_address", ((Map)g_key).get("c_address")), entry("c_phone", ((Map)g_key).get("c_phone")), entry("c_comment", ((Map)g_key).get("c_comment"))));
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum(), g_key.c_acctbal, g_key.n_name, g_key.c_address, g_key.c_phone, g_key.c_comment));
 	}
 	return _res0;
 }}).get();

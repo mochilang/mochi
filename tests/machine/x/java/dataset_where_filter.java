@@ -1,24 +1,38 @@
 import java.util.*;
-public class DatasetWhereFilter {
-	static <K,V> Map.Entry<K,V> entry(K k, V v) { return new AbstractMap.SimpleEntry<>(k, v); }
-	static <K,V> LinkedHashMap<K,V> mapOfEntries(Map.Entry<? extends K,? extends V>... entries) {
-		LinkedHashMap<K,V> m = new LinkedHashMap<>();
-		for (var e : entries) m.put(e.getKey(), e.getValue());
-		return m;
+class NameAge {
+	String name;
+	int age;
+	NameAge(String name, int age) {
+		this.name = name;
+		this.age = age;
 	}
+	int size() { return 2; }
+}
+class NameAgeIsSenior {
+	String name;
+	int age;
+	boolean is_senior;
+	NameAgeIsSenior(String name, int age, boolean is_senior) {
+		this.name = name;
+		this.age = age;
+		this.is_senior = is_senior;
+	}
+	int size() { return 3; }
+}
+public class DatasetWhereFilter {
 	public static void main(String[] args) {
-	List<Map<String,Object>> people = new ArrayList<>(Arrays.asList(mapOfEntries(entry("name", "Alice"), entry("age", 30)), mapOfEntries(entry("name", "Bob"), entry("age", 15)), mapOfEntries(entry("name", "Charlie"), entry("age", 65)), mapOfEntries(entry("name", "Diana"), entry("age", 45))));
-	List<Map<String,Object>> adults = (new java.util.function.Supplier<List<Map<String,Object>>>(){public List<Map<String,Object>> get(){
-	List<Map<String,Object>> _res0 = new ArrayList<>();
+	List<NameAge> people = new ArrayList<>(Arrays.asList(new NameAge("Alice", 30), new NameAge("Bob", 15), new NameAge("Charlie", 65), new NameAge("Diana", 45)));
+	List<NameAgeIsSenior> adults = (new java.util.function.Supplier<List<NameAgeIsSenior>>(){public List<NameAgeIsSenior> get(){
+	List<NameAgeIsSenior> _res0 = new ArrayList<>();
 	for (var person : people) {
-		if (!(((Number)((Map)person).get("age")).doubleValue() >= 18)) continue;
-		_res0.add(mapOfEntries(entry("name", ((Map)person).get("name")), entry("age", ((Map)person).get("age")), entry("is_senior", ((Number)((Map)person).get("age")).doubleValue() >= 60)));
+		if (!(person.age >= 18)) continue;
+		_res0.add(new NameAgeIsSenior(person.name, person.age, person.age >= 60));
 	}
 	return _res0;
 }}).get();
 	System.out.println("--- Adults ---");
-	for (Map<String,Object> person : adults) {
-		System.out.println(((Map)person).get("name") + " " + "is" + " " + ((Map)person).get("age") + " " + (((Map)person).get("is_senior") != null ? " (senior)" : ""));
+	for (NameAgeIsSenior person : adults) {
+		System.out.println(person.name + " " + "is" + " " + person.age + " " + (person.is_senior ? " (senior)" : ""));
 	}
 	}
 }
