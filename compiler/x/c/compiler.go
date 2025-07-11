@@ -3783,6 +3783,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 		if op.Op == "/" && isInt(leftType) && isInt(rightType) {
 			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
 			leftType = types.FloatType{}
+		} else if op.Op == "/" && (strings.Contains(left, "_sum_int(") || strings.Contains(right, "_sum_int(")) {
+			left = fmt.Sprintf("((double)%s) / ((double)%s)", left, right)
+			leftType = types.FloatType{}
 		} else {
 			left = fmt.Sprintf("%s %s %s", left, op.Op, right)
 			leftType = resultType(op.Op, leftType, rightType)
@@ -4295,6 +4298,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.need(needListString)
 					c.need(needPrintListString)
 					c.writeln(fmt.Sprintf("_print_list_string(%s);", argExpr))
+					if i == len(p.Call.Args)-1 {
+						c.writeln("printf(\"\\n\");")
+					} else {
+						c.writeln("printf(\" \");")
+					}
+				} else if isListStructExpr(a, c.env) {
+					lt, _ := c.exprType(a).(types.ListType)
+					st, _ := lt.Elem.(types.StructType)
+					loop := c.newLoopVar()
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, argExpr, loop))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s it = %s.data[%s];", sanitizeTypeName(st.Name), argExpr, loop))
+					c.writeln(fmt.Sprintf("if(%s>0) printf(\" \");", loop))
+					c.writeln("printf(\"map[\");")
+					for i2, field := range st.Order {
+						if i2 > 0 {
+							c.writeln("printf(\" \");")
+						}
+						c.writeln(fmt.Sprintf("printf(\"%s:\");", field))
+						fe := fmt.Sprintf("it.%s", sanitizeName(field))
+						switch st.Fields[field].(type) {
+						case types.StringType:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
+						case types.FloatType:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%.16g", fe))
+						default:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", fe))
+						}
+					}
+					c.writeln("printf(\"]\");")
+					c.indent--
+					c.writeln("}")
 					if i == len(p.Call.Args)-1 {
 						c.writeln("printf(\"\\n\");")
 					} else {
@@ -5590,6 +5625,18 @@ func isListMapStringPrimary(p *parser.Primary, env *types.Env) bool {
 	return false
 }
 
+func isListStructExpr(e *parser.Expr, env *types.Env) bool {
+	if env == nil || e == nil {
+		return false
+	}
+	if lt, ok := types.ExprType(e, env).(types.ListType); ok {
+		if _, ok2 := lt.Elem.(types.StructType); ok2 {
+			return true
+		}
+	}
+	return false
+}
+
 func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || e.Binary.Left.Value == nil || e.Binary.Left.Value.Target == nil {
 		return nil
@@ -5651,6 +5698,36 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 	} else if isListMapStringExpr(e, c.env) {
 		c.need(needJSONListMapString)
 		c.writeln(fmt.Sprintf("_json_list_map_string(%s);", argExpr))
+	} else if isListStructExpr(e, c.env) {
+		lt, _ := c.exprType(e).(types.ListType)
+		st, _ := lt.Elem.(types.StructType)
+		loop := c.newLoopVar()
+		c.writeln("printf(\"[\");")
+		c.writeln(fmt.Sprintf("for(int %s=0; %s<%s.len; %s++){", loop, loop, argExpr, loop))
+		c.indent++
+		c.writeln(fmt.Sprintf("if(%s>0) printf(\",\");", loop))
+		c.writeln(fmt.Sprintf("%s it = %s.data[%s];", sanitizeTypeName(st.Name), argExpr, loop))
+		c.writeln("printf(\"{\");")
+		for i, field := range st.Order {
+			if i > 0 {
+				c.writeln("printf(\",\");")
+			}
+			c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
+			c.writeln("printf(\":\");")
+			fe := fmt.Sprintf("it.%s", sanitizeName(field))
+			switch st.Fields[field].(type) {
+			case types.IntType, types.BoolType:
+				c.writeln(fmt.Sprintf("_json_int(%s);", fe))
+			case types.FloatType:
+				c.writeln(fmt.Sprintf("_json_float(%s);", fe))
+			case types.StringType:
+				c.writeln(fmt.Sprintf("_json_string(%s);", fe))
+			}
+		}
+		c.writeln("printf(\"}\");")
+		c.indent--
+		c.writeln("}")
+		c.writeln("printf(\"]\");")
 	} else if isFloatArg(e, c.env) {
 		c.writeln(fmt.Sprintf("_json_float(%s);", argExpr))
 	} else if isStringArg(e, c.env) {
