@@ -1698,13 +1698,25 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return name, nil
 	case p.Call != nil:
-		args := make([]string, len(p.Call.Args))
-		for i, a := range p.Call.Args {
-			v, err := c.compileExpr(a)
-			if err != nil {
-				return "", err
+		var args []string
+		if p.Call.Func == "print" {
+			args = make([]string, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				v, err := c.compileExprWith(types.StringType{}, a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
 			}
-			args[i] = v
+		} else {
+			args = make([]string, len(p.Call.Args))
+			for i, a := range p.Call.Args {
+				v, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				args[i] = v
+			}
 		}
 		argStr := strings.Join(args, ", ")
 		switch p.Call.Func {
