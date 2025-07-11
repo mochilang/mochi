@@ -36,7 +36,9 @@ function _group_by($src, $keyfn) {
     $res = [];
     foreach ($order as $k) { $res[] = $groups[$k]; }
     return $res;
-}function _query($src, $joins, $opts) {
+}
+
+function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }
     foreach ($joins as $j) {
@@ -119,4 +121,5 @@ function _group_by($src, $keyfn) {
     $sel = $opts['select'];
     foreach ($items as $r) { $res[] = $sel(...$r); }
     return $res;
-}?>
+}
+?>

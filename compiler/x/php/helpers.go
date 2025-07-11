@@ -178,9 +178,13 @@ func (c *Compiler) emitRuntime() {
 		names = append(names, n)
 	}
 	sort.Strings(names)
-	for _, n := range names {
+	for i, n := range names {
 		if code, ok := helperMap[n]; ok {
+			if i > 0 {
+				c.buf.WriteByte('\n')
+			}
 			c.buf.WriteString(code)
+			c.buf.WriteByte('\n')
 		}
 	}
 }
