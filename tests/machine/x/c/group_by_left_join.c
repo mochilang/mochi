@@ -47,15 +47,15 @@ static list_statsItem list_statsItem_create(int len) {
 }
 
 int main() {
-  list_customersItem _t1 = list_customersItem_create(3);
-  _t1.data[0] = (customersItem){.id = 1, .name = "Alice"};
-  _t1.data[1] = (customersItem){.id = 2, .name = "Bob"};
-  _t1.data[2] = (customersItem){.id = 3, .name = "Charlie"};
+  customersItem _t1_data[] = {(customersItem){.id = 1, .name = "Alice"},
+                              (customersItem){.id = 2, .name = "Bob"},
+                              (customersItem){.id = 3, .name = "Charlie"}};
+  list_customersItem _t1 = {3, _t1_data};
   list_customersItem customers = _t1;
-  list_ordersItem _t2 = list_ordersItem_create(3);
-  _t2.data[0] = (ordersItem){.id = 100, .customerId = 1};
-  _t2.data[1] = (ordersItem){.id = 101, .customerId = 1};
-  _t2.data[2] = (ordersItem){.id = 102, .customerId = 2};
+  ordersItem _t2_data[] = {(ordersItem){.id = 100, .customerId = 1},
+                           (ordersItem){.id = 101, .customerId = 1},
+                           (ordersItem){.id = 102, .customerId = 2}};
+  list_ordersItem _t2 = {3, _t2_data};
   list_ordersItem orders = _t2;
   list_statsItem stats = 0;
   printf("%s\n", "--- Group Left Join ---");

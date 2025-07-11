@@ -120,10 +120,10 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  list_dataItem _t1 = list_dataItem_create(3);
-  _t1.data[0] = (dataItem){.tag = "a", .val = 1};
-  _t1.data[1] = (dataItem){.tag = "a", .val = 2};
-  _t1.data[2] = (dataItem){.tag = "b", .val = 3};
+  dataItem _t1_data[] = {(dataItem){.tag = "a", .val = 1},
+                         (dataItem){.tag = "a", .val = 2},
+                         (dataItem){.tag = "b", .val = 3}};
+  list_dataItem _t1 = {3, _t1_data};
   list_dataItem data = _t1;
   list_dataItem _t2 = list_dataItem_create(data.len);
   list_string _t3 = list_string_create(data.len);

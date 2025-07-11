@@ -12,9 +12,8 @@ static list_int list_int_create(int len) {
   return l;
 }
 int main() {
-  list_int _t1 = list_int_create(2);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
+  int _t1_data[] = {1, 2};
+  list_int _t1 = {2, _t1_data};
   list_int data = _t1;
   list_int _t2 = list_int_create(data.len);
   int _t3 = 0;

@@ -17,14 +17,15 @@ static list_productsItem list_productsItem_create(int len) {
 }
 
 int main() {
-  list_productsItem _t1 = list_productsItem_create(7);
-  _t1.data[0] = (productsItem){.name = "Laptop", .price = 1500};
-  _t1.data[1] = (productsItem){.name = "Smartphone", .price = 900};
-  _t1.data[2] = (productsItem){.name = "Tablet", .price = 600};
-  _t1.data[3] = (productsItem){.name = "Monitor", .price = 300};
-  _t1.data[4] = (productsItem){.name = "Keyboard", .price = 100};
-  _t1.data[5] = (productsItem){.name = "Mouse", .price = 50};
-  _t1.data[6] = (productsItem){.name = "Headphones", .price = 200};
+  productsItem _t1_data[] = {
+      (productsItem){.name = "Laptop", .price = 1500},
+      (productsItem){.name = "Smartphone", .price = 900},
+      (productsItem){.name = "Tablet", .price = 600},
+      (productsItem){.name = "Monitor", .price = 300},
+      (productsItem){.name = "Keyboard", .price = 100},
+      (productsItem){.name = "Mouse", .price = 50},
+      (productsItem){.name = "Headphones", .price = 200}};
+  list_productsItem _t1 = {7, _t1_data};
   list_productsItem products = _t1;
   list_productsItem _t2 = list_productsItem_create(products.len);
   int *_t5 = (int *)malloc(sizeof(int) * products.len);

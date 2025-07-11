@@ -102,13 +102,14 @@ static list_statsItem list_statsItem_create(int len) {
 }
 
 int main() {
-  list_peopleItem _t1 = list_peopleItem_create(6);
-  _t1.data[0] = (peopleItem){.name = "Alice", .age = 30, .city = "Paris"};
-  _t1.data[1] = (peopleItem){.name = "Bob", .age = 15, .city = "Hanoi"};
-  _t1.data[2] = (peopleItem){.name = "Charlie", .age = 65, .city = "Paris"};
-  _t1.data[3] = (peopleItem){.name = "Diana", .age = 45, .city = "Hanoi"};
-  _t1.data[4] = (peopleItem){.name = "Eve", .age = 70, .city = "Paris"};
-  _t1.data[5] = (peopleItem){.name = "Frank", .age = 22, .city = "Hanoi"};
+  peopleItem _t1_data[] = {
+      (peopleItem){.name = "Alice", .age = 30, .city = "Paris"},
+      (peopleItem){.name = "Bob", .age = 15, .city = "Hanoi"},
+      (peopleItem){.name = "Charlie", .age = 65, .city = "Paris"},
+      (peopleItem){.name = "Diana", .age = 45, .city = "Hanoi"},
+      (peopleItem){.name = "Eve", .age = 70, .city = "Paris"},
+      (peopleItem){.name = "Frank", .age = 22, .city = "Hanoi"}};
+  list_peopleItem _t1 = {6, _t1_data};
   list_peopleItem people = _t1;
   list_peopleItem _t2 = list_peopleItem_create(people.len);
   list_string _t3 = list_string_create(people.len);

@@ -94,33 +94,34 @@ static list_resultItem list_resultItem_create(int len) {
 }
 
 int main() {
-  list_nationItem _t1 = list_nationItem_create(1);
-  _t1.data[0] = (nationItem){.n_nationkey = 1, .n_name = "BRAZIL"};
+  nationItem _t1_data[] = {(nationItem){.n_nationkey = 1, .n_name = "BRAZIL"}};
+  list_nationItem _t1 = {1, _t1_data};
   list_nationItem nation = _t1;
-  list_customerItem _t2 = list_customerItem_create(1);
-  _t2.data[0] = (customerItem){.c_custkey = 1,
-                               .c_name = "Alice",
-                               .c_acctbal = 100.0,
-                               .c_nationkey = 1,
-                               .c_address = "123 St",
-                               .c_phone = "123-456",
-                               .c_comment = "Loyal"};
+  customerItem _t2_data[] = {(customerItem){.c_custkey = 1,
+                                            .c_name = "Alice",
+                                            .c_acctbal = 100.0,
+                                            .c_nationkey = 1,
+                                            .c_address = "123 St",
+                                            .c_phone = "123-456",
+                                            .c_comment = "Loyal"}};
+  list_customerItem _t2 = {1, _t2_data};
   list_customerItem customer = _t2;
-  list_ordersItem _t3 = list_ordersItem_create(2);
-  _t3.data[0] = (ordersItem){
-      .o_orderkey = 1000, .o_custkey = 1, .o_orderdate = "1993-10-15"};
-  _t3.data[1] = (ordersItem){
-      .o_orderkey = 2000, .o_custkey = 1, .o_orderdate = "1994-01-02"};
+  ordersItem _t3_data[] = {
+      (ordersItem){
+          .o_orderkey = 1000, .o_custkey = 1, .o_orderdate = "1993-10-15"},
+      (ordersItem){
+          .o_orderkey = 2000, .o_custkey = 1, .o_orderdate = "1994-01-02"}};
+  list_ordersItem _t3 = {2, _t3_data};
   list_ordersItem orders = _t3;
-  list_lineitemItem _t4 = list_lineitemItem_create(2);
-  _t4.data[0] = (lineitemItem){.l_orderkey = 1000,
-                               .l_returnflag = "R",
-                               .l_extendedprice = 1000.0,
-                               .l_discount = 0.1};
-  _t4.data[1] = (lineitemItem){.l_orderkey = 2000,
-                               .l_returnflag = "N",
-                               .l_extendedprice = 500.0,
-                               .l_discount = 0.0};
+  lineitemItem _t4_data[] = {(lineitemItem){.l_orderkey = 1000,
+                                            .l_returnflag = "R",
+                                            .l_extendedprice = 1000.0,
+                                            .l_discount = 0.1},
+                             (lineitemItem){.l_orderkey = 2000,
+                                            .l_returnflag = "N",
+                                            .l_extendedprice = 500.0,
+                                            .l_discount = 0.0}};
+  list_lineitemItem _t4 = {2, _t4_data};
   list_lineitemItem lineitem = _t4;
   list_resultItem result = 0;
   printf("%d\n", result);

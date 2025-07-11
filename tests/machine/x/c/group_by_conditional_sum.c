@@ -33,10 +33,10 @@ static list_resultItem list_resultItem_create(int len) {
 }
 
 int main() {
-  list_itemsItem _t1 = list_itemsItem_create(3);
-  _t1.data[0] = (itemsItem){.cat = "a", .val = 10, .flag = 1};
-  _t1.data[1] = (itemsItem){.cat = "a", .val = 5, .flag = 0};
-  _t1.data[2] = (itemsItem){.cat = "b", .val = 20, .flag = 1};
+  itemsItem _t1_data[] = {(itemsItem){.cat = "a", .val = 10, .flag = 1},
+                          (itemsItem){.cat = "a", .val = 5, .flag = 0},
+                          (itemsItem){.cat = "b", .val = 20, .flag = 1}};
+  list_itemsItem _t1 = {3, _t1_data};
   list_itemsItem items = _t1;
   list_resultItem result = 0;
   printf("%d\n", result);

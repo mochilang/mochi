@@ -1,11 +1,11 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/outer_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/outer_join.c:81:9: error: used struct type value where scalar is required
-   81 |     if (row.order) {
+/workspace/mochi/tests/machine/x/c/outer_join.c:82:9: error: used struct type value where scalar is required
+   82 |     if (row.order) {
       |         ^~~
-/workspace/mochi/tests/machine/x/c/outer_join.c:82:11: error: used struct type value where scalar is required
-   82 |       if (row.customer) {
+/workspace/mochi/tests/machine/x/c/outer_join.c:83:11: error: used struct type value where scalar is required
+   83 |       if (row.customer) {
       |           ^~~
 
    1: #include <stdio.h>

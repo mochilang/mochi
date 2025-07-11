@@ -63,17 +63,13 @@ static void _print_list_int(list_int v) {
   }
 }
 int main() {
-  list_int _t1 = list_int_create(3);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
-  _t1.data[2] = 3;
+  int _t1_data[] = {1, 2, 3};
+  list_int _t1 = {3, _t1_data};
   list_int _t2 = slice_list_int(_t1, 1, 3);
   _print_list_int(_t2);
   printf("\n");
-  list_int _t3 = list_int_create(3);
-  _t3.data[0] = 1;
-  _t3.data[1] = 2;
-  _t3.data[2] = 3;
+  int _t3_data[] = {1, 2, 3};
+  list_int _t3 = {3, _t3_data};
   list_int _t4 = slice_list_int(_t3, 0, 2);
   _print_list_int(_t4);
   printf("\n");

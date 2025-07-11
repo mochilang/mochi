@@ -18,10 +18,8 @@ static int contains_list_int(list_int v, int item) {
   return 0;
 }
 int main() {
-  list_int _t1 = list_int_create(3);
-  _t1.data[0] = 1;
-  _t1.data[1] = 2;
-  _t1.data[2] = 3;
+  int _t1_data[] = {1, 2, 3};
+  list_int _t1 = {3, _t1_data};
   list_int nums = _t1;
   printf("%s\n", (contains_list_int(nums, 2)) ? "true" : "false");
   printf("%s\n", (contains_list_int(nums, 4)) ? "true" : "false");

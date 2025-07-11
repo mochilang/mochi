@@ -1,11 +1,11 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:125:28: error: invalid initializer
-  125 |   list_resultItem result = 0;
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:126:28: error: invalid initializer
+  126 |   list_resultItem result = 0;
       |                            ^
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:126:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-  126 |   printf("%d\n", result);
+/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:127:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
+  127 |   printf("%d\n", result);
       |           ~^     ~~~~~~
       |            |     |
       |            int   list_resultItem

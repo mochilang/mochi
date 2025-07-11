@@ -2,8 +2,8 @@ line: 0
 error: output mismatch
 -- got --
 two
--154525648
--154525608
+-471719888
+-471719848
 zero
 many
 -- want --

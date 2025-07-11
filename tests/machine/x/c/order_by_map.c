@@ -66,10 +66,9 @@ static list_dataItem list_dataItem_create(int len) {
 }
 
 int main() {
-  list_dataItem _t1 = list_dataItem_create(3);
-  _t1.data[0] = (dataItem){.a = 1, .b = 2};
-  _t1.data[1] = (dataItem){.a = 1, .b = 1};
-  _t1.data[2] = (dataItem){.a = 0, .b = 5};
+  dataItem _t1_data[] = {(dataItem){.a = 1, .b = 2}, (dataItem){.a = 1, .b = 1},
+                         (dataItem){.a = 0, .b = 5}};
+  list_dataItem _t1 = {3, _t1_data};
   list_dataItem data = _t1;
   list_dataItem _t2 = list_dataItem_create(data.len);
   map_string_int *_t5 =

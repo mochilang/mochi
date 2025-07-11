@@ -32,11 +32,10 @@ static list_groupedItem list_groupedItem_create(int len) {
 }
 
 int main() {
-  list_itemsItem _t1 = list_itemsItem_create(4);
-  _t1.data[0] = (itemsItem){.cat = "a", .val = 3};
-  _t1.data[1] = (itemsItem){.cat = "a", .val = 1};
-  _t1.data[2] = (itemsItem){.cat = "b", .val = 5};
-  _t1.data[3] = (itemsItem){.cat = "b", .val = 2};
+  itemsItem _t1_data[] = {
+      (itemsItem){.cat = "a", .val = 3}, (itemsItem){.cat = "a", .val = 1},
+      (itemsItem){.cat = "b", .val = 5}, (itemsItem){.cat = "b", .val = 2}};
+  list_itemsItem _t1 = {4, _t1_data};
   list_itemsItem items = _t1;
   list_groupedItem grouped = 0;
   printf("%d\n", grouped);

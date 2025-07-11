@@ -3,6 +3,11 @@
 
 typedef struct Person Person;
 
+typedef struct Person {
+  char *name;
+  int age;
+  char *status;
+} Person;
 typedef struct {
   int len;
   Person *data;
@@ -14,18 +19,13 @@ static list_Person list_Person_create(int len) {
   return l;
 }
 
-typedef struct Person {
-  char *name;
-  int age;
-  char *status;
-} Person;
-
 static void test_update_adult_status() {
-  list_Person _t1 = list_Person_create(4);
-  _t1.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
-  _t1.data[1] = (Person){.name = "Bob", .age = 26, .status = "adult"};
-  _t1.data[2] = (Person){.name = "Charlie", .age = 19, .status = "adult"};
-  _t1.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  Person _t1_data[] = {
+      (Person){.name = "Alice", .age = 17, .status = "minor"},
+      (Person){.name = "Bob", .age = 26, .status = "adult"},
+      (Person){.name = "Charlie", .age = 19, .status = "adult"},
+      (Person){.name = "Diana", .age = 16, .status = "minor"}};
+  list_Person _t1 = {4, _t1_data};
   if (!(people == _t1)) {
     fprintf(stderr, "expect failed\n");
     exit(1);
@@ -33,11 +33,12 @@ static void test_update_adult_status() {
 }
 
 int main() {
-  list_Person _t2 = list_Person_create(4);
-  _t2.data[0] = (Person){.name = "Alice", .age = 17, .status = "minor"};
-  _t2.data[1] = (Person){.name = "Bob", .age = 25, .status = "unknown"};
-  _t2.data[2] = (Person){.name = "Charlie", .age = 18, .status = "unknown"};
-  _t2.data[3] = (Person){.name = "Diana", .age = 16, .status = "minor"};
+  Person _t2_data[] = {
+      (Person){.name = "Alice", .age = 17, .status = "minor"},
+      (Person){.name = "Bob", .age = 25, .status = "unknown"},
+      (Person){.name = "Charlie", .age = 18, .status = "unknown"},
+      (Person){.name = "Diana", .age = 16, .status = "minor"}};
+  list_Person _t2 = {4, _t2_data};
   list_Person people = _t2;
   for (int _t3 = 0; _t3 < people.len; _t3++) {
     Person _t4 = people.data[_t3];
