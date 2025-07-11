@@ -250,3 +250,50 @@ func (c *Compiler) newStructName(base string) string {
 		}
 	}
 }
+
+// assignTypeNames attaches generated names to anonymous struct types so that
+// compiled code can avoid "dynamic" fields. The returned type mirrors t but
+// with any unnamed structs replaced by named versions.
+func (c *Compiler) assignTypeNames(t types.Type, hint string) types.Type {
+	switch tt := t.(type) {
+	case types.StructType:
+		if tt.Name == "" {
+			tt.Name = c.newStructName(hint)
+			c.extraStructs = append(c.extraStructs, tt)
+		}
+		for k, ft := range tt.Fields {
+			tt.Fields[k] = c.assignTypeNames(ft, pascalCase(k))
+		}
+		return tt
+	case types.ListType:
+		tt.Elem = c.assignTypeNames(tt.Elem, singular(hint)).(types.Type)
+		return tt
+	case types.MapType:
+		tt.Key = c.assignTypeNames(tt.Key, hint+"Key").(types.Type)
+		tt.Value = c.assignTypeNames(tt.Value, hint+"Val").(types.Type)
+		return tt
+	default:
+		return t
+	}
+}
+
+// registerStructs adds all named struct types within t to the compiler
+// environment so later expressions can reference them by name.
+func (c *Compiler) registerStructs(t types.Type) {
+	switch tt := t.(type) {
+	case types.StructType:
+		if tt.Name != "" && c.env != nil {
+			if _, ok := c.env.GetStruct(tt.Name); !ok {
+				c.env.SetStruct(tt.Name, tt)
+			}
+		}
+		for _, ft := range tt.Fields {
+			c.registerStructs(ft)
+		}
+	case types.ListType:
+		c.registerStructs(tt.Elem)
+	case types.MapType:
+		c.registerStructs(tt.Key)
+		c.registerStructs(tt.Value)
+	}
+}
