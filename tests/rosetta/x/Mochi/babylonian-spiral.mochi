@@ -1,0 +1,101 @@
+// Babylonian spiral implementation in Mochi.
+// Translated from the Go version but avoids trigonometry.
+
+fun push(h: list<map<string, int>>, it: map<string, int>): list<map<string, int>> {
+  h = append(h, it)
+  var i = len(h) - 1
+  while i > 0 && h[i-1]["s"] > h[i]["s"] {
+    let tmp = h[i-1]
+    h[i-1] = h[i]
+    h[i] = tmp
+    i = i - 1
+  }
+  return h
+}
+
+fun step(h: list<map<string, int>>, nv: int, dir: list<int>): map<string, any> {
+  // generate next set of vectors
+  while len(h) == 0 || nv * nv <= h[0]["s"] {
+    h = push(h, {"s": nv * nv, "a": nv, "b": 0})
+    nv = nv + 1
+  }
+  let s = h[0]["s"]
+  var v: list<list<int>> = []
+  while len(h) > 0 && h[0]["s"] == s {
+    let it = h[0]
+    h = h[1:]
+    v = append(v, [it["a"], it["b"]])
+    if it["a"] > it["b"] {
+      h = push(h, {"s": it["a"] * it["a"] + (it["b"] + 1) * (it["b"] + 1), "a": it["a"], "b": it["b"] + 1})
+    }
+  }
+
+  var list: list<list<int>> = []
+  for p in v { list = append(list, p) }
+  var temp: list<list<int>> = list
+  for p in temp { if p[0] != p[1] { list = append(list, [p[1], p[0]]) } }
+  temp = list
+  for p in temp { if p[1] != 0 { list = append(list, [p[0], -p[1]]) } }
+  temp = list
+  for p in temp { if p[0] != 0 { list = append(list, [-p[0], p[1]]) } }
+
+  var bestDot = -999999999
+  var best = dir
+  for p in list {
+    let cross = p[0] * dir[1] - p[1] * dir[0]
+    if cross >= 0 {
+      let dot = p[0] * dir[0] + p[1] * dir[1]
+      if dot > bestDot {
+        bestDot = dot
+        best = p
+      }
+    }
+  }
+  return {"d": best, "heap": h, "n": nv}
+}
+
+fun positions(n: int): list<list<int>> {
+  var pos: list<list<int>> = []
+  var x = 0
+  var y = 0
+  var dir: list<int> = [0, 1]
+  var heap: list<map<string, int>> = []
+  var nv = 1
+  var i = 0
+  while i < n {
+    pos = append(pos, [x, y])
+    let st = step(heap, nv, dir)
+    dir = st["d"] as list<int>
+    heap = st["heap"] as list<map<string, int>>
+    nv = st["n"] as int
+    x = x + dir[0]
+    y = y + dir[1]
+    i = i + 1
+  }
+  return pos
+}
+
+fun pad(s: string, w: int): string {
+  var r = s
+  while len(r) < w { r = r + " " }
+  return r
+}
+
+fun main() {
+  let pts = positions(40)
+  print("The first 40 Babylonian spiral points are:")
+  var line = ""
+  var i = 0
+  while i < len(pts) {
+    let p = pts[i]
+    let s = pad("(" + str(p[0]) + ", " + str(p[1]) + ")", 10)
+    line = line + s
+    if (i + 1) % 10 == 0 {
+      print(line)
+      line = ""
+    }
+    i = i + 1
+  }
+}
+
+main()
