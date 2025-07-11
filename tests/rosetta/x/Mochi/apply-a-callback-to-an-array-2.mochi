@@ -1,0 +1,22 @@
+// Mochi implementation of Rosetta "Apply a callback to an array" task (variant 2)
+// Demonstrates custom each and Map functions similar to the Go example.
+
+fun each(xs: list<int>, f: fun(int)) {
+  for x in xs { f(x) }
+}
+
+fun Map(xs: list<int>, f: fun(int): int): list<int> {
+  var r: list<int> = []
+  for x in xs {
+    r = append(r, f(x))
+  }
+  return r
+}
+
+fun main() {
+  let s: list<int> = [1, 2, 3, 4, 5]
+  each(s, fun(i: int): any => print(str(i * i)))
+  print(str(Map(s, fun(i: int): int => i * i)))
+}
+
+main()
