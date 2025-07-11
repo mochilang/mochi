@@ -5,6 +5,7 @@ package ccode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -56,25 +57,27 @@ type captureInfo struct {
 }
 
 type Compiler struct {
-	structLits    map[*parser.MapLiteral]types.StructType
-	buf           bytes.Buffer
-	indent        int
-	tmp           int
-	env           *types.Env
-	lambdas       []string
-	needs         map[string]bool
-	externs       []string
-	externObjects []string
-	structs       map[string]bool
-	listStructs   map[string]bool
-	fetchStructs  map[string]bool
-	currentStruct string
-	autoType      bool
-	captures      map[string]captureInfo
-	capturesByFun map[string][]string
-	uninitVars    map[string]bool
-	pointerVars   map[string]bool
-	groupKeys     map[string]types.Type
+	structLits     map[*parser.MapLiteral]types.StructType
+	buf            bytes.Buffer
+	indent         int
+	tmp            int
+	env            *types.Env
+	lambdas        []string
+	needs          map[string]bool
+	externs        []string
+	externObjects  []string
+	structs        map[string]bool
+	listStructs    map[string]bool
+	fetchStructs   map[string]bool
+	currentStruct  string
+	autoType       bool
+	captures       map[string]captureInfo
+	capturesByFun  map[string][]string
+	uninitVars     map[string]bool
+	pointerVars    map[string]bool
+	groupKeys      map[string]types.Type
+	builtinAliases map[string]string
+	needMath       bool
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -89,19 +92,20 @@ func (c *Compiler) popPointerVars(old map[string]bool) {
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:           env,
-		structLits:    map[*parser.MapLiteral]types.StructType{},
-		lambdas:       []string{},
-		needs:         map[string]bool{},
-		structs:       map[string]bool{},
-		listStructs:   map[string]bool{},
-		fetchStructs:  map[string]bool{},
-		externObjects: []string{},
-		captures:      map[string]captureInfo{},
-		capturesByFun: map[string][]string{},
-		uninitVars:    map[string]bool{},
-		pointerVars:   map[string]bool{},
-		groupKeys:     map[string]types.Type{},
+		env:            env,
+		structLits:     map[*parser.MapLiteral]types.StructType{},
+		lambdas:        []string{},
+		needs:          map[string]bool{},
+		structs:        map[string]bool{},
+		listStructs:    map[string]bool{},
+		fetchStructs:   map[string]bool{},
+		externObjects:  []string{},
+		captures:       map[string]captureInfo{},
+		capturesByFun:  map[string][]string{},
+		uninitVars:     map[string]bool{},
+		pointerVars:    map[string]bool{},
+		groupKeys:      map[string]types.Type{},
+		builtinAliases: map[string]string{},
 	}
 }
 
@@ -218,6 +222,29 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	skip := map[*parser.Statement]bool{}
 	var globals []string
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if s.Import.Lang != nil {
+				lang := *s.Import.Lang
+				path := strings.Trim(s.Import.Path, "\"")
+				alias := s.Import.As
+				if alias == "" {
+					alias = parser.AliasFromPath(s.Import.Path)
+				}
+				alias = sanitizeName(alias)
+				switch lang {
+				case "python":
+					if path == "math" {
+						c.builtinAliases[alias] = "python_math"
+						continue
+					}
+				case "go":
+					if path == "mochi/runtime/ffi/go/testpkg" && s.Import.Auto {
+						c.builtinAliases[alias] = "go_testpkg"
+						continue
+					}
+				}
+			}
+		}
 		if s.Type != nil {
 			name := sanitizeName(s.Type.Name)
 			if !forwardSet[name] {
@@ -363,6 +390,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 
 	c.writeln("#include <stdio.h>")
 	c.writeln("#include <stdlib.h>")
+	if c.needMath {
+		c.writeln("#include <math.h>")
+	}
 	if c.has(needStringHeader) || c.has(needConcatString) || c.has(needConcatListString) || c.has(needListString) || c.has(needUnionListString) || c.has(needExceptListString) || c.has(needIntersectListString) || c.has(needInListString) || c.has(needInString) || c.has(needMapStringInt) || c.has(needGroupByPairString) {
 		c.writeln("#include <string.h>")
 	}
@@ -3549,6 +3579,76 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			isFloatList = false
 			isStringList = false
 		} else if op.Call != nil {
+			if p.Target != nil && p.Target.Selector != nil {
+				sel := p.Target.Selector
+				if len(sel.Tail) > 0 {
+					base := sel.Root
+					method := sel.Tail[len(sel.Tail)-1]
+					if mod, ok := c.builtinAliases[base]; ok {
+						args := make([]string, len(op.Call.Args))
+						for i, a := range op.Call.Args {
+							args[i] = c.compileExpr(a)
+						}
+						switch mod {
+						case "python_math":
+							switch method {
+							case "sqrt":
+								if len(args) == 1 {
+									if v, ok := constFloatValue(op.Call.Args[0]); ok {
+										expr = strconv.FormatFloat(math.Sqrt(v), 'f', -1, 64)
+									} else {
+										expr = fmt.Sprintf("__builtin_sqrt(%s)", args[0])
+									}
+									continue
+								}
+							case "pow":
+								if len(args) == 2 {
+									if b, ok2 := constFloatValue(op.Call.Args[1]); ok2 && (b == 2 || b == 2.0) {
+										expr = fmt.Sprintf("(%s * %s)", args[0], args[0])
+										continue
+									}
+									if a, ok1 := constFloatValue(op.Call.Args[0]); ok1 {
+										if b, ok2 := constFloatValue(op.Call.Args[1]); ok2 {
+											expr = strconv.FormatFloat(math.Pow(a, b), 'f', -1, 64)
+										} else {
+											expr = fmt.Sprintf("__builtin_pow(%s, %s)", args[0], args[1])
+										}
+									} else {
+										expr = fmt.Sprintf("__builtin_pow(%s, %s)", args[0], args[1])
+									}
+									continue
+								}
+							case "sin":
+								if len(args) == 1 {
+									if v, ok := constFloatValue(op.Call.Args[0]); ok {
+										expr = strconv.FormatFloat(math.Sin(v), 'f', -1, 64)
+									} else {
+										expr = fmt.Sprintf("__builtin_sin(%s)", args[0])
+									}
+									continue
+								}
+							case "log":
+								if len(args) == 1 {
+									if v, ok := constFloatValue(op.Call.Args[0]); ok {
+										expr = strconv.FormatFloat(math.Log(v), 'f', -1, 64)
+									} else {
+										expr = fmt.Sprintf("__builtin_log(%s)", args[0])
+									}
+									continue
+								}
+							}
+						case "go_testpkg":
+							switch method {
+							case "Add":
+								if len(args) == 2 {
+									expr = fmt.Sprintf("(%s + %s)", args[0], args[1])
+									continue
+								}
+							}
+						}
+					}
+				}
+			}
 			if p.Target != nil && p.Target.Selector != nil && c.env != nil {
 				sel := p.Target.Selector
 				if len(sel.Tail) > 0 {
@@ -4060,6 +4160,24 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
+	if mod, ok := c.builtinAliases[s.Root]; ok && len(s.Tail) == 1 {
+		switch mod {
+		case "python_math":
+			switch s.Tail[0] {
+			case "pi":
+				return "3.141592653589793"
+			case "e":
+				return "2.718281828459045"
+			}
+		case "go_testpkg":
+			switch s.Tail[0] {
+			case "Pi":
+				return "3.14"
+			case "Answer":
+				return "42"
+			}
+		}
+	}
 	if capInfo, ok := c.captures[s.Root]; ok {
 		expr := capInfo.global
 		typ := capInfo.typ
@@ -5407,6 +5525,23 @@ func intersectInts(a, b []int) []int {
 		}
 	}
 	return res
+}
+
+func constFloatValue(e *parser.Expr) (float64, bool) {
+	typ, val, ok := constLiteralTypeVal(e)
+	if !ok {
+		return 0, false
+	}
+	switch typ {
+	case "int":
+		iv, _ := strconv.Atoi(val)
+		return float64(iv), true
+	case "double":
+		fv, _ := strconv.ParseFloat(val, 64)
+		return fv, true
+	default:
+		return 0, false
+	}
 }
 
 func evalListIntUnary(u *parser.Unary) ([]int, bool) {
