@@ -1855,7 +1855,7 @@ func (c *Compiler) compilePartialCall(fnName string, ft types.FuncType, args []*
 // supports optional `sort by`, `skip` and `take` clauses in addition to basic
 // `from`/`where`/`select`. Joins and grouping remain unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
-	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
 		if name, ok := identName(q.Group.Exprs[0]); ok && name == q.Var {
 			src := c.compileExpr(q.Source)
 			srcT := c.exprType(q.Source)
@@ -1926,6 +1926,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.structLits[ml] = st
 						}
 					}
+					var sortT types.Type
+					if q.Sort != nil {
+						sortT = c.exprType(q.Sort)
+					}
 					retList := types.ListType{Elem: retT}
 					listC := cTypeFromType(retList)
 					if listC == "list_string" {
@@ -1937,13 +1941,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					res := c.newTemp()
 					idx := c.newTemp()
+					var keyArr string
+					keyType := ""
+					if q.Sort != nil {
+						keyType = cTypeFromType(sortT)
+						if keyType == "" {
+							keyType = "int"
+						}
+					}
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, groups))
+					if keyType != "" {
+						keyArr = c.newTemp()
+						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
+					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idx))
 					c.writeln(fmt.Sprintf("for (int i=0; i<%s.len; i++) {", groups))
 					c.indent++
 					c.writeln(fmt.Sprintf("_GroupInt %s = %s.data[i];", sanitizeName(q.Group.Name), groups))
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idx, val))
+					if keyType != "" {
+						sortExpr := c.compileExpr(q.Sort)
+						c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idx, sortExpr))
+					}
 					c.writeln(fmt.Sprintf("%s++;", idx))
 					c.indent--
 					c.writeln("}")
@@ -1955,6 +1975,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					if keyType != "" {
+						tmpK := c.newTemp()
+						tmpV := c.newTemp()
+						elemOut := cTypeFromType(retT)
+						if elemOut == "" {
+							elemOut = "int"
+						}
+						c.writeln(fmt.Sprintf("for (int i = 0; i < %s-1; i++) {", idx))
+						c.indent++
+						c.writeln(fmt.Sprintf("for (int j = i+1; j < %s; j++) {", idx))
+						c.indent++
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[i], %s[j]) > 0) {", keyArr, keyArr))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[i] > %s[j]) {", keyArr, keyArr))
+						}
+						c.indent++
+						c.writeln(fmt.Sprintf("%s %s = %s[i];", keyType, tmpK, keyArr))
+						c.writeln(fmt.Sprintf("%s[i] = %s[j];", keyArr, keyArr))
+						c.writeln(fmt.Sprintf("%s[j] = %s;", keyArr, tmpK))
+						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
+						c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
+						c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+					}
 					return res
 				}
 			}
@@ -2053,9 +2103,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					} else if listRes == "list_list_int" {
 						c.need(needListListInt)
 					}
+					var sortT types.Type
+					if q.Sort != nil {
+						sortT = c.exprType(q.Sort)
+					}
 					res := c.newTemp()
 					idxRes := c.newTemp()
+					var keyArr string
+					keyType := ""
+					if q.Sort != nil {
+						keyType = cTypeFromType(sortT)
+						if keyType == "" {
+							keyType = "int"
+						}
+					}
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+					if keyType != "" {
+						keyArr = c.newTemp()
+						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
+					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
 					c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
 					c.indent++
@@ -2071,6 +2137,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("struct {char* key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
+					if keyType != "" {
+						sortExpr := c.compileExpr(q.Sort)
+						c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idxRes, sortExpr))
+					}
 					c.writeln(fmt.Sprintf("%s++;", idxRes))
 					c.indent--
 					c.writeln("}")
@@ -2082,6 +2152,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					if keyType != "" {
+						tmpK := c.newTemp()
+						tmpV := c.newTemp()
+						elemOut := cTypeFromType(retT)
+						if elemOut == "" {
+							elemOut = "int"
+						}
+						c.writeln(fmt.Sprintf("for (int i = 0; i < %s-1; i++) {", idxRes))
+						c.indent++
+						c.writeln(fmt.Sprintf("for (int j = i+1; j < %s; j++) {", idxRes))
+						c.indent++
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[i], %s[j]) > 0) {", keyArr, keyArr))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[i] > %s[j]) {", keyArr, keyArr))
+						}
+						c.indent++
+						c.writeln(fmt.Sprintf("%s %s = %s[i];", keyType, tmpK, keyArr))
+						c.writeln(fmt.Sprintf("%s[i] = %s[j];", keyArr, keyArr))
+						c.writeln(fmt.Sprintf("%s[j] = %s;", keyArr, tmpK))
+						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
+						c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
+						c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+					}
 					return res
 				} else if _, ok := c.exprType(q.Group.Exprs[0]).(types.IntType); ok {
 					c.need(needGroupByInt)
@@ -2167,9 +2267,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					} else if listRes == "list_list_int" {
 						c.need(needListListInt)
 					}
+					var sortT types.Type
+					if q.Sort != nil {
+						sortT = c.exprType(q.Sort)
+					}
 					res := c.newTemp()
 					idxRes := c.newTemp()
+					var keyArr string
+					keyType := ""
+					if q.Sort != nil {
+						keyType = cTypeFromType(sortT)
+						if keyType == "" {
+							keyType = "int"
+						}
+					}
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+					if keyType != "" {
+						keyArr = c.newTemp()
+						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
+					}
 					c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
 					c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
 					c.indent++
@@ -2185,6 +2301,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.writeln(fmt.Sprintf("struct {int key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
 					val := c.compileExpr(q.Select)
 					c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
+					if keyType != "" {
+						sortExpr := c.compileExpr(q.Sort)
+						c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idxRes, sortExpr))
+					}
 					c.writeln(fmt.Sprintf("%s++;", idxRes))
 					c.indent--
 					c.writeln("}")
@@ -2196,6 +2316,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					if keyType != "" {
+						tmpK := c.newTemp()
+						tmpV := c.newTemp()
+						elemOut := cTypeFromType(retT)
+						if elemOut == "" {
+							elemOut = "int"
+						}
+						c.writeln(fmt.Sprintf("for (int i = 0; i < %s-1; i++) {", idxRes))
+						c.indent++
+						c.writeln(fmt.Sprintf("for (int j = i+1; j < %s; j++) {", idxRes))
+						c.indent++
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[i], %s[j]) > 0) {", keyArr, keyArr))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[i] > %s[j]) {", keyArr, keyArr))
+						}
+						c.indent++
+						c.writeln(fmt.Sprintf("%s %s = %s[i];", keyType, tmpK, keyArr))
+						c.writeln(fmt.Sprintf("%s[i] = %s[j];", keyArr, keyArr))
+						c.writeln(fmt.Sprintf("%s[j] = %s;", keyArr, tmpK))
+						c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
+						c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
+						c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+						c.indent--
+						c.writeln("}")
+					}
 					return res
 				}
 			}
@@ -2295,9 +2445,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						} else if listRes == "list_list_int" {
 							c.need(needListListInt)
 						}
+						var sortT types.Type
+						if q.Sort != nil {
+							sortT = c.exprType(q.Sort)
+						}
 						res := c.newTemp()
 						idxRes := c.newTemp()
+						var keyArr string
+						keyType := ""
+						if q.Sort != nil {
+							keyType = cTypeFromType(sortT)
+							if keyType == "" {
+								keyType = "int"
+							}
+						}
 						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+						if keyType != "" {
+							keyArr = c.newTemp()
+							c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
+						}
 						c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
 						c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
 						c.indent++
@@ -2313,6 +2479,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.writeln(fmt.Sprintf("struct { pair_string key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
 						val := c.compileExpr(q.Select)
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
+						if keyType != "" {
+							sortExpr := c.compileExpr(q.Sort)
+							c.writeln(fmt.Sprintf("%s[%s] = %s;", keyArr, idxRes, sortExpr))
+						}
 						c.writeln(fmt.Sprintf("%s++;", idxRes))
 						c.indent--
 						c.writeln("}")
@@ -2324,6 +2494,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.env = prevEnv
 						}
 						delete(c.groupKeys, q.Group.Name)
+						if keyType != "" {
+							tmpK := c.newTemp()
+							tmpV := c.newTemp()
+							elemOut := cTypeFromType(retT)
+							if elemOut == "" {
+								elemOut = "int"
+							}
+							c.writeln(fmt.Sprintf("for (int i = 0; i < %s-1; i++) {", idxRes))
+							c.indent++
+							c.writeln(fmt.Sprintf("for (int j = i+1; j < %s; j++) {", idxRes))
+							c.indent++
+							if keyType == "char*" {
+								c.writeln(fmt.Sprintf("if (strcmp(%s[i], %s[j]) > 0) {", keyArr, keyArr))
+							} else {
+								c.writeln(fmt.Sprintf("if (%s[i] > %s[j]) {", keyArr, keyArr))
+							}
+							c.indent++
+							c.writeln(fmt.Sprintf("%s %s = %s[i];", keyType, tmpK, keyArr))
+							c.writeln(fmt.Sprintf("%s[i] = %s[j];", keyArr, keyArr))
+							c.writeln(fmt.Sprintf("%s[j] = %s;", keyArr, tmpK))
+							c.writeln(fmt.Sprintf("%s %s = %s.data[i];", elemOut, tmpV, res))
+							c.writeln(fmt.Sprintf("%s.data[i] = %s.data[j];", res, res))
+							c.writeln(fmt.Sprintf("%s.data[j] = %s;", res, tmpV))
+							c.indent--
+							c.writeln("}")
+							c.indent--
+							c.writeln("}")
+							c.indent--
+							c.writeln("}")
+						}
 						return res
 					}
 				}

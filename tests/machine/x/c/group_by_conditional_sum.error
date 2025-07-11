@@ -1,11 +1,14 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:41:28: error: invalid initializer
-   41 |   list_resultItem result = 0;
-      |                            ^
-/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:42:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
-   42 |   printf("%d\n", result);
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:111:29: error: array subscript is not an integer
+  111 |     itemsItem i = items.data[i];
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:151:14: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  151 |     _t8[_t7] = g.key;
+      |              ^
+/workspace/mochi/tests/machine/x/c/group_by_conditional_sum.c:168:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_resultItem’ [-Wformat=]
+  168 |   printf("%d\n", result);
       |           ~^     ~~~~~~
       |            |     |
       |            int   list_resultItem

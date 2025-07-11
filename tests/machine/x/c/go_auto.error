@@ -1,9 +1,11 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/go_auto.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/go_auto.c:5:18: error: ‘testpkg’ undeclared (first use in this function)
-    5 |   printf("%d\n", testpkg.Add(2, 3));
-      |                  ^~~~~~~
-/workspace/mochi/tests/machine/x/c/go_auto.c:5:18: note: each undeclared identifier is reported only once for each function it appears in
-
+error: output mismatch
+-- got --
+5
+-1416462912
+42
+-- want --
+5
+3.14
+42
    1: #include <stdio.h>

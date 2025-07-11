@@ -1,11 +1,11 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_by_sort.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_sort.c:40:30: error: invalid initializer
-   40 |   list_groupedItem grouped = 0;
-      |                              ^
-/workspace/mochi/tests/machine/x/c/group_by_sort.c:41:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
-   41 |   printf("%d\n", grouped);
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:110:29: error: array subscript is not an integer
+  110 |     itemsItem i = items.data[i];
+      |                             ^
+/workspace/mochi/tests/machine/x/c/group_by_sort.c:166:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_groupedItem’ [-Wformat=]
+  166 |   printf("%d\n", grouped);
       |           ~^     ~~~~~~~
       |            |     |
       |            int   list_groupedItem
