@@ -1,0 +1,88 @@
+fun histogram(img: list<list<int>>, bins: int): list<int> {
+  if bins <= 0 {
+    bins = 256
+  }
+  var h: list<int> = []
+  var i = 0
+  while i < bins {
+    h = append(h, 0)
+    i = i + 1
+  }
+  var y = 0
+  while y < len(img) {
+    var x = 0
+    while x < len(img[y]) {
+      let p = img[y][x]
+      let idx = (p * (bins - 1) / 255) as int
+      h[idx] = h[idx] + 1
+      x = x + 1
+    }
+    y = y + 1
+  }
+  return h
+}
+
+fun medianThreshold(h: list<int>): int {
+  var lb = 0
+  var ub = len(h) - 1
+  var lsum = 0
+  var usum = 0
+  while lb <= ub {
+    if lsum + h[lb] < usum + h[ub] {
+      lsum = lsum + h[lb]
+      lb = lb + 1
+    } else {
+      usum = usum + h[ub]
+      ub = ub - 1
+    }
+  }
+  return (ub * 255 / len(h)) as int
+}
+
+fun thresholdImage(img: list<list<int>>, t: int): list<list<int>> {
+  var out: list<list<int>> = []
+  var y = 0
+  while y < len(img) {
+    var row: list<int> = []
+    var x = 0
+    while x < len(img[y]) {
+      let p = img[y][x]
+      if p < t {
+        row = append(row, 0)
+      } else {
+        row = append(row, 255)
+      }
+      x = x + 1
+    }
+    out = append(out, row)
+    y = y + 1
+  }
+  return out
+}
+
+fun printImage(img: list<list<int>>) {
+  for row in img {
+    var line = ""
+    for p in row {
+      if p == 0 { line = line + "." } else { line = line + "#" }
+    }
+    print(line)
+  }
+}
+
+fun main() {
+  let img = [
+    [0, 50, 100, 150, 200],
+    [10, 60, 110, 160, 210],
+    [20, 70, 120, 170, 220],
+    [30, 80, 130, 180, 230],
+    [40, 90, 140, 190, 240],
+  ]
+  let h = histogram(img, 0)
+  let t = medianThreshold(h)
+  let bw = thresholdImage(img, t)
+  print("threshold=" + str(t))
+  printImage(bw)
+}
+
+main()
