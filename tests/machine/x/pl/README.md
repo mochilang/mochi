@@ -4,7 +4,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 
 ## Summary
 
- - 97/97 programs compiled and ran successfully.
+ - 100/100 programs compiled (execution requires `swipl`).
 
 ### Checklist
 - [x] append_builtin
@@ -28,6 +28,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] go_auto
 - [x] group_by_multi_join_sort
 - [x] if_else
 - [x] if_then_else
@@ -61,6 +62,8 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [x] record_assign
 - [x] short_circuit
 - [x] slice
@@ -118,3 +121,13 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [ ] Handle records with optional fields
 - [ ] Support lazy evaluation features
 - [ ] Document known limitations in compiler
+- [ ] Improve pattern matching translation
+- [ ] Better list comprehension support
+- [ ] Implement dictionary update syntax
+- [ ] Support Prolog modules for packages
+- [ ] Generate comments from Mochi source
+- [ ] Implement property-based tests
+- [ ] Optimize query compilation
+- [ ] Support multi-file compilation
+- [ ] Add linter for generated Prolog
+- [ ] Improve variable naming heuristics

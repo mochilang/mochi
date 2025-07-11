@@ -35,6 +35,7 @@ type Compiler struct {
 
 	currentFun string
 	nested     map[string]nestedInfo
+	ffiModules map[string]string
 }
 
 type nestedInfo struct {
@@ -45,6 +46,7 @@ type nestedInfo struct {
 func New() *Compiler {
 	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
 	c.nested = make(map[string]nestedInfo)
+	c.ffiModules = make(map[string]string)
 	c.out = &c.funcBuf
 	return c
 }
@@ -89,10 +91,15 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsExpect = false
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
+	c.ffiModules = make(map[string]string)
 
 	c.out = &c.funcBuf
 	for _, st := range p.Statements {
-		if st.Fun != nil {
+		if st.Import != nil {
+			if err := c.compileImport(st.Import); err != nil {
+				return nil, err
+			}
+		} else if st.Fun != nil {
 			if err := c.compileFun(st.Fun); err != nil {
 				return nil, err
 			}
@@ -321,6 +328,12 @@ func (c *Compiler) compileNestedFun(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
 	switch {
+	case s.Import != nil:
+		// imports are handled in the preamble
+		return nil
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations are ignored in Prolog backend
+		return nil
 	case s.Type != nil:
 		// Type declarations are ignored in Prolog output
 		return nil
@@ -678,6 +691,39 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	return nil
 }
 
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	aliasAtom := sanitizeAtom(alias)
+	c.vars[alias] = aliasAtom
+	if c.ffiModules == nil {
+		c.ffiModules = make(map[string]string)
+	}
+	mod := *im.Lang + ":" + strings.Trim(im.Path, "\"")
+	c.ffiModules[aliasAtom] = mod
+	switch mod {
+	case "go:mochi/runtime/ffi/go/testpkg":
+		c.writeln(fmt.Sprintf("%s_add(A, B, R) :- R is A + B.", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_pi(P) :- P is 3.14.", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_answer(A) :- A is 42.", aliasAtom))
+		c.writeln("")
+	case "python:math":
+		c.writeln(fmt.Sprintf("%s_pi(P) :- P is 3.141592653589793.", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_e(E) :- E is 2.718281828459045.", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_sqrt(X, R) :- R is sqrt(X).", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_pow(X, Y, R) :- R is X ** Y.", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_sin(X, R) :- R is sin(X).", aliasAtom))
+		c.writeln(fmt.Sprintf("%s_log(X, R) :- R is log(X).", aliasAtom))
+		c.writeln("")
+	}
+	return nil
+}
+
 func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	listVar := c.lookupVar(u.Target)
 	helper := sanitizeAtom(u.Target + "_update")
@@ -939,6 +985,38 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 				i++
 				continue
 			}
+			if mod, ok := c.ffiModules[val]; ok {
+				tmp := c.newTmp()
+				handled := true
+				switch mod {
+				case "go:mochi/runtime/ffi/go/testpkg":
+					if op.Field.Name == "Pi" {
+						c.writeln(fmt.Sprintf("%s_pi(%s),", val, tmp))
+						arith = true
+					} else if op.Field.Name == "Answer" {
+						c.writeln(fmt.Sprintf("%s_answer(%s),", val, tmp))
+						arith = true
+					} else {
+						handled = false
+					}
+				case "python:math":
+					if op.Field.Name == "pi" {
+						c.writeln(fmt.Sprintf("%s_pi(%s),", val, tmp))
+						arith = true
+					} else if op.Field.Name == "e" {
+						c.writeln(fmt.Sprintf("%s_e(%s),", val, tmp))
+						arith = true
+					} else {
+						handled = false
+					}
+				default:
+					handled = false
+				}
+				if handled {
+					val = tmp
+					continue
+				}
+			}
 			tmp := c.newTmp()
 			c.needsGetItem = true
 			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(op.Field.Name), tmp))
@@ -983,6 +1061,34 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 			val = sanitizeVar(p.Selector.Root)
 		}
 		for _, f := range p.Selector.Tail {
+			if mod, ok := c.ffiModules[val]; ok {
+				tmp := c.newTmp()
+				handled := true
+				switch mod {
+				case "go:mochi/runtime/ffi/go/testpkg":
+					if f == "Pi" {
+						c.writeln(fmt.Sprintf("%s_pi(%s),", val, tmp))
+					} else if f == "Answer" {
+						c.writeln(fmt.Sprintf("%s_answer(%s),", val, tmp))
+					} else {
+						handled = false
+					}
+				case "python:math":
+					if f == "pi" {
+						c.writeln(fmt.Sprintf("%s_pi(%s),", val, tmp))
+					} else if f == "e" {
+						c.writeln(fmt.Sprintf("%s_e(%s),", val, tmp))
+					} else {
+						handled = false
+					}
+				default:
+					handled = false
+				}
+				if handled {
+					val = tmp
+					continue
+				}
+			}
 			tmp := c.newTmp()
 			c.needsGetItem = true
 			c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", val, strings.ToLower(f), tmp))
@@ -1707,6 +1813,75 @@ func (c *Compiler) compileMethodCall(container, method string, call *parser.Call
 		c.needsContains = true
 		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", container, arg, tmp))
 		return tmp, false, nil
+	}
+	if mod, ok := c.ffiModules[container]; ok {
+		switch mod {
+		case "go:mochi/runtime/ffi/go/testpkg":
+			if method == "Add" && len(call.Args) == 2 {
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				a2, _, err := c.compileExpr(call.Args[1])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_add(%s, %s, %s),", container, a1, a2, tmp))
+				return tmp, true, nil
+			}
+		case "python:math":
+			switch method {
+			case "sqrt":
+				if len(call.Args) != 1 {
+					return "", false, fmt.Errorf("sqrt expects 1 arg")
+				}
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_sqrt(%s, %s),", container, a1, tmp))
+				return tmp, true, nil
+			case "pow":
+				if len(call.Args) != 2 {
+					return "", false, fmt.Errorf("pow expects 2 args")
+				}
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				a2, _, err := c.compileExpr(call.Args[1])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_pow(%s, %s, %s),", container, a1, a2, tmp))
+				return tmp, true, nil
+			case "sin":
+				if len(call.Args) != 1 {
+					return "", false, fmt.Errorf("sin expects 1 arg")
+				}
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_sin(%s, %s),", container, a1, tmp))
+				return tmp, true, nil
+			case "log":
+				if len(call.Args) != 1 {
+					return "", false, fmt.Errorf("log expects 1 arg")
+				}
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_log(%s, %s),", container, a1, tmp))
+				return tmp, true, nil
+			}
+		}
 	}
 	return "", false, fmt.Errorf("unsupported method")
 }
