@@ -111,3 +111,13 @@ Checklist:
 - [ ] Add code generation for remaining Mochi examples
 - [ ] Track parameter types for more accurate list/map access
 - [x] Ensure string keys in maps remain quoted
+- [ ] Handle nested map updates with mixed key types
+- [ ] Detect guard-safe conditions to use `if` where possible
+- [ ] Improve error messages for unsupported syntax
+- [ ] Write unit tests for runtime join helpers
+- [ ] Optimize generated comprehension expressions
+- [ ] Document limitations of the current compiler
+- [ ] Expose CLI tool for compiling individual programs
+- [ ] Support pattern matching in let bindings
+- [ ] Add constant propagation for simple expressions
+- [ ] Investigate generating specs for dialyzer

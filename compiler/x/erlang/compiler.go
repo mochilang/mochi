@@ -543,7 +543,7 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 			elseCode = "ok"
 		}
 	}
-	return fmt.Sprintf("(if %s -> %s; true -> %s end)", cond, thenCode, elseCode), nil
+	return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenCode, elseCode), nil
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
@@ -1473,19 +1473,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
-	if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
-		u := e.Binary.Left
-		if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
-			if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
-				// Keep quoted keys to avoid converting strings
-				// that look like identifiers into atoms.
-				return c.compileExpr(e)
-			}
-			if u.Value.Target.Selector != nil && len(u.Value.Target.Selector.Tail) == 0 {
-				return u.Value.Target.Selector.Root, nil
-			}
-		}
-	}
+	// Map keys may be arbitrary expressions. Delegate to compileExpr so
+	// that quoted string keys remain quoted in the output.
 	return c.compileExpr(e)
 }
 
