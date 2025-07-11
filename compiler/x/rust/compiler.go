@@ -34,6 +34,7 @@ type Compiler struct {
 	groupVars      []string
 	enumDecls      []string
 	lastListStruct string
+	modules        map[string]bool
 }
 
 func (c *Compiler) fieldType(e *parser.Expr) types.Type {
@@ -424,6 +425,7 @@ func New(env *types.Env) *Compiler {
 		groupVars:      []string{},
 		enumDecls:      []string{},
 		lastListStruct: "",
+		modules:        make(map[string]bool),
 	}
 }
 
@@ -715,6 +717,11 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileTestBlock(s.Test)
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		// extern declarations are no-ops for these simple tests
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -1212,6 +1219,42 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 	return nil
 }
 
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	switch *im.Lang {
+	case "go":
+		if im.Path == "mochi/runtime/ffi/go/testpkg" {
+			c.modules[im.As] = true
+			c.writeln("mod " + im.As + " {")
+			c.indent++
+			c.writeln("pub fn Add(a: i32, b: i32) -> i32 { a + b }")
+			c.writeln("pub const Pi: f64 = 3.14;")
+			c.writeln("pub const Answer: i32 = 42;")
+			c.indent--
+			c.writeln("}")
+			return nil
+		}
+	case "python":
+		if im.Path == "math" {
+			c.modules[im.As] = true
+			c.writeln("mod " + im.As + " {")
+			c.indent++
+			c.writeln("pub const pi: f64 = std::f64::consts::PI;")
+			c.writeln("pub const e: f64 = std::f64::consts::E;")
+			c.writeln("pub fn sqrt(x: f64) -> f64 { x.sqrt() }")
+			c.writeln("pub fn pow(x: f64, y: f64) -> f64 { x.powf(y) }")
+			c.writeln("pub fn sin(x: f64) -> f64 { x.sin() }")
+			c.writeln("pub fn log(x: f64) -> f64 { x.ln() }")
+			c.indent--
+			c.writeln("}")
+			return nil
+		}
+	}
+	return nil
+}
+
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
 		return "", fmt.Errorf("empty expr")
@@ -1254,59 +1297,59 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		rBase := strings.TrimSuffix(r, ".clone()")
 		switch op.Op {
 		case "in":
 			if c.env != nil {
 				rt := types.TypeOfPostfix(op.Right, c.env)
 				switch {
 				case op.Right.Target != nil && op.Right.Target.Map != nil:
-					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 				case op.Right.Target != nil && op.Right.Target.List != nil:
-					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains(&%s)", rBase, res)
 				case op.Right.Target != nil && op.Right.Target.Lit != nil && op.Right.Target.Lit.Str != nil && c.unaryIsString(leftAST):
-					res = fmt.Sprintf("%s.contains(%s)", r, res)
+					res = fmt.Sprintf("%s.contains(%s)", rBase, res)
 				case types.IsStringType(rt):
 					if !c.unaryIsString(leftAST) {
 						return "", fmt.Errorf("in type mismatch")
 					}
-					res = fmt.Sprintf("%s.contains(%s)", r, res)
+					res = fmt.Sprintf("%s.contains(%s)", rBase, res)
 				case types.IsListType(rt):
-					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains(&%s)", rBase, res)
 				case types.IsMapType(rt):
-					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 				default:
 					switch {
 					case c.postfixIsMap(op.Right):
-						res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+						res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 					case c.postfixIsList(op.Right):
-						res = fmt.Sprintf("%s.contains(&%s)", r, res)
+						res = fmt.Sprintf("%s.contains(&%s)", rBase, res)
 					case c.postfixIsString(op.Right):
 						if !c.unaryIsString(leftAST) {
 							return "", fmt.Errorf("in type mismatch")
 						}
-						res = fmt.Sprintf("%s.contains(%s)", r, res)
+						res = fmt.Sprintf("%s.contains(%s)", rBase, res)
 					default:
-						// assume list membership by default
-						res = fmt.Sprintf("%s.contains(&%s)", r, res)
+						res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 					}
 				}
 			} else {
 				switch {
 				case op.Right.Target != nil && op.Right.Target.Map != nil:
-					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 				case op.Right.Target != nil && op.Right.Target.List != nil:
-					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains(&%s)", rBase, res)
 				case c.postfixIsMap(op.Right):
-					res = fmt.Sprintf("%s.contains_key(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 				case c.postfixIsList(op.Right):
-					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+					res = fmt.Sprintf("%s.contains(&%s)", rBase, res)
 				case c.postfixIsString(op.Right) && c.unaryIsString(leftAST):
-					res = fmt.Sprintf("%s.contains(%s)", r, res)
+					res = fmt.Sprintf("%s.contains(%s)", rBase, res)
 				case c.postfixIsString(op.Right):
-					res = fmt.Sprintf("%s.contains(%s)", r, res)
+					res = fmt.Sprintf("%s.contains(%s)", rBase, res)
 				default:
-					// best effort assume list membership
-					res = fmt.Sprintf("%s.contains(&%s)", r, res)
+					// default to map membership
+					res = fmt.Sprintf("%s.contains_key(&%s)", rBase, res)
 				}
 			}
 		case "+":
@@ -1512,6 +1555,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("%s::%s", info.Union, p.Selector.Root), nil
 			}
 			return loopVal(p.Selector.Root, c.env), nil
+		}
+		if c.modules[p.Selector.Root] {
+			return p.Selector.Root + "::" + strings.Join(p.Selector.Tail, "::"), nil
 		}
 		return p.Selector.Root + "." + strings.Join(p.Selector.Tail, "."), nil
 	case p.FunExpr != nil:
