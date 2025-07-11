@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/len_map.scala:5: error: value size is not a member of len_map.Auto1
+    println((Auto1(a = 1, b = 2).size))
+                                 ^
+one error found
