@@ -1,0 +1,66 @@
+// Compute the mode(s) of a list of integers.
+var arr1 = [2,7,1,8,2]
+var counts1: map<int,int> = {}
+var keys1: list<int> = []
+var i = 0
+while i < len(arr1) {
+  let v = arr1[i]
+  if v in counts1 {
+    counts1[v] = counts1[v] + 1
+  } else {
+    counts1[v] = 1
+    keys1 = append(keys1, v)
+  }
+  i = i + 1
+}
+var max1 = 0
+i = 0
+while i < len(keys1) {
+  let k = keys1[i]
+  let c = counts1[k]
+  if c > max1 { max1 = c }
+  i = i + 1
+}
+var modes1: list<int> = []
+i = 0
+while i < len(keys1) {
+  let k = keys1[i]
+  if counts1[k] == max1 {
+    modes1 = append(modes1, k)
+  }
+  i = i + 1
+}
+print(str(modes1))
+
+var arr2 = [2,7,1,8,2,8]
+var counts2: map<int,int> = {}
+var keys2: list<int> = []
+i = 0
+while i < len(arr2) {
+  let v = arr2[i]
+  if v in counts2 {
+    counts2[v] = counts2[v] + 1
+  } else {
+    counts2[v] = 1
+    keys2 = append(keys2, v)
+  }
+  i = i + 1
+}
+var max2 = 0
+i = 0
+while i < len(keys2) {
+  let k = keys2[i]
+  let c = counts2[k]
+  if c > max2 { max2 = c }
+  i = i + 1
+}
+var modes2: list<int> = []
+i = 0
+while i < len(keys2) {
+  let k = keys2[i]
+  if counts2[k] == max2 {
+    modes2 = append(modes2, k)
+  }
+  i = i + 1
+}
+print(str(modes2))
