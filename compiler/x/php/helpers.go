@@ -205,6 +205,21 @@ func formatMap(items []string) string {
 	return b.String()
 }
 
+func isSimpleLiteralExpr(e *parser.Expr) bool {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	return p.Target.Lit != nil
+}
+
 func (c *Compiler) use(name string) {
 	if c.helpers == nil {
 		c.helpers = map[string]bool{}

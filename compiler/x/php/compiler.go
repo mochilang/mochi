@@ -1304,6 +1304,42 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	simple := true
+	defaultRes := "null"
+	cases := make([]string, 0, len(m.Cases))
+	for _, cs := range m.Cases {
+		res, err := c.compileExpr(cs.Result)
+		if err != nil {
+			return "", err
+		}
+		if isUnderscoreExpr(cs.Pattern) {
+			defaultRes = res
+			continue
+		}
+		if isSimpleLiteralExpr(cs.Pattern) {
+			pat, err := c.compileExpr(cs.Pattern)
+			if err != nil {
+				return "", err
+			}
+			cases = append(cases, fmt.Sprintf("%s => %s", pat, res))
+			continue
+		}
+		simple = false
+		break
+	}
+
+	if simple {
+		var buf bytes.Buffer
+		buf.WriteString("match(" + target + ") {\n")
+		for _, cse := range cases {
+			buf.WriteString("    " + cse + ",\n")
+		}
+		buf.WriteString("    default => " + defaultRes + ",\n")
+		buf.WriteString("}")
+		return buf.String(), nil
+	}
+
 	var buf bytes.Buffer
 	buf.WriteString("(function($_t) {\n")
 	for _, cs := range m.Cases {

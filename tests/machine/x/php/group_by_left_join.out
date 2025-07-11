@@ -1,11 +1,11 @@
 
-Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 13
+Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 23
 
-Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 13
+Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 23
 
-Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 13
+Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 23
 
-Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 13
+Warning: Undefined array key "o" in /workspace/mochi/tests/machine/x/php/group_by_left_join.php on line 23
 string(23) "--- Group Left Join ---"
 string(5) "Alice"
 string(7) "orders:"
