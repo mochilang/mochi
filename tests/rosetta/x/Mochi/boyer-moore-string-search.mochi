@@ -1,0 +1,72 @@
+fun indexOfStr(h: string, n: string): int {
+  let hlen = len(h)
+  let nlen = len(n)
+  if nlen == 0 { return 0 }
+  var i = 0
+  while i <= hlen - nlen {
+    if substring(h, i, i + nlen) == n { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun stringSearchSingle(h: string, n: string): int {
+  return indexOfStr(h, n)
+}
+
+fun stringSearch(h: string, n: string): list<int> {
+  var result: list<int> = []
+  var start = 0
+  let hlen = len(h)
+  let nlen = len(n)
+  while start < hlen {
+    let idx = indexOfStr(substring(h, start, hlen), n)
+    if idx >= 0 {
+      result = append(result, start + idx)
+      start = start + idx + nlen
+    } else {
+      break
+    }
+  }
+  return result
+}
+
+fun display(nums: list<int>): string {
+  var s = "["
+  var i = 0
+  while i < len(nums) {
+    if i > 0 { s = s + ", " }
+    s = s + str(nums[i])
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  let texts = [
+    "GCTAGCTCTACGAGTCTA",
+    "GGCTATAATGCGTA",
+    "there would have been a time for such a word",
+    "needle need noodle needle",
+    "DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages",
+    "Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk."
+  ]
+  let patterns = ["TCTA", "TAATAAA", "word", "needle", "and", "alfalfa"]
+
+  var i = 0
+  while i < len(texts) {
+    print("text" + str(i + 1) + " = " + texts[i])
+    i = i + 1
+  }
+  print("")
+
+  var j = 0
+  while j < len(texts) {
+    let idxs = stringSearch(texts[j], patterns[j])
+    print("Found \"" + patterns[j] + "\" in 'text" + str(j + 1) + "' at indexes " + display(idxs))
+    j = j + 1
+  }
+}
+
+main()
