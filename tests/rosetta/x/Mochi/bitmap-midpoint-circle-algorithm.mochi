@@ -1,0 +1,64 @@
+fun initGrid(size: int): list<list<string>> {
+  var g: list<list<string>> = []
+  var y = 0
+  while y < size {
+    var row: list<string> = []
+    var x = 0
+    while x < size {
+      row = append(row, " ")
+      x = x + 1
+    }
+    g = append(g, row)
+    y = y + 1
+  }
+  return g
+}
+
+fun set(g: list<list<string>>, x: int, y: int) {
+  if x >= 0 && x < len(g[0]) && y >= 0 && y < len(g) {
+    g[y][x] = "#"
+  }
+}
+
+fun circle(r: int): list<list<string>> {
+  let size = r * 2 + 1
+  var g = initGrid(size)
+  var x = r
+  var y = 0
+  var err = 1 - r
+  while y <= x {
+    set(g, r + x, r + y)
+    set(g, r + y, r + x)
+    set(g, r - x, r + y)
+    set(g, r - y, r + x)
+    set(g, r - x, r - y)
+    set(g, r - y, r - x)
+    set(g, r + x, r - y)
+    set(g, r + y, r - x)
+    y = y + 1
+    if err < 0 {
+      err = err + 2 * y + 1
+    } else {
+      x = x - 1
+      err = err + 2 * (y - x) + 1
+    }
+  }
+  return g
+}
+
+fun trimRight(row: list<string>): string {
+  var end = len(row)
+  while end > 0 && row[end-1] == " " { end = end - 1 }
+  var s = ""
+  var i = 0
+  while i < end {
+    s = s + row[i]
+    i = i + 1
+  }
+  return s
+}
+
+var g = circle(10)
+for row in g {
+  print(trimRight(row))
+}
