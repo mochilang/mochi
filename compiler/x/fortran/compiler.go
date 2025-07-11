@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -26,13 +27,14 @@ type Compiler struct {
 	env         *types.Env
 	declared    map[string]bool
 	tmpIndex    int
+	helpers     map[string]bool
 }
 
 func structName(name string) string { return "t_" + strings.ToLower(name) }
 
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, declared: make(map[string]bool)}
+	return &Compiler{env: env, declared: make(map[string]bool), helpers: make(map[string]bool)}
 }
 
 // Compile converts a parsed Mochi program into Fortran source code.
@@ -95,8 +97,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	if len(c.functions) > 0 {
+	if len(c.functions) > 0 || len(c.helpers) > 0 {
 		c.writeln("contains")
+		if len(c.helpers) > 0 {
+			c.emitHelpers()
+		}
 		for _, fn := range c.functions {
 			if err := c.compileFun(fn); err != nil {
 				return nil, err
@@ -555,6 +560,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			} else {
 				res = fmt.Sprintf("any(%s == %s)", r, res)
 			}
+			continue
+		case "union":
+			c.use("_union")
+			res = fmt.Sprintf("_union(%s, %s)", res, r)
+			continue
+		case "union_all":
+			c.use("_union_all")
+			res = fmt.Sprintf("_union_all(%s, %s)", res, r)
+			continue
+		case "except":
+			c.use("_except")
+			res = fmt.Sprintf("_except(%s, %s)", res, r)
+			continue
+		case "intersect":
+			c.use("_intersect")
+			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 			continue
 		case "+":
 			if leftIsStr || rightIsStr {
@@ -1136,6 +1157,117 @@ func typeNameFromTypes(t types.Type) string {
 		return fmt.Sprintf("type(%s)", structName(st.Name))
 	default:
 		return "integer"
+	}
+}
+
+func (c *Compiler) use(name string) {
+	if c.helpers != nil {
+		c.helpers[name] = true
+	}
+}
+
+func (c *Compiler) emitHelpers() {
+	if len(c.helpers) == 0 {
+		return
+	}
+	names := make([]string, 0, len(c.helpers))
+	for n := range c.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		switch n {
+		case "_union_all":
+			c.writeln("integer function _union_all(a, b) result(res)")
+			c.indent++
+			c.writeln("integer, intent(in) :: a(:), b(:)")
+			c.writeln("integer, allocatable :: res(:)")
+			c.writeln("allocate(res(size(a)+size(b)))")
+			c.writeln("res(1:size(a)) = a")
+			c.writeln("res(size(a)+1:size(a)+size(b)) = b")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function _union_all")
+		case "_union":
+			c.writeln("integer function _union(a, b) result(res)")
+			c.indent++
+			c.writeln("integer, intent(in) :: a(:), b(:)")
+			c.writeln("integer :: tmp(size(a)+size(b))")
+			c.writeln("integer :: n, i")
+			c.writeln("n = 0")
+			c.writeln("do i = 1, size(a)")
+			c.indent++
+			c.writeln("if (.not. any(tmp(1:n) == a(i))) then")
+			c.indent++
+			c.writeln("n = n + 1")
+			c.writeln("tmp(n) = a(i)")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("do i = 1, size(b)")
+			c.indent++
+			c.writeln("if (.not. any(tmp(1:n) == b(i))) then")
+			c.indent++
+			c.writeln("n = n + 1")
+			c.writeln("tmp(n) = b(i)")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("integer, allocatable :: res(:)")
+			c.writeln("allocate(res(n))")
+			c.writeln("res = tmp(1:n)")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function _union")
+		case "_except":
+			c.writeln("integer function _except(a, b) result(res)")
+			c.indent++
+			c.writeln("integer, intent(in) :: a(:), b(:)")
+			c.writeln("integer :: tmp(size(a))")
+			c.writeln("integer :: n, i")
+			c.writeln("n = 0")
+			c.writeln("do i = 1, size(a)")
+			c.indent++
+			c.writeln("if (.not. any(b == a(i))) then")
+			c.indent++
+			c.writeln("n = n + 1")
+			c.writeln("tmp(n) = a(i)")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("integer, allocatable :: res(:)")
+			c.writeln("allocate(res(n))")
+			c.writeln("res = tmp(1:n)")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function _except")
+		case "_intersect":
+			c.writeln("integer function _intersect(a, b) result(res)")
+			c.indent++
+			c.writeln("integer, intent(in) :: a(:), b(:)")
+			c.writeln("integer :: tmp(min(size(a),size(b)))")
+			c.writeln("integer :: n, i")
+			c.writeln("n = 0")
+			c.writeln("do i = 1, size(a)")
+			c.indent++
+			c.writeln("if (any(b == a(i)) .and. .not. any(tmp(1:n) == a(i))) then")
+			c.indent++
+			c.writeln("n = n + 1")
+			c.writeln("tmp(n) = a(i)")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("integer, allocatable :: res(:)")
+			c.writeln("allocate(res(n))")
+			c.writeln("res = tmp(1:n)")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function _intersect")
+		}
 	}
 }
 
