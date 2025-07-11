@@ -1308,10 +1308,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		return fmt.Sprintf("maps:values(%s)", a0), nil
-	case "exists":
-		if len(call.Args) != 1 {
-			return "", fmt.Errorf("exists expects 1 arg")
-		}
+        case "exists":
+                if len(call.Args) != 1 {
+                        return "", fmt.Errorf("exists expects 1 arg")
+                }
 		// Special case for simple query expressions so we can
 		// translate to lists:any/2 like the human implementations.
 		if q := extractQuery(call.Args[0]); q != nil {
@@ -1334,8 +1334,18 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("(length(%s) > 0)", a0), nil
-	case "substring":
+                return fmt.Sprintf("(length(%s) > 0)", a0), nil
+       case "json":
+               if len(call.Args) != 1 {
+                       return "", fmt.Errorf("json expects 1 arg")
+               }
+               a0, err := c.compileExpr(call.Args[0])
+               if err != nil {
+                       return "", err
+               }
+               c.needJSON = true
+               return fmt.Sprintf("io:format(\"~s\\n\", [mochi_json_encode(%s)])", a0), nil
+        case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
@@ -1473,9 +1483,20 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
-	// Map keys may be arbitrary expressions. Delegate to compileExpr so
-	// that quoted string keys remain quoted in the output.
-	return c.compileExpr(e)
+       // Map keys may be simple identifiers like a or b which should be emitted
+       // as atoms rather than variables. Detect this pattern before falling
+       // back to the general expression compiler so quoted keys remain quoted.
+       if e != nil && e.Binary != nil && len(e.Binary.Right) == 0 {
+               u := e.Binary.Left
+               if len(u.Ops) == 0 && u.Value != nil && len(u.Value.Ops) == 0 {
+                       if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
+                               if unicode.IsLower(rune(sel.Root[0])) {
+                                       return sel.Root, nil
+                               }
+                       }
+               }
+       }
+       return c.compileExpr(e)
 }
 
 func (c *Compiler) writeln(s string) {
