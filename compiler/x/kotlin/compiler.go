@@ -240,20 +240,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln(fmt.Sprintf("data class %s(%s)", st.Name, strings.Join(fields, ", ")))
 		c.writeln("")
 	}
-	// emit global variable declarations before functions so they are
-	// visible to all functions
-	for _, s := range prog.Statements {
-		if s.Type != nil || s.Fun != nil || s.Import != nil {
-			continue
-		}
-		if s.Let != nil || s.Var != nil {
-			if err := c.stmt(s); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-
 	for _, s := range prog.Statements {
 		if s.Import != nil {
 			continue
@@ -270,10 +256,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent++
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Type != nil || s.Import != nil {
-			continue
-		}
-		if s.Let != nil || s.Var != nil {
-			// already emitted as global variable
 			continue
 		}
 		if err := c.stmt(s); err != nil {
