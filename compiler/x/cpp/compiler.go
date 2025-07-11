@@ -655,6 +655,23 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 	if err != nil {
 		return err
 	}
+	// If this is an append back into the same variable, record the element
+	// type so placeholders in the declaration can be resolved.
+	if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+		if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
+			if arg, err2 := c.compileExpr(call.Args[1]); err2 == nil {
+				if t := structLiteralType(arg); t != "" {
+					c.elemType[st.Name] = t
+					c.varStruct[st.Name] = t
+				} else if t := c.varStruct[arg]; t != "" {
+					c.elemType[st.Name] = t
+					c.varStruct[st.Name] = t
+				} else if t := c.elemType[arg]; t != "" {
+					c.elemType[st.Name] = t
+				}
+			}
+		}
+	}
 	c.buf.WriteString(name + " = " + expr + ";\n")
 	if len(st.Index) == 0 && len(st.Field) == 0 {
 		if s := extractVectorStruct(expr); s != "" {
@@ -2337,6 +2354,77 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) {
+	// Fast path for simple grouping: no joins, froms or filters and the
+	// query simply returns the group object.
+	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil &&
+		q.Sort == nil && q.Skip == nil && q.Take == nil &&
+		q.Group.Having == nil {
+		if id, ok := c.simpleIdentifier(q.Select); ok && id == q.Group.Name {
+			src, err := c.compileExpr(q.Source)
+			if err != nil {
+				return "", err
+			}
+			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+			if err != nil {
+				return "", err
+			}
+			keyType := fmt.Sprintf("decltype(%s)", keyExpr)
+			if t := structLiteralType(keyExpr); t != "" {
+				keyType = t
+			} else if t := c.varStruct[keyExpr]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
+				keyType = t
+			} else if dot := strings.Index(keyExpr, "."); dot != -1 {
+				v := keyExpr[:dot]
+				fld := keyExpr[dot+1:]
+				if t := c.varStruct[v]; t != "" {
+					if idx := strings.Index(t, "{"); idx != -1 {
+						t = t[:idx]
+					}
+					keyType = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+				}
+			}
+
+			itemStruct := ""
+			if t := c.varStruct[src]; t != "" {
+				itemStruct = t
+			} else if t := c.elemType[src]; t != "" {
+				itemStruct = t
+			}
+			if itemStruct == "" {
+				itemStruct = "auto"
+			}
+
+			groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
+			c.structCount++
+			info := &structInfo{Name: groupStruct, Fields: []string{"key", "items"}, Types: []string{keyType, "std::vector<" + itemStruct + ">"}}
+			c.defineStruct(info)
+
+			var buf strings.Builder
+			cap := "[&]"
+			if c.scope == 0 {
+				cap = "[]"
+			}
+			buf.WriteString("(" + cap + "() {\n")
+			buf.WriteString("    std::map<" + keyType + ", std::vector<" + itemStruct + ">> __groups;\n")
+			buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
+			buf.WriteString("        __groups[" + keyExpr + "].push_back(" + itemStruct + "{" + q.Var + "});\n")
+			buf.WriteString("    }\n")
+			buf.WriteString("    std::vector<" + groupStruct + "> __items;\n")
+			buf.WriteString("    for (auto &kv : __groups) {\n")
+			buf.WriteString("        __items.push_back(" + groupStruct + "{kv.first, kv.second});\n")
+			buf.WriteString("    }\n")
+			buf.WriteString("    return __items;\n")
+			buf.WriteString("})()")
+
+			res := buf.String()
+			c.varStruct[res] = groupStruct
+			c.elemType[res] = groupStruct
+			return res, nil
+		}
+	}
 	for _, j := range q.Joins {
 		if j.Side != nil && *j.Side != "left" && *j.Side != "right" && *j.Side != "outer" {
 			return "", fmt.Errorf("join side not supported")
