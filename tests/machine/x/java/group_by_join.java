@@ -50,13 +50,10 @@ public class Main {
 	for (var __e : _groups6.entrySet()) {
 		String g_key = __e.getKey();
 		List<OC> g = __e.getValue();
-		_res5.add(new StatsCountName(g_key, count(g)));
+		_res5.add(new StatsCountName(g_key, g.size()));
 	}
 	return _res5;
 }}).get();
-	static int count(Collection<?> c) {
-		return c.size();
-	}
 	public static void main(String[] args) {
 	System.out.println("--- Orders per customer ---");
 	for (StatsCountName s : stats) {

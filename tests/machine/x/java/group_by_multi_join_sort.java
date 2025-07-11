@@ -127,21 +127,16 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNName g_key = __e.getKey();
 		List<COLN> g = __e.getValue();
-		_res6.add(new ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNNameRevenue(g_key.c_custkey, g_key.c_name, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+		_res6.add(new ResultCAcctbalCAddressCCommentCCustkeyCNameCPhoneNNameRevenue(g_key.c_custkey, g_key.c_name, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
 	List<Double> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.l.l_extendedprice * (1 - x.l.l_discount));
 	}
 	return _res11;
-}}).get()), g_key.c_acctbal, g_key.n_name, g_key.c_address, g_key.c_phone, g_key.c_comment));
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum(), g_key.c_acctbal, g_key.n_name, g_key.c_address, g_key.c_phone, g_key.c_comment));
 	}
 	return _res6;
 }}).get();
-	static int sum(List<? extends Number> v) {
-		int s = 0;
-		for (Number n : v) s += n.intValue();
-		return s;
-	}
 	public static void main(String[] args) {
 	System.out.println(result);
 	}

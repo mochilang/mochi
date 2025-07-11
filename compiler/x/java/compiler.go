@@ -2050,52 +2050,53 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("count expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["count"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("count(%s)", a1), nil
+			typ := c.inferType(p.Call.Args[0])
+			switch typ {
+			case "String":
+				return fmt.Sprintf("%s.length()", a1), nil
+			default:
+				return fmt.Sprintf("%s.size()", a1), nil
+			}
 		case "sum":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("sum expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["sum"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("sum((List<Number>)(List<?>)%s)", a1), nil
+			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).sum()", a1), nil
 		case "avg":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("avg expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["avg"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("avg((List<Number>)(List<?>)%s)", a1), nil
+			return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).average().orElse(0)", a1), nil
 		case "min":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("min expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["min"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("min((List<Number>)(List<?>)%s)", a1), nil
+			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).min().orElse(Integer.MAX_VALUE)", a1), nil
 		case "max":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("max expects 1 argument at line %d", p.Pos.Line)
 			}
-			c.helpers["max"] = true
 			a1, err := c.compileExpr(p.Call.Args[0])
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("max((List<Number>)(List<?>)%s)", a1), nil
+			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).max().orElse(Integer.MIN_VALUE)", a1), nil
 		case "values":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("values expects 1 argument at line %d", p.Pos.Line)

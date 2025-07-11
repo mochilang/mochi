@@ -1,14 +1,14 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsouter_join4292091337/001/Main.java:44: error: incompatible types: Object cannot be converted to CustomersIdName
+/tmp/TestCompileValidProgramsouter_join1878297384/001/Main.java:44: error: incompatible types: Object cannot be converted to CustomersIdName
 			_res3.add(new ResultCustomerOrder(o, c));
 			                                     ^
-/tmp/TestCompileValidProgramsouter_join4292091337/001/Main.java:50: error: incompatible types: Object cannot be converted to OrdersCustomerIdIdTotal
+/tmp/TestCompileValidProgramsouter_join1878297384/001/Main.java:50: error: incompatible types: Object cannot be converted to OrdersCustomerIdIdTotal
 			_res3.add(new ResultCustomerOrder(o, c));
 			                                  ^
-/tmp/TestCompileValidProgramsouter_join4292091337/001/Main.java:58: error: incompatible types: OrdersCustomerIdIdTotal cannot be converted to boolean
+/tmp/TestCompileValidProgramsouter_join1878297384/001/Main.java:58: error: incompatible types: OrdersCustomerIdIdTotal cannot be converted to boolean
 		if (row.order) {
 		       ^
-/tmp/TestCompileValidProgramsouter_join4292091337/001/Main.java:59: error: incompatible types: CustomersIdName cannot be converted to boolean
+/tmp/TestCompileValidProgramsouter_join1878297384/001/Main.java:59: error: incompatible types: CustomersIdName cannot be converted to boolean
 			if (row.customer) {
 			       ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

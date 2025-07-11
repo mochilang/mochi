@@ -30,14 +30,11 @@ public class Main {
 	for (var __e : _groups6.entrySet()) {
 		String g_key = __e.getKey();
 		List<PeopleCityName> g = __e.getValue();
-		if (!(count(g) >= 4)) continue;
-		_res5.add(new BigCityNum(g_key, count(g)));
+		if (!(g.size() >= 4)) continue;
+		_res5.add(new BigCityNum(g_key, g.size()));
 	}
 	return _res5;
 }}).get();
-	static int count(Collection<?> c) {
-		return c.size();
-	}
 	static String toJson(Object o) {
 		if (o instanceof Map<?,?> m) {
 			StringJoiner j = new StringJoiner(",", "{", "}");
