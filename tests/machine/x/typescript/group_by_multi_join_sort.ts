@@ -39,7 +39,7 @@ const lineitem = [
 const start_date = "1993-10-01";
 const end_date = "1994-01-01";
 const result = (() => {
-  const _tmp1: Array<{ c_acctbal: any; c_address: any; c_comment: any; c_custkey: any; c_name: any; c_phone: any; n_name: any; revenue: number }> = [];
+  let _tmp1: Array<{ c_acctbal: any; c_address: any; c_comment: any; c_custkey: any; c_name: any; c_phone: any; n_name: any; revenue: number }> = [];
   const groups = {};
   for (const c of customer) {
     for (const o of orders) {
