@@ -456,6 +456,20 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) funDecl(f *parser.FunStmt) error {
+	// emit basic KDoc with parameter and return type information
+	c.writeln("/**")
+	c.writeln(" * Auto-generated from Mochi")
+	for _, p := range f.Params {
+		typ := "Any"
+		if p.Type != nil {
+			typ = c.typeName(p.Type)
+		}
+		c.writeln(fmt.Sprintf(" * @param %s %s", p.Name, typ))
+	}
+	if f.Return != nil {
+		c.writeln(fmt.Sprintf(" * @return %s", c.typeName(f.Return)))
+	}
+	c.writeln(" */")
 	params := make([]string, len(f.Params))
 	for i, p := range f.Params {
 		if p.Type != nil {
