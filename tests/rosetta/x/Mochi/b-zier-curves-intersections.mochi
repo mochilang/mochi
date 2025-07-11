@@ -1,0 +1,169 @@
+# Mochi implementation of Rosetta "B'zier curves/Intersections" task
+# Translated from Go version in tests/rosetta/x/Go/b-zier-curves-intersections.go
+
+# Basic float helpers
+fun absf(x: float): float {
+  if x < 0.0 { return -x }
+  return x
+}
+
+fun maxf(a: float, b: float): float {
+  if a > b { return a }
+  return b
+}
+
+fun minf(a: float, b: float): float {
+  if a < b { return a }
+  return b
+}
+
+fun max3(a: float, b: float, c: float): float {
+  var m = a
+  if b > m { m = b }
+  if c > m { m = c }
+  return m
+}
+
+fun min3(a: float, b: float, c: float): float {
+  var m = a
+  if b < m { m = b }
+  if c < m { m = c }
+  return m
+}
+
+type Point {
+  x: float
+  y: float
+}
+
+type QuadSpline {
+  c0: float
+  c1: float
+  c2: float
+}
+
+type QuadCurve {
+  x: QuadSpline
+  y: QuadSpline
+}
+
+# Subdivide a quadratic spline using de Casteljau's algorithm.
+fun subdivideQuadSpline(q: QuadSpline, t: float): list<QuadSpline> {
+  let s = 1.0 - t
+  var u = QuadSpline { c0: q.c0, c1: 0.0, c2: 0.0 }
+  var v = QuadSpline { c0: 0.0, c1: 0.0, c2: q.c2 }
+  u.c1 = s * q.c0 + t * q.c1
+  v.c1 = s * q.c1 + t * q.c2
+  u.c2 = s * u.c1 + t * v.c1
+  v.c0 = u.c2
+  return [u, v]
+}
+
+fun subdivideQuadCurve(q: QuadCurve, t: float): list<QuadCurve> {
+  let xs = subdivideQuadSpline(q.x, t)
+  let ys = subdivideQuadSpline(q.y, t)
+  var u = QuadCurve { x: xs[0], y: ys[0] }
+  var v = QuadCurve { x: xs[1], y: ys[1] }
+  return [u, v]
+}
+
+fun rectsOverlap(xa0: float, ya0: float, xa1: float, ya1: float,
+                 xb0: float, yb0: float, xb1: float, yb1: float): bool {
+  return xb0 <= xa1 && xa0 <= xb1 && yb0 <= ya1 && ya0 <= yb1
+}
+
+fun testIntersect(p: QuadCurve, q: QuadCurve, tol: float): map<string, any> {
+  let pxmin = min3(p.x.c0, p.x.c1, p.x.c2)
+  let pymin = min3(p.y.c0, p.y.c1, p.y.c2)
+  let pxmax = max3(p.x.c0, p.x.c1, p.x.c2)
+  let pymax = max3(p.y.c0, p.y.c1, p.y.c2)
+
+  let qxmin = min3(q.x.c0, q.x.c1, q.x.c2)
+  let qymin = min3(q.y.c0, q.y.c1, q.y.c2)
+  let qxmax = max3(q.x.c0, q.x.c1, q.x.c2)
+  let qymax = max3(q.y.c0, q.y.c1, q.y.c2)
+
+  var exclude = true
+  var accept = false
+  var inter = Point { x: 0.0, y: 0.0 }
+  if rectsOverlap(pxmin, pymin, pxmax, pymax, qxmin, qymin, qxmax, qymax) {
+    exclude = false
+    let xmin = maxf(pxmin, qxmin)
+    let xmax = minf(pxmax, qxmax)
+    if xmax - xmin <= tol {
+      let ymin = maxf(pymin, qymin)
+      let ymax = minf(pymax, qymax)
+      if ymax - ymin <= tol {
+        accept = true
+        inter.x = 0.5 * (xmin + xmax)
+        inter.y = 0.5 * (ymin + ymax)
+      }
+    }
+  }
+  return {"exclude": exclude, "accept": accept, "intersect": inter}
+}
+
+fun seemsToBeDuplicate(pts: list<Point>, xy: Point, spacing: float): bool {
+  var i = 0
+  while i < len(pts) {
+    let pt = pts[i]
+    if absf(pt.x - xy.x) < spacing && absf(pt.y - xy.y) < spacing {
+      return true
+    }
+    i = i + 1
+  }
+  return false
+}
+
+fun findIntersects(p: QuadCurve, q: QuadCurve, tol: float, spacing: float): list<Point> {
+  var inters: list<Point> = []
+  var workload: list<map<string, QuadCurve>> = [{"p": p, "q": q}]
+  while len(workload) > 0 {
+    let idx = len(workload) - 1
+    let work = workload[idx]
+    workload = workload[:idx]
+    let res = testIntersect(work["p"], work["q"], tol)
+    let excl = res["exclude"]
+    let acc = res["accept"]
+    let inter = res["intersect"] as Point
+    if acc {
+      if !seemsToBeDuplicate(inters, inter, spacing) {
+        inters = append(inters, inter)
+      }
+    } else if !excl {
+      let ps = subdivideQuadCurve(work["p"], 0.5)
+      let qs = subdivideQuadCurve(work["q"], 0.5)
+      let p0 = ps[0]
+      let p1 = ps[1]
+      let q0 = qs[0]
+      let q1 = qs[1]
+      workload = append(workload, {"p": p0, "q": q0})
+      workload = append(workload, {"p": p0, "q": q1})
+      workload = append(workload, {"p": p1, "q": q0})
+      workload = append(workload, {"p": p1, "q": q1})
+    }
+  }
+  return inters
+}
+
+fun main() {
+  let p = QuadCurve {
+    x: QuadSpline { c0: -1.0, c1: 0.0, c2: 1.0 },
+    y: QuadSpline { c0: 0.0, c1: 10.0, c2: 0.0 },
+  }
+  let q = QuadCurve {
+    x: QuadSpline { c0: 2.0, c1: -8.0, c2: 2.0 },
+    y: QuadSpline { c0: 1.0, c1: 2.0, c2: 3.0 },
+  }
+  let tol = 0.0000001
+  let spacing = tol * 10.0
+  let inters = findIntersects(p, q, tol, spacing)
+  var i = 0
+  while i < len(inters) {
+    let pt = inters[i]
+    print("(" + str(pt.x) + ", " + str(pt.y) + ")")
+    i = i + 1
+  }
+}
+
+main()
