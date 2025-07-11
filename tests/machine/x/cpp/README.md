@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 100/100
+Compiled programs: 99/100
 
 ## Checklist
 
@@ -37,7 +37,7 @@ Compiled programs: 100/100
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -119,3 +119,13 @@ Compiled programs: 100/100
 - [ ] Integrate CMake build generation
 - [ ] Support user defined modules
 - [ ] Document the C++ backend
+- [ ] Support enumeration types
+- [ ] Optimize recursive functions
+- [ ] Add error handling macros
+- [ ] Provide container iterators
+- [ ] Add templates for math utilities
+- [ ] Support asynchronous IO
+- [ ] Improve compile-time warnings
+- [ ] Provide FFI to C libraries
+- [ ] Support large dataset streaming
+- [ ] Implement constant folding
