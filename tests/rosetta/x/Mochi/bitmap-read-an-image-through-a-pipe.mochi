@@ -1,0 +1,70 @@
+# Parse a simple P3 PPM image from a string to simulate reading from a pipe
+
+fun parseIntStr(str: string): int {
+  var i = 0
+  var neg = false
+  if len(str) > 0 && str[0:1] == "-" {
+    neg = true
+    i = 1
+  }
+  var n = 0
+  let digits = {
+    "0": 0,
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 8,
+    "9": 9,
+  }
+  while i < len(str) {
+    n = n * 10 + digits[str[i:i+1]]
+    i = i + 1
+  }
+  if neg { n = -n }
+  return n
+}
+
+fun splitWs(s: string): list<string> {
+  var parts: list<string> = []
+  var cur = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == " " || ch == "\n" || ch == "\t" || ch == "\r" {
+      if len(cur) > 0 {
+        parts = append(parts, cur)
+        cur = ""
+      }
+    } else {
+      cur = cur + ch
+    }
+    i = i + 1
+  }
+  if len(cur) > 0 { parts = append(parts, cur) }
+  return parts
+}
+
+fun parsePpm(data: string): map<string, any> {
+  let toks = splitWs(data)
+  if len(toks) < 4 { return {"err": true} }
+  let magic = toks[0]
+  let w = parseIntStr(toks[1])
+  let h = parseIntStr(toks[2])
+  let maxv = parseIntStr(toks[3])
+  var px: list<int> = []
+  var i = 4
+  while i < len(toks) {
+    px = append(px, parseIntStr(toks[i]))
+    i = i + 1
+  }
+  return {"magic": magic, "w": w, "h": h, "max": maxv, "px": px}
+}
+
+let ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
+
+let img = parsePpm(ppmData)
+print("width=" + str(img.w) + " height=" + str(img.h))
