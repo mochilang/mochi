@@ -1,0 +1,63 @@
+// Mochi translation of Rosetta "Circles of given radius through two points" task
+// Based on Go version
+
+struct Point { x: float, y: float }
+
+fun sqrtApprox(x: float): float {
+  var g = x
+  var i = 0
+  while i < 20 { g = (g + x / g) / 2.0; i = i + 1 }
+  return g
+}
+
+fun hypot(x: float, y: float): float { return sqrtApprox(x*x + y*y) }
+
+let Two = "Two circles."
+let R0 = "R==0.0 does not describe circles."
+let Co = "Coincident points describe an infinite number of circles."
+let CoR0 = "Coincident points with r==0.0 describe a degenerate circle."
+let Diam = "Points form a diameter and describe only a single circle."
+let Far = "Points too far apart to form circles."
+
+fun circles(p1: Point, p2: Point, r: float): [Point, Point, string] {
+  if p1.x == p2.x && p1.y == p2.y {
+    if r == 0.0 { return [p1, p1, CoR0] }
+    return [p1, p2, Co]
+  }
+  if r == 0.0 { return [p1, p2, R0] }
+  let dx = p2.x - p1.x
+  let dy = p2.y - p1.y
+  let q = hypot(dx, dy)
+  if q > 2.0 * r { return [p1, p2, Far] }
+  let m = Point{ (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0 }
+  if q == 2.0 * r { return [m, m, Diam] }
+  let d = sqrtApprox(r*r - q*q/4.0)
+  let ox = d * dx / q
+  let oy = d * dy / q
+  return [Point{m.x - oy, m.y + ox}, Point{m.x + oy, m.y - ox}, Two]
+}
+
+var td = [
+  [Point{0.1234,0.9876}, Point{0.8765,0.2345}, 2.0],
+  [Point{0.0,2.0}, Point{0.0,0.0}, 1.0],
+  [Point{0.1234,0.9876}, Point{0.1234,0.9876}, 2.0],
+  [Point{0.1234,0.9876}, Point{0.8765,0.2345}, 0.5],
+  [Point{0.1234,0.9876}, Point{0.1234,0.9876}, 0.0]
+]
+
+for tc in td {
+  let p1 = tc[0]; let p2 = tc[1]; let r = tc[2]
+  print("p1:  {" + str(p1.x) + " " + str(p1.y) + "}")
+  print("p2:  {" + str(p2.x) + " " + str(p2.y) + "}")
+  print("r:  " + str(r))
+  let res = circles(p1,p2,r)
+  let c1 = res[0]; let c2 = res[1]; let Case = res[2]
+  print("   " + Case)
+  if Case == CoR0 || Case == Diam {
+    print("   Center:  {" + str(c1.x) + " " + str(c1.y) + "}")
+  } else if Case == Two {
+    print("   Center 1:  {" + str(c1.x) + " " + str(c1.y) + "}")
+    print("   Center 2:  {" + str(c2.x) + " " + str(c2.y) + "}")
+  }
+  print("")
+}

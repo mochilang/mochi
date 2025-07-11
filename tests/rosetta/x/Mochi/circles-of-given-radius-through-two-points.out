@@ -1,0 +1,29 @@
+p1:  {0.1234 0.9876}
+p2:  {0.8765 0.2345}
+r:  2
+   Two circles.
+   Center 1:  {1.8631118016581891 1.974211801658189}
+   Center 2:  {-0.8632118016581893 -0.752111801658189}
+
+p1:  {0 2}
+p2:  {0 0}
+r:  1
+   Points form a diameter and describe only a single circle.
+   Center:  {0 1}
+
+p1:  {0.1234 0.9876}
+p2:  {0.1234 0.9876}
+r:  2
+   Coincident points describe an infinite number of circles.
+
+p1:  {0.1234 0.9876}
+p2:  {0.8765 0.2345}
+r:  0.5
+   Points too far apart to form circles.
+
+p1:  {0.1234 0.9876}
+p2:  {0.1234 0.9876}
+r:  0
+   Coincident points with r==0.0 describe a degenerate circle.
+   Center:  {0.1234 0.9876}
+

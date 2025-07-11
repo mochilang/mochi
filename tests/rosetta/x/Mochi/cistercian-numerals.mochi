@@ -1,0 +1,96 @@
+// Mochi translation of Rosetta "Cistercian numerals" task
+
+var n: list<list<string>> = []
+fun initN() {
+  var i = 0
+  while i < 15 {
+    var row: list<string> = []
+    var j = 0
+    while j < 11 {
+      row = append(row, " ")
+      j = j + 1
+    }
+    row[5] = "x"
+    n = append(n, row)
+    i = i + 1
+  }
+}
+
+fun horiz(c1: int, c2: int, r: int) { var c = c1; while c <= c2 { n[r][c] = "x"; c = c + 1 } }
+fun verti(r1: int, r2: int, c: int) { var r = r1; while r <= r2 { n[r][c] = "x"; r = r + 1 } }
+fun diagd(c1: int, c2: int, r: int) { var c = c1; while c <= c2 { n[r+c-c1][c] = "x"; c = c + 1 } }
+fun diagu(c1: int, c2: int, r: int) { var c = c1; while c <= c2 { n[r-c+c1][c] = "x"; c = c + 1 } }
+
+var draw: map<int, fun()> = {}
+fun initDraw() {
+  draw[1] = fun() { horiz(6,10,0) }
+  draw[2] = fun() { horiz(6,10,4) }
+  draw[3] = fun() { diagd(6,10,0) }
+  draw[4] = fun() { diagu(6,10,4) }
+  draw[5] = fun() { draw[1](); draw[4]() }
+  draw[6] = fun() { verti(0,4,10) }
+  draw[7] = fun() { draw[1](); draw[6]() }
+  draw[8] = fun() { draw[2](); draw[6]() }
+  draw[9] = fun() { draw[1](); draw[8]() }
+  draw[10] = fun() { horiz(0,4,0) }
+  draw[20] = fun() { horiz(0,4,4) }
+  draw[30] = fun() { diagu(0,4,4) }
+  draw[40] = fun() { diagd(0,4,0) }
+  draw[50] = fun() { draw[10](); draw[40]() }
+  draw[60] = fun() { verti(0,4,0) }
+  draw[70] = fun() { draw[10](); draw[60]() }
+  draw[80] = fun() { draw[20](); draw[60]() }
+  draw[90] = fun() { draw[10](); draw[80]() }
+  draw[100] = fun() { horiz(6,10,14) }
+  draw[200] = fun() { horiz(6,10,10) }
+  draw[300] = fun() { diagu(6,10,14) }
+  draw[400] = fun() { diagd(6,10,10) }
+  draw[500] = fun() { draw[100](); draw[400]() }
+  draw[600] = fun() { verti(10,14,10) }
+  draw[700] = fun() { draw[100](); draw[600]() }
+  draw[800] = fun() { draw[200](); draw[600]() }
+  draw[900] = fun() { draw[100](); draw[800]() }
+  draw[1000] = fun() { horiz(0,4,14) }
+  draw[2000] = fun() { horiz(0,4,10) }
+  draw[3000] = fun() { diagd(0,4,10) }
+  draw[4000] = fun() { diagu(0,4,14) }
+  draw[5000] = fun() { draw[1000](); draw[4000]() }
+  draw[6000] = fun() { verti(10,14,0) }
+  draw[7000] = fun() { draw[1000](); draw[6000]() }
+  draw[8000] = fun() { draw[2000](); draw[6000]() }
+  draw[9000] = fun() { draw[1000](); draw[8000]() }
+}
+
+fun printNumeral() {
+  var i = 0
+  while i < 15 {
+    var line = ""
+    var j = 0
+    while j < 11 {
+      line = line + n[i][j] + " "
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+  print("")
+}
+
+initDraw()
+let numbers = [0,1,20,300,4000,5555,6789,9999]
+for number in numbers {
+  initN()
+  print(str(number) + ":")
+  var num = number
+  let thousands = num / 1000
+  num = num % 1000
+  let hundreds = num / 100
+  num = num % 100
+  let tens = num / 10
+  let ones = num % 10
+  if thousands > 0 { draw[thousands*1000]() }
+  if hundreds > 0 { draw[hundreds*100]() }
+  if tens > 0 { draw[tens*10]() }
+  if ones > 0 { draw[ones]() }
+  printNumeral()
+}

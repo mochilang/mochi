@@ -1,0 +1,55 @@
+// Mochi translation of Rosetta "Church-numerals" task
+// Based on Go version church-numerals-2.go
+
+type Church = fun(Church): Church
+
+fun id(x: any): any { return x }
+
+fun compose(f: fun(any): any, g: fun(any): any): fun(any): any {
+  return fun(x: any): any { return f(g(x)) }
+}
+
+fun zero(): Church { return fun(f: Church): Church { return id } }
+
+fun one(): Church { return id }
+
+fun succ(n: Church): Church {
+  return fun(f: Church): Church { return compose(f, n(f)) }
+}
+
+fun plus(m: Church, n: Church): Church {
+  return fun(f: Church): Church { return compose(m(f), n(f)) }
+}
+
+fun mult(m: Church, n: Church): Church { return compose(m, n) }
+
+fun exp(m: Church, n: Church): Church { return n(m) }
+
+fun toInt(x: Church): int {
+  var counter = 0
+  fun fCounter(f: Church): Church { counter = counter + 1; return f }
+  x(fCounter)(id)
+  return counter
+}
+
+fun toStr(x: Church): string {
+  var s = ""
+  fun fCounter(f: Church): Church { s = s + "|"; return f }
+  x(fCounter)(id)
+  return s
+}
+
+fun main() {
+  print("zero = " + str(toInt(zero())))
+  let onev = one()
+  print("one = " + str(toInt(onev)))
+  let two = succ(succ(zero()))
+  print("two = " + str(toInt(two)))
+  let three = plus(onev, two)
+  print("three = " + str(toInt(three)))
+  let four = mult(two, two)
+  print("four = " + str(toInt(four)))
+  let eight = exp(two, three)
+  print("eight = " + str(toInt(eight)))
+  print("toStr(four) = " + toStr(four))
+}
