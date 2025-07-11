@@ -471,26 +471,47 @@ func (c *Compiler) compileTypeDecl(td *parser.TypeDecl) error {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	params := make([]string, len(fn.Params))
+	child := types.NewEnv(c.env)
 	for i, p := range fn.Params {
 		if p.Type != nil {
 			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeString(p.Type))
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), false)
 		} else {
 			params[i] = p.Name
+			child.SetVar(p.Name, types.AnyType{}, false)
 		}
 	}
 	ret := ""
 	if fn.Return != nil {
 		ret = ": " + c.typeString(fn.Return)
 	}
+
+	oldEnv := c.env
+	c.env = child
+
+	// expression body if the function only returns a single expression
+	if len(fn.Body) == 1 && fn.Body[0].Return != nil {
+		expr, err := c.compileExpr(fn.Body[0].Return.Value)
+		if err != nil {
+			c.env = oldEnv
+			return err
+		}
+		c.writeln(fmt.Sprintf("def %s(%s)%s = %s", fn.Name, strings.Join(params, ", "), ret, expr))
+		c.env = oldEnv
+		return nil
+	}
+
 	c.writeln(fmt.Sprintf("def %s(%s)%s = {", fn.Name, strings.Join(params, ", "), ret))
 	c.indent += indentStep
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = oldEnv
 			return err
 		}
 	}
 	c.indent -= indentStep
 	c.writeln("}")
+	c.env = oldEnv
 	return nil
 }
 
@@ -574,17 +595,23 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	params := make([]string, len(fn.Params))
+	child := types.NewEnv(c.env)
 	for i, p := range fn.Params {
 		if p.Type != nil {
 			params[i] = fmt.Sprintf("%s: %s", p.Name, c.typeString(p.Type))
+			child.SetVar(p.Name, types.ResolveTypeRef(p.Type, c.env), false)
 		} else {
 			params[i] = p.Name
+			child.SetVar(p.Name, types.AnyType{}, false)
 		}
 	}
 	if fn.ExprBody == nil {
 		return "", fmt.Errorf("line %d: block lambdas not supported", fn.Pos.Line)
 	}
+	oldEnv := c.env
+	c.env = child
 	body, err := c.compileExpr(fn.ExprBody)
+	c.env = oldEnv
 	if err != nil {
 		return "", err
 	}
