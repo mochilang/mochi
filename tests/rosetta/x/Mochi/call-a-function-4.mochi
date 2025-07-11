@@ -1,6 +1,16 @@
-// Placeholder for gif.Encode example; Mochi has no GIF library.
+// Simple stand-in for the Go example calling gif.Encode.
+// The real Go code writes a GIF image to an io.Writer but
+// produces no visible output.  Here we implement a dummy
+// function so the example is runnable without external
+// libraries while matching the behaviour (no output).
+
+fun gifEncode(dest: any, img: any, opts: map<string,int>) {
+  // real encoding would happen here
+  let _ = opts["NumColors"]  // access to mimic usage
+}
+
 fun main() {
-  // Would call gif.Encode here
+  gifEncode(nil, nil, {"NumColors": 16})
 }
 
 main()
