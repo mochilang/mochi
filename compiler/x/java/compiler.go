@@ -33,6 +33,7 @@ type Compiler struct {
 	srcDir            string
 	curVar            string
 	className         string
+	forceMapLiteral   bool
 }
 
 type dataClass struct {
@@ -64,6 +65,7 @@ func New() *Compiler {
 		curVar:            "",
 		className:         "",
 		needUtilImports:   false,
+		forceMapLiteral:   false,
 	}
 }
 
@@ -369,10 +371,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("}")
 	}
 	if c.helpers["save_jsonl"] {
-		c.writeln("static void saveJsonl(List<Map<?,?>> list) {")
+		c.writeln("static Map<String,Object> asMap(Object o) {")
 		c.indent++
-		c.writeln("for (Map<?,?> m : list) {")
+		c.writeln("if (o instanceof Map<?,?> mm) {")
 		c.indent++
+		c.writeln("LinkedHashMap<String,Object> m = new LinkedHashMap<>();")
+		c.writeln("for (var e : mm.entrySet()) m.put(String.valueOf(e.getKey()), e.getValue());")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("LinkedHashMap<String,Object> m = new LinkedHashMap<>();")
+		c.writeln("for (var f : o.getClass().getDeclaredFields()) { try { f.setAccessible(true); m.put(f.getName(), f.get(o)); } catch (Exception e) { throw new RuntimeException(e); } }")
+		c.writeln("return m;")
+		c.indent--
+		c.writeln("}")
+		c.writeln("static void saveJsonl(List<?> list) {")
+		c.indent++
+		c.writeln("for (Object obj : list) {")
+		c.indent++
+		c.writeln("Map<String,Object> m = asMap(obj);")
 		c.writeln("List<String> parts = new ArrayList<>();")
 		c.writeln("for (var e : m.entrySet()) { parts.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue()); }")
 		c.writeln("System.out.println(\"{\" + String.join(\",\", parts) + \"}\");")
@@ -617,12 +634,22 @@ func (c *Compiler) maybeNumber(expr string) string {
 	return expr
 }
 
-func maybeBool(expr string) string {
+func maybeBool(c *Compiler, expr string) string {
 	if strings.Contains(expr, ".get(") {
 		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
 			return expr
 		}
 		return fmt.Sprintf("%s != null", expr)
+	}
+	if t, ok := c.vars[expr]; ok {
+		if t != "boolean" && t != "int" && t != "double" {
+			return fmt.Sprintf("%s != null", expr)
+		}
+	}
+	if strings.Contains(expr, ".") {
+		if !strings.ContainsAny(expr, "<>=!+-*/%") && !strings.Contains(expr, "==") && !strings.Contains(expr, "!=") {
+			return fmt.Sprintf("%s != null", expr)
+		}
 	}
 	return expr
 }
@@ -1069,6 +1096,9 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 }
 
 func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
+	if c.forceMapLiteral {
+		return ""
+	}
 	var keys []string
 	for _, it := range m.Items {
 		s, ok := simpleStringKey(it.Key)
@@ -1181,6 +1211,7 @@ func (c *Compiler) compileDataClass(dc *dataClass) {
 	}
 	c.indent--
 	c.writeln("}")
+	c.writeln(fmt.Sprintf("int size() { return %d; }", len(dc.fields)))
 	c.indent--
 	c.writeln("}")
 }
@@ -1234,21 +1265,23 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	if name := c.dataClassFor(m); name != "" {
-		var args []string
-		origVar := c.curVar
-		for _, it := range m.Items {
-			if s, ok := simpleStringKey(it.Key); ok {
-				c.curVar = origVar + "_" + s
+	if !c.forceMapLiteral {
+		if name := c.dataClassFor(m); name != "" {
+			var args []string
+			origVar := c.curVar
+			for _, it := range m.Items {
+				if s, ok := simpleStringKey(it.Key); ok {
+					c.curVar = origVar + "_" + s
+				}
+				v, err := c.compileExpr(it.Value)
+				c.curVar = origVar
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
 			}
-			v, err := c.compileExpr(it.Value)
-			c.curVar = origVar
-			if err != nil {
-				return "", err
-			}
-			args = append(args, v)
+			return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 		}
-		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 	}
 	c.helpers["map_of_entries"] = true
 	var entries []string
@@ -1372,7 +1405,7 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	cond = maybeBool(cond)
+	cond = maybeBool(c, cond)
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
 		return "", err
@@ -1398,7 +1431,11 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
+	if ml := isMapLiteral(v.Value); ml != nil && v.Type == nil {
+		c.forceMapLiteral = true
+	}
 	expr, err := c.compileExpr(v.Value)
+	c.forceMapLiteral = false
 	c.curVar = orig
 	if err != nil {
 		return err
@@ -1521,7 +1558,7 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("if (" + maybeBool(cond) + ") {")
+	c.writeln("if (" + maybeBool(c, cond) + ") {")
 	c.indent++
 	for _, s := range i.Then {
 		if err := c.compileStmt(s); err != nil {
@@ -1762,7 +1799,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			}
 			expr = fmt.Sprintf("%s %s %s", c.maybeNumber(expr), op.Op, c.maybeNumber(right))
 		} else if op.Op == "&&" || op.Op == "||" {
-			expr = fmt.Sprintf("%s %s %s", maybeBool(expr), op.Op, maybeBool(right))
+			expr = fmt.Sprintf("%s %s %s", maybeBool(c, expr), op.Op, maybeBool(c, right))
 		} else {
 			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
 		}
@@ -2408,7 +2445,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				b.WriteString("\tjava.util.Set<Object> _matched = new java.util.HashSet<>();\n")
 			}
 			b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
-			b.WriteString(fmt.Sprintf("\t\tList<Object> %s = new ArrayList<>();\n", tmpList))
+			b.WriteString(fmt.Sprintf("\t\tList<%s> %s = new ArrayList<>();\n", c.vars[j.Var], tmpList))
 			b.WriteString(fmt.Sprintf("\t\tfor (var _it%d : %s) {\n", c.tmpCount, js))
 			iter := fmt.Sprintf("_it%d", c.tmpCount)
 			c.tmpCount++
@@ -2457,7 +2494,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				cond = maybeBool(cond)
+				cond = maybeBool(c, cond)
 				b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 			}
 			b.WriteString(fmt.Sprintf("\t\t%s += %s;\n", tmp, c.maybeNumber(arg)))
@@ -2502,7 +2539,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.tmpCount++
 			iterVar := fmt.Sprintf("_it%d", c.tmpCount)
 			c.tmpCount++
-			b.WriteString(fmt.Sprintf("%sList<Object> %s = new ArrayList<>();\n", indent, tmpList))
+			b.WriteString(fmt.Sprintf("%sList<%s> %s = new ArrayList<>();\n", indent, c.vars[j.Var], tmpList))
 			b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, iterVar, js))
 			indent += "\t"
 			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, j.Var, iterVar))
@@ -2538,7 +2575,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.vars = oldVars
 			return "", err
 		}
-		cond = maybeBool(cond)
+		cond = maybeBool(c, cond)
 		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, cond))
 	}
 	if groupsVar != "" {
@@ -2619,7 +2656,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				c.vars = oldVars
 				return "", err
 			}
-			cond = maybeBool(cond)
+			cond = maybeBool(c, cond)
 			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 		}
 		if id, ok := identName(q.Select); ok && id == gName {
@@ -2806,7 +2843,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("saveJsonl((List<Map<?,?>>)(List<?>)%s)", src), nil
+		return fmt.Sprintf("saveJsonl((List<?>)%s)", src), nil
 	}
 	return "", fmt.Errorf("save only supports stdout")
 }
