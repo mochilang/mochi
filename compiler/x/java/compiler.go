@@ -1528,6 +1528,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		}
 		if c.exprIsMap(f.Source) {
 			c.writeln(fmt.Sprintf("for (var %s : %s.keySet()) {", f.Name, src))
+		} else if dc := c.dataClassByName(c.inferType(f.Source)); dc != nil {
+			var keys []string
+			for _, k := range dc.fields {
+				keys = append(keys, fmt.Sprintf("\"%s\"", k))
+			}
+			c.writeln(fmt.Sprintf("for (String %s : Arrays.asList(%s)) {", f.Name, strings.Join(keys, ", ")))
 		} else {
 			if strings.Contains(src, ".get(") {
 				src = fmt.Sprintf("(List)%s", src)

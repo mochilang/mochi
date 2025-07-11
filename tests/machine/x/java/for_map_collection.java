@@ -10,7 +10,7 @@ class MAB {
 public class Main {
 	static MAB m = new MAB(1, 2);
 	public static void main(String[] args) {
-	for (Object k : m) {
+	for (String k : Arrays.asList("a", "b")) {
 		System.out.println(k);
 	}
 	}
