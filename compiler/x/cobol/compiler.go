@@ -242,15 +242,9 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 				if !ok {
 					return fmt.Errorf("unknown struct %s", structLit.Name)
 				}
-				fields := make([]varField, 0, len(structLit.Fields))
-				for _, f := range structLit.Fields {
-					valStr, err := c.compileExpr(f.Value)
-					if err != nil {
-						return err
-					}
-					ft := st.Fields[f.Name]
-					pic := cobolPic(ft, valStr)
-					fields = append(fields, varField{name: f.Name, pic: pic, val: valStr})
+				fields, err := c.buildStructFields("", st, structLit)
+				if err != nil {
+					return err
 				}
 				c.vars = append(c.vars, varDecl{name: name, fields: fields})
 				return nil
@@ -1163,10 +1157,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Selector != nil:
-		name := p.Selector.Root
-		if len(p.Selector.Tail) > 0 {
-			name = p.Selector.Tail[len(p.Selector.Tail)-1]
+		if len(p.Selector.Tail) == 0 {
+			return cobolName(p.Selector.Root), nil
 		}
+		name := strings.Join(p.Selector.Tail, "-")
 		return cobolName(name), nil
 	default:
 		return "", fmt.Errorf("unsupported expression at line %d", p.Pos.Line)
@@ -1477,6 +1471,41 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func structLiteral(e *parser.Expr) *parser.StructLiteral {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 || u.Value.Target == nil {
+		return nil
+	}
+	return u.Value.Target.Struct
+}
+
+func (c *Compiler) buildStructFields(prefix string, st types.StructType, sl *parser.StructLiteral) ([]varField, error) {
+	fields := make([]varField, 0, len(sl.Fields))
+	for _, f := range sl.Fields {
+		ft := st.Fields[f.Name]
+		if sub := structLiteral(f.Value); sub != nil {
+			if st2, ok := ft.(types.StructType); ok {
+				subFields, err := c.buildStructFields(prefix+cobolName(f.Name)+"-", st2, sub)
+				if err != nil {
+					return nil, err
+				}
+				fields = append(fields, subFields...)
+				continue
+			}
+		}
+		valStr, err := c.compileExpr(f.Value)
+		if err != nil {
+			return nil, err
+		}
+		pic := cobolPic(ft, valStr)
+		fields = append(fields, varField{name: prefix + cobolName(f.Name), pic: pic, val: valStr})
+	}
+	return fields, nil
 }
 
 func cobolPic(t types.Type, val string) string {
