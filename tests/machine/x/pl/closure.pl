@@ -9,7 +9,7 @@ makeAdder(N, _Res) :-
 main :-
     makeAdder(10, _V0),
     Add10 = _V0,
-    add10(7, _V1),
+    call(Add10, 7, _V1),
     write(_V1),
     nl,
     true.

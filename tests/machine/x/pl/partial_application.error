@@ -1,5 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/partial_application.pl:5: user:main main/0: Unknown procedure: add/2
-ERROR:   However, there are definitions for:
-ERROR:         add/3
-

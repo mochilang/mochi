@@ -5,6 +5,7 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 ## Summary
 
  - 100/100 programs compiled (execution requires `swipl`).
+ - Nested functions and simple partial application are now supported.
 
 ### Checklist
 - [x] append_builtin
@@ -131,3 +132,5 @@ This directory contains Prolog code generated from the Mochi programs in `tests/
 - [ ] Support multi-file compilation
 - [ ] Add linter for generated Prolog
 - [ ] Improve variable naming heuristics
+- [x] Support partial application of functions
+- [x] Handle nested function calls correctly
