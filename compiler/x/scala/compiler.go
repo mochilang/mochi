@@ -2065,6 +2065,16 @@ func sameType(a, b types.Type) bool {
 			return sameType(ma.Key, mb.Key) && sameType(ma.Value, mb.Value)
 		}
 	}
+	if oa, ok := a.(types.OptionType); ok {
+		if ob, ok := b.(types.OptionType); ok {
+			return sameType(oa.Elem, ob.Elem)
+		}
+	}
+	if ob, ok := b.(types.OptionType); ok {
+		if oa, ok := a.(types.OptionType); ok {
+			return sameType(oa.Elem, ob.Elem)
+		}
+	}
 	if ua, ok := a.(types.UnionType); ok {
 		if sb, ok := b.(types.StructType); ok {
 			if _, ok := ua.Variants[sb.Name]; ok {
@@ -2472,6 +2482,8 @@ func (c *Compiler) namedType(t types.Type) types.Type {
 		return types.MapType{Key: c.namedType(tt.Key), Value: c.namedType(tt.Value)}
 	case types.StructType:
 		return c.ensureStructName(tt)
+	case types.OptionType:
+		return types.OptionType{Elem: c.namedType(tt.Elem)}
 	case types.FuncType:
 		params := make([]types.Type, len(tt.Params))
 		for i, p := range tt.Params {
