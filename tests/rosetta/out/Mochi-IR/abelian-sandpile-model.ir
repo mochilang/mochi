@@ -1,0 +1,270 @@
+func main (regs=24)
+  // let DIM = 16
+  Const        r0, 16
+  // var pile: list<list<int>> = []
+  Const        r1, []
+  Move         r2, r1
+  // var y = 0
+  Const        r3, 0
+  Move         r4, r3
+L3:
+  // while y < DIM {
+  Const        r0, 16
+  LessInt      r5, r4, r0
+  JumpIfFalse  r5, L0
+  // var row: list<int> = []
+  Const        r1, []
+  Move         r6, r1
+  // var x = 0
+  Const        r3, 0
+  Move         r7, r3
+L2:
+  // while x < DIM {
+  Const        r0, 16
+  LessInt      r8, r7, r0
+  JumpIfFalse  r8, L1
+  // row = append(row, 0)
+  Const        r3, 0
+  Append       r9, r6, r3
+  Move         r6, r9
+  // x = x + 1
+  Const        r10, 1
+  AddInt       r11, r7, r10
+  Move         r7, r11
+  // while x < DIM {
+  Jump         L2
+L1:
+  // pile = append(pile, row)
+  Append       r12, r2, r6
+  Move         r2, r12
+  // y = y + 1
+  Const        r10, 1
+  AddInt       r13, r4, r10
+  Move         r4, r13
+  // while y < DIM {
+  Jump         L3
+L0:
+  // let hdim = (DIM / 2) as int - 1
+  Const        r14, 8
+  Const        r10, 1
+  SubInt       r15, r14, r10
+  // pile[hdim][hdim] = 16
+  Const        r16, 7
+  Index        r17, r2, r16
+  Const        r0, 16
+  Const        r16, 7
+  SetIndex     r17, r16, r0
+  // handlePile(pile, hdim, hdim)
+  Move         r18, r2
+  Const        r16, 7
+  Move         r19, r16
+  Const        r16, 7
+  Move         r20, r16
+  Call         r21, handlePile, r18, r19, r20
+  // drawPile(pile)
+  Move         r22, r2
+  Call         r23, drawPile, r22
+  Return       r0
+
+  // fun handlePile(p: list<list<int>>, x: int, y: int) {
+func handlePile (regs=84)
+  // let dim = len(p)
+  Len          r3, r0
+  // if p[y][x] >= 4 {
+  Index        r4, r0, r2
+  Index        r5, r4, r1
+  Const        r6, 4
+  LessEq       r7, r6, r5
+  JumpIfFalse  r7, L0
+  // p[y][x] = p[y][x] - 4
+  Index        r8, r0, r2
+  Index        r9, r0, r2
+  Index        r10, r9, r1
+  Const        r6, 4
+  Sub          r11, r10, r6
+  SetIndex     r8, r1, r11
+  // if y > 0 {
+  Const        r12, 0
+  Less         r13, r12, r2
+  JumpIfFalse  r13, L1
+  // p[y-1][x] = p[y-1][x] + 1
+  Const        r14, 1
+  Sub          r15, r2, r14
+  Index        r16, r0, r15
+  Const        r14, 1
+  Sub          r17, r2, r14
+  Index        r18, r0, r17
+  Index        r19, r18, r1
+  Const        r14, 1
+  Add          r20, r19, r14
+  SetIndex     r16, r1, r20
+  // if p[y-1][x] >= 4 { handlePile(p, x, y-1) }
+  Const        r14, 1
+  Sub          r21, r2, r14
+  Index        r22, r0, r21
+  Index        r23, r22, r1
+  Const        r6, 4
+  LessEq       r24, r6, r23
+  JumpIfFalse  r24, L1
+  Move         r25, r0
+  Move         r26, r1
+  Const        r14, 1
+  Sub          r28, r2, r14
+  Move         r27, r28
+  Call         r29, handlePile, r25, r26, r27
+L1:
+  // if x > 0 {
+  Const        r12, 0
+  Less         r30, r12, r1
+  JumpIfFalse  r30, L2
+  // p[y][x-1] = p[y][x-1] + 1
+  Index        r31, r0, r2
+  Index        r32, r0, r2
+  Const        r14, 1
+  Sub          r33, r1, r14
+  Index        r34, r32, r33
+  Const        r14, 1
+  Add          r35, r34, r14
+  Const        r14, 1
+  Sub          r36, r1, r14
+  SetIndex     r31, r36, r35
+  // if p[y][x-1] >= 4 { handlePile(p, x-1, y) }
+  Index        r37, r0, r2
+  Const        r14, 1
+  Sub          r38, r1, r14
+  Index        r39, r37, r38
+  Const        r6, 4
+  LessEq       r40, r6, r39
+  JumpIfFalse  r40, L2
+  Move         r41, r0
+  Const        r14, 1
+  Sub          r44, r1, r14
+  Move         r42, r44
+  Move         r43, r2
+  Call         r45, handlePile, r41, r42, r43
+L2:
+  // if y < dim - 1 {
+  Const        r14, 1
+  SubInt       r46, r3, r14
+  Less         r47, r2, r46
+  JumpIfFalse  r47, L3
+  // p[y+1][x] = p[y+1][x] + 1
+  Const        r14, 1
+  Add          r48, r2, r14
+  Index        r49, r0, r48
+  Const        r14, 1
+  Add          r50, r2, r14
+  Index        r51, r0, r50
+  Index        r52, r51, r1
+  Const        r14, 1
+  Add          r53, r52, r14
+  SetIndex     r49, r1, r53
+  // if p[y+1][x] >= 4 { handlePile(p, x, y+1) }
+  Const        r14, 1
+  Add          r54, r2, r14
+  Index        r55, r0, r54
+  Index        r56, r55, r1
+  Const        r6, 4
+  LessEq       r57, r6, r56
+  JumpIfFalse  r57, L3
+  Move         r58, r0
+  Move         r59, r1
+  Const        r14, 1
+  Add          r61, r2, r14
+  Move         r60, r61
+  Call         r62, handlePile, r58, r59, r60
+L3:
+  // if x < dim - 1 {
+  Const        r14, 1
+  SubInt       r63, r3, r14
+  Less         r64, r1, r63
+  JumpIfFalse  r64, L4
+  // p[y][x+1] = p[y][x+1] + 1
+  Index        r65, r0, r2
+  Index        r66, r0, r2
+  Const        r14, 1
+  Add          r67, r1, r14
+  Index        r68, r66, r67
+  Const        r14, 1
+  Add          r69, r68, r14
+  Const        r14, 1
+  Add          r70, r1, r14
+  SetIndex     r65, r70, r69
+  // if p[y][x+1] >= 4 { handlePile(p, x+1, y) }
+  Index        r71, r0, r2
+  Const        r14, 1
+  Add          r72, r1, r14
+  Index        r73, r71, r72
+  Const        r6, 4
+  LessEq       r74, r6, r73
+  JumpIfFalse  r74, L4
+  Move         r75, r0
+  Const        r14, 1
+  Add          r78, r1, r14
+  Move         r76, r78
+  Move         r77, r2
+  Call         r79, handlePile, r75, r76, r77
+L4:
+  // handlePile(p, x, y)
+  Move         r80, r0
+  Move         r81, r1
+  Move         r82, r2
+  Call         r83, handlePile, r80, r81, r82
+L0:
+  Return       r0
+
+  // fun drawPile(p: list<list<int>>) {
+func drawPile (regs=20)
+  // let chars = [" ", "░", "▓", "█"]
+  Const        r1, [" ", "░", "▓", "█"]
+  // let dim = len(p)
+  Len          r2, r0
+  // var y = 0
+  Const        r3, 0
+  Move         r4, r3
+L4:
+  // while y < dim {
+  LessInt      r5, r4, r2
+  JumpIfFalse  r5, L0
+  // var line = ""
+  Const        r6, ""
+  Move         r7, r6
+  // var x = 0
+  Const        r3, 0
+  Move         r8, r3
+L3:
+  // while x < dim {
+  LessInt      r9, r8, r2
+  JumpIfFalse  r9, L1
+  // var elem = p[y][x]
+  Index        r10, r0, r4
+  Index        r11, r10, r8
+  Move         r12, r11
+  // if elem > 3 { elem = 3 }
+  Const        r13, 3
+  Less         r14, r13, r12
+  JumpIfFalse  r14, L2
+  Const        r13, 3
+  Move         r12, r13
+L2:
+  // line = line + chars[elem]
+  Index        r15, r1, r12
+  Add          r16, r7, r15
+  Move         r7, r16
+  // x = x + 1
+  Const        r17, 1
+  AddInt       r18, r8, r17
+  Move         r8, r18
+  // while x < dim {
+  Jump         L3
+L1:
+  // print(line)
+  Print        r7
+  // y = y + 1
+  Const        r17, 1
+  AddInt       r19, r4, r17
+  Move         r4, r19
+  // while y < dim {
+  Jump         L4
+L0:
+  Return       r0

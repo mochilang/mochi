@@ -1,0 +1,907 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun Node(data: int): map<string, any> {
+func Node (regs=13)
+  // return {"Data": data, "Balance": 0, "Link": [null, null]}
+  Const        r1, "Data"
+  Const        r2, "Balance"
+  Const        r3, 0
+  Const        r4, "Link"
+  Const        r5, [nil, nil]
+  Move         r6, r1
+  Move         r7, r0
+  Move         r8, r2
+  Move         r9, r3
+  Move         r10, r4
+  Move         r11, r5
+  MakeMap      r12, 3, r6
+  Return       r12
+
+  // fun getLink(n: map<string, any>, dir: int): any {
+func getLink (regs=6)
+  // return (n["Link"] as list<any>)[dir]
+  Const        r2, "Link"
+  Index        r3, r0, r2
+  Cast         r4, r3, [any]
+  Index        r5, r4, r1
+  Return       r5
+
+  // fun setLink(n: map<string, any>, dir: int, v: any) {
+func setLink (regs=7)
+  // var links = n["Link"] as list<any>
+  Const        r3, "Link"
+  Index        r4, r0, r3
+  Cast         r5, r4, [any]
+  Move         r6, r5
+  // links[dir] = v
+  SetIndex     r6, r1, r2
+  // n["Link"] = links
+  Const        r3, "Link"
+  SetIndex     r0, r3, r6
+  Return       r0
+
+  // fun opp(dir: int): int { return 1 - dir }
+func opp (regs=3)
+  // fun opp(dir: int): int { return 1 - dir }
+  Const        r1, 1
+  Sub          r2, r1, r0
+  Return       r2
+
+  // fun single(root: map<string, any>, dir: int): map<string, any> {
+func single (regs=21)
+  // var tmp = getLink(root, opp(dir))
+  Move         r2, r0
+  Move         r4, r1
+  Call         r5, opp, r4
+  Move         r3, r5
+  Call2        r6, getLink, r2, r3
+  Move         r7, r6
+  // setLink(root, opp(dir), getLink(tmp, dir))
+  Move         r8, r0
+  Move         r11, r1
+  Call         r12, opp, r11
+  Move         r9, r12
+  Move         r13, r7
+  Move         r14, r1
+  Call2        r15, getLink, r13, r14
+  Move         r10, r15
+  Call         r16, setLink, r8, r9, r10
+  // setLink(tmp, dir, root)
+  Move         r17, r7
+  Move         r18, r1
+  Move         r19, r0
+  Call         r20, setLink, r17, r18, r19
+  // return tmp
+  Return       r7
+
+  // fun double(root: map<string, any>, dir: int): map<string, any> {
+func double (regs=60)
+  // var tmp = getLink(getLink(root, opp(dir)), dir)
+  Move         r4, r0
+  Move         r6, r1
+  Call         r7, opp, r6
+  Move         r5, r7
+  Call2        r8, getLink, r4, r5
+  Move         r2, r8
+  Move         r3, r1
+  Call2        r9, getLink, r2, r3
+  Move         r10, r9
+  // setLink(getLink(root, opp(dir)), dir, getLink(tmp, opp(dir)))
+  Move         r14, r0
+  Move         r16, r1
+  Call         r17, opp, r16
+  Move         r15, r17
+  Call2        r18, getLink, r14, r15
+  Move         r11, r18
+  Move         r12, r1
+  Move         r19, r10
+  Move         r21, r1
+  Call         r22, opp, r21
+  Move         r20, r22
+  Call2        r23, getLink, r19, r20
+  Move         r13, r23
+  Call         r24, setLink, r11, r12, r13
+  // setLink(tmp, opp(dir), getLink(root, opp(dir)))
+  Move         r25, r10
+  Move         r28, r1
+  Call         r29, opp, r28
+  Move         r26, r29
+  Move         r30, r0
+  Move         r32, r1
+  Call         r33, opp, r32
+  Move         r31, r33
+  Call2        r34, getLink, r30, r31
+  Move         r27, r34
+  Call         r35, setLink, r25, r26, r27
+  // setLink(root, opp(dir), tmp)
+  Move         r36, r0
+  Move         r39, r1
+  Call         r40, opp, r39
+  Move         r37, r40
+  Move         r38, r10
+  Call         r41, setLink, r36, r37, r38
+  // tmp = getLink(root, opp(dir))
+  Move         r42, r0
+  Move         r44, r1
+  Call         r45, opp, r44
+  Move         r43, r45
+  Call2        r46, getLink, r42, r43
+  Move         r10, r46
+  // setLink(root, opp(dir), getLink(tmp, dir))
+  Move         r47, r0
+  Move         r50, r1
+  Call         r51, opp, r50
+  Move         r48, r51
+  Move         r52, r10
+  Move         r53, r1
+  Call2        r54, getLink, r52, r53
+  Move         r49, r54
+  Call         r55, setLink, r47, r48, r49
+  // setLink(tmp, dir, root)
+  Move         r56, r10
+  Move         r57, r1
+  Move         r58, r0
+  Call         r59, setLink, r56, r57, r58
+  // return tmp
+  Return       r10
+
+  // fun adjustBalance(root: map<string, any>, dir: int, bal: int) {
+func adjustBalance (regs=19)
+  // var n = getLink(root, dir) as map<string, any>
+  Move         r3, r0
+  Move         r4, r1
+  Call2        r5, getLink, r3, r4
+  Cast         r6, r5, {string: any}
+  Move         r7, r6
+  // var nn = getLink(n, opp(dir)) as map<string, any>
+  Move         r8, r7
+  Move         r10, r1
+  Call         r11, opp, r10
+  Move         r9, r11
+  Call2        r12, getLink, r8, r9
+  Cast         r13, r12, {string: any}
+  Move         r14, r13
+  // if nn["Balance"] == 0 {
+  Const        r15, "Balance"
+  Index        r16, r14, r15
+  Const        r17, 0
+  Equal        r18, r16, r17
+  JumpIfFalse  r18, L0
+  // root["Balance"] = 0
+  Const        r17, 0
+  Const        r15, "Balance"
+  SetIndex     r0, r15, r17
+  // n["Balance"] = 0
+  Const        r17, 0
+  Const        r15, "Balance"
+  SetIndex     r7, r15, r17
+L0:
+  // nn["Balance"] = 0
+  Const        r17, 0
+  Const        r15, "Balance"
+  SetIndex     r14, r15, r17
+  Return       r0
+
+  // fun insertBalance(root: map<string, any>, dir: int): map<string, any> {
+func insertBalance (regs=30)
+  // var n = getLink(root, dir) as map<string, any>
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, getLink, r2, r3
+  Cast         r5, r4, {string: any}
+  Move         r6, r5
+  // var bal = 2*dir - 1
+  Const        r7, 2
+  Mul          r8, r7, r1
+  Const        r9, 1
+  Sub          r10, r8, r9
+  Move         r11, r10
+  // if n["Balance"] == bal {
+  Const        r12, "Balance"
+  Index        r13, r6, r12
+  Equal        r14, r13, r11
+  JumpIfFalse  r14, L0
+  // root["Balance"] = 0
+  Const        r15, 0
+  Const        r12, "Balance"
+  SetIndex     r0, r12, r15
+  // n["Balance"] = 0
+  Const        r15, 0
+  Const        r12, "Balance"
+  SetIndex     r6, r12, r15
+  // return single(root, opp(dir))
+  Move         r16, r0
+  Move         r18, r1
+  Call         r19, opp, r18
+  Move         r17, r19
+  Call2        r20, single, r16, r17
+  Return       r20
+L0:
+  // adjustBalance(root, dir, bal)
+  Move         r21, r0
+  Move         r22, r1
+  Move         r23, r11
+  Call         r24, adjustBalance, r21, r22, r23
+  // return double(root, opp(dir))
+  Move         r25, r0
+  Move         r27, r1
+  Call         r28, opp, r27
+  Move         r26, r28
+  Call2        r29, double, r25, r26
+  Return       r29
+
+  // fun insertR(root: any, data: int): map<string, any> {
+func insertR (regs=75)
+  // if root == null { return {"node": Node(data), "done": false} }
+  Const        r2, nil
+  Equal        r3, r0, r2
+  JumpIfFalse  r3, L0
+  Const        r4, "node"
+  Move         r5, r1
+  Call         r6, Node, r5
+  Const        r7, "done"
+  Const        r8, false
+  Move         r9, r4
+  Move         r10, r6
+  Move         r11, r7
+  Move         r12, r8
+  MakeMap      r13, 2, r9
+  Return       r13
+L0:
+  // var node = root as map<string, any>
+  Cast         r14, r0, {string: any}
+  Move         r15, r14
+  // var dir = 0
+  Const        r16, 0
+  Move         r17, r16
+  // if (node["Data"] as int) < data { dir = 1 }
+  Const        r18, "Data"
+  Index        r19, r15, r18
+  Cast         r20, r19, int
+  Less         r21, r20, r1
+  JumpIfFalse  r21, L1
+  Const        r22, 1
+  Move         r17, r22
+L1:
+  // var r = insertR(getLink(node, dir), data)
+  Move         r25, r15
+  Move         r26, r17
+  Call2        r27, getLink, r25, r26
+  Move         r23, r27
+  Move         r24, r1
+  Call2        r28, insertR, r23, r24
+  Move         r29, r28
+  // setLink(node, dir, r["node"])
+  Move         r30, r15
+  Move         r31, r17
+  Const        r4, "node"
+  Index        r33, r29, r4
+  Move         r32, r33
+  Call         r34, setLink, r30, r31, r32
+  // if r["done"] { return {"node": node, "done": true} }
+  Const        r7, "done"
+  Index        r35, r29, r7
+  JumpIfFalse  r35, L2
+  Const        r4, "node"
+  Const        r7, "done"
+  Const        r36, true
+  Move         r37, r4
+  Move         r38, r15
+  Move         r39, r7
+  Move         r40, r36
+  MakeMap      r41, 2, r37
+  Return       r41
+L2:
+  // node["Balance"] = (node["Balance"] as int) + (2*dir - 1)
+  Const        r42, "Balance"
+  Index        r43, r15, r42
+  Cast         r44, r43, int
+  Const        r45, 2
+  MulInt       r46, r45, r17
+  Const        r22, 1
+  SubInt       r47, r46, r22
+  Add          r48, r44, r47
+  Const        r42, "Balance"
+  SetIndex     r15, r42, r48
+  // if node["Balance"] == 0 {
+  Const        r42, "Balance"
+  Index        r49, r15, r42
+  Const        r16, 0
+  Equal        r50, r49, r16
+  JumpIfFalse  r50, L3
+  // return {"node": node, "done": true}
+  Const        r4, "node"
+  Const        r7, "done"
+  Const        r36, true
+  Move         r51, r4
+  Move         r52, r15
+  Move         r53, r7
+  Move         r54, r36
+  MakeMap      r55, 2, r51
+  Return       r55
+L3:
+  // if node["Balance"] == 1 || node["Balance"] == (-1) {
+  Const        r42, "Balance"
+  Index        r56, r15, r42
+  Const        r22, 1
+  Equal        r57, r56, r22
+  Const        r42, "Balance"
+  Index        r58, r15, r42
+  Const        r59, -1
+  Equal        r60, r58, r59
+  Move         r61, r57
+  JumpIfTrue   r61, L4
+  Move         r61, r60
+L4:
+  JumpIfFalse  r61, L5
+  // return {"node": node, "done": false}
+  Const        r4, "node"
+  Const        r7, "done"
+  Const        r8, false
+  Move         r62, r4
+  Move         r63, r15
+  Move         r64, r7
+  Move         r65, r8
+  MakeMap      r66, 2, r62
+  Return       r66
+L5:
+  // return {"node": insertBalance(node, dir), "done": true}
+  Const        r4, "node"
+  Move         r67, r15
+  Move         r68, r17
+  Call2        r69, insertBalance, r67, r68
+  Const        r7, "done"
+  Const        r36, true
+  Move         r70, r4
+  Move         r71, r69
+  Move         r72, r7
+  Move         r73, r36
+  MakeMap      r74, 2, r70
+  Return       r74
+
+  // fun Insert(tree: any, data: int): any {
+func Insert (regs=7)
+  // let r = insertR(tree, data)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, insertR, r2, r3
+  // return r["node"]
+  Const        r5, "node"
+  Index        r6, r4, r5
+  Return       r6
+
+  // fun removeBalance(root: map<string, any>, dir: int): map<string, any> {
+func removeBalance (regs=57)
+  // var n = getLink(root, opp(dir)) as map<string, any>
+  Move         r2, r0
+  Move         r4, r1
+  Call         r5, opp, r4
+  Move         r3, r5
+  Call2        r6, getLink, r2, r3
+  Cast         r7, r6, {string: any}
+  Move         r8, r7
+  // var bal = 2*dir - 1
+  Const        r9, 2
+  Mul          r10, r9, r1
+  Const        r11, 1
+  Sub          r12, r10, r11
+  Move         r13, r12
+  // if n["Balance"] == (-bal) {
+  Const        r14, "Balance"
+  Index        r15, r8, r14
+  Neg          r16, r13
+  Equal        r17, r15, r16
+  JumpIfFalse  r17, L0
+  // root["Balance"] = 0
+  Const        r18, 0
+  Const        r14, "Balance"
+  SetIndex     r0, r14, r18
+  // n["Balance"] = 0
+  Const        r18, 0
+  Const        r14, "Balance"
+  SetIndex     r8, r14, r18
+  // return {"node": single(root, dir), "done": false}
+  Const        r19, "node"
+  Move         r20, r0
+  Move         r21, r1
+  Call2        r22, single, r20, r21
+  Const        r23, "done"
+  Const        r24, false
+  Move         r25, r19
+  Move         r26, r22
+  Move         r27, r23
+  Move         r28, r24
+  MakeMap      r29, 2, r25
+  Return       r29
+L0:
+  // if n["Balance"] == bal {
+  Const        r14, "Balance"
+  Index        r30, r8, r14
+  Equal        r31, r30, r13
+  JumpIfFalse  r31, L1
+  // adjustBalance(root, opp(dir), (-bal))
+  Move         r32, r0
+  Move         r35, r1
+  Call         r36, opp, r35
+  Move         r33, r36
+  Neg          r37, r13
+  Move         r34, r37
+  Call         r38, adjustBalance, r32, r33, r34
+  // return {"node": double(root, dir), "done": false}
+  Const        r19, "node"
+  Move         r39, r0
+  Move         r40, r1
+  Call2        r41, double, r39, r40
+  Const        r23, "done"
+  Const        r24, false
+  Move         r42, r19
+  Move         r43, r41
+  Move         r44, r23
+  Move         r45, r24
+  MakeMap      r46, 2, r42
+  Return       r46
+L1:
+  // root["Balance"] = -bal
+  Neg          r47, r13
+  Const        r14, "Balance"
+  SetIndex     r0, r14, r47
+  // n["Balance"] = bal
+  Const        r14, "Balance"
+  SetIndex     r8, r14, r13
+  // return {"node": single(root, dir), "done": true}
+  Const        r19, "node"
+  Move         r48, r0
+  Move         r49, r1
+  Call2        r50, single, r48, r49
+  Const        r23, "done"
+  Const        r51, true
+  Move         r52, r19
+  Move         r53, r50
+  Move         r54, r23
+  Move         r55, r51
+  MakeMap      r56, 2, r52
+  Return       r56
+
+  // fun removeR(root: any, data: int): map<string, any> {
+func removeR (regs=105)
+  // if root == null { return {"node": null, "done": false} }
+  Const        r2, nil
+  Equal        r3, r0, r2
+  JumpIfFalse  r3, L0
+  Const        r4, {"done": false, "node": nil}
+  Return       r4
+L0:
+  // var node = root as map<string, any>
+  Cast         r5, r0, {string: any}
+  Move         r6, r5
+  // if (node["Data"] as int) == data {
+  Const        r7, "Data"
+  Index        r8, r6, r7
+  Cast         r9, r8, int
+  Equal        r10, r9, r1
+  JumpIfFalse  r10, L1
+  // if getLink(node, 0) == null { return {"node": getLink(node, 1), "done": false} }
+  Move         r11, r6
+  Const        r13, 0
+  Move         r12, r13
+  Call2        r14, getLink, r11, r12
+  Const        r2, nil
+  Equal        r15, r14, r2
+  JumpIfFalse  r15, L2
+  Const        r16, "node"
+  Move         r17, r6
+  Const        r19, 1
+  Move         r18, r19
+  Call2        r20, getLink, r17, r18
+  Const        r21, "done"
+  Const        r22, false
+  Move         r23, r16
+  Move         r24, r20
+  Move         r25, r21
+  Move         r26, r22
+  MakeMap      r27, 2, r23
+  Return       r27
+L2:
+  // if getLink(node, 1) == null { return {"node": getLink(node, 0), "done": false} }
+  Move         r28, r6
+  Const        r19, 1
+  Move         r29, r19
+  Call2        r30, getLink, r28, r29
+  Const        r2, nil
+  Equal        r31, r30, r2
+  JumpIfFalse  r31, L3
+  Const        r16, "node"
+  Move         r32, r6
+  Const        r13, 0
+  Move         r33, r13
+  Call2        r34, getLink, r32, r33
+  Const        r21, "done"
+  Const        r22, false
+  Move         r35, r16
+  Move         r36, r34
+  Move         r37, r21
+  Move         r38, r22
+  MakeMap      r39, 2, r35
+  Return       r39
+L3:
+  // var heir = getLink(node, 0)
+  Move         r40, r6
+  Const        r13, 0
+  Move         r41, r13
+  Call2        r42, getLink, r40, r41
+  Move         r43, r42
+L5:
+  // while getLink(heir, 1) != null {
+  Move         r44, r43
+  Const        r19, 1
+  Move         r45, r19
+  Call2        r46, getLink, r44, r45
+  Const        r2, nil
+  NotEqual     r47, r46, r2
+  JumpIfFalse  r47, L4
+  // heir = getLink(heir, 1)
+  Move         r48, r43
+  Const        r19, 1
+  Move         r49, r19
+  Call2        r50, getLink, r48, r49
+  Move         r43, r50
+  // while getLink(heir, 1) != null {
+  Jump         L5
+L4:
+  // node["Data"] = heir["Data"]
+  Const        r7, "Data"
+  Index        r51, r43, r7
+  Const        r7, "Data"
+  SetIndex     r6, r7, r51
+  // data = heir["Data"] as int
+  Const        r7, "Data"
+  Index        r52, r43, r7
+  Cast         r53, r52, int
+  Move         r1, r53
+L1:
+  // var dir = 0
+  Const        r13, 0
+  Move         r54, r13
+  // if (node["Data"] as int) < data { dir = 1 }
+  Const        r7, "Data"
+  Index        r55, r6, r7
+  Cast         r56, r55, int
+  Less         r57, r56, r1
+  JumpIfFalse  r57, L6
+  Const        r19, 1
+  Move         r54, r19
+L6:
+  // var r = removeR(getLink(node, dir), data)
+  Move         r60, r6
+  Move         r61, r54
+  Call2        r62, getLink, r60, r61
+  Move         r58, r62
+  Move         r59, r1
+  Call2        r63, removeR, r58, r59
+  Move         r64, r63
+  // setLink(node, dir, r["node"])
+  Move         r65, r6
+  Move         r66, r54
+  Const        r16, "node"
+  Index        r68, r64, r16
+  Move         r67, r68
+  Call         r69, setLink, r65, r66, r67
+  // if r["done"] { return {"node": node, "done": true} }
+  Const        r21, "done"
+  Index        r70, r64, r21
+  JumpIfFalse  r70, L7
+  Const        r16, "node"
+  Const        r21, "done"
+  Const        r71, true
+  Move         r72, r16
+  Move         r73, r6
+  Move         r74, r21
+  Move         r75, r71
+  MakeMap      r76, 2, r72
+  Return       r76
+L7:
+  // node["Balance"] = (node["Balance"] as int) + 1 - 2*dir
+  Const        r77, "Balance"
+  Index        r78, r6, r77
+  Cast         r79, r78, int
+  Const        r80, 2
+  MulInt       r81, r80, r54
+  Const        r19, 1
+  Add          r82, r79, r19
+  Sub          r83, r82, r81
+  Const        r77, "Balance"
+  SetIndex     r6, r77, r83
+  // if node["Balance"] == 1 || node["Balance"] == (-1) { return {"node": node, "done": true} }
+  Const        r77, "Balance"
+  Index        r84, r6, r77
+  Const        r19, 1
+  Equal        r85, r84, r19
+  Const        r77, "Balance"
+  Index        r86, r6, r77
+  Const        r87, -1
+  Equal        r88, r86, r87
+  Move         r89, r85
+  JumpIfTrue   r89, L8
+  Move         r89, r88
+L8:
+  JumpIfFalse  r89, L9
+  Const        r16, "node"
+  Const        r21, "done"
+  Const        r71, true
+  Move         r90, r16
+  Move         r91, r6
+  Move         r92, r21
+  Move         r93, r71
+  MakeMap      r94, 2, r90
+  Return       r94
+L9:
+  // if node["Balance"] == 0 { return {"node": node, "done": false} }
+  Const        r77, "Balance"
+  Index        r95, r6, r77
+  Const        r13, 0
+  Equal        r96, r95, r13
+  JumpIfFalse  r96, L10
+  Const        r16, "node"
+  Const        r21, "done"
+  Const        r22, false
+  Move         r97, r16
+  Move         r98, r6
+  Move         r99, r21
+  Move         r100, r22
+  MakeMap      r101, 2, r97
+  Return       r101
+L10:
+  // return removeBalance(node, dir)
+  Move         r102, r6
+  Move         r103, r54
+  Call2        r104, removeBalance, r102, r103
+  Return       r104
+
+  // fun Remove(tree: any, data: int): any {
+func Remove (regs=7)
+  // let r = removeR(tree, data)
+  Move         r2, r0
+  Move         r3, r1
+  Call2        r4, removeR, r2, r3
+  // return r["node"]
+  Const        r5, "node"
+  Index        r6, r4, r5
+  Return       r6
+
+  // fun indentStr(n: int): string {
+func indentStr (regs=10)
+  // var s = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < n {
+  Less         r5, r4, r0
+  JumpIfFalse  r5, L0
+  // s = s + " "
+  Const        r6, " "
+  Add          r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < n {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun dumpNode(node: any, indent: int, comma: bool) {
+func dumpNode (regs=70)
+  // let sp = indentStr(indent)
+  Move         r3, r1
+  Call         r4, indentStr, r3
+  // if node == null {
+  Const        r5, nil
+  Equal        r6, r0, r5
+  JumpIfFalse  r6, L0
+  // var line = sp + "null"
+  Const        r7, "null"
+  Add          r8, r4, r7
+  Move         r9, r8
+  // if comma { line = line + "," }
+  JumpIfFalse  r2, L1
+  Const        r10, ","
+  Add          r11, r9, r10
+  Move         r9, r11
+L1:
+  // print(line)
+  Print        r9
+  // if node == null {
+  Jump         L2
+L0:
+  // print(sp + "{")
+  Const        r12, "{"
+  Add          r13, r4, r12
+  Print        r13
+  // print(indentStr(indent+3) + "\"Data\": " + str(node["Data"]) + ",")
+  Const        r15, 3
+  Add          r16, r1, r15
+  Move         r14, r16
+  Call         r17, indentStr, r14
+  Const        r18, "\"Data\": "
+  Add          r19, r17, r18
+  Const        r20, "Data"
+  Index        r21, r0, r20
+  Str          r22, r21
+  Add          r23, r19, r22
+  Const        r10, ","
+  Add          r24, r23, r10
+  Print        r24
+  // print(indentStr(indent+3) + "\"Balance\": " + str(node["Balance"]) + ",")
+  Const        r15, 3
+  Add          r26, r1, r15
+  Move         r25, r26
+  Call         r27, indentStr, r25
+  Const        r28, "\"Balance\": "
+  Add          r29, r27, r28
+  Const        r30, "Balance"
+  Index        r31, r0, r30
+  Str          r32, r31
+  Add          r33, r29, r32
+  Const        r10, ","
+  Add          r34, r33, r10
+  Print        r34
+  // print(indentStr(indent+3) + "\"Link\": [")
+  Const        r15, 3
+  Add          r36, r1, r15
+  Move         r35, r36
+  Call         r37, indentStr, r35
+  Const        r38, "\"Link\": ["
+  Add          r39, r37, r38
+  Print        r39
+  // dumpNode(getLink(node, 0), indent+6, true)
+  Move         r43, r0
+  Const        r45, 0
+  Move         r44, r45
+  Call2        r46, getLink, r43, r44
+  Move         r40, r46
+  Const        r47, 6
+  Add          r48, r1, r47
+  Move         r41, r48
+  Const        r49, true
+  Move         r42, r49
+  Call         r50, dumpNode, r40, r41, r42
+  // dumpNode(getLink(node, 1), indent+6, false)
+  Move         r54, r0
+  Const        r56, 1
+  Move         r55, r56
+  Call2        r57, getLink, r54, r55
+  Move         r51, r57
+  Const        r47, 6
+  Add          r58, r1, r47
+  Move         r52, r58
+  Const        r59, false
+  Move         r53, r59
+  Call         r60, dumpNode, r51, r52, r53
+  // print(indentStr(indent+3) + "]")
+  Const        r15, 3
+  Add          r62, r1, r15
+  Move         r61, r62
+  Call         r63, indentStr, r61
+  Const        r64, "]"
+  Add          r65, r63, r64
+  Print        r65
+  // var end = sp + "}"
+  Const        r66, "}"
+  Add          r67, r4, r66
+  Move         r68, r67
+  // if comma { end = end + "," }
+  JumpIfFalse  r2, L3
+  Const        r10, ","
+  Add          r69, r68, r10
+  Move         r68, r69
+L3:
+  // print(end)
+  Print        r68
+L2:
+  Return       r0
+
+  // fun dump(node: any, indent: int) {
+func dump (regs=7)
+  // dumpNode(node, indent, false)
+  Move         r2, r0
+  Move         r3, r1
+  Const        r5, false
+  Move         r4, r5
+  Call         r6, dumpNode, r2, r3, r4
+  Return       r0
+
+  // fun main() {
+func main (regs=44)
+  // var tree = null
+  Const        r0, nil
+  Move         r1, r0
+  // print("Empty tree:")
+  Const        r2, "Empty tree:"
+  Print        r2
+  // dump(tree, 0)
+  Move         r3, r1
+  Const        r5, 0
+  Move         r4, r5
+  Call2        r6, dump, r3, r4
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // print("Insert test:")
+  Const        r8, "Insert test:"
+  Print        r8
+  // tree = Insert(tree, 3)
+  Move         r9, r1
+  Const        r11, 3
+  Move         r10, r11
+  Call2        r12, Insert, r9, r10
+  Move         r1, r12
+  // tree = Insert(tree, 1)
+  Move         r13, r1
+  Const        r15, 1
+  Move         r14, r15
+  Call2        r16, Insert, r13, r14
+  Move         r1, r16
+  // tree = Insert(tree, 4)
+  Move         r17, r1
+  Const        r19, 4
+  Move         r18, r19
+  Call2        r20, Insert, r17, r18
+  Move         r1, r20
+  // tree = Insert(tree, 1)
+  Move         r21, r1
+  Const        r15, 1
+  Move         r22, r15
+  Call2        r23, Insert, r21, r22
+  Move         r1, r23
+  // tree = Insert(tree, 5)
+  Move         r24, r1
+  Const        r26, 5
+  Move         r25, r26
+  Call2        r27, Insert, r24, r25
+  Move         r1, r27
+  // dump(tree, 0)
+  Move         r28, r1
+  Const        r5, 0
+  Move         r29, r5
+  Call2        r30, dump, r28, r29
+  // print("")
+  Const        r7, ""
+  Print        r7
+  // print("Remove test:")
+  Const        r31, "Remove test:"
+  Print        r31
+  // tree = Remove(tree, 3)
+  Move         r32, r1
+  Const        r11, 3
+  Move         r33, r11
+  Call2        r34, Remove, r32, r33
+  Move         r1, r34
+  // tree = Remove(tree, 1)
+  Move         r35, r1
+  Const        r15, 1
+  Move         r36, r15
+  Call2        r37, Remove, r35, r36
+  Move         r1, r37
+  // var t = tree as map<string, any>
+  Cast         r38, r1, {string: any}
+  Move         r39, r38
+  // t["Balance"] = 0
+  Const        r5, 0
+  Const        r40, "Balance"
+  SetIndex     r39, r40, r5
+  // tree = t
+  Move         r1, r39
+  // dump(tree, 0)
+  Move         r41, r1
+  Const        r5, 0
+  Move         r42, r5
+  Call2        r43, dump, r41, r42
+  Return       r0

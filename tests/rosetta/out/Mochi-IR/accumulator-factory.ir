@@ -1,0 +1,54 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun accumulator(sum: any): fun(any) {
+func accumulator (regs=9)
+  // var state = {"v": sum}
+  Const        r1, "v"
+  Move         r2, r1
+  Move         r3, r0
+  MakeMap      r4, 1, r2
+  Move         r5, r4
+  // fun add(nv: any): any {
+  Move         r6, r5
+  Move         r7, r0
+  MakeClosure  r8, add, 2, r6
+  // return add
+  Return       r8
+
+  // fun add(nv: any): any {
+func add (regs=7)
+  // state["v"] = state["v"] + nv
+  Const        r3, "v"
+  Index        r4, r0, r3
+  Add          r5, r4, r2
+  Const        r3, "v"
+  SetIndex     r0, r3, r5
+  // return state["v"]
+  Const        r3, "v"
+  Index        r6, r0, r3
+  Return       r6
+
+  // fun main() {
+func main (regs=13)
+  // let x = accumulator(1)
+  Const        r1, 1
+  Move         r0, r1
+  Call         r2, accumulator, r0
+  // x(5)
+  Const        r4, 5
+  Move         r3, r4
+  CallV        r5, r2, 1, r3
+  // accumulator(3)
+  Const        r7, 3
+  Move         r6, r7
+  Call         r8, accumulator, r6
+  // print(str(x(2.3)))
+  Const        r10, 2.3
+  Move         r9, r10
+  CallV        r11, r2, 1, r9
+  Str          r12, r11
+  Print        r12
+  Return       r0

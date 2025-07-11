@@ -1,0 +1,46 @@
+func main (regs=23)
+  // for pair in [
+  Const        r0, [["d41d8cd98f00b204e9800998ecf8427e", ""], ["0cc175b9c0f1b6a831c399e269772661", "a"], ["900150983cd24fb0d6963f7d28e17f72", "abc"], ["f96b697d7cb7938d525a2f31aaf161d0", "message digest"], ["c3fcd3d76192e4007dfb496cca67e13b", "abcdefghijklmnopqrstuvwxyz"], ["d174ab98d277d9f5a5611c2c9f419d9f", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"], ["57edf4a22be3c955ac49da2e2107b67a", "12345678901234567890123456789012345678901234567890123456789012345678901234567890"], ["e38ca1d920c4b8b8d3946b2c72f01680", "The quick brown fox jumped over the lazy dog's back"]]
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L2:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  // let sum = testpkg.MD5Hex(pair[1])
+  Const        r8, 1
+  Index        r9, r6, r8
+  Move         r7, r9
+  Const        r11, "mochi/runtime/ffi/go/testpkg.MD5Hex"
+  GoAutoCall   r10, r11, 1, r7
+  // if sum != pair[0] {
+  Const        r12, 0
+  Index        r13, r6, r12
+  NotEqual     r14, r10, r13
+  JumpIfFalse  r14, L1
+  // print("MD5 fail")
+  Const        r15, "MD5 fail"
+  Print        r15
+  // print("  for string,", pair[1])
+  Const        r16, "  for string,"
+  Const        r8, 1
+  Index        r17, r6, r8
+  Print2       r16, r17
+  // print("  expected:  ", pair[0])
+  Const        r18, "  expected:  "
+  Const        r12, 0
+  Index        r19, r6, r12
+  Print2       r18, r19
+  // print("  got:       ", sum)
+  Const        r20, "  got:       "
+  Print2       r20, r10
+L1:
+  // for pair in [
+  Const        r21, 1
+  AddInt       r22, r3, r21
+  Move         r3, r22
+  Jump         L2
+L0:
+  Return       r0

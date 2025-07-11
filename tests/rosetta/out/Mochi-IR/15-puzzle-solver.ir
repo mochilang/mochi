@@ -1,0 +1,6 @@
+func main (regs=2)
+  // print(testpkg.FifteenPuzzleExample())
+  Const        r1, "mochi/runtime/ffi/go/testpkg.FifteenPuzzleExample"
+  GoAutoCall   r0, r1, 0, r0
+  Print        r0
+  Return       r0

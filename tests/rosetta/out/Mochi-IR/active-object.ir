@@ -1,0 +1,134 @@
+func main (regs=37)
+  // let PI = 3.141592653589793
+  Const        r0, 3.141592653589793
+  // let dt = 0.01
+  Const        r1, 0.01
+  // var s = 0.0
+  Const        r2, 0.0
+  Move         r3, r2
+  // var t1 = 0.0
+  Const        r2, 0.0
+  Move         r4, r2
+  // var k1 = sinApprox(0.0)
+  Const        r2, 0.0
+  Move         r5, r2
+  Call         r6, sinApprox, r5
+  Move         r7, r6
+  // var i = 1
+  Const        r8, 1
+  Move         r9, r8
+L1:
+  // while i <= 200 {
+  Const        r10, 200
+  LessEqInt    r11, r9, r10
+  JumpIfFalse  r11, L0
+  // let t2 = (i as float) * dt
+  Cast         r12, r9, float
+  Const        r1, 0.01
+  MulFloat     r13, r12, r1
+  // let k2 = sinApprox(t2 * PI)
+  Const        r0, 3.141592653589793
+  MulFloat     r15, r13, r0
+  Move         r14, r15
+  Call         r16, sinApprox, r14
+  // s = s + (k1 + k2) * 0.5 * (t2 - t1)
+  Add          r17, r7, r16
+  Const        r18, 0.5
+  MulFloat     r19, r17, r18
+  SubFloat     r20, r13, r4
+  MulFloat     r21, r19, r20
+  AddFloat     r22, r3, r21
+  Move         r3, r22
+  // t1 = t2
+  Move         r4, r13
+  // k1 = k2
+  Move         r7, r16
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r23, r9, r8
+  Move         r9, r23
+  // while i <= 200 {
+  Jump         L1
+L0:
+  // var i2 = 1
+  Const        r8, 1
+  Move         r24, r8
+L3:
+  // while i2 <= 50 {
+  Const        r25, 50
+  LessEqInt    r26, r24, r25
+  JumpIfFalse  r26, L2
+  // let t2 = 2.0 + (i2 as float) * dt
+  Const        r27, 2.0
+  Cast         r28, r24, float
+  Const        r1, 0.01
+  MulFloat     r29, r28, r1
+  AddFloat     r30, r27, r29
+  // let k2 = 0.0
+  Const        r2, 0.0
+  // s = s + (k1 + k2) * 0.5 * (t2 - t1)
+  Const        r2, 0.0
+  AddFloat     r31, r7, r2
+  Const        r18, 0.5
+  MulFloat     r32, r31, r18
+  SubFloat     r33, r30, r4
+  MulFloat     r34, r32, r33
+  AddFloat     r35, r3, r34
+  Move         r3, r35
+  // t1 = t2
+  Move         r4, r30
+  // k1 = k2
+  Const        r2, 0.0
+  Move         r7, r2
+  // i2 = i2 + 1
+  Const        r8, 1
+  AddInt       r36, r24, r8
+  Move         r24, r36
+  // while i2 <= 50 {
+  Jump         L3
+L2:
+  // print(s)
+  Print        r3
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=19)
+  // var term = x
+  Move         r1, r0
+  // var sum = x
+  Move         r2, r0
+  // var n = 1
+  Const        r3, 1
+  Move         r4, r3
+L1:
+  // while n <= 12 {
+  Const        r5, 12
+  LessEqInt    r6, r4, r5
+  JumpIfFalse  r6, L0
+  // let denom = ((2 * n) * (2 * n + 1)) as float
+  Const        r7, 2
+  MulInt       r8, r7, r4
+  Const        r7, 2
+  MulInt       r9, r7, r4
+  Const        r3, 1
+  AddInt       r10, r9, r3
+  MulInt       r11, r8, r10
+  Cast         r12, r11, float
+  // term = -term * x * x / denom
+  Neg          r13, r1
+  Mul          r14, r13, r0
+  Mul          r15, r14, r0
+  DivFloat     r16, r15, r12
+  Move         r1, r16
+  // sum = sum + term
+  AddFloat     r17, r2, r1
+  Move         r2, r17
+  // n = n + 1
+  Const        r3, 1
+  AddInt       r18, r4, r3
+  Move         r4, r18
+  // while n <= 12 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r2

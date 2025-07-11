@@ -1,0 +1,51 @@
+func main (regs=18)
+  // var result = ""
+  Const        r0, ""
+  Move         r1, r0
+  // for i in 1..101 {
+  Const        r2, 1
+  Const        r3, 101
+  Move         r4, r2
+L5:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  // var j = 1
+  Const        r2, 1
+  Move         r6, r2
+L2:
+  // while j * j < i {
+  MulInt       r7, r6, r6
+  LessInt      r8, r7, r4
+  JumpIfFalse  r8, L1
+  // j = j + 1
+  Const        r2, 1
+  AddInt       r9, r6, r2
+  Move         r6, r9
+  // while j * j < i {
+  Jump         L2
+L1:
+  // if j * j == i {
+  MulInt       r10, r6, r6
+  EqualInt     r11, r10, r4
+  JumpIfFalse  r11, L3
+  // result = result + "O"
+  Const        r12, "O"
+  Add          r13, r1, r12
+  Move         r1, r13
+  // if j * j == i {
+  Jump         L4
+L3:
+  // result = result + "-"
+  Const        r14, "-"
+  Add          r15, r1, r14
+  Move         r1, r15
+L4:
+  // for i in 1..101 {
+  Const        r16, 1
+  AddInt       r17, r4, r16
+  Move         r4, r17
+  Jump         L5
+L0:
+  // print(result)
+  Print        r1
+  Return       r0

@@ -1,0 +1,247 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fields(s: string): list<string> {
+func fields (regs=27)
+  // var words: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i + 1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Const        r12, " "
+  Equal        r13, r11, r12
+  Const        r14, "\n"
+  Equal        r15, r11, r14
+  Const        r16, "\t"
+  Equal        r17, r11, r16
+  Move         r18, r13
+  JumpIfTrue   r18, L1
+  Move         r18, r15
+  JumpIfTrue   r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // if len(cur) > 0 {
+  Len          r19, r4
+  Const        r5, 0
+  LessInt      r20, r5, r19
+  JumpIfFalse  r20, L3
+  // words = append(words, cur)
+  Append       r21, r2, r4
+  Move         r2, r21
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r22, r4, r11
+  Move         r4, r22
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r23, r6, r9
+  Move         r6, r23
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 { words = append(words, cur) }
+  Len          r24, r4
+  Const        r5, 0
+  LessInt      r25, r5, r24
+  JumpIfFalse  r25, L5
+  Append       r26, r2, r4
+  Move         r2, r26
+L5:
+  // return words
+  Return       r2
+
+  // fun takeRunes(s: string, n: int): string {
+func takeRunes (regs=12)
+  // var idx = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var count = 0
+  Const        r2, 0
+  Move         r4, r2
+L2:
+  // while idx < len(s) {
+  Len          r5, r0
+  LessInt      r6, r3, r5
+  JumpIfFalse  r6, L0
+  // if count == n { return substring(s, 0, idx) }
+  Equal        r7, r4, r1
+  JumpIfFalse  r7, L1
+  Const        r2, 0
+  Slice        r8, r0, r2, r3
+  Return       r8
+L1:
+  // idx = idx + 1
+  Const        r9, 1
+  AddInt       r10, r3, r9
+  Move         r3, r10
+  // count = count + 1
+  Const        r9, 1
+  AddInt       r11, r4, r9
+  Move         r4, r11
+  // while idx < len(s) {
+  Jump         L2
+L0:
+  // return s
+  Return       r0
+
+  // fun distinct(xs: list<string>): list<string> {
+func distinct (regs=16)
+  // var m: map<string, bool> = {}
+  Const        r1, {}
+  Move         r2, r1
+  // var out: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L2:
+  // while i < len(xs) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let x = xs[i]
+  Index        r9, r0, r6
+  // if !(x in m) {
+  In           r10, r9, r2
+  Not          r11, r10
+  JumpIfFalse  r11, L1
+  // m[x] = true
+  Const        r12, true
+  SetIndex     r2, r9, r12
+  // out = append(out, x)
+  Append       r13, r4, r9
+  Move         r4, r13
+L1:
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r6, r14
+  Move         r6, r15
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return out
+  Return       r4
+
+  // fun abbrevLen(words: list<string>): int {
+func abbrevLen (regs=20)
+  // let size = len(words)
+  Len          r1, r0
+  // var l = 1
+  Const        r2, 1
+  Move         r3, r2
+L3:
+  // while true {
+  Const        r4, true
+  // var abbrs: list<string> = []
+  Const        r5, []
+  Move         r6, r5
+  // var i = 0
+  Const        r7, 0
+  Move         r8, r7
+L1:
+  // while i < size {
+  LessInt      r9, r8, r1
+  JumpIfFalse  r9, L0
+  // abbrs = append(abbrs, takeRunes(words[i], l))
+  Index        r12, r0, r8
+  Move         r10, r12
+  Move         r11, r3
+  Call2        r13, takeRunes, r10, r11
+  Append       r14, r6, r13
+  Move         r6, r14
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r15, r8, r2
+  Move         r8, r15
+  // while i < size {
+  Jump         L1
+L0:
+  // if len(distinct(abbrs)) == size { return l }
+  Distinct     16,6,0,0
+  Len          r17, r16
+  EqualInt     r18, r17, r1
+  JumpIfFalse  r18, L2
+  Return       r3
+L2:
+  // l = l + 1
+  Const        r2, 1
+  AddInt       r19, r3, r2
+  Move         r3, r19
+  // while true {
+  Jump         L3
+
+  // fun pad2(n: int): string {
+func pad2 (regs=7)
+  // let s = str(n)
+  Str          r1, r0
+  // if len(s) < 2 { return " " + s }
+  Len          r2, r1
+  Const        r3, 2
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, " "
+  Add          r6, r5, r1
+  Return       r6
+L0:
+  // return s
+  Return       r1
+
+  // fun main() {
+func main (regs=18)
+  // let lines = [
+  Const        r0, ["Sunday Monday Tuesday Wednesday Thursday Friday Saturday", "Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag", "E_djelë E_hënë E_martë E_mërkurë E_enjte E_premte E_shtunë", "Ehud Segno Maksegno Erob Hamus Arbe Kedame", "Al_Ahad Al_Ithinin Al_Tholatha'a Al_Arbia'a Al_Kamis Al_Gomia'a Al_Sabit", "Guiragui Yergou_shapti Yerek_shapti Tchorek_shapti Hink_shapti Ourpat Shapat", "domingu llunes martes miércoles xueves vienres sábadu", "Bazar_gÜnÜ Birinci_gÜn Çkinci_gÜn ÜçÜncÜ_gÜn DÖrdÜncÜ_gÜn Bes,inci_gÜn Altòncò_gÜn", "Igande Astelehen Astearte Asteazken Ostegun Ostiral Larunbat", "Robi_bar Shom_bar Mongal_bar Budhh_bar BRihashpati_bar Shukro_bar Shoni_bar", "Nedjelja Ponedeljak Utorak Srijeda Cxetvrtak Petak Subota", "Disul Dilun Dimeurzh Dimerc'her Diriaou Digwener Disadorn", "nedelia ponedelnik vtornik sriada chetvartak petak sabota", "sing_kei_yaht sing_kei_yat sing_kei_yee sing_kei_saam sing_kei_sie sing_kei_ng sing_kei_luk", "Diumenge Dilluns Dimarts Dimecres Dijous Divendres Dissabte", "Dzeenkk-eh Dzeehn_kk-ehreh Dzeehn_kk-ehreh_nah_kay_dzeeneh Tah_neesee_dzeehn_neh Deehn_ghee_dzee-neh Tl-oowey_tts-el_dehlee Dzeentt-ahzee", "dy_Sul dy_Lun dy_Meurth dy_Mergher dy_You dy_Gwener dy_Sadorn", "Dimanch Lendi Madi Mèkredi Jedi Vandredi Samdi", "nedjelja ponedjeljak utorak srijeda cxetvrtak petak subota", "nede^le ponde^lí úterÿ str^eda c^tvrtek pátek sobota", "Sondee Mondee Tiisiday Walansedee TOOsedee Feraadee Satadee", "s0ndag mandag tirsdag onsdag torsdag fredag l0rdag", "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag", "Diman^co Lundo Mardo Merkredo ^Jaùdo Vendredo Sabato", "pÜhapäev esmaspäev teisipäev kolmapäev neljapäev reede laupäev", "Diu_prima Diu_sequima Diu_tritima Diu_quartima Diu_quintima Diu_sextima Diu_sabbata", "sunnudagur mánadagur tÿsdaguy mikudagur hósdagur friggjadagur leygardagur", "Yek_Sham'beh Do_Sham'beh Seh_Sham'beh Cha'har_Sham'beh Panj_Sham'beh Jom'eh Sham'beh", "sunnuntai maanantai tiistai keskiviiko torsktai perjantai lauantai", "dimanche lundi mardi mercredi jeudi vendredi samedi", "Snein Moandei Tiisdei Woansdei Tonersdei Freed Sneon", "Domingo Segunda_feira Martes Mércores Joves Venres Sábado", "k'vira orshabati samshabati otkhshabati khutshabati p'arask'evi shabati", "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Samstag", "Kiriaki' Defte'ra Tri'ti Teta'rti Pe'mpti Paraskebi' Sa'bato", "ravivaar somvaar mangalvaar budhvaar guruvaar shukravaar shanivaar", "pópule pó`akahi pó`alua pó`akolu pó`ahá pó`alima pó`aono", "Yom_rishon Yom_sheni Yom_shlishi Yom_revi'i Yom_chamishi Yom_shishi Shabat", "ravivara somavar mangalavar budhavara brahaspativar shukravara shanivar", "vasárnap hétfö kedd szerda csütörtök péntek szombat", "Sunnudagur Mánudagur ╞riδjudagur Miδvikudagar Fimmtudagur FÖstudagur Laugardagur", "sundio lundio mardio merkurdio jovdio venerdio saturdio", "Minggu Senin Selasa Rabu Kamis Jumat Sabtu", "Dominica Lunedi Martedi Mercuridi Jovedi Venerdi Sabbato", "Dé_Domhnaigh Dé_Luain Dé_Máirt Dé_Ceadaoin Dé_ardaoin Dé_hAoine Dé_Sathairn", "domenica lunedí martedí mercoledí giovedí venerdí sabato", "Nichiyou_bi Getzuyou_bi Kayou_bi Suiyou_bi Mokuyou_bi Kin'you_bi Doyou_bi", "Il-yo-il Wol-yo-il Hwa-yo-il Su-yo-il Mok-yo-il Kum-yo-il To-yo-il", "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni", "sve-tdien pirmdien otrdien tresvdien ceturtdien piektdien sestdien", "Sekmadienis Pirmadienis Antradienis Trec^iadienis Ketvirtadienis Penktadienis S^es^tadienis", "Wangu Kazooba Walumbe Mukasa Kiwanuka Nnagawonye Wamunyi", "xing-_qi-_rì xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù", "Jedoonee Jelune Jemayrt Jecrean Jardaim Jeheiney Jesam", "Jabot Manre Juje Wonje Taije Balaire Jarere", "geminrongo minòmishi mártes mièrkoles misheushi bèrnashi mishábaro", "Ahad Isnin Selasa Rabu Khamis Jumaat Sabtu", "sφndag mandag tirsdag onsdag torsdag fredag lφrdag", "lo_dimenge lo_diluns lo_dimarç lo_dimèrcres lo_dijòus lo_divendres lo_dissabte", "djadomingo djaluna djamars djarason djaweps djabièrna djasabra", "Niedziela Poniedzial/ek Wtorek S,roda Czwartek Pia,tek Sobota", "Domingo segunda-feire terça-feire quarta-feire quinta-feire sexta-feira såbado", "Domingo Lunes martes Miercoles Jueves Viernes Sabado", "Duminicª Luni Mart'i Miercuri Joi Vineri Sâmbªtª", "voskresenie ponedelnik vtornik sreda chetverg pyatnitsa subbota", "Sunday Di-luain Di-màirt Di-ciadain Di-ardaoin Di-haoine Di-sathurne", "nedjelja ponedjeljak utorak sreda cxetvrtak petak subota", "Sontaha Mmantaha Labobedi Laboraro Labone Labohlano Moqebelo", "Iridha- Sandhudha- Anga.haruwa-dha- Badha-dha- Brahaspa.thindha- Sikura-dha- Sena.sura-dha-", "nedel^a pondelok utorok streda s^tvrtok piatok sobota", "Nedelja Ponedeljek Torek Sreda Cxetrtek Petek Sobota", "domingo lunes martes miércoles jueves viernes sábado", "sonde mundey tude-wroko dride-wroko fode-wroko freyda Saturday", "Jumapili Jumatatu Jumanne Jumatano Alhamisi Ijumaa Jumamosi", "söndag måndag tisdag onsdag torsdag fredag lordag", "Linggo Lunes Martes Miyerkoles Huwebes Biyernes Sabado", "Lé-pài-jít Pài-it Pài-jï Pài-sañ Pài-sì Pài-gÖ. Pài-lák", "wan-ar-tit wan-tjan wan-ang-kaan wan-phoet wan-pha-ru-hat-sa-boh-die wan-sook wan-sao", "Tshipi Mosupologo Labobedi Laboraro Labone Labotlhano Matlhatso", "Pazar Pazartesi Sali Çar,samba Per,sembe Cuma Cumartesi", "nedilya ponedilok vivtorok sereda chetver pyatnytsya subota", "Chu?_Nhâ.t Thú*_Hai Thú*_Ba Thú*_Tu* Thú*_Na'm Thú*_Sáu Thú*_Ba?y", "dydd_Sul dyds_Llun dydd_Mawrth dyds_Mercher dydd_Iau dydd_Gwener dyds_Sadwrn", "Dibeer Altine Talaata Allarba Al_xebes Aljuma Gaaw", "iCawa uMvulo uLwesibini uLwesithathu uLuwesine uLwesihlanu uMgqibelo", "zuntik montik dinstik mitvokh donershtik fraytik shabes", "iSonto uMsombuluko uLwesibili uLwesithathu uLwesine uLwesihlanu uMgqibelo", "Dies_Dominica Dies_Lunæ Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Saturni", "Bazar_gÜnÜ Bazar_ærtæsi Çærs,ænbæ_axs,amò Çærs,ænbæ_gÜnÜ CÜmæ_axs,amò CÜmæ_gÜnÜ CÜmæ_Senbæ", "Sun Moon Mars Mercury Jove Venus Saturn", "zondag maandag dinsdag woensdag donderdag vrijdag zaterdag", "KoseEraa GyoOraa BenEraa Kuoraa YOwaaraa FeEraa Memenaa", "Sonntag Montag Dienstag Mittwoch Donnerstag Freitag Sonnabend", "Domingo Luns Terza_feira Corta_feira Xoves Venres Sábado", "Dies_Solis Dies_Lunae Dies_Martis Dies_Mercurii Dies_Iovis Dies_Veneris Dies_Sabbatum", "xing-_qi-_tiàn xing-_qi-_yi-. xing-_qi-_èr xing-_qi-_san-. xing-_qi-_sì xing-_qi-_wuv. xing-_qi-_liù", "djadomingu djaluna djamars djarason djaweps djabièrnè djasabra", "Killachau Atichau Quoyllurchau Illapachau Chaskachau Kuychichau Intichau"]
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+L1:
+  // while i < len(lines) {
+  Const        r3, 98
+  LessInt      r4, r2, r3
+  JumpIfFalse  r4, L0
+  // let words = fields(lines[i])
+  Index        r6, r0, r2
+  Move         r5, r6
+  Call         r7, fields, r5
+  // let l = abbrevLen(words)
+  Move         r8, r7
+  Call         r9, abbrevLen, r8
+  // print(pad2(l) + "  " + lines[i])
+  Move         r10, r9
+  Call         r11, pad2, r10
+  Const        r12, "  "
+  Add          r13, r11, r12
+  Index        r14, r0, r2
+  Add          r15, r13, r14
+  Print        r15
+  // i = i + 1
+  Const        r16, 1
+  AddInt       r17, r2, r16
+  Move         r2, r17
+  // while i < len(lines) {
+  Jump         L1
+L0:
+  Return       r0

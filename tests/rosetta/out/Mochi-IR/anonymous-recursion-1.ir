@@ -1,0 +1,83 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fib(n: int): int {
+func fib (regs=11)
+  // if n < 2 { return n }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Return       r0
+L0:
+  // var a = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var b = 1
+  Const        r5, 1
+  Move         r6, r5
+  // var i = 1
+  Const        r5, 1
+  Move         r7, r5
+L2:
+  // while i < n {
+  Less         r8, r7, r0
+  JumpIfFalse  r8, L1
+  // let t = a + b
+  AddInt       r9, r4, r6
+  // a = b
+  Move         r4, r6
+  // b = t
+  Move         r6, r9
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r10, r7, r5
+  Move         r7, r10
+  // while i < n {
+  Jump         L2
+L1:
+  // return b
+  Return       r6
+
+  // fun main() {
+func main (regs=21)
+  // for n in [0, 1, 2, 3, 4, 5, 10, 40, -1] {
+  Const        r0, [0, 1, 2, 3, 4, 5, 10, 40, -1]
+  IterPrep     r1, r0
+  Len          r2, r1
+  Const        r3, 0
+L3:
+  LessInt      r4, r3, r2
+  JumpIfFalse  r4, L0
+  Index        r5, r1, r3
+  Move         r6, r5
+  // if n < 0 {
+  Const        r7, 0
+  Less         r8, r6, r7
+  JumpIfFalse  r8, L1
+  // print("fib undefined for negative numbers")
+  Const        r9, "fib undefined for negative numbers"
+  Print        r9
+  // if n < 0 {
+  Jump         L2
+L1:
+  // print("fib " + str(n) + " = " + str(fib(n)))
+  Const        r10, "fib "
+  Str          r11, r6
+  Add          r12, r10, r11
+  Const        r13, " = "
+  Add          r14, r12, r13
+  Move         r15, r6
+  Call         r16, fib, r15
+  Str          r17, r16
+  Add          r18, r14, r17
+  Print        r18
+L2:
+  // for n in [0, 1, 2, 3, 4, 5, 10, 40, -1] {
+  Const        r19, 1
+  AddInt       r20, r3, r19
+  Move         r3, r20
+  Jump         L3
+L0:
+  Return       r0

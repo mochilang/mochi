@@ -1,0 +1,375 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fields(s: string): list<string> {
+func fields (regs=27)
+  // var words: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i + 1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Const        r12, " "
+  Equal        r13, r11, r12
+  Const        r14, "\n"
+  Equal        r15, r11, r14
+  Const        r16, "\t"
+  Equal        r17, r11, r16
+  Move         r18, r13
+  JumpIfTrue   r18, L1
+  Move         r18, r15
+  JumpIfTrue   r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // if len(cur) > 0 {
+  Len          r19, r4
+  Const        r5, 0
+  LessInt      r20, r5, r19
+  JumpIfFalse  r20, L3
+  // words = append(words, cur)
+  Append       r21, r2, r4
+  Move         r2, r21
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r22, r4, r11
+  Move         r4, r22
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r23, r6, r9
+  Move         r6, r23
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 {
+  Len          r24, r4
+  Const        r5, 0
+  LessInt      r25, r5, r24
+  JumpIfFalse  r25, L5
+  // words = append(words, cur)
+  Append       r26, r2, r4
+  Move         r2, r26
+L5:
+  // return words
+  Return       r2
+
+  // fun padRight(s: string, width: int): string {
+func padRight (regs=10)
+  // var out = s
+  Move         r2, r0
+  // var i = len(s)
+  Len          r3, r0
+  Move         r4, r3
+L1:
+  // while i < width {
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // out = out + " "
+  Const        r6, " "
+  Add          r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun join(xs: list<string>, sep: string): string {
+func join (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 {
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  // res = res + sep
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun validate(commands: list<string>, words: list<string>, mins: list<int>): list<string> {
+func validate (regs=38)
+  // var results: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // if len(words) == 0 {
+  Len          r5, r1
+  Const        r6, 0
+  EqualInt     r7, r5, r6
+  JumpIfFalse  r7, L0
+  // return results
+  Return       r4
+L0:
+  // var wi = 0
+  Const        r6, 0
+  Move         r8, r6
+L7:
+  // while wi < len(words) {
+  Len          r9, r1
+  LessInt      r10, r8, r9
+  JumpIfFalse  r10, L1
+  // let w = words[wi]
+  Index        r11, r1, r8
+  // var found = false
+  Const        r12, false
+  Move         r13, r12
+  // let wlen = len(w)
+  Len          r14, r11
+  // var ci = 0
+  Const        r6, 0
+  Move         r15, r6
+L5:
+  // while ci < len(commands) {
+  Len          r16, r0
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L2
+  // let cmd = commands[ci]
+  Index        r18, r0, r15
+  // if mins[ci] != 0 && wlen >= mins[ci] && wlen <= len(cmd) {
+  Index        r19, r2, r15
+  Index        r20, r2, r15
+  LessEq       r21, r20, r14
+  Len          r22, r18
+  LessEqInt    r23, r14, r22
+  Const        r6, 0
+  NotEqual     r24, r19, r6
+  Move         r25, r24
+  JumpIfFalse  r25, L3
+  Move         r25, r21
+  JumpIfFalse  r25, L3
+  Move         r25, r23
+L3:
+  JumpIfFalse  r25, L4
+  // let c = upper(cmd)
+  Upper        r26, r18
+  // let ww = upper(w)
+  Upper        r27, r11
+  // if substring(c, 0, wlen) == ww {
+  Const        r6, 0
+  Slice        r28, r26, r6, r14
+  Equal        r29, r28, r27
+  JumpIfFalse  r29, L4
+  // results = append(results, c)
+  Append       r30, r4, r26
+  Move         r4, r30
+  // found = true
+  Const        r31, true
+  Move         r13, r31
+  // break
+  Jump         L2
+L4:
+  // ci = ci + 1
+  Const        r32, 1
+  AddInt       r33, r15, r32
+  Move         r15, r33
+  // while ci < len(commands) {
+  Jump         L5
+L2:
+  // if !found {
+  Not          r34, r13
+  JumpIfFalse  r34, L6
+  // results = append(results, "*error*")
+  Const        r35, "*error*"
+  Append       r36, r4, r35
+  Move         r4, r36
+L6:
+  // wi = wi + 1
+  Const        r32, 1
+  AddInt       r37, r8, r32
+  Move         r8, r37
+  // while wi < len(words) {
+  Jump         L7
+L1:
+  // return results
+  Return       r4
+
+  // fun main() {
+func main (regs=66)
+  // let table = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " +
+  Const        r0, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy "
+  // "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " +
+  Const        r1, "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find "
+  // let table = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " +
+  Const        r2, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find "
+  // "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " +
+  Const        r3, "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput "
+  // "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " +
+  Const        r4, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput "
+  // " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " +
+  Const        r5, " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO "
+  // "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " +
+  Const        r6, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput  Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO "
+  // "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " +
+  Const        r7, "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT "
+  // " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " +
+  Const        r8, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput  Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT "
+  // "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " +
+  Const        r9, "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT "
+  // "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " +
+  Const        r10, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput  Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT "
+  // "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+  Const        r11, "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+  // "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " +
+  Const        r12, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput  Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+  // let commands = fields(table)
+  Const        r14, "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput  Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+  Move         r13, r14
+  Call         r15, fields, r13
+  // var mins: list<int> = []
+  Const        r16, []
+  Move         r17, r16
+  // var i = 0
+  Const        r18, 0
+  Move         r19, r18
+L5:
+  // while i < len(commands) {
+  Len          r20, r15
+  LessInt      r21, r19, r20
+  JumpIfFalse  r21, L0
+  // var count = 0
+  Const        r18, 0
+  Move         r22, r18
+  // var j = 0
+  Const        r18, 0
+  Move         r23, r18
+  // let cmd = commands[i]
+  Index        r24, r15, r19
+L4:
+  // while j < len(cmd) {
+  Len          r25, r24
+  LessInt      r26, r23, r25
+  JumpIfFalse  r26, L1
+  // let ch = substring(cmd, j, j + 1)
+  Const        r27, 1
+  AddInt       r28, r23, r27
+  Slice        r29, r24, r23, r28
+  // if ch >= "A" && ch <= "Z" {
+  Const        r30, "A"
+  LessEq       r31, r30, r29
+  Const        r32, "Z"
+  LessEq       r33, r29, r32
+  Move         r34, r31
+  JumpIfFalse  r34, L2
+  Move         r34, r33
+L2:
+  JumpIfFalse  r34, L3
+  // count = count + 1
+  Const        r27, 1
+  AddInt       r35, r22, r27
+  Move         r22, r35
+L3:
+  // j = j + 1
+  Const        r27, 1
+  AddInt       r36, r23, r27
+  Move         r23, r36
+  // while j < len(cmd) {
+  Jump         L4
+L1:
+  // mins = append(mins, count)
+  Append       r37, r17, r22
+  Move         r17, r37
+  // i = i + 1
+  Const        r27, 1
+  AddInt       r38, r19, r27
+  Move         r19, r38
+  // while i < len(commands) {
+  Jump         L5
+L0:
+  // let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+  Const        r39, "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+  // let words = fields(sentence)
+  Const        r39, "riG   rePEAT copies  put mo   rest    types   fup.    6       poweRin"
+  Move         r40, r39
+  Call         r41, fields, r40
+  // let results = validate(commands, words, mins)
+  Move         r42, r15
+  Move         r43, r41
+  Move         r44, r17
+  Call         r45, validate, r42, r43, r44
+  // var out1 = "user words:  "
+  Const        r46, "user words:  "
+  Move         r47, r46
+  // var k = 0
+  Const        r18, 0
+  Move         r48, r18
+L7:
+  // while k < len(words) {
+  Len          r49, r41
+  LessInt      r50, r48, r49
+  JumpIfFalse  r50, L6
+  // out1 = out1 + padRight(words[k], len(results[k])) + " "
+  Index        r53, r41, r48
+  Move         r51, r53
+  Index        r54, r45, r48
+  Len          r55, r54
+  Move         r52, r55
+  Call2        r56, padRight, r51, r52
+  Add          r57, r47, r56
+  Const        r58, " "
+  Add          r59, r57, r58
+  Move         r47, r59
+  // k = k + 1
+  Const        r27, 1
+  AddInt       r60, r48, r27
+  Move         r48, r60
+  // while k < len(words) {
+  Jump         L7
+L6:
+  // print(out1)
+  Print        r47
+  // print("full words:  " + join(results, " "))
+  Const        r61, "full words:  "
+  Move         r62, r45
+  Const        r58, " "
+  Move         r63, r58
+  Call2        r64, join, r62, r63
+  Add          r65, r61, r64
+  Print        r65
+  Return       r0
