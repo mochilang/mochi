@@ -2771,8 +2771,14 @@ func (fc *funcCompiler) emitBinaryOp(pos lexer.Position, op string, all bool, le
 		return dst
 	case "/":
 		dst := fc.newReg()
-		// SQL division always produces a floating point value.
-		fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
+		if fc.tags[left] == tagFloat || fc.tags[right] == tagFloat {
+			// SQL division with floats yields a float result.
+			fc.emit(pos, Instr{Op: OpDivFloat, A: dst, B: left, C: right})
+		} else if fc.tags[left] == tagInt && fc.tags[right] == tagInt {
+			fc.emit(pos, Instr{Op: OpDivInt, A: dst, B: left, C: right})
+		} else {
+			fc.emit(pos, Instr{Op: OpDiv, A: dst, B: left, C: right})
+		}
 		return dst
 	case "%":
 		dst := fc.newReg()

@@ -23,7 +23,7 @@ func main (regs=11)
   // print(a / b)
   Const        r4, 10
   Const        r5, 5
-  DivFloat     r9, r4, r5
+  Div          r9, r4, r5
   Print        r9
   // print(a % b)
   Const        r4, 10
