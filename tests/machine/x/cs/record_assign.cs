@@ -1,6 +1,6 @@
 using System;
 
-public struct Counter {
+public record struct Counter {
     public long n;
 }
 

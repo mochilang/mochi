@@ -1,11 +1,11 @@
 using System;
 
-public struct Person {
+public record struct Person {
     public string name;
     public long age;
 }
 
-public struct Book {
+public record struct Book {
     public string title;
     public Person author;
 }

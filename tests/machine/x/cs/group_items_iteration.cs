@@ -5,7 +5,7 @@ using System.Linq;
 class Program {
     static void Main() {
         List<Data> data = new List<Data> { new Data { tag = "a", val = 1 }, new Data { tag = "a", val = 2 }, new Data { tag = "b", val = 3 } };
-        var groups = _group_by(data, d => d.tag).Select(g => g).ToList();
+        var groups = _group_by<Data, string>(data, d => d.tag).Select(g => g).ToList();
         var tmp = new List<dynamic>();
         foreach (var g in groups) {
             int total = 0;
@@ -29,20 +29,20 @@ class Program {
     }
     
     
-    static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn) {
-        var groups = new Dictionary<string, _Group>();
+    static List<_Group<TKey, TItem>> _group_by<TItem, TKey>(IEnumerable<TItem> src, Func<TItem, TKey> keyfn) {
+        var groups = new Dictionary<string, _Group<TKey, TItem>>();
         var order = new List<string>();
         foreach (var it in src) {
             var key = keyfn(it);
             var ks = Convert.ToString(key);
             if (!groups.TryGetValue(ks, out var g)) {
-                g = new _Group(key);
+                g = new _Group<TKey, TItem>(key);
                 groups[ks] = g;
                 order.Add(ks);
             }
             g.Items.Add(it);
         }
-        var res = new List<_Group>();
+        var res = new List<_Group<TKey, TItem>>();
         foreach (var k in order) res.Add(groups[k]);
         return res;
     }

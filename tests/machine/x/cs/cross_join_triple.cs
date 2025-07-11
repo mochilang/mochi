@@ -7,17 +7,12 @@ class Program {
         List<int> nums = new List<int> { 1, 2 };
         List<string> letters = new List<string> { "A", "B" };
         List<bool> bools = new List<bool> { true, false };
-        List<Combo> combos = new Func<List<Combo>>(() => {
-    var _res = new List<Combo>();
-    foreach (var n in nums) {
-        foreach (var l in letters) {
-            foreach (var b in bools) {
-                _res.Add(new Combo { n = n, l = l, b = b });
-            }
-        }
-    }
-    return _res;
-})();
+        List<Combo> combos = (
+    from n in nums
+    from l in letters
+    from b in bools
+    select new Combo { n = n, l = l, b = b }
+).ToList();
         Console.WriteLine("--- Cross Join of three lists ---");
         foreach (var c in combos) {
             Console.WriteLine(string.Join(" ", new [] { Convert.ToString(c.n), Convert.ToString(c.l), Convert.ToString(c.b) }));

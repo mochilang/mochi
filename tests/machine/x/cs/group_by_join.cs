@@ -7,7 +7,7 @@ class Program {
         List<Customer> customers = new List<Customer> { new Customer { id = 1, name = "Alice" }, new Customer { id = 2, name = "Bob" } };
         List<Order> orders = new List<Order> { new Order { id = 100, customerId = 1 }, new Order { id = 101, customerId = 1 }, new Order { id = 102, customerId = 2 } };
         List<Stat> stats = new Func<List<Stat>>(() => {
-    var groups = new Dictionary<string, _Group>();
+    var groups = new Dictionary<string, _Group<string, Order>>();
     var order = new List<string>();
     foreach (var o in orders) {
         foreach (var c in customers) {
@@ -15,14 +15,14 @@ class Program {
             var key = c.name;
             var ks = Convert.ToString(key);
             if (!groups.TryGetValue(ks, out var g)) {
-                g = new _Group(key);
+                g = new _Group<string, Order>(key);
                 groups[ks] = g;
                 order.Add(ks);
             }
             g.Items.Add(o);
         }
     }
-    var items = new List<_Group>();
+    var items = new List<_Group<string, Order>>();
     foreach (var ks in order) items.Add(groups[ks]);
     var _res = new List<Stat>();
     foreach (var g in items) {
@@ -54,10 +54,12 @@ class Program {
     
     
     
-    public class _Group {
-        public dynamic key;
-        public List<dynamic> Items = new List<dynamic>();
-        public _Group(dynamic k) { key = k; }
+    public interface _IGroup { System.Collections.IEnumerable Items { get; } }
+    public class _Group<TKey, TItem> : _IGroup {
+        public TKey key;
+        public List<TItem> Items = new List<TItem>();
+        public _Group(TKey k) { key = k; }
+        System.Collections.IEnumerable _IGroup.Items => Items;
     }
     
 }

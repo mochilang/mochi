@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public struct Person {
+public record struct Person {
     public string name;
     public long age;
     public string status;

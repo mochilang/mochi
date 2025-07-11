@@ -409,7 +409,18 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		return nil
 	}
-	c.writeln(fmt.Sprintf("public struct %s {", name))
+	kw := "struct"
+	hasMethod := false
+	for _, m := range t.Members {
+		if m.Method != nil {
+			hasMethod = true
+			break
+		}
+	}
+	if !hasMethod {
+		kw = "record struct"
+	}
+	c.writeln(fmt.Sprintf("public %s %s {", kw, name))
 	c.indent++
 	for _, m := range t.Members {
 		if m.Field != nil {
@@ -435,7 +446,11 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-	c.writeln(fmt.Sprintf("public struct %s {", name))
+	kw := "struct"
+	if len(st.Methods) == 0 {
+		kw = "record struct"
+	}
+	c.writeln(fmt.Sprintf("public %s %s {", kw, name))
 	c.indent++
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
