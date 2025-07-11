@@ -126,6 +126,7 @@ Checklist:
 - [ ] Generate Go generics for union types where possible.
 - [ ] Provide better CLI messages during batch compilation.
 - [ ] Support custom formatting hooks for printers.
+- [x] Support Mochi list print semantics.
 - [ ] Emit warnings for unused variables in generated code.
 - [ ] Expand documentation comments for generated helper functions.
 - [ ] Investigate concurrency patterns for dataset operations.

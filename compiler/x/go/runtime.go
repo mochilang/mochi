@@ -535,6 +535,28 @@ const (
 		"    return fmt.Sprint(v)\n" +
 		"}\n"
 
+	helperPrint = "func _print(args ...any) {\n" +
+		"    first := true\n" +
+		"    for _, a := range args {\n" +
+		"        if !first { fmt.Print(\" \") }\n" +
+		"        first = false\n" +
+		"        rv := reflect.ValueOf(a)\n" +
+		"        if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {\n" +
+		"            fmt.Print(\"<nil>\")\n" +
+		"            continue\n" +
+		"        }\n" +
+		"        if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {\n" +
+		"            for i := 0; i < rv.Len(); i++ {\n" +
+		"                if i > 0 { fmt.Print(\" \") }\n" +
+		"                fmt.Print(_sprint(rv.Index(i).Interface()))\n" +
+		"            }\n" +
+		"            continue\n" +
+		"        }\n" +
+		"        fmt.Print(_sprint(a))\n" +
+		"    }\n" +
+		"    fmt.Println()\n" +
+		"}\n"
+
 	helperValues = "func _values(v any) []any {\n" +
 		"    switch m := v.(type) {\n" +
 		"    case map[string]any:\n" +
@@ -919,6 +941,7 @@ var helperMap = map[string]string{
 	"_reverseString": helperReverseString,
 	"_lower":         helperLower,
 	"_upper":         helperUpper,
+	"_print":         helperPrint,
 	"_sprint":        helperSprint,
 	"_values":        helperValues,
 	"_except":        helperExcept,
@@ -956,6 +979,11 @@ func (c *Compiler) use(name string) {
 	if name == "_sprint" {
 		c.imports["fmt"] = true
 		c.imports["reflect"] = true
+	}
+	if name == "_print" {
+		c.imports["fmt"] = true
+		c.imports["reflect"] = true
+		c.helpers["_sprint"] = true
 	}
 	if name == "_contains" {
 		c.imports["fmt"] = true

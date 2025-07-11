@@ -4,11 +4,12 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
 	var a []int = []int{1, 2}
-	fmt.Println(append(_convSlice[int, any](a), 3))
+	_print(append(_convSlice[int, any](a), 3))
 }
 
 func _convSlice[T any, U any](s []T) []U {
@@ -17,4 +18,41 @@ func _convSlice[T any, U any](s []T) []U {
 		out = append(out, any(v).(U))
 	}
 	return out
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
