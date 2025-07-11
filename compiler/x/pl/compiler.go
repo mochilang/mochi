@@ -13,25 +13,27 @@ import (
 )
 
 type Compiler struct {
-	buf           bytes.Buffer
-	funcBuf       bytes.Buffer
-	lambdaBuf     bytes.Buffer
-	out           *bytes.Buffer
-	indent        int
-	tmp           int
-	vars          map[string]string
-	mutVars       map[string]bool
-	retVar        string
-	needsGetItem  bool
-	needsSlice    bool
-	needsContains bool
-	needsLenAny   bool
-	needsSetItem  bool
-	needsGroup    bool
-	needsSetOps   bool
-	needsLoad     bool
-	needsSave     bool
-	needsExpect   bool
+	buf             bytes.Buffer
+	funcBuf         bytes.Buffer
+	lambdaBuf       bytes.Buffer
+	out             *bytes.Buffer
+	indent          int
+	tmp             int
+	vars            map[string]string
+	mutVars         map[string]bool
+	retVar          string
+	needsGetItem    bool
+	needsSlice      bool
+	needsContains   bool
+	needsLenAny     bool
+	needsSetItem    bool
+	needsGroup      bool
+	needsSetOps     bool
+	needsLoad       bool
+	needsSave       bool
+	needsExpect     bool
+	needsPythonAuto bool
+	needsGoAuto     bool
 
 	currentFun string
 	nested     map[string]nestedInfo
@@ -47,6 +49,8 @@ func New() *Compiler {
 	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
 	c.nested = make(map[string]nestedInfo)
 	c.ffiModules = make(map[string]string)
+	c.needsPythonAuto = false
+	c.needsGoAuto = false
 	c.out = &c.funcBuf
 	return c
 }
@@ -89,6 +93,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsLoad = false
 	c.needsSave = false
 	c.needsExpect = false
+	c.needsPythonAuto = false
+	c.needsGoAuto = false
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
 	c.ffiModules = make(map[string]string)
@@ -235,6 +241,14 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if c.needsExpect {
 		out.WriteString("expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).\n\n")
+	}
+	if c.needsPythonAuto {
+		out.WriteString("python_get(_, _, _) :- throw(error('python ffi not implemented')).\n")
+		out.WriteString("python_call(_, _, _, _) :- throw(error('python ffi not implemented')).\n\n")
+	}
+	if c.needsGoAuto {
+		out.WriteString("go_get(_, _, _) :- throw(error('go ffi not implemented')).\n")
+		out.WriteString("go_call(_, _, _, _) :- throw(error('go ffi not implemented')).\n\n")
 	}
 	out.Write(c.lambdaBuf.Bytes())
 	out.Write(c.funcBuf.Bytes())
@@ -706,6 +720,14 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	}
 	mod := *im.Lang + ":" + strings.Trim(im.Path, "\"")
 	c.ffiModules[aliasAtom] = mod
+	if im.Auto {
+		switch *im.Lang {
+		case "python":
+			c.needsPythonAuto = true
+		case "go":
+			c.needsGoAuto = true
+		}
+	}
 	switch mod {
 	case "go:mochi/runtime/ffi/go/testpkg":
 		c.writeln(fmt.Sprintf("%s_add(A, B, R) :- R is A + B.", aliasAtom))
@@ -1010,7 +1032,17 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) 
 						handled = false
 					}
 				default:
-					handled = false
+					if strings.HasPrefix(mod, "python:") {
+						c.needsPythonAuto = true
+						c.writeln(fmt.Sprintf("python_get('%s', '%s', %s),", strings.TrimPrefix(mod, "python:"), strings.ToLower(op.Field.Name), tmp))
+						handled = true
+					} else if strings.HasPrefix(mod, "go:") {
+						c.needsGoAuto = true
+						c.writeln(fmt.Sprintf("go_get('%s', '%s', %s),", strings.TrimPrefix(mod, "go:"), strings.ToLower(op.Field.Name), tmp))
+						handled = true
+					} else {
+						handled = false
+					}
 				}
 				if handled {
 					val = tmp
@@ -1082,7 +1114,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, bool, error) {
 						handled = false
 					}
 				default:
-					handled = false
+					if strings.HasPrefix(mod, "python:") {
+						c.needsPythonAuto = true
+						c.writeln(fmt.Sprintf("python_get('%s', '%s', %s),", strings.TrimPrefix(mod, "python:"), strings.ToLower(f), tmp))
+						handled = true
+					} else if strings.HasPrefix(mod, "go:") {
+						c.needsGoAuto = true
+						c.writeln(fmt.Sprintf("go_get('%s', '%s', %s),", strings.TrimPrefix(mod, "go:"), strings.ToLower(f), tmp))
+						handled = true
+					} else {
+						handled = false
+					}
 				}
 				if handled {
 					val = tmp
@@ -1879,6 +1921,26 @@ func (c *Compiler) compileMethodCall(container, method string, call *parser.Call
 				}
 				tmp := c.newTmp()
 				c.writeln(fmt.Sprintf("%s_log(%s, %s),", container, a1, tmp))
+				return tmp, true, nil
+			}
+		default:
+			args := make([]string, len(call.Args))
+			for i, a := range call.Args {
+				s, _, err := c.compileExpr(a)
+				if err != nil {
+					return "", false, err
+				}
+				args[i] = s
+			}
+			tmp := c.newTmp()
+			if strings.HasPrefix(mod, "python:") {
+				c.needsPythonAuto = true
+				c.writeln(fmt.Sprintf("python_call('%s', '%s', [%s], %s),", strings.TrimPrefix(mod, "python:"), strings.ToLower(method), strings.Join(args, ", "), tmp))
+				return tmp, true, nil
+			}
+			if strings.HasPrefix(mod, "go:") {
+				c.needsGoAuto = true
+				c.writeln(fmt.Sprintf("go_call('%s', '%s', [%s], %s),", strings.TrimPrefix(mod, "go:"), strings.ToLower(method), strings.Join(args, ", "), tmp))
 				return tmp, true, nil
 			}
 		}
