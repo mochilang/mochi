@@ -1,4 +1,4 @@
 open System
 
-printfn "%A" (-3)
-printfn "%A" (5 + (-2))
+printfn "%d" (-3)
+printfn "%d" (5 + (-2))

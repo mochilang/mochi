@@ -10,8 +10,8 @@ type Anon2 = {
     count: obj
     avg_age: obj
 }
-let people = [{ name = "Alice"; age = 30; city = "Paris" }; { name = "Bob"; age = 15; city = "Hanoi" }; { name = "Charlie"; age = 65; city = "Paris" }; { name = "Diana"; age = 45; city = "Hanoi" }; { name = "Eve"; age = 70; city = "Paris" }; { name = "Frank"; age = 22; city = "Hanoi" }]
-let stats = [ for gKey, gItems in [ for person in people do yield person ] |> List.groupBy (fun person -> person.city) do
+let people: obj list = [{ name = "Alice"; age = 30; city = "Paris" }; { name = "Bob"; age = 15; city = "Hanoi" }; { name = "Charlie"; age = 65; city = "Paris" }; { name = "Diana"; age = 45; city = "Hanoi" }; { name = "Eve"; age = 70; city = "Paris" }; { name = "Frank"; age = 22; city = "Hanoi" }]
+let stats: obj list = [ for gKey, gItems in [ for person in people do yield person ] |> List.groupBy (fun person -> person.city) do
     let g = {| key = gKey; items = gItems |}
     yield { city = g.key; count = List.length g.items; avg_age = (List.sum [ for p in g do yield p.age ] / List.length [ for p in g do yield p.age ]) } ]
 printfn "%s" "--- People grouped by city ---"

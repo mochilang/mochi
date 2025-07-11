@@ -1,21 +1,21 @@
 open System
 
-let x = 2
-let label = (match x with
+let x: int = 2
+let label: obj = (match x with
     | 1 -> "one"
     | 2 -> "two"
     | 3 -> "three"
     | _ -> "unknown")
 printfn "%A" (label)
 let day: string = "sun"
-let mood = (match day with
+let mood: obj = (match day with
     | "mon" -> "tired"
     | "fri" -> "excited"
     | "sun" -> "relaxed"
     | _ -> "normal")
 printfn "%A" (mood)
-let ok = true
-let status = (match ok with
+let ok: bool = true
+let status: obj = (match ok with
     | true -> "confirmed"
     | false -> "denied")
 printfn "%A" (status)

@@ -1,14 +1,14 @@
 open System
 
 type Anon1 = {
-    n: obj
-    l: obj
-    b: obj
+    n: int
+    l: string
+    b: bool
 }
-let nums = [1; 2]
-let letters = ["A"; "B"]
-let bools = [true; false]
-let combos = [ for n in nums do 
+let nums: int list = [1; 2]
+let letters: string list = ["A"; "B"]
+let bools: bool list = [true; false]
+let combos: obj list = [ for n in nums do 
   for l in letters do 
   for b in bools do yield { n = n; l = l; b = b } ]
 printfn "%s" "--- Cross Join of three lists ---"

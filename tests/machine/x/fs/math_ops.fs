@@ -1,5 +1,5 @@
 open System
 
-printfn "%A" (6 * 7)
-printfn "%A" (7 / 2)
-printfn "%A" (7 % 2)
+printfn "%d" (6 * 7)
+printfn "%d" (7 / 2)
+printfn "%d" (7 % 2)
