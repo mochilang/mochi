@@ -12,8 +12,7 @@ inline bool operator==(const Person &a, const Person &b) {
 }
 inline bool operator!=(const Person &a, const Person &b) { return !(a == b); }
 int main() {
-  auto people = std::vector<decltype(Person{std::string("Alice"), 17,
-                                            std::string("minor")})>{
+  auto people = std::vector<Person>{
       Person{std::string("Alice"), 17, std::string("minor")},
       Person{std::string("Bob"), 25, std::string("unknown")},
       Person{std::string("Charlie"), 18, std::string("unknown")},

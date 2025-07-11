@@ -186,3 +186,27 @@ func collectIdents(e *parser.Expr, out map[string]struct{}) {
 		scanPostfix(part.Right)
 	}
 }
+
+// simpleExistsQuery checks if the expression is a simple query suitable for
+// translation to std::any_of. It returns the QueryExpr if so.
+func simpleExistsQuery(e *parser.Expr) (*parser.QueryExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return nil, false
+	}
+	pf := u.Value
+	if len(pf.Ops) != 0 || pf.Target == nil || pf.Target.Query == nil {
+		return nil, false
+	}
+	q := pf.Target.Query
+	if len(q.Froms) != 0 || len(q.Joins) != 0 || q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil || q.Distinct {
+		return nil, false
+	}
+	if id, ok := identName(q.Select); !ok || id != q.Var {
+		return nil, false
+	}
+	return q, true
+}

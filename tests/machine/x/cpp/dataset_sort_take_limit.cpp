@@ -4,27 +4,25 @@
 #include <utility>
 #include <vector>
 
-struct __struct1 {
+struct Product {
   decltype(std::string("Laptop")) name;
   decltype(1500) price;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Product &a, const Product &b) {
   return a.name == b.name && a.price == b.price;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Product &a, const Product &b) { return !(a == b); }
 int main() {
-  std::vector<__struct1> products =
-      std::vector<__struct1>{__struct1{std::string("Laptop"), 1500},
-                             __struct1{std::string("Smartphone"), 900},
-                             __struct1{std::string("Tablet"), 600},
-                             __struct1{std::string("Monitor"), 300},
-                             __struct1{std::string("Keyboard"), 100},
-                             __struct1{std::string("Mouse"), 50},
-                             __struct1{std::string("Headphones"), 200}};
+  std::vector<Product> products =
+      std::vector<Product>{Product{std::string("Laptop"), 1500},
+                           Product{std::string("Smartphone"), 900},
+                           Product{std::string("Tablet"), 600},
+                           Product{std::string("Monitor"), 300},
+                           Product{std::string("Keyboard"), 100},
+                           Product{std::string("Mouse"), 50},
+                           Product{std::string("Headphones"), 200}};
   auto expensive = ([&]() {
-    std::vector<std::pair<decltype(std::declval<__struct1>().price), __struct1>>
+    std::vector<std::pair<decltype(std::declval<Product>().price), Product>>
         __items;
     for (auto p : products) {
       __items.push_back({(-p.price), p});
@@ -35,7 +33,7 @@ int main() {
       __items.erase(__items.begin(), __items.begin() + 1);
     if ((size_t)3 < __items.size())
       __items.resize(3);
-    std::vector<__struct1> __res;
+    std::vector<Product> __res;
     for (auto &p : __items)
       __res.push_back(p.second);
     return __res;

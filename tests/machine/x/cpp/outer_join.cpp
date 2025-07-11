@@ -2,46 +2,42 @@
 #include <string>
 #include <vector>
 
-struct __struct1 {
+struct Customer {
   decltype(1) id;
   decltype(std::string("Alice")) name;
 };
-inline bool operator==(const __struct1 &a, const __struct1 &b) {
+inline bool operator==(const Customer &a, const Customer &b) {
   return a.id == b.id && a.name == b.name;
 }
-inline bool operator!=(const __struct1 &a, const __struct1 &b) {
+inline bool operator!=(const Customer &a, const Customer &b) {
   return !(a == b);
 }
-struct __struct2 {
+struct Order {
   decltype(100) id;
   decltype(1) customerId;
   decltype(250) total;
 };
-inline bool operator==(const __struct2 &a, const __struct2 &b) {
+inline bool operator==(const Order &a, const Order &b) {
   return a.id == b.id && a.customerId == b.customerId && a.total == b.total;
 }
-inline bool operator!=(const __struct2 &a, const __struct2 &b) {
-  return !(a == b);
-}
-struct __struct3 {
-  __struct2 order;
-  __struct1 customer;
+inline bool operator!=(const Order &a, const Order &b) { return !(a == b); }
+struct Result {
+  Order order;
+  Customer customer;
 };
-inline bool operator==(const __struct3 &a, const __struct3 &b) {
+inline bool operator==(const Result &a, const Result &b) {
   return a.order == b.order && a.customer == b.customer;
 }
-inline bool operator!=(const __struct3 &a, const __struct3 &b) {
-  return !(a == b);
-}
+inline bool operator!=(const Result &a, const Result &b) { return !(a == b); }
 int main() {
-  std::vector<__struct1> customers = std::vector<__struct1>{
-      __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-      __struct1{3, std::string("Charlie")}, __struct1{4, std::string("Diana")}};
-  std::vector<__struct2> orders =
-      std::vector<__struct2>{__struct2{100, 1, 250}, __struct2{101, 2, 125},
-                             __struct2{102, 1, 300}, __struct2{103, 5, 80}};
+  std::vector<Customer> customers = std::vector<Customer>{
+      Customer{1, std::string("Alice")}, Customer{2, std::string("Bob")},
+      Customer{3, std::string("Charlie")}, Customer{4, std::string("Diana")}};
+  std::vector<Order> orders =
+      std::vector<Order>{Order{100, 1, 250}, Order{101, 2, 125},
+                         Order{102, 1, 300}, Order{103, 5, 80}};
   auto result = ([&]() {
-    std::vector<__struct3> __items;
+    std::vector<Result> __items;
     for (auto o : orders) {
       {
         bool __matched0 = false;
@@ -49,11 +45,11 @@ int main() {
           if (!((o.customerId == c.id)))
             continue;
           __matched0 = true;
-          __items.push_back(__struct3{o, c});
+          __items.push_back(Result{o, c});
         }
         if (!__matched0) {
           auto c = std::decay_t<decltype(*(customers).begin())>{};
-          __items.push_back(__struct3{o, c});
+          __items.push_back(Result{o, c});
         }
       }
     }
@@ -61,8 +57,8 @@ int main() {
   })();
   std::cout << std::string("--- Outer Join using syntax ---") << std::endl;
   for (auto row : result) {
-    if ((row.order != __struct2{})) {
-      if ((row.customer != __struct1{})) {
+    if ((row.order != Order{})) {
+      if ((row.customer != Customer{})) {
         {
           std::cout << std::string("Order");
           std::cout << ' ';
