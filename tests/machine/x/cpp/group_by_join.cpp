@@ -23,8 +23,8 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
 struct __struct3 {
-  decltype(o) o;
-  decltype(c) c;
+  __struct2 o;
+  __struct1 c;
 };
 inline bool operator==(const __struct3 &a, const __struct3 &b) {
   return a.o == b.o && a.c == b.c;
@@ -33,7 +33,7 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
 struct __struct4 {
-  decltype(c.name) key;
+  decltype(std::declval<__struct1>().name) key;
   std::vector<__struct3> items;
 };
 inline bool operator==(const __struct4 &a, const __struct4 &b) {
@@ -53,10 +53,10 @@ inline bool operator!=(const __struct5 &a, const __struct5 &b) {
   return !(a == b);
 }
 int main() {
-  auto customers = std::vector<__struct1>{__struct1{1, std::string("Alice")},
-                                          __struct1{2, std::string("Bob")}};
-  auto orders = std::vector<__struct2>{__struct2{100, 1}, __struct2{101, 1},
-                                       __struct2{102, 2}};
+  std::vector<__struct1> customers = std::vector<__struct1>{
+      __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
+  std::vector<__struct2> orders = std::vector<__struct2>{
+      __struct2{100, 1}, __struct2{101, 1}, __struct2{102, 2}};
   auto stats = ([&]() {
     std::vector<__struct4> __groups;
     for (auto o : orders) {

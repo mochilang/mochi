@@ -59,13 +59,13 @@ inline bool operator!=(const __struct4 &a, const __struct4 &b) {
   return !(a == b);
 }
 struct __struct5 {
-  decltype(c.c_custkey) c_custkey;
-  decltype(c.c_name) c_name;
-  decltype(c.c_acctbal) c_acctbal;
-  decltype(c.c_address) c_address;
-  decltype(c.c_phone) c_phone;
-  decltype(c.c_comment) c_comment;
-  decltype(n.n_name) n_name;
+  decltype(std::declval<__struct2>().c_custkey) c_custkey;
+  decltype(std::declval<__struct2>().c_name) c_name;
+  decltype(std::declval<__struct2>().c_acctbal) c_acctbal;
+  decltype(std::declval<__struct2>().c_address) c_address;
+  decltype(std::declval<__struct2>().c_phone) c_phone;
+  decltype(std::declval<__struct2>().c_comment) c_comment;
+  decltype(std::declval<__struct1>().n_name) n_name;
 };
 inline bool operator==(const __struct5 &a, const __struct5 &b) {
   return a.c_custkey == b.c_custkey && a.c_name == b.c_name &&
@@ -77,10 +77,10 @@ inline bool operator!=(const __struct5 &a, const __struct5 &b) {
   return !(a == b);
 }
 struct __struct6 {
-  decltype(c) c;
-  decltype(o) o;
-  decltype(l) l;
-  decltype(n) n;
+  __struct2 c;
+  __struct3 o;
+  __struct4 l;
+  __struct1 n;
 };
 inline bool operator==(const __struct6 &a, const __struct6 &b) {
   return a.c == b.c && a.o == b.o && a.l == b.l && a.n == b.n;
@@ -118,14 +118,15 @@ inline bool operator!=(const __struct8 &a, const __struct8 &b) {
   return !(a == b);
 }
 int main() {
-  auto nation = std::vector<__struct1>{__struct1{1, std::string("BRAZIL")}};
-  auto customer = std::vector<__struct2>{
+  std::vector<__struct1> nation =
+      std::vector<__struct1>{__struct1{1, std::string("BRAZIL")}};
+  std::vector<__struct2> customer = std::vector<__struct2>{
       __struct2{1, std::string("Alice"), 100, 1, std::string("123 St"),
                 std::string("123-456"), std::string("Loyal")}};
-  auto orders =
+  std::vector<__struct3> orders =
       std::vector<__struct3>{__struct3{1000, 1, std::string("1993-10-15")},
                              __struct3{2000, 1, std::string("1994-01-02")}};
-  auto lineitem =
+  std::vector<__struct4> lineitem =
       std::vector<__struct4>{__struct4{1000, std::string("R"), 1000, 0.1},
                              __struct4{2000, std::string("N"), 500, 0}};
   auto start_date = std::string("1993-10-01");

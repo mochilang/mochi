@@ -13,8 +13,8 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 struct __struct2 {
-  decltype(person.name) name;
-  decltype(person.age) age;
+  decltype(std::declval<__struct1>().name) name;
+  decltype(std::declval<__struct1>().age) age;
   bool is_senior;
 };
 inline bool operator==(const __struct2 &a, const __struct2 &b) {
@@ -24,10 +24,10 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
   return !(a == b);
 }
 int main() {
-  auto people = std::vector<__struct1>{__struct1{std::string("Alice"), 30},
-                                       __struct1{std::string("Bob"), 15},
-                                       __struct1{std::string("Charlie"), 65},
-                                       __struct1{std::string("Diana"), 45}};
+  std::vector<__struct1> people = std::vector<__struct1>{
+      __struct1{std::string("Alice"), 30}, __struct1{std::string("Bob"), 15},
+      __struct1{std::string("Charlie"), 65},
+      __struct1{std::string("Diana"), 45}};
   auto adults = ([&]() {
     std::vector<__struct2> __items;
     for (auto person : people) {

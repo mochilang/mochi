@@ -3,7 +3,7 @@
 #include <vector>
 
 struct __struct1 {
-  decltype(n) n;
+  int n;
   std::string l;
 };
 inline bool operator==(const __struct1 &a, const __struct1 &b) {
@@ -13,7 +13,7 @@ inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
 int main() {
-  auto nums = std::vector<int>{1, 2, 3};
+  std::vector<int> nums = std::vector<int>{1, 2, 3};
   std::vector<std::string> letters =
       std::vector<std::string>{std::string("A"), std::string("B")};
   auto pairs = ([&]() {

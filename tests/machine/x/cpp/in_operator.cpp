@@ -3,7 +3,7 @@
 #include <vector>
 
 int main() {
-  auto xs = std::vector<int>{1, 2, 3};
+  std::vector<int> xs = std::vector<int>{1, 2, 3};
   std::cout << std::boolalpha
             << (std::find(xs.begin(), xs.end(), 2) != xs.end()) << std::endl;
   std::cout << std::boolalpha

@@ -33,8 +33,8 @@ inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
 struct __struct4 {
-  decltype(c.name) name;
-  decltype(i.sku) sku;
+  decltype(std::declval<__struct1>().name) name;
+  decltype(std::declval<__struct3>().sku) sku;
 };
 inline bool operator==(const __struct4 &a, const __struct4 &b) {
   return a.name == b.name && a.sku == b.sku;
@@ -43,11 +43,12 @@ inline bool operator!=(const __struct4 &a, const __struct4 &b) {
   return !(a == b);
 }
 int main() {
-  auto customers = std::vector<__struct1>{__struct1{1, std::string("Alice")},
-                                          __struct1{2, std::string("Bob")}};
-  auto orders = std::vector<__struct2>{__struct2{100, 1}, __struct2{101, 2}};
-  auto items = std::vector<__struct3>{__struct3{100, std::string("a")},
-                                      __struct3{101, std::string("b")}};
+  std::vector<__struct1> customers = std::vector<__struct1>{
+      __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
+  std::vector<__struct2> orders =
+      std::vector<__struct2>{__struct2{100, 1}, __struct2{101, 2}};
+  std::vector<__struct3> items = std::vector<__struct3>{
+      __struct3{100, std::string("a")}, __struct3{101, std::string("b")}};
   auto result = ([&]() {
     std::vector<__struct4> __items;
     for (auto o : orders) {
