@@ -949,7 +949,11 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
+	if ml := isMapLiteral(v.Value); ml != nil && v.Type == nil {
+		c.forceMapLiteral = true
+	}
 	expr, err := c.compileExpr(v.Value)
+	c.forceMapLiteral = false
 	c.curVar = orig
 	if err != nil {
 		return err
@@ -1838,8 +1842,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	typ := ""
-	if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 {
+	if p.Target.Selector != nil {
 		typ = c.vars[p.Target.Selector.Root]
+		for _, f := range p.Target.Selector.Tail {
+			if strings.HasPrefix(typ, "Map<") {
+				typ = mapValueType(typ)
+			} else {
+				typ = c.fieldType(typ, f)
+			}
+		}
 	}
 	for i, op := range p.Ops {
 		switch {
