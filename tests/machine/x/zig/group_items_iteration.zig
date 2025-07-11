@@ -42,7 +42,7 @@ pub fn main() void {
 }{
     .tag = g.key,
     .total = total,
-}) catch unreachable; break :blk2 _tmp8.toOwnedSlice() catch unreachable; };
+}) catch unreachable; break :blk2 _tmp8.items; };
     }
     std.debug.print("{any}\n", .{result});
 }
