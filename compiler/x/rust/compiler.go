@@ -687,7 +687,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("fn max(v: &[i32]) -> i32 {\n    *v.iter().max().unwrap()\n}\n\n")
 	}
 	if c.helpers["_union"] {
-		out.WriteString("fn _union<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let mut set: HashSet<T> = a.into_iter().collect();\n    set.extend(b.into_iter());\n    set.into_iter().collect()\n}\n\n")
+		out.WriteString("fn _union<T: Eq + std::hash::Hash + Clone + Ord>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let mut set: HashSet<T> = a.into_iter().collect();\n    set.extend(b.into_iter());\n    let mut v: Vec<T> = set.into_iter().collect();\n    v.sort();\n    v\n}\n\n")
 	}
 	if c.helpers["_union_all"] {
 		out.WriteString("fn _union_all<T: Clone>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    a.extend(b);\n    a\n}\n\n")
@@ -1872,6 +1872,7 @@ func (c *Compiler) compileGroupBySimple(q *parser.QueryExpr, src string, child *
 		b.WriteString(groupVec)
 		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
 		b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
+		b.WriteString(fmt.Sprintf(" %s.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap());", groupVec))
 	}
 
 	groupVar := q.Group.Name
@@ -2170,6 +2171,7 @@ func (c *Compiler) compileGroupByJoin(q *parser.QueryExpr, src string, child *ty
 		b.WriteString(groupVec)
 		b.WriteString(fmt.Sprintf(" = Vec::<%s>::new();", groupStruct))
 		b.WriteString(fmt.Sprintf(" for (k,v) in %s { %s.push(%s { key: k, items: v }); }", mapTmp, groupVec, groupStruct))
+		b.WriteString(fmt.Sprintf(" %s.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap());", groupVec))
 	}
 
 	groupVar := q.Group.Name

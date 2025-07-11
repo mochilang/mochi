@@ -1,8 +1,10 @@
-fn _union<T: Eq + std::hash::Hash + Clone>(a: Vec<T>, b: Vec<T>) -> Vec<T> {
+fn _union<T: Eq + std::hash::Hash + Clone + Ord>(a: Vec<T>, b: Vec<T>) -> Vec<T> {
     use std::collections::HashSet;
     let mut set: HashSet<T> = a.into_iter().collect();
     set.extend(b.into_iter());
-    set.into_iter().collect()
+    let mut v: Vec<T> = set.into_iter().collect();
+    v.sort();
+    v
 }
 
 fn _union_all<T: Clone>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {
