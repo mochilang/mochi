@@ -1,5 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/update_stmt.pl:31: user:main people_update/2: Unknown procedure: get_item/3
-ERROR:   However, there are definitions for:
-ERROR:         set_item/4
-

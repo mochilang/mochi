@@ -5,7 +5,7 @@ p__lambda0(X, _Res) :-
 :- initialization(main, main).
 main :-
     Square = p__lambda0,
-    square(6, _V1),
+    call(Square, 6, _V1),
     write(_V1),
     nl,
     true.

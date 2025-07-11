@@ -36,6 +36,7 @@ type Compiler struct {
 	currentFun string
 	nested     map[string]nestedInfo
 	ffiModules map[string]string
+	funcArity  map[string]int
 }
 
 type nestedInfo struct {
@@ -47,6 +48,7 @@ func New() *Compiler {
 	c := &Compiler{vars: make(map[string]string), mutVars: make(map[string]bool)}
 	c.nested = make(map[string]nestedInfo)
 	c.ffiModules = make(map[string]string)
+	c.funcArity = make(map[string]int)
 	c.out = &c.funcBuf
 	return c
 }
@@ -92,8 +94,15 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.nested = make(map[string]nestedInfo)
 	c.currentFun = ""
 	c.ffiModules = make(map[string]string)
+	c.funcArity = make(map[string]int)
 
 	c.out = &c.funcBuf
+	// collect function arities before compilation for partial application
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			c.funcArity[st.Fun.Name] = len(st.Fun.Params)
+		}
+	}
 	for _, st := range p.Statements {
 		if st.Import != nil {
 			if err := c.compileImport(st.Import); err != nil {
@@ -322,7 +331,9 @@ func (c *Compiler) compileNestedFun(fn *parser.FunStmt) error {
 	newFn := &parser.FunStmt{Name: name, Params: params, Body: fn.Body}
 	c.nested[fn.Name] = nestedInfo{name: sanitizeAtom(name), captured: captures}
 	err := c.compileFun(newFn)
-	delete(c.nested, fn.Name)
+	// Keep the nested function info so calls within the outer function
+	// body can resolve to the generated predicate. The map will be reset
+	// when the outer function compilation finishes.
 	return err
 }
 
@@ -1213,6 +1224,23 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		c.writeln(fmt.Sprintf("%s(%s, %s),", info.name, strings.Join(args, ", "), tmp))
 		return tmp, false, nil
 	}
+	if ar, ok := c.funcArity[call.Func]; ok && len(call.Args) < ar {
+		return c.compilePartialCall(call, ar)
+	}
+	if _, ok := c.vars[call.Func]; ok || c.mutVars[call.Func] {
+		fn := c.lookupVar(call.Func)
+		args := make([]string, len(call.Args))
+		for i, a := range call.Args {
+			s, _, err := c.compileExpr(a)
+			if err != nil {
+				return "", false, err
+			}
+			args[i] = s
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("call(%s, %s, %s),", fn, strings.Join(args, ", "), tmp))
+		return tmp, false, nil
+	}
 	switch call.Func {
 	case "append":
 		if len(call.Args) != 2 {
@@ -1768,6 +1796,36 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
 	c.indent = oldIndent
 	c.out = oldOut
 	return name, false, nil
+}
+
+func (c *Compiler) compilePartialCall(call *parser.CallExpr, arity int) (string, bool, error) {
+	captured := make([]string, len(call.Args))
+	for i, a := range call.Args {
+		v, _, err := c.compileExpr(a)
+		if err != nil {
+			return "", false, err
+		}
+		captured[i] = v
+	}
+	params := make([]string, arity-len(call.Args))
+	for i := range params {
+		params[i] = fmt.Sprintf("P%d", i)
+	}
+	lambda := fmt.Sprintf("p__partial%d", c.tmp)
+	c.tmp++
+	oldIndent := c.indent
+	oldOut := c.out
+	c.indent = 0
+	c.out = &c.lambdaBuf
+	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambda, strings.Join(params, ", ")))
+	c.indent++
+	args := append(captured, params...)
+	c.writeln(fmt.Sprintf("%s(%s, _Res).", sanitizeAtom(call.Func), strings.Join(args, ", ")))
+	c.indent--
+	c.writeln("")
+	c.indent = oldIndent
+	c.out = oldOut
+	return lambda, false, nil
 }
 
 func (c *Compiler) compileIndex(container string, idx *parser.IndexOp) (string, bool, error) {

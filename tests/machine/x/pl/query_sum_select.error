@@ -1,3 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/query_sum_select.pl:36: user:main Unknown message: error('sum expects list or group')
-

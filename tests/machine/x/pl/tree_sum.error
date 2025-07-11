@@ -1,8 +1,0 @@
-run: exit status 2
-ERROR: /workspace/mochi/tests/machine/x/pl/tree_sum.pl:8: user:main Stack limit (1.0Gb) exceeded
-ERROR:   Stack sizes: local: 0.9Gb, global: 67.5Mb, trail: 0Kb
-ERROR:   Stack depth: 8,848,928, last-call: 0%, Choice points: 4
-ERROR:   Probable infinite recursion (cycle):
-ERROR:     [8,848,928] user:sum_tree(_116, _118)
-ERROR:     [8,848,927] user:sum_tree(_136, _138)
-

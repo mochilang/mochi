@@ -3,7 +3,7 @@ outer__inner(X, Y, _Res) :-
     _Res is (X + Y).
 
 outer(X, _Res) :-
-    inner(5, _V0),
+    outer__inner(X, 5, _V0),
     _Res = _V0.
 
 :- initialization(main, main).
