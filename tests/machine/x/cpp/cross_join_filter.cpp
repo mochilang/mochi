@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 struct __struct1 {
@@ -11,22 +12,21 @@ inline bool operator==(const __struct1 &a, const __struct1 &b) {
 inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
-std::vector<int> nums = std::vector<decltype(1)>{1, 2, 3};
-std::vector<std::string> letters =
-    std::vector<decltype(std::string("A"))>{std::string("A"), std::string("B")};
-auto pairs = ([]() {
-  std::vector<__struct1> __items;
-  for (auto n : nums) {
-    for (auto l : letters) {
-      if (!(((n % 2) == 0)))
-        continue;
-      __items.push_back(__struct1{n, l});
-    }
-  }
-  return __items;
-})();
-
 int main() {
+  std::vector<int> nums = std::vector<decltype(1)>{1, 2, 3};
+  std::vector<std::string> letters = std::vector<decltype(std::string("A"))>{
+      std::string("A"), std::string("B")};
+  auto pairs = ([&]() {
+    std::vector<__struct1> __items;
+    for (auto n : nums) {
+      for (auto l : letters) {
+        if (!(((n % 2) == 0)))
+          continue;
+        __items.push_back(__struct1{n, l});
+      }
+    }
+    return __items;
+  })();
   std::cout << std::string("--- Even pairs ---") << std::endl;
   for (auto p : pairs) {
     {

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 struct __struct1 {
@@ -32,35 +33,34 @@ inline bool operator==(const __struct3 &a, const __struct3 &b) {
 inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
-std::vector<__struct1> customers =
-    std::vector<decltype(__struct1{1, std::string("Alice")})>{
-        __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
-        __struct1{3, std::string("Charlie")},
-        __struct1{4, std::string("Diana")}};
-std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1, 250})>{
-    __struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300},
-    __struct2{103, 5, 80}};
-auto result = ([]() {
-  std::vector<__struct3> __items;
-  for (auto o : orders) {
-    {
-      bool __matched0 = false;
-      for (auto c : customers) {
-        if (!((o.customerId == c.id)))
-          continue;
-        __matched0 = true;
-        __items.push_back(__struct3{o, c});
-      }
-      if (!__matched0) {
-        auto c = std::decay_t<decltype(*(customers).begin())>{};
-        __items.push_back(__struct3{o, c});
+int main() {
+  std::vector<__struct1> customers =
+      std::vector<decltype(__struct1{1, std::string("Alice")})>{
+          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")},
+          __struct1{3, std::string("Charlie")},
+          __struct1{4, std::string("Diana")}};
+  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1, 250})>{
+      __struct2{100, 1, 250}, __struct2{101, 2, 125}, __struct2{102, 1, 300},
+      __struct2{103, 5, 80}};
+  auto result = ([&]() {
+    std::vector<__struct3> __items;
+    for (auto o : orders) {
+      {
+        bool __matched0 = false;
+        for (auto c : customers) {
+          if (!((o.customerId == c.id)))
+            continue;
+          __matched0 = true;
+          __items.push_back(__struct3{o, c});
+        }
+        if (!__matched0) {
+          auto c = std::decay_t<decltype(*(customers).begin())>{};
+          __items.push_back(__struct3{o, c});
+        }
       }
     }
-  }
-  return __items;
-})();
-
-int main() {
+    return __items;
+  })();
   std::cout << std::string("--- Outer Join using syntax ---") << std::endl;
   for (auto row : result) {
     if ((row.order != __struct2{})) {

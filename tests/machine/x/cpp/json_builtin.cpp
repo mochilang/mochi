@@ -73,9 +73,8 @@ inline void __json(const __struct1 &v) {
   __json(v.b);
   std::cout << "}";
 }
-auto m = __struct1{1, 2};
-
 int main() {
+  auto m = __struct1{1, 2};
   (__json(m));
   return 0;
 }

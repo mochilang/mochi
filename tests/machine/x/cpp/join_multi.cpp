@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 struct __struct1 {
@@ -41,31 +42,30 @@ inline bool operator==(const __struct4 &a, const __struct4 &b) {
 inline bool operator!=(const __struct4 &a, const __struct4 &b) {
   return !(a == b);
 }
-std::vector<__struct1> customers =
-    std::vector<decltype(__struct1{1, std::string("Alice")})>{
-        __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
-std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
-    __struct2{100, 1}, __struct2{101, 2}};
-std::vector<__struct3> items =
-    std::vector<decltype(__struct3{100, std::string("a")})>{
-        __struct3{100, std::string("a")}, __struct3{101, std::string("b")}};
-auto result = ([]() {
-  std::vector<__struct4> __items;
-  for (auto o : orders) {
-    for (auto c : customers) {
-      if (!((o.customerId == c.id)))
-        continue;
-      for (auto i : items) {
-        if (!((o.id == i.orderId)))
+int main() {
+  std::vector<__struct1> customers =
+      std::vector<decltype(__struct1{1, std::string("Alice")})>{
+          __struct1{1, std::string("Alice")}, __struct1{2, std::string("Bob")}};
+  std::vector<__struct2> orders = std::vector<decltype(__struct2{100, 1})>{
+      __struct2{100, 1}, __struct2{101, 2}};
+  std::vector<__struct3> items =
+      std::vector<decltype(__struct3{100, std::string("a")})>{
+          __struct3{100, std::string("a")}, __struct3{101, std::string("b")}};
+  auto result = ([&]() {
+    std::vector<__struct4> __items;
+    for (auto o : orders) {
+      for (auto c : customers) {
+        if (!((o.customerId == c.id)))
           continue;
-        __items.push_back(__struct4{c.name, i.sku});
+        for (auto i : items) {
+          if (!((o.id == i.orderId)))
+            continue;
+          __items.push_back(__struct4{c.name, i.sku});
+        }
       }
     }
-  }
-  return __items;
-})();
-
-int main() {
+    return __items;
+  })();
   std::cout << std::string("--- Multi Join ---") << std::endl;
   for (auto r : result) {
     {

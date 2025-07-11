@@ -1,8 +1,7 @@
 #include <iostream>
 
-int x = 0;
-
 int main() {
+  int x = 0;
   std::cout << std::boolalpha << x << std::endl;
   return 0;
 }

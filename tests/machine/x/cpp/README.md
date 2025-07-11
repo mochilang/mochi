@@ -108,5 +108,5 @@ Compiled programs: 100/100
 - [x] while_loop
 
 ## TODO
-- [ ] Avoid global variables when not needed
-- [ ] Simplify builtin operations like `append` and `avg`
+- [x] Avoid global variables when not needed
+- [x] Simplify builtin operations like `append` and `avg`

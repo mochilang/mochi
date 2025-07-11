@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 auto x = 2;
 auto label = ([]() {

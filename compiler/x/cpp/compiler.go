@@ -53,6 +53,8 @@ type Compiler struct {
 	usesJSON     bool
 	usesIO       bool
 	definedLoad  bool
+	usesAppend   bool
+	usesAvg      bool
 
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
@@ -87,6 +89,8 @@ func New() *Compiler {
 		packages:     map[string]struct{}{},
 		future:       nil,
 		placeholders: map[string]string{},
+		usesAppend:   false,
+		usesAvg:      false,
 	}
 }
 
@@ -168,6 +172,13 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesJSON = false
 
 	globals := []*parser.Statement{}
+	hasFunc := false
+	for _, st := range p.Statements {
+		if st.Fun != nil {
+			hasFunc = true
+			break
+		}
+	}
 	encounteredFun := false
 	encounteredStmt := false
 	for _, st := range p.Statements {
@@ -176,7 +187,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 			encounteredStmt = true
 			continue
 		}
-		if !encounteredFun && !encounteredStmt && (st.Let != nil || st.Var != nil || st.Type != nil) {
+		if hasFunc && !encounteredFun && !encounteredStmt && (st.Let != nil || st.Var != nil || st.Type != nil) {
 			globals = append(globals, st)
 			continue
 		}
@@ -1251,11 +1262,28 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 			if base == "len" && len(args) == 1 {
 				expr = fmt.Sprintf("(%s.size())", args[0])
 			} else if base == "append" && len(args) == 2 {
-				expr = fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0])
+				if !c.usesAppend {
+					c.headerWriteln("template<typename T,typename U> std::vector<T> __append(const std::vector<T>& v,const U& x){")
+					c.headerWriteln("    auto r=v;")
+					c.headerWriteln("    r.push_back(x);")
+					c.headerWriteln("    return r;")
+					c.headerWriteln("}")
+					c.usesAppend = true
+				}
+				expr = fmt.Sprintf("__append(%s, %s)", args[0], args[1])
 			} else if base == "sum" && len(args) == 1 {
 				expr = fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0); })(%s)", args[0])
 			} else if base == "avg" && len(args) == 1 {
-				expr = fmt.Sprintf("([&](auto v){ int s=0; for(auto x:v) s+=x; return v.empty()?0:(double)s/v.size(); })(%s)", args[0])
+				if !c.usesAvg {
+					c.headerWriteln("template<typename T> double __avg(const std::vector<T>& v){")
+					c.headerWriteln("    if(v.empty()) return 0;")
+					c.headerWriteln("    double s=0;")
+					c.headerWriteln("    for(const auto &x:v) s+=x;")
+					c.headerWriteln("    return s/v.size();")
+					c.headerWriteln("}")
+					c.usesAvg = true
+				}
+				expr = fmt.Sprintf("__avg(%s)", args[0])
 			} else if base == "count" && len(args) == 1 {
 				expr = fmt.Sprintf("((int)%s.size())", args[0])
 			} else if base == "min" && len(args) == 1 {
@@ -1553,7 +1581,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "append":
 			if len(args) == 2 {
-				return fmt.Sprintf("([&](auto v){ v.push_back(%s); return v; })(%s)", args[1], args[0]), nil
+				if !c.usesAppend {
+					c.headerWriteln("template<typename T,typename U> std::vector<T> __append(const std::vector<T>& v,const U& x){")
+					c.headerWriteln("    auto r=v;")
+					c.headerWriteln("    r.push_back(x);")
+					c.headerWriteln("    return r;")
+					c.headerWriteln("}")
+					c.usesAppend = true
+				}
+				return fmt.Sprintf("__append(%s, %s)", args[0], args[1]), nil
 			}
 		case "sum":
 			if len(args) == 1 {
@@ -1561,7 +1597,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "avg":
 			if len(args) == 1 {
-				return fmt.Sprintf("([&](auto v){ int s=0; for(auto x:v) s+=x; return v.empty()?0:(double)s/v.size(); })(%s)", args[0]), nil
+				if !c.usesAvg {
+					c.headerWriteln("template<typename T> double __avg(const std::vector<T>& v){")
+					c.headerWriteln("    if(v.empty()) return 0;")
+					c.headerWriteln("    double s=0;")
+					c.headerWriteln("    for(const auto &x:v) s+=x;")
+					c.headerWriteln("    return s/v.size();")
+					c.headerWriteln("}")
+					c.usesAvg = true
+				}
+				return fmt.Sprintf("__avg(%s)", args[0]), nil
 			}
 		case "count":
 			if len(args) == 1 {

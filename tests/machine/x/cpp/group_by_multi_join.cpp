@@ -1,5 +1,6 @@
 #include <iostream>
 #include <numeric>
+#include <string>
 #include <vector>
 
 struct __struct1 {
@@ -66,66 +67,65 @@ inline bool operator==(const __struct6 &a, const __struct6 &b) {
 inline bool operator!=(const __struct6 &a, const __struct6 &b) {
   return !(a == b);
 }
-std::vector<__struct1> nations =
-    std::vector<decltype(__struct1{1, std::string("A")})>{
-        __struct1{1, std::string("A")}, __struct1{2, std::string("B")}};
-std::vector<__struct2> suppliers =
-    std::vector<decltype(__struct2{1, 1})>{__struct2{1, 1}, __struct2{2, 2}};
-std::vector<__struct3> partsupp =
-    std::vector<decltype(__struct3{100, 1, 10, 2})>{__struct3{100, 1, 10, 2},
-                                                    __struct3{100, 2, 20, 1},
-                                                    __struct3{200, 1, 5, 3}};
-auto filtered = ([]() {
-  std::vector<__struct4> __items;
-  for (auto ps : partsupp) {
-    for (auto s : suppliers) {
-      if (!((s.id == ps.supplier)))
-        continue;
-      for (auto n : nations) {
-        if (!((n.id == s.nation)))
-          continue;
-        if (!((n.name == std::string("A"))))
-          continue;
-        __items.push_back(__struct4{ps.part, (ps.cost * ps.qty)});
-      }
-    }
-  }
-  return __items;
-})();
-auto grouped = ([]() {
-  std::vector<__struct5> __groups;
-  for (auto x : filtered) {
-    auto __key = x.part;
-    bool __found = false;
-    for (auto &__g : __groups) {
-      if (__g.key == __key) {
-        __g.items.push_back(__struct4{x});
-        __found = true;
-        break;
-      }
-    }
-    if (!__found) {
-      __groups.push_back(
-          __struct5{__key, std::vector<__struct4>{__struct4{x}}});
-    }
-  }
-  std::vector<__struct6> __items;
-  for (auto &g : __groups) {
-    __items.push_back(__struct6{
-        g.key, ([&](auto v) {
-          return std::accumulate(v.begin(), v.end(), 0);
-        })(([&]() {
-          std::vector<decltype(std::declval<__struct4>().value)> __items;
-          for (auto r : g.items) {
-            __items.push_back(r.value);
-          }
-          return __items;
-        })())});
-  }
-  return __items;
-})();
-
 int main() {
+  std::vector<__struct1> nations =
+      std::vector<decltype(__struct1{1, std::string("A")})>{
+          __struct1{1, std::string("A")}, __struct1{2, std::string("B")}};
+  std::vector<__struct2> suppliers =
+      std::vector<decltype(__struct2{1, 1})>{__struct2{1, 1}, __struct2{2, 2}};
+  std::vector<__struct3> partsupp =
+      std::vector<decltype(__struct3{100, 1, 10, 2})>{__struct3{100, 1, 10, 2},
+                                                      __struct3{100, 2, 20, 1},
+                                                      __struct3{200, 1, 5, 3}};
+  auto filtered = ([&]() {
+    std::vector<__struct4> __items;
+    for (auto ps : partsupp) {
+      for (auto s : suppliers) {
+        if (!((s.id == ps.supplier)))
+          continue;
+        for (auto n : nations) {
+          if (!((n.id == s.nation)))
+            continue;
+          if (!((n.name == std::string("A"))))
+            continue;
+          __items.push_back(__struct4{ps.part, (ps.cost * ps.qty)});
+        }
+      }
+    }
+    return __items;
+  })();
+  auto grouped = ([&]() {
+    std::vector<__struct5> __groups;
+    for (auto x : filtered) {
+      auto __key = x.part;
+      bool __found = false;
+      for (auto &__g : __groups) {
+        if (__g.key == __key) {
+          __g.items.push_back(__struct4{x});
+          __found = true;
+          break;
+        }
+      }
+      if (!__found) {
+        __groups.push_back(
+            __struct5{__key, std::vector<__struct4>{__struct4{x}}});
+      }
+    }
+    std::vector<__struct6> __items;
+    for (auto &g : __groups) {
+      __items.push_back(__struct6{
+          g.key, ([&](auto v) {
+            return std::accumulate(v.begin(), v.end(), 0);
+          })(([&]() {
+            std::vector<decltype(std::declval<__struct4>().value)> __items;
+            for (auto r : g.items) {
+              __items.push_back(r.value);
+            }
+            return __items;
+          })())});
+    }
+    return __items;
+  })();
   {
     auto __tmp1 = grouped;
     bool first = true;

@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 struct Person {
@@ -42,18 +43,17 @@ inline bool operator==(const __struct1 &a, const __struct1 &b) {
 inline bool operator!=(const __struct1 &a, const __struct1 &b) {
   return !(a == b);
 }
-auto people = __load_yaml_person("../interpreter/valid/people.yaml");
-auto adults = ([]() {
-  std::vector<__struct1> __items;
-  for (auto p : people) {
-    if (!((p.age >= 18)))
-      continue;
-    __items.push_back(__struct1{p.name, p.email});
-  }
-  return __items;
-})();
-
 int main() {
+  auto people = __load_yaml_person("../interpreter/valid/people.yaml");
+  auto adults = ([&]() {
+    std::vector<__struct1> __items;
+    for (auto p : people) {
+      if (!((p.age >= 18)))
+        continue;
+      __items.push_back(__struct1{p.name, p.email});
+    }
+    return __items;
+  })();
   for (auto a : adults) {
     {
       std::cout << std::boolalpha << a.name;

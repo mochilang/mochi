@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 bool boom(int a, int b) {
   std::cout << std::string("boom") << std::endl;
