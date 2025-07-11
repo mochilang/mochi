@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
+	"strings"
 )
 
 func main() {
@@ -100,24 +101,24 @@ func main() {
 		for _, ks := range order {
 			items = append(items, groups[ks])
 		}
-		_res := []Stats{}
+		results := []Stats{}
 		for _, g := range items {
-			_res = append(_res, Stats{
+			results = append(results, Stats{
 				Name: g.Key,
 				Count: len(func() []any {
-					_res := []any{}
+					results := []any{}
 					for _, r := range g.Items {
 						if _exists((r).(map[string]any)["o"]) {
 							if _exists((r).(map[string]any)["o"]) {
-								_res = append(_res, r)
+								results = append(results, r)
 							}
 						}
 					}
-					return _res
+					return results
 				}()),
 			})
 		}
-		return _res
+		return results
 	}()
 	fmt.Println("--- Group Left Join ---")
 	for _, s := range stats {
@@ -158,7 +159,7 @@ func _exists(v any) bool {
 	case reflect.Pointer:
 		return !rv.IsNil()
 	case reflect.Struct:
-		return true
+		return !rv.IsZero()
 	}
 	return false
 }
@@ -174,6 +175,25 @@ func _toAnyMap(m any) map[string]any {
 		}
 		return out
 	default:
+		rv := reflect.ValueOf(v)
+		if rv.Kind() == reflect.Struct {
+			out := make(map[string]any, rv.NumField())
+			rt := rv.Type()
+			for i := 0; i < rv.NumField(); i++ {
+				name := rt.Field(i).Name
+				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
+					comma := strings.Index(tag, ",")
+					if comma >= 0 {
+						tag = tag[:comma]
+					}
+					if tag != "-" {
+						name = tag
+					}
+				}
+				out[name] = rv.Field(i).Interface()
+			}
+			return out
+		}
 		return nil
 	}
 }

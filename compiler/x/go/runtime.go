@@ -63,7 +63,7 @@ const (
 		"    case reflect.Slice, reflect.Array: return rv.Len() > 0\n" +
 		"    case reflect.Map: return !rv.IsNil() && rv.Len() > 0\n" +
 		"    case reflect.Pointer: return !rv.IsNil()\n" +
-		"    case reflect.Struct: return true\n" +
+		"    case reflect.Struct: return !rv.IsZero()\n" +
 		"    }\n" +
 		"    return false\n" +
 		"}\n"
@@ -419,6 +419,21 @@ const (
 		"        }\n" +
 		"        return out\n" +
 		"    default:\n" +
+		"        rv := reflect.ValueOf(v)\n" +
+		"        if rv.Kind() == reflect.Struct {\n" +
+		"            out := make(map[string]any, rv.NumField())\n" +
+		"            rt := rv.Type()\n" +
+		"            for i := 0; i < rv.NumField(); i++ {\n" +
+		"                name := rt.Field(i).Name\n" +
+		"                if tag := rt.Field(i).Tag.Get(\"json\"); tag != \"\" {\n" +
+		"                    comma := strings.Index(tag, \",\")\n" +
+		"                    if comma >= 0 { tag = tag[:comma] }\n" +
+		"                    if tag != \"-\" { name = tag }\n" +
+		"                }\n" +
+		"                out[name] = rv.Field(i).Interface()\n" +
+		"            }\n" +
+		"            return out\n" +
+		"        }\n" +
 		"        return nil\n" +
 		"    }\n" +
 		"}\n"
@@ -907,6 +922,10 @@ func (c *Compiler) use(name string) {
 	if name == "_toMapSlice" {
 		c.imports["encoding/json"] = true
 		c.imports["reflect"] = true
+	}
+	if name == "_toAnyMap" {
+		c.imports["reflect"] = true
+		c.imports["strings"] = true
 	}
 	if name == "_lower" || name == "_upper" {
 		c.imports["fmt"] = true
