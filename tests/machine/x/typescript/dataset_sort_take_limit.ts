@@ -9,7 +9,6 @@ const products = [
 ];
 const expensive = products.slice().sort((a,b)=> (-a.price) < (-b.price) ? -1 : (-a.price) > (-b.price) ? 1 : 0).slice(1, (1 + 3));
 console.log("--- Top products (excluding most expensive) ---");
-const _tmp1 = expensive;
-for (const item of (Array.isArray(_tmp1) ? _tmp1 : Object.keys(_tmp1))) {
+for (const item of expensive) {
   console.log(item.name, "costs $", item.price);
 }

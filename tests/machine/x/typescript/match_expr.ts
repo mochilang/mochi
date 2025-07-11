@@ -1,8 +1,8 @@
 const x = 2;
 const label = (() => {
-  const _tmp50 = x;
+  const _tmp1 = x;
   let _res;
-  switch (_tmp50) {
+  switch (_tmp1) {
     case 1:
       _res = "one";
       break;

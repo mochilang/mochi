@@ -321,7 +321,12 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	case s.Let != nil:
 		typ := ""
 		if s.Let.Type != nil {
-			typ = ": " + tsTypeRef(s.Let.Type)
+			tstr := tsTypeRef(s.Let.Type)
+			if s.Let.Value == nil {
+				typ = ": " + tstr + " | null"
+			} else {
+				typ = ": " + tstr
+			}
 		}
 		if s.Let.Value == nil {
 			c.writeln(fmt.Sprintf("const %s%s = null;", s.Let.Name, typ))
@@ -335,7 +340,12 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	case s.Var != nil:
 		typ := ""
 		if s.Var.Type != nil {
-			typ = ": " + tsTypeRef(s.Var.Type)
+			tstr := tsTypeRef(s.Var.Type)
+			if s.Var.Value == nil {
+				typ = ": " + tstr + " | null"
+			} else {
+				typ = ": " + tstr
+			}
 		}
 		if s.Var.Value == nil {
 			c.writeln(fmt.Sprintf("let %s%s = null;", s.Var.Name, typ))
@@ -461,13 +471,7 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		c.writeln(fmt.Sprintf("for (let %s = %s; %s < %s; %s++) {", f.Name, src, f.Name, end, f.Name))
 	} else {
-		if isSimpleIterable(f.Source) {
-			c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
-		} else {
-			tmp := c.newTmp()
-			c.writeln(fmt.Sprintf("const %s = %s;", tmp, src))
-			c.writeln(fmt.Sprintf("for (const %s of (Array.isArray(%s) ? %s : Object.keys(%s))) {", f.Name, tmp, tmp, tmp))
-		}
+		c.writeln(fmt.Sprintf("for (const %s of %s) {", f.Name, src))
 	}
 	c.indent++
 	for _, st := range f.Body {

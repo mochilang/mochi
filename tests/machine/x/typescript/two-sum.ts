@@ -9,6 +9,11 @@ function twoSum(nums, target) {
   }
   return [(-1), (-1)];
 }
-const result = twoSum([2, 7, 11, 15], 9);
+const result = twoSum([
+  2,
+  7,
+  11,
+  15
+], 9);
 console.log(result[0]);
 console.log(result[1]);
