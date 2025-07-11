@@ -30,21 +30,16 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		String g_key = __e.getKey();
 		List<ItemsCatVal> g = __e.getValue();
-		_res6.add(new GroupedCatTotal(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+		_res6.add(new GroupedCatTotal(g_key, (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res11 = new ArrayList<>();
 	for (var x : g) {
 		_res11.add(x.val);
 	}
 	return _res11;
-}}).get())));
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()));
 	}
 	return _res6;
 }}).get();
-	static int sum(List<? extends Number> v) {
-		int s = 0;
-		for (Number n : v) s += n.intValue();
-		return s;
-	}
 	public static void main(String[] args) {
 	System.out.println(grouped);
 	}

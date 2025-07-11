@@ -32,27 +32,22 @@ public class Main {
 	for (var __e : _groups8.entrySet()) {
 		String g_key = __e.getKey();
 		List<ItemsCatFlagVal> g = __e.getValue();
-		_res7.add(new ResultCatShare(g_key, ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+		_res7.add(new ResultCatShare(g_key, ((Number)(new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
 	List<Object> _res12 = new ArrayList<>();
 	for (var x : g) {
 		_res12.add((x.flag ? x.val : 0));
 	}
 	return _res12;
-}}).get())).doubleValue() / ((Number)sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue() / ((Number)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res13 = new ArrayList<>();
 	for (var x : g) {
 		_res13.add(x.val);
 	}
 	return _res13;
-}}).get())).doubleValue()));
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue()));
 	}
 	return _res7;
 }}).get();
-	static int sum(List<? extends Number> v) {
-		int s = 0;
-		for (Number n : v) s += n.intValue();
-		return s;
-	}
 	public static void main(String[] args) {
 	System.out.println(result);
 	}

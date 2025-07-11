@@ -74,21 +74,16 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		int g_key = __e.getKey();
 		List<FilteredPartValue> g = __e.getValue();
-		_res8.add(new GroupedPartTotal(g_key, sum((List<Number>)(List<?>)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+		_res8.add(new GroupedPartTotal(g_key, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
 	List<Double> _res13 = new ArrayList<>();
 	for (var r : g) {
 		_res13.add(r.value);
 	}
 	return _res13;
-}}).get())));
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()));
 	}
 	return _res8;
 }}).get();
-	static int sum(List<? extends Number> v) {
-		int s = 0;
-		for (Number n : v) s += n.intValue();
-		return s;
-	}
 	public static void main(String[] args) {
 	System.out.println(grouped);
 	}

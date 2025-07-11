@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsleft_join2751915098/001/Main.java:44: error: incompatible types: Object cannot be converted to CustomersIdName
+/tmp/TestCompileValidProgramsleft_join1699317589/001/Main.java:44: error: incompatible types: Object cannot be converted to CustomersIdName
 			_res3.add(new ResultCustomerOrderIdTotal(o.id, c, o.total));
 			                                               ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

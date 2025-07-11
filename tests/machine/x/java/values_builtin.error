@@ -1,5 +1,5 @@
 line 0: javac error: exit status 1
-/tmp/TestCompileValidProgramsvalues_builtin1501361423/001/Main.java:18: error: method values in class Main cannot be applied to given types;
+/tmp/TestCompileValidProgramsvalues_builtin253957079/001/Main.java:18: error: method values in class Main cannot be applied to given types;
 	System.out.println(values(m));
 	                   ^
   required: Map<K,V>

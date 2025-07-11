@@ -56,20 +56,17 @@ public class Main {
 	for (var __e : _groups9.entrySet()) {
 		String g_key = __e.getKey();
 		List<CO> g = __e.getValue();
-		_res8.add(new StatsCountName(g_key, count((new java.util.function.Supplier<List<CO>>(){public List<CO> get(){
+		_res8.add(new StatsCountName(g_key, (new java.util.function.Supplier<List<CO>>(){public List<CO> get(){
 	List<CO> _res15 = new ArrayList<>();
 	for (var r : g) {
 		if (!(r.o)) continue;
 		_res15.add(r);
 	}
 	return _res15;
-}}).get())));
+}}).get().size()));
 	}
 	return _res8;
 }}).get();
-	static int count(Collection<?> c) {
-		return c.size();
-	}
 	public static void main(String[] args) {
 	System.out.println("--- Group Left Join ---");
 	for (StatsCountName s : stats) {

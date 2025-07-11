@@ -34,25 +34,16 @@ public class Main {
 	for (var __e : _groups7.entrySet()) {
 		String g_key = __e.getKey();
 		List<PeopleAgeCityName> g = __e.getValue();
-		_res6.add(new StatsAvgAgeCityCount(g_key, count(g), avg((List<Number>)(List<?>)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+		_res6.add(new StatsAvgAgeCityCount(g_key, g.size(), (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
 	List<Integer> _res11 = new ArrayList<>();
 	for (var p : g) {
 		_res11.add(p.age);
 	}
 	return _res11;
-}}).get())));
+}}).get().stream().mapToDouble(n -> ((Number)n).doubleValue()).average().orElse(0)));
 	}
 	return _res6;
 }}).get();
-	static int count(Collection<?> c) {
-		return c.size();
-	}
-	static double avg(List<? extends Number> v) {
-		if (v.isEmpty()) return 0;
-		int s = 0;
-		for (Number n : v) s += n.intValue();
-		return (double)s / v.size();
-	}
 	public static void main(String[] args) {
 	System.out.println("--- People grouped by city ---");
 	for (StatsAvgAgeCityCount s : stats) {
