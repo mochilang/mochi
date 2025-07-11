@@ -2,19 +2,19 @@ line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c: In function ‘main’:
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:171:23: error: incompatible types when assigning to type ‘int’ from type ‘struct <anonymous>’
-  171 |     tmp6.data[tmp7] = g;
+  171 |     tmp7.data[tmp8] = g;
       |                       ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:182:34: error: request for member ‘items’ in something not a structure or union
-  182 |     for (int tmp11 = 0; tmp11 < g.items.len; tmp11++) {
+  182 |     for (int tmp13 = 0; tmp13 < g.items.len; tmp13++) {
       |                                  ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:183:21: error: request for member ‘items’ in something not a structure or union
-  183 |       DataItem x = g.items.data[tmp11];
+  183 |       DataItem x = g.items.data[tmp13];
       |                     ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:187:38: error: request for member ‘key’ in something not a structure or union
-  187 |     map_int_bool_put(&tmp12, "tag", g.key);
+  187 |     map_int_bool_put(&tmp14, "tag", g.key);
       |                                      ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:187:30: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  187 |     map_int_bool_put(&tmp12, "tag", g.key);
+  187 |     map_int_bool_put(&tmp14, "tag", g.key);
       |                              ^~~~~
       |                              |
       |                              char *
@@ -22,7 +22,7 @@ error: cc error: exit status 1
    63 | static void map_int_bool_put(map_int_bool *m, int key, int value) {
       |                                               ~~~~^~~
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:188:30: warning: passing argument 2 of ‘map_int_bool_put’ makes integer from pointer without a cast [-Wint-conversion]
-  188 |     map_int_bool_put(&tmp12, "total", total);
+  188 |     map_int_bool_put(&tmp14, "total", total);
       |                              ^~~~~~~
       |                              |
       |                              char *
@@ -33,7 +33,7 @@ error: cc error: exit status 1
   189 |     tmp = 0;
       |           ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:197:21: error: request for member ‘tag’ in something not a structure or union
-  197 |     tmp16[tmp14] = r.tag;
+  197 |     tmp18[tmp16] = r.tag;
       |                     ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:214:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘list_int’ [-Wformat=]
   214 |   printf("%d\n", result);

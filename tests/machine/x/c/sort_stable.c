@@ -58,15 +58,15 @@ int main() {
     tmp3++;
   }
   tmp2.len = tmp3;
-  for (int i = 0; i < tmp3 - 1; i++) {
-    for (int j = i + 1; j < tmp3; j++) {
-      if (tmp5[i] > tmp5[j]) {
-        int tmp6 = tmp5[i];
-        tmp5[i] = tmp5[j];
-        tmp5[j] = tmp6;
-        char *tmp7 = tmp2.data[i];
-        tmp2.data[i] = tmp2.data[j];
-        tmp2.data[j] = tmp7;
+  for (int i8 = 0; i8 < tmp3 - 1; i8++) {
+    for (int i9 = i8 + 1; i9 < tmp3; i9++) {
+      if (tmp5[i8] > tmp5[i9]) {
+        int tmp6 = tmp5[i8];
+        tmp5[i8] = tmp5[i9];
+        tmp5[i9] = tmp6;
+        char *tmp7 = tmp2.data[i8];
+        tmp2.data[i8] = tmp2.data[i9];
+        tmp2.data[i9] = tmp7;
       }
     }
   }

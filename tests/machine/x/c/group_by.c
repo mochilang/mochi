@@ -130,45 +130,45 @@ int main() {
   list_PeopleItem tmp2 = list_PeopleItem_create(people.len);
   list_string tmp3 = list_string_create(people.len);
   int tmp4 = 0;
-  for (int i = 0; i < people.len; i++) {
-    PeopleItem person = people.data[i];
+  for (int i5 = 0; i5 < people.len; i5++) {
+    PeopleItem person = people.data[i5];
     tmp2.data[tmp4] = person;
     tmp3.data[tmp4] = person.city;
     tmp4++;
   }
   tmp2.len = tmp4;
   tmp3.len = tmp4;
-  list_group_string tmp5 = _group_by_string(tmp3);
-  list_StatsItem tmp6 = list_StatsItem_create(tmp5.len);
-  int tmp7 = 0;
-  for (int gi = 0; gi < tmp5.len; gi++) {
-    _GroupString _gp = tmp5.data[gi];
-    list_PeopleItem tmp8 = list_PeopleItem_create(_gp.items.len);
-    for (int j = 0; j < _gp.items.len; j++) {
-      tmp8.data[j] = tmp2.data[_gp.items.data[j]];
+  list_group_string tmp6 = _group_by_string(tmp3);
+  list_StatsItem tmp7 = list_StatsItem_create(tmp6.len);
+  int tmp8 = 0;
+  for (int gi = 0; gi < tmp6.len; gi++) {
+    _GroupString _gp = tmp6.data[gi];
+    list_PeopleItem tmp9 = list_PeopleItem_create(_gp.items.len);
+    for (int i10 = 0; i10 < _gp.items.len; i10++) {
+      tmp9.data[i10] = tmp2.data[_gp.items.data[i10]];
     }
-    tmp8.len = _gp.items.len;
+    tmp9.len = _gp.items.len;
     struct {
       char *key;
       list_PeopleItem items;
-    } g = {_gp.key, tmp8};
-    list_int tmp9 = list_int_create(g.items.len);
-    int tmp10 = 0;
-    for (int i = 0; i < g.items.len; i++) {
-      PeopleItem p = g.items.data[i];
-      tmp9.data[tmp10] = p.age;
-      tmp10++;
+    } g = {_gp.key, tmp9};
+    list_int tmp11 = list_int_create(g.items.len);
+    int tmp12 = 0;
+    for (int i13 = 0; i13 < g.items.len; i13++) {
+      PeopleItem p = g.items.data[i13];
+      tmp11.data[tmp12] = p.age;
+      tmp12++;
     }
-    tmp9.len = tmp10;
-    tmp6.data[tmp7] =
-        (StatsItem){.city = g.key, .count = g.items.len, .avg_age = _avg(tmp9)};
-    tmp7++;
+    tmp11.len = tmp12;
+    tmp7.data[tmp8] = (StatsItem){
+        .city = g.key, .count = g.items.len, .avg_age = _avg(tmp11)};
+    tmp8++;
   }
-  tmp6.len = tmp7;
-  list_StatsItem stats = tmp6;
+  tmp7.len = tmp8;
+  list_StatsItem stats = tmp7;
   printf("%s\n", "--- People grouped by city ---");
-  for (int tmp11 = 0; tmp11 < stats.len; tmp11++) {
-    StatsItem s = stats.data[tmp11];
+  for (int tmp14 = 0; tmp14 < stats.len; tmp14++) {
+    StatsItem s = stats.data[tmp14];
     printf("%s ", s.city);
     printf("%s ", ": count =");
     printf("%d ", s.count);

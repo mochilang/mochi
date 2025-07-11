@@ -122,63 +122,63 @@ int main() {
   list_ItemsItem tmp2 = list_ItemsItem_create(items.len);
   list_string tmp3 = list_string_create(items.len);
   int tmp4 = 0;
-  for (int i = 0; i < items.len; i++) {
-    ItemsItem i = items.data[i];
+  for (int i5 = 0; i5 < items.len; i5++) {
+    ItemsItem i = items.data[i5];
     tmp2.data[tmp4] = i;
     tmp3.data[tmp4] = i.cat;
     tmp4++;
   }
   tmp2.len = tmp4;
   tmp3.len = tmp4;
-  list_group_string tmp5 = _group_by_string(tmp3);
-  list_GroupedItem tmp6 = list_GroupedItem_create(tmp5.len);
-  double *tmp8 = (double *)malloc(sizeof(double) * tmp5.len);
-  int tmp7 = 0;
-  for (int gi = 0; gi < tmp5.len; gi++) {
-    _GroupString _gp = tmp5.data[gi];
-    list_ItemsItem tmp9 = list_ItemsItem_create(_gp.items.len);
-    for (int j = 0; j < _gp.items.len; j++) {
-      tmp9.data[j] = tmp2.data[_gp.items.data[j]];
+  list_group_string tmp6 = _group_by_string(tmp3);
+  list_GroupedItem tmp7 = list_GroupedItem_create(tmp6.len);
+  double *tmp9 = (double *)malloc(sizeof(double) * tmp6.len);
+  int tmp8 = 0;
+  for (int gi = 0; gi < tmp6.len; gi++) {
+    _GroupString _gp = tmp6.data[gi];
+    list_ItemsItem tmp10 = list_ItemsItem_create(_gp.items.len);
+    for (int i11 = 0; i11 < _gp.items.len; i11++) {
+      tmp10.data[i11] = tmp2.data[_gp.items.data[i11]];
     }
-    tmp9.len = _gp.items.len;
+    tmp10.len = _gp.items.len;
     struct {
       char *key;
       list_ItemsItem items;
-    } g = {_gp.key, tmp9};
-    list_int tmp10 = list_int_create(g.items.len);
-    int tmp11 = 0;
-    for (int i = 0; i < g.items.len; i++) {
-      ItemsItem x = g.items.data[i];
-      tmp10.data[tmp11] = x.val;
-      tmp11++;
-    }
-    tmp10.len = tmp11;
-    tmp6.data[tmp7] = (GroupedItem){.cat = g.key, .total = _sum_int(tmp10)};
+    } g = {_gp.key, tmp10};
     list_int tmp12 = list_int_create(g.items.len);
     int tmp13 = 0;
-    for (int i = 0; i < g.items.len; i++) {
-      ItemsItem x = g.items.data[i];
+    for (int i14 = 0; i14 < g.items.len; i14++) {
+      ItemsItem x = g.items.data[i14];
       tmp12.data[tmp13] = x.val;
       tmp13++;
     }
     tmp12.len = tmp13;
-    tmp8[tmp7] = (-_sum_int(tmp12));
-    tmp7++;
+    tmp7.data[tmp8] = (GroupedItem){.cat = g.key, .total = _sum_int(tmp12)};
+    list_int tmp15 = list_int_create(g.items.len);
+    int tmp16 = 0;
+    for (int i17 = 0; i17 < g.items.len; i17++) {
+      ItemsItem x = g.items.data[i17];
+      tmp15.data[tmp16] = x.val;
+      tmp16++;
+    }
+    tmp15.len = tmp16;
+    tmp9[tmp8] = (-_sum_int(tmp15));
+    tmp8++;
   }
-  tmp6.len = tmp7;
-  for (int i = 0; i < tmp7 - 1; i++) {
-    for (int j = i + 1; j < tmp7; j++) {
-      if (tmp8[i] > tmp8[j]) {
-        double tmp14 = tmp8[i];
-        tmp8[i] = tmp8[j];
-        tmp8[j] = tmp14;
-        GroupedItem tmp15 = tmp6.data[i];
-        tmp6.data[i] = tmp6.data[j];
-        tmp6.data[j] = tmp15;
+  tmp7.len = tmp8;
+  for (int i20 = 0; i20 < tmp8 - 1; i20++) {
+    for (int i21 = i20 + 1; i21 < tmp8; i21++) {
+      if (tmp9[i20] > tmp9[i21]) {
+        double tmp18 = tmp9[i20];
+        tmp9[i20] = tmp9[i21];
+        tmp9[i21] = tmp18;
+        GroupedItem tmp19 = tmp7.data[i20];
+        tmp7.data[i20] = tmp7.data[i21];
+        tmp7.data[i21] = tmp19;
       }
     }
   }
-  list_GroupedItem grouped = tmp6;
+  list_GroupedItem grouped = tmp7;
   printf("%d\n", grouped);
   return 0;
 }
