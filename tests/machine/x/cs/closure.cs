@@ -12,7 +12,7 @@ class Program
 
     static void Main()
     {
-        Func<long, long> add10 = makeAdder(10);
+        Func<int, int> add10 = makeAdder(10);
         Console.WriteLine(add10(7));
     }
 }

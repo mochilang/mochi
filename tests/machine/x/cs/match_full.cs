@@ -11,7 +11,7 @@ class Program {
     }
     
     static void Main() {
-        long x = 2;
+        int x = 2;
         string label = new Func<string>(() => {
         var _t = x;
         if (_equal(_t, 1)) return "one";

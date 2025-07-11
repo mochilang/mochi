@@ -2,41 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-class Program
-{
-    static void Main()
-    {
-        var people = new List<dynamic> { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 15 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Charlie" }, { "age", 65 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Diana" }, { "age", 45 }, { "city", "Hanoi" } }, new Dictionary<string, dynamic> { { "name", "Eve" }, { "age", 70 }, { "city", "Paris" } }, new Dictionary<string, dynamic> { { "name", "Frank" }, { "age", 22 }, { "city", "Hanoi" } } };
-        var stats = _group_by(people, person => person.city).Select(g => new Dictionary<string, dynamic> { { "city", g.Key }, { "count", Enumerable.Count(g) }, { "avg_age", _avg(g.Items.Select(p => p.age).ToArray()) } }).ToList();
+class Program {
+    static void Main() {
+        var people = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "name", "Alice" }, { "age", 30 }, { "city", "Paris" } }, new Dictionary<dynamic, dynamic> { { "name", "Bob" }, { "age", 15 }, { "city", "Hanoi" } }, new Dictionary<dynamic, dynamic> { { "name", "Charlie" }, { "age", 65 }, { "city", "Paris" } }, new Dictionary<dynamic, dynamic> { { "name", "Diana" }, { "age", 45 }, { "city", "Hanoi" } }, new Dictionary<dynamic, dynamic> { { "name", "Eve" }, { "age", 70 }, { "city", "Paris" } }, new Dictionary<dynamic, dynamic> { { "name", "Frank" }, { "age", 22 }, { "city", "Hanoi" } } };
+        var stats = _group_by(people, person => person.city).Select(g => new Dictionary<dynamic, dynamic> { { "city", g.Key }, { "count", Enumerable.Count(g) }, { "avg_age", _avg(g.Items.Select(p => p.age).ToArray()) } }).ToList();
         Console.WriteLine("--- People grouped by city ---");
-        foreach (var s in stats)
-        {
-            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(s["city"]), Convert.ToString(": count ="), Convert.ToString(s["count"]), Convert.ToString(", avg_age ="), Convert.ToString(s["avg_age"]) }));
+        foreach (var s in stats) {
+            Console.WriteLine(string.Join(" ", new [] { Convert.ToString(s.city), Convert.ToString(": count ="), Convert.ToString(s.count), Convert.ToString(", avg_age ="), Convert.ToString(s.avg_age) }));
         }
     }
-    static double _avg(dynamic v)
-    {
+    static double _avg(dynamic v) {
         if (v == null) return 0.0;
         int _n = 0;
         double _sum = 0;
-        foreach (var it in v)
-        {
+        foreach (var it in v) {
             _sum += Convert.ToDouble(it);
             _n++;
         }
         return _n == 0 ? 0.0 : _sum / _n;
     }
-
-    static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn)
-    {
+    
+    static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn) {
         var groups = new Dictionary<string, _Group>();
         var order = new List<string>();
-        foreach (var it in src)
-        {
+        foreach (var it in src) {
             var key = keyfn(it);
             var ks = Convert.ToString(key);
-            if (!groups.TryGetValue(ks, out var g))
-            {
+            if (!groups.TryGetValue(ks, out var g)) {
                 g = new _Group(key);
                 groups[ks] = g;
                 order.Add(ks);
@@ -47,5 +39,5 @@ class Program
         foreach (var k in order) res.Add(groups[k]);
         return res;
     }
-
+    
 }

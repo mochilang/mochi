@@ -1,20 +1,21 @@
 using System;
+using System.Collections.Generic;
 
 class Program {
-    static long[] twoSum(long[] nums, long target) {
-        long n = nums.Length;
+    static List<long> twoSum(List<long> nums, long target) {
+        int n = nums.Length;
         for (var i = 0; i < n; i++) {
             for (var j = (i + 1); j < n; j++) {
                 if ((_indexList(nums, i) + _indexList(nums, j)) == target) {
-                    return new dynamic[] { i, j };
+                    return new List<dynamic> { i, j };
                 }
             }
         }
-        return new long[] { (-1), (-1) };
+        return new List<int> { (-1), (-1) };
     }
     
     static void Main() {
-        long[] result = twoSum(new long[] { 2, 7, 11, 15 }, 9);
+        List<int> result = twoSum(new List<int> { 2, 7, 11, 15 }, 9);
         Console.WriteLine(_indexList(result, 0));
         Console.WriteLine(_indexList(result, 1));
     }

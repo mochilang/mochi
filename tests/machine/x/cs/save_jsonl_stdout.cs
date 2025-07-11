@@ -5,8 +5,8 @@ using System.IO;
 
 class Program {
     static void Main() {
-        var people = new dynamic[] { new Dictionary<string, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<string, dynamic> { { "name", "Bob" }, { "age", 25 } } };
-        _save(people, "-", new Dictionary<string, string> { { "format", "jsonl" } });
+        var people = new List<dynamic> { new Dictionary<dynamic, dynamic> { { "name", "Alice" }, { "age", 30 } }, new Dictionary<dynamic, dynamic> { { "name", "Bob" }, { "age", 25 } } };
+        _save(people, "-", new Dictionary<dynamic, dynamic> { { "format", "jsonl" } });
     }
     static void _save(dynamic src, string path, Dictionary<string, object> opts) {
         var rows = src as IEnumerable<dynamic>; if (rows == null) return;

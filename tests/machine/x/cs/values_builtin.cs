@@ -4,7 +4,7 @@ using System.Linq;
 
 class Program {
     static void Main() {
-        Dictionary<string, long> m = new Dictionary<string, long> { { "a", 1 }, { "b", 2 }, { "c", 3 } };
-        Console.WriteLine(string.Join(" ", (new Func<List<long>>(() => {var _tmp0=new List<long>();foreach(System.Collections.DictionaryEntry kv in m){_tmp0.Add(kv.Value);}return _tmp0;}))()));
+        Dictionary<string, int> m = new Dictionary<string, int> { { "a", 1 }, { "b", 2 }, { "c", 3 } };
+        Console.WriteLine("[" + string.Join(", ", m.Values.ToList()) + "]");
     }
 }
