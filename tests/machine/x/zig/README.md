@@ -130,3 +130,13 @@ Compiled programs: 100/100
 - [ ] Add support for customizing allocator.
 - [ ] Introduce command line options for optimization levels.
 - [ ] Provide examples demonstrating interop with C libraries.
+- [ ] Add support for async functions for concurrent IO.
+- [ ] Implement memory pooling to reduce allocations.
+- [ ] Generate documentation comments from Mochi source.
+- [ ] Support custom import paths with package manager.
+- [ ] Enhance pattern matching for nested structs.
+- [ ] Provide code formatter for generated Zig.
+- [ ] Explore translation to Zig's async/await.
+- [ ] Add linter for common pitfalls in generated code.
+- [ ] Integrate fuzz testing for compiler.
+- [ ] Support cross compilation for other architectures.
