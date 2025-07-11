@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 95/100 successful.
+Compiled programs: 96/100 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -68,7 +68,7 @@ Compiled programs: 95/100 successful.
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [ ] outer_join.mochi
+ - [x] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
@@ -105,7 +105,7 @@ Compiled programs: 95/100 successful.
 - [x] while_loop.mochi
 
 ## Status
-5 programs failed.
+4 programs failed.
 
 ## Remaining tasks
 - [ ] Fix failing examples
