@@ -153,3 +153,13 @@ Successfully ran: 97/100 programs
 - [ ] Emit top-level properties as `const val` when possible
 - [ ] Validate generated code using `kotlinc` before output
 - [ ] Document compiler flags in this README
+- [ ] Provide plugin architecture for custom data serializers
+- [ ] Integrate Kotlin lint for style checking
+- [ ] Add support for Kotlin data class `copy` usage
+- [ ] Generate sample `build.gradle.kts` templates
+- [ ] Add CLI option to disable runtime injection
+- [ ] Implement caching for compilation results
+- [ ] Support stable ordering of map keys in JSON output
+- [ ] Provide option to emit comments from source code
+- [ ] Improve detection of unreachable code
+- [ ] Add built-in support for complex number types
