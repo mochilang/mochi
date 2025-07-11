@@ -1,0 +1,213 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fields(s: string): list<string> {
+func fields (regs=24)
+  // var res: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L3:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let c = s[i:i+1]
+  Move         r9, r6
+  Const        r11, 1
+  AddInt       r12, r6, r11
+  Move         r10, r12
+  Slice        r13, r0, r9, r10
+  // if c == " " {
+  Const        r14, " "
+  Equal        r15, r13, r14
+  JumpIfFalse  r15, L1
+  // if len(cur) > 0 {
+  Len          r16, r4
+  Const        r5, 0
+  LessInt      r17, r5, r16
+  JumpIfFalse  r17, L2
+  // res = append(res, cur)
+  Append       r18, r2, r4
+  Move         r2, r18
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if c == " " {
+  Jump         L2
+L1:
+  // cur = cur + c
+  Add          r19, r4, r13
+  Move         r4, r19
+L2:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r20, r6, r11
+  Move         r6, r20
+  // while i < len(s) {
+  Jump         L3
+L0:
+  // if len(cur) > 0 {
+  Len          r21, r4
+  Const        r5, 0
+  LessInt      r22, r5, r21
+  JumpIfFalse  r22, L4
+  // res = append(res, cur)
+  Append       r23, r2, r4
+  Move         r2, r23
+L4:
+  // return res
+  Return       r2
+
+  // fun canSpell(word: string, blks: list<string>): bool {
+func canSpell (regs=44)
+  // if len(word) == 0 { return true }
+  Len          r2, r0
+  Const        r3, 0
+  EqualInt     r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, true
+  Return       r5
+L0:
+  // let c = lower(word[0:1])
+  Const        r3, 0
+  Move         r6, r3
+  Const        r8, 1
+  Move         r7, r8
+  Slice        r9, r0, r6, r7
+  Lower        r10, r9
+  // var i = 0
+  Const        r3, 0
+  Move         r11, r3
+L7:
+  // while i < len(blks) {
+  Len          r12, r1
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // let b = blks[i]
+  Index        r14, r1, r11
+  // if c == lower(b[0:1]) || c == lower(b[1:2]) {
+  Const        r3, 0
+  Move         r15, r3
+  Const        r8, 1
+  Move         r16, r8
+  Slice        r17, r14, r15, r16
+  Lower        r18, r17
+  Equal        r19, r10, r18
+  Const        r8, 1
+  Move         r20, r8
+  Const        r22, 2
+  Move         r21, r22
+  Slice        r23, r14, r20, r21
+  Lower        r24, r23
+  Equal        r25, r10, r24
+  Move         r26, r19
+  JumpIfTrue   r26, L2
+  Move         r26, r25
+L2:
+  JumpIfFalse  r26, L3
+  // var rest: list<string> = []
+  Const        r27, []
+  Move         r28, r27
+  // var j = 0
+  Const        r3, 0
+  Move         r29, r3
+L6:
+  // while j < len(blks) {
+  Len          r30, r1
+  LessInt      r31, r29, r30
+  JumpIfFalse  r31, L4
+  // if j != i { rest = append(rest, blks[j]) }
+  NotEqual     r32, r29, r11
+  JumpIfFalse  r32, L5
+  Index        r33, r1, r29
+  Append       r34, r28, r33
+  Move         r28, r34
+L5:
+  // j = j + 1
+  Const        r8, 1
+  AddInt       r35, r29, r8
+  Move         r29, r35
+  // while j < len(blks) {
+  Jump         L6
+L4:
+  // if canSpell(word[1:], rest) { return true }
+  Const        r8, 1
+  Move         r38, r8
+  Const        r39, nil
+  Slice        r40, r0, r38, r39
+  Move         r36, r40
+  Move         r37, r28
+  Call2        r41, canSpell, r36, r37
+  JumpIfFalse  r41, L3
+  Const        r5, true
+  Return       r5
+L3:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r42, r11, r8
+  Move         r11, r42
+  // while i < len(blks) {
+  Jump         L7
+L1:
+  // return false
+  Const        r43, false
+  Return       r43
+
+  // fun newSpeller(blocks: string): fun(string): bool {
+func newSpeller (regs=6)
+  // let bl = fields(blocks)
+  Move         r1, r0
+  Call         r2, fields, r1
+  // return fun(w: string): bool => canSpell(w, bl)
+  Move         r3, r2
+  Move         r4, r0
+  MakeClosure  r5, fn4, 2, r3
+  Return       r5
+
+  // return fun(w: string): bool => canSpell(w, bl)
+func fn4 (regs=6)
+  // return fun(w: string): bool => canSpell(w, bl)
+  Move         r3, r2
+  Move         r4, r0
+  Call2        r5, canSpell, r3, r4
+  Return       r5
+
+  // fun main() {
+func main (regs=18)
+  // let sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
+  Const        r1, "BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM"
+  Move         r0, r1
+  Call         r2, newSpeller, r0
+  // for word in ["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"] {
+  Const        r3, ["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"]
+  IterPrep     r4, r3
+  Len          r5, r4
+  Const        r6, 0
+L1:
+  LessInt      r7, r6, r5
+  JumpIfFalse  r7, L0
+  Index        r8, r4, r6
+  Move         r9, r8
+  // print(word + " " + str(sp(word)))
+  Const        r10, " "
+  Add          r11, r9, r10
+  Move         r12, r9
+  CallV        r13, r2, 1, r12
+  Str          r14, r13
+  Add          r15, r11, r14
+  Print        r15
+  // for word in ["A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE"] {
+  Const        r16, 1
+  AddInt       r17, r6, r16
+  Move         r6, r17
+  Jump         L1
+L0:
+  Return       r0

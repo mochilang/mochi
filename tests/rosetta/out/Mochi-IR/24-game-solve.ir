@@ -1,0 +1,468 @@
+func main (regs=8)
+  // let OP_NUM = 0
+  Const        r0, 0
+  // let OP_ADD = 1
+  Const        r1, 1
+  // let OP_SUB = 2
+  Const        r2, 2
+  // let OP_MUL = 3
+  Const        r3, 3
+  // let OP_DIV = 4
+  Const        r4, 4
+  // let n_cards = 4
+  Const        r4, 4
+  // let goal = 24
+  Const        r5, 24
+  // let digit_range = 9
+  Const        r6, 9
+  // main()
+  Call         r7, main, 
+  Return       r0
+
+  // fun newNum(n: int): map<string, any> {
+func newNum (regs=17)
+  // return {"op": OP_NUM, "value": {"num": n, "denom": 1}}
+  Const        r1, "op"
+  Const        r3, "value"
+  Const        r4, "num"
+  Const        r5, "denom"
+  Const        r6, 1
+  Move         r7, r4
+  Move         r8, r0
+  Move         r9, r5
+  Move         r10, r6
+  MakeMap      r11, 2, r7
+  Move         r12, r1
+  Move         r13, r2
+  Move         r14, r3
+  Move         r15, r11
+  MakeMap      r16, 2, r12
+  Return       r16
+
+  // fun exprEval(x: map<string, any>): map<string, int> {
+func exprEval (regs=78)
+  // if x["op"] == OP_NUM { return x["value"] }
+  Const        r1, "op"
+  Index        r2, r0, r1
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, "value"
+  Index        r6, r0, r5
+  Return       r6
+L0:
+  // let l = exprEval(x["left"])
+  Const        r8, "left"
+  Index        r9, r0, r8
+  Move         r7, r9
+  Call         r10, exprEval, r7
+  // let r = exprEval(x["right"])
+  Const        r12, "right"
+  Index        r13, r0, r12
+  Move         r11, r13
+  Call         r14, exprEval, r11
+  // if x["op"] == OP_ADD {
+  Const        r1, "op"
+  Index        r15, r0, r1
+  Equal        r17, r15, r16
+  JumpIfFalse  r17, L1
+  // return {"num": l["num"]*r["denom"] + l["denom"]*r["num"], "denom": l["denom"]*r["denom"]}
+  Const        r18, "num"
+  Const        r18, "num"
+  Index        r19, r10, r18
+  Const        r20, "denom"
+  Index        r21, r14, r20
+  Mul          r22, r19, r21
+  Const        r20, "denom"
+  Index        r23, r10, r20
+  Const        r18, "num"
+  Index        r24, r14, r18
+  Mul          r25, r23, r24
+  Add          r26, r22, r25
+  Const        r20, "denom"
+  Const        r20, "denom"
+  Index        r27, r10, r20
+  Const        r20, "denom"
+  Index        r28, r14, r20
+  Mul          r29, r27, r28
+  Move         r30, r18
+  Move         r31, r26
+  Move         r32, r20
+  Move         r33, r29
+  MakeMap      r34, 2, r30
+  Return       r34
+L1:
+  // if x["op"] == OP_SUB {
+  Const        r1, "op"
+  Index        r35, r0, r1
+  Equal        r37, r35, r36
+  JumpIfFalse  r37, L2
+  // return {"num": l["num"]*r["denom"] - l["denom"]*r["num"], "denom": l["denom"]*r["denom"]}
+  Const        r18, "num"
+  Const        r18, "num"
+  Index        r38, r10, r18
+  Const        r20, "denom"
+  Index        r39, r14, r20
+  Mul          r40, r38, r39
+  Const        r20, "denom"
+  Index        r41, r10, r20
+  Const        r18, "num"
+  Index        r42, r14, r18
+  Mul          r43, r41, r42
+  Sub          r44, r40, r43
+  Const        r20, "denom"
+  Const        r20, "denom"
+  Index        r45, r10, r20
+  Const        r20, "denom"
+  Index        r46, r14, r20
+  Mul          r47, r45, r46
+  Move         r48, r18
+  Move         r49, r44
+  Move         r50, r20
+  Move         r51, r47
+  MakeMap      r52, 2, r48
+  Return       r52
+L2:
+  // if x["op"] == OP_MUL {
+  Const        r1, "op"
+  Index        r53, r0, r1
+  Equal        r55, r53, r54
+  JumpIfFalse  r55, L3
+  // return {"num": l["num"]*r["num"], "denom": l["denom"]*r["denom"]}
+  Const        r18, "num"
+  Const        r18, "num"
+  Index        r56, r10, r18
+  Const        r18, "num"
+  Index        r57, r14, r18
+  Mul          r58, r56, r57
+  Const        r20, "denom"
+  Const        r20, "denom"
+  Index        r59, r10, r20
+  Const        r20, "denom"
+  Index        r60, r14, r20
+  Mul          r61, r59, r60
+  Move         r62, r18
+  Move         r63, r58
+  Move         r64, r20
+  Move         r65, r61
+  MakeMap      r66, 2, r62
+  Return       r66
+L3:
+  // return {"num": l["num"]*r["denom"], "denom": l["denom"]*r["num"]}
+  Const        r18, "num"
+  Const        r18, "num"
+  Index        r67, r10, r18
+  Const        r20, "denom"
+  Index        r68, r14, r20
+  Mul          r69, r67, r68
+  Const        r20, "denom"
+  Const        r20, "denom"
+  Index        r70, r10, r20
+  Const        r18, "num"
+  Index        r71, r14, r18
+  Mul          r72, r70, r71
+  Move         r73, r18
+  Move         r74, r69
+  Move         r75, r20
+  Move         r76, r72
+  MakeMap      r77, 2, r73
+  Return       r77
+
+  // fun exprString(x: map<string, any>): string {
+func exprString (regs=30)
+  // if x["op"] == OP_NUM { return str(x["value"]["num"]) }
+  Const        r1, "op"
+  Index        r2, r0, r1
+  Equal        r4, r2, r3
+  JumpIfFalse  r4, L0
+  Const        r5, "value"
+  Index        r6, r0, r5
+  Const        r7, "num"
+  Index        r8, r6, r7
+  Str          r9, r8
+  Return       r9
+L0:
+  // let ls = exprString(x["left"])
+  Const        r11, "left"
+  Index        r12, r0, r11
+  Move         r10, r12
+  Call         r13, exprString, r10
+  // let rs = exprString(x["right"])
+  Const        r15, "right"
+  Index        r16, r0, r15
+  Move         r14, r16
+  Call         r17, exprString, r14
+  // var opstr = ""
+  Const        r18, ""
+  Move         r19, r18
+  // if x["op"] == OP_ADD { opstr = " + " }
+  Const        r1, "op"
+  Index        r20, r0, r1
+  Equal        r22, r20, r21
+  JumpIfFalse  r22, L1
+  Const        r23, " + "
+  Move         r19, r23
+L1:
+  // return "(" + ls + opstr + rs + ")"
+  Const        r24, "("
+  Add          r25, r24, r13
+  Add          r26, r25, r19
+  Add          r27, r26, r17
+  Const        r28, ")"
+  Add          r29, r27, r28
+  Return       r29
+
+  // fun solve(xs: list<map<string, any>>): bool {
+func solve (regs=99)
+  // if len(xs) == 1 {
+  Len          r1, r0
+  Const        r2, 1
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  // let f = exprEval(xs[0])
+  Const        r5, 0
+  Index        r6, r0, r5
+  Move         r4, r6
+  Call         r7, exprEval, r4
+  // if f["denom"] != 0 && f["num"] == f["denom"]*goal {
+  Const        r8, "denom"
+  Index        r9, r7, r8
+  Const        r8, "denom"
+  Index        r10, r7, r8
+  Mul          r12, r10, r11
+  Const        r5, 0
+  NotEqual     r13, r9, r5
+  Const        r14, "num"
+  Index        r15, r7, r14
+  Equal        r16, r15, r12
+  Move         r17, r13
+  JumpIfFalse  r17, L1
+  Move         r17, r16
+L1:
+  JumpIfFalse  r17, L2
+  // print(exprString(xs[0]))
+  Const        r5, 0
+  Index        r19, r0, r5
+  Move         r18, r19
+  Call         r20, exprString, r18
+  Print        r20
+  // return true
+  Const        r21, true
+  Return       r21
+L2:
+  // return false
+  Const        r22, false
+  Return       r22
+L0:
+  // var i = 0
+  Const        r5, 0
+  Move         r23, r5
+L15:
+  // while i < len(xs) {
+  Len          r24, r0
+  LessInt      r25, r23, r24
+  JumpIfFalse  r25, L3
+  // var j = i + 1
+  Const        r2, 1
+  AddInt       r26, r23, r2
+  Move         r27, r26
+L14:
+  // while j < len(xs) {
+  Len          r28, r0
+  LessInt      r29, r27, r28
+  JumpIfFalse  r29, L4
+  // var rest: list<map<string, any>> = []
+  Const        r30, []
+  Move         r31, r30
+  // var k = 0
+  Const        r5, 0
+  Move         r32, r5
+L8:
+  // while k < len(xs) {
+  Len          r33, r0
+  LessInt      r34, r32, r33
+  JumpIfFalse  r34, L5
+  // if k != i && k != j { rest = append(rest, xs[k]) }
+  NotEqual     r35, r32, r23
+  NotEqual     r36, r32, r27
+  Move         r37, r35
+  JumpIfFalse  r37, L6
+  Move         r37, r36
+L6:
+  JumpIfFalse  r37, L7
+  Index        r38, r0, r32
+  Append       r39, r31, r38
+  Move         r31, r39
+L7:
+  // k = k + 1
+  Const        r2, 1
+  AddInt       r40, r32, r2
+  Move         r32, r40
+  // while k < len(xs) {
+  Jump         L8
+L5:
+  // let a = xs[i]
+  Index        r41, r0, r23
+  // let b = xs[j]
+  Index        r42, r0, r27
+  // for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
+  Move         r43, r47
+  Move         r44, r48
+  Move         r45, r49
+  Move         r46, r50
+  MakeList     r51, 4, r43
+  IterPrep     r52, r51
+  Len          r53, r52
+  Const        r54, 0
+L11:
+  LessInt      r55, r54, r53
+  JumpIfFalse  r55, L9
+  Index        r56, r52, r54
+  Move         r57, r56
+  // var node = {"op": op, "left": a, "right": b}
+  Const        r58, "op"
+  Const        r59, "left"
+  Const        r60, "right"
+  Move         r61, r58
+  Move         r62, r57
+  Move         r63, r59
+  Move         r64, r41
+  Move         r65, r60
+  Move         r66, r42
+  MakeMap      r67, 3, r61
+  Move         r68, r67
+  // if solve(append(rest, node)) { return true }
+  Append       r70, r31, r68
+  Move         r69, r70
+  Call         r71, solve, r69
+  JumpIfFalse  r71, L10
+  Const        r21, true
+  Return       r21
+L10:
+  // for op in [OP_ADD, OP_SUB, OP_MUL, OP_DIV] {
+  Const        r72, 1
+  AddInt       r73, r54, r72
+  Move         r54, r73
+  Jump         L11
+L9:
+  // var node = {"op": OP_SUB, "left": b, "right": a}
+  Const        r58, "op"
+  Const        r59, "left"
+  Const        r60, "right"
+  Move         r75, r58
+  Move         r76, r74
+  Move         r77, r59
+  Move         r78, r42
+  Move         r79, r60
+  Move         r80, r41
+  MakeMap      r81, 3, r75
+  Move         r82, r81
+  // if solve(append(rest, node)) { return true }
+  Append       r84, r31, r82
+  Move         r83, r84
+  Call         r85, solve, r83
+  JumpIfFalse  r85, L12
+  Const        r21, true
+  Return       r21
+L12:
+  // node = {"op": OP_DIV, "left": b, "right": a}
+  Const        r58, "op"
+  Const        r59, "left"
+  Const        r60, "right"
+  Move         r87, r58
+  Move         r88, r86
+  Move         r89, r59
+  Move         r90, r42
+  Move         r91, r60
+  Move         r92, r41
+  MakeMap      r93, 3, r87
+  Move         r82, r93
+  // if solve(append(rest, node)) { return true }
+  Append       r95, r31, r82
+  Move         r94, r95
+  Call         r96, solve, r94
+  JumpIfFalse  r96, L13
+  Const        r21, true
+  Return       r21
+L13:
+  // j = j + 1
+  Const        r2, 1
+  AddInt       r97, r27, r2
+  Move         r27, r97
+  // while j < len(xs) {
+  Jump         L14
+L4:
+  // i = i + 1
+  Const        r2, 1
+  AddInt       r98, r23, r2
+  Move         r23, r98
+  // while i < len(xs) {
+  Jump         L15
+L3:
+  // return false
+  Const        r22, false
+  Return       r22
+
+  // fun main() {
+func main (regs=28)
+  // var iter = 0
+  Const        r0, 0
+  Move         r1, r0
+L4:
+  // while iter < 10 {
+  Const        r2, 10
+  LessInt      r3, r1, r2
+  JumpIfFalse  r3, L0
+  // var cards: list<map<string, any>> = []
+  Const        r4, []
+  Move         r5, r4
+  // var i = 0
+  Const        r0, 0
+  Move         r6, r0
+L2:
+  // while i < n_cards {
+  Less         r8, r6, r7
+  JumpIfFalse  r8, L1
+  // let n = (now() % (digit_range - 1)) + 1
+  Now          r9
+  Const        r11, 1
+  Sub          r12, r10, r11
+  Mod          r13, r9, r12
+  Const        r11, 1
+  Add          r14, r13, r11
+  // cards = append(cards, newNum(n))
+  Move         r15, r14
+  Call         r16, newNum, r15
+  Append       r17, r5, r16
+  Move         r5, r17
+  // print(" " + str(n))
+  Const        r18, " "
+  Str          r19, r14
+  Add          r20, r18, r19
+  Print        r20
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r21, r6, r11
+  Move         r6, r21
+  // while i < n_cards {
+  Jump         L2
+L1:
+  // print(":  ")
+  Const        r22, ":  "
+  Print        r22
+  // if !solve(cards) {
+  Move         r23, r5
+  Call         r24, solve, r23
+  Not          r25, r24
+  JumpIfFalse  r25, L3
+  // print("No solution")
+  Const        r26, "No solution"
+  Print        r26
+L3:
+  // iter = iter + 1
+  Const        r11, 1
+  AddInt       r27, r1, r11
+  Move         r1, r27
+  // while iter < 10 {
+  Jump         L4
+L0:
+  Return       r0

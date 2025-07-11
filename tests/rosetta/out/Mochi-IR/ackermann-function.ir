@@ -1,0 +1,85 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun ackermann(m: int, n: int): int {
+func ackermann (regs=19)
+  // if m == 0 {
+  Const        r2, 0
+  Equal        r3, r0, r2
+  JumpIfFalse  r3, L0
+  // return n + 1
+  Const        r4, 1
+  Add          r5, r1, r4
+  Return       r5
+L0:
+  // if n == 0 {
+  Const        r2, 0
+  Equal        r6, r1, r2
+  JumpIfFalse  r6, L1
+  // return ackermann(m - 1, 1)
+  Const        r4, 1
+  Sub          r9, r0, r4
+  Move         r7, r9
+  Const        r4, 1
+  Move         r8, r4
+  Call2        r10, ackermann, r7, r8
+  Return       r10
+L1:
+  // return ackermann(m - 1, ackermann(m, n - 1))
+  Const        r4, 1
+  Sub          r13, r0, r4
+  Move         r11, r13
+  Move         r14, r0
+  Const        r4, 1
+  Sub          r16, r1, r4
+  Move         r15, r16
+  Call2        r17, ackermann, r14, r15
+  Move         r12, r17
+  Call2        r18, ackermann, r11, r12
+  Return       r18
+
+  // fun main() {
+func main (regs=29)
+  // print("A(0, 0) = " + str(ackermann(0,0)))
+  Const        r0, "A(0, 0) = "
+  Const        r3, 0
+  Move         r1, r3
+  Const        r3, 0
+  Move         r2, r3
+  Call2        r4, ackermann, r1, r2
+  Str          r5, r4
+  Add          r6, r0, r5
+  Print        r6
+  // print("A(1, 2) = " + str(ackermann(1,2)))
+  Const        r7, "A(1, 2) = "
+  Const        r10, 1
+  Move         r8, r10
+  Const        r11, 2
+  Move         r9, r11
+  Call2        r12, ackermann, r8, r9
+  Str          r13, r12
+  Add          r14, r7, r13
+  Print        r14
+  // print("A(2, 4) = " + str(ackermann(2,4)))
+  Const        r15, "A(2, 4) = "
+  Const        r11, 2
+  Move         r16, r11
+  Const        r18, 4
+  Move         r17, r18
+  Call2        r19, ackermann, r16, r17
+  Str          r20, r19
+  Add          r21, r15, r20
+  Print        r21
+  // print("A(3, 4) = " + str(ackermann(3,4)))
+  Const        r22, "A(3, 4) = "
+  Const        r25, 3
+  Move         r23, r25
+  Const        r18, 4
+  Move         r24, r18
+  Call2        r26, ackermann, r23, r24
+  Str          r27, r26
+  Add          r28, r22, r27
+  Print        r28
+  Return       r0

@@ -1,0 +1,320 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun sortRunes(s: string): string {
+func sortRunes (regs=37)
+  // var arr: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(s) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // arr = append(arr, s[i:i+1])
+  Move         r7, r4
+  Const        r9, 1
+  AddInt       r10, r4, r9
+  Move         r8, r10
+  Slice        r11, r0, r7, r8
+  Append       r12, r2, r11
+  Move         r2, r12
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r13, r4, r9
+  Move         r4, r13
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // var n = len(arr)
+  Len          r14, r2
+  Move         r15, r14
+  // var m = 0
+  Const        r3, 0
+  Move         r16, r3
+L6:
+  // while m < n {
+  LessInt      r17, r16, r15
+  JumpIfFalse  r17, L2
+  // var j = 0
+  Const        r3, 0
+  Move         r18, r3
+L5:
+  // while j < n - 1 {
+  Const        r9, 1
+  SubInt       r19, r15, r9
+  LessInt      r20, r18, r19
+  JumpIfFalse  r20, L3
+  // if arr[j] > arr[j+1] {
+  Index        r21, r2, r18
+  Const        r9, 1
+  AddInt       r22, r18, r9
+  Index        r23, r2, r22
+  Less         r24, r23, r21
+  JumpIfFalse  r24, L4
+  // let tmp = arr[j]
+  Index        r25, r2, r18
+  // arr[j] = arr[j+1]
+  Const        r9, 1
+  AddInt       r26, r18, r9
+  Index        r27, r2, r26
+  SetIndex     r2, r18, r27
+  // arr[j+1] = tmp
+  Const        r9, 1
+  AddInt       r28, r18, r9
+  SetIndex     r2, r28, r25
+L4:
+  // j = j + 1
+  Const        r9, 1
+  AddInt       r29, r18, r9
+  Move         r18, r29
+  // while j < n - 1 {
+  Jump         L5
+L3:
+  // m = m + 1
+  Const        r9, 1
+  AddInt       r30, r16, r9
+  Move         r16, r30
+  // while m < n {
+  Jump         L6
+L2:
+  // var out = ""
+  Const        r31, ""
+  Move         r32, r31
+  // i = 0
+  Const        r3, 0
+  Move         r4, r3
+L8:
+  // while i < n {
+  LessInt      r33, r4, r15
+  JumpIfFalse  r33, L7
+  // out = out + arr[i]
+  Index        r34, r2, r4
+  Add          r35, r32, r34
+  Move         r32, r35
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r36, r4, r9
+  Move         r4, r36
+  // while i < n {
+  Jump         L8
+L7:
+  // return out
+  Return       r32
+
+  // fun sortStrings(xs: list<string>): list<string> {
+func sortStrings (regs=27)
+  // var res: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var tmp = xs
+  Move         r3, r0
+L7:
+  // while len(tmp) > 0 {
+  Len          r4, r3
+  Const        r5, 0
+  LessInt      r6, r5, r4
+  JumpIfFalse  r6, L0
+  // var min = tmp[0]
+  Const        r5, 0
+  Index        r7, r3, r5
+  Move         r8, r7
+  // var idx = 0
+  Const        r5, 0
+  Move         r9, r5
+  // var i = 1
+  Const        r10, 1
+  Move         r11, r10
+L3:
+  // while i < len(tmp) {
+  Len          r12, r3
+  LessInt      r13, r11, r12
+  JumpIfFalse  r13, L1
+  // if tmp[i] < min {
+  Index        r14, r3, r11
+  Less         r15, r14, r8
+  JumpIfFalse  r15, L2
+  // min = tmp[i]
+  Index        r16, r3, r11
+  Move         r8, r16
+  // idx = i
+  Move         r9, r11
+L2:
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r17, r11, r10
+  Move         r11, r17
+  // while i < len(tmp) {
+  Jump         L3
+L1:
+  // res = append(res, min)
+  Append       r18, r2, r8
+  Move         r2, r18
+  // var out: list<string> = []
+  Const        r1, []
+  Move         r19, r1
+  // var j = 0
+  Const        r5, 0
+  Move         r20, r5
+L6:
+  // while j < len(tmp) {
+  Len          r21, r3
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L4
+  // if j != idx {
+  NotEqual     r23, r20, r9
+  JumpIfFalse  r23, L5
+  // out = append(out, tmp[j])
+  Index        r24, r3, r20
+  Append       r25, r19, r24
+  Move         r19, r25
+L5:
+  // j = j + 1
+  Const        r10, 1
+  AddInt       r26, r20, r10
+  Move         r20, r26
+  // while j < len(tmp) {
+  Jump         L6
+L4:
+  // tmp = out
+  Move         r3, r19
+  // while len(tmp) > 0 {
+  Jump         L7
+L0:
+  // return res
+  Return       r2
+
+  // fun main() {
+func main (regs=63)
+  // let words = ["abel","able","bale","bela","elba","alger","glare","lager","large","regal","angel","angle","galen","glean","lange","caret","carte","cater","crate","trace","elan","lane","lean","lena","neal","evil","levi","live","veil","vile"]
+  Const        r0, ["abel", "able", "bale", "bela", "elba", "alger", "glare", "lager", "large", "regal", "angel", "angle", "galen", "glean", "lange", "caret", "carte", "cater", "crate", "trace", "elan", "lane", "lean", "lena", "neal", "evil", "levi", "live", "veil", "vile"]
+  // var groups: map<string, list<string>> = {}
+  Const        r1, {}
+  Move         r2, r1
+  // var maxLen = 0
+  Const        r3, 0
+  Move         r4, r3
+  // for w in words {
+  Const        r5, ["abel", "able", "bale", "bela", "elba", "alger", "glare", "lager", "large", "regal", "angel", "angle", "galen", "glean", "lange", "caret", "carte", "cater", "crate", "trace", "elan", "lane", "lean", "lena", "neal", "evil", "levi", "live", "veil", "vile"]
+  IterPrep     r6, r5
+  Len          r7, r6
+  Const        r8, 0
+L4:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // let k = sortRunes(w)
+  Move         r12, r11
+  Call         r13, sortRunes, r12
+  // if !(k in groups) {
+  In           r14, r13, r2
+  Not          r15, r14
+  JumpIfFalse  r15, L1
+  // groups[k] = [w]
+  Move         r16, r11
+  MakeList     r17, 1, r16
+  SetIndex     r2, r13, r17
+  // if !(k in groups) {
+  Jump         L2
+L1:
+  // groups[k] = append(groups[k], w)
+  Index        r18, r2, r13
+  Append       r19, r18, r11
+  SetIndex     r2, r13, r19
+L2:
+  // if len(groups[k]) > maxLen {
+  Index        r20, r2, r13
+  Len          r21, r20
+  LessInt      r22, r4, r21
+  JumpIfFalse  r22, L3
+  // maxLen = len(groups[k])
+  Index        r23, r2, r13
+  Len          r24, r23
+  Move         r4, r24
+L3:
+  // for w in words {
+  Const        r25, 1
+  AddInt       r26, r8, r25
+  Move         r8, r26
+  Jump         L4
+L0:
+  // var printed: map<string, bool> = {}
+  Const        r1, {}
+  Move         r27, r1
+  // for w in words {
+  Const        r28, ["abel", "able", "bale", "bela", "elba", "alger", "glare", "lager", "large", "regal", "angel", "angle", "galen", "glean", "lange", "caret", "carte", "cater", "crate", "trace", "elan", "lane", "lean", "lena", "neal", "evil", "levi", "live", "veil", "vile"]
+  IterPrep     r29, r28
+  Len          r30, r29
+  Const        r31, 0
+L9:
+  LessInt      r32, r31, r30
+  JumpIfFalse  r32, L5
+  Index        r33, r29, r31
+  Move         r11, r33
+  // let k = sortRunes(w)
+  Move         r34, r11
+  Call         r35, sortRunes, r34
+  // if len(groups[k]) == maxLen {
+  Index        r36, r2, r35
+  Len          r37, r36
+  EqualInt     r38, r37, r4
+  JumpIfFalse  r38, L6
+  // if !(k in printed) {
+  In           r39, r35, r27
+  Not          r40, r39
+  JumpIfFalse  r40, L6
+  // var g = sortStrings(groups[k])
+  Index        r42, r2, r35
+  Move         r41, r42
+  Call         r43, sortStrings, r41
+  Move         r44, r43
+  // var line = "[" + g[0]
+  Const        r45, "["
+  Const        r3, 0
+  Index        r46, r44, r3
+  Add          r47, r45, r46
+  Move         r48, r47
+  // var i = 1
+  Const        r49, 1
+  Move         r50, r49
+L8:
+  // while i < len(g) {
+  Len          r51, r44
+  LessInt      r52, r50, r51
+  JumpIfFalse  r52, L7
+  // line = line + " " + g[i]
+  Const        r53, " "
+  Add          r54, r48, r53
+  Index        r55, r44, r50
+  Add          r56, r54, r55
+  Move         r48, r56
+  // i = i + 1
+  Const        r49, 1
+  AddInt       r57, r50, r49
+  Move         r50, r57
+  // while i < len(g) {
+  Jump         L8
+L7:
+  // line = line + "]"
+  Const        r58, "]"
+  Add          r59, r48, r58
+  Move         r48, r59
+  // print(line)
+  Print        r48
+  // printed[k] = true
+  Const        r60, true
+  SetIndex     r27, r35, r60
+L6:
+  // for w in words {
+  Const        r61, 1
+  AddInt       r62, r31, r61
+  Move         r31, r62
+  Jump         L9
+L5:
+  Return       r0

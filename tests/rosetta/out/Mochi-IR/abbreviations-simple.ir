@@ -1,0 +1,528 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun fields(s: string): list<string> {
+func fields (regs=27)
+  // var words: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L4:
+  // while i < len(s) {
+  Len          r7, r0
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let ch = substring(s, i, i + 1)
+  Const        r9, 1
+  AddInt       r10, r6, r9
+  Slice        r11, r0, r6, r10
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Const        r12, " "
+  Equal        r13, r11, r12
+  Const        r14, "\n"
+  Equal        r15, r11, r14
+  Const        r16, "\t"
+  Equal        r17, r11, r16
+  Move         r18, r13
+  JumpIfTrue   r18, L1
+  Move         r18, r15
+  JumpIfTrue   r18, L1
+  Move         r18, r17
+L1:
+  JumpIfFalse  r18, L2
+  // if len(cur) > 0 {
+  Len          r19, r4
+  Const        r5, 0
+  LessInt      r20, r5, r19
+  JumpIfFalse  r20, L3
+  // words = append(words, cur)
+  Append       r21, r2, r4
+  Move         r2, r21
+  // cur = ""
+  Const        r3, ""
+  Move         r4, r3
+  // if ch == " " || ch == "\n" || ch == "\t" {
+  Jump         L3
+L2:
+  // cur = cur + ch
+  Add          r22, r4, r11
+  Move         r4, r22
+L3:
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r23, r6, r9
+  Move         r6, r23
+  // while i < len(s) {
+  Jump         L4
+L0:
+  // if len(cur) > 0 { words = append(words, cur) }
+  Len          r24, r4
+  Const        r5, 0
+  LessInt      r25, r5, r24
+  JumpIfFalse  r25, L5
+  Append       r26, r2, r4
+  Move         r2, r26
+L5:
+  // return words
+  Return       r2
+
+  // fun padRight(s: string, width: int): string {
+func padRight (regs=10)
+  // var out = s
+  Move         r2, r0
+  // var i = len(s)
+  Len          r3, r0
+  Move         r4, r3
+L1:
+  // while i < width {
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // out = out + " "
+  Const        r6, " "
+  Add          r7, r2, r6
+  Move         r2, r7
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r4, r8
+  Move         r4, r9
+  // while i < width {
+  Jump         L1
+L0:
+  // return out
+  Return       r2
+
+  // fun join(xs: list<string>, sep: string): string {
+func join (regs=14)
+  // var res = ""
+  Const        r2, ""
+  Move         r3, r2
+  // var i = 0
+  Const        r4, 0
+  Move         r5, r4
+L2:
+  // while i < len(xs) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L0
+  // if i > 0 { res = res + sep }
+  Const        r4, 0
+  LessInt      r8, r4, r5
+  JumpIfFalse  r8, L1
+  Add          r9, r3, r1
+  Move         r3, r9
+L1:
+  // res = res + xs[i]
+  Index        r10, r0, r5
+  Add          r11, r3, r10
+  Move         r3, r11
+  // i = i + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while i < len(xs) {
+  Jump         L2
+L0:
+  // return res
+  Return       r3
+
+  // fun parseIntStr(str: string): int {
+func parseIntStr (regs=29)
+  // var i = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var neg = false
+  Const        r3, false
+  Move         r4, r3
+  // if len(str) > 0 && str[0:1] == "-" {
+  Len          r5, r0
+  Const        r1, 0
+  LessInt      r6, r1, r5
+  Const        r1, 0
+  Move         r7, r1
+  Const        r9, 1
+  Move         r8, r9
+  Slice        r10, r0, r7, r8
+  Const        r11, "-"
+  Equal        r12, r10, r11
+  Move         r13, r6
+  JumpIfFalse  r13, L0
+  Move         r13, r12
+L0:
+  JumpIfFalse  r13, L1
+  // neg = true
+  Const        r14, true
+  Move         r4, r14
+  // i = 1
+  Const        r9, 1
+  Move         r2, r9
+L1:
+  // var n = 0
+  Const        r1, 0
+  Move         r15, r1
+  // let digits = {
+  Const        r16, {"0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
+L3:
+  // while i < len(str) {
+  Len          r17, r0
+  LessInt      r18, r2, r17
+  JumpIfFalse  r18, L2
+  // n = n * 10 + digits[str[i:i+1]]
+  Const        r19, 10
+  MulInt       r20, r15, r19
+  Move         r21, r2
+  Const        r9, 1
+  AddInt       r23, r2, r9
+  Move         r22, r23
+  Slice        r24, r0, r21, r22
+  Index        r25, r16, r24
+  Add          r26, r20, r25
+  Move         r15, r26
+  // i = i + 1
+  Const        r9, 1
+  AddInt       r27, r2, r9
+  Move         r2, r27
+  // while i < len(str) {
+  Jump         L3
+L2:
+  // if neg { n = -n }
+  JumpIfFalse  r4, L4
+  Neg          r28, r15
+  Move         r15, r28
+L4:
+  // return n
+  Return       r15
+
+  // fun isDigits(s: string): bool {
+func isDigits (regs=18)
+  // if len(s) == 0 { return false }
+  Len          r1, r0
+  Const        r2, 0
+  EqualInt     r3, r1, r2
+  JumpIfFalse  r3, L0
+  Const        r4, false
+  Return       r4
+L0:
+  // var i = 0
+  Const        r2, 0
+  Move         r5, r2
+L4:
+  // while i < len(s) {
+  Len          r6, r0
+  LessInt      r7, r5, r6
+  JumpIfFalse  r7, L1
+  // let ch = substring(s, i, i + 1)
+  Const        r8, 1
+  AddInt       r9, r5, r8
+  Slice        r10, r0, r5, r9
+  // if ch < "0" || ch > "9" { return false }
+  Const        r11, "0"
+  Less         r12, r10, r11
+  Const        r13, "9"
+  Less         r14, r13, r10
+  Move         r15, r12
+  JumpIfTrue   r15, L2
+  Move         r15, r14
+L2:
+  JumpIfFalse  r15, L3
+  Const        r4, false
+  Return       r4
+L3:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r16, r5, r8
+  Move         r5, r16
+  // while i < len(s) {
+  Jump         L4
+L1:
+  // return true
+  Const        r17, true
+  Return       r17
+
+  // fun readTable(table: string): map<string, any> {
+func readTable (regs=38)
+  // let toks = fields(table)
+  Move         r1, r0
+  Call         r2, fields, r1
+  // var cmds: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var mins: list<int> = []
+  Const        r3, []
+  Move         r5, r3
+  // var i = 0
+  Const        r6, 0
+  Move         r7, r6
+L4:
+  // while i < len(toks) {
+  Len          r8, r2
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // let cmd = toks[i]
+  Index        r10, r2, r7
+  // var minlen = len(cmd)
+  Len          r11, r10
+  Move         r12, r11
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r7, r13
+  Move         r7, r14
+  // if i < len(toks) && isDigits(toks[i]) {
+  Len          r15, r2
+  LessInt      r16, r7, r15
+  Move         r17, r16
+  JumpIfFalse  r17, L1
+  Index        r19, r2, r7
+  Move         r18, r19
+  Call         r20, isDigits, r18
+  Move         r17, r20
+L1:
+  JumpIfFalse  r17, L2
+  // let num = parseIntStr(toks[i])
+  Index        r22, r2, r7
+  Move         r21, r22
+  Call         r23, parseIntStr, r21
+  // if num >= 1 && num < len(cmd) {
+  Const        r13, 1
+  LessEq       r24, r13, r23
+  Len          r25, r10
+  Less         r26, r23, r25
+  Move         r27, r24
+  JumpIfFalse  r27, L3
+  Move         r27, r26
+L3:
+  JumpIfFalse  r27, L2
+  // minlen = num
+  Move         r12, r23
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r28, r7, r13
+  Move         r7, r28
+L2:
+  // cmds = append(cmds, cmd)
+  Append       r29, r4, r10
+  Move         r4, r29
+  // mins = append(mins, minlen)
+  Append       r30, r5, r12
+  Move         r5, r30
+  // while i < len(toks) {
+  Jump         L4
+L0:
+  // return {"commands": cmds, "mins": mins}
+  Const        r31, "commands"
+  Const        r32, "mins"
+  Move         r33, r31
+  Move         r34, r4
+  Move         r35, r32
+  Move         r36, r5
+  MakeMap      r37, 2, r33
+  Return       r37
+
+  // fun validate(commands: list<string>, mins: list<int>, words: list<string>): list<string> {
+func validate (regs=36)
+  // var results: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var wi = 0
+  Const        r5, 0
+  Move         r6, r5
+L6:
+  // while wi < len(words) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // let w = words[wi]
+  Index        r9, r2, r6
+  // var found = false
+  Const        r10, false
+  Move         r11, r10
+  // let wlen = len(w)
+  Len          r12, r9
+  // var ci = 0
+  Const        r5, 0
+  Move         r13, r5
+L4:
+  // while ci < len(commands) {
+  Len          r14, r0
+  LessInt      r15, r13, r14
+  JumpIfFalse  r15, L1
+  // let cmd = commands[ci]
+  Index        r16, r0, r13
+  // if mins[ci] != 0 && wlen >= mins[ci] && wlen <= len(cmd) {
+  Index        r17, r1, r13
+  Index        r18, r1, r13
+  LessEq       r19, r18, r12
+  Len          r20, r16
+  LessEqInt    r21, r12, r20
+  Const        r5, 0
+  NotEqual     r22, r17, r5
+  Move         r23, r22
+  JumpIfFalse  r23, L2
+  Move         r23, r19
+  JumpIfFalse  r23, L2
+  Move         r23, r21
+L2:
+  JumpIfFalse  r23, L3
+  // let c = upper(cmd)
+  Upper        r24, r16
+  // let ww = upper(w)
+  Upper        r25, r9
+  // if substring(c, 0, wlen) == ww {
+  Const        r5, 0
+  Slice        r26, r24, r5, r12
+  Equal        r27, r26, r25
+  JumpIfFalse  r27, L3
+  // results = append(results, c)
+  Append       r28, r4, r24
+  Move         r4, r28
+  // found = true
+  Const        r29, true
+  Move         r11, r29
+  // break
+  Jump         L1
+L3:
+  // ci = ci + 1
+  Const        r30, 1
+  AddInt       r31, r13, r30
+  Move         r13, r31
+  // while ci < len(commands) {
+  Jump         L4
+L1:
+  // if !found { results = append(results, "*error*") }
+  Not          r32, r11
+  JumpIfFalse  r32, L5
+  Const        r33, "*error*"
+  Append       r34, r4, r33
+  Move         r4, r34
+L5:
+  // wi = wi + 1
+  Const        r30, 1
+  AddInt       r35, r6, r30
+  Move         r6, r35
+  // while wi < len(words) {
+  Jump         L6
+L0:
+  // return results
+  Return       r4
+
+  // fun main() {
+func main (regs=60)
+  // let table = "" +
+  Const        r0, ""
+  // "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " +
+  Const        r1, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 "
+  // let table = "" +
+  Const        r2, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 "
+  // "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " +
+  Const        r3, "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate "
+  // "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 " +
+  Const        r4, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate "
+  // "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " +
+  Const        r5, "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 "
+  // "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate " +
+  Const        r6, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 "
+  // "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " +
+  Const        r7, "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load "
+  // "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 " +
+  Const        r8, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load "
+  // "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " +
+  Const        r9, "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 "
+  // "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load " +
+  Const        r10, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 "
+  // "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " +
+  Const        r11, "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 "
+  // "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 " +
+  Const        r12, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 "
+  // "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " +
+  Const        r13, "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left "
+  // "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 " +
+  Const        r14, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left "
+  // "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+  Const        r15, "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+  // "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left " +
+  Const        r16, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left 2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+  // let sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+  Const        r17, "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+  // let tbl = readTable(table)
+  Const        r19, "add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate 3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left 2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "
+  Move         r18, r19
+  Call         r20, readTable, r18
+  // let commands = tbl["commands"] as list<string>
+  Const        r21, "commands"
+  Index        r22, r20, r21
+  Cast         r23, r22, [string]
+  // let mins = tbl["mins"] as list<int>
+  Const        r24, "mins"
+  Index        r25, r20, r24
+  Cast         r26, r25, [int]
+  // let words = fields(sentence)
+  Const        r17, "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"
+  Move         r27, r17
+  Call         r28, fields, r27
+  // let results = validate(commands, mins, words)
+  Move         r29, r23
+  Move         r30, r26
+  Move         r31, r28
+  Call         r32, validate, r29, r30, r31
+  // var out1 = "user words:"
+  Const        r33, "user words:"
+  Move         r34, r33
+  // var k = 0
+  Const        r35, 0
+  Move         r36, r35
+L3:
+  // while k < len(words) {
+  Len          r37, r28
+  LessInt      r38, r36, r37
+  JumpIfFalse  r38, L0
+  // out1 = out1 + " "
+  Const        r39, " "
+  Add          r40, r34, r39
+  Move         r34, r40
+  // if k < len(words) - 1 {
+  Len          r41, r28
+  Const        r42, 1
+  SubInt       r43, r41, r42
+  LessInt      r44, r36, r43
+  JumpIfFalse  r44, L1
+  // out1 = out1 + padRight(words[k], len(results[k]))
+  Index        r47, r28, r36
+  Move         r45, r47
+  Index        r48, r32, r36
+  Len          r49, r48
+  Move         r46, r49
+  Call2        r50, padRight, r45, r46
+  Add          r51, r34, r50
+  Move         r34, r51
+  // if k < len(words) - 1 {
+  Jump         L2
+L1:
+  // out1 = out1 + words[k]
+  Index        r52, r28, r36
+  Add          r53, r34, r52
+  Move         r34, r53
+L2:
+  // k = k + 1
+  Const        r42, 1
+  AddInt       r54, r36, r42
+  Move         r36, r54
+  // while k < len(words) {
+  Jump         L3
+L0:
+  // print(out1)
+  Print        r34
+  // print("full words: " + join(results, " "))
+  Const        r55, "full words: "
+  Move         r56, r32
+  Const        r39, " "
+  Move         r57, r39
+  Call2        r58, join, r56, r57
+  Add          r59, r55, r58
+  Print        r59
+  Return       r0

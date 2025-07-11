@@ -1,0 +1,158 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun main() {
+func main (regs=44)
+  // print("Diagram after trimming whitespace and removal of blank lines:\n")
+  Const        r0, "Diagram after trimming whitespace and removal of blank lines:\n"
+  Print        r0
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|                      ID                       |")
+  Const        r2, "|                      ID                       |"
+  Print        r2
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |")
+  Const        r3, "|QR|   Opcode  |AA|TC|RD|RA|   Z    |   RCODE   |"
+  Print        r3
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|                    QDCOUNT                    |")
+  Const        r4, "|                    QDCOUNT                    |"
+  Print        r4
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|                    ANCOUNT                    |")
+  Const        r5, "|                    ANCOUNT                    |"
+  Print        r5
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|                    NSCOUNT                    |")
+  Const        r6, "|                    NSCOUNT                    |"
+  Print        r6
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("|                    ARCOUNT                    |")
+  Const        r7, "|                    ARCOUNT                    |"
+  Print        r7
+  // print("+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+")
+  Const        r1, "+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+"
+  Print        r1
+  // print("\nDecoded:\n")
+  Const        r8, "\nDecoded:\n"
+  Print        r8
+  // print("Name     Bits  Start  End")
+  Const        r9, "Name     Bits  Start  End"
+  Print        r9
+  // print("=======  ====  =====  ===")
+  Const        r10, "=======  ====  =====  ==="
+  Print        r10
+  // print("ID        16      0    15")
+  Const        r11, "ID        16      0    15"
+  Print        r11
+  // print("QR         1     16    16")
+  Const        r12, "QR         1     16    16"
+  Print        r12
+  // print("Opcode     4     17    20")
+  Const        r13, "Opcode     4     17    20"
+  Print        r13
+  // print("AA         1     21    21")
+  Const        r14, "AA         1     21    21"
+  Print        r14
+  // print("TC         1     22    22")
+  Const        r15, "TC         1     22    22"
+  Print        r15
+  // print("RD         1     23    23")
+  Const        r16, "RD         1     23    23"
+  Print        r16
+  // print("RA         1     24    24")
+  Const        r17, "RA         1     24    24"
+  Print        r17
+  // print("Z          3     25    27")
+  Const        r18, "Z          3     25    27"
+  Print        r18
+  // print("RCODE      4     28    31")
+  Const        r19, "RCODE      4     28    31"
+  Print        r19
+  // print("QDCOUNT   16     32    47")
+  Const        r20, "QDCOUNT   16     32    47"
+  Print        r20
+  // print("ANCOUNT   16     48    63")
+  Const        r21, "ANCOUNT   16     48    63"
+  Print        r21
+  // print("NSCOUNT   16     64    79")
+  Const        r22, "NSCOUNT   16     64    79"
+  Print        r22
+  // print("ARCOUNT   16     80    95")
+  Const        r23, "ARCOUNT   16     80    95"
+  Print        r23
+  // print("\nTest string in hex:")
+  Const        r24, "\nTest string in hex:"
+  Print        r24
+  // print("78477bbf5496e12e1bf169a4")
+  Const        r25, "78477bbf5496e12e1bf169a4"
+  Print        r25
+  // print("\nTest string in binary:")
+  Const        r26, "\nTest string in binary:"
+  Print        r26
+  // print("011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100")
+  Const        r27, "011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100"
+  Print        r27
+  // print("\nUnpacked:\n")
+  Const        r28, "\nUnpacked:\n"
+  Print        r28
+  // print("Name     Size  Bit pattern")
+  Const        r29, "Name     Size  Bit pattern"
+  Print        r29
+  // print("=======  ====  ================")
+  Const        r30, "=======  ====  ================"
+  Print        r30
+  // print("ID        16   0111100001000111")
+  Const        r31, "ID        16   0111100001000111"
+  Print        r31
+  // print("QR         1   0")
+  Const        r32, "QR         1   0"
+  Print        r32
+  // print("Opcode     4   1111")
+  Const        r33, "Opcode     4   1111"
+  Print        r33
+  // print("AA         1   0")
+  Const        r34, "AA         1   0"
+  Print        r34
+  // print("TC         1   1")
+  Const        r35, "TC         1   1"
+  Print        r35
+  // print("RD         1   1")
+  Const        r36, "RD         1   1"
+  Print        r36
+  // print("RA         1   1")
+  Const        r37, "RA         1   1"
+  Print        r37
+  // print("Z          3   011")
+  Const        r38, "Z          3   011"
+  Print        r38
+  // print("RCODE      4   1111")
+  Const        r39, "RCODE      4   1111"
+  Print        r39
+  // print("QDCOUNT   16   0101010010010110")
+  Const        r40, "QDCOUNT   16   0101010010010110"
+  Print        r40
+  // print("ANCOUNT   16   1110000100101110")
+  Const        r41, "ANCOUNT   16   1110000100101110"
+  Print        r41
+  // print("NSCOUNT   16   0001101111110001")
+  Const        r42, "NSCOUNT   16   0001101111110001"
+  Print        r42
+  // print("ARCOUNT   16   0110100110100100")
+  Const        r43, "ARCOUNT   16   0110100110100100"
+  Print        r43
+  Return       r0

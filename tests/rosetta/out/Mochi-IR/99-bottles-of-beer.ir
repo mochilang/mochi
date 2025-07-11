@@ -1,0 +1,70 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun bottles(n: int): string {
+func bottles (regs=10)
+  // if n == 0 {
+  Const        r1, 0
+  Equal        r2, r0, r1
+  JumpIfFalse  r2, L0
+  // return "No more bottles"
+  Const        r3, "No more bottles"
+  Return       r3
+L0:
+  // if n == 1 {
+  Const        r4, 1
+  Equal        r5, r0, r4
+  JumpIfFalse  r5, L1
+  // return "1 bottle"
+  Const        r6, "1 bottle"
+  Return       r6
+L1:
+  // return str(n) + " bottles"
+  Str          r7, r0
+  Const        r8, " bottles"
+  Add          r9, r7, r8
+  Return       r9
+
+  // fun main() {
+func main (regs=19)
+  // var i = 99
+  Const        r0, 99
+  Move         r1, r0
+L1:
+  // while i > 0 {
+  Const        r2, 0
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(bottles(i) + " of beer on the wall")
+  Move         r4, r1
+  Call         r5, bottles, r4
+  Const        r6, " of beer on the wall"
+  Add          r7, r5, r6
+  Print        r7
+  // print(bottles(i) + " of beer")
+  Move         r8, r1
+  Call         r9, bottles, r8
+  Const        r10, " of beer"
+  Add          r11, r9, r10
+  Print        r11
+  // print("Take one down, pass it around")
+  Const        r12, "Take one down, pass it around"
+  Print        r12
+  // print(bottles(i - 1) + " of beer on the wall")
+  Const        r14, 1
+  SubInt       r15, r1, r14
+  Move         r13, r15
+  Call         r16, bottles, r13
+  Const        r6, " of beer on the wall"
+  Add          r17, r16, r6
+  Print        r17
+  // i = i - 1
+  Const        r14, 1
+  SubInt       r18, r1, r14
+  Move         r1, r18
+  // while i > 0 {
+  Jump         L1
+L0:
+  Return       r0

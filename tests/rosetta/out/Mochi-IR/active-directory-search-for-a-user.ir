@@ -1,0 +1,78 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun search_user(directory: map<string, list<string>>, username: string): list<string> {
+func search_user (regs=3)
+  // return directory[username]
+  Index        r2, r0, r1
+  Return       r2
+
+  // fun main() {
+func main (regs=30)
+  // let client = {
+  Const        r0, {"Base": "dc=example,dc=com", "GroupFilter": "(memberUid=%s)", "Host": "ldap.example.com", "Port": 389}
+  // let directory = {
+  Const        r1, {"john": ["users"], "username": ["admins", "users"]}
+  // let groups = search_user(directory, "username")
+  Const        r4, {"john": ["users"], "username": ["admins", "users"]}
+  Move         r2, r4
+  Const        r5, "username"
+  Move         r3, r5
+  Call2        r6, search_user, r2, r3
+  // if len(groups) > 0 {
+  Len          r7, r6
+  Const        r8, 0
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  // var out = "Groups: ["
+  Const        r10, "Groups: ["
+  Move         r11, r10
+  // var i = 0
+  Const        r8, 0
+  Move         r12, r8
+L3:
+  // while i < len(groups) {
+  Len          r13, r6
+  LessInt      r14, r12, r13
+  JumpIfFalse  r14, L1
+  // out = out + "\"" + groups[i] + "\""
+  Const        r15, "\""
+  Add          r16, r11, r15
+  Index        r17, r6, r12
+  Add          r18, r16, r17
+  Const        r15, "\""
+  Add          r19, r18, r15
+  Move         r11, r19
+  // if i < len(groups) - 1 { out = out + ", " }
+  Len          r20, r6
+  Const        r21, 1
+  SubInt       r22, r20, r21
+  LessInt      r23, r12, r22
+  JumpIfFalse  r23, L2
+  Const        r24, ", "
+  Add          r25, r11, r24
+  Move         r11, r25
+L2:
+  // i = i + 1
+  Const        r21, 1
+  AddInt       r26, r12, r21
+  Move         r12, r26
+  // while i < len(groups) {
+  Jump         L3
+L1:
+  // out = out + "]"
+  Const        r27, "]"
+  Add          r28, r11, r27
+  Move         r11, r28
+  // print(out)
+  Print        r11
+  // if len(groups) > 0 {
+  Jump         L4
+L0:
+  // print("User not found")
+  Const        r29, "User not found"
+  Print        r29
+L4:
+  Return       r0

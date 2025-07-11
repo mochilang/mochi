@@ -1,0 +1,11 @@
+func main (regs=4)
+  // var myVar = 3.14
+  Const        r0, 3.14
+  Move         r1, r0
+  // print("value as float:", myVar)
+  Const        r2, "value as float:"
+  Print2       r2, r1
+  // print("address: <not available>")
+  Const        r3, "address: <not available>"
+  Print        r3
+  Return       r0

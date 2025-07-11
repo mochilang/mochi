@@ -1,0 +1,151 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun pfacSum(i: int): int {
+func pfacSum (regs=12)
+  // var sum = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var p = 1
+  Const        r3, 1
+  Move         r4, r3
+L2:
+  // while p <= i / 2 {
+  Const        r5, 2
+  DivFloat     r6, r0, r5
+  LessEqFloat  r7, r4, r6
+  JumpIfFalse  r7, L0
+  // if i % p == 0 {
+  Mod          r8, r0, r4
+  Const        r1, 0
+  Equal        r9, r8, r1
+  JumpIfFalse  r9, L1
+  // sum = sum + p
+  AddInt       r10, r2, r4
+  Move         r2, r10
+L1:
+  // p = p + 1
+  Const        r3, 1
+  AddInt       r11, r4, r3
+  Move         r4, r11
+  // while p <= i / 2 {
+  Jump         L2
+L0:
+  // return sum
+  Return       r2
+
+  // fun pad(n: int, width: int): string {
+func pad (regs=8)
+  // var s = str(n)
+  Str          r2, r0
+  Move         r3, r2
+L1:
+  // while len(s) < width {
+  Len          r4, r3
+  Less         r5, r4, r1
+  JumpIfFalse  r5, L0
+  // s = " " + s
+  Const        r6, " "
+  Add          r7, r6, r3
+  Move         r3, r7
+  // while len(s) < width {
+  Jump         L1
+L0:
+  // return s
+  Return       r3
+
+  // fun main() {
+func main (regs=37)
+  // var sums: list<int> = []
+  Const        r0, []
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 20000 {
+  Const        r4, 20000
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // sums = append(sums, 0)
+  Const        r2, 0
+  Append       r6, r1, r2
+  Move         r1, r6
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r8, r3, r7
+  Move         r3, r8
+  // while i < 20000 {
+  Jump         L1
+L0:
+  // i = 1
+  Const        r7, 1
+  Move         r3, r7
+L3:
+  // while i < 20000 {
+  Const        r4, 20000
+  LessInt      r9, r3, r4
+  JumpIfFalse  r9, L2
+  // sums[i] = pfacSum(i)
+  Move         r10, r3
+  Call         r11, pfacSum, r10
+  SetIndex     r1, r3, r11
+  // i = i + 1
+  Const        r7, 1
+  AddInt       r12, r3, r7
+  Move         r3, r12
+  // while i < 20000 {
+  Jump         L3
+L2:
+  // print("The amicable pairs below 20,000 are:")
+  Const        r13, "The amicable pairs below 20,000 are:"
+  Print        r13
+  // var n = 2
+  Const        r14, 2
+  Move         r15, r14
+L7:
+  // while n < 19999 {
+  Const        r16, 19999
+  LessInt      r17, r15, r16
+  JumpIfFalse  r17, L4
+  // let m = sums[n]
+  Index        r18, r1, r15
+  // if m > n && m < 20000 && n == sums[m] {
+  Less         r19, r15, r18
+  Const        r4, 20000
+  Less         r20, r18, r4
+  Index        r21, r1, r18
+  Equal        r22, r15, r21
+  Move         r23, r19
+  JumpIfFalse  r23, L5
+  Move         r23, r20
+  JumpIfFalse  r23, L5
+  Move         r23, r22
+L5:
+  JumpIfFalse  r23, L6
+  // print("  " + pad(n, 5) + " and " + pad(m, 5))
+  Const        r24, "  "
+  Move         r25, r15
+  Const        r27, 5
+  Move         r26, r27
+  Call2        r28, pad, r25, r26
+  Add          r29, r24, r28
+  Const        r30, " and "
+  Add          r31, r29, r30
+  Move         r32, r18
+  Const        r27, 5
+  Move         r33, r27
+  Call2        r34, pad, r32, r33
+  Add          r35, r31, r34
+  Print        r35
+L6:
+  // n = n + 1
+  Const        r7, 1
+  AddInt       r36, r15, r7
+  Move         r15, r36
+  // while n < 19999 {
+  Jump         L7
+L4:
+  Return       r0

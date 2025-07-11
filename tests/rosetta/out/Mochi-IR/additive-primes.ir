@@ -1,0 +1,225 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun isPrime(n: int): bool {
+func isPrime (regs=24)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // if n % 2 == 0 { return n == 2 }
+  Const        r1, 2
+  Mod          r4, r0, r1
+  Const        r5, 0
+  Equal        r6, r4, r5
+  JumpIfFalse  r6, L1
+  Const        r1, 2
+  Equal        r7, r0, r1
+  Return       r7
+L1:
+  // if n % 3 == 0 { return n == 3 }
+  Const        r8, 3
+  Mod          r9, r0, r8
+  Const        r5, 0
+  Equal        r10, r9, r5
+  JumpIfFalse  r10, L2
+  Const        r8, 3
+  Equal        r11, r0, r8
+  Return       r11
+L2:
+  // var d = 5
+  Const        r12, 5
+  Move         r13, r12
+L6:
+  // while d * d <= n {
+  MulInt       r14, r13, r13
+  LessEq       r15, r14, r0
+  JumpIfFalse  r15, L3
+  // if n % d == 0 { return false }
+  Mod          r16, r0, r13
+  Const        r5, 0
+  Equal        r17, r16, r5
+  JumpIfFalse  r17, L4
+  Const        r3, false
+  Return       r3
+L4:
+  // d = d + 2
+  Const        r1, 2
+  AddInt       r18, r13, r1
+  Move         r13, r18
+  // if n % d == 0 { return false }
+  Mod          r19, r0, r13
+  Const        r5, 0
+  Equal        r20, r19, r5
+  JumpIfFalse  r20, L5
+  Const        r3, false
+  Return       r3
+L5:
+  // d = d + 4
+  Const        r21, 4
+  AddInt       r22, r13, r21
+  Move         r13, r22
+  // while d * d <= n {
+  Jump         L6
+L3:
+  // return true
+  Const        r23, true
+  Return       r23
+
+  // fun sumDigits(n: int): int {
+func sumDigits (regs=10)
+  // var s = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var x = n
+  Move         r3, r0
+L1:
+  // while x > 0 {
+  Const        r1, 0
+  Less         r4, r1, r3
+  JumpIfFalse  r4, L0
+  // s = s + x % 10
+  Const        r5, 10
+  Mod          r6, r3, r5
+  Add          r7, r2, r6
+  Move         r2, r7
+  // x = (x / 10) as int
+  Const        r5, 10
+  DivFloat     r8, r3, r5
+  Cast         r9, r8, int
+  Move         r3, r9
+  // while x > 0 {
+  Jump         L1
+L0:
+  // return s
+  Return       r2
+
+  // fun pad(n: int): string {
+func pad (regs=12)
+  // if n < 10 { return "  " + str(n) }
+  Const        r1, 10
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, "  "
+  Str          r4, r0
+  Add          r5, r3, r4
+  Return       r5
+L0:
+  // if n < 100 { return " " + str(n) }
+  Const        r6, 100
+  Less         r7, r0, r6
+  JumpIfFalse  r7, L1
+  Const        r8, " "
+  Str          r9, r0
+  Add          r10, r8, r9
+  Return       r10
+L1:
+  // return str(n)
+  Str          r11, r0
+  Return       r11
+
+  // fun main() {
+func main (regs=40)
+  // print("Additive primes less than 500:")
+  Const        r0, "Additive primes less than 500:"
+  Print        r0
+  // var count = 0
+  Const        r1, 0
+  Move         r2, r1
+  // var line = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var lineCount = 0
+  Const        r1, 0
+  Move         r5, r1
+  // var i = 2
+  Const        r6, 2
+  Move         r7, r6
+L4:
+  // while i < 500 {
+  Const        r8, 500
+  LessInt      r9, r7, r8
+  JumpIfFalse  r9, L0
+  // if isPrime(i) && isPrime(sumDigits(i)) {
+  Move         r10, r7
+  Call         r11, isPrime, r10
+  Move         r12, r11
+  JumpIfFalse  r12, L1
+  Move         r14, r7
+  Call         r15, sumDigits, r14
+  Move         r13, r15
+  Call         r16, isPrime, r13
+  Move         r12, r16
+L1:
+  JumpIfFalse  r12, L2
+  // count = count + 1
+  Const        r17, 1
+  AddInt       r18, r2, r17
+  Move         r2, r18
+  // line = line + pad(i) + "  "
+  Move         r19, r7
+  Call         r20, pad, r19
+  Add          r21, r4, r20
+  Const        r22, "  "
+  Add          r23, r21, r22
+  Move         r4, r23
+  // lineCount = lineCount + 1
+  Const        r17, 1
+  AddInt       r24, r5, r17
+  Move         r5, r24
+  // if lineCount == 10 {
+  Const        r25, 10
+  EqualInt     r26, r5, r25
+  JumpIfFalse  r26, L2
+  // print(substring(line, 0, len(line) - 2))
+  Const        r1, 0
+  Len          r27, r4
+  Const        r6, 2
+  SubInt       r28, r27, r6
+  Slice        r29, r4, r1, r28
+  Print        r29
+  // line = ""
+  Const        r3, ""
+  Move         r4, r3
+  // lineCount = 0
+  Const        r1, 0
+  Move         r5, r1
+L2:
+  // if i > 2 { i = i + 2 } else { i = i + 1 }
+  Const        r6, 2
+  LessInt      r30, r6, r7
+  JumpIfFalse  r30, L3
+  Const        r6, 2
+  AddInt       r31, r7, r6
+  Move         r7, r31
+  Jump         L4
+L3:
+  Const        r17, 1
+  AddInt       r32, r7, r17
+  Move         r7, r32
+  // while i < 500 {
+  Jump         L4
+L0:
+  // if lineCount > 0 {
+  Const        r1, 0
+  LessInt      r33, r1, r5
+  JumpIfFalse  r33, L5
+  // print(substring(line, 0, len(line) - 2))
+  Const        r1, 0
+  Len          r34, r4
+  Const        r6, 2
+  SubInt       r35, r34, r6
+  Slice        r36, r4, r1, r35
+  Print        r36
+L5:
+  // print(str(count) + " additive primes found.")
+  Str          r37, r2
+  Const        r38, " additive primes found."
+  Add          r39, r37, r38
+  Print        r39
+  Return       r0

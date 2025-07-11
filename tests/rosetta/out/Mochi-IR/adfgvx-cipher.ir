@@ -1,0 +1,989 @@
+func main (regs=5)
+  // var adfgvx = "ADFGVX"
+  Const        r0, "ADFGVX"
+  Move         r1, r0
+  // var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  Const        r2, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  Move         r3, r2
+  // main()
+  Call         r4, main, 
+  Return       r0
+
+  // fun shuffleStr(s: string): string {
+func shuffleStr (regs=30)
+  // var arr: list<string> = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(s) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // arr = arr + [s[i]]
+  Index        r8, r0, r4
+  Move         r7, r8
+  MakeList     r9, 1, r7
+  Add          r10, r2, r9
+  Move         r2, r10
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r12, r4, r11
+  Move         r4, r12
+  // while i < len(s) {
+  Jump         L1
+L0:
+  // var j = len(arr) - 1
+  Len          r13, r2
+  Const        r11, 1
+  SubInt       r14, r13, r11
+  Move         r15, r14
+L3:
+  // while j > 0 {
+  Const        r3, 0
+  LessInt      r16, r3, r15
+  JumpIfFalse  r16, L2
+  // let k = now() % (j + 1)
+  Now          r17
+  Const        r11, 1
+  AddInt       r18, r15, r11
+  ModInt       r19, r17, r18
+  // let tmp = arr[j]
+  Index        r20, r2, r15
+  // arr[j] = arr[k]
+  Index        r21, r2, r19
+  SetIndex     r2, r15, r21
+  // arr[k] = tmp
+  SetIndex     r2, r19, r20
+  // j = j - 1
+  Const        r11, 1
+  SubInt       r22, r15, r11
+  Move         r15, r22
+  // while j > 0 {
+  Jump         L3
+L2:
+  // var out = ""
+  Const        r23, ""
+  Move         r24, r23
+  // i = 0
+  Const        r3, 0
+  Move         r4, r3
+L5:
+  // while i < len(arr) {
+  Len          r25, r2
+  LessInt      r26, r4, r25
+  JumpIfFalse  r26, L4
+  // out = out + arr[i]
+  Index        r27, r2, r4
+  Add          r28, r24, r27
+  Move         r24, r28
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r29, r4, r11
+  Move         r4, r29
+  // while i < len(arr) {
+  Jump         L5
+L4:
+  // return out
+  Return       r24
+
+  // fun createPolybius(): list<string> {
+func createPolybius (regs=36)
+  // let shuffled = shuffleStr(alphabet)
+  Move         r0, r1
+  Call         r2, shuffleStr, r0
+  // print("6 x 6 Polybius square:\n")
+  Const        r3, "6 x 6 Polybius square:\n"
+  Print        r3
+  // print("  | A D F G V X")
+  Const        r4, "  | A D F G V X"
+  Print        r4
+  // print("---------------")
+  Const        r5, "---------------"
+  Print        r5
+  // var p: list<string> = []
+  Const        r6, []
+  Move         r7, r6
+  // var i = 0
+  Const        r8, 0
+  Move         r9, r8
+L3:
+  // while i < 6 {
+  Const        r10, 6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L0
+  // var row = shuffled[i*6:(i+1)*6]
+  Const        r10, 6
+  MulInt       r13, r9, r10
+  Move         r12, r13
+  Const        r15, 1
+  AddInt       r16, r9, r15
+  Const        r10, 6
+  MulInt       r17, r16, r10
+  Move         r14, r17
+  Slice        r18, r2, r12, r14
+  Move         r19, r18
+  // p = p + [row]
+  Move         r20, r19
+  MakeList     r21, 1, r20
+  Add          r22, r7, r21
+  Move         r7, r22
+  // var line = adfgvx[i] + " | "
+  Index        r24, r23, r9
+  Const        r25, " | "
+  Add          r26, r24, r25
+  Move         r27, r26
+  // var j = 0
+  Const        r8, 0
+  Move         r28, r8
+L2:
+  // while j < 6 {
+  Const        r10, 6
+  LessInt      r29, r28, r10
+  JumpIfFalse  r29, L1
+  // line = line + row[j] + " "
+  Index        r30, r19, r28
+  Add          r31, r27, r30
+  Const        r32, " "
+  Add          r33, r31, r32
+  Move         r27, r33
+  // j = j + 1
+  Const        r15, 1
+  AddInt       r34, r28, r15
+  Move         r28, r34
+  // while j < 6 {
+  Jump         L2
+L1:
+  // print(line)
+  Print        r27
+  // i = i + 1
+  Const        r15, 1
+  AddInt       r35, r9, r15
+  Move         r9, r35
+  // while i < 6 {
+  Jump         L3
+L0:
+  // return p
+  Return       r7
+
+  // fun createKey(n: int): string {
+func createKey (regs=32)
+  // if n < 7 || n > 12 {
+  Const        r1, 7
+  Less         r2, r0, r1
+  Const        r3, 12
+  Less         r4, r3, r0
+  Move         r5, r2
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+  // print("Key should be within 7 and 12 letters long.")
+  Const        r6, "Key should be within 7 and 12 letters long."
+  Print        r6
+L1:
+  // var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  Const        r7, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  Move         r8, r7
+  // var key = ""
+  Const        r9, ""
+  Move         r10, r9
+  // var i = 0
+  Const        r11, 0
+  Move         r12, r11
+L3:
+  // while i < n {
+  Less         r13, r12, r0
+  JumpIfFalse  r13, L2
+  // let idx = now() % len(pool)
+  Now          r14
+  Len          r15, r8
+  ModInt       r16, r14, r15
+  // key = key + pool[idx]
+  Index        r17, r8, r16
+  Add          r18, r10, r17
+  Move         r10, r18
+  // pool = pool[:idx] + pool[idx+1:len(pool)]
+  Const        r19, nil
+  Move         r20, r16
+  Slice        r21, r8, r19, r20
+  Const        r23, 1
+  AddInt       r24, r16, r23
+  Move         r22, r24
+  Len          r26, r8
+  Move         r25, r26
+  Slice        r27, r8, r22, r25
+  Add          r28, r21, r27
+  Move         r8, r28
+  // i = i + 1
+  Const        r23, 1
+  AddInt       r29, r12, r23
+  Move         r12, r29
+  // while i < n {
+  Jump         L3
+L2:
+  // print("\nThe key is " + key)
+  Const        r30, "\nThe key is "
+  Add          r31, r30, r10
+  Print        r31
+  // return key
+  Return       r10
+
+  // fun orderKey(key: string): list<int> {
+func orderKey (regs=44)
+  // var pairs = []
+  Const        r1, []
+  Move         r2, r1
+  // var i = 0
+  Const        r3, 0
+  Move         r4, r3
+L1:
+  // while i < len(key) {
+  Len          r5, r0
+  LessInt      r6, r4, r5
+  JumpIfFalse  r6, L0
+  // pairs = pairs + [[key[i], i]]
+  Index        r10, r0, r4
+  Move         r8, r10
+  Move         r9, r4
+  MakeList     r11, 2, r8
+  Move         r7, r11
+  MakeList     r12, 1, r7
+  Add          r13, r2, r12
+  Move         r2, r13
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r15, r4, r14
+  Move         r4, r15
+  // while i < len(key) {
+  Jump         L1
+L0:
+  // var n = len(pairs)
+  Len          r16, r2
+  Move         r17, r16
+  // var m = 0
+  Const        r3, 0
+  Move         r18, r3
+L6:
+  // while m < n {
+  LessInt      r19, r18, r17
+  JumpIfFalse  r19, L2
+  // var j = 0
+  Const        r3, 0
+  Move         r20, r3
+L5:
+  // while j < n - 1 {
+  Const        r14, 1
+  SubInt       r21, r17, r14
+  LessInt      r22, r20, r21
+  JumpIfFalse  r22, L3
+  // if pairs[j][0] > pairs[j+1][0] {
+  Index        r23, r2, r20
+  Const        r3, 0
+  Index        r24, r23, r3
+  Const        r14, 1
+  AddInt       r25, r20, r14
+  Index        r26, r2, r25
+  Const        r3, 0
+  Index        r27, r26, r3
+  Less         r28, r27, r24
+  JumpIfFalse  r28, L4
+  // let tmp = pairs[j]
+  Index        r29, r2, r20
+  // pairs[j] = pairs[j+1]
+  Const        r14, 1
+  AddInt       r30, r20, r14
+  Index        r31, r2, r30
+  SetIndex     r2, r20, r31
+  // pairs[j+1] = tmp
+  Const        r14, 1
+  AddInt       r32, r20, r14
+  SetIndex     r2, r32, r29
+L4:
+  // j = j + 1
+  Const        r14, 1
+  AddInt       r33, r20, r14
+  Move         r20, r33
+  // while j < n - 1 {
+  Jump         L5
+L3:
+  // m = m + 1
+  Const        r14, 1
+  AddInt       r34, r18, r14
+  Move         r18, r34
+  // while m < n {
+  Jump         L6
+L2:
+  // var res = []
+  Const        r1, []
+  Move         r35, r1
+  // i = 0
+  Const        r3, 0
+  Move         r4, r3
+L8:
+  // while i < n {
+  LessInt      r36, r4, r17
+  JumpIfFalse  r36, L7
+  // res = res + [pairs[i][1] as int]
+  Index        r38, r2, r4
+  Const        r14, 1
+  Index        r39, r38, r14
+  Cast         r40, r39, int
+  Move         r37, r40
+  MakeList     r41, 1, r37
+  Add          r42, r35, r41
+  Move         r35, r42
+  // i = i + 1
+  Const        r14, 1
+  AddInt       r43, r4, r14
+  Move         r4, r43
+  // while i < n {
+  Jump         L8
+L7:
+  // return res
+  Return       r35
+
+  // fun encrypt(polybius: list<string>, key: string, plainText: string): string {
+func encrypt (regs=94)
+  // var temp = ""
+  Const        r3, ""
+  Move         r4, r3
+  // var i = 0
+  Const        r5, 0
+  Move         r6, r5
+L6:
+  // while i < len(plainText) {
+  Len          r7, r2
+  LessInt      r8, r6, r7
+  JumpIfFalse  r8, L0
+  // var r = 0
+  Const        r5, 0
+  Move         r9, r5
+L5:
+  // while r < 6 {
+  Const        r10, 6
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L1
+  // var c = 0
+  Const        r5, 0
+  Move         r12, r5
+L4:
+  // while c < 6 {
+  Const        r10, 6
+  LessInt      r13, r12, r10
+  JumpIfFalse  r13, L2
+  // if polybius[r][c] == plainText[i] {
+  Index        r14, r0, r9
+  Index        r15, r14, r12
+  Index        r16, r2, r6
+  Equal        r17, r15, r16
+  JumpIfFalse  r17, L3
+  // temp = temp + adfgvx[r] + adfgvx[c]
+  Index        r19, r18, r9
+  Add          r20, r4, r19
+  Index        r22, r21, r12
+  Add          r23, r20, r22
+  Move         r4, r23
+L3:
+  // c = c + 1
+  Const        r24, 1
+  AddInt       r25, r12, r24
+  Move         r12, r25
+  // while c < 6 {
+  Jump         L4
+L2:
+  // r = r + 1
+  Const        r24, 1
+  AddInt       r26, r9, r24
+  Move         r9, r26
+  // while r < 6 {
+  Jump         L5
+L1:
+  // i = i + 1
+  Const        r24, 1
+  AddInt       r27, r6, r24
+  Move         r6, r27
+  // while i < len(plainText) {
+  Jump         L6
+L0:
+  // var colLen = len(temp) / len(key)
+  Len          r28, r4
+  Len          r29, r1
+  DivFloat     r30, r28, r29
+  Move         r31, r30
+  // if len(temp) % len(key) > 0 {
+  Len          r32, r4
+  Len          r33, r1
+  ModInt       r34, r32, r33
+  Const        r5, 0
+  LessInt      r35, r5, r34
+  JumpIfFalse  r35, L7
+  // colLen = colLen + 1
+  Const        r24, 1
+  AddFloat     r36, r31, r24
+  Move         r31, r36
+L7:
+  // var table: list<list<string>> = []
+  Const        r37, []
+  Move         r38, r37
+  // var rIdx = 0
+  Const        r5, 0
+  Move         r39, r5
+L11:
+  // while rIdx < colLen {
+  LessFloat    r40, r39, r31
+  JumpIfFalse  r40, L8
+  // var row: list<string> = []
+  Const        r37, []
+  Move         r41, r37
+  // var j = 0
+  Const        r5, 0
+  Move         r42, r5
+L10:
+  // while j < len(key) {
+  Len          r43, r1
+  LessInt      r44, r42, r43
+  JumpIfFalse  r44, L9
+  // row = row + [""]
+  Const        r45, [""]
+  Add          r46, r41, r45
+  Move         r41, r46
+  // j = j + 1
+  Const        r24, 1
+  AddInt       r47, r42, r24
+  Move         r42, r47
+  // while j < len(key) {
+  Jump         L10
+L9:
+  // table = table + [row]
+  Move         r48, r41
+  MakeList     r49, 1, r48
+  Add          r50, r38, r49
+  Move         r38, r50
+  // rIdx = rIdx + 1
+  Const        r24, 1
+  AddInt       r51, r39, r24
+  Move         r39, r51
+  // while rIdx < colLen {
+  Jump         L11
+L8:
+  // var idx = 0
+  Const        r5, 0
+  Move         r52, r5
+L13:
+  // while idx < len(temp) {
+  Len          r53, r4
+  LessInt      r54, r52, r53
+  JumpIfFalse  r54, L12
+  // let row = idx / len(key)
+  Len          r55, r1
+  DivFloat     r56, r52, r55
+  // let col = idx % len(key)
+  Len          r57, r1
+  ModInt       r58, r52, r57
+  // table[row][col] = temp[idx:idx+1]
+  Index        r59, r38, r56
+  Move         r60, r52
+  Const        r24, 1
+  AddInt       r62, r52, r24
+  Move         r61, r62
+  Slice        r63, r4, r60, r61
+  SetIndex     r59, r58, r63
+  // idx = idx + 1
+  Const        r24, 1
+  AddInt       r64, r52, r24
+  Move         r52, r64
+  // while idx < len(temp) {
+  Jump         L13
+L12:
+  // let order = orderKey(key)
+  Move         r65, r1
+  Call         r66, orderKey, r65
+  // var cols: list<string> = []
+  Const        r37, []
+  Move         r67, r37
+  // var ci = 0
+  Const        r5, 0
+  Move         r68, r5
+L17:
+  // while ci < len(key) {
+  Len          r69, r1
+  LessInt      r70, r68, r69
+  JumpIfFalse  r70, L14
+  // var colStr = ""
+  Const        r3, ""
+  Move         r71, r3
+  // var ri = 0
+  Const        r5, 0
+  Move         r72, r5
+L16:
+  // while ri < colLen {
+  LessFloat    r73, r72, r31
+  JumpIfFalse  r73, L15
+  // colStr = colStr + table[ri][order[ci]]
+  Index        r74, r38, r72
+  Index        r75, r66, r68
+  Index        r76, r74, r75
+  Add          r77, r71, r76
+  Move         r71, r77
+  // ri = ri + 1
+  Const        r24, 1
+  AddInt       r78, r72, r24
+  Move         r72, r78
+  // while ri < colLen {
+  Jump         L16
+L15:
+  // cols = cols + [colStr]
+  Move         r79, r71
+  MakeList     r80, 1, r79
+  Add          r81, r67, r80
+  Move         r67, r81
+  // ci = ci + 1
+  Const        r24, 1
+  AddInt       r82, r68, r24
+  Move         r68, r82
+  // while ci < len(key) {
+  Jump         L17
+L14:
+  // var result = ""
+  Const        r3, ""
+  Move         r83, r3
+  // ci = 0
+  Const        r5, 0
+  Move         r68, r5
+L20:
+  // while ci < len(cols) {
+  Len          r84, r67
+  LessInt      r85, r68, r84
+  JumpIfFalse  r85, L18
+  // result = result + cols[ci]
+  Index        r86, r67, r68
+  Add          r87, r83, r86
+  Move         r83, r87
+  // if ci < len(cols) - 1 {
+  Len          r88, r67
+  Const        r24, 1
+  SubInt       r89, r88, r24
+  LessInt      r90, r68, r89
+  JumpIfFalse  r90, L19
+  // result = result + " "
+  Const        r91, " "
+  Add          r92, r83, r91
+  Move         r83, r92
+L19:
+  // ci = ci + 1
+  Const        r24, 1
+  AddInt       r93, r68, r24
+  Move         r68, r93
+  // while ci < len(cols) {
+  Jump         L20
+L18:
+  // return result
+  Return       r83
+
+  // fun indexOf(s: string, ch: string): int {
+func indexOf (regs=11)
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L2:
+  // while i < len(s) {
+  Len          r4, r0
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // if s[i] == ch {
+  Index        r6, r0, r3
+  Equal        r7, r6, r1
+  JumpIfFalse  r7, L1
+  // return i
+  Return       r3
+L1:
+  // i = i + 1
+  Const        r8, 1
+  AddInt       r9, r3, r8
+  Move         r3, r9
+  // while i < len(s) {
+  Jump         L2
+L0:
+  // return -1
+  Const        r8, 1
+  NegInt       r10, r8
+  Return       r10
+
+  // fun decrypt(polybius: list<string>, key: string, cipherText: string): string {
+func decrypt (regs=134)
+  // var colStrs: list<string> = []
+  Const        r3, []
+  Move         r4, r3
+  // var start = 0
+  Const        r5, 0
+  Move         r6, r5
+  // var i = 0
+  Const        r5, 0
+  Move         r7, r5
+L3:
+  // while i <= len(cipherText) {
+  Len          r8, r2
+  LessEqInt    r9, r7, r8
+  JumpIfFalse  r9, L0
+  // if i == len(cipherText) || cipherText[i] == " " {
+  Len          r10, r2
+  EqualInt     r11, r7, r10
+  Index        r12, r2, r7
+  Const        r13, " "
+  Equal        r14, r12, r13
+  Move         r15, r11
+  JumpIfTrue   r15, L1
+  Move         r15, r14
+L1:
+  JumpIfFalse  r15, L2
+  // colStrs = colStrs + [cipherText[start:i]]
+  Move         r17, r6
+  Move         r18, r7
+  Slice        r19, r2, r17, r18
+  Move         r16, r19
+  MakeList     r20, 1, r16
+  Add          r21, r4, r20
+  Move         r4, r21
+  // start = i + 1
+  Const        r22, 1
+  AddInt       r23, r7, r22
+  Move         r6, r23
+L2:
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r24, r7, r22
+  Move         r7, r24
+  // while i <= len(cipherText) {
+  Jump         L3
+L0:
+  // var maxColLen = 0
+  Const        r5, 0
+  Move         r25, r5
+  // i = 0
+  Const        r5, 0
+  Move         r7, r5
+L6:
+  // while i < len(colStrs) {
+  Len          r26, r4
+  LessInt      r27, r7, r26
+  JumpIfFalse  r27, L4
+  // if len(colStrs[i]) > maxColLen {
+  Index        r28, r4, r7
+  Len          r29, r28
+  LessInt      r30, r25, r29
+  JumpIfFalse  r30, L5
+  // maxColLen = len(colStrs[i])
+  Index        r31, r4, r7
+  Len          r32, r31
+  Move         r25, r32
+L5:
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r33, r7, r22
+  Move         r7, r33
+  // while i < len(colStrs) {
+  Jump         L6
+L4:
+  // var cols: list<list<string>> = []
+  Const        r3, []
+  Move         r34, r3
+  // i = 0
+  Const        r5, 0
+  Move         r7, r5
+L16:
+  // while i < len(colStrs) {
+  Len          r35, r4
+  LessInt      r36, r7, r35
+  JumpIfFalse  r36, L7
+  // var s = colStrs[i]
+  Index        r37, r4, r7
+  Move         r38, r37
+  // var ls: list<string> = []
+  Const        r3, []
+  Move         r39, r3
+  // var j = 0
+  Const        r5, 0
+  Move         r40, r5
+L9:
+  // while j < len(s) {
+  Len          r41, r38
+  LessInt      r42, r40, r41
+  JumpIfFalse  r42, L8
+  // ls = ls + [s[j]]
+  Index        r44, r38, r40
+  Move         r43, r44
+  MakeList     r45, 1, r43
+  Add          r46, r39, r45
+  Move         r39, r46
+  // j = j + 1
+  Const        r22, 1
+  AddInt       r47, r40, r22
+  Move         r40, r47
+  // while j < len(s) {
+  Jump         L9
+L8:
+  // if len(s) < maxColLen {
+  Len          r48, r38
+  LessInt      r49, r48, r25
+  JumpIfFalse  r49, L10
+  // var pad: list<string> = []
+  Const        r3, []
+  Move         r50, r3
+  // var k = 0
+  Const        r5, 0
+  Move         r51, r5
+L14:
+  // while k < maxColLen {
+  LessInt      r52, r51, r25
+  JumpIfFalse  r52, L11
+  // if k < len(ls) {
+  Len          r53, r39
+  LessInt      r54, r51, r53
+  JumpIfFalse  r54, L12
+  // pad = pad + [ls[k]]
+  Index        r56, r39, r51
+  Move         r55, r56
+  MakeList     r57, 1, r55
+  Add          r58, r50, r57
+  Move         r50, r58
+  // if k < len(ls) {
+  Jump         L13
+L12:
+  // pad = pad + [""]
+  Const        r59, [""]
+  Add          r60, r50, r59
+  Move         r50, r60
+L13:
+  // k = k + 1
+  Const        r22, 1
+  AddInt       r61, r51, r22
+  Move         r51, r61
+  // while k < maxColLen {
+  Jump         L14
+L11:
+  // cols = cols + [pad]
+  Move         r62, r50
+  MakeList     r63, 1, r62
+  Add          r64, r34, r63
+  Move         r34, r64
+  // if len(s) < maxColLen {
+  Jump         L15
+L10:
+  // cols = cols + [ls]
+  Move         r65, r39
+  MakeList     r66, 1, r65
+  Add          r67, r34, r66
+  Move         r34, r67
+L15:
+  // i = i + 1
+  Const        r22, 1
+  AddInt       r68, r7, r22
+  Move         r7, r68
+  // while i < len(colStrs) {
+  Jump         L16
+L7:
+  // var table: list<list<string>> = []
+  Const        r3, []
+  Move         r69, r3
+  // var r = 0
+  Const        r5, 0
+  Move         r70, r5
+L20:
+  // while r < maxColLen {
+  LessInt      r71, r70, r25
+  JumpIfFalse  r71, L17
+  // var row: list<string> = []
+  Const        r3, []
+  Move         r72, r3
+  // var c = 0
+  Const        r5, 0
+  Move         r73, r5
+L19:
+  // while c < len(key) {
+  Len          r74, r1
+  LessInt      r75, r73, r74
+  JumpIfFalse  r75, L18
+  // row = row + [""]
+  Const        r76, [""]
+  Add          r77, r72, r76
+  Move         r72, r77
+  // c = c + 1
+  Const        r22, 1
+  AddInt       r78, r73, r22
+  Move         r73, r78
+  // while c < len(key) {
+  Jump         L19
+L18:
+  // table = table + [row]
+  Move         r79, r72
+  MakeList     r80, 1, r79
+  Add          r81, r69, r80
+  Move         r69, r81
+  // r = r + 1
+  Const        r22, 1
+  AddInt       r82, r70, r22
+  Move         r70, r82
+  // while r < maxColLen {
+  Jump         L20
+L17:
+  // let order = orderKey(key)
+  Move         r83, r1
+  Call         r84, orderKey, r83
+  // r = 0
+  Const        r5, 0
+  Move         r70, r5
+L24:
+  // while r < maxColLen {
+  LessInt      r85, r70, r25
+  JumpIfFalse  r85, L21
+  // var c = 0
+  Const        r5, 0
+  Move         r86, r5
+L23:
+  // while c < len(key) {
+  Len          r87, r1
+  LessInt      r88, r86, r87
+  JumpIfFalse  r88, L22
+  // table[r][order[c]] = cols[c][r]
+  Index        r89, r69, r70
+  Index        r90, r34, r86
+  Index        r91, r90, r70
+  Index        r92, r84, r86
+  SetIndex     r89, r92, r91
+  // c = c + 1
+  Const        r22, 1
+  AddInt       r93, r86, r22
+  Move         r86, r93
+  // while c < len(key) {
+  Jump         L23
+L22:
+  // r = r + 1
+  Const        r22, 1
+  AddInt       r94, r70, r22
+  Move         r70, r94
+  // while r < maxColLen {
+  Jump         L24
+L21:
+  // var temp = ""
+  Const        r95, ""
+  Move         r96, r95
+  // r = 0
+  Const        r5, 0
+  Move         r70, r5
+L28:
+  // while r < len(table) {
+  Len          r97, r69
+  LessInt      r98, r70, r97
+  JumpIfFalse  r98, L25
+  // var j = 0
+  Const        r5, 0
+  Move         r99, r5
+L27:
+  // while j < len(table[r]) {
+  Index        r100, r69, r70
+  Len          r101, r100
+  LessInt      r102, r99, r101
+  JumpIfFalse  r102, L26
+  // temp = temp + table[r][j]
+  Index        r103, r69, r70
+  Index        r104, r103, r99
+  Add          r105, r96, r104
+  Move         r96, r105
+  // j = j + 1
+  Const        r22, 1
+  AddInt       r106, r99, r22
+  Move         r99, r106
+  // while j < len(table[r]) {
+  Jump         L27
+L26:
+  // r = r + 1
+  Const        r22, 1
+  AddInt       r107, r70, r22
+  Move         r70, r107
+  // while r < len(table) {
+  Jump         L28
+L25:
+  // var plainText = ""
+  Const        r95, ""
+  Move         r108, r95
+  // var idx = 0
+  Const        r5, 0
+  Move         r109, r5
+L30:
+  // while idx < len(temp) {
+  Len          r110, r96
+  LessInt      r111, r109, r110
+  JumpIfFalse  r111, L29
+  // let rIdx = indexOf(adfgvx, temp[idx:idx+1])
+  Move         r112, r114
+  Move         r115, r109
+  Const        r22, 1
+  AddInt       r117, r109, r22
+  Move         r116, r117
+  Slice        r118, r96, r115, r116
+  Move         r113, r118
+  Call2        r119, indexOf, r112, r113
+  // let cIdx = indexOf(adfgvx, temp[idx+1:idx+2])
+  Move         r120, r122
+  Const        r22, 1
+  AddInt       r124, r109, r22
+  Move         r123, r124
+  Const        r126, 2
+  AddInt       r127, r109, r126
+  Move         r125, r127
+  Slice        r128, r96, r123, r125
+  Move         r121, r128
+  Call2        r129, indexOf, r120, r121
+  // plainText = plainText + polybius[rIdx][cIdx]
+  Index        r130, r0, r119
+  Index        r131, r130, r129
+  Add          r132, r108, r131
+  Move         r108, r132
+  // idx = idx + 2
+  Const        r126, 2
+  AddInt       r133, r109, r126
+  Move         r109, r133
+  // while idx < len(temp) {
+  Jump         L30
+L29:
+  // return plainText
+  Return       r108
+
+  // fun main() {
+func main (regs=19)
+  // let plainText = "ATTACKAT1200AM"
+  Const        r0, "ATTACKAT1200AM"
+  // let polybius = createPolybius()
+  Call         r1, createPolybius, 
+  // let key = createKey(9)
+  Const        r3, 9
+  Move         r2, r3
+  Call         r4, createKey, r2
+  // print("\nPlaintext : " + plainText)
+  Const        r5, "\nPlaintext : "
+  Const        r0, "ATTACKAT1200AM"
+  Add          r6, r5, r0
+  Print        r6
+  // let cipherText = encrypt(polybius, key, plainText)
+  Move         r7, r1
+  Move         r8, r4
+  Const        r0, "ATTACKAT1200AM"
+  Move         r9, r0
+  Call         r10, encrypt, r7, r8, r9
+  // print("\nEncrypted : " + cipherText)
+  Const        r11, "\nEncrypted : "
+  Add          r12, r11, r10
+  Print        r12
+  // let plainText2 = decrypt(polybius, key, cipherText)
+  Move         r13, r1
+  Move         r14, r4
+  Move         r15, r10
+  Call         r16, decrypt, r13, r14, r15
+  // print("\nDecrypted : " + plainText2)
+  Const        r17, "\nDecrypted : "
+  Add          r18, r17, r16
+  Print        r18
+  Return       r0

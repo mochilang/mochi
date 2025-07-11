@@ -243,6 +243,10 @@ out
 # Keep SLT golden files
 !tests/dataset/slt/out
 !tests/dataset/slt/out/**
+# Keep Rosetta Mochi IR outputs
+!tests/rosetta/out
+!tests/rosetta/out/Mochi-IR
+!tests/rosetta/out/Mochi-IR/*
 
 # Nuxt.js build / generate output
 .nuxt

@@ -1,0 +1,155 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun beastKind(b: Beast): string {
+func beastKind (regs=18)
+  // Dog(k, _) => k
+  Const        r3, "__name"
+  Index        r4, r0, r3
+  Const        r5, "Dog"
+  Equal        r2, r4, r5
+  JumpIfFalse  r2, L0
+  Const        r6, "kind"
+  Index        r7, r0, r6
+  Const        r8, "name"
+  Index        r9, r0, r8
+  Move         r1, r7
+  Jump         L1
+L0:
+  // Cat(k, _) => k
+  Const        r11, "__name"
+  Index        r12, r0, r11
+  Const        r13, "Cat"
+  Equal        r10, r12, r13
+  JumpIfFalse  r10, L2
+  Const        r14, "kind"
+  Index        r15, r0, r14
+  Const        r16, "name"
+  Index        r17, r0, r16
+  Move         r1, r15
+  Jump         L1
+L2:
+  Const        r1, nil
+L1:
+  // return match b {
+  Return       r1
+
+  // fun beastName(b: Beast): string {
+func beastName (regs=18)
+  // Dog(_, n) => n
+  Const        r3, "__name"
+  Index        r4, r0, r3
+  Const        r5, "Dog"
+  Equal        r2, r4, r5
+  JumpIfFalse  r2, L0
+  Const        r6, "kind"
+  Index        r7, r0, r6
+  Const        r8, "name"
+  Index        r9, r0, r8
+  Move         r1, r9
+  Jump         L1
+L0:
+  // Cat(_, n) => n
+  Const        r11, "__name"
+  Index        r12, r0, r11
+  Const        r13, "Cat"
+  Equal        r10, r12, r13
+  JumpIfFalse  r10, L2
+  Const        r14, "kind"
+  Index        r15, r0, r14
+  Const        r16, "name"
+  Index        r17, r0, r16
+  Move         r1, r17
+  Jump         L1
+L2:
+  Const        r1, nil
+L1:
+  // return match b {
+  Return       r1
+
+  // fun beastCry(b: Beast): string {
+func beastCry (regs=20)
+  // Dog(_, _) => "Woof"
+  Const        r3, "__name"
+  Index        r4, r0, r3
+  Const        r5, "Dog"
+  Equal        r2, r4, r5
+  JumpIfFalse  r2, L0
+  Const        r6, "kind"
+  Index        r7, r0, r6
+  Const        r8, "name"
+  Index        r9, r0, r8
+  Const        r10, "Woof"
+  Move         r1, r10
+  Jump         L1
+L0:
+  // Cat(_, _) => "Meow"
+  Const        r12, "__name"
+  Index        r13, r0, r12
+  Const        r14, "Cat"
+  Equal        r11, r13, r14
+  JumpIfFalse  r11, L2
+  Const        r15, "kind"
+  Index        r16, r0, r15
+  Const        r17, "name"
+  Index        r18, r0, r17
+  Const        r19, "Meow"
+  Move         r1, r19
+  Jump         L1
+L2:
+  Const        r1, nil
+L1:
+  // return match b {
+  Return       r1
+
+  // fun bprint(b: Beast) {
+func bprint (regs=15)
+  // print(beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" + beastCry(b) + "\".")
+  Move         r1, r0
+  Call         r2, beastName, r1
+  Const        r3, ", who's a "
+  Add          r4, r2, r3
+  Move         r5, r0
+  Call         r6, beastKind, r5
+  Add          r7, r4, r6
+  Const        r8, ", cries: \""
+  Add          r9, r7, r8
+  Move         r10, r0
+  Call         r11, beastCry, r10
+  Add          r12, r9, r11
+  Const        r13, "\"."
+  Add          r14, r12, r13
+  Print        r14
+  Return       r0
+
+  // fun main() {
+func main (regs=22)
+  // let d: Beast = Dog { kind: "labrador", name: "Max" }
+  Const        r0, "labrador"
+  Const        r1, "Max"
+  Const        r2, "__name"
+  Const        r3, "Dog"
+  Const        r4, "kind"
+  Move         r5, r0
+  Const        r6, "name"
+  Move         r7, r1
+  MakeMap      r8, 3, r2
+  // let c: Beast = Cat { kind: "siamese", name: "Sammy" }
+  Const        r9, "siamese"
+  Const        r10, "Sammy"
+  Const        r11, "__name"
+  Const        r12, "Cat"
+  Const        r13, "kind"
+  Move         r14, r9
+  Const        r15, "name"
+  Move         r16, r10
+  MakeMap      r17, 3, r11
+  // bprint(d)
+  Move         r18, r8
+  Call         r19, bprint, r18
+  // bprint(c)
+  Move         r20, r17
+  Call         r21, bprint, r20
+  Return       r0

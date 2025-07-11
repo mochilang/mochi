@@ -1,0 +1,296 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun shuffle(xs: list<int>): list<int> {
+func shuffle (regs=13)
+  // var arr = xs
+  Move         r1, r0
+  // var i = 99  // length of arr minus 1
+  Const        r2, 99
+  Move         r3, r2
+L1:
+  // while i > 0 {
+  Const        r4, 0
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  // let j = now() % (i + 1)
+  Now          r6
+  Const        r7, 1
+  AddInt       r8, r3, r7
+  ModInt       r9, r6, r8
+  // let tmp = arr[i]
+  Index        r10, r1, r3
+  // arr[i] = arr[j]
+  Index        r11, r1, r9
+  SetIndex     r1, r3, r11
+  // arr[j] = tmp
+  SetIndex     r1, r9, r10
+  // i = i - 1
+  Const        r7, 1
+  SubInt       r12, r3, r7
+  Move         r3, r12
+  // while i > 0 {
+  Jump         L1
+L0:
+  // return arr
+  Return       r1
+
+  // fun doTrials(trials: int, np: int, strategy: string) {
+func doTrials (regs=69)
+  // var pardoned = 0
+  Const        r3, 0
+  Move         r4, r3
+  // var t = 0
+  Const        r3, 0
+  Move         r5, r3
+L17:
+  // while t < trials {
+  Less         r6, r5, r0
+  JumpIfFalse  r6, L0
+  // var drawers: list<int> = []
+  Const        r7, []
+  Move         r8, r7
+  // var i = 0
+  Const        r3, 0
+  Move         r9, r3
+L2:
+  // while i < 100 {
+  Const        r10, 100
+  LessInt      r11, r9, r10
+  JumpIfFalse  r11, L1
+  // drawers = append(drawers, i)
+  Append       r12, r8, r9
+  Move         r8, r12
+  // i = i + 1
+  Const        r13, 1
+  AddInt       r14, r9, r13
+  Move         r9, r14
+  // while i < 100 {
+  Jump         L2
+L1:
+  // drawers = shuffle(drawers)
+  Move         r15, r8
+  Call         r16, shuffle, r15
+  Move         r8, r16
+  // var p = 0
+  Const        r3, 0
+  Move         r17, r3
+  // var success = true
+  Const        r18, true
+  Move         r19, r18
+L15:
+  // while p < np {
+  Less         r20, r17, r1
+  JumpIfFalse  r20, L3
+  // var found = false
+  Const        r21, false
+  Move         r22, r21
+  // if strategy == "optimal" {
+  Const        r23, "optimal"
+  Equal        r24, r2, r23
+  JumpIfFalse  r24, L4
+  // var prev = p
+  Move         r25, r17
+  // var d = 0
+  Const        r3, 0
+  Move         r26, r3
+L7:
+  // while d < 50 {
+  Const        r27, 50
+  LessInt      r28, r26, r27
+  JumpIfFalse  r28, L5
+  // let this = drawers[prev]
+  Index        r29, r8, r25
+  // if this == p {
+  Equal        r30, r29, r17
+  JumpIfFalse  r30, L6
+  // found = true
+  Const        r18, true
+  Move         r22, r18
+  // break
+  Jump         L5
+L6:
+  // prev = this
+  Move         r25, r29
+  // d = d + 1
+  Const        r13, 1
+  AddInt       r31, r26, r13
+  Move         r26, r31
+  // while d < 50 {
+  Jump         L7
+L4:
+  // var opened: list<bool> = []
+  Const        r7, []
+  Move         r32, r7
+  // var k = 0
+  Const        r3, 0
+  Move         r33, r3
+L9:
+  // while k < 100 {
+  Const        r10, 100
+  LessInt      r34, r33, r10
+  JumpIfFalse  r34, L8
+  // opened = append(opened, false)
+  Const        r21, false
+  Append       r35, r32, r21
+  Move         r32, r35
+  // k = k + 1
+  Const        r13, 1
+  AddInt       r36, r33, r13
+  Move         r33, r36
+  // while k < 100 {
+  Jump         L9
+L8:
+  // var d = 0
+  Const        r3, 0
+  Move         r37, r3
+L13:
+  // while d < 50 {
+  Const        r27, 50
+  LessInt      r38, r37, r27
+  JumpIfFalse  r38, L5
+  // var n = now() % 100
+  Now          r39
+  Const        r10, 100
+  ModInt       r40, r39, r10
+  Move         r41, r40
+L11:
+  // while opened[n] {
+  Index        r42, r32, r41
+  JumpIfFalse  r42, L10
+  // n = now() % 100
+  Now          r43
+  Const        r10, 100
+  ModInt       r44, r43, r10
+  Move         r41, r44
+  // while opened[n] {
+  Jump         L11
+L10:
+  // opened[n] = true
+  Const        r18, true
+  SetIndex     r32, r41, r18
+  // if drawers[n] == p {
+  Index        r45, r8, r41
+  Equal        r46, r45, r17
+  JumpIfFalse  r46, L12
+  // found = true
+  Const        r18, true
+  Move         r22, r18
+  // break
+  Jump         L5
+L12:
+  // d = d + 1
+  Const        r13, 1
+  AddInt       r47, r37, r13
+  Move         r37, r47
+  // while d < 50 {
+  Jump         L13
+L5:
+  // if !found {
+  Not          r48, r22
+  JumpIfFalse  r48, L14
+  // success = false
+  Const        r21, false
+  Move         r19, r21
+  // break
+  Jump         L3
+L14:
+  // p = p + 1
+  Const        r13, 1
+  AddInt       r49, r17, r13
+  Move         r17, r49
+  // while p < np {
+  Jump         L15
+L3:
+  // if success {
+  JumpIfFalse  r19, L16
+  // pardoned = pardoned + 1
+  Const        r13, 1
+  AddInt       r50, r4, r13
+  Move         r4, r50
+L16:
+  // t = t + 1
+  Const        r13, 1
+  AddInt       r51, r5, r13
+  Move         r5, r51
+  // while t < trials {
+  Jump         L17
+L0:
+  // let rf = (pardoned as float) / (trials as float) * 100.0
+  Cast         r52, r4, float
+  Cast         r53, r0, float
+  DivFloat     r54, r52, r53
+  Const        r55, 100.0
+  MulFloat     r56, r54, r55
+  // print("  strategy = " + strategy + "  pardoned = " + str(pardoned) + " relative frequency = " + str(rf) + "%")
+  Const        r57, "  strategy = "
+  Add          r58, r57, r2
+  Const        r59, "  pardoned = "
+  Add          r60, r58, r59
+  Str          r61, r4
+  Add          r62, r60, r61
+  Const        r63, " relative frequency = "
+  Add          r64, r62, r63
+  Str          r65, r56
+  Add          r66, r64, r65
+  Const        r67, "%"
+  Add          r68, r66, r67
+  Print        r68
+  Return       r0
+
+  // fun main() {
+func main (regs=32)
+  // let trials = 1000
+  Const        r0, 1000
+  // for np in [10, 100] {
+  Const        r1, [10, 100]
+  IterPrep     r2, r1
+  Len          r3, r2
+  Const        r4, 0
+L3:
+  LessInt      r5, r4, r3
+  JumpIfFalse  r5, L0
+  Index        r6, r2, r4
+  Move         r7, r6
+  // print("Results from " + str(trials) + " trials with " + str(np) + " prisoners:\n")
+  Const        r8, "Results from "
+  Const        r9, "1000"
+  Const        r10, "Results from 1000"
+  Const        r11, " trials with "
+  Const        r12, "Results from 1000 trials with "
+  Str          r13, r7
+  Add          r14, r12, r13
+  Const        r15, " prisoners:\n"
+  Add          r16, r14, r15
+  Print        r16
+  // for strat in ["random", "optimal"] {
+  Const        r17, ["random", "optimal"]
+  IterPrep     r18, r17
+  Len          r19, r18
+  Const        r20, 0
+L2:
+  LessInt      r21, r20, r19
+  JumpIfFalse  r21, L1
+  Index        r22, r18, r20
+  Move         r23, r22
+  // doTrials(trials, np, strat)
+  Const        r0, 1000
+  Move         r24, r0
+  Move         r25, r7
+  Move         r26, r23
+  Call         r27, doTrials, r24, r25, r26
+  // for strat in ["random", "optimal"] {
+  Const        r28, 1
+  AddInt       r29, r20, r28
+  Move         r20, r29
+  Jump         L2
+L1:
+  // for np in [10, 100] {
+  Const        r30, 1
+  AddInt       r31, r4, r30
+  Move         r4, r31
+  Jump         L3
+L0:
+  Return       r0

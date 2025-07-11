@@ -1,0 +1,222 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun poly(p: int): string {
+func poly (regs=43)
+  // var s: string = ""
+  Const        r1, ""
+  Move         r2, r1
+  // var coef: int = 1
+  Const        r3, 1
+  Move         r4, r3
+  // var i = p
+  Move         r5, r0
+  // if coef != 1 {
+  Const        r3, 1
+  NotEqual     r6, r4, r3
+  JumpIfFalse  r6, L0
+  // s = s + str(coef)
+  Str          r7, r4
+  Add          r8, r2, r7
+  Move         r2, r8
+L0:
+  // while i > 0 {
+  Const        r9, 0
+  Less         r10, r9, r5
+  JumpIfFalse  r10, L1
+  // s = s + "x"
+  Const        r11, "x"
+  Add          r12, r2, r11
+  Move         r2, r12
+  // if i != 1 {
+  Const        r3, 1
+  NotEqual     r13, r5, r3
+  JumpIfFalse  r13, L2
+  // s = s + "^" + str(i)
+  Const        r14, "^"
+  Add          r15, r2, r14
+  Str          r16, r5
+  Add          r17, r15, r16
+  Move         r2, r17
+L2:
+  // coef = (coef * i / (p - i + 1)) as int
+  Mul          r18, r4, r5
+  Sub          r19, r0, r5
+  Const        r3, 1
+  Add          r20, r19, r3
+  DivFloat     r21, r18, r20
+  Cast         r22, r21, int
+  Move         r4, r22
+  // var d = coef
+  Move         r23, r4
+  // if (p - (i - 1)) % 2 == 1 {
+  Const        r3, 1
+  Sub          r24, r5, r3
+  Sub          r25, r0, r24
+  Const        r26, 2
+  Mod          r27, r25, r26
+  Const        r3, 1
+  Equal        r28, r27, r3
+  JumpIfFalse  r28, L3
+  // d = -d
+  Neg          r29, r23
+  Move         r23, r29
+L3:
+  // if d < 0 {
+  Const        r9, 0
+  Less         r30, r23, r9
+  JumpIfFalse  r30, L4
+  // s = s + " - " + str(-d)
+  Const        r31, " - "
+  Add          r32, r2, r31
+  Neg          r33, r23
+  Str          r34, r33
+  Add          r35, r32, r34
+  Move         r2, r35
+  // if d < 0 {
+  Jump         L5
+L4:
+  // s = s + " + " + str(d)
+  Const        r36, " + "
+  Add          r37, r2, r36
+  Str          r38, r23
+  Add          r39, r37, r38
+  Move         r2, r39
+L5:
+  // i = i - 1
+  Const        r3, 1
+  Sub          r40, r5, r3
+  Move         r5, r40
+  // while i > 0 {
+  Jump         L0
+L1:
+  // if s == "" {
+  Const        r1, ""
+  Equal        r41, r2, r1
+  JumpIfFalse  r41, L6
+  // s = "1"
+  Const        r42, "1"
+  Move         r2, r42
+L6:
+  // return s
+  Return       r2
+
+  // fun aks(n: int): bool {
+func aks (regs=18)
+  // if n < 2 { return false }
+  Const        r1, 2
+  Less         r2, r0, r1
+  JumpIfFalse  r2, L0
+  Const        r3, false
+  Return       r3
+L0:
+  // var c: int = n
+  Move         r4, r0
+  // var i = 1
+  Const        r5, 1
+  Move         r6, r5
+L3:
+  // while i < n {
+  Less         r7, r6, r0
+  JumpIfFalse  r7, L1
+  // if c % n != 0 { return false }
+  Mod          r8, r4, r0
+  Const        r9, 0
+  NotEqual     r10, r8, r9
+  JumpIfFalse  r10, L2
+  Const        r3, false
+  Return       r3
+L2:
+  // c = (c * (n - i) / (i + 1)) as int
+  Sub          r11, r0, r6
+  Mul          r12, r4, r11
+  Const        r5, 1
+  AddInt       r13, r6, r5
+  DivFloat     r14, r12, r13
+  Cast         r15, r14, int
+  Move         r4, r15
+  // i = i + 1
+  Const        r5, 1
+  AddInt       r16, r6, r5
+  Move         r6, r16
+  // while i < n {
+  Jump         L3
+L1:
+  // return true
+  Const        r17, true
+  Return       r17
+
+  // fun main() {
+func main (regs=29)
+  // var p = 0
+  Const        r0, 0
+  Move         r1, r0
+L1:
+  // while p <= 7 {
+  Const        r2, 7
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  // print(str(p) + ":  " + poly(p))
+  Str          r4, r1
+  Const        r5, ":  "
+  Add          r6, r4, r5
+  Move         r7, r1
+  Call         r8, poly, r7
+  Add          r9, r6, r8
+  Print        r9
+  // p = p + 1
+  Const        r10, 1
+  AddInt       r11, r1, r10
+  Move         r1, r11
+  // while p <= 7 {
+  Jump         L1
+L0:
+  // var first = true
+  Const        r12, true
+  Move         r13, r12
+  // p = 2
+  Const        r14, 2
+  Move         r1, r14
+  // var line: string = ""
+  Const        r15, ""
+  Move         r16, r15
+L5:
+  // while p < 50 {
+  Const        r17, 50
+  LessInt      r18, r1, r17
+  JumpIfFalse  r18, L2
+  // if aks(p) {
+  Move         r19, r1
+  Call         r20, aks, r19
+  JumpIfFalse  r20, L3
+  // if first {
+  JumpIfFalse  r13, L4
+  // line = line + str(p)
+  Str          r21, r1
+  Add          r22, r16, r21
+  Move         r16, r22
+  // first = false
+  Const        r23, false
+  Move         r13, r23
+  // if first {
+  Jump         L3
+L4:
+  // line = line + " " + str(p)
+  Const        r24, " "
+  Add          r25, r16, r24
+  Str          r26, r1
+  Add          r27, r25, r26
+  Move         r16, r27
+L3:
+  // p = p + 1
+  Const        r10, 1
+  AddInt       r28, r1, r10
+  Move         r1, r28
+  // while p < 50 {
+  Jump         L5
+L2:
+  // print(line)
+  Print        r16
+  Return       r0

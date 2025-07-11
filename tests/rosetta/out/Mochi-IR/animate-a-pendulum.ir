@@ -1,0 +1,171 @@
+func main (regs=30)
+  // let PI = 3.141592653589793
+  Const        r0, 3.141592653589793
+  // let L = 10.0
+  Const        r1, 10.0
+  // let G = 9.81
+  Const        r2, 9.81
+  // let dt = 0.2
+  Const        r3, 0.2
+  // let phi0 = PI / 4.0
+  Const        r0, 3.141592653589793
+  Const        r4, 4.0
+  DivFloat     r5, r0, r4
+  // let omega = sqrtApprox(G / L)
+  Const        r2, 9.81
+  Const        r1, 10.0
+  DivFloat     r7, r2, r1
+  Move         r6, r7
+  Call         r8, sqrtApprox, r6
+  // var t = 0.0
+  Const        r9, 0.0
+  Move         r10, r9
+  // for step in 0..10 {
+  Const        r11, 0
+  Const        r12, 10
+  Move         r13, r11
+L1:
+  LessInt      r14, r13, r12
+  JumpIfFalse  r14, L0
+  // let phi = phi0 * cosApprox(omega * t)
+  Const        r15, 0.7853981633974483
+  MulFloat     r17, r8, r10
+  Move         r16, r17
+  Call         r18, cosApprox, r16
+  MulFloat     r19, r15, r18
+  // let pos = (10.0 * sinApprox(phi) + 0.5) as int
+  Const        r1, 10.0
+  Move         r20, r19
+  Call         r21, sinApprox, r20
+  MulFloat     r22, r1, r21
+  Const        r23, 0.5
+  AddFloat     r24, r22, r23
+  Cast         r25, r24, int
+  // print(str(pos))
+  Str          r26, r25
+  Print        r26
+  // t = t + dt
+  Const        r3, 0.2
+  AddFloat     r27, r10, r3
+  Move         r10, r27
+  // for step in 0..10 {
+  Const        r28, 1
+  AddInt       r29, r13, r28
+  Move         r13, r29
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun sinApprox(x: float): float {
+func sinApprox (regs=19)
+  // var term = x
+  Move         r1, r0
+  // var sum = x
+  Move         r2, r0
+  // var n = 1
+  Const        r3, 1
+  Move         r4, r3
+L1:
+  // while n <= 10 {
+  Const        r5, 10
+  LessEqInt    r6, r4, r5
+  JumpIfFalse  r6, L0
+  // let denom = ((2*n)*(2*n+1)) as float
+  Const        r7, 2
+  MulInt       r8, r7, r4
+  Const        r7, 2
+  MulInt       r9, r7, r4
+  Const        r3, 1
+  AddInt       r10, r9, r3
+  MulInt       r11, r8, r10
+  Cast         r12, r11, float
+  // term = -term * x * x / denom
+  Neg          r13, r1
+  Mul          r14, r13, r0
+  Mul          r15, r14, r0
+  DivFloat     r16, r15, r12
+  Move         r1, r16
+  // sum = sum + term
+  AddFloat     r17, r2, r1
+  Move         r2, r17
+  // n = n + 1
+  Const        r3, 1
+  AddInt       r18, r4, r3
+  Move         r4, r18
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r2
+
+  // fun cosApprox(x: float): float {
+func cosApprox (regs=20)
+  // var term = 1.0
+  Const        r1, 1.0
+  Move         r2, r1
+  // var sum = 1.0
+  Const        r1, 1.0
+  Move         r3, r1
+  // var n = 1
+  Const        r4, 1
+  Move         r5, r4
+L1:
+  // while n <= 10 {
+  Const        r6, 10
+  LessEqInt    r7, r5, r6
+  JumpIfFalse  r7, L0
+  // let denom = ((2*n-1)*(2*n)) as float
+  Const        r8, 2
+  MulInt       r9, r8, r5
+  Const        r4, 1
+  SubInt       r10, r9, r4
+  Const        r8, 2
+  MulInt       r11, r8, r5
+  MulInt       r12, r10, r11
+  Cast         r13, r12, float
+  // term = -term * x * x / denom
+  NegFloat     r14, r2
+  MulFloat     r15, r14, r0
+  MulFloat     r16, r15, r0
+  DivFloat     r17, r16, r13
+  Move         r2, r17
+  // sum = sum + term
+  AddFloat     r18, r3, r2
+  Move         r3, r18
+  // n = n + 1
+  Const        r4, 1
+  AddInt       r19, r5, r4
+  Move         r5, r19
+  // while n <= 10 {
+  Jump         L1
+L0:
+  // return sum
+  Return       r3
+
+  // fun sqrtApprox(x: float): float {
+func sqrtApprox (regs=12)
+  // var guess = x
+  Move         r1, r0
+  // var i = 0
+  Const        r2, 0
+  Move         r3, r2
+L1:
+  // while i < 10 {
+  Const        r4, 10
+  LessInt      r5, r3, r4
+  JumpIfFalse  r5, L0
+  // guess = (guess + x / guess) / 2.0
+  DivFloat     r6, r0, r1
+  AddFloat     r7, r1, r6
+  Const        r8, 2.0
+  DivFloat     r9, r7, r8
+  Move         r1, r9
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r11, r3, r10
+  Move         r3, r11
+  // while i < 10 {
+  Jump         L1
+L0:
+  // return guess
+  Return       r1

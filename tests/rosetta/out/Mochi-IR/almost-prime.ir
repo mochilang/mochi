@@ -1,0 +1,110 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun kPrime(n: int, k: int): bool {
+func kPrime (regs=16)
+  // var nf = 0
+  Const        r2, 0
+  Move         r3, r2
+  // var i = 2
+  Const        r4, 2
+  Move         r5, r4
+L4:
+  // while i <= n {
+  LessEq       r6, r5, r0
+  JumpIfFalse  r6, L0
+L3:
+  // while n % i == 0 {
+  Mod          r7, r0, r5
+  Const        r2, 0
+  Equal        r8, r7, r2
+  JumpIfFalse  r8, L1
+  // if nf == k { return false }
+  Equal        r9, r3, r1
+  JumpIfFalse  r9, L2
+  Const        r10, false
+  Return       r10
+L2:
+  // nf = nf + 1
+  Const        r11, 1
+  AddInt       r12, r3, r11
+  Move         r3, r12
+  // n = n / i
+  DivFloat     r13, r0, r5
+  Move         r0, r13
+  // while n % i == 0 {
+  Jump         L3
+L1:
+  // i = i + 1
+  Const        r11, 1
+  AddInt       r14, r5, r11
+  Move         r5, r14
+  // while i <= n {
+  Jump         L4
+L0:
+  // return nf == k
+  Equal        r15, r3, r1
+  Return       r15
+
+  // fun gen(k: int, count: int): list<int> {
+func gen (regs=14)
+  // var r: list<int> = []
+  Const        r2, []
+  Move         r3, r2
+  // var n = 2
+  Const        r4, 2
+  Move         r5, r4
+L2:
+  // while len(r) < count {
+  Len          r6, r3
+  Less         r7, r6, r1
+  JumpIfFalse  r7, L0
+  // if kPrime(n, k) { r = append(r, n) }
+  Move         r8, r5
+  Move         r9, r0
+  Call2        r10, kPrime, r8, r9
+  JumpIfFalse  r10, L1
+  Append       r11, r3, r5
+  Move         r3, r11
+L1:
+  // n = n + 1
+  Const        r12, 1
+  AddInt       r13, r5, r12
+  Move         r5, r13
+  // while len(r) < count {
+  Jump         L2
+L0:
+  // return r
+  Return       r3
+
+  // fun main() {
+func main (regs=14)
+  // var k = 1
+  Const        r0, 1
+  Move         r1, r0
+L1:
+  // while k <= 5 {
+  Const        r2, 5
+  LessEqInt    r3, r1, r2
+  JumpIfFalse  r3, L0
+  // print(str(k) + " " + str(gen(k, 10)))
+  Str          r4, r1
+  Const        r5, " "
+  Add          r6, r4, r5
+  Move         r7, r1
+  Const        r9, 10
+  Move         r8, r9
+  Call2        r10, gen, r7, r8
+  Str          r11, r10
+  Add          r12, r6, r11
+  Print        r12
+  // k = k + 1
+  Const        r0, 1
+  AddInt       r13, r1, r0
+  Move         r1, r13
+  // while k <= 5 {
+  Jump         L1
+L0:
+  Return       r0
