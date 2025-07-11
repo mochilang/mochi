@@ -1,0 +1,51 @@
+line 9:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:9:9: error: unresolved reference: Node
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+        ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:9:21: error: unresolved reference: Leaf
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+                    ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:9:46: error: unresolved reference: Node
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+                                             ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:9:58: error: unresolved reference: Leaf
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+                                                         ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:9:83: error: unresolved reference: Leaf
+val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+                                                                                  ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:11:17: error: unresolved reference: Tree
+fun sum_tree(t: Tree): Int {
+                ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:14:5: error: 'when' expression must be exhaustive, add necessary 'else' branch
+    when (__t) {
+    ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:15:9: error: unresolved reference: Leaf
+        Leaf -> 0
+        ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:9: error: unresolved reference: Node
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+        ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:14: error: unresolved reference: left
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+             ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:20: error: unresolved reference: value
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                   ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:27: error: unresolved reference: right
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                          ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:52: error: unresolved reference: left
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                   ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:66: error: unresolved reference: value
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:16:85: error: unresolved reference: right
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                                                    ^
+
+  8: 
+  9: val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
+ 10: 

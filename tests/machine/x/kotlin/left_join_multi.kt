@@ -1,10 +1,10 @@
-data class Customer(var id: Int, var name: String)
-
-data class Order(var id: Int, var customerId: Int)
-
 data class Item(var orderId: Int, var sku: String)
 
 data class Result(var orderId: Any?, var name: Any?, var item: Any?)
+
+data class Customer(var id: Int, var name: String)
+
+data class Order(var id: Int, var customerId: Int)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 

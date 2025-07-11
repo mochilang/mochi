@@ -1,0 +1,27 @@
+line 16:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:16:72: error: the integer literal does not conform to the expected type Double
+val partsupp = mutableListOf(Partsupp(part = 100, supplier = 1, cost = 10, qty = 2), Partsupp(part = 100, supplier = 2, cost = 20, qty = 1), Partsupp(part = 200, supplier = 1, cost = 5, qty = 3))
+                                                                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:16:128: error: the integer literal does not conform to the expected type Double
+val partsupp = mutableListOf(Partsupp(part = 100, supplier = 1, cost = 10, qty = 2), Partsupp(part = 100, supplier = 2, cost = 20, qty = 1), Partsupp(part = 200, supplier = 1, cost = 5, qty = 3))
+                                                                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:16:184: error: the integer literal does not conform to the expected type Double
+val partsupp = mutableListOf(Partsupp(part = 100, supplier = 1, cost = 10, qty = 2), Partsupp(part = 100, supplier = 2, cost = 20, qty = 1), Partsupp(part = 200, supplier = 1, cost = 5, qty = 3))
+                                                                                                                                                                                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:55:21: error: unresolved reference: value
+        __res.add(r.value)
+                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:58:3: error: unresolved reference: sumOf
+}.sumOf { toInt(it) }))
+  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:58:11: error: unresolved reference: toInt
+}.sumOf { toInt(it) }))
+          ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join.kt:58:17: error: unresolved reference: it
+}.sumOf { toInt(it) }))
+                ^
+
+ 15: 
+ 16: val partsupp = mutableListOf(Partsupp(part = 100, supplier = 1, cost = 10, qty = 2), Partsupp(part = 100, supplier = 2, cost = 20, qty = 1), Partsupp(part = 200, supplier = 1, cost = 5, qty = 3))
+ 17: 

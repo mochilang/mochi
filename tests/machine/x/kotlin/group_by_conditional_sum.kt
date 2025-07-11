@@ -1,9 +1,9 @@
 class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Item(var cat: String, var val: Int, var flag: Boolean)
+data class Item(var cat: String, var `val`: Int, var flag: Boolean)
 
 data class Result(var cat: Any?, var share: Double)
 
-val items = mutableListOf(Item(cat = "a", val = 10, flag = true), Item(cat = "a", val = 5, flag = false), Item(cat = "b", val = 20, flag = true))
+val items = mutableListOf(Item(cat = "a", `val` = 10, flag = true), Item(cat = "a", `val` = 5, flag = false), Item(cat = "b", `val` = 20, flag = true))
 
 val result = run {
     val __groups = mutableMapOf<Any?, Group>()
@@ -27,13 +27,13 @@ val result = run {
         __res.add(if (x.flag) x.val else 0)
     }
     __res
-}.sumOf { toInt(it) } / run {
+}.sum() / run {
     val __res = mutableListOf<Int>()
     for (x in g) {
         __res.add(x.val)
     }
     __res
-}.sumOf { toInt(it) }))
+}.sum()))
     }
     __res
 }.sortedBy { it.key as Comparable<Any> }

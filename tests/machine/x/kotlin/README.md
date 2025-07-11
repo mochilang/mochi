@@ -8,7 +8,7 @@ Each generated file now includes only the runtime helper functions that are actu
 
 Compiled: 100/100 programs
 
-Successfully ran: 88/100 programs
+Successfully ran: 83/100 programs
 
 ## Checklist
 
@@ -34,12 +34,12 @@ Successfully ran: 88/100 programs
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [x] group_by.mochi
-- [x] group_by_conditional_sum.mochi
+- [ ] group_by.mochi
+- [ ] group_by_conditional_sum.mochi
  - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
-- [x] group_by_multi_join.mochi
+- [ ] group_by_multi_join.mochi
  - [ ] group_by_multi_join_sort.mochi
  - [ ] group_by_sort.mochi
  - [ ] group_items_iteration.mochi
@@ -47,7 +47,7 @@ Successfully ran: 88/100 programs
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
 - [x] in_operator.mochi
-- [x] in_operator_extended.mochi
+- [ ] in_operator_extended.mochi
 - [x] inner_join.mochi
 - [x] join_multi.mochi
 - [x] json_builtin.mochi
@@ -73,17 +73,17 @@ Successfully ran: 88/100 programs
 - [x] match_full.mochi
 - [x] math_ops.mochi
 - [x] membership.mochi
-- [x] min_max_builtin.mochi
+- [ ] min_max_builtin.mochi
  - [x] nested_function.mochi
 - [ ] order_by_map.mochi
-- [x] outer_join.mochi
+- [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
 - [ ] query_sum_select.mochi
 - [x] record_assign.mochi
-- [x] right_join.mochi
+- [ ] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi

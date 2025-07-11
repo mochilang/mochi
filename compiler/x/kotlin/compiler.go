@@ -226,7 +226,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, st := range c.inferred {
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
-			fields[i] = fmt.Sprintf("var %s: %s", f, kotlinTypeOf(st.Fields[f]))
+			fields[i] = fmt.Sprintf("var %s: %s", escapeIdent(f), kotlinTypeOf(st.Fields[f]))
 		}
 		c.writeln(fmt.Sprintf("data class %s(%s)", st.Name, strings.Join(fields, ", ")))
 		c.writeln("")
@@ -597,7 +597,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		if lt, ok := t.(types.ListType); ok {
 			if st, ok := lt.Elem.(types.StructType); ok {
 				for _, f := range st.Order {
-					c.writeln(fmt.Sprintf("val %s = %s.%s", f, item, f))
+					c.writeln(fmt.Sprintf("val %s = %s.%s", escapeIdent(f), item, escapeIdent(f)))
 					c.env.SetVar(f, st.Fields[f], true)
 				}
 			}
@@ -622,7 +622,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			return err
 		}
 		if ok {
-			c.writeln(fmt.Sprintf("%s.%s = %s", item, key, valExpr))
+			c.writeln(fmt.Sprintf("%s.%s = %s", item, escapeIdent(key), valExpr))
 		} else {
 			keyExpr, err := c.expr(it.Key)
 			if err != nil {
@@ -652,7 +652,7 @@ func (c *Compiler) typeDecl(t *parser.TypeDecl) error {
 	fields := make([]string, 0, len(t.Members))
 	for _, m := range t.Members {
 		if m.Field != nil {
-			fields = append(fields, fmt.Sprintf("var %s: %s", m.Field.Name, c.typeName(m.Field.Type)))
+			fields = append(fields, fmt.Sprintf("var %s: %s", escapeIdent(m.Field.Name), c.typeName(m.Field.Type)))
 		}
 	}
 	c.writeln(fmt.Sprintf("data class %s(%s)", t.Name, strings.Join(fields, ", ")))
@@ -741,7 +741,7 @@ func kotlinZeroValue(t types.Type) string {
 	case types.StructType:
 		fields := make([]string, len(tt.Order))
 		for i, f := range tt.Order {
-			fields[i] = fmt.Sprintf("%s = %s", f, kotlinZeroValue(tt.Fields[f]))
+			fields[i] = fmt.Sprintf("%s = %s", escapeIdent(f), kotlinZeroValue(tt.Fields[f]))
 		}
 		return fmt.Sprintf("%s(%s)", tt.Name, strings.Join(fields, ", "))
 	default:
@@ -907,7 +907,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Field != nil:
-			val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+			val = fmt.Sprintf("%s.%s", val, escapeIdent(op.Field.Name))
 		case op.Cast != nil:
 			// special case: casting a map literal to a struct type
 			if op.Cast.Type.Simple != nil {
@@ -988,7 +988,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 					return "", err
 				}
 				k, _ := identName(it.Key)
-				fields[i] = fmt.Sprintf("%s = %s", k, v)
+				fields[i] = fmt.Sprintf("%s = %s", escapeIdent(k), v)
 			}
 			return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
 		}
@@ -1020,7 +1020,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+			fields[i] = fmt.Sprintf("%s = %s", escapeIdent(f.Name), v)
 		}
 		return fmt.Sprintf("%s(%s)", p.Struct.Name, strings.Join(fields, ", ")), nil
 	case p.FunExpr != nil:
@@ -1118,11 +1118,12 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "avg":
 		if len(args) == 1 {
+			c.use("toDouble")
 			return fmt.Sprintf("%s.map{ toDouble(it) }.average()", args[0]), true
 		}
 	case "sum":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.sumOf { toInt(it) }", args[0]), true
+			return fmt.Sprintf("%s.sum()", args[0]), true
 		}
 	case "max":
 		if len(args) == 1 {
@@ -2071,6 +2072,21 @@ func kotlinTypeOf(t types.Type) string {
 	default:
 		return "Any?"
 	}
+}
+
+var kotlinKeywords = map[string]bool{
+	"class":  true,
+	"object": true,
+	"val":    true,
+	"var":    true,
+	"when":   true,
+}
+
+func escapeIdent(name string) string {
+	if kotlinKeywords[name] {
+		return "`" + name + "`"
+	}
+	return name
 }
 
 func isStructType(t types.Type) bool {
