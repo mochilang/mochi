@@ -119,6 +119,8 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _left_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(A, Option[B])] = for(x <- a) yield (x, b.find(y => cond(x,y)))\n")
 		case "_right_join":
 			out.WriteString(pad + "def _right_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], B)] = for(y <- b) yield (a.find(x => cond(x,y)), y)\n")
+		case "_outer_join":
+			out.WriteString(pad + "def _outer_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], Option[B])] = { val left = _left_join(a,b)(cond).map{ case(x,y) => (Some(x), y) }; val right = _right_join(a,b)(cond).collect{ case(None, r) => (None, Some(r)) }; left ++ right }\n")
 		case "_load_yaml":
 			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String,String]] = {\n" +
 				pad + "  val lines = scala.io.Source.fromFile(path).getLines().toList\n" +
@@ -1677,6 +1679,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
 			parts = append(parts, fmt.Sprintf("if %s", cond))
 			child.SetVar(j.Var, elemT, false)
+		} else if *j.Side == "outer" {
+			pair := c.newVar("pair")
+			leftT, _ := child.GetVar(q.Var)
+			parts[len(parts)-1] = fmt.Sprintf("%s <- _outer_join(%s, %s)((%s,%s) => %s)", pair, src, s, q.Var, j.Var, cond)
+			parts = append(parts, fmt.Sprintf("%s = %s._1", q.Var, pair))
+			parts = append(parts, fmt.Sprintf("%s = %s._2", j.Var, pair))
+			child.SetVar(q.Var, types.OptionType{Elem: leftT}, false)
+			child.SetVar(j.Var, types.OptionType{Elem: elemT}, false)
+			c.use("_outer_join")
 		} else {
 			parts = append(parts, fmt.Sprintf("%s = %s.find(%s => %s)", j.Var, s, j.Var, cond))
 			child.SetVar(j.Var, types.OptionType{Elem: elemT}, false)
@@ -1698,22 +1709,34 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		tuple := strings.Join(append([]string{q.Var}, func() []string {
-			names := make([]string, len(q.Froms)+len(q.Joins))
+		names := append([]string{q.Var}, func() []string {
+			n := make([]string, len(q.Froms)+len(q.Joins))
 			for i, f := range q.Froms {
-				names[i] = f.Var
+				n[i] = f.Var
 			}
 			for i, j := range q.Joins {
-				names[len(q.Froms)+i] = j.Var
+				n[len(q.Froms)+i] = j.Var
 			}
-			return names
-		}()...), ", ")
-		tmp := fmt.Sprintf("for { %s } yield (%s, (%s))", strings.Join(parts, "; "), keyExpr, tuple)
+			return n
+		}()...)
+		elem := types.StructType{Fields: make(map[string]types.Type), Order: names}
+		for _, n := range names {
+			if t, err := child.GetVar(n); err == nil {
+				elem.Fields[n] = t
+			}
+		}
+		elem = c.ensureStructName(elem)
+		partsExpr := make([]string, len(names))
+		for i, n := range names {
+			partsExpr[i] = fmt.Sprintf("%s = %s", sanitizeField(n), n)
+		}
+		tuple := fmt.Sprintf("%s(%s)", elem.Name, strings.Join(partsExpr, ", "))
+		tmp := fmt.Sprintf("for { %s } yield (%s, %s)", strings.Join(parts, "; "), keyExpr, tuple)
 		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList", tmp)
 
 		groupEnv := types.NewEnv(c.env)
 		keyT := types.ExprType(q.Group.Exprs[0], c.env)
-		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: types.AnyType{}}, false)
+		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, false)
 
 		if q.Sort != nil {
 			c.env = groupEnv
