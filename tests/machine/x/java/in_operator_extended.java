@@ -5,6 +5,14 @@ class A {
 		this.a = a;
 	}
 	int size() { return 1; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof A other)) return false;
+		return Objects.equals(this.a, other.a);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(a);
+	}
 }
 public class InOperatorExtended {
 	static boolean inOp(Object item, Object collection) {

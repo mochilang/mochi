@@ -7,6 +7,14 @@ class IdName {
 		this.name = name;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdName other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, name);
+	}
 }
 class IdNation {
 	int id;
@@ -16,6 +24,14 @@ class IdNation {
 		this.nation = nation;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdNation other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.nation, other.nation);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, nation);
+	}
 }
 class PartSupplierCostQty {
 	int part;
@@ -29,6 +45,14 @@ class PartSupplierCostQty {
 		this.qty = qty;
 	}
 	int size() { return 4; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PartSupplierCostQty other)) return false;
+		return Objects.equals(this.part, other.part) && Objects.equals(this.supplier, other.supplier) && Objects.equals(this.cost, other.cost) && Objects.equals(this.qty, other.qty);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(part, supplier, cost, qty);
+	}
 }
 class PartValue {
 	int part;
@@ -38,6 +62,14 @@ class PartValue {
 		this.value = value;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PartValue other)) return false;
+		return Objects.equals(this.part, other.part) && Objects.equals(this.value, other.value);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(part, value);
+	}
 }
 class PartTotal {
 	Object part;
@@ -47,6 +79,14 @@ class PartTotal {
 		this.total = total;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof PartTotal other)) return false;
+		return Objects.equals(this.part, other.part) && Objects.equals(this.total, other.total);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(part, total);
+	}
 }
 public class GroupByMultiJoin {
 	public static void main(String[] args) {

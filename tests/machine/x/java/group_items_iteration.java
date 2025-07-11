@@ -7,6 +7,14 @@ class TagVal {
 		this.val = val;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof TagVal other)) return false;
+		return Objects.equals(this.tag, other.tag) && Objects.equals(this.val, other.val);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(tag, val);
+	}
 }
 class TagTotal {
 	Object tag;
@@ -16,6 +24,14 @@ class TagTotal {
 		this.total = total;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof TagTotal other)) return false;
+		return Objects.equals(this.tag, other.tag) && Objects.equals(this.total, other.total);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(tag, total);
+	}
 }
 public class GroupItemsIteration {
 	static <T> List<T> append(List<T> list, T item) {

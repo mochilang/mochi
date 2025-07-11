@@ -9,6 +9,14 @@ class CatValFlag {
 		this.flag = flag;
 	}
 	int size() { return 3; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CatValFlag other)) return false;
+		return Objects.equals(this.cat, other.cat) && Objects.equals(this.val, other.val) && Objects.equals(this.flag, other.flag);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(cat, val, flag);
+	}
 }
 class CatShare {
 	Object cat;
@@ -18,6 +26,14 @@ class CatShare {
 		this.share = share;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CatShare other)) return false;
+		return Objects.equals(this.cat, other.cat) && Objects.equals(this.share, other.share);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(cat, share);
+	}
 }
 public class GroupByConditionalSum {
 	public static void main(String[] args) {

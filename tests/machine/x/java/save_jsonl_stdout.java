@@ -7,6 +7,14 @@ class NameAge {
 		this.age = age;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NameAge other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, age);
+	}
 }
 public class SaveJsonlStdout {
 	static Map<String,Object> asMap(Object o) {

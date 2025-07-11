@@ -7,6 +7,14 @@ class IdName {
 		this.name = name;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdName other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.name, other.name);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, name);
+	}
 }
 class IdCustomerId {
 	int id;
@@ -16,6 +24,14 @@ class IdCustomerId {
 		this.customerId = customerId;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof IdCustomerId other)) return false;
+		return Objects.equals(this.id, other.id) && Objects.equals(this.customerId, other.customerId);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(id, customerId);
+	}
 }
 class OrderIdSku {
 	int orderId;
@@ -25,6 +41,14 @@ class OrderIdSku {
 		this.sku = sku;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof OrderIdSku other)) return false;
+		return Objects.equals(this.orderId, other.orderId) && Objects.equals(this.sku, other.sku);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(orderId, sku);
+	}
 }
 class NameSku {
 	String name;
@@ -34,6 +58,14 @@ class NameSku {
 		this.sku = sku;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NameSku other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.sku, other.sku);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, sku);
+	}
 }
 public class JoinMulti {
 	public static void main(String[] args) {

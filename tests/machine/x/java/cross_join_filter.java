@@ -7,6 +7,14 @@ class NL {
 		this.l = l;
 	}
 	int size() { return 2; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NL other)) return false;
+		return Objects.equals(this.n, other.n) && Objects.equals(this.l, other.l);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(n, l);
+	}
 }
 public class CrossJoinFilter {
 	public static void main(String[] args) {

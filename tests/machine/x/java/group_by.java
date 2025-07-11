@@ -9,6 +9,14 @@ class NameAgeCity {
 		this.city = city;
 	}
 	int size() { return 3; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof NameAgeCity other)) return false;
+		return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age) && Objects.equals(this.city, other.city);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(name, age, city);
+	}
 }
 class CityCountAvgAge {
 	Object city;
@@ -20,6 +28,14 @@ class CityCountAvgAge {
 		this.avg_age = avg_age;
 	}
 	int size() { return 3; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof CityCountAvgAge other)) return false;
+		return Objects.equals(this.city, other.city) && Objects.equals(this.count, other.count) && Objects.equals(this.avg_age, other.avg_age);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(city, count, avg_age);
+	}
 }
 public class GroupBy {
 	public static void main(String[] args) {

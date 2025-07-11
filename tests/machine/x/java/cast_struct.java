@@ -19,6 +19,14 @@ class Title {
 		this.title = title;
 	}
 	int size() { return 1; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Title other)) return false;
+		return Objects.equals(this.title, other.title);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(title);
+	}
 }
 public class CastStruct {
 	public static void main(String[] args) {

@@ -9,6 +9,14 @@ class ABC {
 		this.c = c;
 	}
 	int size() { return 3; }
+	@Override public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof ABC other)) return false;
+		return Objects.equals(this.a, other.a) && Objects.equals(this.b, other.b) && Objects.equals(this.c, other.c);
+	}
+	@Override public int hashCode() {
+		return Objects.hash(a, b, c);
+	}
 }
 public class ValuesBuiltin {
 	public static void main(String[] args) {
