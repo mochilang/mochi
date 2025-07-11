@@ -1,0 +1,104 @@
+// Mochi implementation of Rosetta "Arithmetic derivative" task
+// Translated from Go version in tests/rosetta/x/Go/arithmetic-derivative.go
+
+fun primeFactors(n: int): list<int> {
+  var factors: list<int> = []
+  var x = n
+  while x % 2 == 0 {
+    factors = append(factors, 2)
+    x = (x / 2) as int
+  }
+  var p = 3
+  while p * p <= x {
+    while x % p == 0 {
+      factors = append(factors, p)
+      x = (x / p) as int
+    }
+    p = p + 2
+  }
+  if x > 1 {
+    factors = append(factors, x)
+  }
+  return factors
+}
+
+fun repeat(ch: string, n: int): string {
+  var s = ""
+  var i = 0
+  while i < n {
+    s = s + ch
+    i = i + 1
+  }
+  return s
+}
+
+fun D(n: float): float {
+  if n < 0.0 {
+    return -D(-n)
+  }
+  if n < 2.0 {
+    return 0.0
+  }
+  var factors: list<int> = []
+  if n < 10000000000000000000.0 {
+    factors = primeFactors((n) as int)
+  } else {
+    let g = (n / 100.0) as int
+    factors = primeFactors(g)
+    factors = append(factors, 2)
+    factors = append(factors, 2)
+    factors = append(factors, 5)
+    factors = append(factors, 5)
+  }
+  let c = len(factors)
+  if c == 1 {
+    return 1.0
+  }
+  if c == 2 {
+    return (factors[0] + factors[1]) as float
+  }
+  let d = n / (factors[0] as float)
+  return D(d) * (factors[0] as float) + d
+}
+
+fun pad(n: int): string {
+  var s = str(n)
+  while len(s) < 4 {
+    s = " " + s
+  }
+  return s
+}
+
+fun main() {
+  var vals: list<int> = []
+  var n = -99
+  while n < 101 {
+    vals = append(vals, (D(n as float)) as int)
+    n = n + 1
+  }
+  var i = 0
+  while i < len(vals) {
+    var line = ""
+    var j = 0
+    while j < 10 {
+      line = line + pad(vals[i+j])
+      if j < 9 { line = line + " " }
+      j = j + 1
+    }
+    print(line)
+    i = i + 10
+  }
+
+  var pow = 1.0
+  var m = 1
+  while m < 21 {
+    pow = pow * 10.0
+    var exp = str(m)
+    if len(exp) < 2 { exp = exp + " " }
+    var res = str(m) + repeat("0", m - 1)
+    print("D(10^" + exp + ") / 7 = " + res)
+    m = m + 1
+  }
+}
+
+main()
