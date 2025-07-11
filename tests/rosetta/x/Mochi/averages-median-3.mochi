@@ -1,0 +1,52 @@
+// Mochi implementation of Rosetta "Averages/Median" task (variant 3)
+// Uses a quickselect algorithm with random pivots.
+
+fun qsel(a: list<float>, k: int): float {
+  var arr = a
+  while len(arr) > 1 {
+    var px = now() % len(arr)
+    var pv = arr[px]
+    let last = len(arr) - 1
+    let tmp = arr[px]
+    arr[px] = arr[last]
+    arr[last] = tmp
+    px = 0
+    var i = 0
+    while i < last {
+      let v = arr[i]
+      if v < pv {
+        let tmp2 = arr[px]
+        arr[px] = arr[i]
+        arr[i] = tmp2
+        px = px + 1
+      }
+      i = i + 1
+    }
+    if px == k {
+      return pv
+    }
+    if k < px {
+      arr = arr[0:px]
+    } else {
+      let tmp2 = arr[px]
+      arr[px] = pv
+      arr[last] = tmp2
+      arr = arr[(px + 1):]
+      k = k - (px + 1)
+    }
+  }
+  return arr[0]
+}
+
+fun median(list: list<float>): float {
+  var arr = list
+  let half = (len(arr) / 2) as int
+  let med = qsel(arr, half)
+  if len(arr) % 2 == 0 {
+    return (med + qsel(arr, half-1)) / 2.0
+  }
+  return med
+}
+
+print(str(median([3.0, 1.0, 4.0, 1.0])))
+print(str(median([3.0, 1.0, 4.0, 1.0, 5.0])))
