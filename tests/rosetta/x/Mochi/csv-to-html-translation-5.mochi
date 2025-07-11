@@ -1,0 +1,58 @@
+fun split(s: string, sep: string): list<string> {
+  var out: list<string> = []
+  var start = 0
+  var i = 0
+  let n = len(sep)
+  while i <= len(s) - n {
+    if substring(s, i, i + n) == sep {
+      out = append(out, substring(s, start, i))
+      i = i + n
+      start = i
+    } else {
+      i = i + 1
+    }
+  }
+  out = append(out, substring(s, start, len(s)))
+  return out
+}
+
+fun htmlEscape(s: string): string {
+  var out = ""
+  var i = 0
+  while i < len(s) {
+    let ch = substring(s, i, i+1)
+    if ch == "&" {
+      out = out + "&amp;"
+    } else if ch == "<" {
+      out = out + "&lt;"
+    } else if ch == ">" {
+      out = out + "&gt;"
+    } else {
+      out = out + ch
+    }
+    i = i + 1
+  }
+  return out
+}
+
+let c = "Character,Speech\n" +
+  "The multitude,The messiah! Show us the messiah!\n" +
+  "Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>\n" +
+  "The multitude,Who are you?\n" +
+  "Brians mother,I'm his mother; that's who!\n" +
+  "The multitude,Behold his mother! Behold his mother!"
+
+var rows: list<list<string>> = []
+for line in split(c, "\n") {
+  rows = append(rows, split(line, ","))
+}
+
+print("<table>")
+for row in rows {
+  var cells = ""
+  for cell in row {
+    cells = cells + "<td>" + htmlEscape(cell) + "</td>"
+  }
+  print("    <tr>" + cells + "</tr>")
+}
+print("</table>")
