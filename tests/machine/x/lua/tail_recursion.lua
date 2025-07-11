@@ -23,14 +23,6 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function sum_rec(n, acc)
   if __eq(n, 0) then
     return acc
@@ -38,4 +30,4 @@ function sum_rec(n, acc)
   return sum_rec((n - 1), __add(acc, n))
 end
 
-__print(sum_rec(10, 0))
+print(sum_rec(10, 0))

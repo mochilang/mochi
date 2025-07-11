@@ -23,14 +23,6 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function __run_tests(tests)
     local function format_duration(d)
         if d < 1e-6 then return string.format('%dns', math.floor(d*1e9)) end
@@ -79,7 +71,7 @@ for _i0 = 1, #people do
   end
   people[_i0] = _it0
 end
-__print("ok")
+print("ok")
 local __tests = {
   {name="update adult status", fn=test_update_adult_status},
 }

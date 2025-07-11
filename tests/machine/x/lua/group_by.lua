@@ -61,14 +61,6 @@ function __count(v)
         error('count() expects list or group')
     end
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 people = {{["name"]="Alice", ["age"]=30, ["city"]="Paris"}, {["name"]="Bob", ["age"]=15, ["city"]="Hanoi"}, {["name"]="Charlie", ["age"]=65, ["city"]="Paris"}, {["name"]="Diana", ["age"]=45, ["city"]="Hanoi"}, {["name"]="Eve", ["age"]=70, ["city"]="Paris"}, {["name"]="Frank", ["age"]=22, ["city"]="Hanoi"}}
 stats = (function()
   local _groups = __group_by(people, function(person) return person.city end)
@@ -84,8 +76,8 @@ end)())}
   end
   return _res
 end)()
-__print("--- People grouped by city ---")
+print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
-  __print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
+  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
   ::__continue0::
 end

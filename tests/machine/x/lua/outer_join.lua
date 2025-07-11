@@ -11,14 +11,6 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -62,9 +54,8 @@ function __query(src, joins, opts)
             end
             for ri, right in ipairs(jitems) do
                 if not matched[ri] then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -93,9 +84,8 @@ function __query(src, joins, opts)
                     end
                 end
                 if not m then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -173,16 +163,16 @@ result = (function()
     { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end, left = true, right = true }
   }, { selectFn = function(o, c) return {["order"]=o, ["customer"]=c} end })
 end)()
-__print("--- Outer Join using syntax ---")
+print("--- Outer Join using syntax ---")
 for _, row in ipairs(result) do
   if row.order then
     if row.customer then
-      __print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
+      ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
     else
-      __print("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
+      ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
     end
   else
-    __print("Customer", row.customer.name, "has no orders")
+    ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Customer", row.customer.name, "has no orders")
   end
   ::__continue0::
 end

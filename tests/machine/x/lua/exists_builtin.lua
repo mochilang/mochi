@@ -22,14 +22,6 @@ function __exists(v)
         return false
     end
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 data = {1, 2}
 flag = __exists((function()
   local _res = {}
@@ -40,4 +32,4 @@ flag = __exists((function()
   end
   return _res
 end)())
-__print(flag)
+print(flag)

@@ -10,17 +10,9 @@ function __add(a, b)
         return a + b
     end
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function inc(x)
   return __add(x, k)
 end
 
 k = 2
-__print(inc(3))
+print(inc(3))

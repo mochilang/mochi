@@ -10,14 +10,6 @@ function __add(a, b)
         return a + b
     end
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function sum_tree(t)
   return (function()
   local _t0 = t
@@ -28,4 +20,4 @@ end)()
 end
 
 t = {__name="Node", left={__name="Leaf"}, value=1, right={__name="Node", left={__name="Leaf"}, value=2, right={__name="Leaf"}}}
-__print(sum_tree(t))
+print(sum_tree(t))

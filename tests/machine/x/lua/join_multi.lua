@@ -11,14 +11,6 @@ function __eq(a, b)
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
 end
-function __print(...)
-    local args = {...}
-    local parts = {}
-    for i,a in ipairs(args) do
-        if a ~= nil and a ~= '' then parts[#parts+1] = tostring(a) end
-    end
-    print(table.concat(parts, ' '))
-end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -62,9 +54,8 @@ function __query(src, joins, opts)
             end
             for ri, right in ipairs(jitems) do
                 if not matched[ri] then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -93,9 +84,8 @@ function __query(src, joins, opts)
                     end
                 end
                 if not m then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -175,8 +165,8 @@ result = (function()
     { items = items, on = function(o, c, i) return __eq(o.id, i.orderId) end }
   }, { selectFn = function(o, c, i) return {["name"]=c.name, ["sku"]=i.sku} end })
 end)()
-__print("--- Multi Join ---")
+print("--- Multi Join ---")
 for _, r in ipairs(result) do
-  __print(r.name, "bought item", r.sku)
+  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(r.name, "bought item", r.sku)
   ::__continue0::
 end

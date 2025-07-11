@@ -1,6 +1,7 @@
-line 211: run error: exit status 1
-lua: ...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:211: attempt to call a table value
+line 238: run error: exit status 1
+lua: ...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:238: invalid value (table) at index 1 in table for 'concat'
 stack traceback:
-	...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:211: in main chunk
+	[C]: in function 'table.concat'
+	...e/mochi/tests/machine/x/lua/group_by_conditional_sum.lua:238: in main chunk
 	[C]: in ?
 
