@@ -88,6 +88,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		if s.Let != nil {
 			c.globalVars[s.Let.Name] = true
 		}
+		if s.ExternVar != nil {
+			c.vars[s.ExternVar.Name()] = c.typeName(s.ExternVar.Type)
+		}
+		if s.ExternFun != nil {
+			c.funRet[s.ExternFun.Name()] = c.typeName(s.ExternFun.Return)
+			c.funSigs[s.ExternFun.Name()] = &funSig{params: s.ExternFun.Params, ret: s.ExternFun.Return}
+		}
 	}
 	c.globalUsed = make(map[string]bool)
 	for _, s := range prog.Statements {
@@ -695,6 +702,9 @@ func (c *Compiler) maybeNumber(expr string) string {
 }
 
 func maybeBool(c *Compiler, expr string) string {
+	if strings.Contains(expr, "Objects.equals") {
+		return expr
+	}
 	if strings.Contains(expr, ".get(") {
 		if strings.ContainsAny(expr, "<>=!+-*/%") || strings.Contains(expr, "==") || strings.Contains(expr, "!=") || strings.Contains(expr, "Objects.equals") {
 			return expr
@@ -1259,6 +1269,24 @@ func (c *Compiler) fieldType(structName, field string) string {
 	return "Object"
 }
 
+func (c *Compiler) hasField(structName, field string) bool {
+	if td, ok := c.types[structName]; ok {
+		for _, m := range td.Members {
+			if m.Field != nil && m.Field.Name == field {
+				return true
+			}
+		}
+	}
+	if dc := c.dataClassByName(structName); dc != nil {
+		for _, f := range dc.fields {
+			if f == field {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (c *Compiler) compileDataClass(dc *dataClass) {
 	c.writeln(fmt.Sprintf("class %s {", dc.name))
 	c.indent++
@@ -1575,6 +1603,14 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		return err
 	}
 	if len(a.Index) == 0 && len(a.Field) == 0 {
+		if arg, ok := appendCallArg(a.Value, a.Name); ok {
+			val, err := c.compileExpr(arg)
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.add(%s);", a.Name, val))
+			return nil
+		}
 		if c.vars[a.Name] == "int" {
 			if strings.Contains(expr, ".doubleValue()") {
 				expr = fmt.Sprintf("(int)(%s)", expr)
@@ -1604,7 +1640,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			} else if strings.HasPrefix(typ, "List<") {
 				c.writeln(fmt.Sprintf("%s.set(%s, %s);", target, ix, expr))
 			} else if field, ok := simpleStringKey(idx.Start); ok {
-				c.writeln(fmt.Sprintf("%s.%s = %s;", target, field, expr))
+				if c.hasField(typ, field) {
+					c.writeln(fmt.Sprintf("%s.%s = %s;", target, field, expr))
+				} else {
+					c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
+				}
 			} else {
 				c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
 			}
@@ -1669,7 +1709,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if keyType == "var" {
 				keyType = "Object"
 			}
-			c.writeln(fmt.Sprintf("for (%s %s : %s.keySet()) {", keyType, f.Name, src))
+			c.writeln(fmt.Sprintf("for (%s %s : %s.keySet()) {", wrapperType(keyType), f.Name, src))
 			c.indent++
 			prev := c.vars[f.Name]
 			c.vars[f.Name] = keyType
@@ -2435,6 +2475,17 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	return p.Target.Call, true
 }
 
+func appendCallArg(e *parser.Expr, name string) (*parser.Expr, bool) {
+	call, ok := callPattern(e)
+	if !ok || call.Func != "append" || len(call.Args) != 2 {
+		return nil, false
+	}
+	if id, ok := identName(call.Args[0]); ok && id == name {
+		return call.Args[1], true
+	}
+	return nil, false
+}
+
 func simpleStringKey(e *parser.Expr) (string, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
 		return "", false
@@ -2603,7 +2654,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			if *j.Side == "outer" {
 				b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", j.Var, js))
 				b.WriteString("\t\tif (!_matched.contains(" + j.Var + ")) {\n")
-				b.WriteString(fmt.Sprintf("\t\t\tObject %s = null;\n", q.Var))
+				b.WriteString(fmt.Sprintf("\t\t\t%s %s = null;\n", elemType, q.Var))
 				b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", resVar, sel))
 				b.WriteString("\t\t}\n")
 				b.WriteString("\t}\n")
@@ -2786,7 +2837,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			keyType = "Object"
 		}
 		c.vars[keyVar] = keyType
-		b.WriteString(fmt.Sprintf("\tfor (Map.Entry<%s,List<%s>> __e : %s.entrySet()) {\n", keyType, rowType, groupsVar))
+		b.WriteString(fmt.Sprintf("\tfor (Map.Entry<%s,List<%s>> __e : %s.entrySet()) {\n", wrapperType(keyType), rowType, groupsVar))
 		b.WriteString(fmt.Sprintf("\t\t%[1]s %s = __e.getKey();\n", keyType, keyVar))
 		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", rowType, gName))
 		if q.Group.Having != nil {
