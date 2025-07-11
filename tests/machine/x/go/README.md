@@ -108,7 +108,6 @@ Checklist:
 - [x] while_loop
 
 ## Remaining Tasks
-
 - [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
 - [ ] Optimize dataset query loops for large join results.
 - [ ] Support generics in function return types.
@@ -120,3 +119,13 @@ Checklist:
 - [ ] Generate comments from Mochi docs in output.
 - [ ] Investigate build-time caching to speed up tests.
 - [ ] Deduplicate extern modules when auto-imported.
+- [ ] Integrate context-based cancellation for long-running queries.
+- [ ] Add benchmark tests for compiled Go programs.
+- [ ] Implement caching for compiled modules.
+- [ ] Improve support for optional types and nil safety.
+- [ ] Generate Go generics for union types where possible.
+- [ ] Provide better CLI messages during batch compilation.
+- [ ] Support custom formatting hooks for printers.
+- [ ] Emit warnings for unused variables in generated code.
+- [ ] Expand documentation comments for generated helper functions.
+- [ ] Investigate concurrency patterns for dataset operations.

@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -57,7 +56,7 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(sorted), "["), "]"))
+	fmt.Println(sorted)
 }
 
 type _joinSpec struct {

@@ -1,6 +1,6 @@
 Error on line 0: output mismatch
 -- got --
-[1 2 3]
+[a b c]
 -- want --
-1 2 3
+a b c
 1: //go:build ignore

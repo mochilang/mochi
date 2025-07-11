@@ -5,7 +5,6 @@ package main
 import (
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 func main() {
@@ -20,7 +19,7 @@ func main() {
 		B: 2,
 		C: 3,
 	}
-	fmt.Println(strings.TrimSuffix(strings.TrimPrefix(fmt.Sprint(_values(m)), "["), "]"))
+	fmt.Println(_values(m))
 }
 
 func _values(v any) []any {
