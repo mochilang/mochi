@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   char *name;
@@ -60,13 +61,44 @@ int main() {
   }
   tmp2.len = tmp3;
   list_AdultsItem adults = tmp2;
-  printf("%s\n", "--- Adults ---");
+  {
+    int first = 1;
+    if (!first && strlen("--- Adults ---") > 0)
+      printf(" ");
+    if (strlen("--- Adults ---") > 0)
+      printf("%s", "--- Adults ---");
+    if (strlen("--- Adults ---") > 0)
+      first = 0;
+    printf("\n");
+  }
   for (int tmp5 = 0; tmp5 < adults.len; tmp5++) {
     AdultsItem person = adults.data[tmp5];
-    printf("%s ", person.name);
-    printf("%s ", "is");
-    printf("%d ", person.age);
-    printf("%s\n", (person.is_senior ? " (senior)" : ""));
+    {
+      int first = 1;
+      if (!first && strlen(person.name) > 0)
+        printf(" ");
+      if (strlen(person.name) > 0)
+        printf("%s", person.name);
+      if (strlen(person.name) > 0)
+        first = 0;
+      if (!first && strlen("is") > 0)
+        printf(" ");
+      if (strlen("is") > 0)
+        printf("%s", "is");
+      if (strlen("is") > 0)
+        first = 0;
+      if (!first)
+        printf(" ");
+      printf("%d", person.age);
+      first = 0;
+      if (!first && strlen((person.is_senior ? " (senior)" : "")) > 0)
+        printf(" ");
+      if (strlen((person.is_senior ? " (senior)" : "")) > 0)
+        printf("%s", (person.is_senior ? " (senior)" : ""));
+      if (strlen((person.is_senior ? " (senior)" : "")) > 0)
+        first = 0;
+      printf("\n");
+    }
   }
   return 0;
 }
