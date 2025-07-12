@@ -51,9 +51,9 @@ let () =
     match lst with
       | [] -> ()
       | (r : record4)::rest ->
-        try
+        (try
           print_endline (__show (r.orderId) ^ " " ^ __show (r.name) ^ " " ^ __show (r.item));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 result with Break -> ()

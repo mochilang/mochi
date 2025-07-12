@@ -35,9 +35,9 @@ let () =
     match lst with
       | [] -> ()
       | (item : record1)::rest ->
-        try
+        (try
           print_endline (__show (item.name) ^ " " ^ __show ("costs $") ^ " " ^ __show (item.price));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 expensive with Break -> ()

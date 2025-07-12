@@ -16,8 +16,6 @@ let rec __show v =
     | _ -> "<value>"
 
 
-type record1 = { mutable a : int; mutable b : int }
-
 
 let () =
-  print_endline (__show (List.length { a = 1; b = 2 }));
+  print_endline (__show (List.length [("a",Obj.repr (1));("b",Obj.repr (2))]));

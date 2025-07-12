@@ -64,9 +64,9 @@ let () =
     match lst with
       | [] -> ()
       | (a : record1)::rest ->
-        try
+        (try
           print_endline (__show (a.name) ^ " " ^ __show (a.email));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 adults with Break -> ()

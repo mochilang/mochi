@@ -49,9 +49,9 @@ let () =
     match lst with
       | [] -> ()
       | (s : record3)::rest ->
-        try
+        (try
           print_endline (__show (s.name) ^ " " ^ __show ("orders:") ^ " " ^ __show (s.count));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 stats with Break -> ()

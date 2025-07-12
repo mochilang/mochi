@@ -54,9 +54,9 @@ let () =
     match lst with
       | [] -> ()
       | (s : record2)::rest ->
-        try
+        (try
           print_endline (__show (s.city) ^ " " ^ __show (": count =") ^ " " ^ __show (s.count) ^ " " ^ __show (", avg_age =") ^ " " ^ __show (s.avg_age));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop2 rest
     in
     try __loop2 stats with Break -> ()

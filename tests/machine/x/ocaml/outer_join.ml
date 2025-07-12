@@ -57,7 +57,7 @@ let () =
     match lst with
       | [] -> ()
       | (row : record3)::rest ->
-        try
+        (try
           if row.order then (
             if row.customer then (
               print_endline (__show ("Order") ^ " " ^ __show (row.order.id) ^ " " ^ __show ("by") ^ " " ^ __show (row.customer.name) ^ " " ^ __show ("- $") ^ " " ^ __show (row.order.total));
@@ -67,7 +67,7 @@ let () =
           ) else (
             print_endline (__show ("Customer") ^ " " ^ __show (row.customer.name) ^ " " ^ __show ("has no orders"));
           ) ;
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 result with Break -> ()

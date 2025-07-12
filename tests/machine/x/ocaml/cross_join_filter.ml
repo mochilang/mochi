@@ -39,9 +39,9 @@ let () =
     match lst with
       | [] -> ()
       | (p : record1)::rest ->
-        try
+        (try
           print_endline (__show (p.n) ^ " " ^ __show (p.l));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 pairs with Break -> ()
