@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureCC verifies that a C compiler is installed. It attempts to
@@ -127,6 +129,9 @@ func EnsureClangFormat() error {
 // FormatC runs clang-format on the given source code if available. If the
 // formatter is missing or fails, the input is returned unchanged.
 func FormatC(src []byte) []byte {
+	header := meta.Header("//")
+	src = append(header, src...)
+
 	if err := EnsureClangFormat(); err != nil {
 		if len(src) > 0 && src[len(src)-1] != '\n' {
 			src = append(src, '\n')
