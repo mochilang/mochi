@@ -504,6 +504,8 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 }
 
 func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
+	// allow updates to variables defined using let by removing immutability flag
+	delete(c.lets, st.Target)
 	item := c.newVarName(st.Target + "Item")
 	prev := c.refVar(st.Target)
 	aliases := map[string]string{}
@@ -585,7 +587,10 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 			elseCode = "ok"
 		}
 	}
-	return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenCode, elseCode), nil
+	if isBoolExpr(ifst.Cond) {
+		return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenCode, elseCode), nil
+	}
+	return fmt.Sprintf("(case %s of undefined -> %s; false -> %s; _ -> %s end)", cond, elseCode, elseCode, thenCode), nil
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
@@ -687,7 +692,10 @@ func (c *Compiler) compileIfExpr(ix *parser.IfExpr) (string, error) {
 			return "", err
 		}
 	}
-	return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenExpr, elseExpr), nil
+	if isBoolExpr(ix.Cond) {
+		return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenExpr, elseExpr), nil
+	}
+	return fmt.Sprintf("(case %s of undefined -> %s; false -> %s; _ -> %s end)", cond, elseExpr, elseExpr, thenExpr), nil
 }
 
 func (c *Compiler) compileMatchExpr(mx *parser.MatchExpr) (string, error) {
@@ -911,6 +919,10 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		sel, err := c.compileExpr(q.Select)
 		if err != nil {
 			return "", err
+		}
+
+		if selectIsVar(q.Select, q.Group.Name) {
+			sel = fmt.Sprintf("#{key => %s, items => %s}", kvar, vvar)
 		}
 
 		listExpr := "[" + sel + " || {" + kvar + ", " + vvar + "} <- " + groupsList
@@ -1702,6 +1714,30 @@ func isLiteralExpr(e *parser.Expr) bool {
 		return false
 	}
 	return u.Value.Target.Lit != nil
+}
+
+func isBoolExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		for _, op := range u.Ops {
+			if op == "!" {
+				return true
+			}
+		}
+	}
+	if u.Value != nil && len(u.Value.Ops) == 0 && u.Value.Target.Lit != nil && u.Value.Target.Lit.Bool != nil {
+		return true
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "==", "!=", "<", "<=", ">", ">=", "&&", "||", "in":
+			return true
+		}
+	}
+	return false
 }
 
 func typeNameFromRef(tr *parser.TypeRef) string {
