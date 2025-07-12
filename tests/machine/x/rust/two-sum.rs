@@ -11,6 +11,6 @@ fn main() {
         return vec![-1, -1];
     }
     let result = twoSum(vec![2, 7, 11, 15], 9);
-    println!("{}", result[0 as usize]);
-    println!("{}", result[1 as usize]);
+    println!("{}", result[0]);
+    println!("{}", result[1]);
 }

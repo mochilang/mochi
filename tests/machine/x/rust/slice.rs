@@ -1,5 +1,5 @@
 fn main() {
-    println!("{:?}", vec![1, 2, 3][1 as usize..3 as usize].to_vec());
-    println!("{:?}", vec![1, 2, 3][0 as usize..2 as usize].to_vec());
-    println!("{}", &"hello"[1 as usize..4 as usize]);
+    println!("{:?}", vec![1, 2, 3][1..3].to_vec());
+    println!("{:?}", vec![1, 2, 3][0..2].to_vec());
+    println!("{}", &"hello"[1..4]);
 }
