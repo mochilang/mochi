@@ -1,0 +1,369 @@
+// Mochi translation of Rosetta "Catmull-Clark subdivision surface" task
+// Based on Go version in tests/rosetta/x/Go/catmull-clark-subdivision-surface.go
+
+type Point {
+  x: float
+  y: float
+  z: float
+}
+
+type Edge {
+  pn1: int
+  pn2: int
+  fn1: int
+  fn2: int
+  cp: Point
+}
+
+type PointEx {
+  p: Point
+  n: int
+}
+
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if substring(s, i, i+1) == ch { return i }
+    i = i + 1
+  }
+  return -1
+}
+
+fun fmt4(x: float): string {
+  var y = x * 10000.0
+  if y >= 0 { y = y + 0.5 } else { y = y - 0.5 }
+  y = (y as int) as float / 10000.0
+  var s = str(y)
+  var dot = indexOf(s, ".")
+  if dot == 0 - 1 {
+    s = s + ".0000"
+  } else {
+    var decs = len(s) - dot - 1
+    if decs > 4 {
+      s = substring(s, 0, dot + 5)
+    } else {
+      while decs < 4 {
+        s = s + "0"
+        decs = decs + 1
+      }
+    }
+  }
+  if x >= 0.0 { s = " " + s }
+  return s
+}
+
+fun fmt2(n: int): string {
+  let s = str(n)
+  if len(s) < 2 { return " " + s }
+  return s
+}
+
+fun sumPoint(p1: Point, p2: Point): Point {
+  return Point{ x: p1.x + p2.x, y: p1.y + p2.y, z: p1.z + p2.z }
+}
+
+fun mulPoint(p: Point, m: float): Point {
+  return Point{ x: p.x * m, y: p.y * m, z: p.z * m }
+}
+
+fun divPoint(p: Point, d: float): Point { return mulPoint(p, 1.0 / d) }
+
+fun centerPoint(p1: Point, p2: Point): Point { return divPoint(sumPoint(p1, p2), 2.0) }
+
+fun getFacePoints(points: list<Point>, faces: list<list<int>>): list<Point> {
+  var facePoints: list<Point> = []
+  var i = 0
+  while i < len(faces) {
+    let face = faces[i]
+    var fp = Point{ x:0.0, y:0.0, z:0.0 }
+    for idx in face { fp = sumPoint(fp, points[idx]) }
+    fp = divPoint(fp, (len(face) as float))
+    facePoints = append(facePoints, fp)
+    i = i + 1
+  }
+  return facePoints
+}
+
+fun sortEdges(edges: list<list<int>>): list<list<int>> {
+  var res: list<list<int>> = []
+  var tmp = edges
+  while len(tmp) > 0 {
+    var min = tmp[0]
+    var idx = 0
+    var j = 1
+    while j < len(tmp) {
+      let e = tmp[j]
+      if e[0] < min[0] || (e[0] == min[0] && (e[1] < min[1] || (e[1] == min[1] && e[2] < min[2]))) {
+        min = e
+        idx = j
+      }
+      j = j + 1
+    }
+    res = append(res, min)
+    var out: list<list<int>> = []
+    var k = 0
+    while k < len(tmp) {
+      if k != idx { out = append(out, tmp[k]) }
+      k = k + 1
+    }
+    tmp = out
+  }
+  return res
+}
+
+fun getEdgesFaces(points: list<Point>, faces: list<list<int>>): list<Edge> {
+  var edges: list<list<int>> = []
+  var fnum = 0
+  while fnum < len(faces) {
+    let face = faces[fnum]
+    var numP = len(face)
+    var pi = 0
+    while pi < numP {
+      var pn1 = face[pi]
+      var pn2 = 0
+      if pi < numP - 1 { pn2 = face[pi+1] } else { pn2 = face[0] }
+      if pn1 > pn2 {
+        var tmpn = pn1
+        pn1 = pn2
+        pn2 = tmpn
+      }
+      edges = append(edges, [pn1, pn2, fnum])
+      pi = pi + 1
+    }
+    fnum = fnum + 1
+  }
+  edges = sortEdges(edges)
+  var merged: list<list<int>> = []
+  var idx = 0
+  while idx < len(edges) {
+    let e1 = edges[idx]
+    if idx < len(edges) - 1 {
+      let e2 = edges[idx+1]
+      if e1[0] == e2[0] && e1[1] == e2[1] {
+        merged = append(merged, [e1[0], e1[1], e1[2], e2[2]])
+        idx = idx + 2
+        continue
+      }
+    }
+    merged = append(merged, [e1[0], e1[1], e1[2], -1])
+    idx = idx + 1
+  }
+  var edgesCenters: list<Edge> = []
+  for me in merged {
+    let p1 = points[me[0]]
+    let p2 = points[me[1]]
+    let cp = centerPoint(p1,p2)
+    edgesCenters = append(edgesCenters, Edge{ pn1: me[0], pn2: me[1], fn1: me[2], fn2: me[3], cp: cp })
+  }
+  return edgesCenters
+}
+
+fun getEdgePoints(points: list<Point>, edgesFaces: list<Edge>, facePoints: list<Point>): list<Point> {
+  var edgePoints: list<Point> = []
+  var i = 0
+  while i < len(edgesFaces) {
+    let edge = edgesFaces[i]
+    let cp = edge.cp
+    let fp1 = facePoints[edge.fn1]
+    var fp2 = fp1
+    if edge.fn2 != 0 - 1 {
+      fp2 = facePoints[edge.fn2]
+    }
+    let cfp = centerPoint(fp1, fp2)
+    edgePoints = append(edgePoints, centerPoint(cp, cfp))
+    i = i + 1
+  }
+  return edgePoints
+}
+
+fun getAvgFacePoints(points: list<Point>, faces: list<list<int>>, facePoints: list<Point>): list<Point> {
+  var numP = len(points)
+  var temp: list<PointEx> = []
+  var i = 0
+  while i < numP {
+    temp = append(temp, PointEx{ p: Point{ x:0.0, y:0.0, z:0.0 }, n:0 })
+    i = i + 1
+  }
+  var fnum = 0
+  while fnum < len(faces) {
+    let fp = facePoints[fnum]
+    for pn in faces[fnum] {
+      let tp = temp[pn]
+      temp[pn] = PointEx{ p: sumPoint(tp.p, fp), n: tp.n + 1 }
+    }
+    fnum = fnum + 1
+  }
+  var avg: list<Point> = []
+  var j = 0
+  while j < numP {
+    let tp = temp[j]
+    avg = append(avg, divPoint(tp.p, tp.n as float))
+    j = j + 1
+  }
+  return avg
+}
+
+fun getAvgMidEdges(points: list<Point>, edgesFaces: list<Edge>): list<Point> {
+  var numP = len(points)
+  var temp: list<PointEx> = []
+  var i = 0
+  while i < numP {
+    temp = append(temp, PointEx{ p: Point{ x:0.0, y:0.0, z:0.0 }, n:0 })
+    i = i + 1
+  }
+  for edge in edgesFaces {
+    let cp = edge.cp
+    var arr = [edge.pn1, edge.pn2]
+    for pn in arr {
+      let tp = temp[pn]
+      temp[pn] = PointEx{ p: sumPoint(tp.p, cp), n: tp.n + 1 }
+    }
+  }
+  var avg: list<Point> = []
+  var j = 0
+  while j < numP {
+    let tp = temp[j]
+    avg = append(avg, divPoint(tp.p, tp.n as float))
+    j = j + 1
+  }
+  return avg
+}
+
+fun getPointsFaces(points: list<Point>, faces: list<list<int>>): list<int> {
+  var pf: list<int> = []
+  var i = 0
+  while i < len(points) {
+    pf = append(pf, 0)
+    i = i + 1
+  }
+  var fnum = 0
+  while fnum < len(faces) {
+    for pn in faces[fnum] { pf[pn] = pf[pn] + 1 }
+    fnum = fnum + 1
+  }
+  return pf
+}
+
+fun getNewPoints(points: list<Point>, pf: list<int>, afp: list<Point>, ame: list<Point>): list<Point> {
+  var newPts: list<Point> = []
+  var i = 0
+  while i < len(points) {
+    var n = pf[i] as float
+    var m1 = (n - 3.0) / n
+    var m2 = 1.0 / n
+    var m3 = 2.0 / n
+    let old = points[i]
+    let p1 = mulPoint(old, m1)
+    let p2 = mulPoint(afp[i], m2)
+    let p3 = mulPoint(ame[i], m3)
+    newPts = append(newPts, sumPoint(sumPoint(p1,p2), p3))
+    i = i + 1
+  }
+  return newPts
+}
+
+fun key(a: int, b: int): string {
+  if a < b { return str(a) + "," + str(b) }
+  return str(b) + "," + str(a)
+}
+
+fun cmcSubdiv(points: list<Point>, faces: list<list<int>>): list<any> {
+  let facePoints = getFacePoints(points, faces)
+  let edgesFaces = getEdgesFaces(points, faces)
+  let edgePoints = getEdgePoints(points, edgesFaces, facePoints)
+  let avgFacePoints = getAvgFacePoints(points, faces, facePoints)
+  let avgMidEdges = getAvgMidEdges(points, edgesFaces)
+  let pointsFaces = getPointsFaces(points, faces)
+  var newPoints = getNewPoints(points, pointsFaces, avgFacePoints, avgMidEdges)
+  var facePointNums: list<int> = []
+  var nextPoint = len(newPoints)
+  for fp in facePoints {
+    newPoints = append(newPoints, fp)
+    facePointNums = append(facePointNums, nextPoint)
+    nextPoint = nextPoint + 1
+  }
+  var edgePointNums: map<string,int> = {}
+  var idx = 0
+  while idx < len(edgesFaces) {
+    let e = edgesFaces[idx]
+    newPoints = append(newPoints, edgePoints[idx])
+    edgePointNums[key(e.pn1,e.pn2)] = nextPoint
+    nextPoint = nextPoint + 1
+    idx = idx + 1
+  }
+  var newFaces: list<list<int>> = []
+  var fnum = 0
+  while fnum < len(faces) {
+    let oldFace = faces[fnum]
+    if len(oldFace) == 4 {
+      let a = oldFace[0]
+      let b = oldFace[1]
+      let c = oldFace[2]
+      let d = oldFace[3]
+      let fpnum = facePointNums[fnum]
+      let ab = edgePointNums[key(a,b)]
+      let da = edgePointNums[key(d,a)]
+      let bc = edgePointNums[key(b,c)]
+      let cd = edgePointNums[key(c,d)]
+      newFaces = append(newFaces, [a, ab, fpnum, da])
+      newFaces = append(newFaces, [b, bc, fpnum, ab])
+      newFaces = append(newFaces, [c, cd, fpnum, bc])
+      newFaces = append(newFaces, [d, da, fpnum, cd])
+    }
+    fnum = fnum + 1
+  }
+  return [newPoints, newFaces]
+}
+
+fun formatPoint(p: Point): string {
+  return "[" + fmt4(p.x) + " " + fmt4(p.y) + " " + fmt4(p.z) + "]"
+}
+
+fun formatFace(f: list<int>): string {
+  if len(f) == 0 { return "[]" }
+  var s = "[" + fmt2(f[0])
+  var i = 1
+  while i < len(f) {
+    s = s + " " + fmt2(f[i])
+    i = i + 1
+  }
+  s = s + "]"
+  return s
+}
+
+fun main() {
+  let inputPoints = [
+    Point{x: -1.0, y: 1.0, z: 1.0},
+    Point{x: -1.0, y: -1.0, z: 1.0},
+    Point{x: 1.0, y: -1.0, z: 1.0},
+    Point{x: 1.0, y: 1.0, z: 1.0},
+    Point{x: 1.0, y: -1.0, z: -1.0},
+    Point{x: 1.0, y: 1.0, z: -1.0},
+    Point{x: -1.0, y: -1.0, z: -1.0},
+    Point{x: -1.0, y: 1.0, z: -1.0},
+  ]
+
+  let inputFaces = [
+    [0,1,2,3],
+    [3,2,4,5],
+    [5,4,6,7],
+    [7,0,3,5],
+    [7,6,1,0],
+    [6,1,2,4],
+  ]
+
+  var outputPoints = inputPoints
+  var outputFaces = inputFaces
+  var i = 0
+  while i < 1 {
+    let res = cmcSubdiv(outputPoints, outputFaces)
+    outputPoints = res[0]
+    outputFaces = res[1]
+    i = i + 1
+  }
+  for p in outputPoints { print(formatPoint(p)) }
+  print("")
+  for f in outputFaces { print(formatFace(f)) }
+}
+
+main()
