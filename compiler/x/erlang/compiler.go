@@ -199,7 +199,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	c.indent--
 	c.writeRuntime()
-	return c.buf.Bytes(), nil
+	code := c.buf.Bytes()
+	return FormatErlang(code), nil
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
