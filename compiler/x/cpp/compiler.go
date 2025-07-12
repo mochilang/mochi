@@ -646,49 +646,49 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
-        c.writeIndent()
-        name := st.Name
-        for _, idx := range st.Index {
-                if idx.Start != nil {
-                        expr, err := c.compileExpr(idx.Start)
-                        if err != nil {
-                                return err
-                        }
-                        name += "[" + expr + "]"
-                }
-        }
-        for _, fld := range st.Field {
-                name += "." + fld.Name
-        }
-        // Special case: "x = append(x, y)" -> "x.push_back(y);"
-        if len(st.Index) == 0 && len(st.Field) == 0 {
-                if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
-                        if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
-                                arg, err := c.compileExpr(call.Args[1])
-                                if err != nil {
-                                        return err
-                                }
-                                c.buf.WriteString(name + ".push_back(" + arg + ");\n")
-                                // update placeholder type info
-                                if t := c.structLiteralType(arg); t != "" {
-                                        c.elemType[st.Name] = t
-                                        c.varStruct[st.Name] = t
-                                } else if t := c.varStruct[arg]; t != "" {
-                                        c.elemType[st.Name] = t
-                                        c.varStruct[st.Name] = t
-                                } else if t := c.elemType[arg]; t != "" {
-                                        c.elemType[st.Name] = t
-                                }
-                                return nil
-                        }
-                }
-        }
-        expr, err := c.compileExpr(st.Value)
-        if err != nil {
-                return err
-        }
-        // If this is an append back into the same variable, record the element
-        // type so placeholders in the declaration can be resolved.
+	c.writeIndent()
+	name := st.Name
+	for _, idx := range st.Index {
+		if idx.Start != nil {
+			expr, err := c.compileExpr(idx.Start)
+			if err != nil {
+				return err
+			}
+			name += "[" + expr + "]"
+		}
+	}
+	for _, fld := range st.Field {
+		name += "." + fld.Name
+	}
+	// Special case: "x = append(x, y)" -> "x.push_back(y);"
+	if len(st.Index) == 0 && len(st.Field) == 0 {
+		if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
+			if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
+				arg, err := c.compileExpr(call.Args[1])
+				if err != nil {
+					return err
+				}
+				c.buf.WriteString(name + ".push_back(" + arg + ");\n")
+				// update placeholder type info
+				if t := c.structLiteralType(arg); t != "" {
+					c.elemType[st.Name] = t
+					c.varStruct[st.Name] = t
+				} else if t := c.varStruct[arg]; t != "" {
+					c.elemType[st.Name] = t
+					c.varStruct[st.Name] = t
+				} else if t := c.elemType[arg]; t != "" {
+					c.elemType[st.Name] = t
+				}
+				return nil
+			}
+		}
+	}
+	expr, err := c.compileExpr(st.Value)
+	if err != nil {
+		return err
+	}
+	// If this is an append back into the same variable, record the element
+	// type so placeholders in the declaration can be resolved.
 	if call, ok := callPattern(st.Value); ok && call.Func == "append" && len(call.Args) == 2 {
 		if id, ok2 := identName(call.Args[0]); ok2 && id == st.Name {
 			if arg, err2 := c.compileExpr(call.Args[1]); err2 == nil {
@@ -775,9 +775,24 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; ++%s) {", st.Name, startExpr, st.Name, endExpr, st.Name))
+		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", st.Name, startExpr, st.Name, endExpr, st.Name))
+		c.indent++
+		if err := c.compileBlock(st.Body); err != nil {
+			return err
+		}
+		c.indent--
+		c.writeln("}")
+		return nil
+	}
+
+	if c.vars[src] == "map" {
+		iter := c.newTmp()
+		c.writeln(fmt.Sprintf("for (const auto &%s : %s) {", iter, src))
+		c.indent++
+		c.writeln(fmt.Sprintf("auto %s = %s.first;", st.Name, iter))
 	} else {
 		c.writeln(fmt.Sprintf("for (auto %s : %s) {", st.Name, src))
+		c.indent++
 		if t := c.varStruct[src]; t != "" {
 			c.varStruct[st.Name] = t
 		}
@@ -786,11 +801,10 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 				c.vars[st.Name] = "string"
 			}
 		}
-		if c.vars[src] == "map" {
-			c.vars[st.Name] = "pair"
-		}
 	}
-	c.indent++
+	if c.vars[src] == "map" {
+		// key type unknown; avoid printing as pair
+	}
 	if err := c.compileBlock(st.Body); err != nil {
 		return err
 	}
@@ -1089,25 +1103,25 @@ func (c *Compiler) simulateExpr(e *parser.Expr) (string, error) {
 func (c *Compiler) Predict(name string) string { return c.predictElemType(name) }
 
 func (c *Compiler) compilePrint(args []*parser.Expr) error {
-        // Special case: print(append(x, y)) -> x.push_back(y); print(x)
-        if len(args) == 1 {
-                if call, ok := callPattern(args[0]); ok && call.Func == "append" && len(call.Args) == 2 {
-                        if id, ok2 := identName(call.Args[0]); ok2 {
-                                val, err := c.compileExpr(call.Args[1])
-                                if err != nil {
-                                        return err
-                                }
-                                c.writeIndent()
-                                c.buf.WriteString(id + ".push_back(" + val + ");\n")
-                                return c.compilePrint([]*parser.Expr{call.Args[0]})
-                        }
-                }
-                // Special case: a single simple argument can be printed on one line
-                // without the extra block used for complex prints.
-                s, err := c.compileExpr(args[0])
-                if err != nil {
-                        return err
-                }
+	// Special case: print(append(x, y)) -> x.push_back(y); print(x)
+	if len(args) == 1 {
+		if call, ok := callPattern(args[0]); ok && call.Func == "append" && len(call.Args) == 2 {
+			if id, ok2 := identName(call.Args[0]); ok2 {
+				val, err := c.compileExpr(call.Args[1])
+				if err != nil {
+					return err
+				}
+				c.writeIndent()
+				c.buf.WriteString(id + ".push_back(" + val + ");\n")
+				return c.compilePrint([]*parser.Expr{call.Args[0]})
+			}
+		}
+		// Special case: a single simple argument can be printed on one line
+		// without the extra block used for complex prints.
+		s, err := c.compileExpr(args[0])
+		if err != nil {
+			return err
+		}
 		typ := c.inferType(s)
 		if typ == "" {
 			if t, ok := c.vars[s]; ok {
