@@ -5,13 +5,15 @@ defmodule Person do
 end
 
 defmodule Main do
-  @people [
-    %Person{name: "Alice", age: 17, status: "minor"},
-    %Person{name: "Bob", age: 25, status: "unknown"},
-    %Person{name: "Charlie", age: 18, status: "unknown"},
-    %Person{name: "Diana", age: 16, status: "minor"}
-  ]
   def main do
+    # people :: list(Person)
+    people = [
+      %Person{name: "Alice", age: 17, status: "minor"},
+      %Person{name: "Bob", age: 25, status: "unknown"},
+      %Person{name: "Charlie", age: 18, status: "unknown"},
+      %Person{name: "Diana", age: 16, status: "minor"}
+    ]
+
     people =
       Enum.map(people, fn it ->
         %{name: name, age: age, status: status} = it

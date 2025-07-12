@@ -65,6 +65,9 @@ func assignedVars(stmts []*parser.Statement) []string {
 			if s.Assign != nil {
 				set[s.Assign.Name] = struct{}{}
 			}
+			if s.Update != nil {
+				set[s.Update.Target] = struct{}{}
+			}
 			if s.Var != nil {
 				decl[s.Var.Name] = struct{}{}
 			}
@@ -220,6 +223,47 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			letNames = append(letNames, sanitizeName(s.Let.Name))
 		}
 	}
+	mutatedSet := map[string]struct{}{}
+	declared := map[string]bool{}
+	var walkIf func(*parser.IfStmt)
+	var walk func([]*parser.Statement)
+	walkIf = func(ifst *parser.IfStmt) {
+		if ifst == nil {
+			return
+		}
+		walk(ifst.Then)
+		walk(ifst.Else)
+		walkIf(ifst.ElseIf)
+	}
+	walk = func(st []*parser.Statement) {
+		for _, s := range st {
+			if s.Let != nil {
+				if _, ok := declared[s.Let.Name]; !ok {
+					declared[s.Let.Name] = true
+				}
+			}
+			if s.Assign != nil {
+				if declared[s.Assign.Name] {
+					mutatedSet[sanitizeName(s.Assign.Name)] = struct{}{}
+				}
+			}
+			if s.Update != nil {
+				if declared[s.Update.Target] {
+					mutatedSet[sanitizeName(s.Update.Target)] = struct{}{}
+				}
+			}
+			if s.For != nil {
+				walk(s.For.Body)
+			}
+			if s.While != nil {
+				walk(s.While.Body)
+			}
+			if s.If != nil {
+				walkIf(s.If)
+			}
+		}
+	}
+	walk(prog.Statements)
 	containsVar := func(expr, self string) bool {
 		for _, n := range letNames {
 			if n == self {
@@ -242,8 +286,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 				val = v
 			}
 			name := sanitizeName(s.Let.Name)
-			// only emit module attribute for simple constant expressions
-			if isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
+			// only emit module attribute for simple constant expressions that are never mutated
+			if _, ok := mutatedSet[name]; !ok && isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
 				c.attrs[name] = val
 				c.writeln(fmt.Sprintf("@%s %s", name, val))
 			}
