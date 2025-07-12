@@ -1,0 +1,11 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:15: error: value += is not a member of Int
+  Expression does not convert to assignment because:
+    value val is not a member of group_items_iteration.Group
+    expansion: total = total.+(x.<`val`: error>)
+        total += x.`val`
+              ^
+/workspace/mochi/tests/machine/x/scala/group_items_iteration.scala:19: error: value tag is not a member of Any
+    val result = (for { r <- tmp } yield r).sortBy(r => r.tag).map(r => r)
+                                                          ^
+two errors found

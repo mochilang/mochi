@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by_sort.scala:9: error: value map is not a member of group_by_sort._Group[String,group_by_sort.Grouped]
+  val grouped = (((for { i <- items } yield (i.cat, Grouped(i = i))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).sortBy(g => -(for { x <- g } yield x.`val`).sum)).map{ g => Grouped1(cat = g.key, total = (for { x <- g } yield x.`val`).sum) }.toList
+                                                                                                                                                                     ^
+one error found

@@ -93,6 +93,23 @@ func (c *Compiler) use(name string) {
 	}
 }
 
+func truthyExpr(expr string, t types.Type) string {
+	switch t.(type) {
+	case types.BoolType:
+		return expr
+	case types.OptionType:
+		return expr + ".nonEmpty"
+	case types.ListType, types.MapType, types.StringType:
+		return expr + ".nonEmpty"
+	case types.IntType, types.Int64Type:
+		return expr + " != 0"
+	case types.FloatType:
+		return expr + " != 0.0"
+	default:
+		return expr + " != null"
+	}
+}
+
 func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 	if len(c.helpers) == 0 {
 		return
@@ -602,9 +619,9 @@ func (c *Compiler) compileIf(s *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
-		c.use("_truthy")
-		cond = fmt.Sprintf("_truthy(%s)", cond)
+	t := types.ExprType(s.Cond, c.env)
+	if _, ok := t.(types.BoolType); !ok {
+		cond = truthyExpr(cond, t)
 	}
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent += indentStep
@@ -643,9 +660,9 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if _, ok := types.ExprType(e.Cond, c.env).(types.BoolType); !ok {
-		c.use("_truthy")
-		cond = fmt.Sprintf("_truthy(%s)", cond)
+	t := types.ExprType(e.Cond, c.env)
+	if _, ok := t.(types.BoolType); !ok {
+		cond = truthyExpr(cond, t)
 	}
 	thenExpr, err := c.compileExpr(e.Then)
 	if err != nil {
@@ -696,9 +713,9 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
-	if _, ok := types.ExprType(s.Cond, c.env).(types.BoolType); !ok {
-		c.use("_truthy")
-		cond = fmt.Sprintf("_truthy(%s)", cond)
+	t := types.ExprType(s.Cond, c.env)
+	if _, ok := t.(types.BoolType); !ok {
+		cond = truthyExpr(cond, t)
 	}
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent += indentStep
@@ -991,8 +1008,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
 			}
 			if op.Op == "/" {
-				c.use("_safe_div")
-				s = fmt.Sprintf("_safe_div(%s, %s)", ls, rs)
+				s = fmt.Sprintf("%s / %s", ls, rs)
 			} else {
 				s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
 			}
@@ -1012,20 +1028,16 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			}
 		case "union":
 			if op.All {
-				c.use("_union_all")
-				s = fmt.Sprintf("_union_all(%s, %s)", s, r)
+				s = fmt.Sprintf("(%s ++ %s)", s, r)
 			} else {
-				c.use("_union")
-				s = fmt.Sprintf("_union(%s, %s)", s, r)
+				s = fmt.Sprintf("((%s) ++ (%s)).distinct", s, r)
 			}
 			leftType = types.ListType{Elem: types.AnyType{}}
 		case "except":
-			c.use("_except")
-			s = fmt.Sprintf("_except(%s, %s)", s, r)
+			s = fmt.Sprintf("((%s).toSet diff (%s).toSet).toList", s, r)
 			leftType = types.ListType{Elem: types.AnyType{}}
 		case "intersect":
-			c.use("_intersect")
-			s = fmt.Sprintf("_intersect(%s, %s)", s, r)
+			s = fmt.Sprintf("((%s).toSet intersect (%s).toSet).toList", s, r)
 			leftType = types.ListType{Elem: types.AnyType{}}
 		default:
 			return "", fmt.Errorf("line %d: unsupported operator %s", op.Pos.Line, op.Op)
@@ -1054,8 +1066,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 			if _, ok := valType.(types.BoolType); ok {
 				s = fmt.Sprintf("!%s", s)
 			} else {
-				c.use("_truthy")
-				s = fmt.Sprintf("!_truthy(%s)", s)
+				s = fmt.Sprintf("!(%s)", truthyExpr(s, valType))
 			}
 		default:
 			return "", fmt.Errorf("line %d: unsupported unary op %s", u.Pos.Line, op)
@@ -1296,15 +1307,14 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
-		c.use("_safe_div")
 		if qarg, ok := queryExpr(call.Args[0]); ok {
 			inner, err := c.compileQueryExpr(qarg)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("_safe_div((%s).sum.toDouble, (%s).size)", inner, inner), nil
+			return fmt.Sprintf("(%s).sum.toDouble / (%s).size", inner, inner), nil
 		}
-		return fmt.Sprintf("_safe_div((%s).sum.toDouble, (%s).size)", args[0], args[0]), nil
+		return fmt.Sprintf("(%s).sum.toDouble / (%s).size", args[0], args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
@@ -1642,8 +1652,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	child := types.NewEnv(c.env)
-	if lt, ok := types.ExprType(q.Source, c.env).(types.ListType); ok {
-		child.SetVar(q.Var, lt.Elem, false)
+	switch t := types.ExprType(q.Source, c.env).(type) {
+	case types.ListType:
+		child.SetVar(q.Var, t.Elem, false)
+	case types.GroupType:
+		child.SetVar(q.Var, t.Elem, false)
 	}
 	oldEnv := c.env
 	c.env = child
@@ -1657,8 +1670,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		parts = append(parts, fmt.Sprintf("%s <- %s", f.Var, s))
-		if lt, ok := types.ExprType(f.Src, c.env).(types.ListType); ok {
-			child.SetVar(f.Var, lt.Elem, false)
+		switch ft := types.ExprType(f.Src, c.env).(type) {
+		case types.ListType:
+			child.SetVar(f.Var, ft.Elem, false)
+		case types.GroupType:
+			child.SetVar(f.Var, ft.Elem, false)
 		}
 	}
 
@@ -1677,9 +1693,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		if _, ok := types.ExprType(j.On, c.env).(types.BoolType); !ok {
-			c.use("_truthy")
-			cond = fmt.Sprintf("_truthy(%s)", cond)
+		jt := types.ExprType(j.On, c.env)
+		if _, ok := jt.(types.BoolType); !ok {
+			cond = truthyExpr(cond, jt)
 		}
 		if j.Side == nil {
 			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
@@ -1706,9 +1722,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		if _, ok := types.ExprType(q.Where, c.env).(types.BoolType); !ok {
-			c.use("_truthy")
-			cond = fmt.Sprintf("_truthy(%s)", cond)
+		wt := types.ExprType(q.Where, c.env)
+		if _, ok := wt.(types.BoolType); !ok {
+			cond = truthyExpr(cond, wt)
 		}
 		parts = append(parts, fmt.Sprintf("if %s", cond))
 	}
@@ -1768,11 +1784,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = oldEnv
 				return "", err
 			}
-			if _, ok := types.ExprType(q.Group.Having, c.env).(types.BoolType); !ok {
-				c.use("_truthy")
-				cond = fmt.Sprintf("_truthy(%s)", cond)
+			ht := types.ExprType(q.Group.Having, c.env)
+			if _, ok := ht.(types.BoolType); !ok {
+				cond = truthyExpr(cond, ht)
 			}
-			groups = fmt.Sprintf("(%s).filter{ g => { val %s = g; %s } }", groups, q.Group.Name, cond)
+			if q.Group.Name == "g" {
+				groups = fmt.Sprintf("(%s).filter{ g => %s }", groups, cond)
+			} else {
+				groups = fmt.Sprintf("(%s).filter{ g => { val %s = g; %s } }", groups, q.Group.Name, cond)
+			}
 		}
 
 		c.env = groupEnv
@@ -1781,7 +1801,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s).map{ g => { val %s = g; %s } }.toList", groups, q.Group.Name, sel)
+		if q.Group.Name == "g" {
+			expr = fmt.Sprintf("(%s).map{ g => %s }.toList", groups, sel)
+		} else {
+			expr = fmt.Sprintf("(%s).map{ g => { val %s = g; %s } }.toList", groups, q.Group.Name, sel)
+		}
 	} else {
 		// handle simple aggregations without GROUP BY
 		if call, ok := callPattern(q.Select); ok {
