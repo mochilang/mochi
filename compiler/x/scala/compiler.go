@@ -142,6 +142,14 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _right_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], B)] = for(y <- b) yield (a.find(x => cond(x,y)), y)\n")
 		case "_outer_join":
 			out.WriteString(pad + "def _outer_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], Option[B])] = { val left = _left_join(a,b)(cond).map{ case(x,y) => (Some(x), y) }; val right = _right_join(a,b)(cond).collect{ case(None, r) => (None, Some(r)) }; left ++ right }\n")
+		case "_compare":
+			out.WriteString(pad + "def _compare(a: Any, b: Any): Int = (a, b) match {\n" +
+				pad + "  case (x: Int, y: Int) => x.compare(y)\n" +
+				pad + "  case (x: Double, y: Double) => java.lang.Double.compare(x, y)\n" +
+				pad + "  case (x: String, y: String) => x.compareTo(y)\n" +
+				pad + "  case _ => a.toString.compareTo(b.toString)\n" +
+				pad + "}\n" +
+				pad + "implicit val _anyOrdering: Ordering[Any] = new Ordering[Any] { def compare(x: Any, y: Any): Int = _compare(x, y) }\n")
 		case "_Group":
 			out.WriteString(pad + "case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }\n")
 		case "_load_yaml":
@@ -187,6 +195,97 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  case opt: Option[_] => opt.nonEmpty\n" +
 				pad + "  case _ => true\n" +
 				pad + "}\n")
+		case "_group_by":
+			out.WriteString(pad + "def _group_by(src: Seq[Any], keyfn: Any => Any): Seq[_Group] = {\n" +
+				pad + "  val groups = scala.collection.mutable.LinkedHashMap[String,_Group]()\n" +
+				pad + "  for (it <- src) {\n" +
+				pad + "    val key = keyfn(it)\n" +
+				pad + "    val ks = key.toString\n" +
+				pad + "    val g = groups.getOrElseUpdate(ks, new _Group(key))\n" +
+				pad + "    g.Items.append(it)\n" +
+				pad + "  }\n" +
+				pad + "  groups.values.toSeq\n" +
+				pad + "}\n")
+		case "_query":
+			out.WriteString(pad + "def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {\n" +
+				pad + "  var items = src.map(v => Seq[Any](v))\n" +
+				pad + "  for (j <- joins) {\n" +
+				pad + "    val joined = scala.collection.mutable.ArrayBuffer[Seq[Any]]()\n" +
+				pad + "    val jitems = j(\"items\").asInstanceOf[Seq[Any]]\n" +
+				pad + "    val on = j.get(\"on\").map(_.asInstanceOf[Seq[Any] => Boolean])\n" +
+				pad + "    val left = j.get(\"left\").exists(_.asInstanceOf[Boolean])\n" +
+				pad + "    val right = j.get(\"right\").exists(_.asInstanceOf[Boolean])\n" +
+				pad + "    if (left && right) {\n" +
+				pad + "      val matched = Array.fill(jitems.length)(false)\n" +
+				pad + "      for (leftRow <- items) {\n" +
+				pad + "        var m = false\n" +
+				pad + "        for ((rightRow, ri) <- jitems.zipWithIndex) {\n" +
+				pad + "          var keep = true\n" +
+				pad + "          if (on.isDefined) keep = on.get(leftRow :+ rightRow)\n" +
+				pad + "          if (keep) { m = true; matched(ri) = true; joined.append(leftRow :+ rightRow) }\n" +
+				pad + "        }\n" +
+				pad + "        if (!m) joined.append(leftRow :+ null)\n" +
+				pad + "      }\n" +
+				pad + "      for ((rightRow, ri) <- jitems.zipWithIndex) {\n" +
+				pad + "        if (!matched(ri)) {\n" +
+				pad + "          val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()\n" +
+				pad + "          joined.append(undef :+ rightRow)\n" +
+				pad + "        }\n" +
+				pad + "      }\n" +
+				pad + "    } else if (right) {\n" +
+				pad + "      for (rightRow <- jitems) {\n" +
+				pad + "        var m = false\n" +
+				pad + "        for (leftRow <- items) {\n" +
+				pad + "          var keep = true\n" +
+				pad + "          if (on.isDefined) keep = on.get(leftRow :+ rightRow)\n" +
+				pad + "          if (keep) { m = true; joined.append(leftRow :+ rightRow) }\n" +
+				pad + "        }\n" +
+				pad + "        if (!m) {\n" +
+				pad + "          val undef = if (items.nonEmpty) Seq.fill(items.head.length)(null) else Seq[Any]()\n" +
+				pad + "          joined.append(undef :+ rightRow)\n" +
+				pad + "        }\n" +
+				pad + "      }\n" +
+				pad + "    } else {\n" +
+				pad + "      for (leftRow <- items) {\n" +
+				pad + "        var m = false\n" +
+				pad + "        for (rightRow <- jitems) {\n" +
+				pad + "          var keep = true\n" +
+				pad + "          if (on.isDefined) keep = on.get(leftRow :+ rightRow)\n" +
+				pad + "          if (keep) { m = true; joined.append(leftRow :+ rightRow) }\n" +
+				pad + "        }\n" +
+				pad + "        if (left && !m) joined.append(leftRow :+ null)\n" +
+				pad + "      }\n" +
+				pad + "    }\n" +
+				pad + "    items = joined.toSeq\n" +
+				pad + "  }\n" +
+				pad + "  var it = items\n" +
+				pad + "  opts.get(\"where\").foreach { f =>\n" +
+				pad + "    val fn = f.asInstanceOf[Seq[Any] => Boolean]\n" +
+				pad + "    it = it.filter(r => fn(r))\n" +
+				pad + "  }\n" +
+				pad + "  opts.get(\"sortKey\").foreach { f =>\n" +
+				pad + "    val fn = f.asInstanceOf[Seq[Any] => Any]\n" +
+				pad + "    it = it.sortBy(r => fn(r))(_anyOrdering)\n" +
+				pad + "  }\n" +
+				pad + "  opts.get(\"skip\").foreach { n => it = it.drop(n.asInstanceOf[Int]) }\n" +
+				pad + "  opts.get(\"take\").foreach { n => it = it.take(n.asInstanceOf[Int]) }\n" +
+				pad + "  val sel = opts(\"select\").asInstanceOf[Seq[Any] => Any]\n" +
+				pad + "  it.map(r => sel(r))\n" +
+				pad + "}\n")
+		case "_to_json":
+			out.WriteString(pad + "def _to_json(v: Any): String = v match {\n" +
+				pad + "  case null => \"null\"\n" +
+				pad + "  case s: String => \"\\\"\" + s.replace(\\\"\\\\\\\", \\\"\\\\\\\\\\\").replace(\\\"\\\"\\\", \\\"\\\\\\\"\\\") + \"\\\"\"\n" +
+				pad + "  case b: Boolean => b.toString\n" +
+				pad + "  case i: Int => i.toString\n" +
+				pad + "  case l: Long => l.toString\n" +
+				pad + "  case d: Double => d.toString\n" +
+				pad + "  case m: scala.collection.Map[_, _] => m.map{ case (k, v2) => \"\\\"\" + k.toString.replace(\\\"\\\"\", \\\"\\\\\\\"\\\") + \"\\\":\" + _to_json(v2) }.mkString(\"{\", \",\", \"}\")\n" +
+				pad + "  case seq: Iterable[_] => seq.map(_to_json).mkString(\"[\", \",\", \"]\")\n" +
+				pad + "  case other => \"\\\"\" + other.toString.replace(\\\"\\\\\\\", \\\"\\\\\\\\\\\").replace(\\\"\\\"\", \\\"\\\\\\\"\\\") + \"\\\"\"\n" +
+				pad + "}\n")
+		case "_json":
+			out.WriteString(pad + "def _json(v: Any): Unit = println(_to_json(v))\n")
 		}
 		out.WriteByte('\n')
 	}
