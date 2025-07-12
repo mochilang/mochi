@@ -1,22 +1,22 @@
 Person = {}
 Person.__index = Person
 function Person.new(o)
-  o = o or {}
-  setmetatable(o, Person)
-  return o
+    o = o or {}
+    setmetatable(o, Person)
+    return o
 end
 
-people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["age"]=15, ["email"]="bob@example.com", ["name"]="Bob"}, {["name"]="Charlie", ["age"]=20, ["email"]="charlie@example.com"}}
+people = {{["name"]="Alice", ["age"]=30, ["email"]="alice@example.com"}, {["name"]="Bob", ["age"]=15, ["email"]="bob@example.com"}, {["name"]="Charlie", ["age"]=20, ["email"]="charlie@example.com"}}
 adults = (function()
-  local _res = {}
-  for _, p in ipairs(people) do
-    if (p.age >= 18) then
-      _res[#_res+1] = {["name"]=p.name, ["email"]=p.email}
+    local _res = {}
+    for _, p in ipairs(people) do
+        if (p.age >= 18) then
+            _res[#_res+1] = {["name"]=p.name, ["email"]=p.email}
+        end
     end
-  end
-  return _res
+    return _res
 end)()
 for _, a in ipairs(adults) do
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(a.name, a.email)
-  ::__continue0::
+    print(a.name, a.email)
+    ::__continue0::
 end

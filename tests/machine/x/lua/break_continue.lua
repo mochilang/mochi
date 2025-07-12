@@ -13,12 +13,12 @@ function __eq(a, b)
 end
 numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9}
 for _, n in ipairs(numbers) do
-  if __eq((n % 2), 0) then
-    goto __continue0
-  end
-  if (n > 7) then
-    break
-  end
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("odd number:", n)
-  ::__continue0::
+    if __eq((n % 2), 0) then
+        goto __continue0
+    end
+    if (n > 7) then
+        break
+    end
+    print("odd number:", n)
+    ::__continue0::
 end
