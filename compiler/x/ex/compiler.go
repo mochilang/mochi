@@ -178,6 +178,10 @@ func (c *Compiler) typeSpec(t types.Type) string {
 		return "list(" + c.typeSpec(tt.Elem) + ")"
 	case types.MapType:
 		return "map()"
+	case types.OptionType:
+		return "nil | " + c.typeSpec(tt.Elem)
+	case types.GroupType:
+		return "Group.t()"
 	case types.StructType:
 		return tt.Name
 	case types.UnionType:
@@ -809,12 +813,43 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	orig := c.env
 	child := types.NewEnv(c.env)
-	child.SetVar(q.Var, types.AnyType{}, true)
+	srcType := c.inferExprType(q.Source)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		elemType = gt.Elem
+	}
+	qVarType := elemType
+	for _, j := range q.Joins {
+		if j.Side != nil && (*j.Side == "right" || *j.Side == "outer") {
+			qVarType = types.OptionType{Elem: elemType}
+			break
+		}
+	}
+	child.SetVar(q.Var, qVarType, true)
 	for _, f := range q.Froms {
-		child.SetVar(f.Var, types.AnyType{}, true)
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		} else if gt, ok := ft.(types.GroupType); ok {
+			fe = gt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
 	}
 	for _, j := range q.Joins {
-		child.SetVar(j.Var, types.AnyType{}, true)
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		} else if gt, ok := jt.(types.GroupType); ok {
+			je = gt.Elem
+		}
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "outer") {
+			je = types.OptionType{Elem: je}
+		}
+		child.SetVar(j.Var, je, true)
 	}
 	hasSide := false
 	for _, j := range q.Joins {
@@ -832,8 +867,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		keyT := c.inferExprType(q.Group.Exprs[0])
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
 		c.env = genv
 		val, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -936,8 +972,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		keyT := c.inferExprType(q.Group.Exprs[0])
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
 		c.env = genv
 		val, err := c.compileExpr(q.Select)
 		if err != nil {
