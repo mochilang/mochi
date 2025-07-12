@@ -721,18 +721,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				rr := r
 				if isNumericOp(op.Op) {
 					if !isNumericType(leftType) {
-						cast := "num"
-						if rightType == (types.IntType{}) {
-							cast = "int"
-						}
-						l = fmt.Sprintf("(%s as %s)", l, cast)
+						l = fmt.Sprintf("(%s as num)", l)
 					}
 					if !isNumericType(rightType) {
-						cast := "num"
-						if leftType == (types.IntType{}) {
-							cast = "int"
-						}
-						rr = fmt.Sprintf("(%s as %s)", rr, cast)
+						rr = fmt.Sprintf("(%s as num)", rr)
 					}
 				}
 				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
