@@ -312,12 +312,14 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("}")
 			case "_group":
 				c.writeln("public interface _IGroup { System.Collections.IEnumerable Items { get; } }")
-				c.writeln("public class _Group<TKey, TItem> : _IGroup {")
+				c.writeln("public class _Group<TKey, TItem> : _IGroup, IEnumerable<TItem> {")
 				c.indent++
 				c.writeln("public TKey key;")
 				c.writeln("public List<TItem> Items = new List<TItem>();")
 				c.writeln("public _Group(TKey k) { key = k; }")
 				c.writeln("System.Collections.IEnumerable _IGroup.Items => Items;")
+				c.writeln("public IEnumerator<TItem> GetEnumerator() => Items.GetEnumerator();")
+				c.writeln("System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => Items.GetEnumerator();")
 				c.indent--
 				c.writeln("}")
 			case "_group_by":

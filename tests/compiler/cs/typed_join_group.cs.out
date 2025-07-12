@@ -1,0 +1,79 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public record struct Customer
+{
+    public int id;
+    public string name;
+}
+
+public record struct Order
+{
+    public int id;
+    public int custId;
+}
+
+public record struct Summary
+{
+    public string name;
+    public int count;
+}
+
+public record struct Key
+{
+    public string name;
+}
+
+class Program
+{
+    static void Main()
+    {
+        List<Customer> customers = new List<Customer> { new Customer { id = 1, name = "Alice" }, new Customer { id = 2, name = "Bob" } };
+        List<Order> orders = new List<Order> { new Order { id = 100, custId = 1 }, new Order { id = 101, custId = 1 }, new Order { id = 102, custId = 2 } };
+        List<Summary> result = new Func<List<Summary>>(() =>
+        {
+            var groups = new Dictionary<string, _Group<Key, Order>>();
+            var order = new List<string>();
+            foreach (var o in orders)
+            {
+                foreach (var c in customers)
+                {
+                    if (!((o.custId == c.id))) continue;
+                    var key = new Key { name = c.name };
+                    var ks = Convert.ToString(key);
+                    if (!groups.TryGetValue(ks, out var g))
+                    {
+                        g = new _Group<Key, Order>(key);
+                        groups[ks] = g;
+                        order.Add(ks);
+                    }
+                    g.Items.Add(o);
+                }
+            }
+            var items = new List<_Group<Key, Order>>();
+            foreach (var ks in order) items.Add(groups[ks]);
+            var _res = new List<Summary>();
+            foreach (var g in items)
+            {
+                _res.Add(new Summary { name = g.key.name, count = Enumerable.Count(g) });
+            }
+            return _res;
+        })();
+        foreach (var r in result)
+        {
+            Console.WriteLine(string.Join(" ", new[] { Convert.ToString(r.name), Convert.ToString(r.count) }));
+        }
+    }
+    public interface _IGroup { System.Collections.IEnumerable Items { get; } }
+    public class _Group<TKey, TItem> : _IGroup, IEnumerable<TItem>
+    {
+        public TKey key;
+        public List<TItem> Items = new List<TItem>();
+        public _Group(TKey k) { key = k; }
+        System.Collections.IEnumerable _IGroup.Items => Items;
+        public IEnumerator<TItem> GetEnumerator() => Items.GetEnumerator();
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => Items.GetEnumerator();
+    }
+
+}
