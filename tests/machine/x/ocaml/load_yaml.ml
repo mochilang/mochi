@@ -63,9 +63,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | a::rest ->
+      | (a : record1)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "name" a)) ^ " " ^ __show (Obj.obj (List.assoc "email" a)));
+          print_endline (__show (a.name) ^ " " ^ __show (a.email));
         with Continue -> ()
         ; __loop1 rest
     in

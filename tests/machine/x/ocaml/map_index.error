@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/map_index.ml", line 24, characters 49-50:
+24 |   print_endline (__show (Obj.obj (List.assoc "b" m)));
+                                                      ^
+Error: This expression has type record1
+       but an expression was expected of type (string * 'a) list
+
+
+Context (around line 24):
+  22 | 
+  23 | let () =
+  24 |   print_endline (__show (Obj.obj (List.assoc "b" m)));
+  25 | 

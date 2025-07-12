@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/map_assign.ml", line 26, characters 41-58:
+26 | let scores : (string * Obj.t) list ref = ref { alice = 1 }
+                                              ^^^^^^^^^^^^^^^^^
+Error: This expression has type record1 ref
+       but an expression was expected of type (string * Obj.t) list ref
+       Type record1 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 26):
+  24 | type record1 = { mutable alice : int }
+  25 | 
+  26 | let scores : (string * Obj.t) list ref = ref { alice = 1 }
+  27 | 
+  28 | let () =

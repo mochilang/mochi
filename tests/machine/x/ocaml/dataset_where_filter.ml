@@ -20,13 +20,13 @@
 
 
   type record1 = { mutable name : string; mutable age : int }
-  type record2 = { mutable name : Obj.t; mutable age : Obj.t; mutable is_senior : bool }
+  type record2 = { mutable name : string; mutable age : int; mutable is_senior : bool }
 
 let people : record1 list = [{ name = "Alice"; age = 30 };{ name = "Bob"; age = 15 };{ name = "Charlie"; age = 65 };{ name = "Diana"; age = 45 }]
 let adults : record2 list = (let __res0 = ref [] in
   List.iter (fun (person : record1) ->
-      if (Obj.obj (List.assoc "age" person) >= 18) then
-    __res0 := { name = Obj.obj (List.assoc "name" person); age = Obj.obj (List.assoc "age" person); is_senior = (Obj.obj (List.assoc "age" person) >= 60) } :: !__res0;
+      if (person.age >= 18) then
+    __res0 := { name = person.name; age = person.age; is_senior = (person.age >= 60) } :: !__res0;
   ) people;
 List.rev !__res0)
 
@@ -36,9 +36,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | person::rest ->
+      | (person : record2)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "name" person)) ^ " " ^ __show ("is") ^ " " ^ __show (Obj.obj (List.assoc "age" person)) ^ " " ^ __show ((if Obj.obj (List.assoc "is_senior" person) then " (senior)" else "")));
+          print_endline (__show (person.name) ^ " " ^ __show ("is") ^ " " ^ __show (person.age) ^ " " ^ __show ((if person.is_senior then " (senior)" else "")));
         with Continue -> ()
         ; __loop1 rest
     in

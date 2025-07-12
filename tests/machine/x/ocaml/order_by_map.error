@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/order_by_map.ml", line 26, characters 0-16:
+26 | List.rev !__res0)
+     ^^^^^^^^^^^^^^^^
+Error: This expression has type record1 list
+       but an expression was expected of type (string * Obj.t) list list
+       Type record1 is not compatible with type (string * Obj.t) list 
+
+
+Context (around line 26):
+  24 |       __res0 := x :: !__res0;
+  25 |   ) data;
+  26 | List.rev !__res0)
+  27 | 
+  28 | 

@@ -26,7 +26,7 @@
 let people : record1 list = [{ name = "Alice"; age = 30; city = "Paris" };{ name = "Bob"; age = 15; city = "Hanoi" };{ name = "Charlie"; age = 65; city = "Paris" };{ name = "Diana"; age = 45; city = "Hanoi" };{ name = "Eve"; age = 70; city = "Paris" };{ name = "Frank"; age = 22; city = "Hanoi" }]
 let stats : record2 list = (let (__groups0 : (Obj.t * (string * Obj.t) list list) list ref) = ref [] in
   List.iter (fun (person : record1) ->
-      let key = Obj.obj (List.assoc "city" person) in
+      let key = person.city in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in
       __groups0 := (key, person :: cur) :: List.remove_assoc key !__groups0;
   ) people;
@@ -53,9 +53,9 @@ let () =
   let rec __loop2 lst =
     match lst with
       | [] -> ()
-      | s::rest ->
+      | (s : record2)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "city" s)) ^ " " ^ __show (": count =") ^ " " ^ __show (Obj.obj (List.assoc "count" s)) ^ " " ^ __show (", avg_age =") ^ " " ^ __show (Obj.obj (List.assoc "avg_age" s)));
+          print_endline (__show (s.city) ^ " " ^ __show (": count =") ^ " " ^ __show (s.count) ^ " " ^ __show (", avg_age =") ^ " " ^ __show (s.avg_age));
         with Continue -> ()
         ; __loop2 rest
     in

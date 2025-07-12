@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/values_builtin.ml", line 24, characters 38-39:
+24 |   print_endline (__show (List.map snd m));
+                                           ^
+Error: This expression has type record1
+       but an expression was expected of type ('a * 'b) list
+
+
+Context (around line 24):
+  22 | 
+  23 | let () =
+  24 |   print_endline (__show (List.map snd m));
+  25 | 
