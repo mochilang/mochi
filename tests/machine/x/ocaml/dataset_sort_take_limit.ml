@@ -22,7 +22,7 @@
   type record1 = { mutable name : string; mutable price : int }
 
 let products : record1 list = [{ name = "Laptop"; price = 1500 };{ name = "Smartphone"; price = 900 };{ name = "Tablet"; price = 600 };{ name = "Monitor"; price = 300 };{ name = "Keyboard"; price = 100 };{ name = "Mouse"; price = 50 };{ name = "Headphones"; price = 200 }]
-let expensive : (string * Obj.t) list list = (let __res0 = ref [] in
+let expensive : record1 list = (let __res0 = ref [] in
   List.iter (fun (p : record1) ->
       __res0 := p :: !__res0;
   ) products;
@@ -34,9 +34,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | item::rest ->
+      | (item : record1)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "name" item)) ^ " " ^ __show ("costs $") ^ " " ^ __show (Obj.obj (List.assoc "price" item)));
+          print_endline (__show (item.name) ^ " " ^ __show ("costs $") ^ " " ^ __show (item.price));
         with Continue -> ()
         ; __loop1 rest
     in

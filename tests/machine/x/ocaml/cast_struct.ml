@@ -16,10 +16,8 @@ let rec __show v =
     | _ -> "<value>"
 
 
-type record1 = { mutable title : string }
-
 type todo = { mutable title : string }
-let todo : record1 = { title = "hi" }
+let todo : todo = { title = "hi" }
 
 let () =
   print_endline (__show (todo.title));

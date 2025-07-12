@@ -2,7 +2,7 @@
 
 This directory contains OCaml code generated from the Mochi programs in `tests/vm/valid` using the OCaml compiler. Each program was compiled and executed with `ocamlc`. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 72/100 successful.
+Compiled programs: 74/100 successful.
 
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
