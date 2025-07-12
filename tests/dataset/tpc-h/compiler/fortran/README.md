@@ -1,7 +1,7 @@
 # TPC-H Fortran Outputs
 
 This directory holds Fortran translations of the Mochi implementations of the TPC-H benchmark queries.
-Only queries 1-4 have been translated so far.
+Only queries 1-5 have been translated so far.
 
 ## Checklist
 
@@ -9,7 +9,7 @@ Only queries 1-4 have been translated so far.
 - [x] q2
 - [x] q3
 - [x] q4
-- [ ] q5
+- [x] q5
 - [ ] q6
 - [ ] q7
 - [ ] q8
