@@ -1,0 +1,529 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+  int len;
+  int *data;
+} list_int;
+static list_int list_int_create(int len) {
+  list_int l;
+  l.len = len;
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+typedef struct {
+  int len;
+  double *data;
+} list_float;
+static list_float list_float_create(int len) {
+  list_float l;
+  l.len = len;
+  l.data = calloc(len, sizeof(double));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+typedef struct {
+  int len;
+  char **data;
+} list_string;
+static list_string list_string_create(int len) {
+  list_string l;
+  l.len = len;
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+typedef struct {
+  int len;
+  list_int *data;
+} list_list_int;
+static list_list_int list_list_int_create(int len) {
+  list_list_int l;
+  l.len = len;
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+typedef struct {
+  int key;
+  int value;
+} map_int_bool_item;
+static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  map_int_bool_item *it = calloc(1, sizeof(map_int_bool_item));
+  if (!it) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  it->key = key;
+  it->value = value;
+  return it;
+}
+typedef struct {
+  int len;
+  int cap;
+  map_int_bool_item **data;
+} map_int_bool;
+static map_int_bool map_int_bool_create(int cap) {
+  map_int_bool m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? calloc(cap, sizeof(map_int_bool_item *)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return m;
+}
+static void map_int_bool_put(map_int_bool *m, int key, int value) {
+  for (int i = 0; i < m->len; i++)
+    if (m->data[i]->key == key) {
+      m->data[i]->value = value;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data = (map_int_bool_item **)realloc(
+        m->data, sizeof(map_int_bool_item *) * m->cap);
+  }
+  m->data[m->len++] = map_int_bool_item_new(key, value);
+}
+static int map_int_bool_contains(map_int_bool m, int key) {
+  for (int i = 0; i < m.len; i++)
+    if (m.data[i]->key == key)
+      return 1;
+  return 0;
+}
+static double _min_float(list_float v) {
+  if (v.len == 0)
+    return 0;
+  double m = v.data[0];
+  for (int i = 1; i < v.len; i++)
+    if (v.data[i] < m)
+      m = v.data[i];
+  return m;
+}
+static void _json_int(int v) { printf("%d", v); }
+static void _json_float(double v) { printf("%g", v); }
+static void _json_string(char *s) { printf("\"%s\"", s); }
+static void _json_list_int(list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_int(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_float(list_float v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_float(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_string(list_string v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_string(v.data[i]);
+  }
+  printf("]");
+}
+static void _json_list_list_int(list_list_int v) {
+  printf("[");
+  for (int i = 0; i < v.len; i++) {
+    if (i > 0)
+      printf(",");
+    _json_list_int(v.data[i]);
+  }
+  printf("]");
+}
+typedef struct {
+  int r_regionkey;
+  char *r_name;
+} RegionItem;
+typedef struct {
+  int len;
+  RegionItem *data;
+} list_RegionItem;
+static list_RegionItem list_RegionItem_create(int len) {
+  list_RegionItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(RegionItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int n_nationkey;
+  int n_regionkey;
+  char *n_name;
+} NationItem;
+typedef struct {
+  int len;
+  NationItem *data;
+} list_NationItem;
+static list_NationItem list_NationItem_create(int len) {
+  list_NationItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(NationItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int s_suppkey;
+  char *s_name;
+  char *s_address;
+  int s_nationkey;
+  char *s_phone;
+  double s_acctbal;
+  char *s_comment;
+} SupplierItem;
+typedef struct {
+  int len;
+  SupplierItem *data;
+} list_SupplierItem;
+static list_SupplierItem list_SupplierItem_create(int len) {
+  list_SupplierItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(SupplierItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int p_partkey;
+  char *p_type;
+  int p_size;
+  char *p_mfgr;
+} PartItem;
+typedef struct {
+  int len;
+  PartItem *data;
+} list_PartItem;
+static list_PartItem list_PartItem_create(int len) {
+  list_PartItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(PartItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int ps_partkey;
+  int ps_suppkey;
+  double ps_supplycost;
+} PartsuppItem;
+typedef struct {
+  int len;
+  PartsuppItem *data;
+} list_PartsuppItem;
+static list_PartsuppItem list_PartsuppItem_create(int len) {
+  list_PartsuppItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(PartsuppItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  SupplierItem s;
+  NationItem n;
+} Europe_suppliersItem;
+typedef struct {
+  int len;
+  Europe_suppliersItem *data;
+} list_Europe_suppliersItem;
+static list_Europe_suppliersItem list_Europe_suppliersItem_create(int len) {
+  list_Europe_suppliersItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(Europe_suppliersItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  double s_acctbal;
+  char *s_name;
+  char *n_name;
+  int p_partkey;
+  char *p_mfgr;
+  char *s_address;
+  char *s_phone;
+  char *s_comment;
+  double ps_supplycost;
+} Target_partsuppItem;
+typedef struct {
+  int len;
+  Target_partsuppItem *data;
+} list_Target_partsuppItem;
+static list_Target_partsuppItem list_Target_partsuppItem_create(int len) {
+  list_Target_partsuppItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(Target_partsuppItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+static void
+test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {
+  map_int_bool tmp2 = map_int_bool_create(9);
+  map_int_bool_put(&tmp2, "s_acctbal", 1000.0);
+  map_int_bool_put(&tmp2, "s_name", "BestSupplier");
+  map_int_bool_put(&tmp2, "n_name", "FRANCE");
+  map_int_bool_put(&tmp2, "p_partkey", 1000);
+  map_int_bool_put(&tmp2, "p_mfgr", "M1");
+  map_int_bool_put(&tmp2, "s_address", "123 Rue");
+  map_int_bool_put(&tmp2, "s_phone", "123");
+  map_int_bool_put(&tmp2, "s_comment", "Fast and reliable");
+  map_int_bool_put(&tmp2, "ps_supplycost", 10.0);
+  int tmp1[] = {tmp2};
+  if (!(result == tmp1)) {
+    fprintf(stderr, "expect failed\n");
+    exit(1);
+  }
+}
+
+int main() {
+  RegionItem tmp3_data[] = {(RegionItem){.r_regionkey = 1, .r_name = "EUROPE"},
+                            (RegionItem){.r_regionkey = 2, .r_name = "ASIA"}};
+  list_RegionItem tmp3 = {2, tmp3_data};
+  list_RegionItem region = tmp3;
+  NationItem tmp4_data[] = {
+      (NationItem){.n_nationkey = 10, .n_regionkey = 1, .n_name = "FRANCE"},
+      (NationItem){.n_nationkey = 20, .n_regionkey = 2, .n_name = "CHINA"}};
+  list_NationItem tmp4 = {2, tmp4_data};
+  list_NationItem nation = tmp4;
+  SupplierItem tmp5_data[] = {(SupplierItem){.s_suppkey = 100,
+                                             .s_name = "BestSupplier",
+                                             .s_address = "123 Rue",
+                                             .s_nationkey = 10,
+                                             .s_phone = "123",
+                                             .s_acctbal = 1000.0,
+                                             .s_comment = "Fast and reliable"},
+                              (SupplierItem){.s_suppkey = 200,
+                                             .s_name = "AltSupplier",
+                                             .s_address = "456 Way",
+                                             .s_nationkey = 20,
+                                             .s_phone = "456",
+                                             .s_acctbal = 500.0,
+                                             .s_comment = "Slow"}};
+  list_SupplierItem tmp5 = {2, tmp5_data};
+  list_SupplierItem supplier = tmp5;
+  PartItem tmp6_data[] = {(PartItem){.p_partkey = 1000,
+                                     .p_type = "LARGE BRASS",
+                                     .p_size = 15,
+                                     .p_mfgr = "M1"},
+                          (PartItem){.p_partkey = 2000,
+                                     .p_type = "SMALL COPPER",
+                                     .p_size = 15,
+                                     .p_mfgr = "M2"}};
+  list_PartItem tmp6 = {2, tmp6_data};
+  list_PartItem part = tmp6;
+  PartsuppItem tmp7_data[] = {
+      (PartsuppItem){
+          .ps_partkey = 1000, .ps_suppkey = 100, .ps_supplycost = 10.0},
+      (PartsuppItem){
+          .ps_partkey = 1000, .ps_suppkey = 200, .ps_supplycost = 15.0}};
+  list_PartsuppItem tmp7 = {2, tmp7_data};
+  list_PartsuppItem partsupp = tmp7;
+  list_NationItem tmp8 = list_NationItem_create(region.len * nation.len);
+  int tmp9 = 0;
+  for (int tmp10 = 0; tmp10 < region.len; tmp10++) {
+    RegionItem r = region.data[tmp10];
+    for (int tmp11 = 0; tmp11 < nation.len; tmp11++) {
+      NationItem n = nation.data[tmp11];
+      if (!(n.n_regionkey == r.r_regionkey)) {
+        continue;
+      }
+      if (!((strcmp(r.r_name, "EUROPE") == 0))) {
+        continue;
+      }
+      tmp8.data[tmp9] = n;
+      tmp9++;
+    }
+  }
+  tmp8.len = tmp9;
+  list_NationItem europe_nations = tmp8;
+  list_Europe_suppliersItem tmp12 =
+      list_Europe_suppliersItem_create(supplier.len * europe_nations.len);
+  int tmp13 = 0;
+  for (int tmp14 = 0; tmp14 < supplier.len; tmp14++) {
+    SupplierItem s = supplier.data[tmp14];
+    for (int tmp15 = 0; tmp15 < europe_nations.len; tmp15++) {
+      NationItem n = europe_nations.data[tmp15];
+      if (!(s.s_nationkey == n.n_nationkey)) {
+        continue;
+      }
+      tmp12.data[tmp13] = (Europe_suppliersItem){.s = s, .n = n};
+      tmp13++;
+    }
+  }
+  tmp12.len = tmp13;
+  list_Europe_suppliersItem europe_suppliers = tmp12;
+  list_PartItem tmp16 = list_PartItem_create(part.len);
+  int tmp17 = 0;
+  for (int tmp18 = 0; tmp18 < part.len; tmp18++) {
+    PartItem p = part.data[tmp18];
+    if (!(p.p_size == 15 && p.p_type == "LARGE BRASS")) {
+      continue;
+    }
+    tmp16.data[tmp17] = p;
+    tmp17++;
+  }
+  tmp16.len = tmp17;
+  list_PartItem target_parts = tmp16;
+  list_Target_partsuppItem tmp19 = list_Target_partsuppItem_create(
+      partsupp.len * target_parts.len * europe_suppliers.len);
+  int tmp20 = 0;
+  for (int tmp21 = 0; tmp21 < partsupp.len; tmp21++) {
+    PartsuppItem ps = partsupp.data[tmp21];
+    for (int tmp22 = 0; tmp22 < target_parts.len; tmp22++) {
+      PartItem p = target_parts.data[tmp22];
+      if (!(ps.ps_partkey == p.p_partkey)) {
+        continue;
+      }
+      for (int tmp23 = 0; tmp23 < europe_suppliers.len; tmp23++) {
+        Europe_suppliersItem s = europe_suppliers.data[tmp23];
+        if (!(ps.ps_suppkey == s.s.s_suppkey)) {
+          continue;
+        }
+        tmp19.data[tmp20] =
+            (Target_partsuppItem){.s_acctbal = s.s.s_acctbal,
+                                  .s_name = s.s.s_name,
+                                  .n_name = s.n.n_name,
+                                  .p_partkey = p.p_partkey,
+                                  .p_mfgr = p.p_mfgr,
+                                  .s_address = s.s.s_address,
+                                  .s_phone = s.s.s_phone,
+                                  .s_comment = s.s.s_comment,
+                                  .ps_supplycost = ps.ps_supplycost};
+        tmp20++;
+      }
+    }
+  }
+  tmp19.len = tmp20;
+  list_Target_partsuppItem target_partsupp = tmp19;
+  list_float tmp24 = list_float_create(target_partsupp.len);
+  int tmp25 = 0;
+  for (int tmp26 = 0; tmp26 < target_partsupp.len; tmp26++) {
+    Target_partsuppItem x = target_partsupp.data[tmp26];
+    tmp24.data[tmp25] = x.ps_supplycost;
+    tmp25++;
+  }
+  tmp24.len = tmp25;
+  list_float costs = tmp24;
+  int min_cost = _min_float(costs);
+  list_Target_partsuppItem tmp27 =
+      list_Target_partsuppItem_create(target_partsupp.len);
+  double *tmp30 = (double *)malloc(sizeof(double) * target_partsupp.len);
+  int tmp28 = 0;
+  for (int tmp29 = 0; tmp29 < target_partsupp.len; tmp29++) {
+    Target_partsuppItem x = target_partsupp.data[tmp29];
+    if (!(x.ps_supplycost == min_cost)) {
+      continue;
+    }
+    tmp27.data[tmp28] = x;
+    tmp30[tmp28] = (-x.s_acctbal);
+    tmp28++;
+  }
+  tmp27.len = tmp28;
+  for (int i33 = 0; i33 < tmp28 - 1; i33++) {
+    for (int i34 = i33 + 1; i34 < tmp28; i34++) {
+      if (tmp30[i33] > tmp30[i34]) {
+        double tmp31 = tmp30[i33];
+        tmp30[i33] = tmp30[i34];
+        tmp30[i34] = tmp31;
+        Target_partsuppItem tmp32 = tmp27.data[i33];
+        tmp27.data[i33] = tmp27.data[i34];
+        tmp27.data[i34] = tmp32;
+      }
+    }
+  }
+  list_Target_partsuppItem result = tmp27;
+  printf("[");
+  for (int i35 = 0; i35 < result.len; i35++) {
+    if (i35 > 0)
+      printf(",");
+    Target_partsuppItem it = result.data[i35];
+    printf("{");
+    _json_string("s_acctbal");
+    printf(":");
+    _json_float(it.s_acctbal);
+    printf(",");
+    _json_string("s_name");
+    printf(":");
+    _json_string(it.s_name);
+    printf(",");
+    _json_string("n_name");
+    printf(":");
+    _json_string(it.n_name);
+    printf(",");
+    _json_string("p_partkey");
+    printf(":");
+    _json_int(it.p_partkey);
+    printf(",");
+    _json_string("p_mfgr");
+    printf(":");
+    _json_string(it.p_mfgr);
+    printf(",");
+    _json_string("s_address");
+    printf(":");
+    _json_string(it.s_address);
+    printf(",");
+    _json_string("s_phone");
+    printf(":");
+    _json_string(it.s_phone);
+    printf(",");
+    _json_string("s_comment");
+    printf(":");
+    _json_string(it.s_comment);
+    printf(",");
+    _json_string("ps_supplycost");
+    printf(":");
+    _json_float(it.ps_supplycost);
+    printf("}");
+  }
+  printf("]");
+  test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part();
+  return 0;
+}
