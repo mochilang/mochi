@@ -108,7 +108,7 @@ Checklist:
 - [x] while_loop
 
 ## Remaining Tasks
-- [ ] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
+- [x] Enhance type inference to avoid unnecessary `_toAnyMap` conversions.
 - [ ] Optimize dataset query loops for large join results.
 - [ ] Support generics in function return types.
 - [x] Simplify struct initialization when field order matches.

@@ -2655,6 +2655,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	child.SetVar(q.Var, elemType, true)
 	// Add cross join variables to environment
 	fromIsMap := make([]bool, len(q.Froms))
+	fromElemType := make([]types.Type, len(q.Froms))
 	for i, f := range q.Froms {
 		ft := c.inferExprType(f.Src)
 		var felem types.Type = types.AnyType{}
@@ -2662,10 +2663,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			felem = lt.Elem
 		}
 		child.SetVar(f.Var, felem, true)
+		fromElemType[i] = felem
 		fromIsMap[i] = isStringMapLike(felem)
 	}
 	// Add join variables to environment
 	joinIsMap := make([]bool, len(q.Joins))
+	joinElemType := make([]types.Type, len(q.Joins))
 	for i, j := range q.Joins {
 		jt := c.inferExprType(j.Src)
 		var jelem types.Type = types.AnyType{}
@@ -2673,6 +2676,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			jelem = lt.Elem
 		}
 		child.SetVar(j.Var, jelem, true)
+		joinElemType[i] = jelem
 		joinIsMap[i] = isStringMapLike(jelem)
 	}
 
@@ -2949,6 +2953,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
 		if elemIsMap {
 			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+		} else if st, ok := elemType.(types.StructType); ok {
+			c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
 		} else {
 			c.use("_toAnyMap")
 			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
@@ -2957,6 +2963,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		for i, f := range q.Froms {
 			if fromIsMap[i] {
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+			} else if st, ok := fromElemType[i].(types.StructType); ok {
+				c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
 			} else {
 				c.use("_toAnyMap")
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
@@ -2966,6 +2974,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		for i, j := range q.Joins {
 			if joinIsMap[i] {
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+			} else if st, ok := joinElemType[i].(types.StructType); ok {
+				c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
 			} else {
 				c.use("_toAnyMap")
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
@@ -2999,6 +3009,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
 			if elemIsMap {
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			} else if st, ok := elemType.(types.StructType); ok {
+				c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
 			} else {
 				c.use("_toAnyMap")
 				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
@@ -3007,6 +3019,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			for i, f := range q.Froms {
 				if fromIsMap[i] {
 					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				} else if st, ok := fromElemType[i].(types.StructType); ok {
+					c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
 				} else {
 					c.use("_toAnyMap")
 					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
@@ -3016,6 +3030,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			for i, j := range q.Joins {
 				if joinIsMap[i] {
 					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				} else if st, ok := joinElemType[i].(types.StructType); ok {
+					c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
 				} else {
 					c.use("_toAnyMap")
 					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
