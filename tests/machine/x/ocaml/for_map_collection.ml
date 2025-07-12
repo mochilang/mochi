@@ -19,18 +19,16 @@
   exception Continue
 
 
-  type record1 = { mutable a : int; mutable b : int }
-
-let m : (string * Obj.t) list ref = ref { a = 1; b = 2 }
+let m : (string * Obj.t) list ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
 
 let () =
   let rec __loop0 lst =
     match lst with
       | [] -> ()
-      | k::rest ->
-        try
+      | (k, _)::rest ->
+        (try
           print_endline (__show (k));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop0 rest
     in
     try __loop0 (!m) with Break -> ()

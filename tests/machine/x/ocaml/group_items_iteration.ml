@@ -50,20 +50,20 @@ let () =
     match lst with
       | [] -> ()
       | g::rest ->
-        try
+        (try
           let total : int ref = ref 0 in
           let rec __loop3 lst =
             match lst with
               | [] -> ()
               | x::rest ->
-                try
+                (try
                   total := ((!total) + Obj.obj (List.assoc "val" x));
-                with Continue -> ()
+                with Continue -> ())
                 ; __loop3 rest
             in
             try __loop3 g.items with Break -> ()
             tmp := ((!tmp) @ [{ tag = g.key; total = (!total) }]);
-          with Continue -> ()
+          with Continue -> ())
           ; __loop2 rest
       in
       try __loop2 groups with Break -> ()

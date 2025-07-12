@@ -507,11 +507,15 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	}
 	srcType := types.ExprType(fr.Source, c.env)
 	var elemType types.Type
+	isMap := false
 	switch t := srcType.(type) {
 	case types.ListType:
 		elemType = t.Elem
 	case types.GroupType:
 		elemType = t.Elem
+	case types.MapType:
+		elemType = t.Key
+		isMap = true
 	default:
 		elemType = types.AnyType{}
 	}
@@ -538,12 +542,15 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	c.indent++
 	c.writeln("| [] -> ()")
 	pat := fr.Name
-	if typ := c.loopTypeForSource(fr.Source); typ != "" {
+	if isMap {
+		pat = fmt.Sprintf("(%s, _)", fr.Name)
+	}
+	if typ := c.loopTypeForSource(fr.Source); typ != "" && !isMap {
 		pat = fmt.Sprintf("(%s : %s)", fr.Name, typ)
 	}
 	c.writeln(fmt.Sprintf("| %s::rest ->", pat))
 	c.indent++
-	c.writeln("try")
+	c.writeln("(try")
 	c.indent++
 	for _, st := range fr.Body {
 		if err := c.compileStmt(st); err != nil {
@@ -553,7 +560,7 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	}
 	c.env = oldEnv
 	c.indent--
-	c.writeln("with Continue -> ()")
+	c.writeln("with Continue -> ())")
 	c.writeln(fmt.Sprintf("; %s rest", loopName))
 	c.indent--
 	c.indent--
@@ -1793,7 +1800,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
 	case p.Map != nil:
-		if st, ok := c.structTypeFromMapLiteral(p.Map); ok {
+		if st, ok := c.structTypeFromMapLiteral(p.Map); ok && identKeysOnly(p.Map) {
 			c.ensureStructName(st)
 			fields := make([]string, len(p.Map.Items))
 			for i, it := range p.Map.Items {
@@ -2477,6 +2484,15 @@ func identConst(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+func identKeysOnly(ml *parser.MapLiteral) bool {
+	for _, it := range ml.Items {
+		if _, ok := identConst(it.Key); !ok {
+			return false
+		}
+	}
+	return true
+}
+
 // structTypeFromMapLiteral returns a StructType representing ml if all keys are
 // constant identifiers or strings. The order of fields matches the literal.
 func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.StructType, bool) {
@@ -2490,13 +2506,9 @@ func (c *Compiler) structTypeFromMapLiteralEnv(ml *parser.MapLiteral, env *types
 	fields := map[string]types.Type{}
 	order := []string{}
 	for _, it := range ml.Items {
-		var key string
-		var ok bool
-		if key, ok = identConst(it.Key); !ok {
-			key, ok = stringConst(it.Key)
-			if !ok {
-				return types.StructType{}, false
-			}
+		key, ok := identConst(it.Key)
+		if !ok {
+			return types.StructType{}, false
 		}
 		fields[key] = types.ExprType(it.Value, env)
 		order = append(order, key)

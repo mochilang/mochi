@@ -42,9 +42,9 @@ let () =
     match lst with
       | [] -> ()
       | (entry : record3)::rest ->
-        try
+        (try
           print_endline (__show ("Order") ^ " " ^ __show (entry.orderId) ^ " " ^ __show ("by") ^ " " ^ __show (entry.customerName) ^ " " ^ __show ("- $") ^ " " ^ __show (entry.total));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 result with Break -> ()

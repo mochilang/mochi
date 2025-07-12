@@ -1,6 +1,0 @@
-stage: run
-error:
-Fatal error: exception Sys_error("../interpreter/valid/people.yaml: No such file or directory")
-
-
-Context (around line 0):

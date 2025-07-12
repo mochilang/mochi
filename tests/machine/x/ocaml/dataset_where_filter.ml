@@ -37,9 +37,9 @@ let () =
     match lst with
       | [] -> ()
       | (person : record2)::rest ->
-        try
+        (try
           print_endline (__show (person.name) ^ " " ^ __show ("is") ^ " " ^ __show (person.age) ^ " " ^ __show ((if person.is_senior then " (senior)" else "")));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 adults with Break -> ()

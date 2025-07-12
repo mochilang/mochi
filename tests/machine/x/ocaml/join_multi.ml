@@ -45,9 +45,9 @@ let () =
     match lst with
       | [] -> ()
       | (r : record4)::rest ->
-        try
+        (try
           print_endline (__show (r.name) ^ " " ^ __show ("bought item") ^ " " ^ __show (r.sku));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop1 rest
     in
     try __loop1 result with Break -> ()

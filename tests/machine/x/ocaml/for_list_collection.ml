@@ -25,9 +25,9 @@ let () =
     match lst with
       | [] -> ()
       | n::rest ->
-        try
+        (try
           print_endline (__show (n));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop0 rest
     in
     try __loop0 [1;2;3] with Break -> ()

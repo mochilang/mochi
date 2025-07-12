@@ -26,7 +26,7 @@ let () =
     match lst with
       | [] -> ()
       | n::rest ->
-        try
+        (try
           if ((n mod 2) = 0) then (
             raise Continue
           ) ;
@@ -34,7 +34,7 @@ let () =
             raise Break
           ) ;
           print_endline (__show ("odd number:") ^ " " ^ __show (n));
-        with Continue -> ()
+        with Continue -> ())
         ; __loop0 rest
     in
     try __loop0 numbers with Break -> ()
