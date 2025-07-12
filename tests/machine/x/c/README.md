@@ -109,4 +109,4 @@ Checklist:
 
 ## TODO
 
-- [ ] Replace remaining dynamic `list_int_create` usages with stack arrays.
+- [x] Replace remaining dynamic `list_int_create` usages with stack arrays.
