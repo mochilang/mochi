@@ -22,17 +22,17 @@ line 43
 
     warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
     │
- 48 │                where: fn c, o, l, n ->
-    │                          ~
+ 48 │                where: fn [c, o, l, n] ->
+    │                           ~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:26: Main.main/0
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:27: Main.main/0
 
     warning: variable "n" is unused (if the variable is not meant to be used, prefix it with an underscore)
     │
- 48 │                where: fn c, o, l, n ->
-    │                                   ~
+ 48 │                where: fn [c, o, l, n] ->
+    │                                    ~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:35: Main.main/0
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:36: Main.main/0
 
     warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
     │
@@ -55,8 +55,14 @@ line 43
      │
      └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:147:8: Main (module)
 
-** (BadArityError) #Function<10.120828553/4 in Main.main/0> with arity 4 called with 1 argument ([%{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}])
-    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:150: anonymous fn/2 in Main._query/3
+** (FunctionClauseError) no function clause matching in anonymous fn/1 in Main.main/0    
+    
+    The following arguments were given to anonymous fn/1 in Main.main/0:
+    
+        # 1
+        [%{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}]
+    
+    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48: anonymous fn/1 in Main.main/0
     (elixir 1.18.3) lib/enum.ex:4390: Enum.filter_list/2
     /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:150: Main._query/3
     /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:39: Main.main/0

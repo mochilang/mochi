@@ -3,7 +3,7 @@ defmodule Main do
   def main do
     # data :: list(map())
     data = [%{tag: "a", val: 1}, %{tag: "a", val: 2}, %{tag: "b", val: 3}]
-    # groups :: list(any())
+    # groups :: list(Group.t())
     groups = Enum.map(_group_by(data, fn d -> d.tag end), fn g -> g end)
     # tmp :: list(any())
     tmp = []
