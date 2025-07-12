@@ -1053,7 +1053,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			return err
 		}
 		elemType = types.IntType{}
-		c.writeln(fmt.Sprintf("for %s in (%s as i32)..(%s as i32) {", f.Name, src, end))
+		c.writeln(fmt.Sprintf("for %s in %s..%s {", f.Name, src, end))
 	} else if mt, ok := types.TypeOfExprBasic(f.Source, c.env).(types.MapType); ok {
 		elemType = mt.Key
 		c.writeln(fmt.Sprintf("for %s in %s.keys() {", f.Name, src))
