@@ -57,9 +57,10 @@ int main() {
   tmp3.len = tmp4;
   list_PairsItem pairs = tmp3;
   printf("%s\n", "--- Even pairs ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp5 = 0; tmp5 < pairs.len; tmp5++) {
+    PairsItem p = pairs.data[tmp5];
+    printf("%d ", p.n);
+    printf("%s\n", p.l);
   }
   return 0;
 }

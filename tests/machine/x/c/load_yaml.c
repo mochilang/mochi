@@ -291,7 +291,7 @@ static list_Person list_Person_create(int len) {
 
 int main() {
   list_Person people = _load_json("../interpreter/valid/people.yaml");
-  list_adultsItem tmp1 = list_adultsItem_create(people.len);
+  list_AdultsItem tmp1 = list_AdultsItem_create(people.len);
   int tmp2 = 0;
   for (int tmp3 = 0; tmp3 < people.len; tmp3++) {
     Person p = people.data[tmp3];
@@ -303,9 +303,10 @@ int main() {
   }
   tmp1.len = tmp2;
   list_AdultsItem adults = tmp1;
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp4 = 0; tmp4 < adults.len; tmp4++) {
+    AdultsItem a = adults.data[tmp4];
+    printf("%s ", a.name);
+    printf("%s\n", a.email);
   }
   return 0;
 }

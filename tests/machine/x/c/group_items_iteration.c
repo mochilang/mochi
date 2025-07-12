@@ -44,6 +44,63 @@ static list_list_int list_list_int_create(int len) {
   }
   return l;
 }
+typedef struct {
+  int key;
+  int value;
+} map_int_bool_item;
+static map_int_bool_item *map_int_bool_item_new(int key, int value) {
+  map_int_bool_item *it = calloc(1, sizeof(map_int_bool_item));
+  if (!it) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  it->key = key;
+  it->value = value;
+  return it;
+}
+typedef struct {
+  int len;
+  int cap;
+  map_int_bool_item **data;
+} map_int_bool;
+static map_int_bool map_int_bool_create(int cap) {
+  map_int_bool m;
+  m.len = 0;
+  m.cap = cap;
+  m.data = cap ? calloc(cap, sizeof(map_int_bool_item *)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return m;
+}
+static void map_int_bool_put(map_int_bool *m, int key, int value) {
+  for (int i = 0; i < m->len; i++)
+    if (m->data[i]->key == key) {
+      m->data[i]->value = value;
+      return;
+    }
+  if (m->len >= m->cap) {
+    m->cap = m->cap ? m->cap * 2 : 4;
+    m->data = (map_int_bool_item **)realloc(
+        m->data, sizeof(map_int_bool_item *) * m->cap);
+  }
+  m->data[m->len++] = map_int_bool_item_new(key, value);
+}
+static int map_int_bool_contains(map_int_bool m, int key) {
+  for (int i = 0; i < m.len; i++)
+    if (m.data[i]->key == key)
+      return 1;
+  return 0;
+}
+static list_int concat_list_int(list_int a, list_int b) {
+  list_int r = list_int_create(a.len + b.len);
+  for (int i = 0; i < a.len; i++)
+    r.data[i] = a.data[i];
+  for (int i = 0; i < b.len; i++)
+    r.data[a.len + i] = b.data[i];
+  return r;
+}
 static void _print_list_int(list_int v) {
   for (int i = 0; i < v.len; i++) {
     if (i > 0)
@@ -146,34 +203,47 @@ int main() {
   tmp7.len = tmp8;
   list_int groups = tmp7;
   int tmp[] = {};
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp11 = 0; tmp11 < groups.len; tmp11++) {
+    int g = groups.data[tmp11];
+    int total = 0;
+    for (int tmp12 = 0; tmp12 < g.items.len; tmp12++) {
+      DataItem x = g.items.data[tmp12];
+      total = total + x.val;
+    }
+    int tmp13[] = {};
+    map_int_bool tmp14 = map_int_bool_create(2);
+    map_int_bool_put(&tmp14, "tag", g.key);
+    map_int_bool_put(&tmp14, "total", total);
+    int tmp15_data[1];
+    list_int tmp15 = {1, tmp15_data};
+    tmp15.data[0] = tmp14;
+    list_int tmp16 = concat_list_int(tmp13, tmp15);
+    tmp = tmp16;
   }
-  int tmp12[] = {};
-  list_int tmp13 = list_int_create(tmp12.len);
-  int *tmp16 = (int *)malloc(sizeof(int) * tmp12.len);
-  int tmp14 = 0;
-  for (int tmp15 = 0; tmp15 < tmp12.len; tmp15++) {
-    int r = tmp12.data[tmp15];
-    tmp13.data[tmp14] = r;
-    tmp16[tmp14] = r.tag;
-    tmp14++;
+  int tmp17[] = {};
+  list_int tmp18 = list_int_create(tmp17.len);
+  int *tmp21 = (int *)malloc(sizeof(int) * tmp17.len);
+  int tmp19 = 0;
+  for (int tmp20 = 0; tmp20 < tmp17.len; tmp20++) {
+    int r = tmp17.data[tmp20];
+    tmp18.data[tmp19] = r;
+    tmp21[tmp19] = r.tag;
+    tmp19++;
   }
-  tmp13.len = tmp14;
-  for (int i19 = 0; i19 < tmp14 - 1; i19++) {
-    for (int i20 = i19 + 1; i20 < tmp14; i20++) {
-      if (tmp16[i19] > tmp16[i20]) {
-        int tmp17 = tmp16[i19];
-        tmp16[i19] = tmp16[i20];
-        tmp16[i20] = tmp17;
-        int tmp18 = tmp13.data[i19];
-        tmp13.data[i19] = tmp13.data[i20];
-        tmp13.data[i20] = tmp18;
+  tmp18.len = tmp19;
+  for (int i24 = 0; i24 < tmp19 - 1; i24++) {
+    for (int i25 = i24 + 1; i25 < tmp19; i25++) {
+      if (tmp21[i24] > tmp21[i25]) {
+        int tmp22 = tmp21[i24];
+        tmp21[i24] = tmp21[i25];
+        tmp21[i25] = tmp22;
+        int tmp23 = tmp18.data[i24];
+        tmp18.data[i24] = tmp18.data[i25];
+        tmp18.data[i25] = tmp23;
       }
     }
   }
-  list_int result = tmp13;
+  list_int result = tmp18;
   _print_list_int(result);
   printf("\n");
   return 0;

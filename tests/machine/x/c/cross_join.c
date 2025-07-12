@@ -89,9 +89,16 @@ int main() {
   tmp3.len = tmp4;
   list_ResultItem result = tmp3;
   printf("%s\n", "--- Cross Join: All order-customer pairs ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp5 = 0; tmp5 < result.len; tmp5++) {
+    ResultItem entry = result.data[tmp5];
+    printf("%s ", "Order");
+    printf("%d ", entry.orderId);
+    printf("%s ", "(customerId:");
+    printf("%d ", entry.orderCustomerId);
+    printf("%s ", ", total: $");
+    printf("%d ", entry.orderTotal);
+    printf("%s ", ") paired with");
+    printf("%s\n", entry.pairedCustomerName);
   }
   return 0;
 }

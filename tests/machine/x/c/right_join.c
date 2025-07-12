@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int id;
@@ -95,9 +96,20 @@ int main() {
   tmp3.len = tmp4;
   list_ResultItem result = tmp3;
   printf("%s\n", "--- Right Join using syntax ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp8 = 0; tmp8 < result.len; tmp8++) {
+    ResultItem entry = result.data[tmp8];
+    if (memcmp(&entry.order, &(OrdersItem){0}, sizeof(OrdersItem)) != 0) {
+      printf("%s ", "Customer");
+      printf("%s ", entry.customerName);
+      printf("%s ", "has order");
+      printf("%d ", entry.order.id);
+      printf("%s ", "- $");
+      printf("%d\n", entry.order.total);
+    } else {
+      printf("%s ", "Customer");
+      printf("%s ", entry.customerName);
+      printf("%s\n", "has no orders");
+    }
   }
   return 0;
 }

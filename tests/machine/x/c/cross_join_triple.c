@@ -60,9 +60,11 @@ int main() {
   tmp4.len = tmp5;
   list_CombosItem combos = tmp4;
   printf("%s\n", "--- Cross Join of three lists ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp6 = 0; tmp6 < combos.len; tmp6++) {
+    CombosItem c = combos.data[tmp6];
+    printf("%d ", c.n);
+    printf("%s ", c.l);
+    printf("%s\n", (c.b) ? "true" : "false");
   }
   return 0;
 }
