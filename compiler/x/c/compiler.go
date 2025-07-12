@@ -4415,6 +4415,56 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			end := c.compileExpr(p.Call.Args[2])
 			return fmt.Sprintf("slice_string(%s, %s, %s)", s, start, end)
 		} else if p.Call.Func == "print" {
+			simple := true
+			for _, a := range p.Call.Args {
+				if isListListExpr(a, c.env) || isListIntExpr(a, c.env) || isListFloatExpr(a, c.env) || isListStringExpr(a, c.env) || isListStructExpr(a, c.env) {
+					simple = false
+					break
+				}
+			}
+			if simple {
+				c.writeln("{")
+				c.indent++
+				c.writeln("int first = 1;")
+				for _, a := range p.Call.Args {
+					argExpr := c.compileExpr(a)
+					if isBoolArg(a, c.env) {
+						c.writeln("if(!first) printf(\" \");")
+						c.writeln(fmt.Sprintf("printf(\"%s\", (%s)?\"true\":\"false\");", "%s", argExpr))
+						c.writeln("first = 0;")
+					} else {
+						fmtStr := "%d"
+						if isStringArg(a, c.env) {
+							fmtStr = "%s"
+						} else if isFloatArg(a, c.env) {
+							fmtStr = "%.16g"
+						} else if name, okn := identName(a); okn && c.env != nil {
+							if vt, err := c.env.GetVar(name); err == nil {
+								if _, okf := vt.(types.FloatType); okf {
+									fmtStr = "%.16g"
+								}
+							}
+						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
+							fmtStr = "%.16g"
+						}
+						if isStringArg(a, c.env) {
+							c.need(needStringHeader)
+							cond := fmt.Sprintf("strlen(%s) > 0", argExpr)
+							c.writeln(fmt.Sprintf("if(!first && %s) printf(\" \");", cond))
+							c.writeln(fmt.Sprintf("if(%s) printf(\"%s\", %s);", cond, fmtStr, argExpr))
+							c.writeln(fmt.Sprintf("if(%s) first = 0;", cond))
+						} else {
+							c.writeln("if(!first) printf(\" \");")
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", fmtStr, argExpr))
+							c.writeln("first = 0;")
+						}
+					}
+				}
+				c.writeln("printf(\"\\n\");")
+				c.indent--
+				c.writeln("}")
+				return ""
+			}
 			for i, a := range p.Call.Args {
 				if name, ok := identName(a); ok && c.uninitVars[name] {
 					end := " "
