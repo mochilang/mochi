@@ -1297,7 +1297,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	resultT := c.inferExprType(q.Select)
 	resultType := csTypeOf(resultT)
-	if st, ok := resultT.(types.StructType); ok && st.Name == "" {
+	if st, ok := resultT.(types.StructType); ok && st.Name == "" && q.Group == nil {
 		base := c.structHint
 		if base == "" {
 			base = "Item"
@@ -1306,7 +1306,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		resultType = st.Name
 		resultT = st
 		c.extraStructs = append(c.extraStructs, st)
-	} else if lt, ok := resultT.(types.ListType); ok {
+	} else if lt, ok := resultT.(types.ListType); ok && q.Group == nil {
 		if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
 			base := c.structHint
 			if base == "" {
@@ -1443,6 +1443,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			srcParts = append(srcParts, fmt.Sprintf("Where(%s => %s)", v, cond))
 		}
 		filtered := strings.Join(srcParts, ".")
+		c.use("_group")
 		c.use("_group_by")
 		expr := fmt.Sprintf("_group_by<%s, %s>(%s, %s => %s)", elemTypeStr, keyTypeStr, filtered, v, keyExpr)
 		if havingExpr != "" {
