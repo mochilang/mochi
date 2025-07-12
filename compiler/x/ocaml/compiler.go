@@ -1432,21 +1432,28 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		return "", err
 	}
 	keyTyp := ""
-	if st, ok := c.structTypeFromExpr(q.Group.Exprs[0]); ok {
+	if st, ok := c.structTypeFromExprEnv(q.Group.Exprs[0], qenv); ok {
 		if s, ok2 := st.(types.StructType); ok2 {
 			keyTyp = c.ocamlType(s)
 		}
 	}
 
-	srcType0 := types.ExprType(q.Source, c.env)
 	var elemType types.Type
-	switch t := srcType0.(type) {
-	case types.ListType:
-		elemType = t.Elem
-	case types.GroupType:
-		elemType = t.Elem
-	default:
-		elemType = types.AnyType{}
+	if name, ok := identName(q.Source); ok {
+		if st, ok2 := c.varStructs[name]; ok2 {
+			elemType = st
+		}
+	}
+	if elemType == nil {
+		srcType0 := types.ExprType(q.Source, c.env)
+		switch t := srcType0.(type) {
+		case types.ListType:
+			elemType = t.Elem
+		case types.GroupType:
+			elemType = t.Elem
+		default:
+			elemType = types.AnyType{}
+		}
 	}
 	elemTyp := c.ocamlType(elemType)
 	if elemTyp == "" {
@@ -1502,21 +1509,28 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	}
 
 	buf.WriteString(fmt.Sprintf("  let %s = ref [] in\n", resName))
-	param := fmt.Sprintf("(%sKey,%sItems)", q.Group.Name, q.Group.Name)
+	param := fmt.Sprintf("((%sKey,%sItems))", q.Group.Name, q.Group.Name)
 	if keyTyp != "" {
-		param = fmt.Sprintf("(%sKey : %s,%sItems)", q.Group.Name, keyTyp, q.Group.Name)
+		param = fmt.Sprintf("((%sKey : %s), %sItems)", q.Group.Name, keyTyp, q.Group.Name)
 	}
 	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", param))
 	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
-	srcType := types.ExprType(q.Source, c.env)
 	var elemType2 types.Type
-	switch t := srcType.(type) {
-	case types.ListType:
-		elemType2 = t.Elem
-	case types.GroupType:
-		elemType2 = t.Elem
-	default:
-		elemType2 = types.AnyType{}
+	if name, ok := identName(q.Source); ok {
+		if st, ok2 := c.varStructs[name]; ok2 {
+			elemType2 = st
+		}
+	}
+	if elemType2 == nil {
+		srcType := types.ExprType(q.Source, c.env)
+		switch t := srcType.(type) {
+		case types.ListType:
+			elemType2 = t.Elem
+		case types.GroupType:
+			elemType2 = t.Elem
+		default:
+			elemType2 = types.AnyType{}
+		}
 	}
 	selEnv := types.NewEnv(qenv)
 	selEnv.SetVar(q.Group.Name, types.GroupType{Elem: elemType2}, true)
@@ -1960,10 +1974,32 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
+		t := types.ExprType(call.Args[0], c.env)
+		var elem types.Type
+		switch tt := t.(type) {
+		case types.ListType:
+			elem = tt.Elem
+		case types.GroupType:
+			elem = tt.Elem
+		}
+		if _, ok := elem.(types.FloatType); ok {
+			return fmt.Sprintf("(List.fold_left (+.) 0.0 %s /. float_of_int (List.length %s))", args[0], args[0]), nil
+		}
 		return fmt.Sprintf("(List.fold_left (+) 0 %s / List.length %s)", args[0], args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		t := types.ExprType(call.Args[0], c.env)
+		var elem types.Type
+		switch tt := t.(type) {
+		case types.ListType:
+			elem = tt.Elem
+		case types.GroupType:
+			elem = tt.Elem
+		}
+		if _, ok := elem.(types.FloatType); ok {
+			return fmt.Sprintf("(List.fold_left (+.) 0.0 %s)", args[0]), nil
 		}
 		return fmt.Sprintf("(sum %s)", args[0]), nil
 	case "values":
