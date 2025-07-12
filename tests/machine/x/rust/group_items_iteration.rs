@@ -28,7 +28,7 @@ fn main() {
     for g in groups {
         let mut total = 0;
         for x in g.items {
-            total = total + x.val;
+            total += x.val;
         }
         tmp = append(tmp, Item { tag: g.key, total: total });
     }

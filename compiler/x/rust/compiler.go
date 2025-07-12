@@ -904,12 +904,57 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 }
 
 func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
+	target := a.Name
+	prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: a.Name}}}}
+	targetPath := a.Name
+	for _, f := range a.Field {
+		targetPath += "." + f.Name
+	}
+
+	// detect simple operator assignments like `x = x + y` -> `x += y`
+	if len(a.Index) == 0 {
+		if b := a.Value.Binary; b != nil && len(b.Right) == 1 {
+			op := b.Right[0].Op
+			switch op {
+			case "+", "-", "*", "/", "%":
+				if root, fields, ok := exprFieldPath(&parser.Expr{Binary: &parser.BinaryExpr{Left: b.Left}}); ok {
+					if root == a.Name {
+						match := len(fields) == len(a.Field)
+						if match {
+							for i, f := range a.Field {
+								if fields[i] != f.Name {
+									match = false
+									break
+								}
+							}
+						}
+						if match {
+							r, err := c.compilePostfix(b.Right[0].Right)
+							if err != nil {
+								return err
+							}
+							c.writeln(fmt.Sprintf("%s %s= %s;", targetPath, op, r))
+							return nil
+						}
+					}
+				} else if len(a.Field) == 0 {
+					if id, ok := simpleIdentUnary(b.Left); ok && id == a.Name {
+						r, err := c.compilePostfix(b.Right[0].Right)
+						if err != nil {
+							return err
+						}
+						c.writeln(fmt.Sprintf("%s %s= %s;", targetPath, op, r))
+						return nil
+					}
+				}
+			}
+		}
+	}
+
 	val, err := c.compileExpr(a.Value)
 	if err != nil {
 		return err
 	}
-	target := a.Name
-	prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: a.Name}}}}
 	// handle map assignments specially
 	if len(a.Index) > 0 && len(a.Field) == 0 {
 		t, _ := c.env.GetVar(a.Name)
@@ -3703,6 +3748,17 @@ func (c *Compiler) simpleIdent(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	u := e.Binary.Left
+	if u == nil || len(u.Ops) > 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) > 0 || p.Target == nil || p.Target.Selector == nil || len(p.Target.Selector.Tail) > 0 {
+		return "", false
+	}
+	return p.Target.Selector.Root, true
+}
+
+func simpleIdentUnary(u *parser.Unary) (string, bool) {
 	if u == nil || len(u.Ops) > 0 {
 		return "", false
 	}
