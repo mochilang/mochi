@@ -905,6 +905,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			res += "%" + t
 		}
 		return res, nil
+	case p.Query != nil:
+		return c.compileQuery(p.Query)
 	case p.Group != nil:
 		inner, err := c.compileExpr(p.Group)
 		if err != nil {
@@ -1009,6 +1011,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	}
+}
+
+func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
+	return "", fmt.Errorf("query expressions with join/group by are not supported")
 }
 
 func (c *Compiler) compileIfExpr(ie *parser.IfExpr) (string, error) {
