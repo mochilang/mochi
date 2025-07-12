@@ -1495,9 +1495,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 func (c *Compiler) recordLiteral(m *parser.MapLiteral) (string, error) {
 	fields := make([]string, len(m.Items))
 	for i, it := range m.Items {
-		key, ok := stringConst(it.Key)
-		if !ok {
-			return "", fmt.Errorf("unsupported struct key")
+		var key string
+		var ok bool
+		if key, ok = identConst(it.Key); !ok {
+			key, ok = stringConst(it.Key)
+			if !ok {
+				return "", fmt.Errorf("unsupported struct key")
+			}
 		}
 		v, err := c.compileExpr(it.Value)
 		if err != nil {
@@ -1556,6 +1560,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(elems, ";") + "]", nil
 	case p.Map != nil:
+		if st, ok := c.structTypeFromMapLiteral(p.Map); ok {
+			c.ensureStructName(st)
+			fields := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				var key string
+				var ok2 bool
+				if key, ok2 = identConst(it.Key); !ok2 {
+					key, _ = stringConst(it.Key)
+				}
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				fields[i] = fmt.Sprintf("%s = %s", key, v)
+			}
+			return "{ " + strings.Join(fields, "; ") + " }", nil
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k, v string
