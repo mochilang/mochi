@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 100/100 programs
+Compiled: 96/100 programs
 
 ## Checklist
 
@@ -36,7 +36,7 @@ Compiled: 100/100 programs
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
-- [ ] group_by_multi_join.mochi
+- [x] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
 - [ ] group_items_iteration.mochi

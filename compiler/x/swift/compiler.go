@@ -1332,6 +1332,16 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 	}
 	typ := c.varTypes[s.Root]
 	if strings.HasPrefix(typ, "map") || (typ == "" && c.mapFields[s.Root] != nil) {
+		if len(s.Tail) >= 2 {
+			if m, ok := c.mapFields[s.Root]; ok {
+				if st, ok2 := m[s.Tail[0]]; ok2 {
+					if _, ok3 := c.structTypes[st]; ok3 {
+						expr := fmt.Sprintf("(%s[%q] as! %s)", s.Root, s.Tail[0], st)
+						return expr + "." + strings.Join(s.Tail[1:], ".")
+					}
+				}
+			}
+		}
 		parts := []string{s.Root}
 		for _, f := range s.Tail {
 			typ := "Any"
@@ -3163,7 +3173,11 @@ func (c *compiler) mapFieldsFromLiteral(m *parser.MapLiteral) map[string]string 
 			typ = literalType(it.Value)
 		}
 		if typ == "" {
-			typ = "Any"
+			if numericExpr(it.Value) {
+				typ = "Double"
+			} else {
+				typ = "Any"
+			}
 		}
 		fields[key] = typ
 	}
@@ -3259,6 +3273,37 @@ func boolExpr(e *parser.Expr) bool {
 	for _, op := range e.Binary.Right {
 		switch op.Op {
 		case "<", "<=", ">", ">=", "==", "!=", "&&", "||":
+			return true
+		}
+	}
+	return false
+}
+
+func numericExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	if len(e.Binary.Right) == 0 {
+		if u := e.Binary.Left; u != nil {
+			if v := u.Value; v != nil && v.Target != nil {
+				if lit := v.Target.Lit; lit != nil {
+					return lit.Int != nil || lit.Float != nil
+				}
+				if v.Target.Call != nil {
+					fn := strings.ToLower(v.Target.Call.Func)
+					if fn == "double" || fn == "float" || fn == "int" {
+						return true
+					}
+				}
+			}
+		}
+	}
+	for _, op := range e.Binary.Right {
+		switch op.Op {
+		case "+", "-", "*", "/", "%":
+			return true
+		}
+		if numericExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}}) {
 			return true
 		}
 	}

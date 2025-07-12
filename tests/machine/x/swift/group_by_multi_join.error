@@ -1,0 +1,4 @@
+line 45: exit status 1
+    }
+    return _tmp.map { g in ["part": g.key, "total": g.items.map { r in r["value"]! }.reduce(0, +)] }
+}()
