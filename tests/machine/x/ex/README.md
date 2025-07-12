@@ -2,7 +2,7 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 98/100
+Compiled programs: 99/100
 
 Checklist:
 
@@ -35,7 +35,7 @@ Checklist:
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
-- [ ] group_by_multi_join_sort
+- [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [x] group_items_iteration
 - [x] if_else
@@ -108,11 +108,4 @@ Checklist:
 - [x] while_loop
 
 ### Remaining tasks
-- [x] go_auto
-- [x] group_by_left_join
-- [ ] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
 - [ ] load_yaml
-- [x] python_auto
-- [x] python_math
