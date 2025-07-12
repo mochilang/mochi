@@ -1082,16 +1082,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = orig
-		selectFn := ""
-		if q.Group != nil {
-			fields := make([]string, len(paramCopy))
-			for i, p := range paramCopy {
-				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(p), sanitizeName(p))
-			}
-			selectFn = fmt.Sprintf("fn %s -> %%{%s} end", allParams, strings.Join(fields, ", "))
-		} else {
-			selectFn = fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
-		}
+		selectFn := fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
 		whereFn := ""
 		if cond != "" {
 			whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
@@ -1139,11 +1130,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" })\n")
 		if q.Group != nil {
-			parts := make([]string, len(paramCopy))
-			for i, p := range paramCopy {
-				parts[i] = fmt.Sprintf("%s: %s", sanitizeName(p), sanitizeName(p))
-			}
-			pattern := "%{" + strings.Join(parts, ", ") + "}"
+			pattern := fmt.Sprintf("[%s]", allParams)
 			b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn %s -> %s end)\n", pattern, keyExpr))
 		} else {
 			b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn [%s] -> %s end)\n", allParams, keyExpr))
