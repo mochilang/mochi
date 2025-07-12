@@ -1,4 +1,0 @@
-line 42: exit status 254
-    for (var x in g['items']) {
-      total = (total as num) + (x['val'] as num);
-    }
