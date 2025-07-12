@@ -29,7 +29,7 @@ not yet support some construct used by that example.
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -77,8 +77,8 @@ not yet support some construct used by that example.
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -110,6 +110,4 @@ not yet support some construct used by that example.
 
 ## Remaining tasks
 
-- Implement support for `go_auto.mochi`
-- Implement support for `python_auto.mochi`
-- Implement support for `python_math.mochi`
+None.

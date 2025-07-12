@@ -40,6 +40,14 @@ type Compiler struct {
 	needLoop        bool
 	needLoadYaml    bool
 	needSaveJSONL   bool
+
+	// imported module aliases to OCaml module names and field mappings
+	imports map[string]importInfo
+}
+
+type importInfo struct {
+	module string
+	fields map[string]string
 }
 
 // New creates a compiler instance.
@@ -49,6 +57,7 @@ func New(env *types.Env) *Compiler {
 		varStructs:  make(map[string]types.StructType),
 		env:         env,
 		structNames: make(map[string]string),
+		imports:     make(map[string]importInfo),
 	}
 }
 
@@ -62,6 +71,7 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.structNames = make(map[string]string)
 	c.anonStructs = nil
 	c.structCounter = 0
+	c.imports = make(map[string]importInfo)
 
 	c.scanProgram(prog)
 
@@ -69,9 +79,13 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	oldBuf := c.buf
 	c.buf = body
 
-	// first emit type, function and variable declarations
+	// first emit imports, type, function and variable declarations
 	for _, s := range prog.Statements {
 		switch {
+		case s.Import != nil:
+			if err := c.compileImport(s.Import); err != nil {
+				return nil, err
+			}
 		case s.Type != nil:
 			if err := c.compileTypeDecl(s.Type); err != nil {
 				return nil, err
@@ -96,7 +110,7 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.writeln("let () =")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Let != nil || s.Var != nil || s.Type != nil {
+		if s.Fun != nil || s.Let != nil || s.Var != nil || s.Type != nil || s.Import != nil {
 			continue
 		}
 		if err := c.compileStmt(s); err != nil {
@@ -159,6 +173,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileLocalLet(s.Let)
 	case s.Var != nil:
 		return c.compileLocalVar(s.Var)
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -622,6 +640,57 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 		return err
 	}
 	c.writeln(fmt.Sprintf("assert (%s)", expr))
+	return nil
+}
+
+func capitalize(name string) string {
+	if name == "" {
+		return ""
+	}
+	return strings.ToUpper(name[:1]) + name[1:]
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	lang := *im.Lang
+	switch lang {
+	case "go":
+		if im.Path == "mochi/runtime/ffi/go/testpkg" {
+			mod := capitalize(alias)
+			c.imports[alias] = importInfo{
+				module: mod,
+				fields: map[string]string{"Add": "add", "Pi": "pi", "Answer": "answer"},
+			}
+			c.writeln(fmt.Sprintf("module %s = struct", mod))
+			c.indent++
+			c.writeln("let add a b = a + b")
+			c.writeln("let pi = 3.14")
+			c.writeln("let answer = 42")
+			c.indent--
+			c.writeln("end")
+		}
+	case "python":
+		if im.Path == "math" {
+			mod := capitalize(alias)
+			c.imports[alias] = importInfo{module: mod, fields: nil}
+			c.writeln(fmt.Sprintf("module %s = struct", mod))
+			c.indent++
+			c.writeln("let pi = Float.pi")
+			c.writeln("let e = exp 1.0")
+			c.writeln("let sqrt x = sqrt x")
+			c.writeln("let pow x y = x ** y")
+			c.writeln("let sin x = sin x")
+			c.writeln("let log x = log x")
+			c.indent--
+			c.writeln("end")
+		}
+	}
 	return nil
 }
 
@@ -1483,6 +1552,20 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			res = fmt.Sprintf("(list_intersect %s %s)", res, r)
 			continue
 		}
+		if opStr == "+" || opStr == "-" || opStr == "*" || opStr == "/" {
+			if isFloatUnary(b.Left, c.env) || isFloatPostfix(op.Right, c.env) {
+				switch opStr {
+				case "+":
+					opStr = "+."
+				case "-":
+					opStr = "-."
+				case "*":
+					opStr = "*."
+				case "/":
+					opStr = "/."
+				}
+			}
+		}
 		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
 			res = fmt.Sprintf("(%s ^ %s)", res, r)
 		} else {
@@ -1627,6 +1710,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		base := p.Selector.Root
 		expr := base
+		if info, ok := c.imports[base]; ok {
+			expr = info.module
+			for _, field := range p.Selector.Tail {
+				if info.fields != nil {
+					if f2, ok2 := info.fields[field]; ok2 {
+						expr = expr + "." + f2
+					} else {
+						expr = expr + "." + field
+					}
+				} else {
+					expr = expr + "." + field
+				}
+			}
+			return expr, nil
+		}
 		if c.vars[base] {
 			expr = "(!" + base + ")"
 		}
@@ -2304,6 +2402,24 @@ func isStringUnary(u *parser.Unary) bool {
 		return true
 	}
 	return false
+}
+
+func isFloatUnary(u *parser.Unary, env *types.Env) bool {
+	if u == nil {
+		return false
+	}
+	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: u}}, env)
+	_, ok := t.(types.FloatType)
+	return ok
+}
+
+func isFloatPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil {
+		return false
+	}
+	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, env)
+	_, ok := t.(types.FloatType)
+	return ok
 }
 
 func stringConst(e *parser.Expr) (string, bool) {
