@@ -1,8 +1,8 @@
 fn main() {
     fn twoSum(nums: Vec<i32>, target: i32) -> Vec<i32> {
         let n = nums.len() as i32;
-        for i in (0 as i32)..(n as i32) {
-            for j in (i + 1 as i32)..(n as i32) {
+        for i in 0..n {
+            for j in i + 1..n {
                 if nums[i as usize] + nums[j as usize] == target {
                     return vec![i, j];
                 }
