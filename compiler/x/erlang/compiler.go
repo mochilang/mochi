@@ -831,14 +831,17 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			keyExpr = "{" + strings.Join(keyParts, ", ") + "}"
 		}
 
-		vars := []string{fmt.Sprintf("%s=%s", capitalize(q.Var), capitalize(q.Var))}
+		vars := []string{capitalize(q.Var)}
 		for _, fr := range q.Froms {
-			vars = append(vars, fmt.Sprintf("%s=%s", capitalize(fr.Var), capitalize(fr.Var)))
+			vars = append(vars, capitalize(fr.Var))
 		}
 		for _, j := range q.Joins {
-			vars = append(vars, fmt.Sprintf("%s=%s", capitalize(j.Var), capitalize(j.Var)))
+			vars = append(vars, capitalize(j.Var))
 		}
-		elemMap := "#{" + strings.Join(vars, ", ") + "}"
+		elemMap := strings.Join(vars, ", ")
+		if len(vars) > 1 {
+			elemMap = "{" + elemMap + "}"
+		}
 
 		pairList := "[{" + keyExpr + ", " + elemMap + "} || " + strings.Join(gens, ", ")
 		if cond != "" {
@@ -1387,7 +1390,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", err
 		}
 		c.needJSON = true
-		return fmt.Sprintf("io:format(\"~s\\n\", [mochi_json_encode(%s)])", a0), nil
+		return fmt.Sprintf("mochi_json(%s)", a0), nil
 	case "substring":
 		if len(call.Args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
@@ -1823,16 +1826,29 @@ func (c *Compiler) writeRuntime() {
 	}
 	if c.needJSON {
 		c.writeln("")
-		c.writeln("mochi_json_value(V) when is_integer(V); is_float(V) -> io_lib:format(\"~p\", [V]);")
-		c.writeln("mochi_json_value(V) when is_list(V) -> io_lib:format(\"~s\", [V]);")
-		c.writeln("mochi_json_value(true) -> \"true\";")
-		c.writeln("mochi_json_value(false) -> \"false\";")
-		c.writeln("mochi_json_value(undefined) -> \"null\".")
-		c.writeln("")
-		c.writeln("mochi_json_encode(M) ->")
+		c.writeln("mochi_escape_json([]) -> [];")
+		c.writeln("mochi_escape_json([H|T]) ->")
 		c.indent++
-		c.writeln("Pairs = [ io_lib:format(\"\\\"~s\\\":~s\", [atom_to_list(K), mochi_json_value(V)]) || {K,V} <- maps:to_list(M) ],")
-		c.writeln("lists:flatten([\"{\", string:join(Pairs, \",\"), \"}\"]).")
+		c.writeln("E = case H of")
+		c.indent++
+		c.writeln("$\\ -> \"\\\\\";")
+		c.writeln("$\" -> \"\\\"\";")
+		c.writeln("_ -> [H]")
 		c.indent--
+		c.writeln("end,")
+		c.writeln("E ++ mochi_escape_json(T).")
+		c.indent--
+
+		c.writeln("")
+		c.writeln(`mochi_to_json(true) -> "true";`)
+		c.writeln(`mochi_to_json(false) -> "false";`)
+		c.writeln(`mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));`)
+		c.writeln(`mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";`)
+		c.writeln(`mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";`)
+		c.writeln(`mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";`)
+		c.writeln(`mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}".`)
+
+		c.writeln("")
+		c.writeln("mochi_json(V) -> io:format(\"~s\n\", [mochi_to_json(V)]).")
 	}
 }
