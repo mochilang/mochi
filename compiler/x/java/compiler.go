@@ -1772,10 +1772,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 				if c.hasField(typ, field) {
 					c.writeln(fmt.Sprintf("%s.%s = %s;", target, field, expr))
 				} else {
-					c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
+					c.writeln(fmt.Sprintf("((Map<?,?>)%s).put(%s, %s);", target, ix, expr))
 				}
 			} else {
-				c.writeln(fmt.Sprintf("((Map)%s).put(%s, %s);", target, ix, expr))
+				c.writeln(fmt.Sprintf("((Map<?,?>)%s).put(%s, %s);", target, ix, expr))
 			}
 		} else {
 			if strings.HasPrefix(typ, "Map<") {
@@ -2258,10 +2258,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 							val = fmt.Sprintf("%s.%s", val, field)
 							typ = c.fieldType(typ, field)
 						} else {
-							val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+							val = fmt.Sprintf("((Map<?,?>)%s).get(%s)", val, idx)
 						}
 					} else {
-						val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+						val = fmt.Sprintf("((Map<?,?>)%s).get(%s)", val, idx)
 					}
 				} else {
 					if strings.HasPrefix(typ, "Map<") {
@@ -2345,7 +2345,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				for _, f := range pTail {
 					if strings.HasPrefix(typ, "Map<") {
 						typ = mapValueType(typ)
-						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+						s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
 					} else {
 						s += "." + f
 						typ = c.fieldType(typ, f)
@@ -2365,7 +2365,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				typ = itemType
 				for _, f := range p.Selector.Tail[1:] {
 					if strings.HasPrefix(typ, "Map<") {
-						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+						s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
 						typ = mapValueType(typ)
 					} else {
 						s += "." + f
@@ -2377,7 +2377,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		for _, f := range p.Selector.Tail {
 			if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
-				s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+				s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
 				typ = mapValueType(typ)
 			} else {
 				s += "." + f
