@@ -156,7 +156,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.prelude.WriteString("        if groups.TryGetValue(ks, &g) then ()\n")
 		c.prelude.WriteString("        else\n")
 		c.prelude.WriteString("            g <- _Group<'K,'T>(key)\n")
-		c.prelude.WriteString("            groups[ks] <- g\n")
+		c.prelude.WriteString("            groups.Add(ks, g)\n")
 		c.prelude.WriteString("            order.Add(ks)\n")
 		c.prelude.WriteString("        g.Items.Add(it)\n")
 		c.prelude.WriteString("    [ for ks in order -> groups[ks] ]\n\n")
