@@ -5,11 +5,16 @@ package cpp
 import (
 	"bytes"
 	"os/exec"
+
+	meta "mochi/compiler/meta"
 )
 
 // FormatCPP runs clang-format on the given source code if available.
 // If clang-format is missing or fails, the input is returned unchanged.
 func FormatCPP(src []byte) []byte {
+	header := meta.Header("//")
+	src = append(header, src...)
+
 	path, err := exec.LookPath("clang-format")
 	if err != nil {
 		if len(src) > 0 && src[len(src)-1] != '\n' {
