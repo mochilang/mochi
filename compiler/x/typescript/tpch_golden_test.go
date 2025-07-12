@@ -4,6 +4,7 @@ package typescriptcode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,12 +15,12 @@ import (
 	"mochi/types"
 )
 
-func TestTypeScriptCompiler_TPCHQuery1(t *testing.T) {
+func runTPCHQuery(t *testing.T, base string) {
+	t.Helper()
 	if _, err := exec.LookPath("deno"); err != nil {
 		t.Skip("deno not installed")
 	}
 	root := findRepoRoot(t)
-	base := "q1"
 	src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "typescript", base+".ts.out")
 	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "typescript", base+".out")
@@ -60,5 +61,12 @@ func TestTypeScriptCompiler_TPCHQuery1(t *testing.T) {
 	}
 	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
 		t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+	}
+}
+
+func TestTypeScriptCompiler_TPCH(t *testing.T) {
+	for i := 1; i <= 4; i++ {
+		base := fmt.Sprintf("q%d", i)
+		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
 	}
 }
