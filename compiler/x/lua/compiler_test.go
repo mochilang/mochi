@@ -145,6 +145,53 @@ func TestLuaCompiler_ValidPrograms(t *testing.T) {
 	}
 }
 
+func TestLuaCompiler_TPCHQ1(t *testing.T) {
+	if err := luacode.EnsureLua(); err != nil {
+		t.Skipf("lua not installed: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
+	prog, err := parser.Parse(src)
+	if err != nil {
+		t.Fatalf("parse error: %v", err)
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		t.Fatalf("type error: %v", errs[0])
+	}
+	code, err := luacode.New(env).Compile(prog)
+	if err != nil {
+		t.Fatalf("compile error: %v", err)
+	}
+	wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", "q1.lua.out"))
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	gotCode := bytes.TrimSpace(code)
+	if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
+		t.Errorf("generated code mismatch for q1.lua.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotCode, bytes.TrimSpace(wantCode))
+	}
+
+	dir := t.TempDir()
+	file := filepath.Join(dir, "main.lua")
+	if err := os.WriteFile(file, code, 0644); err != nil {
+		t.Fatalf("write error: %v", err)
+	}
+	out, err := exec.Command("lua", file).CombinedOutput()
+	if err != nil {
+		t.Fatalf("lua error: %v\n%s", err, out)
+	}
+	gotOut := bytes.TrimSpace(out)
+	wantOut, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", "q1.out"))
+	if err != nil {
+		t.Fatalf("read golden: %v", err)
+	}
+	if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+		t.Errorf("output mismatch for q1.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", gotOut, bytes.TrimSpace(wantOut))
+	}
+}
+
 func TestMain(m *testing.M) {
 	code := m.Run()
 	updateReadme()
