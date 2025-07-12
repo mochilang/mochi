@@ -1,7 +1,7 @@
 object left_join {
   case class Customer(id: Int, name: String)
   case class Order(id: Int, customerId: Int, total: Int)
-  case class Result(orderId: Int, customer: Any, total: Int)
+  case class Result(orderId: Int, customer: Option[Customer], total: Int)
   case class Result1(orderId: Int, customer: Customer, total: Int)
 
   val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
