@@ -905,10 +905,18 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 		} else if op.Op == "%" {
 			res = fmt.Sprintf("(%s mod %s)", res, rhs)
 		} else if op.Op == "==" {
-			res = fmt.Sprintf("(%s == %s)", res, rhs)
+			if arith && ar {
+				res = fmt.Sprintf("(%s =:= %s)", res, rhs)
+			} else {
+				res = fmt.Sprintf("(%s == %s)", res, rhs)
+			}
 			arith = false
 		} else if op.Op == "!=" {
-			res = fmt.Sprintf("(%s \\== %s)", res, rhs)
+			if arith && ar {
+				res = fmt.Sprintf("(%s \\= %s)", res, rhs)
+			} else {
+				res = fmt.Sprintf("(%s \\== %s)", res, rhs)
+			}
 			arith = false
 		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
 			cmp := map[string]string{"<": "@<", "<=": "@=<", ">": "@>", ">=": "@>="}[op.Op]

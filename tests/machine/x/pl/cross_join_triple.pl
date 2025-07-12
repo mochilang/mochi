@@ -12,8 +12,7 @@ main :-
     Bools = [true, false],
     findall(_V1, (member(N, Nums), member(L, Letters), member(B, Bools), true, dict_create(_V0, map, [n-N, l-L, b-B]), _V1 = _V0), _V2),
     Combos = _V2,
-    write("--- Cross Join of three lists ---"),
-    nl,
+    writeln("--- Cross Join of three lists ---"),
     catch(
         (
             member(C, Combos),

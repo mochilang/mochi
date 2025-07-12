@@ -20,6 +20,8 @@ func (c *Compiler) checkQueryTypes(q *parser.QueryExpr) error {
 		elem = t.Elem
 	case types.GroupType:
 		elem = t.Elem
+	case types.AnyType:
+		elem = types.AnyType{}
 	default:
 		return fmt.Errorf("query source must be list or group")
 	}
@@ -32,6 +34,8 @@ func (c *Compiler) checkQueryTypes(q *parser.QueryExpr) error {
 			env.SetVar(fr.Var, ft.Elem, true)
 		case types.GroupType:
 			env.SetVar(fr.Var, ft.Elem, true)
+		case types.AnyType:
+			env.SetVar(fr.Var, types.AnyType{}, true)
 		default:
 			return fmt.Errorf("from source must be list or group")
 		}
@@ -44,6 +48,8 @@ func (c *Compiler) checkQueryTypes(q *parser.QueryExpr) error {
 			env.SetVar(j.Var, jt.Elem, true)
 		case types.GroupType:
 			env.SetVar(j.Var, jt.Elem, true)
+		case types.AnyType:
+			env.SetVar(j.Var, types.AnyType{}, true)
 		default:
 			return fmt.Errorf("join source must be list or group")
 		}

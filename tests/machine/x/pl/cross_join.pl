@@ -17,8 +17,7 @@ main :-
     Orders = [_V3, _V4, _V5],
     findall(_V11, (member(O, Orders), member(C, Customers), true, get_item(O, 'id', _V6), get_item(O, 'customerid', _V7), get_item(C, 'name', _V8), get_item(O, 'total', _V9), dict_create(_V10, map, [orderid-_V6, ordercustomerid-_V7, pairedcustomername-_V8, ordertotal-_V9]), _V11 = _V10), _V12),
     Result = _V12,
-    write("--- Cross Join: All order-customer pairs ---"),
-    nl,
+    writeln("--- Cross Join: All order-customer pairs ---"),
     catch(
         (
             member(Entry, Result),
