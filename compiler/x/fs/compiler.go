@@ -959,14 +959,26 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				}
 			}
 			if isBoolExpr(argAST) || c.inferType(argAST) == "bool" {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%b\" %s", args[0]), nil
+				}
 				return fmt.Sprintf("printfn \"%%b\" (%s)", args[0]), nil
 			}
 			t := c.inferType(argAST)
 			if t == "int" {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%d\" %s", args[0]), nil
+				}
 				return fmt.Sprintf("printfn \"%%d\" (%s)", args[0]), nil
 			}
 			if t == "float" {
+				if identifierRegexp.MatchString(args[0]) {
+					return fmt.Sprintf("printfn \"%%f\" %s", args[0]), nil
+				}
 				return fmt.Sprintf("printfn \"%%f\" (%s)", args[0]), nil
+			}
+			if identifierRegexp.MatchString(args[0]) {
+				return fmt.Sprintf("printfn \"%%A\" %s", args[0]), nil
 			}
 			return fmt.Sprintf("printfn \"%%A\" (%s)", args[0]), nil
 		}
