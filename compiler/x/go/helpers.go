@@ -436,14 +436,13 @@ func (c *Compiler) eqJoinKeys(e *parser.Expr, leftVar, rightVar string) (string,
 }
 
 func (c *Compiler) newVar() string {
-	name := fmt.Sprintf("tmp%d", c.tempVarCount)
-	c.tempVarCount++
-	return name
+	return c.newNamedVar("tmp")
 }
 
 func (c *Compiler) newNamedVar(prefix string) string {
-	name := fmt.Sprintf("%s%d", prefix, c.tempVarCount)
-	c.tempVarCount++
+	count := c.varCounts[prefix]
+	name := fmt.Sprintf("%s%d", prefix, count)
+	c.varCounts[prefix] = count + 1
 	return name
 }
 
