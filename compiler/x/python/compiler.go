@@ -5,6 +5,8 @@ package pycode
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -36,6 +38,7 @@ type Compiler struct {
 	structKeys   map[string]string
 	autoCount    int
 	typeHints    bool
+	logger       *log.Logger
 }
 
 func New(env *types.Env) *Compiler {
@@ -55,6 +58,22 @@ func New(env *types.Env) *Compiler {
 		structKeys:   make(map[string]string),
 		autoCount:    0,
 		typeHints:    true,
+		logger:       nil,
+	}
+}
+
+// SetLogger enables logging of compiler phases using the provided writer.
+func (c *Compiler) SetLogger(w io.Writer) {
+	if w == nil {
+		c.logger = nil
+		return
+	}
+	c.logger = log.New(w, "pycompiler: ", log.LstdFlags)
+}
+
+func (c *Compiler) logf(format string, args ...interface{}) {
+	if c.logger != nil {
+		c.logger.Printf(format, args...)
 	}
 }
 
@@ -214,6 +233,7 @@ func (c *Compiler) emitAutoStructs() {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	c.logf("start compilation (%d statements)", len(prog.Statements))
 	c.buf.Reset()
 
 	// Collect Python imports first so they can be emitted at the top.
@@ -326,6 +346,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(body)
 
 	code := c.buf.Bytes()
+	c.logf("finished compilation")
 	return FormatPy(code), nil
 }
 

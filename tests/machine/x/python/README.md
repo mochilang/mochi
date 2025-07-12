@@ -120,7 +120,7 @@ Compiled programs: 100/100 successful.
 - [ ] Provide CLI for custom output directory
 - [ ] Implement caching for compiled modules
 - [ ] Support incremental compilation
-- [ ] Add logging for compiler phases
+- [x] Add logging for compiler phases
 - [ ] Enhance error messages with line numbers
 - [ ] Provide option to suppress runtime imports
 - [ ] Add plugin architecture for new targets
