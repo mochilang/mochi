@@ -1,5 +1,5 @@
 void main() {
-  print((6 * 7 as int));
-  print((7 / 2 as int));
-  print((7 % 2 as int));
+  print(6 * 7);
+  print(7 / 2);
+  print(7 % 2);
 }

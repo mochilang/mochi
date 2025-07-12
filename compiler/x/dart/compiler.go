@@ -409,24 +409,68 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileType(td *parser.TypeDecl) error {
-	st, ok := c.env.GetStruct(td.Name)
-	if !ok {
+	if st, ok := c.env.GetStruct(td.Name); ok {
+		c.writeln(fmt.Sprintf("class %s {", td.Name))
+		c.indent++
+		fields := make([]string, len(st.Order))
+		for i, name := range st.Order {
+			typ := dartTypeFromType(st.Fields[name])
+			if typ == "" {
+				typ = "dynamic"
+			}
+			c.writeln(fmt.Sprintf("%s %s;", typ, name))
+			fields[i] = "this." + name
+		}
+		c.writeln(fmt.Sprintf("%s(%s);", td.Name, strings.Join(fields, ", ")))
+		c.indent--
+		c.writeln("}")
 		return nil
 	}
-	c.writeln(fmt.Sprintf("class %s {", td.Name))
-	c.indent++
-	fields := make([]string, len(st.Order))
-	for i, name := range st.Order {
-		typ := dartTypeFromType(st.Fields[name])
-		if typ == "" {
-			typ = "dynamic"
+	if ut, ok := c.env.GetUnion(td.Name); ok {
+		c.writeln(fmt.Sprintf("abstract class %s {}", td.Name))
+		names := make([]string, 0, len(ut.Variants))
+		for n := range ut.Variants {
+			names = append(names, n)
 		}
-		c.writeln(fmt.Sprintf("%s %s;", typ, name))
-		fields[i] = "this." + name
+		sort.Strings(names)
+		var variantMap = map[string]*parser.TypeVariant{}
+		for _, v := range td.Variants {
+			vv := v
+			variantMap[v.Name] = vv
+		}
+		for _, name := range names {
+			st := ut.Variants[name]
+			c.writeln(fmt.Sprintf("class %s extends %s {", name, td.Name))
+			c.indent++
+			fields := make([]string, len(st.Order))
+			for i, f := range st.Order {
+				var typ string
+				if v, ok := variantMap[name]; ok {
+					for _, fld := range v.Fields {
+						if fld.Name == f {
+							typ = dartType(fld.Type)
+							break
+						}
+					}
+				}
+				if typ == "" {
+					typ = dartTypeFromType(st.Fields[f])
+				}
+				if typ == "" {
+					typ = "dynamic"
+				}
+				c.writeln(fmt.Sprintf("%s %s;", typ, f))
+				fields[i] = "this." + f
+			}
+			if len(st.Order) > 0 {
+				c.writeln(fmt.Sprintf("%s(%s);", name, strings.Join(fields, ", ")))
+			} else {
+				c.writeln(fmt.Sprintf("%s();", name))
+			}
+			c.indent--
+			c.writeln("}")
+		}
 	}
-	c.writeln(fmt.Sprintf("%s(%s);", td.Name, strings.Join(fields, ", ")))
-	c.indent--
-	c.writeln("}")
 	return nil
 }
 
@@ -530,6 +574,9 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		child := types.NewEnv(c.env)
+		child.SetVar(f.Name, types.IntType{}, true)
+		c.env = child
 		c.writeln(fmt.Sprintf("for (var %s = %s; %s < %s; %s++) {", f.Name, start, f.Name, end, f.Name))
 	} else {
 		srcExpr := f.Source
@@ -730,7 +777,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
 				newType := types.ResultType(op.Op, leftType, rightType)
 				if _, ok := newType.(types.IntType); ok {
-					res = fmt.Sprintf("(%s as int)", res)
+					if !isIntType(leftType) || !isIntType(rightType) {
+						res = fmt.Sprintf("(%s as int)", res)
+					}
 				}
 				leftType = newType
 			}
@@ -1872,6 +1921,8 @@ func dartTypeFromType(t types.Type) string {
 			v = "dynamic"
 		}
 		return fmt.Sprintf("Map<%s, %s>", k, v)
+	case types.UnionType:
+		return tt.Name
 	case types.StructType:
 		return tt.Name
 	default:
@@ -1948,6 +1999,15 @@ func defaultValue(typ string) string {
 func isNumericType(t types.Type) bool {
 	switch t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:
+		return true
+	default:
+		return false
+	}
+}
+
+func isIntType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type:
 		return true
 	default:
 		return false
