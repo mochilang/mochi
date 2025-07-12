@@ -31,7 +31,17 @@ type Compiler struct {
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
 
 var exReserved = map[string]bool{
-	"end": true,
+	"after":  true,
+	"case":   true,
+	"catch":  true,
+	"do":     true,
+	"else":   true,
+	"end":    true,
+	"fn":     true,
+	"nil":    true,
+	"rescue": true,
+	"try":    true,
+	"when":   true,
 }
 
 func sanitizeName(name string) string {

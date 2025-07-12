@@ -2,7 +2,7 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 100/100
+Compiled programs: 92/100
 
 Checklist:
 
@@ -28,16 +28,16 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] go_auto
+- [ ] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
+- [ ] group_by_left_join
 - [x] group_by_multi_join
-- [x] group_by_multi_join_sort
-- [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -56,7 +56,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -76,8 +76,8 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [x] python_auto
-- [x] python_math
+- [ ] python_auto
+- [ ] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -108,4 +108,11 @@ Checklist:
 - [x] while_loop
 
 ### Remaining tasks
-None
+- [ ] go_auto
+- [ ] group_by_left_join
+- [ ] group_by_multi_join_sort
+- [ ] group_by_sort
+- [ ] group_items_iteration
+- [ ] load_yaml
+- [ ] python_auto
+- [ ] python_math
