@@ -3,17 +3,17 @@ line 27: ../../../tests/machine/x/cpp/group_items_iteration.cpp:27:33: error: �
       |                                 ^~~
 ../../../tests/machine/x/cpp/group_items_iteration.cpp:27:33: error: ‘struct Data’ has no member named ‘key’
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In function ‘int main()’:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:63:37: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
-   63 |     tmp = __append(tmp, __struct3{g.key, total});
-      |                                   ~~^~~
-      |                                     |
-      |                                     std::string {aka std::__cxx11::basic_string<char>}
+../../../tests/machine/x/cpp/group_items_iteration.cpp:57:31: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+   57 |     tmp.push_back(__struct3{g.key, total});
+      |                             ~~^~~
+      |                               |
+      |                               std::string {aka std::__cxx11::basic_string<char>}
 ../../../tests/machine/x/cpp/group_items_iteration.cpp: In lambda function:
-../../../tests/machine/x/cpp/group_items_iteration.cpp:69:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
-   69 |       __items.push_back({r.tag, r});
+../../../tests/machine/x/cpp/group_items_iteration.cpp:63:28: error: request for member ‘tag’ in ‘r’, which is of non-class type ‘int’
+   63 |       __items.push_back({r.tag, r});
       |                            ^~~
-../../../tests/machine/x/cpp/group_items_iteration.cpp:69:24: error: no matching function for call to ‘std::vector<std::pair<int, __struct3> >::push_back(<brace-enclosed initializer list>)’
-   69 |       __items.push_back({r.tag, r});
+../../../tests/machine/x/cpp/group_items_iteration.cpp:63:24: error: no matching function for call to ‘std::vector<std::pair<int, __struct3> >::push_back(<brace-enclosed initializer list>)’
+   63 |       __items.push_back({r.tag, r});
       |       ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
                  from ../../../tests/machine/x/cpp/group_items_iteration.cpp:6:

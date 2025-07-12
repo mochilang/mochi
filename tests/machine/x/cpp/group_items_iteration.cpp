@@ -33,12 +33,6 @@ inline bool operator==(const __struct3 &a, const __struct3 &b) {
 inline bool operator!=(const __struct3 &a, const __struct3 &b) {
   return !(a == b);
 }
-template <typename T, typename U>
-std::vector<T> __append(const std::vector<T> &v, const U &x) {
-  auto r = v;
-  r.push_back(x);
-  return r;
-}
 int main() {
   std::vector<Data> data =
       std::vector<Data>{Data{std::string("a"), 1}, Data{std::string("a"), 2},
@@ -60,7 +54,7 @@ int main() {
     for (auto x : g.items) {
       total = (total + x.val);
     }
-    tmp = __append(tmp, __struct3{g.key, total});
+    tmp.push_back(__struct3{g.key, total});
   }
   auto result = ([&]() {
     std::vector<std::pair<decltype(std::declval<__struct3>().tag), __struct3>>
