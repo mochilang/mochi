@@ -1,6 +1,13 @@
-Error on line 0: output mismatch
--- got --
-[{0 5} {1 1} {1 2}]
--- want --
-map[a:0 b:5] map[a:1 b:1] map[a:1 b:2]
-1: //go:build ignore
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/order_by_map.go:12:16: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:15:5: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:18:5: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:22:15: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:26:10: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:28:15: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:34:10: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:36:15: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:39:11: undefined: v
+tests/machine/x/go/order_by_map.go:44:17: undefined: DataVarItem
+tests/machine/x/go/order_by_map.go:44:17: too many errors

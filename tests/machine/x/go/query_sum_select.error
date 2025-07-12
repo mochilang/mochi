@@ -1,5 +1,3 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/query_sum_select.go:14:21: cannot use _sumOrdered[int](func() []int {…}()) (value of type float64) as []int value in variable declaration
-
-1: //go:build ignore
+tests/machine/x/go/query_sum_select.go:15:21: cannot use _sumOrdered[int](func() []int {…}()) (value of type float64) as []int value in variable declaration

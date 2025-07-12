@@ -8,39 +8,34 @@ import (
 )
 
 func main() {
-	type ProductsItem struct {
-		Name  string `json:"name"`
-		Price int    `json:"price"`
-	}
-
 	var products []ProductsItem = []ProductsItem{
 		ProductsItem{
-			Name:  "Laptop",
-			Price: 1500,
+			"Laptop",
+			1500,
 		},
 		ProductsItem{
-			Name:  "Smartphone",
-			Price: 900,
+			"Smartphone",
+			900,
 		},
 		ProductsItem{
-			Name:  "Tablet",
-			Price: 600,
+			"Tablet",
+			600,
 		},
 		ProductsItem{
-			Name:  "Monitor",
-			Price: 300,
+			"Monitor",
+			300,
 		},
 		ProductsItem{
-			Name:  "Keyboard",
-			Price: 100,
+			"Keyboard",
+			100,
 		},
 		ProductsItem{
-			Name:  "Mouse",
-			Price: 50,
+			"Mouse",
+			50,
 		},
 		ProductsItem{
-			Name:  "Headphones",
-			Price: 200,
+			"Headphones",
+			200,
 		},
 	}
 	var expensive []ProductsItem = func() []ProductsItem {

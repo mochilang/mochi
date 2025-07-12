@@ -18,7 +18,7 @@ func inc(c *Counter) {
 var c Counter
 
 func main() {
-	c = Counter{N: 0}
+	c = Counter{0}
 	inc(&c)
 	fmt.Println(c.N)
 }

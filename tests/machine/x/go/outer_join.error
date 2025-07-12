@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/outer_join.go:14:18: undefined: CustomersItem
+tests/machine/x/go/outer_join.go:15:3: undefined: CustomersItem
+tests/machine/x/go/outer_join.go:19:3: undefined: CustomersItem
+tests/machine/x/go/outer_join.go:23:3: undefined: CustomersItem
+tests/machine/x/go/outer_join.go:27:3: undefined: CustomersItem
+tests/machine/x/go/outer_join.go:33:15: undefined: OrdersItem
+tests/machine/x/go/outer_join.go:34:3: undefined: OrdersItem
+tests/machine/x/go/outer_join.go:39:3: undefined: OrdersItem
+tests/machine/x/go/outer_join.go:44:3: undefined: OrdersItem
+tests/machine/x/go/outer_join.go:49:3: undefined: OrdersItem
+tests/machine/x/go/outer_join.go:49:3: too many errors

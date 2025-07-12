@@ -17,10 +17,6 @@ type Person struct {
 }
 
 func main() {
-	type v struct {
-		Format string `json:"format"`
-	}
-
 	var people []Person = func() []Person {
 		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(v{Format: "yaml"}))
 		out := make([]Person, len(rows))
@@ -29,19 +25,14 @@ func main() {
 		}
 		return out
 	}()
-	type Adults struct {
-		Name  any `json:"name"`
-		Email any `json:"email"`
-	}
-
 	var adults []Adults = func() []Adults {
 		results := []Adults{}
 		for _, p := range people {
 			if p.Age >= 18 {
 				if p.Age >= 18 {
 					results = append(results, Adults{
-						Name:  p.Name,
-						Email: p.Email,
+						p.Name,
+						p.Email,
 					})
 				}
 			}
@@ -49,7 +40,7 @@ func main() {
 		return results
 	}()
 	for _, a := range adults {
-		fmt.Println(a.Name, a.Email)
+		_print(a.Name, a.Email)
 	}
 }
 
@@ -103,6 +94,43 @@ func _load(path string, opts map[string]any) []map[string]any {
 		panic(err)
 	}
 	return rows
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

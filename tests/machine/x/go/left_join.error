@@ -1,10 +1,13 @@
-Error on line 0: output mismatch
--- got --
---- Left Join ---
-Order 100 customer {1 Alice} total 250
-Order 101 customer {0 } total 80
--- want --
---- Left Join ---
-Order 100 customer map[id:1 name:Alice] total 250
-Order 101 customer <nil> total 80
-1: //go:build ignore
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/left_join.go:12:18: undefined: CustomersItem
+tests/machine/x/go/left_join.go:15:5: undefined: CustomersItem
+tests/machine/x/go/left_join.go:20:15: undefined: OrdersItem
+tests/machine/x/go/left_join.go:24:5: undefined: OrdersItem
+tests/machine/x/go/left_join.go:29:15: undefined: Result
+tests/machine/x/go/left_join.go:34:11: undefined: OrdersItem
+tests/machine/x/go/left_join.go:36:16: undefined: OrdersItem
+tests/machine/x/go/left_join.go:40:11: undefined: CustomersItem
+tests/machine/x/go/left_join.go:42:16: undefined: CustomersItem
+tests/machine/x/go/left_join.go:48:11: undefined: OrdersItem
+tests/machine/x/go/left_join.go:48:11: too many errors

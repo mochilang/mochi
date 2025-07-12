@@ -11,54 +11,38 @@ import (
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var customers []CustomersItem = []CustomersItem{
 		CustomersItem{
-			Id:   1,
-			Name: "Alice",
+			1,
+			"Alice",
 		},
 		CustomersItem{
-			Id:   2,
-			Name: "Bob",
+			2,
+			"Bob",
 		},
 		CustomersItem{
-			Id:   3,
-			Name: "Charlie",
+			3,
+			"Charlie",
 		},
 		CustomersItem{
-			Id:   4,
-			Name: "Diana",
+			4,
+			"Diana",
 		},
 	}
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-		Total      int `json:"total"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-		Total:      125,
+		101,
+		2,
+		125,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 1,
-		Total:      300,
+		102,
+		1,
+		300,
 	}}
 	_ = orders
-	type Result struct {
-		CustomerName any `json:"customerName"`
-		Order        any `json:"order"`
-	}
-
 	var result []Result = func() []Result {
 		src := _toAnySlice(customers)
 		resAny := _query(src, []_joinSpec{
@@ -99,8 +83,8 @@ func main() {
 			}
 			_ = o
 			return Result{
-				CustomerName: c.Name,
-				Order:        o,
+				c.Name,
+				o,
 			}
 		}, skip: -1, take: -1})
 		out := make([]Result, len(resAny))
@@ -112,9 +96,9 @@ func main() {
 	fmt.Println("--- Right Join using syntax ---")
 	for _, entry := range result {
 		if _exists(entry.Order) {
-			fmt.Println("Customer", entry.CustomerName, "has order", _toAnyMap(entry.Order)["id"], "- $", _toAnyMap(entry.Order)["total"])
+			_print("Customer", entry.CustomerName, "has order", _toAnyMap(entry.Order)["id"], "- $", _toAnyMap(entry.Order)["total"])
 		} else {
-			fmt.Println("Customer", entry.CustomerName, "has no orders")
+			_print("Customer", entry.CustomerName, "has no orders")
 		}
 	}
 }
@@ -155,6 +139,32 @@ func _exists(v any) bool {
 		return !rv.IsZero()
 	}
 	return false
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
 }
 
 type _joinSpec struct {
@@ -389,6 +399,17 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

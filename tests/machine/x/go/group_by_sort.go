@@ -11,34 +11,24 @@ import (
 )
 
 func main() {
-	type ItemsItem struct {
-		Cat string `json:"cat"`
-		Val int    `json:"val"`
-	}
-
 	var items []ItemsItem = []ItemsItem{
 		ItemsItem{
-			Cat: "a",
-			Val: 3,
+			"a",
+			3,
 		},
 		ItemsItem{
-			Cat: "a",
-			Val: 1,
+			"a",
+			1,
 		},
 		ItemsItem{
-			Cat: "b",
-			Val: 5,
+			"b",
+			5,
 		},
 		ItemsItem{
-			Cat: "b",
-			Val: 2,
+			"b",
+			2,
 		},
 	}
-	type Grouped struct {
-		Cat   any `json:"cat"`
-		Total int `json:"total"`
-	}
-
 	var grouped []Grouped = func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -52,9 +42,8 @@ func main() {
 				order = append(order, ks)
 			}
 			_item := map[string]any{}
-			for k, v := range _toAnyMap(i) {
-				_item[k] = v
-			}
+			_item["cat"] = i.Cat
+			_item["val"] = i.Val
 			_item["i"] = i
 			g.Items = append(g.Items, _item)
 		}
@@ -106,8 +95,8 @@ func main() {
 		results := []Grouped{}
 		for _, g := range items {
 			results = append(results, Grouped{
-				Cat: g.Key,
-				Total: _sum(func() []any {
+				g.Key,
+				_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, _toAnyMap(x)["val"])
@@ -118,7 +107,44 @@ func main() {
 		}
 		return results
 	}()
-	fmt.Println(grouped)
+	_print(grouped)
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

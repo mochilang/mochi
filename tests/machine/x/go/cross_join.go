@@ -4,60 +4,43 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}, CustomersItem{
-		Id:   3,
-		Name: "Charlie",
+		3,
+		"Charlie",
 	}}
 	_ = customers
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-		Total      int `json:"total"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 2,
-		Total:      125,
+		101,
+		2,
+		125,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 1,
-		Total:      300,
+		102,
+		1,
+		300,
 	}}
-	type Result struct {
-		OrderId            any `json:"orderId"`
-		OrderCustomerId    any `json:"orderCustomerId"`
-		PairedCustomerName any `json:"pairedCustomerName"`
-		OrderTotal         any `json:"orderTotal"`
-	}
-
 	var result []Result = func() []Result {
 		results := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {
 				results = append(results, Result{
-					OrderId:            o.Id,
-					OrderCustomerId:    o.CustomerId,
-					PairedCustomerName: c.Name,
-					OrderTotal:         o.Total,
+					o.Id,
+					o.CustomerId,
+					c.Name,
+					o.Total,
 				})
 			}
 		}
@@ -65,6 +48,43 @@ func main() {
 	}()
 	fmt.Println("--- Cross Join: All order-customer pairs ---")
 	for _, entry := range result {
-		fmt.Println("Order", entry.OrderId, "(customerId:", entry.OrderCustomerId, ", total: $", entry.OrderTotal, ") paired with", entry.PairedCustomerName)
+		_print("Order", entry.OrderId, "(customerId:", entry.OrderCustomerId, ", total: $", entry.OrderTotal, ") paired with", entry.PairedCustomerName)
 	}
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

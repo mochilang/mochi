@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 )
 
 func main() {
@@ -12,21 +13,15 @@ func main() {
 	_ = letters
 	var bools []bool = []bool{true, false}
 	_ = bools
-	type Combos struct {
-		N any `json:"n"`
-		L any `json:"l"`
-		B any `json:"b"`
-	}
-
 	var combos []Combos = func() []Combos {
 		results := []Combos{}
 		for _, n := range nums {
 			for _, l := range letters {
 				for _, b := range bools {
 					results = append(results, Combos{
-						N: n,
-						L: l,
-						B: b,
+						n,
+						l,
+						b,
 					})
 				}
 			}
@@ -35,6 +30,43 @@ func main() {
 	}()
 	fmt.Println("--- Cross Join of three lists ---")
 	for _, c := range combos {
-		fmt.Println(c.N, c.L, c.B)
+		_print(c.N, c.L, c.B)
 	}
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

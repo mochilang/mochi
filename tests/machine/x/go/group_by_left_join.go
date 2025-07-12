@@ -10,42 +10,27 @@ import (
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}, CustomersItem{
-		Id:   3,
-		Name: "Charlie",
+		3,
+		"Charlie",
 	}}
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
+		100,
+		1,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 1,
+		101,
+		1,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 2,
+		102,
+		2,
 	}}
 	_ = orders
-	type Stats struct {
-		Name  any `json:"name"`
-		Count int `json:"count"`
-	}
-
 	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -65,13 +50,11 @@ func main() {
 					order = append(order, ks)
 				}
 				_item := map[string]any{}
-				for k, v := range _toAnyMap(c) {
-					_item[k] = v
-				}
+				_item["id"] = c.Id
+				_item["name"] = c.Name
 				_item["c"] = c
-				for k, v := range _toAnyMap(o) {
-					_item[k] = v
-				}
+				_item["id"] = o.Id
+				_item["customerId"] = o.CustomerId
 				_item["o"] = o
 				g.Items = append(g.Items, _item)
 			}
@@ -86,13 +69,11 @@ func main() {
 					order = append(order, ks)
 				}
 				_item := map[string]any{}
-				for k, v := range _toAnyMap(c) {
-					_item[k] = v
-				}
+				_item["id"] = c.Id
+				_item["name"] = c.Name
 				_item["c"] = c
-				for k, v := range _toAnyMap(o) {
-					_item[k] = v
-				}
+				_item["id"] = o.Id
+				_item["customerId"] = o.CustomerId
 				_item["o"] = o
 				g.Items = append(g.Items, _item)
 			}
@@ -104,8 +85,8 @@ func main() {
 		results := []Stats{}
 		for _, g := range items {
 			results = append(results, Stats{
-				Name: g.Key,
-				Count: len(func() []any {
+				g.Key,
+				len(func() []any {
 					results := []any{}
 					for _, r := range g.Items {
 						if _exists(_toAnyMap(r)["o"]) {
@@ -122,7 +103,7 @@ func main() {
 	}()
 	fmt.Println("--- Group Left Join ---")
 	for _, s := range stats {
-		fmt.Println(s.Name, "orders:", s.Count)
+		_print(s.Name, "orders:", s.Count)
 	}
 }
 
@@ -162,6 +143,43 @@ func _exists(v any) bool {
 		return !rv.IsZero()
 	}
 	return false
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

@@ -1,6 +1,8 @@
-Error on line 0: output mismatch
--- got --
-[{a 0} {b 0}]
--- want --
-map[cat:a share:0.6666666666666666] map[cat:b share:1]
-1: //go:build ignore
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/group_by_conditional_sum.go:14:14: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:18:5: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:22:5: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:27:15: undefined: Result
+tests/machine/x/go/group_by_conditional_sum.go:85:16: undefined: Result
+tests/machine/x/go/group_by_conditional_sum.go:87:30: undefined: Result

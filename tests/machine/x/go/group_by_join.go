@@ -6,43 +6,27 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
-	"strings"
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}}
 	_ = customers
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
+		100,
+		1,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 1,
+		101,
+		1,
 	}, OrdersItem{
-		Id:         102,
-		CustomerId: 2,
+		102,
+		2,
 	}}
-	type Stats struct {
-		Name  any `json:"name"`
-		Count int `json:"count"`
-	}
-
 	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -60,13 +44,11 @@ func main() {
 					order = append(order, ks)
 				}
 				_item := map[string]any{}
-				for k, v := range _toAnyMap(o) {
-					_item[k] = v
-				}
+				_item["id"] = o.Id
+				_item["customerId"] = o.CustomerId
 				_item["o"] = o
-				for k, v := range _toAnyMap(c) {
-					_item[k] = v
-				}
+				_item["id"] = c.Id
+				_item["name"] = c.Name
 				_item["c"] = c
 				g.Items = append(g.Items, _item)
 			}
@@ -78,48 +60,51 @@ func main() {
 		results := []Stats{}
 		for _, g := range items {
 			results = append(results, Stats{
-				Name:  g.Key,
-				Count: len(g.Items),
+				g.Key,
+				len(g.Items),
 			})
 		}
 		return results
 	}()
 	fmt.Println("--- Orders per customer ---")
 	for _, s := range stats {
-		fmt.Println(s.Name, "orders:", s.Count)
+		_print(s.Name, "orders:", s.Count)
 	}
 }
 
-func _toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
 		}
-		return out
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Struct {
-			out := make(map[string]any, rv.NumField())
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				name := rt.Field(i).Name
-				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
-					comma := strings.Index(tag, ",")
-					if comma >= 0 {
-						tag = tag[:comma]
-					}
-					if tag != "-" {
-						name = tag
-					}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
 				}
-				out[name] = rv.Field(i).Interface()
+				fmt.Print(_sprint(rv.Index(i).Interface()))
 			}
-			return out
+			continue
 		}
-		return nil
+		fmt.Print(_sprint(a))
 	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }

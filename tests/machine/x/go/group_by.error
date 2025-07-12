@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/group_by.go:13:15: undefined: PeopleItem
+tests/machine/x/go/group_by.go:14:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:19:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:24:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:29:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:34:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:39:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:45:14: undefined: Stats
+tests/machine/x/go/group_by.go:59:16: undefined: Stats
+tests/machine/x/go/group_by.go:62:30: undefined: Stats
+tests/machine/x/go/group_by.go:62:30: too many errors

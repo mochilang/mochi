@@ -4,44 +4,28 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
 func main() {
-	type CustomersItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var customers []CustomersItem = []CustomersItem{CustomersItem{
-		Id:   1,
-		Name: "Alice",
+		1,
+		"Alice",
 	}, CustomersItem{
-		Id:   2,
-		Name: "Bob",
+		2,
+		"Bob",
 	}}
 	_ = customers
-	type OrdersItem struct {
-		Id         int `json:"id"`
-		CustomerId int `json:"customerId"`
-		Total      int `json:"total"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		Id:         100,
-		CustomerId: 1,
-		Total:      250,
+		100,
+		1,
+		250,
 	}, OrdersItem{
-		Id:         101,
-		CustomerId: 3,
-		Total:      80,
+		101,
+		3,
+		80,
 	}}
-	type Result struct {
-		OrderId  any `json:"orderId"`
-		Customer any `json:"customer"`
-		Total    any `json:"total"`
-	}
-
 	var result []Result = func() []Result {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
@@ -82,9 +66,9 @@ func main() {
 			}
 			_ = c
 			return Result{
-				OrderId:  o.Id,
-				Customer: c,
-				Total:    o.Total,
+				o.Id,
+				c,
+				o.Total,
 			}
 		}, skip: -1, take: -1})
 		out := make([]Result, len(resAny))
@@ -95,8 +79,34 @@ func main() {
 	}()
 	fmt.Println("--- Left Join ---")
 	for _, entry := range result {
-		fmt.Println("Order", entry.OrderId, "customer", entry.Customer, "total", entry.Total)
+		_print("Order", entry.OrderId, "customer", entry.Customer, "total", entry.Total)
 	}
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
 }
 
 type _joinSpec struct {
@@ -331,6 +341,17 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {
