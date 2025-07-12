@@ -64,7 +64,7 @@ func TestKotlinCompiler_TPCH(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	for _, base := range []string{"q1"} {
-		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
-	}
+       for _, base := range []string{"q1", "q2"} {
+               t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
+       }
 }
