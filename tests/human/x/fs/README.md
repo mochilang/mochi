@@ -28,6 +28,7 @@ The list below shows every Mochi program and whether a translation exists.
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -75,6 +76,8 @@ The list below shows every Mochi program and whether a translation exists.
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
