@@ -50,6 +50,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	strs := []bool{c.isStringUnary(b.Left)}
 	maps := []bool{c.isMapUnary(b.Left)}
 	nums := []bool{c.isNumberUnary(b.Left)}
+	typesList := []types.Type{c.inferUnaryType(b.Left)}
 	for _, part := range b.Right {
 		right, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -64,6 +65,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		strs = append(strs, c.isStringPostfix(part.Right))
 		maps = append(maps, c.isMapPostfix(part.Right))
 		nums = append(nums, c.isNumberPostfix(part.Right))
+		typesList = append(typesList, c.inferPostfixType(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"&&"}, {"||"}, {"union", "union_all", "except", "intersect"}}
@@ -106,12 +108,24 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						resStr = strs[i] || strs[i+1]
 					}
 				case "==":
-					c.helpers["eq"] = true
-					expr = fmt.Sprintf("__eq(%s, %s)", l, r)
+					lt := typesList[i]
+					rt := typesList[i+1]
+					if isPrimitive(lt) && isPrimitive(rt) {
+						expr = fmt.Sprintf("(%s == %s)", l, r)
+					} else {
+						c.helpers["eq"] = true
+						expr = fmt.Sprintf("__eq(%s, %s)", l, r)
+					}
 					resStr = false
 				case "!=":
-					c.helpers["eq"] = true
-					expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
+					lt := typesList[i]
+					rt := typesList[i+1]
+					if isPrimitive(lt) && isPrimitive(rt) {
+						expr = fmt.Sprintf("(%s ~= %s)", l, r)
+					} else {
+						c.helpers["eq"] = true
+						expr = fmt.Sprintf("not __eq(%s, %s)", l, r)
+					}
 					resStr = false
 				case "union_all":
 					c.helpers["union_all"] = true

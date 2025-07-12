@@ -1,15 +1,3 @@
-function __add(a, b)
-    if type(a) == 'table' and type(b) == 'table' then
-        local out = {}
-        for i = 1, #a do out[#out+1] = a[i] end
-        for i = 1, #b do out[#out+1] = b[i] end
-        return out
-    elseif type(a) == 'string' or type(b) == 'string' then
-        return tostring(a) .. tostring(b)
-    else
-        return a + b
-    end
-end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
     if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
@@ -48,7 +36,7 @@ function __run_tests(tests)
     end
 end
 function test_addition_works()
-  local x = __add(1, 2)
+  local x = (1 + 2)
   if not (__eq(x, 3)) then error('expect failed') end
 end
 

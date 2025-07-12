@@ -1,15 +1,3 @@
-function __add(a, b)
-    if type(a) == 'table' and type(b) == 'table' then
-        local out = {}
-        for i = 1, #a do out[#out+1] = a[i] end
-        for i = 1, #b do out[#out+1] = b[i] end
-        return out
-    elseif type(a) == 'string' or type(b) == 'string' then
-        return tostring(a) .. tostring(b)
-    else
-        return a + b
-    end
-end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
     if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
@@ -67,7 +55,7 @@ for _i0 = 1, #people do
   local status = _it0["status"]
   if (age >= 18) then
     _it0["status"] = "adult"
-    _it0["age"] = __add(age, 1)
+    _it0["age"] = (age + 1)
   end
   people[_i0] = _it0
 end

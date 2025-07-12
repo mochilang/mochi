@@ -11,6 +11,6 @@ function __add(a, b)
     end
 end
 print(__add(1, (2 * 3)))
-print(((__add(1, 2)) * 3))
+print((((1 + 2)) * 3))
 print(__add((2 * 3), 1))
-print((2 * (__add(3, 1))))
+print((2 * ((3 + 1))))
