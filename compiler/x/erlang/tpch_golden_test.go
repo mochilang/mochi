@@ -20,7 +20,7 @@ func TestErlangCompiler_TPCHQueries(t *testing.T) {
 		t.Skip("escript not installed")
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 3; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "erlang", base+".erl.out")
