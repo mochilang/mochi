@@ -30,7 +30,7 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		return "", fmt.Errorf("type error: %v", errs[0])
 	}
-	c := kotlin.New(env, src)
+	c := kotlin.New(env, filepath.Base(src))
 	code, err := c.Compile(prog)
 	if err != nil {
 		return "", fmt.Errorf("compile error: %w", err)

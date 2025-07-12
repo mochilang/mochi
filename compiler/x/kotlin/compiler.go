@@ -192,16 +192,19 @@ type Compiler struct {
 	// inferred struct types from list of maps
 	inferred map[string]types.StructType
 	mapNodes map[*parser.MapLiteral]string
+
+	srcName string
 }
 
 // New creates a new Kotlin compiler.
-func New(env *types.Env, _ string) *Compiler {
+func New(env *types.Env, srcName string) *Compiler {
 	return &Compiler{
 		env:      env,
 		tmpCount: 0,
 		used:     make(map[string]bool),
 		inferred: make(map[string]types.StructType),
 		mapNodes: make(map[*parser.MapLiteral]string),
+		srcName:  srcName,
 	}
 }
 
@@ -212,6 +215,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.used = make(map[string]bool)
 	c.inferred = make(map[string]types.StructType)
 	c.mapNodes = make(map[*parser.MapLiteral]string)
+
+	if c.srcName != "" {
+		c.writeln("// Code generated from " + c.srcName)
+		c.writeln("")
+	}
 
 	// Structural inference infers struct types from map literals.
 	c.discoverStructs(prog)
