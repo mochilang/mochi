@@ -16,19 +16,19 @@ func _json(_ v: Any) {
         print(s)
     }
 }
-struct Auto1: Equatable {
+struct CityName: Equatable {
     var city: String
     var name: String
 }
 
-var people = [Auto1(city: "Paris", name: "Alice"), Auto1(city: "Hanoi", name: "Bob"), Auto1(city: "Paris", name: "Charlie"), Auto1(city: "Hanoi", name: "Diana"), Auto1(city: "Paris", name: "Eve"), Auto1(city: "Hanoi", name: "Frank"), Auto1(city: "Paris", name: "George")]
+var people = [CityName(city: "Paris", name: "Alice"), CityName(city: "Hanoi", name: "Bob"), CityName(city: "Paris", name: "Charlie"), CityName(city: "Hanoi", name: "Diana"), CityName(city: "Paris", name: "Eve"), CityName(city: "Hanoi", name: "Frank"), CityName(city: "Paris", name: "George")]
 var big = { () -> [Any] in
-    var _groups: [String:[Auto1]] = [:]
+    var _groups: [String:[CityName]] = [:]
     for p in people {
         let _k = p.city
         _groups[_k, default: []].append(p)
     }
-    var _tmp: [(key: String, items: [Auto1])] = []
+    var _tmp: [(key: String, items: [CityName])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }

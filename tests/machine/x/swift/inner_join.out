@@ -1,34 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/inner_join.swift:7:25: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 5 | 	for o in orders {
- 6 | 		for c in customers {
- 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-   |                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
- 9 | 		}
-
-/workspace/mochi/tests/machine/x/swift/inner_join.swift:8:36: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 6 | 		for c in customers {
- 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
- 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
-   |                                    `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 9 | 		}
-10 | 	}
-
-/workspace/mochi/tests/machine/x/swift/inner_join.swift:8:103: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 6 | 		for c in customers {
- 7 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
- 8 | 			_res.append(["orderId": o["id"] as! Int, "customerName": c["name"] as! String, "total": o["total"] as! Int])
-   |                                                                                                       `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 9 | 		}
-10 | 	}
-
-/workspace/mochi/tests/machine/x/swift/inner_join.swift:14:21: warning: forced cast of '[[String : Any]]' to same type has no effect
-12 | }())
-13 | print("--- Orders with customer info ---")
-14 | for entry in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:25:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+23 | }())
+24 | print("--- Orders with customer info ---")
+25 | for entry in result as! [[String:Any]] {
    |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
-15 |     print("Order", entry["orderId"]!, "by", entry["customerName"]!, "- $", entry["total"]!)
-16 | }
+26 |     print("Order", entry["orderId"]!, "by", entry["customerName"]!, "- $", entry["total"]!)
+27 | }
 --- Orders with customer info ---
 Order 100 by Alice - $ 250
 Order 101 by Bob - $ 125

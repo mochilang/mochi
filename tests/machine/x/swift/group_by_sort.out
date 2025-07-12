@@ -1,1 +1,1 @@
-[["total": 7, "cat": AnyHashable("b")], ["cat": AnyHashable("a"), "total": 4]]
+[["cat": "b", "total": 7], ["total": 4, "cat": "a"]]

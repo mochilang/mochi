@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 100/100 programs
+Compiled: 95/100 programs
 
 ## Checklist
 
@@ -36,10 +36,10 @@ Compiled: 100/100 programs
 - [x] group_by_having.mochi
 - [x] group_by_join.mochi
 - [x] group_by_left_join.mochi
-- [x] group_by_multi_join.mochi
-- [x] group_by_multi_join_sort.mochi
+- [ ] group_by_multi_join.mochi
+- [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
-- [x] group_items_iteration.mochi
+- [ ] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -73,7 +73,7 @@ Compiled: 100/100 programs
 - [x] min_max_builtin.mochi
 - [x] nested_function.mochi
 - [x] order_by_map.mochi
-- [x] outer_join.mochi
+- [ ] outer_join.mochi
 - [x] partial_application.mochi
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
@@ -82,7 +82,7 @@ Compiled: 100/100 programs
 - [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
-- [x] right_join.mochi
+- [ ] right_join.mochi
 - [x] save_jsonl_stdout.mochi
 - [x] short_circuit.mochi
 - [x] slice.mochi
@@ -108,10 +108,12 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+
 ## Remaining Tasks
 
 - [x] Support `import` statements for FFI modules (`go_auto.mochi`, `python_auto.mochi`, `python_math.mochi`).
-- [ ] Further improve automatic struct naming heuristics.
+- [x] Further improve automatic struct naming heuristics.
 - [ ] Add support for enum pattern matching.
 - [ ] Implement error handling with try/catch.
 - [ ] Emit comments from the original Mochi source.

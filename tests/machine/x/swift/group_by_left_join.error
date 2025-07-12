@@ -1,0 +1,4 @@
+line 34: exit status 1
+	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in r["o"] as! CustomerIdId != nil }.count] }
+}())
+print("--- Group Left Join ---")

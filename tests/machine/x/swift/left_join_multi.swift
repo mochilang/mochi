@@ -1,21 +1,21 @@
-struct Auto1: Equatable {
-    var id: Int
-    var name: String
-}
-
-struct Auto2: Equatable {
+struct CustomerIdId: Equatable {
     var customerId: Int
     var id: Int
 }
 
-struct Auto3: Equatable {
+struct IdName: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct OrderIdSku: Equatable {
     var orderId: Int
     var sku: String
 }
 
-var customers = [Auto1(id: 1, name: "Alice"), Auto1(id: 2, name: "Bob")]
-var orders = [Auto2(customerId: 1, id: 100), Auto2(customerId: 2, id: 101)]
-var items = [Auto3(orderId: 100, sku: "a")]
+var customers = [IdName(id: 1, name: "Alice"), IdName(id: 2, name: "Bob")]
+var orders = [CustomerIdId(customerId: 1, id: 100), CustomerIdId(customerId: 2, id: 101)]
+var items = [OrderIdSku(orderId: 100, sku: "a")]
 var result = ({
 	var _res: [[String:Any]] = []
 	for o in orders {

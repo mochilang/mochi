@@ -1,16 +1,16 @@
-struct Auto1: Equatable {
-    var id: Int
-    var name: String
-}
-
-struct Auto2: Equatable {
+struct CustomerIdId: Equatable {
     var customerId: Int
     var id: Int
     var total: Int
 }
 
-var customers = [Auto1(id: 1, name: "Alice"), Auto1(id: 2, name: "Bob")]
-var orders = [Auto2(customerId: 1, id: 100, total: 250), Auto2(customerId: 3, id: 101, total: 80)]
+struct IdName: Equatable {
+    var id: Int
+    var name: String
+}
+
+var customers = [IdName(id: 1, name: "Alice"), IdName(id: 2, name: "Bob")]
+var orders = [CustomerIdId(customerId: 1, id: 100, total: 250), CustomerIdId(customerId: 3, id: 101, total: 80)]
 var result = ({
 	var _res: [[String:Any]] = []
 	let _src = orders

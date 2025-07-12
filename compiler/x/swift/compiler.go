@@ -3168,7 +3168,11 @@ func (c *compiler) detectAutoStructList(l *parser.ListLiteral, name string) (str
 		return name, true
 	}
 	c.autoCount++
-	stName := c.genStructName(name)
+	base := name
+	if base == "" {
+		base = deriveNameFromFields(order)
+	}
+	stName := c.genStructName(base)
 	c.structKeys[key] = stName
 	c.structs[stName] = order
 	c.structTypes[stName] = fields
@@ -3196,7 +3200,11 @@ func (c *compiler) autoStructFromFields(fields map[string]string, name string) (
 		return name, true
 	}
 	c.autoCount++
-	stName := c.genStructName(name)
+	base := name
+	if base == "" {
+		base = deriveNameFromFields(order)
+	}
+	stName := c.genStructName(base)
 	c.structKeys[key] = stName
 	c.structs[stName] = order
 	c.structTypes[stName] = fields
@@ -3333,6 +3341,27 @@ func (c *compiler) isEquatableType(t string) bool {
 		return true
 	}
 	return false
+}
+
+func deriveNameFromFields(fields []string) string {
+	if len(fields) == 0 {
+		return ""
+	}
+	var parts []string
+	limit := len(fields)
+	if limit > 2 {
+		limit = 2
+	}
+	for i := 0; i < limit; i++ {
+		p := strings.Split(fields[i], "_")
+		for j, s := range p {
+			if len(s) > 0 {
+				p[j] = strings.ToUpper(s[:1]) + s[1:]
+			}
+		}
+		parts = append(parts, strings.Join(p, ""))
+	}
+	return strings.Join(parts, "")
 }
 
 func (c *compiler) genStructName(varName string) string {
