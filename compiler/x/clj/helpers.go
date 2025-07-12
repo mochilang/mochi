@@ -458,3 +458,14 @@ func joinEqParts(e *parser.Expr) (*parser.Expr, *parser.Expr, bool) {
 	}
 	return left, right, true
 }
+
+// identNameSimple returns the identifier name if p is a simple identifier with no postfix operations.
+func identNameSimple(p *parser.Primary) string {
+	if p == nil {
+		return ""
+	}
+	if p.Selector != nil && len(p.Selector.Tail) == 0 {
+		return p.Selector.Root
+	}
+	return ""
+}
