@@ -16,6 +16,8 @@ type Compiler struct {
 	buf    bytes.Buffer
 	indent int
 	vars   map[string]bool // variables declared with 'var'
+	// inferred struct types for let-bound variables
+	varStructs map[string]types.StructType
 
 	// generated anonymous struct types
 	structNames   map[string]string
@@ -44,6 +46,7 @@ type Compiler struct {
 func New(env *types.Env) *Compiler {
 	return &Compiler{
 		vars:        make(map[string]bool),
+		varStructs:  make(map[string]types.StructType),
 		env:         env,
 		structNames: make(map[string]string),
 	}
@@ -55,6 +58,7 @@ func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.indent = 0
 
 	c.vars = make(map[string]bool)
+	c.varStructs = make(map[string]types.StructType)
 	c.structNames = make(map[string]string)
 	c.anonStructs = nil
 	c.structCounter = 0
@@ -197,6 +201,21 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
 	}
+	if l.Type != nil {
+		if st, ok := c.typeRefStruct(l.Type); ok {
+			c.varStructs[l.Name] = st
+		}
+	} else if l.Value != nil {
+		if st, ok := c.structTypeFromExpr(l.Value); ok {
+			if s, ok2 := st.(types.ListType); ok2 {
+				if elem, ok3 := s.Elem.(types.StructType); ok3 {
+					c.varStructs[l.Name] = elem
+				}
+			} else if elem, ok2 := st.(types.StructType); ok2 {
+				c.varStructs[l.Name] = elem
+			}
+		}
+	}
 	return nil
 }
 
@@ -256,6 +275,21 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		c.writeln(fmt.Sprintf("let %s : %s = %s in", l.Name, typ, val))
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s in", l.Name, val))
+	}
+	if l.Type != nil {
+		if st, ok := c.typeRefStruct(l.Type); ok {
+			c.varStructs[l.Name] = st
+		}
+	} else if l.Value != nil {
+		if st, ok := c.structTypeFromExpr(l.Value); ok {
+			if s, ok2 := st.(types.ListType); ok2 {
+				if elem, ok3 := s.Elem.(types.StructType); ok3 {
+					c.varStructs[l.Name] = elem
+				}
+			} else if elem, ok2 := st.(types.StructType); ok2 {
+				c.varStructs[l.Name] = elem
+			}
+		}
 	}
 	return nil
 }
@@ -472,7 +506,11 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	c.writeln("match lst with")
 	c.indent++
 	c.writeln("| [] -> ()")
-	c.writeln(fmt.Sprintf("| %s::rest ->", fr.Name))
+	pat := fr.Name
+	if typ := c.loopTypeForSource(fr.Source); typ != "" {
+		pat = fmt.Sprintf("(%s : %s)", fr.Name, typ)
+	}
+	c.writeln(fmt.Sprintf("| %s::rest ->", pat))
 	c.indent++
 	c.writeln("try")
 	c.indent++
@@ -718,6 +756,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	total := len(froms) + len(q.Joins)
 	sources := make([]string, total)
 	vars := make([]string, total)
+	srcExprs := make([]*parser.Expr, total)
 	idx := 0
 	outerEnv := c.env
 	for _, fr := range froms {
@@ -730,6 +769,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = fr.Var
+		srcExprs[idx] = fr.Src
 		idx++
 	}
 	qenv := c.queryEnv(q)
@@ -744,6 +784,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
+		srcExprs[idx] = jo.Src
 		idx++
 		if jo.On != nil {
 			cond, err := c.compileExprWithEnv(jo.On, qenv)
@@ -777,7 +818,11 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", j+1))
 		}
-		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+		param := vars[i]
+		if t := c.loopTypeForSource(srcExprs[i]); t != "" {
+			param = fmt.Sprintf("(%s : %s)", vars[i], t)
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", param))
 	}
 	for i := 0; i < total; i++ {
 		buf.WriteString(strings.Repeat("  ", total+1-i))
@@ -843,9 +888,17 @@ func (c *Compiler) compileLeftJoin(q *parser.QueryExpr) (string, error) {
 	c.loop++
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
-	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", q.Var))
+	leftParam := q.Var
+	if t := c.loopTypeForSource(q.Source); t != "" {
+		leftParam = fmt.Sprintf("(%s : %s)", q.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", leftParam))
 	buf.WriteString("    let matched = ref false in\n")
-	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", join.Var))
+	rightParam := join.Var
+	if t := c.loopTypeForSource(join.Src); t != "" {
+		rightParam = fmt.Sprintf("(%s : %s)", join.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", rightParam))
 	buf.WriteString(fmt.Sprintf("      if %s then (\n", on))
 	if where != "" {
 		buf.WriteString(fmt.Sprintf("        if %s then %s := %s :: !%s;\n", where, resName, sel, resName))
@@ -907,9 +960,17 @@ func (c *Compiler) compileRightJoin(q *parser.QueryExpr) (string, error) {
 	c.loop++
 	var buf bytes.Buffer
 	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", resName))
-	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", join.Var))
+	rightParam := join.Var
+	if t := c.loopTypeForSource(join.Src); t != "" {
+		rightParam = fmt.Sprintf("(%s : %s)", join.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", rightParam))
 	buf.WriteString("    let matched = ref false in\n")
-	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", q.Var))
+	leftParam := q.Var
+	if t := c.loopTypeForSource(q.Source); t != "" {
+		leftParam = fmt.Sprintf("(%s : %s)", q.Var, t)
+	}
+	buf.WriteString(fmt.Sprintf("    List.iter (fun %s ->\n", leftParam))
 	buf.WriteString(fmt.Sprintf("      if %s then (\n", on))
 	if where != "" {
 		buf.WriteString(fmt.Sprintf("        if %s then %s := %s :: !%s;\n", where, resName, sel, resName))
@@ -1017,6 +1078,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 	total := len(froms) + len(prev)
 	sources := make([]string, total)
 	vars := make([]string, total)
+	srcExprs := make([]*parser.Expr, total)
 	idx := 0
 	outerEnv := c.env
 	for _, fr := range froms {
@@ -1029,6 +1091,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = fr.Var
+		srcExprs[idx] = fr.Src
 		idx++
 	}
 	qenv := c.queryEnv(q)
@@ -1043,6 +1106,7 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
+		srcExprs[idx] = jo.Src
 		idx++
 		if jo.On != nil {
 			cond, err := c.compileExprWithEnv(jo.On, qenv)
@@ -1094,7 +1158,11 @@ func (c *Compiler) compileLeftJoinLast(q *parser.QueryExpr) (string, error) {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", j+1))
 		}
-		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+		param := vars[i]
+		if t := c.loopTypeForSource(srcExprs[i]); t != "" {
+			param = fmt.Sprintf("(%s : %s)", vars[i], t)
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", param))
 	}
 	indent := strings.Repeat("  ", total+1)
 	condAll := prevCond
@@ -1210,6 +1278,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	total := len(froms) + len(q.Joins)
 	sources := make([]string, total)
 	vars := make([]string, total)
+	srcExprs := make([]*parser.Expr, total)
 	idx := 0
 	outerEnv := c.env
 	for _, fr := range froms {
@@ -1222,6 +1291,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = fr.Var
+		srcExprs[idx] = fr.Src
 		idx++
 	}
 	qenv := c.queryEnv(q)
@@ -1236,6 +1306,7 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		}
 		sources[idx] = src
 		vars[idx] = jo.Var
+		srcExprs[idx] = jo.Src
 		idx++
 		if jo.On != nil {
 			cond, err := c.compileExprWithEnv(jo.On, qenv)
@@ -1264,6 +1335,12 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	keyTyp := ""
+	if st, ok := c.structTypeFromExpr(q.Group.Exprs[0]); ok {
+		if s, ok2 := st.(types.StructType); ok2 {
+			keyTyp = c.ocamlType(s)
+		}
+	}
 
 	resName := fmt.Sprintf("__res%d", c.loop)
 	groups := fmt.Sprintf("__groups%d", c.loop)
@@ -1275,7 +1352,11 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", j+1))
 		}
-		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", vars[i]))
+		param := vars[i]
+		if t := c.loopTypeForSource(srcExprs[i]); t != "" {
+			param = fmt.Sprintf("(%s : %s)", vars[i], t)
+		}
+		buf.WriteString(fmt.Sprintf("List.iter (fun %s ->\n", param))
 	}
 	for i := 0; i < total; i++ {
 		buf.WriteString(strings.Repeat("  ", total+1-i))
@@ -1285,7 +1366,11 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("if %s then (\n", cond))
 		buf.WriteString(strings.Repeat("  ", total+2))
 	}
-	buf.WriteString(fmt.Sprintf("let key = %s in\n", keyExpr))
+	if keyTyp != "" {
+		buf.WriteString(fmt.Sprintf("let (key : %s) = %s in\n", keyTyp, keyExpr))
+	} else {
+		buf.WriteString(fmt.Sprintf("let key = %s in\n", keyExpr))
+	}
 	buf.WriteString(strings.Repeat("  ", total+2))
 	buf.WriteString(fmt.Sprintf("let cur = try List.assoc key !%s with Not_found -> [] in\n", groups))
 	buf.WriteString(strings.Repeat("  ", total+2))
@@ -1302,7 +1387,11 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	}
 
 	buf.WriteString(fmt.Sprintf("  let %s = ref [] in\n", resName))
-	buf.WriteString(fmt.Sprintf("  List.iter (fun (%sKey,%sItems) ->\n", q.Group.Name, q.Group.Name))
+	param := fmt.Sprintf("(%sKey,%sItems)", q.Group.Name, q.Group.Name)
+	if keyTyp != "" {
+		param = fmt.Sprintf("(%sKey : %s,%sItems)", q.Group.Name, keyTyp, q.Group.Name)
+	}
+	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", param))
 	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
 	srcType := types.ExprType(q.Source, c.env)
 	var elemType types.Type
@@ -1815,7 +1904,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Str != nil:
 		return fmt.Sprintf("\"%s\"", *l.Str)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		s := fmt.Sprintf("%g", *l.Float)
+		if !strings.ContainsAny(s, ".eE") {
+			s += "."
+		}
+		return s
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return "true"
@@ -1987,6 +2080,22 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 		}
 	}
 	return "unit"
+}
+
+// typeRefStruct resolves t to a StructType if possible.
+func (c *Compiler) typeRefStruct(t *parser.TypeRef) (types.StructType, bool) {
+	if t == nil {
+		return types.StructType{}, false
+	}
+	if t.Simple != nil {
+		if st, ok := c.env.GetStruct(*t.Simple); ok {
+			return st, true
+		}
+	}
+	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
+		return c.typeRefStruct(t.Generic.Args[0])
+	}
+	return types.StructType{}, false
 }
 
 func (c *Compiler) ocamlType(t types.Type) string {
@@ -2259,6 +2368,16 @@ func identName(e *parser.Expr) (string, bool) {
 		return u.Value.Target.Selector.Root, true
 	}
 	return "", false
+}
+
+// loopTypeForSource returns the struct type name for elements of src if known.
+func (c *Compiler) loopTypeForSource(src *parser.Expr) string {
+	if name, ok := identName(src); ok {
+		if st, ok2 := c.varStructs[name]; ok2 {
+			return c.ocamlType(st)
+		}
+	}
+	return ""
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
