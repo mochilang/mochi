@@ -761,6 +761,19 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				case ">=":
 					res = fmt.Sprintf("%s >= 0", cmp)
 				}
+			} else if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
+				!isNumericType(leftType) && !isNumericType(rightType) {
+				cmp := fmt.Sprintf("%s.toString().compareTo(%s.toString())", cur, r)
+				switch op.Op {
+				case "<":
+					res = fmt.Sprintf("%s < 0", cmp)
+				case "<=":
+					res = fmt.Sprintf("%s <= 0", cmp)
+				case ">":
+					res = fmt.Sprintf("%s > 0", cmp)
+				case ">=":
+					res = fmt.Sprintf("%s >= 0", cmp)
+				}
 			} else if op.Op == "+" && (leftType == (types.StringType{}) || rightType == (types.StringType{})) {
 				res = fmt.Sprintf("%s + %s", cur, r)
 			} else {
