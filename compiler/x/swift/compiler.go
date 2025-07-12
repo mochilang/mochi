@@ -3078,9 +3078,9 @@ func (c *compiler) recordMapFields(name string, e *parser.Expr) {
 		}
 	}
 	if p.Target.Query != nil {
-		if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
+		if t := c.queryFieldTypes(p.Target.Query); t != nil {
 			c.mapFields[name] = t
-		} else if t := c.queryFieldTypes(p.Target.Query); t != nil {
+		} else if t := c.elementFieldTypes(p.Target.Query.Select); t != nil {
 			c.mapFields[name] = t
 		} else if m := mapLit(p.Target.Query.Select); m != nil {
 			c.mapFields[name] = c.mapFieldsFromLiteral(m)
