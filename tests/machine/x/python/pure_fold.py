@@ -1,5 +1,4 @@
-def triple(x: int) -> int:
-    """triple(x: int) -> int"""
+def triple(x):
     return x * 3
 
 
