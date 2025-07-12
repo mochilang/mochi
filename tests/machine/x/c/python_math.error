@@ -1,7 +1,7 @@
 line: 0
 error: output mismatch
 -- got --
-Circle area with r = 654544256 => 28
+Circle area with r = -2133086880 => 28
 Square root of 49: 7
 sin(π/4): 0.7071067811865475
 log(e): 1

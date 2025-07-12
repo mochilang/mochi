@@ -1231,6 +1231,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+			} else if st, ok := isListStructType(t); ok {
+				c.compileStructListType(st)
+				listName := "list_" + sanitizeTypeName(st.Name)
+				val := c.newTemp()
+				c.writeln(fmt.Sprintf("%s %s = {0, NULL};", listName, val))
+				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
@@ -3232,7 +3238,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 	// only handle simple queries without joins or grouping
 	if len(q.Froms) > 0 || len(q.Joins) > 0 || q.Group != nil {
-		return "0"
+		retT := c.exprType(q.Select)
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if st, ok := c.structLits[ml]; ok {
+				retT = st
+				c.compileStructType(st)
+				c.compileStructListType(st)
+			} else if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+				retT = st
+				c.structLits[ml] = st
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+				c.compileStructListType(st)
+			}
+		}
+		listC := cTypeFromType(types.ListType{Elem: retT})
+		if listC == "" {
+			listC = "list_int"
+		}
+		switch listC {
+		case "list_string":
+			c.need(needListString)
+		case "list_float":
+			c.need(needListFloat)
+		case "list_list_int":
+			c.need(needListListInt)
+		}
+		return fmt.Sprintf("(%s){0, NULL}", listC)
 	}
 
 	src := c.compileExpr(q.Source)
