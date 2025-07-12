@@ -107,7 +107,8 @@ program q3
   call fmt_int(rows(1)%orderkey, s_orderkey)
   call fmt_int(rows(1)%shippriority, s_priority)
   call fmt_int(int(rows(1)%revenue+0.5d0), s_rev)
-  out = '[{"l_orderkey":'//trim(s_orderkey)//',"o_orderdate":"'//trim(rows(1)%orderdate)//'","o_shippriority":'//trim(s_priority)//',"revenue":'//trim(s_rev)//'}]'
+  out = '[{"l_orderkey":'//trim(s_orderkey)//',"o_orderdate":"'//trim(rows(1)%orderdate)//'",'// &
+       '"o_shippriority":'//trim(s_priority)//',"revenue":'//trim(s_rev)//'}]'
   print '(A)', trim(out)
 contains
   subroutine fmt_int(x, res)

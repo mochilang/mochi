@@ -47,7 +47,7 @@ func TestFortranCompiler_TPCH_Golden(t *testing.T) {
 		t.Fatalf("write error: %v", err)
 	}
 	exe := filepath.Join(dir, "main")
-	if out, err := exec.Command(gfortran, srcFile, "-o", exe).CombinedOutput(); err != nil {
+	if out, err := exec.Command(gfortran, srcFile, "-static", "-o", exe).CombinedOutput(); err != nil {
 		t.Fatalf("gfortran error: %v\n%s", err, out)
 	}
 	out, err := exec.Command(exe).CombinedOutput()

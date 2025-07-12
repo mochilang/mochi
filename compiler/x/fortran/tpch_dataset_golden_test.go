@@ -13,12 +13,12 @@ import (
 	"mochi/types"
 )
 
-// TestFortranCompiler_TPCH_Dataset_Golden compiles the TPCH q1-q3 examples from
+// TestFortranCompiler_TPCH_Dataset_Golden compiles the TPCH q1-q4 examples from
 // tests/dataset/tpc-h and verifies the generated code and program output.
 func TestFortranCompiler_TPCH_Dataset_Golden(t *testing.T) {
 	gfortran := ensureFortran(t)
 	root := testutil.FindRepoRoot(t)
-	for _, base := range []string{"q1", "q2", "q3"} {
+	for _, base := range []string{"q1", "q2", "q3", "q4"} {
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -46,7 +46,7 @@ func TestFortranCompiler_TPCH_Dataset_Golden(t *testing.T) {
 			t.Fatalf("write error: %v", err)
 		}
 		exe := filepath.Join(dir, "main")
-		if out, err := exec.Command(gfortran, srcFile, "-o", exe).CombinedOutput(); err != nil {
+		if out, err := exec.Command(gfortran, srcFile, "-static", "-o", exe).CombinedOutput(); err != nil {
 			t.Fatalf("gfortran error: %v\n%s", err, out)
 		}
 		out, err := exec.Command(exe).CombinedOutput()

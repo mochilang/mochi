@@ -18,7 +18,7 @@ import (
 func TestFortranCompiler_TPCH(t *testing.T) {
 	gfortran := ensureFortran(t)
 	root := testutil.FindRepoRoot(t)
-	for _, q := range []string{"q1", "q2", "q3"} {
+	for _, q := range []string{"q1", "q2", "q3", "q4"} {
 		q := q
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
@@ -48,7 +48,7 @@ func TestFortranCompiler_TPCH(t *testing.T) {
 				t.Fatalf("write error: %v", err)
 			}
 			exe := filepath.Join(dir, "main")
-			if out, err := exec.Command(gfortran, srcFile, "-o", exe).CombinedOutput(); err != nil {
+			if out, err := exec.Command(gfortran, srcFile, "-static", "-o", exe).CombinedOutput(); err != nil {
 				t.Fatalf("gfortran error: %v\n%s", err, out)
 			}
 			out, err := exec.Command(exe).CombinedOutput()
