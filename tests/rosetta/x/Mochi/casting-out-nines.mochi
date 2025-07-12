@@ -1,0 +1,90 @@
+// Casting out nines simplified implementation in Mochi
+// Uses arithmetic modulo base-1 like the Go example.
+
+fun parseIntBase(s: string, base: int): int {
+  let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  var n = 0
+  var i = 0
+  while i < len(s) {
+    var j = 0
+    var v = 0
+    while j < len(digits) {
+      if substring(digits, j, j+1) == s[i:i+1] {
+        v = j
+        break
+      }
+      j = j + 1
+    }
+    n = n * base + v
+    i = i + 1
+  }
+  return n
+}
+
+fun intToBase(n: int, base: int): string {
+  let digits = "0123456789abcdefghijklmnopqrstuvwxyz"
+  if n == 0 { return "0" }
+  var out = ""
+  var v = n
+  while v > 0 {
+    let d = v % base
+    out = digits[d:d+1] + out
+    v = v / base
+  }
+  return out
+}
+
+fun subset(base: int, begin: string, end: string): list<string> {
+  var b = parseIntBase(begin, base)
+  var e = parseIntBase(end, base)
+  var out: list<string> = []
+  var k = b
+  while k <= e {
+    let ks = intToBase(k, base)
+    let mod = base - 1
+    let r1 = parseIntBase(ks, base) % mod
+    let r2 = (parseIntBase(ks, base) * parseIntBase(ks, base)) % mod
+    if r1 == r2 {
+      out = append(out, ks)
+    }
+    k = k + 1
+  }
+  return out
+}
+
+let testCases = [
+  {"base": 10, "begin": "1", "end": "100", "kaprekar": ["1", "9", "45", "55", "99"]},
+  {"base": 17, "begin": "10", "end": "gg", "kaprekar": ["3d", "d4", "gg"]},
+]
+
+var idx = 0
+while idx < len(testCases) {
+  let tc = testCases[idx]
+  print("\nTest case base = " + str(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+  let s = subset(tc["base"], tc["begin"], tc["end"])
+  print("Subset:  " + str(s))
+  print("Kaprekar:" + str(tc["kaprekar"]))
+  var sx = 0
+  var valid = true
+  var i = 0
+  while i < len(tc["kaprekar"]) {
+    let k = tc["kaprekar"][i]
+    var found = false
+    while sx < len(s) {
+      if s[sx] == k {
+        found = true
+        sx = sx + 1
+        break
+      }
+      sx = sx + 1
+    }
+    if !found {
+      print("Fail:" + k + " not in subset")
+      valid = false
+      break
+    }
+    i = i + 1
+  }
+  if valid { print("Valid subset.") }
+  idx = idx + 1
+}
