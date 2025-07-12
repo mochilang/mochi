@@ -524,6 +524,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	finalBuf := new(bytes.Buffer)
 	c.buf = finalBuf
+	c.writeln("// " + filepath.Base(prog.Pos.Filename))
 	importsWritten := false
 	if c.needUtilImports {
 		c.writeln("import java.util.*;")
