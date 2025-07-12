@@ -111,7 +111,7 @@ Executed successfully: 85
 - [x] Support automatic imports for Go/Python packages.
 - [x] Implement dataset joins and YAML helpers.
 - [x] Improve JSON saving helpers.
-- [ ] Add command-line argument parsing utilities.
+- [x] Add command-line argument parsing utilities.
 - [ ] Optimize record structure generation.
 - [ ] Add support for asynchronous I/O.
 - [ ] Improve pattern matching translation.

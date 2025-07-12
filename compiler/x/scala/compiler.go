@@ -182,6 +182,10 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "}\n")
 		case "_safe_div":
 			out.WriteString(pad + "def _safe_div(a: Double, b: Double): Double = if(b == 0) 0 else a / b\n")
+		case "_parse_args":
+			out.WriteString(pad + "def _parse_args(args: Array[String]): Map[String,String] = {\n" +
+				pad + "  args.sliding(2,2).collect { case Array(k,v) if k.startsWith(\"--\") => k.drop(2) -> v }.toMap\n" +
+				pad + "}\n")
 		case "_truthy":
 			out.WriteString(pad + "def _truthy(v: Any): Boolean = v match {\n" +
 				pad + "  case null => false\n" +
