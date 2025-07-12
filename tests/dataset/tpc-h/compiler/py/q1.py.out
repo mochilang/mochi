@@ -2,17 +2,18 @@
 from __future__ import annotations
 import dataclasses
 import json
+import typing
 
 
 @dataclasses.dataclass
 class Lineitem:
-    l_quantity: typing.Any
-    l_extendedprice: typing.Any
-    l_discount: typing.Any
-    l_tax: typing.Any
-    l_returnflag: typing.Any
-    l_linestatus: typing.Any
-    l_shipdate: typing.Any
+    l_quantity: int
+    l_extendedprice: float
+    l_discount: float
+    l_tax: float
+    l_returnflag: str
+    l_linestatus: str
+    l_shipdate: str
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -214,7 +215,7 @@ def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus():
     ]
 
 
-lineitem = [
+lineitem: list[Lineitem] = [
     Lineitem(
         l_quantity=17,
         l_extendedprice=1000,
@@ -287,6 +288,6 @@ def _q0():
     ]
 
 
-result = _q0()
+result: list[dict[str, typing.Any]] = _q0()
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
