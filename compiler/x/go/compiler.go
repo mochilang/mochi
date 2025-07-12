@@ -4067,6 +4067,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 
 	switch call.Func {
 	case "print":
+		c.imports["fmt"] = true
+		simple := true
+		if c.env != nil {
+			for i, a := range call.Args {
+				t := c.inferExprType(a)
+				if isList(t) || isMap(t) || isAny(t) {
+					simple = false
+					_ = i // silence unused warning if later changed
+					break
+				}
+			}
+		}
+		if simple {
+			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
+		}
 		c.use("_print")
 		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "str":
