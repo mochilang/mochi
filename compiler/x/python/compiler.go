@@ -33,6 +33,7 @@ type Compiler struct {
 	currentGroup       string
 	groupFields        map[string]bool
 	autoStructs        map[string]types.StructType
+	dataclassRepr      bool
 	structKeys         map[string]string
 	autoCount          int
 	typeHints          bool
@@ -57,6 +58,7 @@ func New(env *types.Env) *Compiler {
 		autoCount:          0,
 		typeHints:          true,
 		autoStructsEnabled: true,
+		dataclassRepr:      true,
 	}
 }
 
@@ -69,6 +71,13 @@ func (c *Compiler) SetTypeHints(v bool) {
 // list literals that look like structs.
 func (c *Compiler) SetAutoStructs(v bool) {
 	c.autoStructsEnabled = v
+}
+
+// SetDataclassRepr controls whether auto-generated dataclasses include a
+// __repr__ method that prints the instance dictionary. It is enabled by
+// default.
+func (c *Compiler) SetDataclassRepr(v bool) {
+	c.dataclassRepr = v
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {
@@ -210,11 +219,13 @@ func (c *Compiler) emitAutoStructs() {
 			c.indent++
 			c.writeln("return getattr(self, key)")
 			c.indent--
-			c.writeln("")
-			c.writeln("def __repr__(self):")
-			c.indent++
-			c.writeln("return str(self.__dict__)")
-			c.indent--
+			if c.dataclassRepr {
+				c.writeln("")
+				c.writeln("def __repr__(self):")
+				c.indent++
+				c.writeln("return str(self.__dict__)")
+				c.indent--
+			}
 		}
 		c.indent--
 		c.writeln("")
