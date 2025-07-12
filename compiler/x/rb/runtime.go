@@ -194,6 +194,19 @@ end`
   s
 end`
 
+	helperAvg = `def _avg(v)
+  list = nil
+  if defined?(MGroup) && v.is_a?(MGroup)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return 0 if !list || list.empty?
+  list.sum(0.0) / list.length
+end`
+
 	helperMin = `def _min(v)
   list = nil
   if v.respond_to?(:Items)
@@ -450,6 +463,7 @@ var helperMap = map[string]string{
 	"_max":         helperMax,
 	"_first":       helperFirst,
 	"_sum":         helperSum,
+	"_avg":         helperAvg,
 	"_eval":        helperEval,
 	"_group":       helperGroup,
 	"_group_by":    helperGroupBy,

@@ -1,5 +1,17 @@
 require 'ostruct'
 
+def _avg(v)
+  list = nil
+  if defined?(MGroup) && v.is_a?(MGroup)
+    list = v.Items
+  elsif v.is_a?(Array)
+    list = v
+  elsif v.respond_to?(:to_a)
+    list = v.to_a
+  end
+  return 0 if !list || list.empty?
+  list.sum(0.0) / list.length
+end
 class MGroup
   include Enumerable
   attr_accessor :key, :Items
@@ -189,7 +201,7 @@ $result = (begin
 	_items0 = _groups
 	_res = []
 	for g in _items0
-		_res << OpenStruct.new(returnflag: g.key.returnflag, linestatus: g.key.linestatus, sum_qty: _sum(((g)).map { |x| x.l_quantity }), sum_base_price: _sum(((g)).map { |x| x.l_extendedprice }), sum_disc_price: _sum(((g)).map { |x| (x.l_extendedprice * ((1 - x.l_discount))) }), sum_charge: _sum(((g)).map { |x| ((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))) }), avg_qty: ((((g)).map { |x| x.l_quantity }).length > 0 ? (((g)).map { |x| x.l_quantity }).sum(0.0) / (((g)).map { |x| x.l_quantity }).length : 0), avg_price: ((((g)).map { |x| x.l_extendedprice }).length > 0 ? (((g)).map { |x| x.l_extendedprice }).sum(0.0) / (((g)).map { |x| x.l_extendedprice }).length : 0), avg_disc: ((((g)).map { |x| x.l_discount }).length > 0 ? (((g)).map { |x| x.l_discount }).sum(0.0) / (((g)).map { |x| x.l_discount }).length : 0), count_order: (g).length)
+		_res << OpenStruct.new(returnflag: g.key.returnflag, linestatus: g.key.linestatus, sum_qty: _sum(((g)).map { |x| x.l_quantity }), sum_base_price: _sum(((g)).map { |x| x.l_extendedprice }), sum_disc_price: _sum(((g)).map { |x| (x.l_extendedprice * ((1 - x.l_discount))) }), sum_charge: _sum(((g)).map { |x| ((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))) }), avg_qty: _avg(((g)).map { |x| x.l_quantity }), avg_price: _avg(((g)).map { |x| x.l_extendedprice }), avg_disc: _avg(((g)).map { |x| x.l_discount }), count_order: (g).length)
 	end
 	_res
 end)
