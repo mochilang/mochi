@@ -430,6 +430,7 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				} else if s.Let.Value != nil {
 					typ = c.inferExprType(s.Let.Value)
 					if st, ok := c.structTypeFromExpr(s.Let.Value); ok {
+						st = c.nameNestedStructs(pascalCase(name), st)
 						switch tt := st.(type) {
 						case types.StructType:
 							if tt.Name == "" {
@@ -1968,6 +1969,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 			} else {
 				typ = c.inferExprType(st.Value)
 				if stype, ok := c.structTypeFromExpr(st.Value); ok {
+					stype = c.nameNestedStructs(pascalCase(name), stype)
 					switch tt := stype.(type) {
 					case types.StructType:
 						if tt.Name == "" {

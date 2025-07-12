@@ -320,7 +320,11 @@ func (c *Compiler) mapLiteralStruct(m *parser.MapLiteral, name string) (typ, ini
 		if err != nil {
 			return "", "", false, err
 		}
-		valType := zigTypeOf(c.inferExprType(it.Value))
+		t := c.inferExprType(it.Value)
+		if name != "" {
+			t = c.nameNestedStructs(name+pascalCase(key), t)
+		}
+		valType := zigTypeOf(t)
 		keys[i] = key
 		fields[i] = fmt.Sprintf("%s: %s,", key, valType)
 		inits[i] = fmt.Sprintf(".%s = %s", key, valExpr)
@@ -428,6 +432,32 @@ func pascalCase(s string) string {
 	return sanitizeName(strings.Join(parts, ""))
 }
 
+// nameNestedStructs assigns generated names to nested struct types within t.
+// The prefix is used as the base for generated type names. The returned type
+// will have any new struct names registered in the environment.
+func (c *Compiler) nameNestedStructs(prefix string, t types.Type) types.Type {
+	switch tt := t.(type) {
+	case types.StructType:
+		if prefix != "" && tt.Name == "" {
+			tt.Name = pascalCase(prefix)
+		}
+		for _, f := range tt.Order {
+			tt.Fields[f] = c.nameNestedStructs(tt.Name+pascalCase(f), tt.Fields[f])
+		}
+		if c.env != nil && tt.Name != "" {
+			c.env.SetStruct(tt.Name, tt)
+		}
+		return tt
+	case types.ListType:
+		if st, ok := tt.Elem.(types.StructType); ok {
+			tt.Elem = c.nameNestedStructs(prefix+"Item", st)
+		}
+		return tt
+	default:
+		return t
+	}
+}
+
 // matchStructFromMapLiteral checks if the map literal matches any known struct
 // definition in the environment. It returns the struct name if a match is found.
 func (c *Compiler) matchStructFromMapLiteral(m *parser.MapLiteral) (string, bool) {
@@ -533,7 +563,11 @@ func (c *Compiler) structTypeFromMapLiteral(m *parser.MapLiteral, name string) (
 			return types.StructType{}, false
 		}
 		key := sanitizeName(k)
-		st.Fields[key] = c.inferExprType(it.Value)
+		t := c.inferExprType(it.Value)
+		if name != "" {
+			t = c.nameNestedStructs(name+pascalCase(key), t)
+		}
+		st.Fields[key] = t
 		st.Order[i] = key
 	}
 	return st, true

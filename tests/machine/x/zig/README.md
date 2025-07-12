@@ -115,6 +115,7 @@ Compiled programs: 100/100
 - [x] Improve struct inference when map literals match existing definitions.
 - [x] Enhance struct type inference for cast expressions.
 - [x] Enhance struct type inference for list literals with uniform fields.
+- [x] Enhance struct type inference for nested map fields.
 - [ ] Support union pattern matching using enums.
 - [ ] Implement iterators for list handling instead of ArrayList allocations.
 - [ ] Replace `catch unreachable` with proper error handling.
