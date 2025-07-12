@@ -2,7 +2,7 @@ object left_join_multi {
   case class Customer(id: Int, name: String)
   case class Item(orderId: Int, sku: String)
   case class Order(id: Int, customerId: Int)
-  case class Result(orderId: Int, name: String, item: Any)
+  case class Result(orderId: Int, name: String, item: Option[Item])
   case class Result1(orderId: Int, name: String, item: Item)
 
   val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))

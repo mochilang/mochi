@@ -1,7 +1,7 @@
 object right_join {
   case class Customer(id: Int, name: String)
   case class Order(id: Int, customerId: Int, total: Int)
-  case class Result(customerName: String, order: Any)
+  case class Result(customerName: String, order: Option[Order])
   case class Result1(customerName: String, order: Order)
 
   def _truthy(v: Any): Boolean = v match {

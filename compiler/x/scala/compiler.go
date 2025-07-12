@@ -141,10 +141,10 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _save_jsonl(rows: Iterable[Any], path: String): Unit = {\n" +
 				pad + "  def toMap(v: Any): Map[String,Any] = v match {\n" +
 				pad + "    case m: Map[_, _] => m.asInstanceOf[Map[String,Any]]\n" +
-				pad + "    case p: Product => p.getClass.getDeclaredFields.map(_.getName).zip(p.productIterator).toMap.asInstanceOf[Map[String,Any]]\n" +
+				pad + "    case p: Product => p.getClass.getDeclaredFields.map(_.getName).zip(p.productIterator.toList).toMap.asInstanceOf[Map[String,Any]]\n" +
 				pad + "    case x => Map(\"value\" -> x)\n" +
 				pad + "  }\n" +
-				pad + "  val out = if(path == \"-\") Console.out else new java.io.PrintWriter(path)\n" +
+				pad + "  val out: java.io.PrintWriter = if(path == \"-\") new java.io.PrintWriter(System.out) else new java.io.PrintWriter(path)\n" +
 				pad + "  rows.foreach(r => out.println(scala.util.parsing.json.JSONObject(toMap(r)).toString()))\n" +
 				pad + "  out.flush()\n" +
 				pad + "  if(out ne Console.out) out.close()\n" +
@@ -1219,61 +1219,40 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			return fmt.Sprintf("scala.math.%s", attr)
 		}
 	}
-	if t, err := c.env.GetVar(s.Root); err == nil {
-		if len(s.Tail) == 0 {
-			if _, ok := t.(types.GroupType); ok {
-				return fmt.Sprintf("%s._2", s.Root)
-			}
-			return s.Root
+	base := s.Root
+	var t types.Type
+	if v, err := c.env.GetVar(s.Root); err == nil {
+		t = v
+	}
+	if len(s.Tail) == 0 {
+		if _, ok := t.(types.GroupType); ok {
+			return fmt.Sprintf("%s._2", base)
 		}
+		return base
+	}
+	for _, f := range s.Tail {
 		switch tt := t.(type) {
 		case types.MapType:
-			base := s.Root
-			for i, f := range s.Tail {
-				base = fmt.Sprintf("%s(%q)", base, f)
-				if i < len(s.Tail)-1 {
-					// after indexing into map, assume value is map
-				}
-			}
-			return base
+			base = fmt.Sprintf("%s(%q)", base, f)
+			t = tt.Value
+			continue
 		case types.OptionType:
-			base := fmt.Sprintf("%s.get", s.Root)
-			cur := tt.Elem
-			for _, f := range s.Tail {
-				base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
-			}
-			_ = cur
-			return base
-		case types.StructType:
-			if tt.Name == "" {
-				base := s.Root
-				for _, f := range s.Tail {
-					base = fmt.Sprintf("%s(%q)", base, f)
-				}
-				return base
-			}
-		case types.GroupType:
-			if len(s.Tail) == 1 {
-				switch s.Tail[0] {
-				case "key":
-					return fmt.Sprintf("%s._1", s.Root)
-				case "items":
-					return fmt.Sprintf("%s._2", s.Root)
-				}
-			}
-			_ = tt // silence unused warning in case build tags differ
+			base = fmt.Sprintf("%s.get", base)
+			t = tt.Elem
 		}
-	} else if len(s.Tail) == 0 {
-		return s.Root
-	} else {
-		// fall through
+		if st, ok := t.(types.StructType); ok && st.Name != "" {
+			base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
+			if ft, ok := st.Fields[f]; ok {
+				t = ft
+			} else {
+				t = types.AnyType{}
+			}
+		} else {
+			base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
+			t = types.AnyType{}
+		}
 	}
-	parts := make([]string, len(s.Tail)+1)
-	parts[0] = s.Root
-	for i, f := range s.Tail {
-		parts[i+1] = sanitizeField(f)
-	}
-	return strings.Join(parts, ".")
+	return base
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
@@ -1675,6 +1654,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
+		if _, ok := types.ExprType(j.On, c.env).(types.BoolType); !ok {
+			c.use("_truthy")
+			cond = fmt.Sprintf("_truthy(%s)", cond)
+		}
 		if j.Side == nil {
 			parts = append(parts, fmt.Sprintf("%s <- %s", j.Var, s))
 			parts = append(parts, fmt.Sprintf("if %s", cond))
@@ -1699,6 +1682,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = oldEnv
 			return "", err
+		}
+		if _, ok := types.ExprType(q.Where, c.env).(types.BoolType); !ok {
+			c.use("_truthy")
+			cond = fmt.Sprintf("_truthy(%s)", cond)
 		}
 		parts = append(parts, fmt.Sprintf("if %s", cond))
 	}
@@ -1756,6 +1743,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				c.env = oldEnv
 				return "", err
+			}
+			if _, ok := types.ExprType(q.Group.Having, c.env).(types.BoolType); !ok {
+				c.use("_truthy")
+				cond = fmt.Sprintf("_truthy(%s)", cond)
 			}
 			groups = fmt.Sprintf("(%s).filter{ case(%s,%s) => { val %s = (%s, %s); %s } }", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", cond)
 		}
@@ -2030,6 +2021,8 @@ func (c *Compiler) typeOf(t types.Type) string {
 		return fmt.Sprintf("List[%s]", c.typeOf(tt.Elem))
 	case types.MapType:
 		return fmt.Sprintf("Map[%s, %s]", c.typeOf(tt.Key), c.typeOf(tt.Value))
+	case types.OptionType:
+		return fmt.Sprintf("Option[%s]", c.typeOf(tt.Elem))
 	case types.StructType:
 		return tt.Name
 	case types.UnionType:
