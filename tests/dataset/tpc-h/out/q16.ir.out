@@ -168,8 +168,8 @@ L6:
   Sort         r77, r39
   // from s in supplier
   Move         r39, r77
-  // print(result)
-  Print        r39
+  // json(result)
+  JSON         r39
   // expect result == []
   Const        r78, []
   Equal        r79, r39, r78

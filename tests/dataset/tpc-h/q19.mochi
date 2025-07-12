@@ -45,7 +45,7 @@ let revenues =
 
 let result = sum(revenues)
 
-print(result)
+json(result)
 
 test "Q19 returns total revenue from qualifying branded parts" {
   // Matches:

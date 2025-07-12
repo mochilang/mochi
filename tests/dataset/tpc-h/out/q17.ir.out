@@ -136,8 +136,8 @@ L0:
   Sum          r52, r4
   Const        r53, 7.0
   DivFloat     r54, r52, r53
-  // print(result)
-  Print        r54
+  // json(result)
+  JSON         r54
   // let expected = 100.0 / 7.0
   Const        r55, 100.0
   Const        r53, 7.0
