@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.24] – 2025-07-12T16:18:37+07:00
+
+### Added
+
+* Numerous new Rosetta Code tasks including Barnsley fern and Benford's law
+* TPC-H query 1 tests with updated dataset outputs
+* Bool list arrays and list length helpers in the C backend
+* JSON helper for TypeScript and typed grouping for C#
+
+### Changed
+
+* TypeScript compiler checks globals, preserves doc comments and uses interface-based structs
+* Scala compiler improves group and join generation with option types
+* Kotlin, Java and Go compilers refine join handling and map indexing
+* Python, C++ and Rust compilers enhance type inference and formatting
+
+### Fixed
+
+* Fortran query line continuations and circular prime example
+* Java map assignment bugs and TypeScript map loop issues
+* Dart numeric casts and C++ aggregate inference
+
 ## [0.10.23] – 2025-07-11T15:23:14+07:00
 
 ### Added
