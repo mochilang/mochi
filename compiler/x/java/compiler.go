@@ -25,6 +25,7 @@ type Compiler struct {
 	tmpCount          int
 	groupKeys         map[string]string
 	groupItems        map[string]string
+	forceMap          map[string]bool
 	variantOf         map[string]string
 	variantFields     map[string][]string
 	variantFieldTypes map[string][]string
@@ -58,6 +59,7 @@ func New() *Compiler {
 		types:             make(map[string]*parser.TypeDecl),
 		tmpCount:          0,
 		groupKeys:         make(map[string]string),
+		forceMap:          make(map[string]bool),
 		variantOf:         make(map[string]string),
 		variantFields:     make(map[string][]string),
 		variantFieldTypes: make(map[string][]string),
@@ -102,6 +104,39 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Fun != nil {
 			collectUsedGlobalsInStmts(s.Fun.Body, c.globalVars, c.globalUsed)
+		}
+	}
+
+	// detect variables that should remain maps
+	mapKeys := make(map[string][]string)
+	for _, s := range prog.Statements {
+		if s.Var != nil {
+			if ml := isMapLiteral(s.Var.Value); ml != nil {
+				var keys []string
+				for _, it := range ml.Items {
+					if k, ok := simpleStringKey(it.Key); ok {
+						keys = append(keys, k)
+					} else {
+						keys = nil
+						break
+					}
+				}
+				if keys != nil {
+					mapKeys[s.Var.Name] = keys
+				}
+			}
+		}
+	}
+	for _, s := range prog.Statements {
+		if s.Assign != nil {
+			if keys, ok := mapKeys[s.Assign.Name]; ok && len(s.Assign.Index) > 0 {
+				idx := s.Assign.Index[len(s.Assign.Index)-1].Start
+				if idx != nil {
+					if k, ok2 := simpleStringKey(idx); !ok2 || !containsStr(keys, k) {
+						c.forceMap[s.Assign.Name] = true
+					}
+				}
+			}
 		}
 	}
 
@@ -878,6 +913,13 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		return "Object"
 	}
 	if p != nil && p.Selector != nil {
+		full := p.Selector.Root
+		if len(p.Selector.Tail) > 0 {
+			full += "." + strings.Join(p.Selector.Tail, ".")
+		}
+		if typ, ok := c.vars[full]; ok {
+			return typ
+		}
 		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
 			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
 				typ := c.vars[keyVar]
@@ -1396,18 +1438,23 @@ func (c *Compiler) compileList(l *parser.ListLiteral) (string, error) {
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
-	if name := c.dataClassFor(m); name != "" {
-		var args []string
-		for _, it := range m.Items {
-			v, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
+	if !c.forceMap[c.curVar] {
+		if name := c.dataClassFor(m); name != "" {
+			var args []string
+			for _, it := range m.Items {
+				v, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				args = append(args, v)
 			}
-			args = append(args, v)
+			return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 		}
-		return fmt.Sprintf("new %s(%s)", name, strings.Join(args, ", ")), nil
 	}
-	// standard map literal
+	return c.compileMapAsMap(m)
+}
+
+func (c *Compiler) compileMapAsMap(m *parser.MapLiteral) (string, error) {
 	c.helpers["map_of_entries"] = true
 	if len(m.Items) == 0 {
 		return "new LinkedHashMap<>()", nil
@@ -1568,8 +1615,18 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
-			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		} else if ml := isMapLiteral(v.Value); ml != nil {
+			if c.forceMap[v.Name] {
+				tmp, err := c.compileMapAsMap(ml)
+				if err != nil {
+					return err
+				}
+				expr = tmp
+				kt, vt := c.mapLiteralTypes(ml)
+				typ = fmt.Sprintf("Map<%s,%s>", kt, vt)
+			} else if c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
+				expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+			}
 		}
 		if typ == "var" {
 			typ = "Object"
@@ -1597,8 +1654,18 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 		typ = c.inferType(v.Value)
 		if isListLiteral(v.Value) != nil {
 			expr = fmt.Sprintf("new ArrayList<>(%s)", expr)
-		} else if ml := isMapLiteral(v.Value); ml != nil && c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
-			expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+		} else if ml := isMapLiteral(v.Value); ml != nil {
+			if c.forceMap[v.Name] {
+				tmp, err := c.compileMapAsMap(ml)
+				if err != nil {
+					return err
+				}
+				expr = tmp
+				kt, vt := c.mapLiteralTypes(ml)
+				typ = fmt.Sprintf("Map<%s,%s>", kt, vt)
+			} else if c.dataClassFor(ml) == "" && !isMapLitCastToStructExpr(v.Value) {
+				expr = fmt.Sprintf("new HashMap<>(%s)", expr)
+			}
 		}
 		if typ == "var" {
 			typ = "Object"
@@ -2131,8 +2198,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					} else if strings.HasPrefix(typ, "List<") {
 						val = fmt.Sprintf("%s.get(%s)", val, idx)
 					} else if field, ok := simpleStringKey(op.Index.Start); ok {
-						val = fmt.Sprintf("%s.%s", val, field)
-						typ = c.fieldType(typ, field)
+						if c.hasField(typ, field) {
+							val = fmt.Sprintf("%s.%s", val, field)
+							typ = c.fieldType(typ, field)
+						} else {
+							val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+						}
 					} else {
 						val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
 					}
@@ -2144,8 +2215,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
 						typ = listElemType(typ)
 					} else if field, ok := simpleStringKey(op.Index.Start); ok {
-						val = fmt.Sprintf("%s.%s", val, field)
-						typ = c.fieldType(typ, field)
+						if c.hasField(typ, field) {
+							val = fmt.Sprintf("%s.%s", val, field)
+							typ = c.fieldType(typ, field)
+						} else {
+							val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
+							typ = mapValueType(typ)
+						}
 					} else {
 						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
 					}
@@ -2549,6 +2625,15 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func containsStr(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileExistsQuery(q *parser.QueryExpr) (string, error) {
