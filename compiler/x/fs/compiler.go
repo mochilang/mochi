@@ -35,6 +35,7 @@ type Compiler struct {
 	usesUnion     bool
 	usesExcept    bool
 	usesIntersect bool
+	usesGroupBy   bool
 }
 
 func defaultValue(typ string) string {
@@ -84,6 +85,7 @@ func New() *Compiler {
 		usesUnion:     false,
 		usesExcept:    false,
 		usesIntersect: false,
+		usesGroupBy:   false,
 	}
 }
 
@@ -105,6 +107,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesUnion = false
 	c.usesExcept = false
 	c.usesIntersect = false
+	c.usesGroupBy = false
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -137,6 +140,26 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	if c.usesIntersect {
 		c.prelude.WriteString("let _intersect (a: 'T list) (b: 'T list) : 'T list =\n")
 		c.prelude.WriteString("    a |> List.filter (fun x -> List.contains x b) |> List.distinct\n\n")
+	}
+	if c.usesGroupBy {
+		c.prelude.WriteString("type _Group<'K,'T>(key: 'K) =\n")
+		c.prelude.WriteString("    member val key = key with get, set\n")
+		c.prelude.WriteString("    member val Items = System.Collections.Generic.List<'T>() with get\n")
+		c.prelude.WriteString("    member this.size = this.Items.Count\n\n")
+		c.prelude.WriteString("let _group_by (src: 'T list) (keyfn: 'T -> 'K) : _Group<'K,'T> list =\n")
+		c.prelude.WriteString("    let groups = System.Collections.Generic.Dictionary<string,_Group<'K,'T>>()\n")
+		c.prelude.WriteString("    let order = System.Collections.Generic.List<string>()\n")
+		c.prelude.WriteString("    for it in src do\n")
+		c.prelude.WriteString("        let key = keyfn it\n")
+		c.prelude.WriteString("        let ks = string key\n")
+		c.prelude.WriteString("        let mutable g = Unchecked.defaultof<_Group<'K,'T>>\n")
+		c.prelude.WriteString("        if groups.TryGetValue(ks, &g) then ()\n")
+		c.prelude.WriteString("        else\n")
+		c.prelude.WriteString("            g <- _Group<'K,'T>(key)\n")
+		c.prelude.WriteString("            groups[ks] <- g\n")
+		c.prelude.WriteString("            order.Add(ks)\n")
+		c.prelude.WriteString("        g.Items.Add(it)\n")
+		c.prelude.WriteString("    [ for ks in order -> groups[ks] ]\n\n")
 	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
@@ -1440,6 +1463,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	if q.Group != nil {
 		c.groups[q.Group.Name] = true
+		c.usesGroupBy = true
 	}
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1484,32 +1508,30 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		inner.WriteString(yieldExpr)
 		inner.WriteString(" ]")
 		listExpr := inner.String()
-		grpExpr := fmt.Sprintf("%s |> List.groupBy (fun %s -> %s)", listExpr, pat, keyExpr)
-
-		keyVar := q.Group.Name + "Key"
-		itemsVar := q.Group.Name + "Items"
-		c.groups[q.Group.Name] = true
+		grpExpr := fmt.Sprintf("_group_by %s (fun %s -> %s)", listExpr, pat, keyExpr)
 
 		if q.Group.Having != nil {
 			condExpr, err := c.compileExpr(q.Group.Having)
 			if err != nil {
 				return "", err
 			}
-			grpExpr = fmt.Sprintf("%s |> List.filter (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
-				grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, condExpr)
+			tmp := q.Group.Name + "Tmp"
+			grpExpr = fmt.Sprintf("%s |> List.filter (fun %s -> let %s = %s in %s)",
+				grpExpr, tmp, q.Group.Name, tmp, condExpr)
 		}
 		if q.Sort != nil {
 			s, err := c.compileExpr(q.Sort)
 			if err != nil {
 				return "", err
 			}
+			tmp := q.Group.Name + "Tmp"
 			if strings.HasPrefix(s, "-") {
 				s = strings.TrimPrefix(s, "-")
-				grpExpr = fmt.Sprintf("%s |> List.sortByDescending (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
-					grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, s)
+				grpExpr = fmt.Sprintf("%s |> List.sortByDescending (fun %s -> let %s = %s in %s)",
+					grpExpr, tmp, q.Group.Name, tmp, s)
 			} else {
-				grpExpr = fmt.Sprintf("%s |> List.sortBy (fun (%s, %s) -> let %s = {| key = %s; items = %s |} in %s)",
-					grpExpr, keyVar, itemsVar, q.Group.Name, keyVar, itemsVar, s)
+				grpExpr = fmt.Sprintf("%s |> List.sortBy (fun %s -> let %s = %s in %s)",
+					grpExpr, tmp, q.Group.Name, tmp, s)
 			}
 		}
 		if q.Skip != nil {
@@ -1529,8 +1551,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if q.Distinct {
 			grpExpr = fmt.Sprintf("%s |> List.distinct", grpExpr)
 		}
-		return fmt.Sprintf("[ for %s, %s in %s do\n    let %s = {| key = %s; items = %s |}\n    yield %s ]",
-			keyVar, itemsVar, grpExpr, q.Group.Name, keyVar, itemsVar, sel), nil
+		return fmt.Sprintf("[ for %s in %s do\n    yield %s ]",
+			q.Group.Name, grpExpr, sel), nil
 	}
 
 	var b strings.Builder
