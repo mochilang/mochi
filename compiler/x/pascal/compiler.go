@@ -1008,6 +1008,12 @@ func typeString(t types.Type) string {
 	case types.MapType:
 		mt := tt
 		return fmt.Sprintf("specialize TFPGMap<%s, %s>", typeString(mt.Key), typeString(mt.Value))
+	case types.GroupType:
+		key := typeString(tt.Key)
+		if key == "" {
+			key = "Variant"
+		}
+		return fmt.Sprintf("specialize _Group<%s, %s>", key, typeString(tt.Elem))
 	case types.StructType:
 		return sanitizeName(tt.Name)
 	case types.UnionType:
@@ -1726,9 +1732,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			t := types.TypeOfExpr(p.Call.Args[0], c.env)
 			switch tt := t.(type) {
 			case types.GroupType:
+				key := typeString(tt.Key)
+				if key == "" {
+					key = "Variant"
+				}
 				elem := typeString(tt.Elem)
 				c.use("_countGroup")
-				return fmt.Sprintf("specialize _countGroup<%s>(%s)", elem, args[0]), nil
+				return fmt.Sprintf("specialize _countGroup<%s, %s>(%s)", key, elem, args[0]), nil
 			case types.ListType:
 				elem := typeString(tt.Elem)
 				c.use("_countList")
@@ -1790,9 +1800,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			t := types.TypeOfExpr(p.Call.Args[0], c.env)
 			if gt, ok := t.(types.GroupType); ok {
+				key := typeString(gt.Key)
+				if key == "" {
+					key = "Variant"
+				}
 				elem := typeString(gt.Elem)
 				c.use("_countGroup")
-				return fmt.Sprintf("(specialize _countGroup<%s>(%s) > 0)", elem, args[0]), nil
+				return fmt.Sprintf("(specialize _countGroup<%s, %s>(%s) > 0)", key, elem, args[0]), nil
 			}
 			return fmt.Sprintf("(Length(%s) > 0)", args[0]), nil
 		case "len":
@@ -2100,10 +2114,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.indent--
 		c.writeln("end;")
 
-		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s>>", groupType))
+		keyType := typeString(types.TypeOfExpr(q.Group.Exprs[0], child))
+		if keyType == "" {
+			keyType = "Variant"
+		}
+		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s, %s>>", keyType, groupType))
 		c.use("_group_by")
 		c.use("_Group")
-		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s>(%s, function(%s: %s): Variant begin Result := %s end);", tmpGrp, groupType, filtered, sanitizeName(q.Var), groupType, keyExpr))
+		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s, %s>(%s, function(%s: %s): %s begin Result := %s end);", tmpGrp, keyType, groupType, filtered, sanitizeName(q.Var), groupType, keyType, keyExpr))
 		tmpRes := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
 		c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmpRes))
 		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Group.Name), tmpGrp))
@@ -3239,7 +3257,7 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("end;")
 			c.writeln("")
 		case "_countGroup":
-			c.writeln("generic function _countGroup<T>(g: specialize _Group<T>): integer;")
+			c.writeln("generic function _countGroup<K,T>(g: specialize _Group<K,T>): integer;")
 			c.writeln("begin")
 			c.indent++
 			c.writeln("Result := Length(g.Items);")
@@ -3279,16 +3297,16 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("end;")
 			c.writeln("")
 		case "_Group":
-			c.writeln("generic _Group<T> = record")
+			c.writeln("generic _Group<K,T> = record")
 			c.indent++
-			c.writeln("Key: Variant;")
+			c.writeln("Key: K;")
 			c.writeln("Items: specialize TArray<T>;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
 		case "_group_by":
-			c.writeln("generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant): specialize TArray<specialize _Group<T>>;")
-			c.writeln("var i,j,idx: Integer; key: Variant; ks: string;")
+			c.writeln("generic function _group_by<K,T>(src: specialize TArray<T>; keyfn: function(it: T): K): specialize TArray<specialize _Group<K,T>>;")
+			c.writeln("var i,j,idx: Integer; key: K; keyVar: Variant; ks: string;")
 			c.writeln("begin")
 			c.indent++
 			c.writeln("SetLength(Result, 0);")
@@ -3296,7 +3314,8 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("begin")
 			c.indent++
 			c.writeln("key := keyfn(src[i]);")
-			c.writeln("ks := VarToStr(key);")
+			c.writeln("keyVar := key;")
+			c.writeln("ks := VarToStr(keyVar);")
 			c.writeln("idx := -1;")
 			c.writeln("for j := 0 to High(Result) do")
 			c.indent++
