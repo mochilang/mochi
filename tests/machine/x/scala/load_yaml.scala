@@ -23,7 +23,7 @@ object load_yaml {
   val adults = for { p <- people; if p.age >= 18 } yield Adult(name = p.name, email = p.email)
   def main(args: Array[String]): Unit = {
     for(a <- adults) {
-      println((a.name) + " " + (a.email))
+      println(a.name + " " + a.email)
     }
   }
 }

@@ -8,6 +8,6 @@ object record_assign {
   def main(args: Array[String]): Unit = {
     var c = Counter(n = 0)
     inc(c)
-    println((c.n))
+    println(c.n)
   }
 }

@@ -5,6 +5,6 @@ object nested_function {
   }
   
   def main(args: Array[String]): Unit = {
-    println((outer(3)))
+    println(outer(3))
   }
 }

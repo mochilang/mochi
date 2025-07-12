@@ -7,6 +7,6 @@ object match_expr {
     case _ => "unknown"
   }
   def main(args: Array[String]): Unit = {
-    println((label))
+    println(label)
   }
 }
