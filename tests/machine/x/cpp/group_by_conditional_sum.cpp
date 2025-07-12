@@ -26,7 +26,7 @@ inline bool operator!=(const __struct2 &a, const __struct2 &b) {
 }
 struct Result {
   decltype(std::declval<__struct2>().key) cat;
-  bool share;
+  double share;
 };
 inline bool operator==(const Result &a, const Result &b) {
   return a.cat == b.cat && a.share == b.share;
@@ -59,7 +59,7 @@ int main() {
           {g.key,
            Result{g.key,
                   (([&](auto v) {
-                     return std::accumulate(v.begin(), v.end(), 0);
+                     return std::accumulate(v.begin(), v.end(), 0.0);
                    })(([&]() {
                      std::vector<decltype((std::declval<Item>().flag
                                                ? std::declval<Item>().val
@@ -71,7 +71,7 @@ int main() {
                      return __items;
                    })()) /
                    ([&](auto v) {
-                     return std::accumulate(v.begin(), v.end(), 0);
+                     return std::accumulate(v.begin(), v.end(), 0.0);
                    })(([&]() {
                      std::vector<decltype(std::declval<Item>().val)> __items;
                      for (auto x : g.items) {

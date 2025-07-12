@@ -95,7 +95,7 @@ inline bool operator!=(const __struct7 &a, const __struct7 &b) {
 struct __struct8 {
   decltype(std::declval<__struct7>().key.c_custkey) c_custkey;
   decltype(std::declval<__struct7>().key.c_name) c_name;
-  bool revenue;
+  double revenue;
   decltype(std::declval<__struct7>().key.c_acctbal) c_acctbal;
   decltype(std::declval<__struct7>().key.n_name) n_name;
   decltype(std::declval<__struct7>().key.c_address) c_address;
@@ -163,7 +163,7 @@ int main() {
     std::vector<std::pair<double, __struct8>> __items;
     for (auto &g : __groups) {
       __items.push_back(
-          {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0); })(
+          {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
                ([&]() {
                  std::vector<decltype((
                      std::declval<__struct6>().l.l_extendedprice *
@@ -176,7 +176,7 @@ int main() {
                  return __items;
                })())),
            __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
-                       return std::accumulate(v.begin(), v.end(), 0);
+                       return std::accumulate(v.begin(), v.end(), 0.0);
                      })(([&]() {
                        std::vector<decltype((
                            std::declval<__struct6>().l.l_extendedprice *

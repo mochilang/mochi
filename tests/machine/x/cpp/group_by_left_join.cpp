@@ -40,7 +40,7 @@ inline bool operator!=(const __struct4 &a, const __struct4 &b) {
 }
 struct __struct5 {
   decltype(std::declval<__struct4>().key) name;
-  bool count;
+  int count;
 };
 inline bool operator==(const __struct5 &a, const __struct5 &b) {
   return a.name == b.name && a.count == b.count;

@@ -1,3 +1,3 @@
 --- People grouped by city ---
-Paris : count = 3 , avg_age = true
-Hanoi : count = 3 , avg_age = true
+Paris : count = 3 , avg_age = 55
+Hanoi : count = 3 , avg_age = 27.3333
