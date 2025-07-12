@@ -100,7 +100,7 @@ defp _json(v), do: IO.puts(_to_json(v))
 	helperQuery = "defp _query(src, joins, opts \\\\ %{}) do\n" +
 		"  where = Map.get(opts, :where)\n" +
 		"  items = Enum.map(src, fn v -> [v] end)\n" +
-		"  items = (if where, do: Enum.filter(items, fn r -> where.(r) end), else: items)\n" +
+
 		"  items = Enum.reduce(joins, items, fn j, items ->\n" +
 		"    joined = cond do\n" +
 		"      Map.get(j, :right) && Map.get(j, :left) ->\n" +
@@ -152,9 +152,10 @@ defp _json(v), do: IO.puts(_to_json(v))
 		"          end\n" +
 		"        end)\n" +
 		"    end\n" +
-		"    joined = (if where, do: Enum.filter(joined, fn r -> where.(r) end), else: joined)\n" +
+
 		"    joined\n" +
 		"  end)\n" +
+		"  items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items\n" +
 		"  items = (if Map.has_key?(opts, :sortKey), do: Enum.sort_by(items, fn r -> apply(opts[:sortKey], r) end), else: items)\n" +
 		"  items = (if Map.has_key?(opts, :skip), do: (n = opts[:skip]; (if n < length(items), do: Enum.drop(items, n), else: [])), else: items)\n" +
 		"  items = (if Map.has_key?(opts, :take), do: (n = opts[:take]; (if n < length(items), do: Enum.take(items, n), else: items)), else: items)\n" +

@@ -1,0 +1,12 @@
+[
+  %{
+    n_name: "BRAZIL",
+    c_custkey: 1,
+    c_name: "Alice",
+    c_acctbal: 100,
+    c_address: "123 St",
+    c_phone: "123-456",
+    c_comment: "Loyal",
+    revenue: 900.0
+  }
+]

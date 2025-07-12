@@ -44,7 +44,7 @@ defmodule Main do
                %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
              ],
              %{
-               select: fn c, o, l, n -> [c, o, l, n] end,
+               select: fn c, o, l, n -> %{c: c, o: o, l: l, n: n} end,
                where: fn [c, o, l, n] ->
                  o.o_orderdate >= @start_date && o.o_orderdate < @end_date &&
                    l.l_returnflag == "R"
@@ -53,7 +53,7 @@ defmodule Main do
            )
 
          groups =
-           _group_by(rows, fn [c, o, l, n] ->
+           _group_by(rows, fn %{c: c, o: o, l: l, n: n} ->
              %{
                c_custkey: c.c_custkey,
                c_name: c.c_name,
@@ -67,10 +67,10 @@ defmodule Main do
 
          items = groups
 
-        items =
-          Enum.sort_by(items, fn g ->
-            -_sum(for x <- g.items, do: x.l.l_extendedprice * (1 - x.l.l_discount))
-          end)
+         items =
+           Enum.sort_by(items, fn g ->
+             -_sum(for x <- g.items, do: x.l.l_extendedprice * (1 - x.l.l_discount))
+           end)
 
          Enum.map(items, fn g ->
            %{
@@ -147,7 +147,6 @@ defmodule Main do
   defp _query(src, joins, opts \\ %{}) do
     where = Map.get(opts, :where)
     items = Enum.map(src, fn v -> [v] end)
-    items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items
 
     items =
       Enum.reduce(joins, items, fn j, items ->
@@ -229,9 +228,10 @@ defmodule Main do
               end)
           end
 
-        joined = if where, do: Enum.filter(joined, fn r -> where.(r) end), else: joined
         joined
       end)
+
+    items = if where, do: Enum.filter(items, fn r -> where.(r) end), else: items
 
     items =
       if Map.has_key?(opts, :sortKey),

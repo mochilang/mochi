@@ -957,7 +957,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			break
 		}
 	}
-	c.env = child
+	envWithGroup := child
+	if q.Group != nil {
+		keyT := c.inferExprType(q.Group.Exprs[0])
+		genv := types.NewEnv(child)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
+		envWithGroup = genv
+	}
+	c.env = envWithGroup
 
 	// simple group-by without joins or filters
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
@@ -966,10 +973,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
-		keyT := c.inferExprType(q.Group.Exprs[0])
-		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
-		c.env = genv
+		c.env = envWithGroup
 		val, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
@@ -1071,17 +1075,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		keyT := c.inferExprType(q.Group.Exprs[0])
-		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
-		c.env = genv
+		c.env = envWithGroup
 		val, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
 			return "", err
 		}
 		c.env = orig
-		selectFn := fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
+		selectFn := ""
+		if q.Group != nil {
+			fields := make([]string, len(paramCopy))
+			for i, p := range paramCopy {
+				fields[i] = fmt.Sprintf("%s: %s", sanitizeName(p), sanitizeName(p))
+			}
+			selectFn = fmt.Sprintf("fn %s -> %%{%s} end", allParams, strings.Join(fields, ", "))
+		} else {
+			selectFn = fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
+		}
 		whereFn := ""
 		if cond != "" {
 			whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
@@ -1128,7 +1138,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(", take: " + takeExpr)
 		}
 		b.WriteString(" })\n")
-		b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn [%s] -> %s end)\n", allParams, keyExpr))
+		if q.Group != nil {
+			parts := make([]string, len(paramCopy))
+			for i, p := range paramCopy {
+				parts[i] = fmt.Sprintf("%s: %s", sanitizeName(p), sanitizeName(p))
+			}
+			pattern := "%{" + strings.Join(parts, ", ") + "}"
+			b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn %s -> %s end)\n", pattern, keyExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("\tgroups = _group_by(rows, fn [%s] -> %s end)\n", allParams, keyExpr))
+		}
 		// Keep full rows in group items to support nested queries
 		b.WriteString("\titems = groups\n")
 		if sortExpr != "" {
