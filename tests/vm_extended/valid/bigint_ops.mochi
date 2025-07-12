@@ -1,0 +1,3 @@
+print(1n + 2n)
+print(5n * 2n)
+print(-3n)

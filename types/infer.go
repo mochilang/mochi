@@ -269,6 +269,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		switch {
 		case p.Lit.Int != nil:
 			return IntType{}
+		case p.Lit.BigInt != nil:
+			return Int64Type{}
 		case p.Lit.Float != nil:
 			return FloatType{}
 		case p.Lit.Str != nil:
@@ -999,6 +1001,8 @@ func TypeOfPrimaryBasic(p *parser.Primary, env *Env) Type {
 			return StringType{}
 		case p.Lit.Int != nil:
 			return IntType{}
+		case p.Lit.BigInt != nil:
+			return Int64Type{}
 		case p.Lit.Float != nil:
 			return FloatType{}
 		case p.Lit.Bool != nil:

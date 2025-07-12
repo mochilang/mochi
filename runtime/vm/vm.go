@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"sort"
@@ -682,6 +683,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueStr, Str: b.Str + c.Str}
 			} else if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) + toFloat(c)}
+			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
+				res := new(big.Int).Add(toBigInt(b), toBigInt(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) + toInt(c)}
 			}
@@ -712,6 +716,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) - toFloat(c)}
+			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
+				res := new(big.Int).Sub(toBigInt(b), toBigInt(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) - toInt(c)}
 			}
@@ -739,6 +746,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueNull}
 			} else if b.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: -toFloat(b)}
+			} else if b.Tag == ValueBigInt {
+				res := new(big.Int).Neg(toBigInt(b))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: -b.Int}
 			}
@@ -766,6 +776,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) * toFloat(c)}
+			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
+				res := new(big.Int).Mul(toBigInt(b), toBigInt(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) * toInt(c)}
 			}
@@ -799,6 +812,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: toFloat(b) / toFloat(c)}
+			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
+				res := new(big.Int).Div(toBigInt(b), toBigInt(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) / toInt(c)}
 			}
@@ -838,6 +854,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			}
 			if b.Tag == ValueFloat || c.Tag == ValueFloat {
 				fr.regs[ins.A] = Value{Tag: ValueFloat, Float: math.Mod(toFloat(b), toFloat(c))}
+			} else if b.Tag == ValueBigInt || c.Tag == ValueBigInt {
+				res := new(big.Int).Rem(toBigInt(b), toBigInt(c))
+				fr.regs[ins.A] = Value{Tag: ValueBigInt, BigInt: res}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: toInt(b) % toInt(c)}
 			}
@@ -3049,6 +3068,11 @@ func (fc *funcCompiler) compilePrimary(p *parser.Primary) int {
 		switch {
 		case p.Lit.Int != nil:
 			v := Value{Tag: ValueInt, Int: *p.Lit.Int}
+			return fc.constReg(p.Pos, v)
+		case p.Lit.BigInt != nil:
+			s := (*p.Lit.BigInt)[:len(*p.Lit.BigInt)-1]
+			bi, _ := new(big.Int).SetString(s, 10)
+			v := Value{Tag: ValueBigInt, BigInt: bi}
 			return fc.constReg(p.Pos, v)
 		case p.Lit.Float != nil:
 			v := Value{Tag: ValueFloat, Float: *p.Lit.Float}
@@ -7153,6 +7177,11 @@ func valueToString(v Value) string {
 		switch val.Tag {
 		case ValueInt:
 			return fmt.Sprintf("%d", val.Int)
+		case ValueBigInt:
+			if val.BigInt != nil {
+				return val.BigInt.String()
+			}
+			return "0"
 		case ValueFloat:
 			s := strconv.FormatFloat(val.Float, 'f', -1, 64)
 			if !strings.Contains(s, ".") {
@@ -7238,6 +7267,12 @@ func toFloat(v Value) float64 {
 	switch v.Tag {
 	case ValueFloat:
 		return v.Float
+	case ValueBigInt:
+		if v.BigInt != nil {
+			f, _ := new(big.Float).SetInt(v.BigInt).Float64()
+			return f
+		}
+		return 0
 	case ValueBool:
 		if v.Bool {
 			return 1
@@ -7263,6 +7298,11 @@ func toInt(v Value) int {
 	switch v.Tag {
 	case ValueInt:
 		return v.Int
+	case ValueBigInt:
+		if v.BigInt != nil {
+			return int(v.BigInt.Int64())
+		}
+		return 0
 	case ValueBool:
 		if v.Bool {
 			return 1
@@ -7281,10 +7321,37 @@ func toInt(v Value) int {
 	return 0
 }
 
+func toBigInt(v Value) *big.Int {
+	switch v.Tag {
+	case ValueBigInt:
+		if v.BigInt != nil {
+			return new(big.Int).Set(v.BigInt)
+		}
+		return big.NewInt(0)
+	case ValueInt:
+		return big.NewInt(int64(v.Int))
+	case ValueFloat:
+		return big.NewInt(int64(v.Float))
+	case ValueBool:
+		if v.Bool {
+			return big.NewInt(1)
+		}
+		return big.NewInt(0)
+	case ValueStr:
+		bi, ok := new(big.Int).SetString(v.Str, 10)
+		if ok {
+			return bi
+		}
+	}
+	return big.NewInt(0)
+}
+
 func valTag(v Value) regTag {
 	switch v.Tag {
 	case ValueInt:
 		return tagInt
+	case ValueBigInt:
+		return tagUnknown
 	case ValueFloat:
 		return tagFloat
 	case ValueBool:
@@ -7301,12 +7368,17 @@ func valuesEqual(a, b Value) bool {
 	if a.Tag == ValueFloat || b.Tag == ValueFloat {
 		return toFloat(a) == toFloat(b)
 	}
+	if a.Tag == ValueBigInt || b.Tag == ValueBigInt {
+		return toBigInt(a).Cmp(toBigInt(b)) == 0
+	}
 	if a.Tag != b.Tag {
 		return false
 	}
 	switch a.Tag {
 	case ValueInt:
 		return a.Int == b.Int
+	case ValueBigInt:
+		return a.BigInt.Cmp(b.BigInt) == 0
 	case ValueBool:
 		return a.Bool == b.Bool
 	case ValueStr:
@@ -7391,6 +7463,8 @@ func valueLess(a, b Value) bool {
 				bi = 1
 			}
 			return a.Int < bi
+		case ValueBigInt:
+			return big.NewInt(int64(a.Int)).Cmp(b.BigInt) < 0
 		}
 	case ValueFloat:
 		switch b.Tag {
@@ -7404,6 +7478,25 @@ func valueLess(a, b Value) bool {
 				bi = 1
 			}
 			return a.Float < float64(bi)
+		case ValueBigInt:
+			bf := new(big.Float).SetFloat64(a.Float)
+			return bf.Cmp(new(big.Float).SetInt(b.BigInt)) < 0
+		}
+	case ValueBigInt:
+		switch b.Tag {
+		case ValueBigInt:
+			return a.BigInt.Cmp(b.BigInt) < 0
+		case ValueInt:
+			return a.BigInt.Cmp(big.NewInt(int64(b.Int))) < 0
+		case ValueFloat:
+			af := new(big.Float).SetInt(a.BigInt)
+			return af.Cmp(new(big.Float).SetFloat64(b.Float)) < 0
+		case ValueBool:
+			bi := big.NewInt(0)
+			if b.Bool {
+				bi = big.NewInt(1)
+			}
+			return a.BigInt.Cmp(bi) < 0
 		}
 	case ValueStr:
 		if b.Tag == ValueStr {

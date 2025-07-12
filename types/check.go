@@ -1486,6 +1486,8 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 		switch {
 		case p.Lit.Int != nil:
 			return IntType{}, nil
+		case p.Lit.BigInt != nil:
+			return Int64Type{}, nil
 		case p.Lit.Float != nil:
 			return FloatType{}, nil
 		case p.Lit.Str != nil:

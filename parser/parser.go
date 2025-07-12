@@ -28,6 +28,7 @@ var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
 	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|then|for|while|in|generate|match|fetch|load|save|package|export|fact|rule|all|null)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
 	{Name: "Float", Pattern: `\d+\.\d+`},
+	{Name: "BigInt", Pattern: `\d+n`},
 	{Name: "Int", Pattern: `\d+`},
 	{Name: "String", Pattern: `"(?:\\.|[^"])*"`},
 	{Name: "Punct", Pattern: `==|!=|<=|>=|&&|\|\||=>|:-|\.\.|[-+*/%=<>!|{}\[\](),.:]`},
@@ -533,12 +534,13 @@ type CallExpr struct {
 }
 
 type Literal struct {
-	Pos   lexer.Position
-	Int   *int     `parser:"@Int"`
-	Float *float64 `parser:"| @Float"`
-	Bool  *boolLit `parser:"| @('true' | 'false')"`
-	Str   *string  `parser:"| @String"`
-	Null  bool     `parser:"| @'null'"`
+	Pos    lexer.Position
+	Int    *int     `parser:"@Int"`
+	BigInt *string  `parser:"| @BigInt"`
+	Float  *float64 `parser:"| @Float"`
+	Bool   *boolLit `parser:"| @('true' | 'false')"`
+	Str    *string  `parser:"| @String"`
+	Null   bool     `parser:"| @'null'"`
 }
 
 // --- Stream / Struct ---
