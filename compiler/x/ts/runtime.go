@@ -321,7 +321,7 @@ const (
 		"  get(name: string): any { return this.state[name]; }\n" +
 		"}\n"
 
-	helperQuery = "function _query(src: any[], joins: any[], opts: any): any {\n" +
+	helperQuery = "function _query<S, R>(src: S[], joins: any[], opts: { select: (...args: any[]) => R; where?: (...args: any[]) => boolean; sortKey?: (...args: any[]) => any; skip?: number; take?: number; }): R[] {\n" +
 		"  let items = src.map(v => [v]);\n" +
 		"  for (const j of joins) {\n" +
 		"    const joined: any[] = [];\n" +
@@ -397,14 +397,14 @@ const (
 		"  return res;\n" +
 		"}\n"
 
-	helperHashJoin = "function _hashJoin(left: any[], right: any[], lk: (v: any) => any, rk: (v: any) => any): any[] {\n" +
+	helperHashJoin = "function _hashJoin<L, R>(left: L[], right: R[], lk: (v: L) => any, rk: (v: R) => any): Array<[L, R]> {\n" +
 		"  const idx = new Map<any, any[]>();\n" +
 		"  for (const r of right) {\n" +
 		"    const k = rk(r);\n" +
 		"    const arr = idx.get(k);\n" +
 		"    if (arr) arr.push(r); else idx.set(k, [r]);\n" +
 		"  }\n" +
-		"  const out: any[] = [];\n" +
+		"  const out: Array<[L, R]> = [];\n" +
 		"  for (const l of left) {\n" +
 		"    const arr = idx.get(lk(l));\n" +
 		"    if (!arr) continue;\n" +
