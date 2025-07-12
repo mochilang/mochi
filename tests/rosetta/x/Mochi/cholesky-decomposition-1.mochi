@@ -1,0 +1,150 @@
+// Mochi translation of the Go cholesky-decomposition-1 example
+// Uses a packed representation for the lower triangle similar to the Go code.
+
+fun sqrtApprox(x: float): float {
+  var guess = x
+  var i = 0
+  while i < 20 {
+    guess = (guess + x / guess) / 2.0
+    i = i + 1
+  }
+  return guess
+}
+
+// construct a symmetric matrix in packed lower-triangular form
+fun makeSym(order: int, elements: list<float>): map<string, any> {
+  return {"order": order, "ele": elements}
+}
+
+// pretty print the packed symmetric matrix
+fun unpackSym(m: map<string, any>): list<list<float>> {
+  let n = m["order"]
+  let ele = m["ele"]
+  var mat: list<list<float>> = []
+  var idx = 0
+  var r = 0
+  while r < n {
+    var row: list<float> = []
+    var c = 0
+    while c <= r {
+      row = append(row, ele[idx])
+      idx = idx + 1
+      c = c + 1
+    }
+    while c < n {
+      row = append(row, 0.0)
+      c = c + 1
+    }
+    mat = append(mat, row)
+    r = r + 1
+  }
+  r = 0
+  while r < n {
+    var c = r + 1
+    while c < n {
+      mat[r][c] = mat[c][r]
+      c = c + 1
+    }
+    r = r + 1
+  }
+  return mat
+}
+
+fun printMat(m: list<list<float>>) {
+  var i = 0
+  while i < len(m) {
+    var line = ""
+    var j = 0
+    while j < len(m[i]) {
+      line = line + str(m[i][j])
+      if j < len(m[i]) - 1 { line = line + " " }
+      j = j + 1
+    }
+    print(line)
+    i = i + 1
+  }
+}
+
+fun printSym(m: map<string, any>) {
+  printMat(unpackSym(m))
+}
+
+// pretty print the packed lower triangular matrix (upper entries shown as 0)
+fun printLower(m: map<string, any>) {
+  let n = m["order"]
+  let ele = m["ele"]
+  var mat: list<list<float>> = []
+  var idx = 0
+  var r = 0
+  while r < n {
+    var row: list<float> = []
+    var c = 0
+    while c <= r {
+      row = append(row, ele[idx])
+      idx = idx + 1
+      c = c + 1
+    }
+    while c < n {
+      row = append(row, 0.0)
+      c = c + 1
+    }
+    mat = append(mat, row)
+    r = r + 1
+  }
+  printMat(mat)
+}
+
+// perform Cholesky decomposition returning a packed lower matrix
+fun choleskyLower(a: map<string, any>): map<string, any> {
+  let n = a["order"]
+  let ae = a["ele"]
+  var le: list<float> = []
+  var idx = 0
+  while idx < len(ae) {
+    le = append(le, 0.0)
+    idx = idx + 1
+  }
+
+  var row = 1
+  var col = 1
+  var dr = 0
+  var dc = 0
+  var i = 0
+  while i < len(ae) {
+    let e = ae[i]
+    if i < dr {
+      var d = (e - le[i]) / le[dc]
+      le[i] = d
+      var ci = col
+      var cx = dc
+      var j = i + 1
+      while j <= dr {
+        cx = cx + ci
+        ci = ci + 1
+        le[j] = le[j] + d * le[cx]
+        j = j + 1
+      }
+      col = col + 1
+      dc = dc + col
+    } else {
+      le[i] = sqrtApprox(e - le[i])
+      row = row + 1
+      dr = dr + row
+      col = 1
+      dc = 0
+    }
+    i = i + 1
+  }
+  return {"order": n, "ele": le}
+}
+
+fun demo(a: map<string, any>) {
+  print("A:")
+  printSym(a)
+  print("L:")
+  let l = choleskyLower(a)
+  printLower(l)
+}
+
+demo(makeSym(3, [25.0, 15.0, 18.0, -5.0, 0.0, 11.0]))
+demo(makeSym(4, [18.0, 22.0, 70.0, 54.0, 86.0, 174.0, 42.0, 62.0, 134.0, 106.0]))
