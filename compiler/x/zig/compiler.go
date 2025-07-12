@@ -5,6 +5,7 @@ package zigcode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -2354,6 +2355,56 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 				return operand{expr: expr, isStr: true}, nil
 			}
 		}
+		if opName == "+" || opName == "-" || opName == "*" || opName == "/" || opName == "%" {
+			if li, ok := parseIntLiteral(left.expr); ok {
+				if ri, ok2 := parseIntLiteral(right.expr); ok2 {
+					var res int
+					switch opName {
+					case "+":
+						res = li + ri
+					case "-":
+						res = li - ri
+					case "*":
+						res = li * ri
+					case "/":
+						if ri != 0 {
+							res = li / ri
+						}
+					case "%":
+						if ri != 0 {
+							res = li % ri
+						}
+					}
+					return operand{expr: strconv.Itoa(res)}, nil
+				}
+			}
+			if lf, ok := parseFloatLiteral(left.expr); ok {
+				if rf, ok2 := parseFloatLiteral(right.expr); ok2 {
+					var res float64
+					switch opName {
+					case "+":
+						res = lf + rf
+					case "-":
+						res = lf - rf
+					case "*":
+						res = lf * rf
+					case "/":
+						if rf != 0 {
+							res = lf / rf
+						}
+					case "%":
+						if rf != 0 {
+							res = math.Mod(lf, rf)
+						}
+					}
+					s := strconv.FormatFloat(res, 'f', -1, 64)
+					if !strings.ContainsAny(s, ".eE") && (strings.Contains(left.expr, ".") || strings.Contains(right.expr, ".")) && !strings.Contains(s, ".") {
+						s += ".0"
+					}
+					return operand{expr: s}, nil
+				}
+			}
+		}
 		if (opName == "==" || opName == "!=") && (left.isStr || right.isStr) {
 			cmp := fmt.Sprintf("std.mem.eql(u8, %s, %s)", left.expr, right.expr)
 			if opName == "!=" {
@@ -4188,4 +4239,18 @@ func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, *parse
 	default:
 		return nil, nil, nil, false
 	}
+}
+
+func parseIntLiteral(s string) (int, bool) {
+	if v, err := strconv.Atoi(s); err == nil {
+		return v, true
+	}
+	return 0, false
+}
+
+func parseFloatLiteral(s string) (float64, bool) {
+	if v, err := strconv.ParseFloat(s, 64); err == nil {
+		return v, true
+	}
+	return 0, false
 }

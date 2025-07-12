@@ -120,7 +120,7 @@ Compiled programs: 100/100
 - [ ] Support union pattern matching using enums.
 - [ ] Implement iterators for list handling instead of ArrayList allocations.
 - [x] Replace `catch unreachable` with proper error handling.
-- [ ] Optimize constant folding for arithmetic expressions.
+- [x] Optimize constant folding for arithmetic expressions.
 - [ ] Improve type inference for generic functions.
 - [ ] Handle recursive type definitions.
 - [ ] Emit comments describing inferred variable types.

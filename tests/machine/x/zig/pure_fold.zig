@@ -5,5 +5,5 @@ fn triple(x: i32) i32 {
 }
 
 pub fn main() void {
-    std.debug.print("{d}\n", .{triple((1 + 2))});
+    std.debug.print("{d}\n", .{triple(3)});
 }

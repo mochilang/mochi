@@ -25,7 +25,7 @@ const people = &[_]PeopleItem{
     .name = "Diana",
     .age = 45,
 },
-}; // []const Peopleitem
+}; // []const PeopleItem
 const adults = blk0: { var _tmp0 = std.ArrayList(struct {
     name: []const u8,
     age: i32,

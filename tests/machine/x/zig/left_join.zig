@@ -17,7 +17,7 @@ const customers = &[_]CustomersItem{
     .id = 2,
     .name = "Bob",
 },
-}; // []const Customersitem
+}; // []const CustomersItem
 const OrdersItem = struct {
     id: i32,
     customerId: i32,
@@ -34,7 +34,7 @@ const orders = &[_]OrdersItem{
     .customerId = 3,
     .total = 80,
 },
-}; // []const Ordersitem
+}; // []const OrdersItem
 const result = blk0: { var _tmp0 = std.ArrayList(struct {
     orderId: i32,
     customer: CustomersItem,
