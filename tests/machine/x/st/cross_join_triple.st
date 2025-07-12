@@ -7,7 +7,7 @@ combos := [ | tmp |
   nums do: [:n |
     letters do: [:l |
       bools do: [:b |
-        tmp add: Dictionary newFrom:{#n->n. #l->l. #b->b}.
+        tmp add: Dictionary newFrom:{n->n. l->l. b->b}.
       ].
     ].
   ].
