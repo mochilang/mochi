@@ -118,6 +118,7 @@ type BuildCmd struct {
 	File   string `arg:"positional,required" help:"Source file"`
 	Target string `arg:"-t,--target" help:"Target language"`
 	Out    string `arg:"-o" help:"Output file (default stdout)"`
+	NoRepr bool   `arg:"--no-repr" help:"Omit __repr__ in auto dataclasses"`
 }
 
 type BuildXCmd struct {
@@ -511,9 +512,19 @@ func runBuild(cmd *BuildCmd) error {
 	if lang == "" && cmd.Out != "" {
 		lang = strings.TrimPrefix(filepath.Ext(cmd.Out), ".")
 	}
-	data, err := compileProgram(lang, env, prog, modRoot, cmd.File)
-	if err != nil {
-		return err
+	var data []byte
+	var compileErr error
+	if lang == "py" || lang == "python" {
+		c := pycode.New(env)
+		if cmd.NoRepr {
+			c.SetDataclassRepr(false)
+		}
+		data, compileErr = c.Compile(prog)
+	} else {
+		data, compileErr = compileProgram(lang, env, prog, modRoot, cmd.File)
+	}
+	if compileErr != nil {
+		return compileErr
 	}
 	if cmd.Out != "" {
 		return os.WriteFile(cmd.Out, data, 0644)
@@ -834,6 +845,7 @@ func newBuildCmd() *cobra.Command {
 	}
 	c.Flags().StringVarP(&bc.Target, "target", "t", "", "Target language")
 	c.Flags().StringVarP(&bc.Out, "out", "o", "", "Output file (default stdout)")
+	c.Flags().BoolVar(&bc.NoRepr, "no-repr", false, "Omit __repr__ in auto dataclasses")
 	return c
 }
 

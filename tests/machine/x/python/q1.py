@@ -18,9 +18,6 @@ class Lineitem:
     def __getitem__(self, key):
         return getattr(self, key)
 
-    def __repr__(self):
-        return str(self.__dict__)
-
 
 from typing import Any, TypeVar, Generic, Callable
 
