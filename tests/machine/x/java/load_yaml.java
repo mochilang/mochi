@@ -77,8 +77,8 @@ public class LoadYaml {
     List<NameEmail> adults = (new java.util.function.Supplier<List<NameEmail>>(){public List<NameEmail> get(){
     List<NameEmail> res0 = new ArrayList<>();
     for (var p : people) {
-        if (!(((Number)((Map<?,?>)p).get("age")).doubleValue() >= 18)) continue;
-        res0.add(new NameEmail(((Map<?,?>)p).get("name"), ((Map<?,?>)p).get("email")));
+        if (!(((Number)((Map<String,Object>)p).get("age")).doubleValue() >= 18)) continue;
+        res0.add(new NameEmail(((Map<String,Object>)p).get("name"), ((Map<String,Object>)p).get("email")));
     }
     return res0;
 }}).get();
