@@ -24,10 +24,10 @@ function __eq(a, b)
     return true
 end
 function sum_rec(n, acc)
-  if __eq(n, 0) then
-    return acc
-  end
-  return sum_rec((n - 1), __add(acc, n))
+    if __eq(n, 0) then
+        return acc
+    end
+    return sum_rec((n - 1), __add(acc, n))
 end
 
 print(sum_rec(10, 0))

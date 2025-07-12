@@ -75,34 +75,34 @@ function __iter(obj)
 end
 data = {{["tag"]="a", ["val"]=1}, {["tag"]="a", ["val"]=2}, {["tag"]="b", ["val"]=3}}
 groups = (function()
-  local _groups = __group_by(data, function(d) return d.tag end)
-  local _res = {}
-  for _, g in ipairs(_groups) do
-    _res[#_res+1] = g
-  end
-  return _res
+    local _groups = __group_by(data, function(d) return d.tag end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = g
+    end
+    return _res
 end)()
 tmp = {}
 for _, g in ipairs(groups) do
-  local total = 0
-  for _, x in __iter(g.items) do
-    total = __add(total, x.val)
-    ::__continue1::
-  end
-  tmp = __append(tmp, {["tag"]=g.key, ["total"]=total})
-  ::__continue0::
+    local total = 0
+    for _, x in __iter(g.items) do
+        total = __add(total, x.val)
+        ::__continue1::
+    end
+    tmp = __append(tmp, {["tag"]=g.key, ["total"]=total})
+    ::__continue0::
 end
 result = (function()
-  local _res = {}
-  for _, r in ipairs(tmp) do
-    _res[#_res+1] = {__key = r.tag, __val = r}
-  end
-  local items = _res
-  table.sort(items, function(a,b) return a.__key < b.__key end)
-  local tmp = {}
-  for _, it in ipairs(items) do tmp[#tmp+1] = it.__val end
-  items = tmp
-  _res = items
-  return _res
+    local _res = {}
+    for _, r in ipairs(tmp) do
+        _res[#_res+1] = {__key = r.tag, __val = r}
+    end
+    local items = _res
+    table.sort(items, function(a,b) return a.__key < b.__key end)
+    local tmp = {}
+    for _, it in ipairs(items) do tmp[#tmp+1] = it.__val end
+    items = tmp
+    _res = items
+    return _res
 end)()
 print(table.concat(result, " "))

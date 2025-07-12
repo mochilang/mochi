@@ -215,19 +215,19 @@ end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}}
 orders = {{["id"]=100, ["customerId"]=1}, {["id"]=101, ["customerId"]=1}, {["id"]=102, ["customerId"]=2}}
 stats = (function()
-  local _src = orders
-  local _rows = __query(_src, {
-    { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end }
-  }, { selectFn = function(o, c) return {o, c} end })
-  local _groups = __group_by_rows(_rows, function(o, c) return c.name end, function(o, c) local _row = __merge(o, c); _row.o = o; _row.c = c; return _row end)
-  local _res = {}
-  for _, g in ipairs(_groups) do
-    _res[#_res+1] = {["name"]=g.key, ["count"]=__count(g)}
-  end
-  return _res
+    local _src = orders
+    local _rows = __query(_src, {
+        { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end }
+    }, { selectFn = function(o, c) return {o, c} end })
+    local _groups = __group_by_rows(_rows, function(o, c) return c.name end, function(o, c) local _row = __merge(o, c); _row.o = o; _row.c = c; return _row end)
+    local _res = {}
+    for _, g in ipairs(_groups) do
+        _res[#_res+1] = {["name"]=g.key, ["count"]=__count(g)}
+    end
+    return _res
 end)()
 print("--- Orders per customer ---")
 for _, s in ipairs(stats) do
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(s.name, "orders:", s.count)
-  ::__continue0::
+    print(s.name, "orders:", s.count)
+    ::__continue0::
 end

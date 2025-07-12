@@ -36,11 +36,11 @@ function __run_tests(tests)
     end
 end
 function test_addition_works()
-  local x = (1 + 2)
-  if not (__eq(x, 3)) then error('expect failed') end
+    local x = (1 + 2)
+    if not (__eq(x, 3)) then error('expect failed') end
 end
 
 print("ok")
 local __tests = {
-  {name="addition works", fn=test_addition_works},
+    {name="addition works", fn=test_addition_works},
 }

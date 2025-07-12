@@ -1,21 +1,21 @@
 people = {{["name"]="Alice", ["age"]=30}, {["name"]="Bob", ["age"]=15}, {["name"]="Charlie", ["age"]=65}, {["name"]="Diana", ["age"]=45}}
 adults = (function()
-  local _res = {}
-  for _, person in ipairs(people) do
-    if (person.age >= 18) then
-      _res[#_res+1] = {["name"]=person.name, ["age"]=person.age, ["is_senior"]=(person.age >= 60)}
+    local _res = {}
+    for _, person in ipairs(people) do
+        if (person.age >= 18) then
+            _res[#_res+1] = {["name"]=person.name, ["age"]=person.age, ["is_senior"]=(person.age >= 60)}
+        end
     end
-  end
-  return _res
+    return _res
 end)()
 print("--- Adults ---")
 for _, person in ipairs(adults) do
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(person.name, "is", person.age, (function()
-  if person.is_senior then
-    return " (senior)"
-  else
-    return ""
-  end
+    print(person.name, "is", person.age, (function()
+    if person.is_senior then
+        return " (senior)"
+    else
+        return ""
+    end
 end)())
-  ::__continue0::
+    ::__continue0::
 end

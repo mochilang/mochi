@@ -1,16 +1,3 @@
-function __eq(a, b)
-    if type(a) ~= type(b) then return false end
-    if type(a) == 'number' then return math.abs(a-b) < 1e-9 end
-    if type(a) ~= 'table' then return a == b end
-    if (a[1] ~= nil or #a > 0) and (b[1] ~= nil or #b > 0) then
-        if #a ~= #b then return false end
-        for i = 1, #a do if not __eq(a[i], b[i]) then return false end end
-        return true
-    end
-    for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
-    for k, _ in pairs(b) do if a[k] == nil then return false end end
-    return true
-end
 function __exists(v)
     if type(v) == 'table' then
         if v.items ~= nil then return #v.items > 0 end
@@ -24,12 +11,12 @@ function __exists(v)
 end
 data = {1, 2}
 flag = __exists((function()
-  local _res = {}
-  for _, x in ipairs(data) do
-    if __eq(x, 1) then
-      _res[#_res+1] = x
+    local _res = {}
+    for _, x in ipairs(data) do
+        if (x == 1) then
+            _res[#_res+1] = x
+        end
     end
-  end
-  return _res
+    return _res
 end)())
 print(flag)

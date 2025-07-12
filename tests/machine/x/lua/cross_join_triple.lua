@@ -2,18 +2,18 @@ nums = {1, 2}
 letters = {"A", "B"}
 bools = {true, false}
 combos = (function()
-  local _res = {}
-  for _, n in ipairs(nums) do
-    for _, l in ipairs(letters) do
-      for _, b in ipairs(bools) do
-        _res[#_res+1] = {["n"]=n, ["l"]=l, ["b"]=b}
-      end
+    local _res = {}
+    for _, n in ipairs(nums) do
+        for _, l in ipairs(letters) do
+            for _, b in ipairs(bools) do
+                _res[#_res+1] = {["n"]=n, ["l"]=l, ["b"]=b}
+            end
+        end
     end
-  end
-  return _res
+    return _res
 end)()
 print("--- Cross Join of three lists ---")
 for _, c in ipairs(combos) do
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(c.n, c.l, c.b)
-  ::__continue0::
+    print(c.n, c.l, c.b)
+    ::__continue0::
 end
