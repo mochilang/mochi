@@ -1966,12 +1966,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					if cond != "" {
 						filtered := c.newTemp()
 						idxVar := c.newTemp()
-						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", filtered, src))
+						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s);", filtered, c.listLenExpr(src)))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 						loop := c.newLoopVar()
-						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, src, loop))
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
 						c.indent++
-						c.writeln(fmt.Sprintf("int %s = %s.data[%s];", sanitizeName(q.Var), src, loop))
+						c.writeln(fmt.Sprintf("int %s = %s;", sanitizeName(q.Var), c.listItemExpr(src, loop)))
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						c.writeln(fmt.Sprintf("%s.data[%s] = %s;", filtered, idxVar, sanitizeName(q.Var)))
 						c.writeln(fmt.Sprintf("%s++;", idxVar))
@@ -2127,13 +2127,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.compileStructType(st)
 						c.compileStructListType(st)
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
-					c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s.len);", keys, src))
+					c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+					c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s);", keys, c.listLenExpr(src)))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 					loop := c.newLoopVar()
-					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, src, loop))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, loop))
+					c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(lt.Elem), sanitizeName(q.Var), c.listItemExpr(src, loop)))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2299,13 +2299,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.compileStructType(st)
 						c.compileStructListType(st)
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
-					c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s.len);", keys, src))
+					c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+					c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s);", keys, c.listLenExpr(src)))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 					loop := c.newLoopVar()
-					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, src, loop))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, loop))
+					c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(lt.Elem), sanitizeName(q.Var), c.listItemExpr(src, loop)))
 					if cond != "" {
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 					}
@@ -2484,13 +2484,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.compileStructType(st)
 							c.compileStructListType(st)
 						}
-						c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, rows, listC, src))
-						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s.len);", pairs, src))
+						c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+						c.writeln(fmt.Sprintf("list_pair_string %s = list_pair_string_create(%s);", pairs, c.listLenExpr(src)))
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 						loop := c.newLoopVar()
-						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, src, loop))
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
 						c.indent++
-						c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(lt.Elem), sanitizeName(q.Var), src, loop))
+						c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(lt.Elem), sanitizeName(q.Var), c.listItemExpr(src, loop)))
 						if cond != "" {
 							c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
 						}
@@ -3745,9 +3745,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			continue
 		}
 		if op.Op == "in" && isListIntPostfix(op.Right, c.env) {
-			c.need(needInListInt)
-			c.need(needListInt)
-			left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
+			if l, ok := c.listLens[right]; ok {
+				c.need(needInArrayInt)
+				left = fmt.Sprintf("contains_array_int(%s, %d, %s)", right, l, left)
+			} else {
+				c.need(needInListInt)
+				c.need(needListInt)
+				left = fmt.Sprintf("contains_list_int(%s, %s)", right, left)
+			}
 			leftList = false
 			leftListInt = false
 			leftListString = false
@@ -4400,9 +4405,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					lt, _ := c.exprType(a).(types.ListType)
 					st, _ := lt.Elem.(types.StructType)
 					loop := c.newLoopVar()
-					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loop, loop, argExpr, loop))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(argExpr), loop))
 					c.indent++
-					c.writeln(fmt.Sprintf("%s it = %s.data[%s];", sanitizeTypeName(st.Name), argExpr, loop))
+					c.writeln(fmt.Sprintf("%s it = %s;", sanitizeTypeName(st.Name), c.listItemExpr(argExpr, loop)))
 					c.writeln(fmt.Sprintf("if(%s>0) printf(\" \");", loop))
 					c.writeln("printf(\"map[\");")
 					for i2, field := range st.Order {
@@ -5885,10 +5890,10 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 		st, _ := lt.Elem.(types.StructType)
 		loop := c.newLoopVar()
 		c.writeln("printf(\"[\");")
-		c.writeln(fmt.Sprintf("for(int %s=0; %s<%s.len; %s++){", loop, loop, argExpr, loop))
+		c.writeln(fmt.Sprintf("for(int %s=0; %s<%s; %s++){", loop, loop, c.listLenExpr(argExpr), loop))
 		c.indent++
 		c.writeln(fmt.Sprintf("if(%s>0) printf(\",\");", loop))
-		c.writeln(fmt.Sprintf("%s it = %s.data[%s];", sanitizeTypeName(st.Name), argExpr, loop))
+		c.writeln(fmt.Sprintf("%s it = %s;", sanitizeTypeName(st.Name), c.listItemExpr(argExpr, loop)))
 		c.writeln("printf(\"{\");")
 		for i, field := range st.Order {
 			if i > 0 {

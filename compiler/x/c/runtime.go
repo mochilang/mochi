@@ -482,6 +482,10 @@ static list_group_pair_string _group_by_pair_string(list_pair_string src) {
     return 0;
 }
 `
+	helperContainsArrayInt = `static int contains_array_int(int *arr, int len, int item) {
+    for (int i = 0; i < len; i++) if (arr[i] == item) return 1;
+    return 0;
+}`
 	helperContainsListFloat = `static int contains_list_float(list_float v, double item) {
     for (int i = 0; i < v.len; i++) if (v.data[i] == item) return 1;
     return 0;
@@ -755,6 +759,7 @@ var helperCode = map[string]string{
 	needReduceInt:            helperReduceInt,
 	needReduceFloat:          helperReduceFloat,
 	needReduceString:         helperReduceString,
+	needInArrayInt:           helperContainsArrayInt,
 	needInListInt:            helperContainsListInt,
 	needInListFloat:          helperContainsListFloat,
 	needInListString:         helperContainsListString,
@@ -838,6 +843,7 @@ var helperOrder = []string{
 	needReduceInt,
 	needReduceFloat,
 	needReduceString,
+	needInArrayInt,
 	needInListInt,
 	needInListFloat,
 	needInListString,
