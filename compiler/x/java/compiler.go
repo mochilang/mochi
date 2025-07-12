@@ -1973,92 +1973,99 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	expr := left
-	usingSB := false
-	useSB := c.needsStringBuilder(b)
+	operands := []string{left}
+	ops := []*parser.BinaryOp{}
 	for _, op := range b.Right {
 		right, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		if op.Op == "+" && useSB && (isStringVal(expr, c) || isStringVal(right, c) || usingSB) {
-			if !usingSB {
-				expr = fmt.Sprintf("new StringBuilder(String.valueOf(%s))", expr)
-				usingSB = true
+		operands = append(operands, right)
+		ops = append(ops, op)
+	}
+
+	precLevels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, level := range precLevels {
+		for i := 0; i < len(ops); {
+			opName := ops[i].Op
+			if opName == "union" && ops[i].All {
+				opName = "union_all"
 			}
-			expr = fmt.Sprintf("%s.append(String.valueOf(%s))", expr, right)
-			continue
-		}
-		if usingSB {
-			expr += ".toString()"
-			usingSB = false
-		}
-		if op.Op == "in" {
-			typ := c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
-			if typ == "String" {
-				expr = fmt.Sprintf("%s.contains(String.valueOf(%s))", right, expr)
-			} else if strings.HasPrefix(typ, "List<") {
-				expr = fmt.Sprintf("%s.contains(%s)", right, expr)
-			} else if strings.HasPrefix(typ, "Map<") {
-				expr = fmt.Sprintf("%s.containsKey(%s)", right, expr)
-			} else {
-				c.helpers["in"] = true
-				expr = fmt.Sprintf("inOp(%s, %s)", expr, right)
-			}
-			continue
-		}
-		if op.Op == "union" {
-			if op.All {
-				c.helpers["union_all"] = true
-				expr = fmt.Sprintf("union_all(%s, %s)", expr, right)
-			} else {
-				c.helpers["union"] = true
-				expr = fmt.Sprintf("union(%s, %s)", expr, right)
-			}
-			continue
-		}
-		if op.Op == "except" {
-			c.helpers["except"] = true
-			expr = fmt.Sprintf("except(%s, %s)", expr, right)
-			continue
-		}
-		if op.Op == "intersect" {
-			c.helpers["intersect"] = true
-			expr = fmt.Sprintf("intersect(%s, %s)", expr, right)
-			continue
-		}
-		if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
-			isStringVal(expr, c) && isStringVal(right, c) {
-			expr = fmt.Sprintf("%s.compareTo(%s) %s 0", expr, right, op.Op)
-		} else if op.Op == "==" || op.Op == "!=" {
-			if isPrimitive(expr, c) && isPrimitive(right, c) {
-				expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
-			} else {
-				if op.Op == "==" {
-					expr = fmt.Sprintf("Objects.equals(%s, %s)", expr, right)
-				} else {
-					expr = fmt.Sprintf("!Objects.equals(%s, %s)", expr, right)
+			if containsStr(level, opName) {
+				expr, err := c.compileBinaryOp(operands[i], ops[i], operands[i+1])
+				if err != nil {
+					return "", err
 				}
+				operands[i] = expr
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
 			}
-		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%" ||
-			op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
-			if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
-				if isStringVal(expr, c) || isStringVal(right, c) {
-					expr = fmt.Sprintf("String.valueOf(%s).compareTo(String.valueOf(%s)) %s 0", expr, right, op.Op)
-					continue
-				}
-			}
-			expr = fmt.Sprintf("%s %s %s", c.maybeNumber(expr), op.Op, c.maybeNumber(right))
-		} else if op.Op == "&&" || op.Op == "||" {
-			expr = fmt.Sprintf("%s %s %s", maybeBool(c, expr), op.Op, maybeBool(c, right))
-		} else {
-			expr = fmt.Sprintf("%s %s %s", expr, op.Op, right)
 		}
 	}
-	if usingSB {
-		expr += ".toString()"
+
+	if len(operands) != 1 {
+		return operands[0], nil
 	}
-	return expr, nil
+	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, op *parser.BinaryOp, right string) (string, error) {
+	switch op.Op {
+	case "in":
+		typ := c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: op.Right}}})
+		if typ == "String" {
+			return fmt.Sprintf("%s.contains(String.valueOf(%s))", right, left), nil
+		} else if strings.HasPrefix(typ, "List<") {
+			return fmt.Sprintf("%s.contains(%s)", right, left), nil
+		} else if strings.HasPrefix(typ, "Map<") {
+			return fmt.Sprintf("%s.containsKey(%s)", right, left), nil
+		}
+		c.helpers["in"] = true
+		return fmt.Sprintf("inOp(%s, %s)", left, right), nil
+	case "union":
+		if op.All {
+			c.helpers["union_all"] = true
+			return fmt.Sprintf("union_all(%s, %s)", left, right), nil
+		}
+		c.helpers["union"] = true
+		return fmt.Sprintf("union(%s, %s)", left, right), nil
+	case "except":
+		c.helpers["except"] = true
+		return fmt.Sprintf("except(%s, %s)", left, right), nil
+	case "intersect":
+		c.helpers["intersect"] = true
+		return fmt.Sprintf("intersect(%s, %s)", left, right), nil
+	case "<", "<=", ">", ">=":
+		if isStringVal(left, c) || isStringVal(right, c) {
+			return fmt.Sprintf("String.valueOf(%s).compareTo(String.valueOf(%s)) %s 0", left, right, op.Op), nil
+		}
+		return fmt.Sprintf("%s %s %s", c.maybeNumber(left), op.Op, c.maybeNumber(right)), nil
+	case "==", "!=":
+		if isPrimitive(left, c) && isPrimitive(right, c) {
+			return fmt.Sprintf("%s %s %s", left, op.Op, right), nil
+		}
+		if op.Op == "==" {
+			return fmt.Sprintf("Objects.equals(%s, %s)", left, right), nil
+		}
+		return fmt.Sprintf("!Objects.equals(%s, %s)", left, right), nil
+	case "+", "-", "*", "/", "%":
+		return fmt.Sprintf("%s %s %s", c.maybeNumber(left), op.Op, c.maybeNumber(right)), nil
+	case "&&", "||":
+		return fmt.Sprintf("%s %s %s", maybeBool(c, left), op.Op, maybeBool(c, right)), nil
+	default:
+		return fmt.Sprintf("%s %s %s", left, op.Op, right), nil
+	}
 }
 
 func isString(s string) bool {
