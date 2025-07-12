@@ -106,3 +106,4 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] right join semantics
 
 All programs executed successfully with GNU Smalltalk.
+Generated using GNU Smalltalk version 3.2.5.
