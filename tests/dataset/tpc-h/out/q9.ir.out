@@ -1,4 +1,4 @@
-func main (regs=238)
+func main (regs=237)
   // let nation = [
   Const        r0, [{"n_name": "BRAZIL", "n_nationkey": 1}, {"n_name": "CANADA", "n_nationkey": 2}]
   // let supplier = [
@@ -409,41 +409,41 @@ L16:
   Sort         r213, r9
   // from l in lineitem
   Move         r9, r213
-  // print json(result)
+  // json(result)
   JSON         r9
   // let revenue = 1000.0 * 0.9   // 900
-  Const        r215, 1000.0
-  Const        r216, 0.9
-  Const        r217, 900.0
+  Const        r214, 1000.0
+  Const        r215, 0.9
+  Const        r216, 900.0
   // let cost = 5 * 10.0          // 50
   Const        r93, 5
-  Const        r218, 10.0
-  MulFloat     r219, r93, r218
+  Const        r217, 10.0
+  MulFloat     r218, r93, r217
   // nation: "BRAZIL",
-  Const        r221, "nation"
-  Const        r222, "BRAZIL"
+  Const        r220, "nation"
+  Const        r221, "BRAZIL"
   // o_year: "1995",
-  Const        r223, "o_year"
-  Const        r224, "1995"
+  Const        r222, "o_year"
+  Const        r223, "1995"
   // profit: revenue - cost   // 850
-  Const        r225, "profit"
-  Const        r226, 900.0
-  Const        r227, 50.0
-  Const        r228, 850.0
+  Const        r224, "profit"
+  Const        r225, 900.0
+  Const        r226, 50.0
+  Const        r227, 850.0
   // nation: "BRAZIL",
+  Move         r228, r220
   Move         r229, r221
-  Move         r230, r222
   // o_year: "1995",
+  Move         r230, r222
   Move         r231, r223
-  Move         r232, r224
   // profit: revenue - cost   // 850
-  Move         r233, r225
-  Move         r234, r228
+  Move         r232, r224
+  Move         r233, r227
   // {
-  MakeMap      r235, 3, r229
-  Move         r220, r235
+  MakeMap      r234, 3, r228
+  Move         r219, r234
   // expect result == [
-  MakeList     r236, 1, r220
-  Equal        r237, r9, r236
-  Expect       r237
+  MakeList     r235, 1, r219
+  Equal        r236, r9, r235
+  Expect       r236
   Return       r0
