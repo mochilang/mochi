@@ -1,0 +1,58 @@
+// Mochi implementation of the Chaos Game generating
+// a Sierpinski triangle using deterministic randomness.
+
+let width = 60
+let height = (width as float * 0.86602540378) as int
+let iterations = 5000
+
+// initialize blank grid
+var grid: list<list<string>> = []
+var y = 0
+while y < height {
+  var line: list<string> = []
+  var x = 0
+  while x < width {
+    line = append(line, " ")
+    x = x + 1
+  }
+  grid = append(grid, line)
+  y = y + 1
+}
+
+// simple LCG for reproducible pseudo randomness
+fun randInt(s: int, n: int): list<int> {
+  let next = (s * 1664525 + 1013904223) % 2147483647
+  return [next, next % n]
+}
+
+var seed = 1
+let vertices: list<list<int>> = [[0, height - 1], [width - 1, height - 1], [(width / 2) as int, 0]]
+var px = (width / 2) as int
+var py = (height / 2) as int
+
+var i = 0
+while i < iterations {
+  var r = randInt(seed, 3)
+  seed = r[0]
+  let idx = r[1] as int
+  let v = vertices[idx]
+  px = ((px + v[0]) / 2) as int
+  py = ((py + v[1]) / 2) as int
+  if px >= 0 && px < width && py >= 0 && py < height {
+    grid[py][px] = "*"
+  }
+  i = i + 1
+}
+
+// print the grid
+y = 0
+while y < height {
+  var line = ""
+  var x = 0
+  while x < width {
+    line = line + grid[y][x]
+    x = x + 1
+  }
+  print(line)
+  y = y + 1
+}
