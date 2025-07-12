@@ -467,6 +467,19 @@ func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
 		return nil, false
 	}
 	u := e.Binary.Left
+	if len(u.Value.Ops) > 0 {
+		if cast := u.Value.Ops[len(u.Value.Ops)-1].Cast; cast != nil {
+			t := c.resolveTypeRef(cast.Type)
+			if _, ok := t.(types.StructType); ok {
+				return t, true
+			}
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok2 := lt.Elem.(types.StructType); ok2 {
+					return lt, true
+				}
+			}
+		}
+	}
 	if ml := u.Value.Target.Map; ml != nil {
 		st, ok := c.structTypeFromMapLiteral(ml, "")
 		if ok {
