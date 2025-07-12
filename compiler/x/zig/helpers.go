@@ -138,6 +138,13 @@ func (c *Compiler) newLabel() string {
 	return name
 }
 
+// newStructName generates a unique name for anonymous struct types
+func (c *Compiler) newStructName() string {
+	name := fmt.Sprintf("ResultStruct%d", c.tmpCount)
+	c.tmpCount++
+	return name
+}
+
 func indentBlock(s string, depth int) string {
 	if s == "" {
 		return s
