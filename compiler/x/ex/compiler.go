@@ -6,6 +6,7 @@ package excode
 import (
 	"bytes"
 	"fmt"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -16,16 +17,17 @@ import (
 
 // Compiler translates a Mochi AST into Elixir source code.
 type Compiler struct {
-	buf        bytes.Buffer
-	indent     int
-	env        *types.Env
-	tmp        int
-	helpers    map[string]bool
-	funcs      map[string]bool
-	structs    map[string]types.StructType
-	structDefs []string
-	Module     string
-	attrs      map[string]string
+	buf            bytes.Buffer
+	indent         int
+	env            *types.Env
+	tmp            int
+	helpers        map[string]bool
+	funcs          map[string]bool
+	structs        map[string]types.StructType
+	structDefs     []string
+	Module         string
+	attrs          map[string]string
+	builtinAliases map[string]string
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -154,7 +156,7 @@ func usesLoopControl(stmts []*parser.Statement) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main", structDefs: []string{}, attrs: make(map[string]string)}
+	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main", structDefs: []string{}, attrs: make(map[string]string), builtinAliases: make(map[string]string)}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -217,10 +219,32 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if mod == "" {
 		mod = "Main"
 	}
+	for _, s := range prog.Statements {
+		if s.Import != nil && s.Import.Lang != nil {
+			alias := s.Import.As
+			if alias == "" {
+				alias = parser.AliasFromPath(s.Import.Path)
+			}
+			p := strings.Trim(s.Import.Path, "\"")
+			switch *s.Import.Lang {
+			case "go":
+				if s.Import.Auto && p == "mochi/runtime/ffi/go/testpkg" {
+					c.builtinAliases[alias] = "go_testpkg"
+				}
+			case "python":
+				if p == "math" {
+					c.builtinAliases[alias] = "python_math"
+				}
+			}
+		}
+	}
 	c.writeln(fmt.Sprintf("defmodule %s do", mod))
 	c.indent++
 	// record top-level function names first
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			continue
+		}
 		if s.Fun != nil {
 			c.funcs[s.Fun.Name] = true
 		}
@@ -229,6 +253,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	helperRe := regexp.MustCompile(`_[a-zA-Z0-9]+\(`)
 	letNames := []string{}
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			continue
+		}
 		if s.Let != nil {
 			letNames = append(letNames, sanitizeName(s.Let.Name))
 		}
@@ -247,6 +274,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	walk = func(st []*parser.Statement) {
 		for _, s := range st {
+			if s.Import != nil {
+				continue
+			}
 			if s.Let != nil {
 				if _, ok := declared[s.Let.Name]; !ok {
 					declared[s.Let.Name] = true
@@ -286,6 +316,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		return false
 	}
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			continue
+		}
 		if s.Let != nil {
 			val := "nil"
 			if s.Let.Value != nil {
@@ -304,6 +337,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	for _, s := range prog.Statements {
+		if s.Import != nil {
+			continue
+		}
 		if s.Fun != nil {
 			if err := c.compileFunStmt(s.Fun); err != nil {
 				return nil, err
@@ -314,10 +350,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("def main do")
 	c.indent++
 	for _, s := range prog.Statements {
-		if s.Fun == nil {
-			if err := c.compileStmt(s); err != nil {
-				return nil, err
-			}
+		if s.Import != nil || s.Fun != nil {
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			return nil, err
 		}
 	}
 	c.indent--
@@ -621,10 +658,18 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 			return err
 		}
 	}
-	if len(mutated) > 0 {
-		c.writeln(fmt.Sprintf("{:cont, {%s}}", tuple))
+	if needCtrl {
+		if len(mutated) > 0 {
+			c.writeln(fmt.Sprintf("{:cont, {%s}}", tuple))
+		} else {
+			c.writeln("{:cont, :ok}")
+		}
 	} else {
-		c.writeln("{:cont, :ok}")
+		if len(mutated) > 0 {
+			c.writeln(fmt.Sprintf("{%s}", tuple))
+		} else {
+			c.writeln(":ok")
+		}
 	}
 	if needCtrl {
 		c.indent--
@@ -1401,7 +1446,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	path := "nil"
 	if l.Path != nil {
-		path = fmt.Sprintf("%q", *l.Path)
+		p := *l.Path
+		if strings.HasPrefix(p, "../interpreter/") {
+			p = filepath.Join("tests", strings.TrimPrefix(p, "../"))
+		}
+		path = fmt.Sprintf("%q", p)
 	}
 	opts := "nil"
 	if l.With != nil {

@@ -10,7 +10,7 @@ defmodule Main do
          rows = _query(src, [], %{select: fn i -> [i] end})
          groups = _group_by(rows, fn [i] -> i.cat end)
          items = groups
-         items = Enum.sort_by(items, fn g -> -_sum(for x <- g, do: x.val) end)
+        items = Enum.sort_by(items, fn g -> -_sum(for x <- g.items, do: x.val) end)
          Enum.map(items, fn g -> %{cat: g.key, total: _sum(for x <- g.items, do: x.val)} end)
        end).()
 

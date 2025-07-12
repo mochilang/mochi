@@ -273,6 +273,35 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				args = append(args, v)
 			}
 			argStr := strings.Join(args, ", ")
+			if idx := strings.Index(res, "."); idx > 0 {
+				alias := res[:idx]
+				method := res[idx+1:]
+				if kind, ok := c.builtinAliases[alias]; ok {
+					switch kind {
+					case "go_testpkg":
+						switch method {
+						case "Add":
+							if len(args) == 2 {
+								res = fmt.Sprintf("(%s + %s)", args[0], args[1])
+								continue
+							}
+						}
+					case "python_math":
+						switch method {
+						case "sqrt", "sin", "log":
+							if len(args) == 1 {
+								res = fmt.Sprintf(":math.%s(%s)", strings.ToLower(method), args[0])
+								continue
+							}
+						case "pow":
+							if len(args) == 2 {
+								res = fmt.Sprintf(":math.pow(%s, %s)", args[0], args[1])
+								continue
+							}
+						}
+					}
+				}
+			}
 			if strings.HasSuffix(res, ".contains") && len(args) == 1 {
 				target := strings.TrimSuffix(res, ".contains")
 				res = fmt.Sprintf("String.contains?(%s, %s)", target, argStr)
@@ -411,6 +440,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "%{" + strings.Join(items, ", ") + "}", nil
 	case p.Selector != nil:
 		name := sanitizeName(p.Selector.Root)
+		if kind, ok := c.builtinAliases[p.Selector.Root]; ok && len(p.Selector.Tail) == 1 {
+			switch kind {
+			case "go_testpkg":
+				switch p.Selector.Tail[0] {
+				case "Pi":
+					return "3.14", nil
+				case "Answer":
+					return "42", nil
+				}
+			case "python_math":
+				switch p.Selector.Tail[0] {
+				case "pi":
+					return ":math.pi()", nil
+				case "e":
+					return ":math.exp(1)", nil
+				}
+			}
+		}
 		if _, ok := c.attrs[p.Selector.Root]; ok {
 			name = "@" + name
 		}

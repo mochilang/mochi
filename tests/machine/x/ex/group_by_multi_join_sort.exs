@@ -67,10 +67,10 @@ defmodule Main do
 
          items = groups
 
-         items =
-           Enum.sort_by(items, fn g ->
-             -_sum(for x <- g, do: x.l.l_extendedprice * (1 - x.l.l_discount))
-           end)
+        items =
+          Enum.sort_by(items, fn g ->
+            -_sum(for x <- g.items, do: x.l.l_extendedprice * (1 - x.l.l_discount))
+          end)
 
          Enum.map(items, fn g ->
            %{
