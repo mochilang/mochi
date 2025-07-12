@@ -38,10 +38,7 @@ let groups =
 
 var tmp = []
 for g in groups {
-  var total = 0.0
-  for x in g.items {
-    total = total + x.c_acctbal
-  }
+  let total = sum(from x in g.items select x.c_acctbal)
   let row = { cntrycode: g.key, numcust: count(g), totacctbal: total }
   tmp = append(tmp, row)
 }
@@ -51,7 +48,7 @@ let result =
   sort by r.cntrycode
   select r
 
-print(result)
+json(result)
 
 test "Q22 returns wealthy inactive customers by phone prefix" {
   // avg_balance = (600 + 100 + 700) / 3 = 466.66

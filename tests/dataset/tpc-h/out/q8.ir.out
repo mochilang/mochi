@@ -417,8 +417,8 @@ L17:
   Sort         r216, r11
   // from l in lineitem
   Move         r11, r216
-  // print(result)
-  Print        r11
+  // json(result)
+  JSON         r11
   // let numerator = 1000.0 * 0.9      // 900
   Const        r217, 1000.0
   Const        r218, 0.9

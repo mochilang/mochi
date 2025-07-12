@@ -41,7 +41,7 @@ let result =
     s_address: s.s_address
   }
 
-print(result)
+json(result)
 
 test "Q16 returns suppliers not linked to certain parts or complaints" {
   expect result == []

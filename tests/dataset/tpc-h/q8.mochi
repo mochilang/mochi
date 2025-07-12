@@ -58,7 +58,7 @@ let result =
       sum(from x in year select x.l.l_extendedprice * (1 - x.l.l_discount))
   }
 
-print(result)
+json(result)
 
 test "Q8 returns correct market share for BRAZIL in 1995" {
   let numerator = 1000.0 * 0.9      // 900

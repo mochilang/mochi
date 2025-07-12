@@ -46,7 +46,7 @@ func main (regs=102)
   Const        r13, "l_shipmode"
   // && l.l_shipinstruct == "DELIVER IN PERSON"
   Const        r14, "l_shipinstruct"
-  // select sum(l.l_extendedprice * (1 - l.l_discount))
+  // select l.l_extendedprice * (1 - l.l_discount)
   Const        r15, "l_extendedprice"
   Const        r16, "l_discount"
   // from l in lineitem
@@ -246,7 +246,7 @@ L6:
 L13:
   // where (
   JumpIfFalse  r93, L2
-  // select sum(l.l_extendedprice * (1 - l.l_discount))
+  // select l.l_extendedprice * (1 - l.l_discount)
   Const        r15, "l_extendedprice"
   Index        r94, r20, r15
   Const        r36, 1
@@ -268,10 +268,10 @@ L1:
   AddInt       r17, r17, r36
   Jump         L15
 L0:
-  // select sum(l.l_extendedprice * (1 - l.l_discount))
+  // let result = sum(revenues)
   Sum          r99, r2
-  // print(result)
-  Print        r99
+  // json(result)
+  JSON         r99
   // expect result == 2800.0
   Const        r100, 2800.0
   EqualFloat   r101, r99, r100

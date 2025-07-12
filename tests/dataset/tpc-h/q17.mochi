@@ -32,7 +32,7 @@ let filtered =
 
 let result = sum(filtered) / 7.0
 
-print(result)
+json(result)
 
 test "Q17 returns average yearly revenue for small-quantity orders" {
   let expected = 100.0 / 7.0

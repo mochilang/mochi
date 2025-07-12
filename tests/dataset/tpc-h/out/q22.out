@@ -1,1 +1,1 @@
-[map[cntrycode:13 numcust:1 totacctbal:600] map[cntrycode:30 numcust:1 totacctbal:700]]
+[{"cntrycode":"13","numcust":1,"totacctbal":600},{"cntrycode":"30","numcust":1,"totacctbal":700}]

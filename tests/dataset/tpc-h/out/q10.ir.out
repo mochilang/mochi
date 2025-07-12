@@ -447,8 +447,8 @@ L11:
   Sort         r218, r6
   // from c in customer
   Move         r6, r218
-  // print(result)
-  Print        r6
+  // json(result)
+  JSON         r6
   // c_custkey: 1,
   Const        r220, "c_custkey"
   Const        r138, 1

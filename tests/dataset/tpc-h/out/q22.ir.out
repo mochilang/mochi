@@ -1,4 +1,4 @@
-func main (regs=154)
+func main (regs=153)
   // let customer = [
   Const        r0, [{"c_acctbal": 600.0, "c_custkey": 1, "c_phone": "13-123-4567"}, {"c_acctbal": 100.0, "c_custkey": 2, "c_phone": "31-456-7890"}, {"c_acctbal": 700.0, "c_custkey": 3, "c_phone": "30-000-0000"}]
   // let orders = [
@@ -246,89 +246,87 @@ L19:
   JumpIfFalse  r110, L16
   Index        r111, r107, r109
   Move         r104, r111
-  // var total = 0.0
-  Const        r14, 0.0
-  Move         r112, r14
-  // for x in g.items {
+  // let total = sum(from x in g.items select x.c_acctbal)
+  Const        r112, []
+  Const        r4, "c_acctbal"
   Const        r82, "items"
   Index        r113, r104, r82
   IterPrep     r114, r113
   Len          r115, r114
-  Const        r116, 0
+  Const        r9, 0
+  Move         r116, r9
 L18:
   LessInt      r117, r116, r115
   JumpIfFalse  r117, L17
   Index        r118, r114, r116
   Move         r119, r118
-  // total = total + x.c_acctbal
   Const        r4, "c_acctbal"
   Index        r120, r119, r4
-  AddFloat     r121, r112, r120
+  Append       r121, r112, r120
   Move         r112, r121
-  // for x in g.items {
-  Const        r122, 1
-  AddInt       r123, r116, r122
-  Move         r116, r123
+  Const        r24, 1
+  AddInt       r116, r116, r24
   Jump         L18
 L17:
+  Sum          r122, r112
   // let row = { cntrycode: g.key, numcust: count(g), totacctbal: total }
-  Const        r124, "cntrycode"
+  Const        r123, "cntrycode"
   Const        r80, "key"
-  Index        r125, r104, r80
-  Const        r126, "numcust"
-  Count        r127, r104
-  Const        r128, "totacctbal"
+  Index        r124, r104, r80
+  Const        r125, "numcust"
+  Count        r126, r104
+  Const        r127, "totacctbal"
+  Move         r128, r123
   Move         r129, r124
   Move         r130, r125
   Move         r131, r126
   Move         r132, r127
-  Move         r133, r128
-  Move         r134, r112
-  MakeMap      r135, 3, r129
+  Move         r133, r122
+  MakeMap      r134, 3, r128
   // tmp = append(tmp, row)
-  Append       r136, r106, r135
-  Move         r106, r136
+  Append       r135, r106, r134
+  Move         r106, r135
   // for g in groups {
-  Const        r137, 1
-  AddInt       r138, r109, r137
-  Move         r109, r138
+  Const        r136, 1
+  AddInt       r137, r109, r136
+  Move         r109, r137
   Jump         L19
 L16:
   // from r in tmp
-  Const        r139, []
+  Const        r138, []
   // sort by r.cntrycode
   Const        r29, "cntrycode"
   // from r in tmp
-  IterPrep     r140, r106
-  Len          r141, r140
+  IterPrep     r139, r106
+  Len          r140, r139
   Const        r9, 0
-  Move         r142, r9
+  Move         r141, r9
 L21:
-  LessInt      r143, r142, r141
-  JumpIfFalse  r143, L20
-  Index        r144, r140, r142
-  Move         r145, r144
+  LessInt      r142, r141, r140
+  JumpIfFalse  r142, L20
+  Index        r143, r139, r141
+  Move         r144, r143
   // sort by r.cntrycode
   Const        r29, "cntrycode"
-  Index        r148, r145, r29
-  Move         r146, r148
+  Index        r147, r144, r29
+  Move         r145, r147
   // from r in tmp
-  Move         r147, r145
-  MakeList     r149, 2, r146
-  Append       r150, r139, r149
-  Move         r139, r150
+  Move         r146, r144
+  MakeList     r148, 2, r145
+  Append       r149, r138, r148
+  Move         r138, r149
   Const        r24, 1
-  AddInt       r142, r142, r24
+  AddInt       r141, r141, r24
   Jump         L21
 L20:
   // sort by r.cntrycode
-  Sort         r151, r139
+  Sort         r150, r138
   // from r in tmp
-  Move         r139, r151
-  // print(result)
-  Print        r139
+  Move         r138, r150
+  // json(result)
+  JSON         r138
   // expect result == [
-  Const        r152, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600.0}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700.0}]
-  Equal        r153, r139, r152
-  Expect       r153
+  Const        r151, [{"cntrycode": "13", "numcust": 1, "totacctbal": 600.0}, {"cntrycode": "30", "numcust": 1, "totacctbal": 700.0}]
+  Equal        r152, r138, r151
+  Expect       r152
   Return       r0
