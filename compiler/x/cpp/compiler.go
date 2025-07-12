@@ -3183,6 +3183,30 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 		if idx := strings.Index(texpr, "{"); idx != -1 {
 			texpr = texpr[:idx]
 		}
+		if strings.HasSuffix(texpr, "[0]") {
+			base := strings.TrimSuffix(texpr, "[0]")
+			if t := c.elemType[base]; t != "" {
+				return t
+			}
+			if t := c.varStruct[base]; t != "" {
+				return t
+			}
+		}
+		if strings.HasPrefix(texpr, "std::declval<") && strings.Contains(texpr, ">().") {
+			tmp := strings.TrimPrefix(texpr, "std::declval<")
+			parts := strings.SplitN(tmp, ">().", 2)
+			if len(parts) == 2 {
+				structName := parts[0]
+				field := parts[1]
+				if info, ok := c.structByName[structName]; ok {
+					for i, f := range info.Fields {
+						if f == field {
+							return info.Types[i]
+						}
+					}
+				}
+			}
+		}
 		if texpr == "true" || texpr == "false" {
 			return "bool"
 		}
