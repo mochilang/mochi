@@ -111,3 +111,5 @@ Recent improvements:
 
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style
+- [ ] Investigate TPCH `q1.mochi` compilation failures and update helper
+      functions as needed

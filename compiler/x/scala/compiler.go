@@ -29,6 +29,7 @@ type Compiler struct {
 	structHint  string
 	mapVars     map[string]bool
 	pyModules   map[string]string
+	forceMap    bool
 }
 
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
@@ -1622,11 +1623,13 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 	// determine if this map corresponds to a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	t := c.namedType(types.ExprType(expr, c.env))
-	if st, ok := t.(types.StructType); ok && !mutable && !c.mapVars[c.structHint] {
-		return c.mapToStruct(st.Name, st, m)
+	if !c.forceMap {
+		if st, ok := t.(types.StructType); ok && !mutable && !c.mapVars[c.structHint] {
+			return c.mapToStruct(st.Name, st, m)
+		}
 	}
 	// if all keys are simple strings, treat as an anonymous struct
-	if !mutable && !c.mapVars[c.structHint] {
+	if !c.forceMap && !mutable && !c.mapVars[c.structHint] {
 		if _, isMap := t.(types.MapType); !isMap && c.structHint != "" {
 			anon := types.StructType{Fields: make(map[string]types.Type), Order: make([]string, len(m.Items))}
 			allSimple := true
@@ -1839,7 +1842,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	var expr string
 	if q.Group != nil {
+		// do not convert GROUP BY key maps into case classes so that
+		// generated code more closely matches the reference output
+		oldHint := c.structHint
+		oldMap := c.mapVars[q.Group.Name]
+		oldForce := c.forceMap
+		c.structHint = q.Group.Name
+		c.mapVars[q.Group.Name] = true
+		c.forceMap = true
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		c.structHint = oldHint
+		c.forceMap = oldForce
+		if !oldMap {
+			delete(c.mapVars, q.Group.Name)
+		}
 		if err != nil {
 			c.env = oldEnv
 			return "", err
@@ -1879,7 +1895,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.use("_Group")
 
 		groupEnv := types.NewEnv(c.env)
-		keyT := types.ExprType(q.Group.Exprs[0], c.env)
+		keyT := types.AnyType{}
 		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, false)
 
 		if q.Sort != nil {
