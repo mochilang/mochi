@@ -2,7 +2,7 @@
 
 let costs: any[];
 let europe_nations: Record<string, any>[];
-let europe_suppliers: Record<string, Record<string, any>>[];
+let europe_suppliers: { [key: string]: Record<string, any> }[];
 let min_cost: any;
 let nation: Record<string, any>[];
 let part: Record<string, any>[];
@@ -114,15 +114,21 @@ function main(): void {
   })();
   europe_suppliers = (() => {
     const _src = supplier;
+    const _join = europe_nations;
+    const _pairs = _hashJoin(
+      _src,
+      _join,
+      (s) => s.s_nationkey,
+      (n) => n.n_nationkey,
+    );
     const _res = [];
-    for (const s of _src) {
-      for (const n of europe_nations) {
-        if (!(_equal(s.s_nationkey, n.n_nationkey))) continue;
-        _res.push({
-          "s": s,
-          "n": n,
-        });
-      }
+    for (const _p of _pairs) {
+      const s = _p[0];
+      const n = _p[1];
+      _res.push({
+        "s": s,
+        "n": n,
+      });
     }
     return _res;
   })();
@@ -208,6 +214,28 @@ function _equal(a: any, b: any): boolean {
   return a === b;
 }
 
+function _hashJoin(
+  left: any[],
+  right: any[],
+  lk: (v: any) => any,
+  rk: (v: any) => any,
+): any[] {
+  const idx = new Map<any, any[]>();
+  for (const r of right) {
+    const k = rk(r);
+    const arr = idx.get(k);
+    if (arr) arr.push(r);
+    else idx.set(k, [r]);
+  }
+  const out: any[] = [];
+  for (const l of left) {
+    const arr = idx.get(lk(l));
+    if (!arr) continue;
+    for (const r of arr) out.push([l, r]);
+  }
+  return out;
+}
+
 function _json(v: any): string {
   function _sort(x: any): any {
     if (Array.isArray(x)) return x.map(_sort);
@@ -244,4 +272,3 @@ function _min(v: any): any {
 }
 
 main();
-

@@ -161,4 +161,3 @@ function _sum(v: any): number {
 }
 
 main();
-
