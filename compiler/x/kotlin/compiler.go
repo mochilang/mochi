@@ -299,7 +299,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) stmt(s *parser.Statement) error {
 	switch {
 	case s.Let != nil:
-		var val, typ string
+		var val, typ, prefix string
 		if s.Let.Value != nil {
 			v, err := c.expr(s.Let.Value)
 			if err != nil {
@@ -316,7 +316,19 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 				val = c.zeroValue(s.Let.Type)
 			}
 		}
-		c.writeln(fmt.Sprintf("val %s%s = %s", s.Let.Name, typ, val))
+		prefix = "val"
+		if c.indent == 0 && s.Let.Value != nil {
+			var ct types.Type
+			if s.Let.Type != nil {
+				ct = types.ResolveTypeRef(s.Let.Type, c.env)
+			} else {
+				ct = c.inferExprType(s.Let.Value)
+			}
+			if constType(ct) && isConstExpr(s.Let.Value) {
+				prefix = "const val"
+			}
+		}
+		c.writeln(fmt.Sprintf("%s %s%s = %s", prefix, s.Let.Name, typ, val))
 		var t types.Type
 		if s.Let.Type != nil {
 			t = types.ResolveTypeRef(s.Let.Type, c.env)
@@ -806,6 +818,35 @@ func kotlinZeroValue(t types.Type) string {
 		return fmt.Sprintf("%s(%s)", tt.Name, strings.Join(fields, ", "))
 	default:
 		return "null"
+	}
+}
+
+func isConstExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 1 {
+		return false
+	}
+	if len(u.Ops) == 1 {
+		if u.Ops[0] != "-" && u.Ops[0] != "+" {
+			return false
+		}
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Lit == nil {
+		return false
+	}
+	return true
+}
+
+func constType(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.FloatType, types.StringType, types.BoolType:
+		return true
+	default:
+		return false
 	}
 }
 
