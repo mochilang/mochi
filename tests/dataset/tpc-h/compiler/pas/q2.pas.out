@@ -6,65 +6,12 @@ uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 type
   generic TArray<T> = array of T;
 
-procedure test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part;
-
-var
-  _tmp0: specialize TFPGMap<string, integer>;
+  generic procedure _json<T>(v: T);
 begin
-  _tmp0 := specialize TFPGMap<string, integer>.Create;
-  _tmp0.AddOrSetData('s_acctbal', 1000);
-  _tmp0.AddOrSetData('s_na_tmp0e', 'BestSupplier');
-  _tmp0.AddOrSetData('n_na_tmp0e', 'FRANCE');
-  _tmp0.AddOrSetData('p_partkey', 1000);
-  _tmp0.AddOrSetData('p__tmp0fgr', 'M1');
-  _tmp0.AddOrSetData('s_address', '123 Rue');
-  _tmp0.AddOrSetData('s_phone', '123');
-  _tmp0.AddOrSetData('s_co_tmp0_tmp0ent', 'Fast and reliable');
-  _tmp0.AddOrSetData('ps_supplycost', 10);
-  if not ((_result = specialize TArray<specialize TFPGMap<string, integer>>([_tmp0]))) then raise
-    Exception.Create('expect failed');
+  writeln('[]');
 end;
 
-var
-  _tmp1: specialize TFPGMap<string, integer>;
-  _tmp10: specialize TFPGMap<string, integer>;
-  _tmp11: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp12: specialize TFPGMap<string, integer>;
-  _tmp13: specialize TArray<specialize TFPGMap<string, specialize TFPGMap<string, integer>>>;
-  _tmp14: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp15: specialize TFPGMap<string, integer>;
-  _tmp16: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp17: specialize TArray<integer>;
-  _tmp18: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp19: specialize TArray<Variant>;
-  _tmp2: specialize TFPGMap<string, integer>;
-  _tmp3: specialize TFPGMap<string, integer>;
-  _tmp4: specialize TFPGMap<string, integer>;
-  _tmp5: specialize TFPGMap<string, integer>;
-  _tmp6: specialize TFPGMap<string, integer>;
-  _tmp7: specialize TFPGMap<string, integer>;
-  _tmp8: specialize TFPGMap<string, integer>;
-  _tmp9: specialize TFPGMap<string, integer>;
-  costs: specialize TArray<integer>;
-  europe_nations: specialize TArray<specialize TFPGMap<string, integer>>;
-  europe_suppliers: specialize TArray<specialize TFPGMap<string, specialize TFPGMap<string, integer>
-                    >>;
-  min_cost: integer;
-  nation: specialize TArray<specialize TFPGMap<string, integer>>;
-  p: specialize TFPGMap<string, integer>;
-  part: specialize TArray<specialize TFPGMap<string, integer>>;
-  partsupp: specialize TArray<specialize TFPGMap<string, integer>>;
-  ps: specialize TFPGMap<string, integer>;
-  r: specialize TFPGMap<string, integer>;
-  region: specialize TArray<specialize TFPGMap<string, integer>>;
-  _result: specialize TArray<specialize TFPGMap<string, integer>>;
-  s: specialize TFPGMap<string, integer>;
-  supplier: specialize TArray<specialize TFPGMap<string, integer>>;
-  target_parts: specialize TArray<specialize TFPGMap<string, integer>>;
-  target_partsupp: specialize TArray<specialize TFPGMap<string, integer>>;
-  x: specialize TFPGMap<string, integer>;
-
-  generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
+generic procedure _sortBy<T>(var arr: specialize TArray<T>; keys: specialize TArray<Variant>);
 
 var i,j: integer;
   tmp: T;
@@ -83,102 +30,159 @@ begin
         end;
 end;
 
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp11: specialize TFPGMap<specialize TFPGMap<string, Variant>, Variant>;
+  _tmp12: specialize TArray<_>;
+  _tmp13: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp14: specialize TFPGMap<Variant, Variant>;
+  _tmp15: specialize TArray<_>;
+  _tmp16: specialize TArray<Variant>;
+  _tmp17: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp18: specialize TArray<Variant>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TFPGMap<Variant, Variant>;
+  _tmp6: specialize TFPGMap<Variant, Variant>;
+  _tmp7: specialize TFPGMap<Variant, Variant>;
+  _tmp8: specialize TFPGMap<Variant, Variant>;
+  _tmp9: specialize TFPGMap<Variant, Variant>;
+  costs: specialize TArray<Variant>;
+  europe_nations: specialize TArray<specialize TFPGMap<string, Variant>>;
+  europe_suppliers: specialize TArray<specialize TFPGMap<string, specialize TFPGMap<string, Variant>
+                    >>;
+  min_cost: Variant;
+  nation: specialize TArray<specialize TFPGMap<string, Variant>>;
+  p: specialize TFPGMap<string, Variant>;
+  part: specialize TArray<specialize TFPGMap<string, Variant>>;
+  partsupp: specialize TArray<specialize TFPGMap<string, Variant>>;
+  ps: specialize TFPGMap<string, Variant>;
+  r: specialize TFPGMap<string, Variant>;
+  region: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  s: specialize TFPGMap<string, Variant>;
+  supplier: specialize TArray<specialize TFPGMap<string, Variant>>;
+  target_parts: specialize TArray<specialize TFPGMap<string, Variant>>;
+  target_partsupp: specialize TArray<specialize TFPGMap<string, Variant>>;
+  x: specialize TFPGMap<string, Variant>;
+
+procedure test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part;
+
+var
+  _tmp19: specialize TFPGMap<Variant, Variant>;
 begin
-  _tmp1 := specialize TFPGMap<string, integer>.Create;
-  _tmp1.AddOrSetData('r_regionkey', 1);
-  _tmp1.AddOrSetData('r_na_tmp1e', 'EUROPE');
-  _tmp2 := specialize TFPGMap<string, integer>.Create;
-  _tmp2.AddOrSetData('r_regionkey', 2);
-  _tmp2.AddOrSetData('r_na_tmp2e', 'ASIA');
-  region := specialize TArray<specialize TFPGMap<string, integer>>([_tmp1, _tmp2]);
-  _tmp3 := specialize TFPGMap<string, integer>.Create;
-  _tmp3.AddOrSetData('n_nationkey', 10);
-  _tmp3.AddOrSetData('n_regionkey', 1);
-  _tmp3.AddOrSetData('n_na_tmp3e', 'FRANCE');
-  _tmp4 := specialize TFPGMap<string, integer>.Create;
-  _tmp4.AddOrSetData('n_nationkey', 20);
-  _tmp4.AddOrSetData('n_regionkey', 2);
-  _tmp4.AddOrSetData('n_na_tmp4e', 'CHINA');
-  nation := specialize TArray<specialize TFPGMap<string, integer>>([_tmp3, _tmp4]);
-  _tmp5 := specialize TFPGMap<string, integer>.Create;
-  _tmp5.AddOrSetData('s_suppkey', 100);
-  _tmp5.AddOrSetData('s_na_tmp5e', 'BestSupplier');
-  _tmp5.AddOrSetData('s_address', '123 Rue');
-  _tmp5.AddOrSetData('s_nationkey', 10);
-  _tmp5.AddOrSetData('s_phone', '123');
-  _tmp5.AddOrSetData('s_acctbal', 1000);
-  _tmp5.AddOrSetData('s_co_tmp5_tmp5ent', 'Fast and reliable');
-  _tmp6 := specialize TFPGMap<string, integer>.Create;
-  _tmp6.AddOrSetData('s_suppkey', 200);
-  _tmp6.AddOrSetData('s_na_tmp6e', 'AltSupplier');
-  _tmp6.AddOrSetData('s_address', '456 Way');
-  _tmp6.AddOrSetData('s_nationkey', 20);
-  _tmp6.AddOrSetData('s_phone', '456');
-  _tmp6.AddOrSetData('s_acctbal', 500);
-  _tmp6.AddOrSetData('s_co_tmp6_tmp6ent', 'Slow');
-  supplier := specialize TArray<specialize TFPGMap<string, integer>>([_tmp5, _tmp6]);
-  _tmp7 := specialize TFPGMap<string, integer>.Create;
-  _tmp7.AddOrSetData('p_partkey', 1000);
-  _tmp7.AddOrSetData('p_type', 'LARGE BRASS');
+  _tmp19 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp19.AddOrSetData('s_acctbal', 1000);
+  _tmp19.AddOrSetData('s_name', 'BestSupplier');
+  _tmp19.AddOrSetData('n_name', 'FRANCE');
+  _tmp19.AddOrSetData('p_partkey', 1000);
+  _tmp19.AddOrSetData('p_mfgr', 'M1');
+  _tmp19.AddOrSetData('s_address', '123 Rue');
+  _tmp19.AddOrSetData('s_phone', '123');
+  _tmp19.AddOrSetData('s_comment', 'Fast and reliable');
+  _tmp19.AddOrSetData('ps_supplycost', 10);
+  if not ((_result = specialize TArray<_>([_tmp19]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('r_regionkey', 1);
+  _tmp0.AddOrSetData('r_name', 'EUROPE');
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('r_regionkey', 2);
+  _tmp1.AddOrSetData('r_name', 'ASIA');
+  region := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1]);
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('n_nationkey', 10);
+  _tmp2.AddOrSetData('n_regionkey', 1);
+  _tmp2.AddOrSetData('n_name', 'FRANCE');
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('n_nationkey', 20);
+  _tmp3.AddOrSetData('n_regionkey', 2);
+  _tmp3.AddOrSetData('n_name', 'CHINA');
+  nation := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp2, _tmp3]);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('s_suppkey', 100);
+  _tmp4.AddOrSetData('s_name', 'BestSupplier');
+  _tmp4.AddOrSetData('s_address', '123 Rue');
+  _tmp4.AddOrSetData('s_nationkey', 10);
+  _tmp4.AddOrSetData('s_phone', '123');
+  _tmp4.AddOrSetData('s_acctbal', 1000);
+  _tmp4.AddOrSetData('s_comment', 'Fast and reliable');
+  _tmp5 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp5.AddOrSetData('s_suppkey', 200);
+  _tmp5.AddOrSetData('s_name', 'AltSupplier');
+  _tmp5.AddOrSetData('s_address', '456 Way');
+  _tmp5.AddOrSetData('s_nationkey', 20);
+  _tmp5.AddOrSetData('s_phone', '456');
+  _tmp5.AddOrSetData('s_acctbal', 500);
+  _tmp5.AddOrSetData('s_comment', 'Slow');
+  supplier := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp4, _tmp5]);
+  _tmp6 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp6.AddOrSetData('p_partkey', 1000);
+  _tmp6.AddOrSetData('p_type', 'LARGE BRASS');
+  _tmp6.AddOrSetData('p_size', 15);
+  _tmp6.AddOrSetData('p_mfgr', 'M1');
+  _tmp7 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp7.AddOrSetData('p_partkey', 2000);
+  _tmp7.AddOrSetData('p_type', 'SMALL COPPER');
   _tmp7.AddOrSetData('p_size', 15);
-  _tmp7.AddOrSetData('p__tmp7fgr', 'M1');
-  _tmp8 := specialize TFPGMap<string, integer>.Create;
-  _tmp8.AddOrSetData('p_partkey', 2000);
-  _tmp8.AddOrSetData('p_type', 'SMALL COPPER');
-  _tmp8.AddOrSetData('p_size', 15);
-  _tmp8.AddOrSetData('p__tmp8fgr', 'M2');
-  part := specialize TArray<specialize TFPGMap<string, integer>>([_tmp7, _tmp8]);
-  _tmp9 := specialize TFPGMap<string, integer>.Create;
+  _tmp7.AddOrSetData('p_mfgr', 'M2');
+  part := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp6, _tmp7]);
+  _tmp8 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp8.AddOrSetData('ps_partkey', 1000);
+  _tmp8.AddOrSetData('ps_suppkey', 100);
+  _tmp8.AddOrSetData('ps_supplycost', 10);
+  _tmp9 := specialize TFPGMap<Variant, Variant>.Create;
   _tmp9.AddOrSetData('ps_partkey', 1000);
-  _tmp9.AddOrSetData('ps_suppkey', 100);
-  _tmp9.AddOrSetData('ps_supplycost', 10);
-  _tmp10 := specialize TFPGMap<string, integer>.Create;
-  _tmp10.AddOrSetData('ps_partkey', 1000);
-  _tmp10.AddOrSetData('ps_suppkey', 200);
-  _tmp10.AddOrSetData('ps_supplycost', 15);
-  partsupp := specialize TArray<specialize TFPGMap<string, integer>>([_tmp9, _tmp10]);
-  SetLength(_tmp11, 0);
+  _tmp9.AddOrSetData('ps_suppkey', 200);
+  _tmp9.AddOrSetData('ps_supplycost', 15);
+  partsupp := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp8, _tmp9]);
+  SetLength(_tmp10, 0);
   for r in region do
     begin
       for n in nation do
         begin
           if not ((n.n_regionkey = r.r_regionkey)) then continue;
           if not ((r.r_name = 'EUROPE')) then continue;
-          _tmp11 := Concat(_tmp11, [n]);
+          _tmp10 := Concat(_tmp10, [n]);
         end;
     end;
-  europe_nations := _tmp11;
-  _tmp12 := specialize TFPGMap<string, integer>.Create;
-  _tmp12.AddOrSetData('s', s);
-  _tmp12.AddOrSetData('n', n);
-  SetLength(_tmp13, 0);
+  europe_nations := _tmp10;
+  _tmp11 := specialize TFPGMap<specialize TFPGMap<string, Variant>, Variant>.Create;
+  _tmp11.AddOrSetData('s', s);
+  _tmp11.AddOrSetData('n', n);
+  SetLength(_tmp12, 0);
   for s in supplier do
     begin
       for n in europe_nations do
         begin
           if not ((s.s_nationkey = n.n_nationkey)) then continue;
-          _tmp13 := Concat(_tmp13, [_tmp12]);
+          _tmp12 := Concat(_tmp12, [_tmp11]);
         end;
     end;
-  europe_suppliers := _tmp13;
-  SetLength(_tmp14, 0);
+  europe_suppliers := _tmp12;
+  SetLength(_tmp13, 0);
   for p in part do
     begin
       if not (((p.p_size = 15) and (p.p_type = 'LARGE BRASS'))) then continue;
-      _tmp14 := Concat(_tmp14, [p]);
+      _tmp13 := Concat(_tmp13, [p]);
     end;
-  target_parts := _tmp14;
-  _tmp15 := specialize TFPGMap<string, integer>.Create;
-  _tmp15.AddOrSetData('s_acctbal', s.s.s_acctbal);
-  _tmp15.AddOrSetData('s_na_tmp15e', s.s.s_na_tmp15e);
-  _tmp15.AddOrSetData('n_na_tmp15e', s.n.n_na_tmp15e);
-  _tmp15.AddOrSetData('p_partkey', p.p_partkey);
-  _tmp15.AddOrSetData('p__tmp15fgr', p.p__tmp15fgr);
-  _tmp15.AddOrSetData('s_address', s.s.s_address);
-  _tmp15.AddOrSetData('s_phone', s.s.s_phone);
-  _tmp15.AddOrSetData('s_co_tmp15_tmp15ent', s.s.s_co_tmp15_tmp15ent);
-  _tmp15.AddOrSetData('ps_supplycost', ps.ps_supplycost);
-  SetLength(_tmp16, 0);
+  target_parts := _tmp13;
+  _tmp14 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp14.AddOrSetData('s_acctbal', s.s.s_acctbal);
+  _tmp14.AddOrSetData('s_name', s.s.s_name);
+  _tmp14.AddOrSetData('n_name', s.n.n_name);
+  _tmp14.AddOrSetData('p_partkey', p.p_partkey);
+  _tmp14.AddOrSetData('p_mfgr', p.p_mfgr);
+  _tmp14.AddOrSetData('s_address', s.s.s_address);
+  _tmp14.AddOrSetData('s_phone', s.s.s_phone);
+  _tmp14.AddOrSetData('s_comment', s.s.s_comment);
+  _tmp14.AddOrSetData('ps_supplycost', ps.ps_supplycost);
+  SetLength(_tmp15, 0);
   for ps in partsupp do
     begin
       for p in target_parts do
@@ -187,28 +191,28 @@ begin
           for s in europe_suppliers do
             begin
               if not ((ps.ps_suppkey = s.s.s_suppkey)) then continue;
-              _tmp16 := Concat(_tmp16, [_tmp15]);
+              _tmp15 := Concat(_tmp15, [_tmp14]);
             end;
         end;
     end;
-  target_partsupp := _tmp16;
-  SetLength(_tmp17, 0);
+  target_partsupp := _tmp15;
+  SetLength(_tmp16, 0);
   for x in target_partsupp do
     begin
-      _tmp17 := Concat(_tmp17, [x.ps_supplycost]);
+      _tmp16 := Concat(_tmp16, [x.ps_supplycost]);
     end;
-  costs := _tmp17;
+  costs := _tmp16;
   min_cost := min(costs);
+  SetLength(_tmp17, 0);
   SetLength(_tmp18, 0);
-  SetLength(_tmp19, 0);
   for x in target_partsupp do
     begin
       if not ((x.ps_supplycost = min_cost)) then continue;
-      _tmp18 := Concat(_tmp18, [x]);
-      _tmp19 := Concat(_tmp19, [-x.s_acctbal]);
+      _tmp17 := Concat(_tmp17, [x]);
+      _tmp18 := Concat(_tmp18, [-x.s_acctbal]);
     end;
-  specialize _sortBy<specialize TFPGMap<string, integer>>(_tmp18, _tmp19);
-  _result := _tmp18;
-  json(_result);
+  specialize _sortBy<specialize TFPGMap<string, Variant>>(_tmp17, _tmp18);
+  _result := _tmp17;
+  specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
   test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part;
 end.

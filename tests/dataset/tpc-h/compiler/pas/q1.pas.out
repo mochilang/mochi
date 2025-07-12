@@ -6,47 +6,6 @@ uses SysUtils, fgl, fphttpclient, Classes, Variants, fpjson, jsonparser;
 type
   generic TArray<T> = array of T;
 
-procedure test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus;
-
-var
-  _tmp0: specialize TFPGMap<string, integer>;
-begin
-  _tmp0 := specialize TFPGMap<string, integer>.Create;
-  _tmp0.AddOrSetData('returnflag', 'N');
-  _tmp0.AddOrSetData('linestatus', 'O');
-  _tmp0.AddOrSetData('su_tmp0_qty', 53);
-  _tmp0.AddOrSetData('su_tmp0_base_price', 3000);
-  _tmp0.AddOrSetData('su_tmp0_disc_price', 950 + 1800);
-  _tmp0.AddOrSetData('su_tmp0_charge', 950 * 1.07 + 1800 * 1.05);
-  _tmp0.AddOrSetData('avg_qty', 26.5);
-  _tmp0.AddOrSetData('avg_price', 1500);
-  _tmp0.AddOrSetData('avg_disc', 0.07500000000000001);
-  _tmp0.AddOrSetData('count_order', 2);
-  if not ((_result = specialize TArray<specialize TFPGMap<string, integer>>([_tmp0]))) then raise
-    Exception.Create('expect failed');
-end;
-
-var
-  _tmp1: specialize TFPGMap<string, integer>;
-  _tmp10: specialize TArray<integer>;
-  _tmp11: specialize TArray<integer>;
-  _tmp12: specialize TFPGMap<string, integer>;
-  _tmp13: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp14: specialize TArray<specialize _Group<specialize TFPGMap<string, integer>>>;
-  _tmp15: specialize TArray<specialize TFPGMap<string, integer>>;
-  _tmp2: specialize TFPGMap<string, integer>;
-  _tmp3: specialize TFPGMap<string, integer>;
-  _tmp4: specialize TFPGMap<string, integer>;
-  _tmp5: specialize TArray<integer>;
-  _tmp6: specialize TArray<integer>;
-  _tmp7: specialize TArray<integer>;
-  _tmp8: specialize TArray<integer>;
-  _tmp9: specialize TArray<integer>;
-  lineitem: specialize TArray<specialize TFPGMap<string, integer>>;
-  _result: specialize TArray<specialize TFPGMap<string, integer>>;
-  row: specialize TFPGMap<string, integer>;
-  x: integer;
-
   generic _Group<T> = record
     Key: Variant;
     Items: specialize TArray<T>;
@@ -55,7 +14,7 @@ var
   generic function _avgList<T>(arr: specialize TArray<T>): double;
 begin
   if Length(arr) = 0 then exit(0);
-  Result := _sumList<T>(arr) / Length(arr);
+  Result := specialize _sumList<T>(arr) / Length(arr);
 end;
 
 generic function _group_by<T>(src: specialize TArray<T>; keyfn: function(it: T): Variant):
@@ -93,6 +52,11 @@ begin
     end;
 end;
 
+generic procedure _json<T>(v: T);
+begin
+  writeln('[]');
+end;
+
 generic function _sumList<T>(arr: specialize TArray<T>): double;
 
 var i: integer;
@@ -104,97 +68,137 @@ begin
   Result := s;
 end;
 
+var
+  _tmp0: specialize TFPGMap<Variant, Variant>;
+  _tmp1: specialize TFPGMap<Variant, Variant>;
+  _tmp10: specialize TArray<Variant>;
+  _tmp11: specialize TArray<Variant>;
+  _tmp12: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _tmp13: specialize TArray<specialize _Group<specialize TFPGMap<string, Variant>>>;
+  _tmp14: specialize TArray<_>;
+  _tmp2: specialize TFPGMap<Variant, Variant>;
+  _tmp3: specialize TFPGMap<Variant, Variant>;
+  _tmp4: specialize TFPGMap<Variant, Variant>;
+  _tmp5: specialize TArray<Variant>;
+  _tmp6: specialize TArray<Variant>;
+  _tmp7: specialize TArray<Variant>;
+  _tmp8: specialize TArray<Variant>;
+  _tmp9: specialize TArray<Variant>;
+  lineitem: specialize TArray<specialize TFPGMap<string, Variant>>;
+  _result: specialize TArray<specialize TFPGMap<string, Variant>>;
+  row: specialize TFPGMap<string, Variant>;
+  x: integer;
+
+procedure test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus;
+
+var
+  _tmp15: specialize TFPGMap<Variant, Variant>;
 begin
-  _tmp1 := specialize TFPGMap<string, integer>.Create;
-  _tmp1.AddOrSetData('l_quantity', 17);
-  _tmp1.AddOrSetData('l_extendedprice', 1000);
-  _tmp1.AddOrSetData('l_discount', 0.05);
-  _tmp1.AddOrSetData('l_tax', 0.07);
+  _tmp15 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp15.AddOrSetData('returnflag', 'N');
+  _tmp15.AddOrSetData('linestatus', 'O');
+  _tmp15.AddOrSetData('sum_qty', 53);
+  _tmp15.AddOrSetData('sum_base_price', 3000);
+  _tmp15.AddOrSetData('sum_disc_price', 950 + 1800);
+  _tmp15.AddOrSetData('sum_charge', 950 * 1.07 + 1800 * 1.05);
+  _tmp15.AddOrSetData('avg_qty', 26.5);
+  _tmp15.AddOrSetData('avg_price', 1500);
+  _tmp15.AddOrSetData('avg_disc', 0.07500000000000001);
+  _tmp15.AddOrSetData('count_order', 2);
+  if not ((_result = specialize TArray<_>([_tmp15]))) then raise Exception.Create('expect failed');
+end;
+
+begin
+  _tmp0 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp0.AddOrSetData('l_quantity', 17);
+  _tmp0.AddOrSetData('l_extendedprice', 1000);
+  _tmp0.AddOrSetData('l_discount', 0.05);
+  _tmp0.AddOrSetData('l_tax', 0.07);
+  _tmp0.AddOrSetData('l_returnflag', 'N');
+  _tmp0.AddOrSetData('l_linestatus', 'O');
+  _tmp0.AddOrSetData('l_shipdate', '1998-08-01');
+  _tmp1 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp1.AddOrSetData('l_quantity', 36);
+  _tmp1.AddOrSetData('l_extendedprice', 2000);
+  _tmp1.AddOrSetData('l_discount', 0.1);
+  _tmp1.AddOrSetData('l_tax', 0.05);
   _tmp1.AddOrSetData('l_returnflag', 'N');
   _tmp1.AddOrSetData('l_linestatus', 'O');
-  _tmp1.AddOrSetData('l_shipdate', '1998-08-01');
-  _tmp2 := specialize TFPGMap<string, integer>.Create;
-  _tmp2.AddOrSetData('l_quantity', 36);
-  _tmp2.AddOrSetData('l_extendedprice', 2000);
-  _tmp2.AddOrSetData('l_discount', 0.1);
-  _tmp2.AddOrSetData('l_tax', 0.05);
-  _tmp2.AddOrSetData('l_returnflag', 'N');
-  _tmp2.AddOrSetData('l_linestatus', 'O');
-  _tmp2.AddOrSetData('l_shipdate', '1998-09-01');
-  _tmp3 := specialize TFPGMap<string, integer>.Create;
-  _tmp3.AddOrSetData('l_quantity', 25);
-  _tmp3.AddOrSetData('l_extendedprice', 1500);
-  _tmp3.AddOrSetData('l_discount', 0);
-  _tmp3.AddOrSetData('l_tax', 0.08);
-  _tmp3.AddOrSetData('l_returnflag', 'R');
-  _tmp3.AddOrSetData('l_linestatus', 'F');
-  _tmp3.AddOrSetData('l_shipdate', '1998-09-03');
-  lineitem := specialize TArray<specialize TFPGMap<string, integer>>([_tmp1, _tmp2, _tmp3]);
-  _tmp4 := specialize TFPGMap<string, integer>.Create;
-  _tmp4.AddOrSetData('returnflag', row.l_returnflag);
-  _tmp4.AddOrSetData('linestatus', row.l_linestatus);
+  _tmp1.AddOrSetData('l_shipdate', '1998-09-01');
+  _tmp2 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp2.AddOrSetData('l_quantity', 25);
+  _tmp2.AddOrSetData('l_extendedprice', 1500);
+  _tmp2.AddOrSetData('l_discount', 0);
+  _tmp2.AddOrSetData('l_tax', 0.08);
+  _tmp2.AddOrSetData('l_returnflag', 'R');
+  _tmp2.AddOrSetData('l_linestatus', 'F');
+  _tmp2.AddOrSetData('l_shipdate', '1998-09-03');
+  lineitem := specialize TArray<specialize TFPGMap<string, Variant>>([_tmp0, _tmp1, _tmp2]);
+  _tmp3 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp3.AddOrSetData('returnflag', row.l_returnflag);
+  _tmp3.AddOrSetData('linestatus', row.l_linestatus);
+  _tmp4 := specialize TFPGMap<Variant, Variant>.Create;
+  _tmp4.AddOrSetData('returnflag', g.key.returnflag);
+  _tmp4.AddOrSetData('linestatus', g.key.linestatus);
   SetLength(_tmp5, 0);
   for x in g do
     begin
       _tmp5 := Concat(_tmp5, [x.l_quantity]);
     end;
+  _tmp4.AddOrSetData('sum_qty', specialize _sumList<Variant>(_tmp5));
   SetLength(_tmp6, 0);
   for x in g do
     begin
       _tmp6 := Concat(_tmp6, [x.l_extendedprice]);
     end;
+  _tmp4.AddOrSetData('sum_base_price', specialize _sumList<Variant>(_tmp6));
   SetLength(_tmp7, 0);
   for x in g do
     begin
       _tmp7 := Concat(_tmp7, [x.l_extendedprice * 1 - x.l_discount]);
     end;
+  _tmp4.AddOrSetData('sum_disc_price', specialize _sumList<Variant>(_tmp7));
   SetLength(_tmp8, 0);
   for x in g do
     begin
       _tmp8 := Concat(_tmp8, [x.l_extendedprice * 1 - x.l_discount * 1 + x.l_tax]);
     end;
+  _tmp4.AddOrSetData('sum_charge', specialize _sumList<Variant>(_tmp8));
   SetLength(_tmp9, 0);
   for x in g do
     begin
       _tmp9 := Concat(_tmp9, [x.l_quantity]);
     end;
+  _tmp4.AddOrSetData('avg_qty', specialize _avgList<Variant>(_tmp9));
   SetLength(_tmp10, 0);
   for x in g do
     begin
       _tmp10 := Concat(_tmp10, [x.l_extendedprice]);
     end;
+  _tmp4.AddOrSetData('avg_price', specialize _avgList<Variant>(_tmp10));
   SetLength(_tmp11, 0);
   for x in g do
     begin
       _tmp11 := Concat(_tmp11, [x.l_discount]);
     end;
-  _tmp12 := specialize TFPGMap<string, integer>.Create;
-  _tmp12.AddOrSetData('returnflag', g.key.returnflag);
-  _tmp12.AddOrSetData('linestatus', g.key.linestatus);
-  _tmp12.AddOrSetData('su_tmp12_qty', specialize _su_tmp12List<integer>(_t_tmp12p5));
-  _tmp12.AddOrSetData('su_tmp12_base_price', specialize _su_tmp12List<integer>(_t_tmp12p6));
-  _tmp12.AddOrSetData('su_tmp12_disc_price', specialize _su_tmp12List<integer>(_t_tmp12p7));
-  _tmp12.AddOrSetData('su_tmp12_charge', specialize _su_tmp12List<integer>(_t_tmp12p8));
-  _tmp12.AddOrSetData('avg_qty', specialize _avgList<integer>(_t_tmp12p9));
-  _tmp12.AddOrSetData('avg_price', specialize _avgList<integer>(_t_tmp12p10));
-  _tmp12.AddOrSetData('avg_disc', specialize _avgList<integer>(_t_tmp12p11));
-  _tmp12.AddOrSetData('count_order', Length(g));
-  SetLength(_tmp13, 0);
+  _tmp4.AddOrSetData('avg_disc', specialize _avgList<Variant>(_tmp11));
+  _tmp4.AddOrSetData('count_order', Length(g));
+  SetLength(_tmp12, 0);
   for row in lineitem do
     begin
       if not ((row.l_shipdate <= '1998-09-02')) then continue;
-      _tmp13 := Concat(_tmp13, [row]);
+      _tmp12 := Concat(_tmp12, [row]);
     end;
-  _tmp14 := specialize _group_by<specialize TFPGMap<string, integer>>(_tmp13, function(row:
-            specialize TFPGMap<string, integer>): Variant begin Result := _tmp4
+  _tmp13 := specialize _group_by<specialize TFPGMap<string, Variant>>(_tmp12, function(row:
+            specialize TFPGMap<string, Variant>): Variant begin Result := _tmp3
 end
 );
-SetLength(_tmp15, 0);
-for g in _tmp14 do
+SetLength(_tmp14, 0);
+for g in _tmp13 do
   begin
-    _tmp15 := Concat(_tmp15, [_tmp12]);
+    _tmp14 := Concat(_tmp14, [_tmp4]);
   end;
-_result := _tmp15;
-json(_result);
+_result := _tmp14;
+specialize _json<specialize TArray<specialize TFPGMap<string, Variant>>>(_result);
 test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus;
 end.
