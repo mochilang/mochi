@@ -699,8 +699,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 						}
 						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
 					} else {
-						c.imports["typing"] = "typing"
-						c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f.Name)))
+						c.writeln(fmt.Sprintf("%s: object", sanitizeName(f.Name)))
 					}
 				}
 			}
@@ -736,8 +735,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 						}
 						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
 					} else {
-						c.imports["typing"] = "typing"
-						c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(m.Field.Name)))
+						c.writeln(fmt.Sprintf("%s: object", sanitizeName(m.Field.Name)))
 					}
 				}
 			}

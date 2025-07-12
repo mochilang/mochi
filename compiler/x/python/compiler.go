@@ -201,8 +201,7 @@ func (c *Compiler) emitAutoStructs() {
 					}
 					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
 				} else {
-					c.imports["typing"] = "typing"
-					c.writeln(fmt.Sprintf("%s: typing.Any", sanitizeName(f)))
+					c.writeln(fmt.Sprintf("%s: object", sanitizeName(f)))
 				}
 			}
 			c.writeln("")
