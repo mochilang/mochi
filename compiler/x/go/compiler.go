@@ -23,6 +23,7 @@ type Compiler struct {
 	env          *types.Env
 	helpers      map[string]bool
 	structs      map[string]bool
+	decls        bytes.Buffer
 	handlerCount int
 	handlerDones []string
 	streams      []string
@@ -55,6 +56,7 @@ func New(env *types.Env) *Compiler {
 		env:          env,
 		helpers:      make(map[string]bool),
 		structs:      make(map[string]bool),
+		decls:        bytes.Buffer{},
 		handlerDones: []string{},
 		memo:         map[string]*parser.Literal{},
 
@@ -68,6 +70,11 @@ func New(env *types.Env) *Compiler {
 		tempVarCount:    0,
 		anonStructCount: 0,
 	}
+}
+
+// DeclsSize returns the number of bytes in the declarations buffer.
+func (c *Compiler) DeclsSize() int {
+	return c.decls.Len()
 }
 
 // Compile returns Go source code implementing prog.
@@ -112,6 +119,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("package main")
 	c.writeln("")
 	c.writeImports()
+	if c.decls.Len() > 0 {
+		c.buf.Write(c.decls.Bytes())
+	}
 	c.buf.Write(bodyBytes)
 
 	src := c.buf.Bytes()
@@ -929,6 +939,11 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
+	// write type definition to declarations buffer
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = c.decls
+	c.indent = 0
 	c.writeln(fmt.Sprintf("type %s struct {", name))
 	c.indent++
 	for _, fn := range st.Order {
@@ -938,6 +953,8 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	c.indent--
 	c.writeln("}")
 	c.writeln("")
+	c.buf = oldBuf
+	c.indent = oldIndent
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
