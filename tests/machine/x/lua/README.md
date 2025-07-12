@@ -1,7 +1,7 @@
 # Lua Machine Translations
 
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
-Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.
+Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.  The compiler now emits direct Lua code without relying on the large runtime helper library when simple operations are detected.
 
 Compiled programs: 100/100
 
@@ -119,7 +119,7 @@ Checklist:
 - [ ] Expand LLM helper coverage
 - [ ] Improve error messages for Lua runtime
 - [ ] Generate idiomatic for-in loops for tables
-- [ ] Reduce reliance on helper functions
+- [x] Reduce reliance on helper functions
 - [ ] Support pattern matching with tables
 - [ ] Implement generics for Lua functions
 - [ ] Support asynchronous I/O operations

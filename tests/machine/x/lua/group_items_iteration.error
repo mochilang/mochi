@@ -1,7 +1,0 @@
-line 108: run error: exit status 1
-lua: ...pace/mochi/tests/machine/x/lua/group_items_iteration.lua:108: invalid value (table) at index 1 in table for 'concat'
-stack traceback:
-	[C]: in function 'table.concat'
-	...pace/mochi/tests/machine/x/lua/group_items_iteration.lua:108: in main chunk
-	[C]: in ?
-

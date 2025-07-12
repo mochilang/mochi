@@ -1,7 +1,0 @@
-line 35: run error: exit status 1
-lua: /workspace/mochi/tests/machine/x/lua/slice.lua:35: attempt to call a nil value
-stack traceback:
-	/workspace/mochi/tests/machine/x/lua/slice.lua:35: in main chunk
-	[C]: in ?
-2 3
-

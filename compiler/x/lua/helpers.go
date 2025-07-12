@@ -5,7 +5,6 @@ package luacode
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -155,6 +154,14 @@ func isNumber(t types.Type) bool {
 	default:
 		return false
 	}
+}
+
+func isPrimitive(t types.Type) bool {
+	switch t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType, types.StringType, types.BoolType:
+		return true
+	}
+	return false
 }
 
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
