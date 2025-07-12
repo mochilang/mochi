@@ -69,7 +69,7 @@
   (let ((groups '()) (order '()))
     (for-each (lambda (it)
                 (let* ((key (keyfn it))
-                       (ks (format "~a" key))
+                       (ks (_to_string key))
                        (pair (assoc ks groups)))
                   (if pair
                       (let* ((grp (cdr pair))

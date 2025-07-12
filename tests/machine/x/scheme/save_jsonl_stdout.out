@@ -1,5 +1,3 @@
-WARNING: reference to undefined variable: filter
 WARNING: reference to undefined variable: open-input-pipe
-WARNING: reference to undefined variable: format
 {"name":"Alice","age":30}
 {"name":"Bob","age":25}
