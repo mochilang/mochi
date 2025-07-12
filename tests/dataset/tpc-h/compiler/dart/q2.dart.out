@@ -72,7 +72,7 @@ var result = (() {
     if (!(x['ps_supplycost'] == min_cost)) continue;
     _q5.add([-(x['s_acctbal'] as num), x]);
   }
-  _q5.sort((a,b) => (a[0] as Comparable).compareTo(b[0]));
+  _q5.sort((a,b) => (jsonEncode(a[0]) as Comparable).compareTo(jsonEncode(b[0])));
   _q5 = [for (var x in _q5) x[1]];
   return _q5;
 })();

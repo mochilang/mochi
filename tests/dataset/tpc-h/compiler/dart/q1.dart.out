@@ -1,164 +1,65 @@
-import 'dart:io';
 import 'dart:convert';
 
-void test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-  if (!(_equal(result, [{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": (950 + 1800), "sum_charge": (((950 * 1.07)) + ((1800 * 1.05))), "avg_qty": 26.5, "avg_price": 1500, "avg_disc": 0.07500000000000001, "count_order": 2}]))) { throw Exception('expect failed'); }
-}
+var lineitem = [{'l_quantity': 17, 'l_extendedprice': 1000, 'l_discount': 0.05, 'l_tax': 0.07, 'l_returnflag': 'N', 'l_linestatus': 'O', 'l_shipdate': '1998-08-01'}, {'l_quantity': 36, 'l_extendedprice': 2000, 'l_discount': 0.1, 'l_tax': 0.05, 'l_returnflag': 'N', 'l_linestatus': 'O', 'l_shipdate': '1998-09-01'}, {'l_quantity': 25, 'l_extendedprice': 1500, 'l_discount': 0, 'l_tax': 0.08, 'l_returnflag': 'R', 'l_linestatus': 'F', 'l_shipdate': '1998-09-03'}];
+
+var result = (() {
+  var _q0 = <dynamic>[];
+  var _g1 = <dynamic, List<dynamic>>{};
+  for (var row in lineitem) {
+    if (!(row['l_shipdate'].toString().compareTo('1998-09-02') <= 0)) continue;
+    var _k16 = {'returnflag': row['l_returnflag'], 'linestatus': row['l_linestatus']};
+    _g1.putIfAbsent(_k16, () => <dynamic>[]).add(row);
+  }
+  for (var entry in _g1.entries) {
+    var g = entry.value;
+    var _k16 = entry.key;
+    _q0.add({'returnflag': _k16['returnflag'], 'linestatus': _k16['linestatus'], 'sum_qty': (() { var _t18 = (() {
+  var _q17 = <dynamic>[];
+  for (var x in g) {
+    _q17.add(x['l_quantity']);
+  }
+  return _q17;
+})(); return _t18.reduce((a, b) => a + b); })(), 'sum_base_price': (() { var _t20 = (() {
+  var _q19 = <dynamic>[];
+  for (var x in g) {
+    _q19.add(x['l_extendedprice']);
+  }
+  return _q19;
+})(); return _t20.reduce((a, b) => a + b); })(), 'sum_disc_price': (() { var _t22 = (() {
+  var _q21 = <dynamic>[];
+  for (var x in g) {
+    _q21.add((x['l_extendedprice'] as num) * ((1 - (x['l_discount'] as num)) as num));
+  }
+  return _q21;
+})(); return _t22.reduce((a, b) => a + b); })(), 'sum_charge': (() { var _t24 = (() {
+  var _q23 = <dynamic>[];
+  for (var x in g) {
+    _q23.add(((x['l_extendedprice'] as num) * ((1 - (x['l_discount'] as num)) as num) as num) * ((1 + (x['l_tax'] as num)) as num));
+  }
+  return _q23;
+})(); return _t24.reduce((a, b) => a + b); })(), 'avg_qty': (() { var _t26 = (() {
+  var _q25 = <dynamic>[];
+  for (var x in g) {
+    _q25.add(x['l_quantity']);
+  }
+  return _q25;
+})(); return (_t26.isEmpty ? 0 : _t26.reduce((a, b) => a + b) / _t26.length); })(), 'avg_price': (() { var _t28 = (() {
+  var _q27 = <dynamic>[];
+  for (var x in g) {
+    _q27.add(x['l_extendedprice']);
+  }
+  return _q27;
+})(); return (_t28.isEmpty ? 0 : _t28.reduce((a, b) => a + b) / _t28.length); })(), 'avg_disc': (() { var _t30 = (() {
+  var _q29 = <dynamic>[];
+  for (var x in g) {
+    _q29.add(x['l_discount']);
+  }
+  return _q29;
+})(); return (_t30.isEmpty ? 0 : _t30.reduce((a, b) => a + b) / _t30.length); })(), 'count_order': g.length});
+  }
+  return _q0;
+})();
 
 void main() {
-  int failures = 0;
-  List<Map<String, dynamic>> lineitem = [{"l_quantity": 17, "l_extendedprice": 1000, "l_discount": 0.05, "l_tax": 0.07, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-08-01"}, {"l_quantity": 36, "l_extendedprice": 2000, "l_discount": 0.1, "l_tax": 0.05, "l_returnflag": "N", "l_linestatus": "O", "l_shipdate": "1998-09-01"}, {"l_quantity": 25, "l_extendedprice": 1500, "l_discount": 0, "l_tax": 0.08, "l_returnflag": "R", "l_linestatus": "F", "l_shipdate": "1998-09-03"}];
-  List<Map<String, dynamic>> result = (() {
-  var groups = <String,_Group>{};
-  var order = <String>[];
-  for (var row in lineitem) {
-    var key = {"returnflag": row.l_returnflag, "linestatus": row.l_linestatus};
-    var ks = key.toString();
-    var g = groups[ks];
-    if (g == null) {
-      g = _Group(key);
-      groups[ks] = g;
-      order.add(ks);
-    }
-    g.Items.add(row);
-  }
-  var items = [for (var k in order) groups[k]!];
-  var _res = [];
-  for (var g in items) {
-    _res.add({"returnflag": g.key.returnflag, "linestatus": g.key.linestatus, "sum_qty": _sum((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(x.l_quantity);
-  }
-  return _res;
-})()), "sum_base_price": _sum((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(x.l_extendedprice);
-  }
-  return _res;
-})()), "sum_disc_price": _sum((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add((x.l_extendedprice * ((1 - x.l_discount))));
-  }
-  return _res;
-})()), "sum_charge": _sum((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax))));
-  }
-  return _res;
-})()), "avg_qty": _avg((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(x.l_quantity);
-  }
-  return _res;
-})()), "avg_price": _avg((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(x.l_extendedprice);
-  }
-  return _res;
-})()), "avg_disc": _avg((() {
-  var _res = [];
-  for (var x in g) {
-    _res.add(x.l_discount);
-  }
-  return _res;
-})()), "count_order": _count(g)});
-  }
-  return _res;
-})();
-  _json(result);
-  if (!_runTest("Q1 aggregates revenue and quantity by returnflag + linestatus", test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus)) failures++;
-  if (failures > 0) {
-    print("\n[FAIL] $failures test(s) failed.");
-  }
+  print(jsonEncode(result));
 }
-
-class _Group {
-    dynamic key;
-    List<dynamic> Items = [];
-    _Group(this.key);
-    int count() => _count(this);
-    double sum() => _sum(this);
-    double avg() => _avg(this);
-}
-
-double _avg(dynamic v) {
-    List<dynamic>? list;
-    if (v is List) list = v;
-    else if (v is Map && v['items'] is List) list = (v['items'] as List);
-    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
-    else if (v is _Group) list = v.Items;
-    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
-    if (list == null || list.isEmpty) return 0;
-    var s = 0.0;
-    for (var n in list) s += (n as num).toDouble();
-    return s / list.length;
-}
-
-int _count(dynamic v) {
-    if (v is String) return v.runes.length;
-    if (v is List) return v.length;
-    if (v is Map) return v.length;
-    try { var items = (v as dynamic).Items; if (items is List) return items.length; } catch (_) {}
-    try { var items = (v as dynamic).items; if (items is List) return items.length; } catch (_) {}
-    return 0;
-}
-
-bool _equal(dynamic a, dynamic b) {
-    if (a is List && b is List) {
-        if (a.length != b.length) return false;
-        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
-        return true;
-    }
-    if (a is Map && b is Map) {
-        if (a.length != b.length) return false;
-        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
-        return true;
-    }
-    return a == b;
-}
-
-String _formatDuration(Duration d) {
-    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
-    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
-    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
-}
-
-void _json(dynamic v) {
-    print(jsonEncode(v));
-}
-
-bool _runTest(String name, void Function() f) {
-    stdout.write('   test $name ...');
-    var start = DateTime.now();
-    try {
-        f();
-        var d = DateTime.now().difference(start);
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        return true;
-    } catch (e) {
-        var d = DateTime.now().difference(start);
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        return false;
-    }
-}
-
-double _sum(dynamic v) {
-    List<dynamic>? list;
-    if (v is List) list = v;
-    else if (v is Map && v['items'] is List) list = (v['items'] as List);
-    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
-    else if (v is _Group) list = v.Items;
-    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
-    if (list == null || list.isEmpty) return 0;
-    var s = 0.0;
-    for (var n in list) s += (n as num).toDouble();
-    return s;
-}
-
-
