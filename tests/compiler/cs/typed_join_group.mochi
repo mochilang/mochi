@@ -1,0 +1,26 @@
+type Customer { id: int, name: string }
+
+type Order { id: int, custId: int }
+
+type Summary { name: string, count: int }
+type Key { name: string }
+
+let customers = [
+  Customer { id: 1, name: "Alice" },
+  Customer { id: 2, name: "Bob" }
+]
+
+let orders = [
+  Order { id: 100, custId: 1 },
+  Order { id: 101, custId: 1 },
+  Order { id: 102, custId: 2 }
+]
+
+let result = from o in orders
+             join c in customers on o.custId == c.id
+             group by Key { name: c.name } into g
+             select Summary { name: g.key.name, count: count(g) }
+
+for r in result {
+  print(r.name, r.count)
+}
