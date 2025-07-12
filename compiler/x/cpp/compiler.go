@@ -2183,7 +2183,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		itemTypeExpr = "0"
 	}
 	itemType := fmt.Sprintf("decltype(%s)", itemTypeExpr)
-	if strings.Contains(itemTypeExpr, "std::accumulate") {
+	if strings.Contains(itemTypeExpr, "__avg") || strings.Contains(itemTypeExpr, "__sum") {
+		itemType = "double"
+	} else if strings.Contains(itemTypeExpr, "std::accumulate") {
 		if strings.Contains(itemTypeExpr, ".") {
 			itemType = "double"
 		} else {
@@ -2235,6 +2237,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyType = fmt.Sprintf("decltype(%s)", key)
 		if t := c.structLiteralType(key); t != "" {
 			keyType = t
+		} else if strings.Contains(key, "__avg") || strings.Contains(key, "__sum") {
+			keyType = "double"
 		} else if strings.Contains(key, "std::accumulate") {
 			if strings.Contains(key, ".") {
 				keyType = "double"
@@ -2637,6 +2641,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	keyType := fmt.Sprintf("decltype(%s)", keyExpr)
 	if t := c.structLiteralType(keyExpr); t != "" {
 		keyType = t
+	} else if strings.Contains(keyExpr, "__avg") || strings.Contains(keyExpr, "__sum") {
+		keyType = "double"
 	} else if strings.Contains(keyExpr, "std::accumulate") {
 		if strings.Contains(keyExpr, ".") {
 			keyType = "double"
@@ -2786,7 +2792,9 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			sortKeyTypeExpr = strings.ReplaceAll(sortExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
 		}
 		sortKeyType = fmt.Sprintf("decltype(%s)", sortKeyTypeExpr)
-		if strings.Contains(sortKeyTypeExpr, "std::accumulate") {
+		if strings.Contains(sortKeyTypeExpr, "__avg") || strings.Contains(sortKeyTypeExpr, "__sum") {
+			sortKeyType = "double"
+		} else if strings.Contains(sortKeyTypeExpr, "std::accumulate") {
 			if strings.Contains(sortKeyTypeExpr, ".") {
 				sortKeyType = "double"
 			} else {

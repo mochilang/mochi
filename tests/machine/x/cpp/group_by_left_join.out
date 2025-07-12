@@ -1,4 +1,4 @@
 --- Group Left Join ---
-Alice orders: true
-Bob orders: true
-Charlie orders: false
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0

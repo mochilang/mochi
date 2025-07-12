@@ -57,7 +57,7 @@ inline bool operator!=(const __struct5 &a, const __struct5 &b) {
 }
 struct Grouped {
   decltype(std::declval<__struct5>().key) part;
-  bool total;
+  double total;
 };
 inline bool operator==(const Grouped &a, const Grouped &b) {
   return a.part == b.part && a.total == b.total;
@@ -108,7 +108,7 @@ int main() {
     for (auto &g : __groups) {
       __items.push_back(Grouped{
           g.key, ([&](auto v) {
-            return std::accumulate(v.begin(), v.end(), 0);
+            return std::accumulate(v.begin(), v.end(), 0.0);
           })(([&]() {
             std::vector<decltype(std::declval<Filtered>().value)> __items;
             for (auto r : g.items) {
