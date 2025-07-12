@@ -3,7 +3,7 @@
 (define stats (let ([groups (make-hash)])
   (for* ([person people]) (let* ([key (hash-ref person 'city)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons person bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
-  (for/list ([g _groups]) (hash 'city (hash-ref g 'key) 'count (length (hash-ref g 'items)) 'avg_age (let ([xs (for*/list ([p (hash-ref g 'items)]) (hash-ref p 'age))]) (/ (apply + xs) (length xs)))))))
+  (for/list ([g _groups]) (hash 'city (hash-ref g 'key) 'count (length (hash-ref g 'items)) 'avg_age (let ([xs (for*/list ([p (hash-ref g 'items)]) (hash-ref p 'age))] [n (length (for*/list ([p (hash-ref g 'items)]) (hash-ref p 'age)))]) (if (= n 0) 0 (/ (for/fold ([s 0]) ([v xs]) (+ s v)) n)))))))
 (displayln "--- People grouped by city ---")
 (for ([s (if (hash? stats) (hash-keys stats) stats)])
 (displayln (string-join (map ~a (list (hash-ref s 'city) ": count =" (hash-ref s 'count) ", avg_age =" (hash-ref s 'avg_age))) " "))

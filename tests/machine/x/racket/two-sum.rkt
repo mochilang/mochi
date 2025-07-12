@@ -15,6 +15,6 @@
 )
 (return (list (- 1) (- 1)))
   ))
-(define result (twoSum (list 2 7 11 15) 9))
+(define result (twoSum '(2 7 11 15) 9))
 (displayln (cond [(string? result) (string-ref result 0)] [(hash? result) (hash-ref result 0)] [else (list-ref result 0)]))
 (displayln (cond [(string? result) (string-ref result 1)] [(hash? result) (hash-ref result 1)] [else (list-ref result 1)]))

@@ -1,0 +1,8 @@
+run: exit status 1
+/workspace/mochi/tests/machine/x/racket/load_yaml.rkt:3:9: cannot open module file
+  module path: file/paths
+  path: /usr/share/racket/collects/file/paths.rkt
+  system error: no such file or directory; rkt_err=3
+  location...:
+   /workspace/mochi/tests/machine/x/racket/load_yaml.rkt:3:9
+

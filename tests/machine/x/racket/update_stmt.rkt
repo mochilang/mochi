@@ -7,7 +7,7 @@
     (define name (Person-name _item1))
     (define age (Person-age _item1))
     (define status (Person-status _item1))
-    (when (>= age 18)
+    (when (cond [(string? age) (string>=? age 18)] [(string? 18) (string>=? age 18)] [else (>= age 18)])
     (set-Person-status! _item1 "adult")
     (set-Person-age! _item1 (+ age 1))
     )

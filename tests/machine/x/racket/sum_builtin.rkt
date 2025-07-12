@@ -1,2 +1,2 @@
 #lang racket
-(displayln (apply + (list 1 2 3)))
+(displayln (apply + '(1 2 3)))
