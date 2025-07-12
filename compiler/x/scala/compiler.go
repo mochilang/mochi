@@ -196,15 +196,15 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  case _ => true\n" +
 				pad + "}\n")
 		case "_group_by":
-			out.WriteString(pad + "def _group_by(src: Seq[Any], keyfn: Any => Any): Seq[_Group] = {\n" +
-				pad + "  val groups = scala.collection.mutable.LinkedHashMap[String,_Group]()\n" +
+			out.WriteString(pad + "def _group_by[T,K](src: Seq[T], keyfn: T => K): Seq[_Group[K,T]] = {\n" +
+				pad + "  val groups = scala.collection.mutable.LinkedHashMap[String,(K, scala.collection.mutable.ListBuffer[T])]()\n" +
 				pad + "  for (it <- src) {\n" +
 				pad + "    val key = keyfn(it)\n" +
 				pad + "    val ks = key.toString\n" +
-				pad + "    val g = groups.getOrElseUpdate(ks, new _Group(key))\n" +
-				pad + "    g.Items.append(it)\n" +
+				pad + "    val buf = groups.getOrElseUpdate(ks, (key, scala.collection.mutable.ListBuffer[T]()))\n" +
+				pad + "    buf._2.append(it)\n" +
 				pad + "  }\n" +
-				pad + "  groups.values.toSeq\n" +
+				pad + "  groups.values.map{ case(k,b) => _Group(k, b.toList) }.toSeq\n" +
 				pad + "}\n")
 		case "_query":
 			out.WriteString(pad + "def _query(src: Seq[Any], joins: Seq[Map[String,Any]], opts: Map[String,Any]): Seq[Any] = {\n" +
