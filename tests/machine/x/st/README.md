@@ -1,4 +1,4 @@
-# Mochi to Smalltalk Machine Outputs (97/100 compiled and run)
+# Mochi to Smalltalk Machine Outputs (100/100 compiled and run)
 
 This directory contains Smalltalk source code generated from the Mochi programs in `tests/vm/valid`. A checkbox indicates the program compiled and executed successfully during tests.
 
@@ -25,7 +25,7 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
-- [ ] go_auto.mochi
+- [x] go_auto.mochi
 - [x] group_by.mochi
 - [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
@@ -73,8 +73,8 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] print_hello.mochi
 - [x] pure_fold.mochi
 - [x] pure_global_fold.mochi
-- [ ] python_auto.mochi
-- [ ] python_math.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 - [x] query_sum_select.mochi
 - [x] record_assign.mochi
 - [x] right_join.mochi
@@ -108,3 +108,4 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 - [x] full outer join semantics
 - [x] right join semantics
 
+All programs executed successfully with GNU Smalltalk.

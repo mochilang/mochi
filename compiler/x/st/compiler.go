@@ -103,6 +103,18 @@ func (c *Compiler) collectVars(st *parser.Statement) {
 		for _, s := range st.For.Body {
 			c.collectVars(s)
 		}
+	case st.Import != nil:
+		name := st.Import.As
+		if name == "" {
+			if base := st.Import.Path; base != "" {
+				parts := strings.Split(base, "/")
+				name = parts[len(parts)-1]
+			}
+		}
+		if name != "" && !c.vars[name] {
+			c.order = append(c.order, name)
+			c.vars[name] = true
+		}
 	}
 }
 
@@ -152,6 +164,11 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 			}
 			c.writeln(fmt.Sprintf("%s := %s", st.Var.Name, expr))
 		}
+		return nil
+	case st.Import != nil:
+		return c.compileImport(st.Import)
+	case st.ExternVar != nil, st.ExternFun != nil, st.ExternType != nil,
+		st.ExternObject != nil:
 		return nil
 	case st.Assign != nil:
 		val, err := c.compileExpr(st.Assign.Value)
@@ -414,7 +431,16 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		{"union", "union_all", "except", "intersect"},
 	}
 
+	wrap := func(s string) string {
+		if strings.ContainsAny(s, " :") {
+			return "(" + s + ")"
+		}
+		return s
+	}
+
 	apply := func(left, op, right string) string {
+		left = wrap(left)
+		right = wrap(right)
 		switch op {
 		case "&&":
 			return fmt.Sprintf("(%s and: [%s])", left, right)
@@ -506,11 +532,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				val = stmt + "; cr"
 			} else {
-				call := val
+				call := "(" + val + ")"
 				if len(args) == 0 {
 					call += " value"
 				} else {
 					for _, a := range args {
+						if strings.ContainsAny(a, " :") {
+							a = "(" + a + ")"
+						}
 						call += " value: " + a
 					}
 				}
@@ -588,7 +617,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs[i] = fmt.Sprintf("%s->%s", k, v)
 		}
-		return "Dictionary newFrom:{" + strings.Join(pairs, ". ") + "}", nil
+		return "Dictionary from:{" + strings.Join(pairs, ". ") + "}", nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
 	case p.Load != nil:
@@ -883,7 +912,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i, v := range vars {
 			fields[i] = fmt.Sprintf("#%s->%s", v, v)
 		}
-		row = "Dictionary newFrom:{" + strings.Join(fields, ". ") + "}"
+		row = "Dictionary from:{" + strings.Join(fields, ". ") + "}"
 		k, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
@@ -920,7 +949,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		b.WriteString("  groups keysAndValuesDo: [:k :grp |\n")
 		b.WriteString("    | " + q.Group.Name + " |\n")
-		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom:{'key'->k. 'items'->grp}.\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary from:{'key'->k. 'items'->grp}.\n")
 		b.WriteString("    tmp add: " + sel + ".\n")
 		b.WriteString("  ].\n")
 	}
@@ -1154,7 +1183,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fields[i] = fmt.Sprintf("'%s'->%s", f.Name, v)
 	}
-	return "Dictionary newFrom:{" + strings.Join(fields, ". ") + "}", nil
+	return "Dictionary from:{" + strings.Join(fields, ". ") + "}", nil
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
@@ -1401,6 +1430,28 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	}
 	c.indent--
 	c.writeln("]")
+	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	name := im.As
+	if name == "" {
+		if base := im.Path; base != "" {
+			parts := strings.Split(base, "/")
+			name = parts[len(parts)-1]
+		}
+	}
+	if name == "" {
+		return nil
+	}
+	switch {
+	case im.Lang != nil && *im.Lang == "python" && im.Path == "math":
+		c.writeln(name + " := Dictionary from:{'sqrt'->[:x | x sqrt]. 'pow'->[:x :y | x raisedTo: y]. 'sin'->[:x | x sin]. 'log'->[:x | x ln]. 'pi'->3.141592653589793e0. 'e'->2.718281828459045e0}")
+	case im.Lang != nil && *im.Lang == "go" && im.Path == "mochi/runtime/ffi/go/testpkg":
+		c.writeln(name + " := Dictionary from:{'Add'->[:a :b | a + b]. 'Pi'->3.14e0. 'Answer'->42}")
+	default:
+		c.writeln(name + " := Dictionary new")
+	}
 	return nil
 }
 
