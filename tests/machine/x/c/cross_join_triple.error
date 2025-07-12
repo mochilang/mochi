@@ -1,0 +1,30 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:45:3: error: unknown type name ‘list_int’; did you mean ‘list_string’?
+   45 |   list_int bools = tmp2;
+      |   ^~~~~~~~
+      |   list_string
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:45:20: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+   45 |   list_int bools = tmp2;
+      |                    ^~~~
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:48:34: error: request for member ‘len’ in something not a structure or union
+   48 |       list_CombosItem_create(tmp3.len * letters.len * bools.len);
+      |                                  ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:48:60: error: request for member ‘len’ in something not a structure or union
+   48 |       list_CombosItem_create(tmp3.len * letters.len * bools.len);
+      |                                                            ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:50:35: error: request for member ‘len’ in something not a structure or union
+   50 |   for (int n_idx = 0; n_idx < tmp3.len; n_idx++) {
+      |                                   ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:51:17: error: request for member ‘data’ in something not a structure or union
+   51 |     int n = tmp3.data[n_idx];
+      |                 ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:54:40: error: request for member ‘len’ in something not a structure or union
+   54 |       for (int b_idx = 0; b_idx < bools.len; b_idx++) {
+      |                                        ^
+/workspace/mochi/tests/machine/x/c/cross_join_triple.c:55:22: error: request for member ‘data’ in something not a structure or union
+   55 |         int b = bools.data[b_idx];
+      |                      ^
+
+   1: #include <stdio.h>

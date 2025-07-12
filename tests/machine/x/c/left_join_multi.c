@@ -122,11 +122,9 @@ int main() {
   tmp4.len = tmp5;
   list_ResultItem result = tmp4;
   printf("%s\n", "--- Left Join Multi ---");
-  for (int tmp10 = 0; tmp10 < result.len; tmp10++) {
-    ResultItem r = result.data[tmp10];
-    printf("%d ", r.orderId);
-    printf("%s ", r.name);
-    printf("%d\n", r.item);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

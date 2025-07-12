@@ -1,0 +1,8 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/count_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/count_builtin.c:6:22: error: request for member ‘len’ in something not a structure or union
+    6 |   printf("%d\n", tmp1.len);
+      |                      ^
+
+   1: #include <stdio.h>

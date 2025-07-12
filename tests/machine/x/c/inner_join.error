@@ -1,0 +1,10 @@
+line: 0
+error: output mismatch
+-- got --
+--- Orders with customer info ---
+-- want --
+--- Orders with customer info ---
+Order 100 by Alice - $ 250
+Order 101 by Bob - $ 125
+Order 102 by Alice - $ 300
+   1: #include <stdio.h>

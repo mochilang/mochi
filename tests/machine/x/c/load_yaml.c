@@ -303,10 +303,9 @@ int main() {
   }
   tmp1.len = tmp2;
   list_AdultsItem adults = tmp1;
-  for (int tmp4 = 0; tmp4 < adults.len; tmp4++) {
-    AdultsItem a = adults.data[tmp4];
-    printf("%s ", a.name);
-    printf("%s\n", a.email);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

@@ -1,0 +1,29 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/exists_builtin.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:7:3: error: unknown type name ‘list_int’
+    7 |   list_int tmp2 = list_int_create(tmp1.len);
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:7:19: warning: implicit declaration of function ‘list_int_create’ [-Wimplicit-function-declaration]
+    7 |   list_int tmp2 = list_int_create(tmp1.len);
+      |                   ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:7:39: error: request for member ‘len’ in something not a structure or union
+    7 |   list_int tmp2 = list_int_create(tmp1.len);
+      |                                       ^
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:9:33: error: request for member ‘len’ in something not a structure or union
+    9 |   for (int tmp4 = 0; tmp4 < tmp1.len; tmp4++) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:10:17: error: request for member ‘data’ in something not a structure or union
+   10 |     int x = tmp1.data[tmp4];
+      |                 ^
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:14:9: error: request for member ‘data’ in something not a structure or union
+   14 |     tmp2.data[tmp3] = x;
+      |         ^
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:17:7: error: request for member ‘len’ in something not a structure or union
+   17 |   tmp2.len = tmp3;
+      |       ^
+/workspace/mochi/tests/machine/x/c/exists_builtin.c:18:18: error: request for member ‘len’ in something not a structure or union
+   18 |   int flag = tmp2.len > 0;
+      |                  ^
+
+   1: #include <stdio.h>

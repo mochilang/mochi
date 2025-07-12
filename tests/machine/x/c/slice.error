@@ -1,0 +1,21 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/slice.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/slice.c:75:34: error: incompatible type for argument 1 of ‘slice_list_int’
+   75 |   list_int tmp2 = slice_list_int(tmp1, 1, 3);
+      |                                  ^~~~
+      |                                  |
+      |                                  int *
+/workspace/mochi/tests/machine/x/c/slice.c:50:41: note: expected ‘list_int’ but argument is of type ‘int *’
+   50 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+/workspace/mochi/tests/machine/x/c/slice.c:79:34: error: incompatible type for argument 1 of ‘slice_list_int’
+   79 |   list_int tmp4 = slice_list_int(tmp3, 0, 2);
+      |                                  ^~~~
+      |                                  |
+      |                                  int *
+/workspace/mochi/tests/machine/x/c/slice.c:50:41: note: expected ‘list_int’ but argument is of type ‘int *’
+   50 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+
+   1: #include <stdio.h>

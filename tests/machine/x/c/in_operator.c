@@ -22,9 +22,7 @@ static int contains_list_int(list_int v, int item) {
   return 0;
 }
 int main() {
-  int tmp1_data[] = {1, 2, 3};
-  list_int tmp1 = {3, tmp1_data};
-  list_int xs = tmp1;
+  int xs[] = {1, 2, 3};
   printf("%s\n", (contains_list_int(xs, 2)) ? "true" : "false");
   printf("%s\n", ((!(contains_list_int(xs, 5)))) ? "true" : "false");
   return 0;

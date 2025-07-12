@@ -95,14 +95,9 @@ int main() {
   tmp3.len = tmp4;
   list_ResultItem result = tmp3;
   printf("%s\n", "--- Left Join ---");
-  for (int tmp8 = 0; tmp8 < result.len; tmp8++) {
-    ResultItem entry = result.data[tmp8];
-    printf("%s ", "Order");
-    printf("%d ", entry.orderId);
-    printf("%s ", "customer");
-    printf("%d ", entry.customer);
-    printf("%s ", "total");
-    printf("%d\n", entry.total);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

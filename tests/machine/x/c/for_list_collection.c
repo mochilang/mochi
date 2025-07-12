@@ -1,25 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct {
-  int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
 int main() {
-  int tmp1_data[] = {1, 2, 3};
-  list_int tmp1 = {3, tmp1_data};
-  for (int tmp2 = 0; tmp2 < tmp1.len; tmp2++) {
-    int n = tmp1.data[tmp2];
+  int tmp1[] = {1, 2, 3};
+  for (int tmp2 = 0; tmp2 < 3; tmp2++) {
+    int n = tmp1[tmp2];
     printf("%d\n", n);
   }
   return 0;
