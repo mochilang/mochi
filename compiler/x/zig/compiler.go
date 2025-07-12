@@ -2307,6 +2307,20 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr, asReturn bool) (string, e
 			}
 			return operand{expr: cmp}, nil
 		}
+		if (opName == "<" || opName == "<=" || opName == ">" || opName == ">=") && (left.isStr || right.isStr) {
+			var cmp string
+			switch opName {
+			case "<":
+				cmp = fmt.Sprintf("std.mem.order(u8, %s, %s) == .lt", left.expr, right.expr)
+			case "<=":
+				cmp = fmt.Sprintf("std.mem.order(u8, %s, %s) != .gt", left.expr, right.expr)
+			case ">":
+				cmp = fmt.Sprintf("std.mem.order(u8, %s, %s) == .gt", left.expr, right.expr)
+			case ">=":
+				cmp = fmt.Sprintf("std.mem.order(u8, %s, %s) != .lt", left.expr, right.expr)
+			}
+			return operand{expr: cmp}, nil
+		}
 		if opName == "in" {
 			if right.isMap {
 				expr = fmt.Sprintf("%s.contains(%s)", right.expr, left.expr)
