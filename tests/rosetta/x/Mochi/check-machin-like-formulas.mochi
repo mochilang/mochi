@@ -1,0 +1,61 @@
+// Mochi implementation of Rosetta Code task "Check Machin-like formulas".
+// Ported from the Go version.
+
+fun br(n: int, d: int): bigrat { return (n as bigrat) / (d as bigrat) as bigrat }
+
+var testCases = [
+  [{"a":1, "n":1, "d":2}, {"a":1, "n":1, "d":3}],
+  [{"a":2, "n":1, "d":3}, {"a":1, "n":1, "d":7}],
+  [{"a":4, "n":1, "d":5}, {"a":-1, "n":1, "d":239}],
+  [{"a":5, "n":1, "d":7}, {"a":2, "n":3, "d":79}],
+  [{"a":1, "n":1, "d":2}, {"a":1, "n":1, "d":5}, {"a":1, "n":1, "d":8}],
+  [{"a":4, "n":1, "d":5}, {"a":-1, "n":1, "d":70}, {"a":1, "n":1, "d":99}],
+  [{"a":5, "n":1, "d":7}, {"a":4, "n":1, "d":53}, {"a":2, "n":1, "d":4443}],
+  [{"a":6, "n":1, "d":8}, {"a":2, "n":1, "d":57}, {"a":1, "n":1, "d":239}],
+  [{"a":8, "n":1, "d":10}, {"a":-1, "n":1, "d":239}, {"a":-4, "n":1, "d":515}],
+  [{"a":12, "n":1, "d":18}, {"a":8, "n":1, "d":57}, {"a":-5, "n":1, "d":239}],
+  [{"a":16, "n":1, "d":21}, {"a":3, "n":1, "d":239}, {"a":4, "n":3, "d":1042}],
+  [{"a":22, "n":1, "d":28}, {"a":2, "n":1, "d":443}, {"a":-5, "n":1, "d":1393}, {"a":-10, "n":1, "d":11018}],
+  [{"a":22, "n":1, "d":38}, {"a":17, "n":7, "d":601}, {"a":10, "n":7, "d":8149}],
+  [{"a":44, "n":1, "d":57}, {"a":7, "n":1, "d":239}, {"a":-12, "n":1, "d":682}, {"a":24, "n":1, "d":12943}],
+  [{"a":88, "n":1, "d":172}, {"a":51, "n":1, "d":239}, {"a":32, "n":1, "d":682}, {"a":44, "n":1, "d":5357}, {"a":68, "n":1, "d":12943}],
+  [{"a":88, "n":1, "d":172}, {"a":51, "n":1, "d":239}, {"a":32, "n":1, "d":682}, {"a":44, "n":1, "d":5357}, {"a":68, "n":1, "d":12944}],
+]
+
+fun format(ts: list<map<string,int>>): string {
+  var s = "["
+  var i = 0
+  while i < len(ts) {
+    let t = ts[i]
+    s = s + "{" + str(t["a"]) + " " + str(t["n"]) + " " + str(t["d"]) + "}"
+    if i < len(ts)-1 { s = s + " " }
+    i = i + 1
+  }
+  return s + "]"
+}
+
+fun tanEval(coef: int, f: bigrat): bigrat {
+  if coef == 1 { return f }
+  if coef < 0 { return -(tanEval(-coef, f)) as bigrat }
+  let ca = coef / 2
+  let cb = coef - ca
+  let a = tanEval(ca, f)
+  let b = tanEval(cb, f)
+  return (a + b) as bigrat / (1 as bigrat - a*b) as bigrat
+}
+
+fun tans(m: list<map<string,int>>): bigrat {
+  if len(m) == 1 {
+    let t = m[0]
+    return tanEval(t["a"], br(t["n"], t["d"]))
+  }
+  let half = len(m)/2
+  let a = tans(m[0:half])
+  let b = tans(m[half:])
+  return (a + b) as bigrat / (1 as bigrat - a*b) as bigrat
+}
+
+for ts in testCases {
+  print("tan " + format(ts) + " = " + str(tans(ts)))
+}
+
