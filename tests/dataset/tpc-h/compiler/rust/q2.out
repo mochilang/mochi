@@ -1,0 +1,1 @@
+[Result1 { s_acctbal: 1000.0, s_name: "BestSupplier", n_name: "FRANCE", p_partkey: 1000, p_mfgr: "M1", s_address: "123 Rue", s_phone: "123", s_comment: "Fast and reliable", ps_supplycost: 10.0 }]

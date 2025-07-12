@@ -1,0 +1,78 @@
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+struct Region {
+    r_regionkey: i32,
+    r_name: &'static str,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+struct Nation {
+    n_nationkey: i32,
+    n_regionkey: i32,
+    n_name: &'static str,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+struct Supplier {
+    s_suppkey: i32,
+    s_name: &'static str,
+    s_address: &'static str,
+    s_nationkey: i32,
+    s_phone: &'static str,
+    s_acctbal: f64,
+    s_comment: &'static str,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+struct Part {
+    p_partkey: i32,
+    p_type: &'static str,
+    p_size: i32,
+    p_mfgr: &'static str,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+struct Partsupp {
+    ps_partkey: i32,
+    ps_suppkey: i32,
+    ps_supplycost: f64,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+struct Result {
+    s: Supplier,
+    n: Nation,
+}
+
+#[derive(Default, Debug, Clone, PartialEq)]
+struct Result1 {
+    s_acctbal: f64,
+    s_name: &'static str,
+    n_name: &'static str,
+    p_partkey: i32,
+    p_mfgr: &'static str,
+    s_address: &'static str,
+    s_phone: &'static str,
+    s_comment: &'static str,
+    ps_supplycost: f64,
+}
+
+fn min<T: PartialOrd + Copy>(v: &[T]) -> T {
+    *v.iter().min_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()
+}
+
+fn main() {
+    let region = vec![Region { r_regionkey: 1, r_name: "EUROPE" }, Region { r_regionkey: 2, r_name: "ASIA" }];
+    let nation = vec![Nation { n_nationkey: 10, n_regionkey: 1, n_name: "FRANCE" }, Nation { n_nationkey: 20, n_regionkey: 2, n_name: "CHINA" }];
+    let supplier = vec![Supplier { s_suppkey: 100, s_name: "BestSupplier", s_address: "123 Rue", s_nationkey: 10, s_phone: "123", s_acctbal: 1000.0, s_comment: "Fast and reliable" }, Supplier { s_suppkey: 200, s_name: "AltSupplier", s_address: "456 Way", s_nationkey: 20, s_phone: "456", s_acctbal: 500.0, s_comment: "Slow" }];
+    let part = vec![Part { p_partkey: 1000, p_type: "LARGE BRASS", p_size: 15, p_mfgr: "M1" }, Part { p_partkey: 2000, p_type: "SMALL COPPER", p_size: 15, p_mfgr: "M2" }];
+    let partsupp = vec![Partsupp { ps_partkey: 1000, ps_suppkey: 100, ps_supplycost: 10.0 }, Partsupp { ps_partkey: 1000, ps_suppkey: 200, ps_supplycost: 15.0 }];
+    let europe_nations = { let mut tmp1 = Vec::new();for r in &region { for n in &nation { if !(n.n_regionkey == r.r_regionkey) { continue; } if !(r.r_name == "EUROPE") { continue; } tmp1.push(n.clone()); } } tmp1 };
+    let europe_suppliers = { let mut tmp2 = Vec::new();for s in &supplier { for n in &europe_nations { if !(s.s_nationkey == n.n_nationkey) { continue; } tmp2.push(Result { s: s.clone(), n: n.clone() }); } } tmp2 };
+    let target_parts = { let mut tmp3 = Vec::new();for p in &part { if !(p.p_size == 15 && p.p_type == "LARGE BRASS") { continue; } tmp3.push(p.clone()); } tmp3 };
+    let target_partsupp = { let mut tmp4 = Vec::new();for ps in &partsupp { for p in &target_parts { if !(ps.ps_partkey == p.p_partkey) { continue; } for s in &europe_suppliers { if !(ps.ps_suppkey == s.s.s_suppkey) { continue; } tmp4.push(Result1 { s_acctbal: s.s.s_acctbal, s_name: s.s.s_name, n_name: s.n.n_name, p_partkey: p.p_partkey, p_mfgr: p.p_mfgr, s_address: s.s.s_address, s_phone: s.s.s_phone, s_comment: s.s.s_comment, ps_supplycost: ps.ps_supplycost }); } } } tmp4 };
+    let costs = { let mut tmp5 = Vec::new();for x in &target_partsupp { tmp5.push(x.ps_supplycost); } tmp5 };
+    let min_cost = min(&costs);
+    let result = { let mut tmp6 = Vec::new();for x in &target_partsupp { if !(x.ps_supplycost == min_cost) { continue; } let tmp7 = x.clone(); let tmp8 = -x.s_acctbal; tmp6.push((tmp8, tmp7)); } tmp6.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp9 = Vec::new(); for p in tmp6 { tmp9.push(p.1); } tmp9 };
+    println!("{:?}", result);
+    assert!(result == vec![Result1 { s_acctbal: 1000.0, s_name: "BestSupplier", n_name: "FRANCE", p_partkey: 1000, p_mfgr: "M1", s_address: "123 Rue", s_phone: "123", s_comment: "Fast and reliable", ps_supplycost: 10.0 }]);
+}
