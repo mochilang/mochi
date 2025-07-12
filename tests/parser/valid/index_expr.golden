@@ -13,9 +13,6 @@
     )
   )
   (let w
-    (index
-      (selector x)
-      (unary - (int 1))
-    )
+    (index (selector x) (int -1))
   )
 )
