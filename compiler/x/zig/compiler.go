@@ -539,21 +539,27 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					typ = c.resolveTypeRef(s.Var.Type)
 				} else if s.Var.Value != nil {
 					if ml := extractMapLiteral(s.Var.Value); ml != nil {
-						var keyT types.Type = types.AnyType{}
-						var valT types.Type = types.AnyType{}
-						if len(ml.Items) > 0 {
-							if _, ok := simpleStringKey(ml.Items[0].Key); ok {
-								keyT = types.StringType{}
-							} else if c.isFloatExpr(ml.Items[0].Key) {
-								keyT = types.FloatType{}
-							} else if c.isBoolExpr(ml.Items[0].Key) {
-								keyT = types.BoolType{}
-							} else {
-								keyT = types.IntType{}
+						if known, ok := c.matchStructFromMapLiteral(ml); ok {
+							if stype, ok2 := c.env.GetStruct(known); ok2 {
+								typ = stype
 							}
-							valT = c.inferExprType(ml.Items[0].Value)
+						} else {
+							var keyT types.Type = types.AnyType{}
+							var valT types.Type = types.AnyType{}
+							if len(ml.Items) > 0 {
+								if _, ok := simpleStringKey(ml.Items[0].Key); ok {
+									keyT = types.StringType{}
+								} else if c.isFloatExpr(ml.Items[0].Key) {
+									keyT = types.FloatType{}
+								} else if c.isBoolExpr(ml.Items[0].Key) {
+									keyT = types.BoolType{}
+								} else {
+									keyT = types.IntType{}
+								}
+								valT = c.inferExprType(ml.Items[0].Value)
+							}
+							typ = types.MapType{Key: keyT, Value: valT}
 						}
-						typ = types.MapType{Key: keyT, Value: valT}
 					} else {
 						typ = c.inferExprType(s.Var.Value)
 					}
@@ -567,10 +573,23 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
 					var v string
 					if ml := extractMapLiteral(s.Var.Value); ml != nil {
-						var err error
-						v, err = c.compileMapLiteral(ml, true)
-						if err != nil {
-							return err
+						if known, ok := c.matchStructFromMapLiteral(ml); ok {
+							vv, err := c.compileMapLiteral(ml, false)
+							if err != nil {
+								return err
+							}
+							if c.env != nil {
+								if stype, ok2 := c.env.GetStruct(known); ok2 {
+									c.env.SetVar(s.Var.Name, stype, true)
+								}
+							}
+							v = vv
+						} else {
+							var err error
+							v, err = c.compileMapLiteral(ml, true)
+							if err != nil {
+								return err
+							}
 						}
 					} else {
 						vv, err := c.compileExpr(s.Var.Value, false)
@@ -739,34 +758,50 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 		val := "0"
 		if s.Let.Value != nil {
 			if ml := extractMapLiteral(s.Let.Value); ml != nil && s.Let.Type == nil {
-				structName := pascalCase(name)
-				decl, init, ok, err := c.mapLiteralStruct(ml, structName)
-				if ok && err == nil {
-					if !c.structs[structName] {
-						c.writeln(decl)
-						c.structs[structName] = true
-						if c.env != nil {
-							st, ok := c.structTypeFromMapLiteral(ml, structName)
-							if ok {
-								c.env.SetStruct(structName, st)
-							}
-						}
+				if known, ok := c.matchStructFromMapLiteral(ml); ok {
+					v, err := c.compileMapLiteral(ml, false)
+					if err != nil {
+						return err
 					}
-					val = init
 					if c.env != nil {
-						if st, ok := c.structTypeFromMapLiteral(ml, structName); ok {
+						if st, ok2 := c.env.GetStruct(known); ok2 {
 							c.env.SetVar(s.Let.Name, st, false)
 							if inFun {
 								c.locals[s.Let.Name] = st
 							}
 						}
 					}
-				} else {
-					v, err := c.compileMapLiteral(ml, true)
-					if err != nil {
-						return err
-					}
 					val = v
+				} else {
+					structName := pascalCase(name)
+					decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+					if ok && err == nil {
+						if !c.structs[structName] {
+							c.writeln(decl)
+							c.structs[structName] = true
+							if c.env != nil {
+								st, ok := c.structTypeFromMapLiteral(ml, structName)
+								if ok {
+									c.env.SetStruct(structName, st)
+								}
+							}
+						}
+						val = init
+						if c.env != nil {
+							if st, ok := c.structTypeFromMapLiteral(ml, structName); ok {
+								c.env.SetVar(s.Let.Name, st, false)
+								if inFun {
+									c.locals[s.Let.Name] = st
+								}
+							}
+						}
+					} else {
+						v, err := c.compileMapLiteral(ml, true)
+						if err != nil {
+							return err
+						}
+						val = v
+					}
 				}
 			} else if f := fetchExprOnly(s.Let.Value); f != nil && typ != (types.AnyType{}) {
 				v, err := c.compileFetchExprTyped(f, typ)
@@ -1909,21 +1944,27 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 			typ = c.resolveTypeRef(st.Type)
 		} else if st.Value != nil {
 			if ml := extractMapLiteral(st.Value); ml != nil {
-				var keyT types.Type = types.AnyType{}
-				var valT types.Type = types.AnyType{}
-				if len(ml.Items) > 0 {
-					if _, ok := simpleStringKey(ml.Items[0].Key); ok {
-						keyT = types.StringType{}
-					} else if c.isFloatExpr(ml.Items[0].Key) {
-						keyT = types.FloatType{}
-					} else if c.isBoolExpr(ml.Items[0].Key) {
-						keyT = types.BoolType{}
-					} else {
-						keyT = types.IntType{}
+				if known, ok := c.matchStructFromMapLiteral(ml); ok {
+					if stype, ok2 := c.env.GetStruct(known); ok2 {
+						typ = stype
 					}
-					valT = c.inferExprType(ml.Items[0].Value)
+				} else {
+					var keyT types.Type = types.AnyType{}
+					var valT types.Type = types.AnyType{}
+					if len(ml.Items) > 0 {
+						if _, ok := simpleStringKey(ml.Items[0].Key); ok {
+							keyT = types.StringType{}
+						} else if c.isFloatExpr(ml.Items[0].Key) {
+							keyT = types.FloatType{}
+						} else if c.isBoolExpr(ml.Items[0].Key) {
+							keyT = types.BoolType{}
+						} else {
+							keyT = types.IntType{}
+						}
+						valT = c.inferExprType(ml.Items[0].Value)
+					}
+					typ = types.MapType{Key: keyT, Value: valT}
 				}
-				typ = types.MapType{Key: keyT, Value: valT}
 			} else {
 				typ = c.inferExprType(st.Value)
 				if stype, ok := c.structTypeFromExpr(st.Value); ok {
@@ -1974,7 +2015,19 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	}
 	if st.Value != nil {
 		if ll := extractListLiteral(st.Value); ll != nil && len(ll.Elems) > 0 && st.Type == nil {
-			if extractMapLiteral(ll.Elems[0]) != nil {
+			if ml := extractMapLiteral(ll.Elems[0]); ml != nil {
+				if known, ok := c.matchStructFromMapLiteral(ml); ok {
+					v, err := c.compileListLiteral(ll, true)
+					if err == nil {
+						if c.env != nil {
+							if stype, ok2 := c.env.GetStruct(known); ok2 {
+								c.env.SetVar(st.Name, types.ListType{Elem: stype}, true)
+							}
+						}
+						c.writelnType(fmt.Sprintf("var %s = %s;", name, v), typ)
+						return nil
+					}
+				}
 				structName := pascalCase(name) + "Item"
 				decl, init, err := c.compileNamedListLiteral(ll, true, structName)
 				if err == nil {
@@ -1982,14 +2035,14 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 						c.writeln(decl)
 						c.structs[structName] = true
 						if c.env != nil {
-							stype, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName)
+							stype, ok := c.structTypeFromMapLiteral(ml, structName)
 							if ok {
 								c.env.SetStruct(structName, stype)
 							}
 						}
 					}
 					if c.env != nil {
-						if stype, ok := c.structTypeFromMapLiteral(extractMapLiteral(ll.Elems[0]), structName); ok {
+						if stype, ok := c.structTypeFromMapLiteral(ml, structName); ok {
 							c.env.SetVar(st.Name, types.ListType{Elem: stype}, true)
 						}
 					}
@@ -2002,11 +2055,24 @@ func (c *Compiler) compileVar(st *parser.VarStmt, inFun bool) error {
 	val := "0"
 	if st.Value != nil {
 		if ml := extractMapLiteral(st.Value); ml != nil {
-			v, err := c.compileMapLiteral(ml, true)
-			if err != nil {
-				return err
+			if known, ok := c.matchStructFromMapLiteral(ml); ok {
+				v, err := c.compileMapLiteral(ml, false)
+				if err != nil {
+					return err
+				}
+				if c.env != nil {
+					if stype, ok2 := c.env.GetStruct(known); ok2 {
+						c.env.SetVar(st.Name, stype, true)
+					}
+				}
+				val = v
+			} else {
+				v, err := c.compileMapLiteral(ml, true)
+				if err != nil {
+					return err
+				}
+				val = v
 			}
-			val = v
 		} else {
 			v, err := c.compileExpr(st.Value, false)
 			if err != nil {

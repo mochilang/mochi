@@ -5,10 +5,10 @@ const result = twoSum(&[_]i32{
     7,
     11,
     15,
-}, 9);
+}, 9); // []const i32
 
 fn twoSum(nums: []const i32, target: i32) []const i32 {
-    const n = (nums).len;
+    const n = (nums).len; // i32
     for (0 .. n) |i| {
         for ((i + 1) .. n) |j| {
             if (((nums[i] + nums[j]) == target)) {

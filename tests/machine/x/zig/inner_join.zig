@@ -17,7 +17,7 @@ const customers = &[_]CustomersItem{
     .id = 3,
     .name = "Charlie",
 },
-};
+}; // []const CustomersItem
 const OrdersItem = struct {
     id: i32,
     customerId: i32,
@@ -44,7 +44,7 @@ const orders = &[_]OrdersItem{
     .customerId = 4,
     .total = 80,
 },
-};
+}; // []const OrdersItem
 const result = blk0: { var _tmp0 = std.ArrayList(struct {
     orderId: i32,
     customerName: []const u8,
@@ -57,7 +57,7 @@ const result = blk0: { var _tmp0 = std.ArrayList(struct {
     .orderId = o.id,
     .customerName = c.name,
     .total = o.total,
-}) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
+}) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Orders with customer info ---\n", .{});

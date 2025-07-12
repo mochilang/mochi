@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const x = 5;
+const x = 5; // i32
 
 pub fn main() void {
     if ((x > 3)) {

@@ -16,7 +16,7 @@ const book = Book{
     .name = "Bob",
     .age = 42,
 },
-};
+}; // Book
 
 pub fn main() void {
     std.debug.print("{s}\n", .{book.author.name});

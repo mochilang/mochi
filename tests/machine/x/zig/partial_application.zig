@@ -1,6 +1,6 @@
 const std = @import("std");
 
-const add5 = add(5);
+const add5 = add(5); // fn(i32) i32
 
 fn add(a: i32, b: i32) i32 {
     return (a + b);

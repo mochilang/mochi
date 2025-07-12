@@ -18,7 +18,7 @@ const nums = &[_]i32{
     3,
     1,
     4,
-};
+}; // []const i32
 
 pub fn main() void {
     std.debug.print("{any}\n", .{_min_int(nums)});

@@ -21,7 +21,7 @@ const customers = &[_]CustomersItem{
     .id = 4,
     .name = "Diana",
 },
-};
+}; // []const CustomersItem
 const OrdersItem = struct {
     id: i32,
     customerId: i32,
@@ -48,7 +48,7 @@ const orders = &[_]OrdersItem{
     .customerId = 5,
     .total = 80,
 },
-};
+}; // []const OrdersItem
 const result = blk0: { var _tmp0 = std.ArrayList(struct {
     order: OrdersItem,
     customer: CustomersItem,
@@ -64,7 +64,7 @@ const result = blk0: { var _tmp0 = std.ArrayList(struct {
 }{
     .order = o,
     .customer = c,
-}) catch unreachable; } } const res = _tmp0.toOwnedSlice() catch unreachable; break :blk0 res; };
+}) catch unreachable; } } const res = _tmp0.toOwnedSlice() catch unreachable; break :blk0 res; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Outer Join using syntax ---\n", .{});

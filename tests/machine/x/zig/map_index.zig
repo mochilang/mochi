@@ -7,7 +7,7 @@ const M = struct {
 const m = M{
     .a = 1,
     .b = 2,
-};
+}; // M
 
 pub fn main() void {
     std.debug.print("{any}\n", .{m["b"]});

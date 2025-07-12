@@ -21,7 +21,7 @@ const NationItem = struct {
 const nation = &[_]NationItem{NationItem{
     .n_nationkey = 1,
     .n_name = "BRAZIL",
-}};
+}}; // []const NationItem
 const CustomerItem = struct {
     c_custkey: i32,
     c_name: []const u8,
@@ -39,7 +39,7 @@ const customer = &[_]CustomerItem{CustomerItem{
     .c_address = "123 St",
     .c_phone = "123-456",
     .c_comment = "Loyal",
-}};
+}}; // []const CustomerItem
 const OrdersItem = struct {
     o_orderkey: i32,
     o_custkey: i32,
@@ -56,7 +56,7 @@ const orders = &[_]OrdersItem{
     .o_custkey = 1,
     .o_orderdate = "1994-01-02",
 },
-};
+}; // []const OrdersItem
 const LineitemItem = struct {
     l_orderkey: i32,
     l_returnflag: []const u8,
@@ -76,9 +76,9 @@ const lineitem = &[_]LineitemItem{
     .l_extendedprice = 500.0,
     .l_discount = 0.0,
 },
-};
-const start_date = "1993-10-01";
-const end_date = "1994-01-01";
+}; // []const LineitemItem
+const start_date = "1993-10-01"; // []const u8
+const end_date = "1994-01-01"; // []const u8
 const result = blk2: { var _tmp4 = std.ArrayList(struct { key: struct {
     c_custkey: i32,
     c_name: []const u8,
@@ -170,7 +170,7 @@ const result = blk2: { var _tmp4 = std.ArrayList(struct { key: struct {
     .c_address = g.key.c_address,
     .c_phone = g.key.c_phone,
     .c_comment = g.key.c_comment,
-}) catch unreachable; } const _tmp10Slice = _tmp10.toOwnedSlice() catch unreachable; break :blk2 _tmp10Slice; };
+}) catch unreachable; } const _tmp10Slice = _tmp10.toOwnedSlice() catch unreachable; break :blk2 _tmp10Slice; }; // []const i32
 
 pub fn main() void {
     std.debug.print("{any}\n", .{result});

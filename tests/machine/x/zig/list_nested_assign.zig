@@ -9,7 +9,7 @@ var matrix = &[_][]const i32{
     3,
     4,
 },
-};
+}; // []const []const i32
 
 pub fn main() void {
     matrix.items[1][0] = 5;

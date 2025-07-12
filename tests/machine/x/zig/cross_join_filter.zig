@@ -4,11 +4,11 @@ const nums = &[_]i32{
     1,
     2,
     3,
-};
+}; // []const i32
 const letters = &[_][]const u8{
     "A",
     "B",
-};
+}; // []const []const u8
 const pairs = blk0: { var _tmp0 = std.ArrayList(struct {
     n: i32,
     l: []const u8,
@@ -18,7 +18,7 @@ const pairs = blk0: { var _tmp0 = std.ArrayList(struct {
 }{
     .n = n,
     .l = l,
-}) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
+}) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Even pairs ---\n", .{});

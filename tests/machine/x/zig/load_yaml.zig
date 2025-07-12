@@ -28,7 +28,7 @@ const Person = struct {
     email: []const u8,
 };
 
-const people = _load_json([]Person, "../interpreter/valid/people.yaml");
+const people = _load_json([]Person, "../interpreter/valid/people.yaml"); // []const Person
 const adults = blk0: { var _tmp0 = std.ArrayList(struct {
     name: []const u8,
     email: []const u8,
@@ -38,7 +38,7 @@ const adults = blk0: { var _tmp0 = std.ArrayList(struct {
 }{
     .name = p.name,
     .email = p.email,
-}) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; };
+}) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap([]const u8)
 
 pub fn main() void {
     for (adults) |a| {

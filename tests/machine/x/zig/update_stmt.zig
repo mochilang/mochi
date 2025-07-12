@@ -31,7 +31,7 @@ const people = &[_]Person{
     .age = 16,
     .status = "minor",
 },
-};
+}; // []const Person
 
 fn test_update_adult_status() void {
     expect((people == &[_]Person{

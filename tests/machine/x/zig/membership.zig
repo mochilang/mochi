@@ -9,7 +9,7 @@ const nums = &[_]i32{
     1,
     2,
     3,
-};
+}; // []const i32
 
 pub fn main() void {
     std.debug.print("{}\n", .{_contains_list_int(nums, 2)});

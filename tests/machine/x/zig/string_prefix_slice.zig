@@ -21,9 +21,9 @@ fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
     return res.toOwnedSlice() catch unreachable;
 }
 
-const prefix = "fore";
-const s1 = "forest";
-const s2 = "desert";
+const prefix = "fore"; // []const u8
+const s1 = "forest"; // []const u8
+const s2 = "desert"; // []const u8
 
 pub fn main() void {
     std.debug.print("{}\n", .{std.mem.eql(u8, _slice_string(s1, 0, (prefix).len, 1), prefix)});
