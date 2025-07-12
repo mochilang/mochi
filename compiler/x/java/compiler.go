@@ -12,6 +12,8 @@ import (
 	"mochi/parser"
 )
 
+var numberLit = regexp.MustCompile(`^-?\d+(\.\d+)?$`)
+
 type Compiler struct {
 	buf               *bytes.Buffer
 	indent            int
@@ -774,6 +776,9 @@ func listElemType(t string) string {
 }
 
 func (c *Compiler) maybeNumber(expr string) string {
+	if numberLit.MatchString(expr) {
+		return expr
+	}
 	if t, ok := c.vars[expr]; ok {
 		if t == "int" || t == "double" {
 			return expr
@@ -825,7 +830,7 @@ func isPrimitive(expr string, c *Compiler) bool {
 	if expr == "true" || expr == "false" {
 		return true
 	}
-	if regexp.MustCompile(`^-?\d+(\.\d+)?$`).MatchString(expr) {
+	if numberLit.MatchString(expr) {
 		return true
 	}
 	if t, ok := c.vars[expr]; ok {
