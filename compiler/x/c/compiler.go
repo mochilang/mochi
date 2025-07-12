@@ -281,12 +281,23 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		if s.Var != nil && s.Var.Value != nil {
 			if typ, val, ok := constLiteralTypeVal(s.Var.Value); ok {
 				t := typ
+				var vt types.Type
 				if s.Var.Type != nil {
 					t = c.cType(s.Var.Type)
+					vt = resolveTypeRef(s.Var.Type, c.env)
+				} else {
+					switch typ {
+					case "double":
+						vt = types.FloatType{}
+					case "char*":
+						vt = types.StringType{}
+					default:
+						vt = types.IntType{}
+					}
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
 				if c.env != nil {
-					c.env.SetVar(s.Var.Name, resolveTypeRef(s.Var.Type, c.env), true)
+					c.env.SetVar(s.Var.Name, vt, true)
 				}
 				skip[s] = true
 			}
@@ -294,12 +305,23 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 		if s.Let != nil && s.Let.Value != nil {
 			if typ, val, ok := constLiteralTypeVal(s.Let.Value); ok {
 				t := typ
+				var vt types.Type
 				if s.Let.Type != nil {
 					t = c.cType(s.Let.Type)
+					vt = resolveTypeRef(s.Let.Type, c.env)
+				} else {
+					switch typ {
+					case "double":
+						vt = types.FloatType{}
+					case "char*":
+						vt = types.StringType{}
+					default:
+						vt = types.IntType{}
+					}
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
 				if c.env != nil {
-					c.env.SetVar(s.Let.Name, resolveTypeRef(s.Let.Type, c.env), true)
+					c.env.SetVar(s.Let.Name, vt, true)
 				}
 				skip[s] = true
 			}
@@ -4485,15 +4507,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.16g"
+							fmtStr = "%.17g"
 						} else if name, okn := identName(a); okn && c.env != nil {
 							if vt, err := c.env.GetVar(name); err == nil {
 								if _, okf := vt.(types.FloatType); okf {
-									fmtStr = "%.16g"
+									fmtStr = "%.17g"
 								}
 							}
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.16g"
+							fmtStr = "%.17g"
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {
@@ -6153,7 +6175,11 @@ func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
 	case lit.Int != nil:
 		return "int", strconv.Itoa(*lit.Int), true
 	case lit.Float != nil:
-		return "double", strconv.FormatFloat(*lit.Float, 'f', -1, 64), true
+		s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return "double", s, true
 	case lit.Bool != nil:
 		if bool(*lit.Bool) {
 			return "int", "1", true
