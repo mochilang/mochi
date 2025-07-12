@@ -102,4 +102,7 @@ The following Mochi programs were compiled to Scala using the automated compiler
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-\nAll programs compiled successfully.
+All programs compiled successfully.
+
+## Remaining Tasks
+- [ ] Review generated Scala code for idiomatic style

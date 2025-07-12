@@ -10,6 +10,6 @@ object tree_sum {
   
   def main(args: Array[String]): Unit = {
     val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
-    println((sum_tree(t)))
+    println(sum_tree(t))
   }
 }

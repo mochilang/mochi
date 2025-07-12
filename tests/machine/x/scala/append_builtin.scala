@@ -1,6 +1,6 @@
 object append_builtin {
-  val a = List[Int](1, 2)
+  val a = List(1, 2)
   def main(args: Array[String]): Unit = {
-    println((a :+ 3))
+    println(a :+ 3)
   }
 }

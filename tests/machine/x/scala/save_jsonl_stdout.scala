@@ -13,7 +13,7 @@ object save_jsonl_stdout {
     if(out ne Console.out) out.close()
   }
 
-  val people = List[People](People(name = "Alice", age = 30), People(name = "Bob", age = 25))
+  val people = List(People(name = "Alice", age = 30), People(name = "Bob", age = 25))
   def main(args: Array[String]): Unit = {
     _save_jsonl(people, "-")
   }

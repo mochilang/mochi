@@ -1,7 +1,7 @@
 object string_in_operator {
   val s = "catch"
   def main(args: Array[String]): Unit = {
-    println((s.contains("cat")))
-    println((s.contains("dog")))
+    println(s.contains("cat"))
+    println(s.contains("dog"))
   }
 }

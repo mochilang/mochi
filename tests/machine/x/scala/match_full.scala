@@ -13,7 +13,7 @@ object match_full {
   }
   
   def main(args: Array[String]): Unit = {
-    println((label))
+    println(label)
     val day = "sun"
     val mood = day match {
       case "mon" => "tired"
@@ -21,14 +21,14 @@ object match_full {
       case "sun" => "relaxed"
       case _ => "normal"
     }
-    println((mood))
+    println(mood)
     val ok = true
     val status = ok match {
       case true => "confirmed"
       case false => "denied"
     }
-    println((status))
-    println((classify(0)))
-    println((classify(5)))
+    println(status)
+    println(classify(0))
+    println(classify(5))
   }
 }

@@ -1,6 +1,6 @@
 object values_builtin {
-  val m = Map[String, Int]("a" -> (1), "b" -> (2), "c" -> (3))
+  val m = Map("a" -> (1), "b" -> (2), "c" -> (3))
   def main(args: Array[String]): Unit = {
-    println((m.values.toList))
+    println(m.values.toList)
   }
 }

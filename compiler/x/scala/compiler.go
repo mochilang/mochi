@@ -1061,7 +1061,7 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 			if err != nil {
 				return err
 			}
-			args[i] = fmt.Sprintf("(%s)", v)
+			args[i] = v
 		}
 		if len(args) == 1 {
 			c.writeln(fmt.Sprintf("println(%s)", args[0]))
@@ -1612,8 +1612,7 @@ func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, err
 		elems[i] = s
 	}
 
-	typeStr := c.typeOf(elemType)
-	return fmt.Sprintf("%s[%s](%s)", prefix, typeStr, strings.Join(elems, ", ")), nil
+	return fmt.Sprintf("%s(%s)", prefix, strings.Join(elems, ", ")), nil
 }
 
 func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error) {
@@ -1691,12 +1690,10 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 			}
 		}
 	}
-	typeStr := fmt.Sprintf("[%s, %s]", c.typeOf(keyType), c.typeOf(valType))
-
 	if c.inSort {
 		return fmt.Sprintf("(%s)", strings.Join(vals, ", ")), nil
 	}
-	return fmt.Sprintf("%s%s(%s)", prefix, typeStr, strings.Join(items, ", ")), nil
+	return fmt.Sprintf("%s(%s)", prefix, strings.Join(items, ", ")), nil
 }
 
 func (c *Compiler) compileStructLit(st *parser.StructLiteral) (string, error) {

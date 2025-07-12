@@ -3,6 +3,6 @@ object pure_global_fold {
   def inc(x: Int): Int = x + k
   
   def main(args: Array[String]): Unit = {
-    println((inc(3)))
+    println(inc(3))
   }
 }

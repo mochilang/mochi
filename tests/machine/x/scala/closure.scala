@@ -3,6 +3,6 @@ object closure {
   
   def main(args: Array[String]): Unit = {
     val add10 = makeAdder(10)
-    println((add10(7)))
+    println(add10(7))
   }
 }

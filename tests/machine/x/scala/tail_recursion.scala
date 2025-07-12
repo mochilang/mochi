@@ -7,6 +7,6 @@ object tail_recursion {
   }
   
   def main(args: Array[String]): Unit = {
-    println((sum_rec(10, 0)))
+    println(sum_rec(10, 0))
   }
 }

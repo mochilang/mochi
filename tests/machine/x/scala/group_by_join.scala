@@ -6,13 +6,13 @@ object group_by_join {
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
-  val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
-  val orders = List[Order](Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
+  val customers = List(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
+  val orders = List(Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
   val stats = ((for { o <- orders; c <- customers; if o.customerId == (c.id).asInstanceOf[Int] } yield (c.name, Stat(o = o, c = c))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat1(name = g.key, count = (g).size) }.toList
   def main(args: Array[String]): Unit = {
-    println(("--- Orders per customer ---"))
+    println("--- Orders per customer ---")
     for(s <- stats) {
-      println((s.name) + " " + ("orders:") + " " + (s.count))
+      println(s.name + " " + "orders:" + " " + s.count)
     }
   }
 }

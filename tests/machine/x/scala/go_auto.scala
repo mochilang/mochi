@@ -6,8 +6,8 @@ object go_auto {
       val Answer: Int = 42
     }
     
-    println((testpkg.Add(2, 3)))
-    println((testpkg.Pi))
-    println((testpkg.Answer))
+    println(testpkg.Add(2, 3))
+    println(testpkg.Pi)
+    println(testpkg.Answer)
   }
 }

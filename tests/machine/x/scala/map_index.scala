@@ -1,6 +1,6 @@
 object map_index {
-  val m = Map[String, Int]("a" -> (1), "b" -> (2))
+  val m = Map("a" -> (1), "b" -> (2))
   def main(args: Array[String]): Unit = {
-    println((m("b")))
+    println(m("b"))
   }
 }
