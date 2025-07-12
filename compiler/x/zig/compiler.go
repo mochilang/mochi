@@ -1392,6 +1392,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		if ml := extractMapLiteral(q.Select); ml != nil {
+			structName := c.newStructName()
+			decl, _, ok, err := c.mapLiteralStruct(ml, structName)
+			if ok && err == nil {
+				if !c.structs[structName] {
+					c.writeln(decl)
+					c.structs[structName] = true
+				}
+				if st, ok2 := c.structTypeFromMapLiteral(ml, structName); ok2 {
+					if orig != nil {
+						orig.SetStruct(structName, st)
+					}
+					genv.SetStruct(structName, st)
+				}
+			}
+		}
 		c.env = genv
 		sel, err := c.compileExpr(q.Select, false)
 		if err != nil {
@@ -1435,7 +1451,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
-		resType := zigTypeOf(c.inferExprType(q.Select))
+		resTT := c.inferExprType(q.Select)
+		if lt, ok := resTT.(types.ListType); ok {
+			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
+				name := c.newStructName()
+				st.Name = name
+				st = c.nameNestedStructs(name, st).(types.StructType)
+				if orig != nil {
+					orig.SetStruct(name, st)
+				}
+				resTT = types.ListType{Elem: st}
+			}
+		}
+		resType := zigTypeOf(resTT)
 		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
 		c.env = orig
 
