@@ -1,0 +1,75 @@
+line 43
+    warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 43 │                %{items: lineitem, on: fn c, o, l -> l.l_orderkey == o.o_orderkey end},
+    │                                          ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:43:42: Main.main/0
+
+    warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 44 │                %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
+    │                                              ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:44:46: Main.main/0
+
+    warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 44 │                %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
+    │                                           ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:44:43: Main.main/0
+
+    warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 48 │                where: fn [c, o, l, n] ->
+    │                           ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:27: Main.main/0
+
+    warning: variable "n" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 48 │                where: fn [c, o, l, n] ->
+    │                                    ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48:36: Main.main/0
+
+    warning: variable "l" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 56 │            _group_by(rows, fn [c, o, l, n] ->
+    │                                      ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:56:38: Main.main/0
+
+    warning: variable "o" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 56 │            _group_by(rows, fn [c, o, l, n] ->
+    │                                   ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:56:35: Main.main/0
+
+     warning: default values for the optional arguments in _query/3 are never used
+     │
+ 147 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:147:8: Main (module)
+
+** (FunctionClauseError) no function clause matching in anonymous fn/1 in Main.main/0    
+    
+    The following arguments were given to anonymous fn/1 in Main.main/0:
+    
+        # 1
+        [%{c_custkey: 1, c_name: "Alice", c_acctbal: 100, c_nationkey: 1, c_address: "123 St", c_phone: "123-456", c_comment: "Loyal"}]
+    
+    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:48: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:4390: Enum.filter_list/2
+    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:150: Main._query/3
+    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:39: Main.main/0
+    /workspace/mochi/tests/machine/x/ex/group_by_multi_join_sort.exs:274: (file)
+
+             [
+               %{items: orders, on: fn c, o -> o.o_custkey == c.c_custkey end},
+               %{items: lineitem, on: fn c, o, l -> l.l_orderkey == o.o_orderkey end},
+               %{items: nation, on: fn c, o, l, n -> n.n_nationkey == c.c_nationkey end}
+             ],

@@ -1,0 +1,28 @@
+line 75
+    warning: default values for the optional arguments in _query/3 are never used
+    │
+ 75 │   defp _query(src, joins, opts \\ %{}) do
+    │        ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/group_by_sort.exs:75:8: Main (module)
+
+** (Protocol.UndefinedError) protocol Enumerable not implemented for type Main.Group (a struct)
+
+Got value:
+
+    %Main.Group{key: "a", items: [%{cat: "a", val: 3}, %{cat: "a", val: 1}]}
+
+    (elixir 1.18.3) lib/enum.ex:1: Enumerable.impl_for!/1
+    (elixir 1.18.3) lib/enum.ex:166: Enumerable.reduce/3
+    (elixir 1.18.3) lib/enum.ex:4515: Enum.map/2
+    /workspace/mochi/tests/machine/x/ex/group_by_sort.exs:13: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:3363: anonymous fn/2 in Enum.sort_by/3
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    (elixir 1.18.3) lib/enum.ex:3363: Enum.sort_by/3
+    /workspace/mochi/tests/machine/x/ex/group_by_sort.exs:13: Main.main/0
+
+  end
+
+  defp _query(src, joins, opts \\ %{}) do
+    where = Map.get(opts, :where)
+    items = Enum.map(src, fn v -> [v] end)

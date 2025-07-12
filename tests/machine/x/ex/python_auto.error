@@ -1,0 +1,23 @@
+line 4
+    error: undefined variable "math"
+    │
+  4 │     IO.inspect(math.sqrt(16))
+    │                ^^^^
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/python_auto.exs:4:16: Main.main/0
+
+    error: undefined variable "math"
+    │
+  5 │     IO.inspect(math.pi)
+    │                ^^^^
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/python_auto.exs:5:16: Main.main/0
+
+** (CompileError) /workspace/mochi/tests/machine/x/ex/python_auto.exs: cannot compile module Main (errors have been logged)
+
+
+defmodule Main do
+  def main do
+    IO.inspect(math.sqrt(16))
+    IO.inspect(math.pi)
+  end
