@@ -1,0 +1,26 @@
+// Mochi translation of Rosetta "Check that file exists" task
+// Since Mochi currently lacks standard filesystem APIs, we simulate a minimal
+// filesystem containing only a few example paths.
+
+// fs maps paths to a boolean indicating whether the entry is a directory.
+fun printStat(fs: map<string, bool>, path: string) {
+  if path in fs {
+    if fs[path] {
+      print(path + " is a directory")
+    } else {
+      print(path + " is a file")
+    }
+  } else {
+    print("stat " + path + ": no such file or directory")
+  }
+}
+
+fun main() {
+  var fs: map<string, bool> = {}
+  fs["docs"] = true
+  for p in ["input.txt", "/input.txt", "docs", "/docs"] {
+    printStat(fs, p)
+  }
+}
+
+main()
