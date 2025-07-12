@@ -1328,7 +1328,7 @@ func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, error) {
 				}
 				expr = fmt.Sprintf("__append(%s, %s)", args[0], args[1])
 			} else if base == "sum" && len(args) == 1 {
-				expr = fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0); })(%s)", args[0])
+				expr = fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0.0); })(%s)", args[0])
 			} else if base == "avg" && len(args) == 1 {
 				if !c.usesAvg {
 					c.headerWriteln("template<typename T> double __avg(const std::vector<T>& v){")
@@ -1673,7 +1673,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		case "sum":
 			if len(args) == 1 {
-				return fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0); })(%s)", args[0]), nil
+				return fmt.Sprintf("([&](auto v){ return std::accumulate(v.begin(), v.end(), 0.0); })(%s)", args[0]), nil
 			}
 		case "avg":
 			if len(args) == 1 {
@@ -3099,10 +3099,22 @@ func (c *Compiler) inferType(expr string) string {
 // inferExprType returns a simple C++ type for the given expression string.
 // It is used when generating struct field declarations.
 func inferExprType(expr string) string {
-	if strings.ContainsAny(expr, "<>=!&|") {
+	trimmed := strings.TrimSpace(expr)
+	if strings.Contains(trimmed, "true") || strings.Contains(trimmed, "false") {
 		return "bool"
 	}
-	if strings.Contains(expr, "true") || strings.Contains(expr, "false") {
+	if strings.Contains(trimmed, "__avg") || strings.Contains(trimmed, "std::accumulate") {
+		return "double"
+	}
+	if strings.Contains(trimmed, "size()") {
+		return "int"
+	}
+	// detect boolean operators but avoid template angle brackets
+	if strings.Contains(trimmed, "==") || strings.Contains(trimmed, "!=") ||
+		strings.Contains(trimmed, "<=") || strings.Contains(trimmed, ">=") ||
+		strings.Contains(trimmed, "&&") || strings.Contains(trimmed, "||") ||
+		strings.HasPrefix(trimmed, "!") ||
+		strings.Contains(trimmed, " < ") || strings.Contains(trimmed, " > ") {
 		return "bool"
 	}
 	return ""
