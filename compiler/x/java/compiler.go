@@ -885,7 +885,7 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		case "len":
 			return "int"
 		case "sum", "min", "max":
-			return "int"
+			return "double"
 		case "count":
 			return "int"
 		case "avg":
@@ -2463,7 +2463,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).sum()", a1), nil
+			return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).sum()", a1), nil
 		case "avg":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("avg expects 1 argument at line %d", p.Pos.Line)
