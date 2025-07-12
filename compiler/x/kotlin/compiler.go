@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"mochi/parser"
@@ -212,7 +213,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.inferred = make(map[string]types.StructType)
 	c.mapNodes = make(map[*parser.MapLiteral]string)
 
-	c.discoverStructs(prog)
+	// Structural inference currently generates data classes which
+	// cause type mismatches for untyped query results. Skip for now.
+	//c.discoverStructs(prog)
 
 	// handle builtin imports
 	for _, s := range prog.Statements {
@@ -1226,7 +1229,11 @@ func (c *Compiler) literal(l *parser.Literal) string {
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(s, ".eE") {
+			s += ".0"
+		}
+		return s
 	case l.Bool != nil:
 		return fmt.Sprintf("%t", bool(*l.Bool))
 	case l.Null:
