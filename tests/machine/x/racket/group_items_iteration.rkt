@@ -1,4 +1,5 @@
 #lang racket
+(require racket/list)
 (define data (list (hash 'tag "a" 'val 1) (hash 'tag "a" 'val 2) (hash 'tag "b" 'val 3)))
 (define groups (let ([groups (make-hash)])
   (for* ([d data]) (let* ([key (hash-ref d 'tag)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons d bucket))))
@@ -12,5 +13,7 @@
 )
 (set! tmp (append tmp (list (hash 'tag (hash-ref g 'key) 'total total))))
 )
-(define result (for*/list ([r tmp]) r))
+(define result (let ([_items0 (for*/list ([r tmp]) r)])
+  (set! _items0 (sort _items0 (lambda (a b) (cond [(string? (let ([r a]) (hash-ref r 'tag))) (string<? (let ([r a]) (hash-ref r 'tag)) (let ([r b]) (hash-ref r 'tag)))] [(string? (let ([r b]) (hash-ref r 'tag))) (string<? (let ([r a]) (hash-ref r 'tag)) (let ([r b]) (hash-ref r 'tag)))] [else (< (let ([r a]) (hash-ref r 'tag)) (let ([r b]) (hash-ref r 'tag)))]))))
+  (for/list ([r _items0]) r)))
 (displayln result)
