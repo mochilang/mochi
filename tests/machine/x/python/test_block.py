@@ -1,5 +1,5 @@
 def test_addition_works():
-    x = 1 + 2
+    x: int = 1 + 2
     assert x == 3
 
 

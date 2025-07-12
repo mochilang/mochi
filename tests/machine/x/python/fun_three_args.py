@@ -1,4 +1,5 @@
-def sum3(a, b, c):
+def sum3(a: int, b: int, c: int) -> int:
+    """sum3(a: int, b: int, c: int) -> int"""
     return a + b + c
 
 

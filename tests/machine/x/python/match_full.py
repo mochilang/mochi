@@ -1,4 +1,5 @@
-def classify(n):
+def classify(n: int) -> str:
+    """classify(n: int) -> str"""
 
     def _match0(_t0):
         match _t0:
@@ -12,7 +13,7 @@ def classify(n):
     return _match0(n)
 
 
-x = 2
+x: int = 2
 
 
 def _match1(_t1):
@@ -27,9 +28,9 @@ def _match1(_t1):
             return "unknown"
 
 
-label = _match1(x)
+label: str = _match1(x)
 print(label)
-day = "sun"
+day: str = "sun"
 
 
 def _match2(_t2):
@@ -44,9 +45,9 @@ def _match2(_t2):
             return "normal"
 
 
-mood = _match2(day)
+mood: str = _match2(day)
 print(mood)
-ok = True
+ok: bool = True
 
 
 def _match3(_t3):
@@ -59,7 +60,7 @@ def _match3(_t3):
             return None
 
 
-status = _match3(ok)
+status: str = _match3(ok)
 print(status)
 print(classify(0))
 print(classify(5))

@@ -203,6 +203,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	if typ == nil && s.Type != nil {
 		typ = c.resolveTypeRef(s.Type)
 	}
+	if typ == nil && s.Value != nil {
+		typ = c.inferExprType(s.Value)
+	}
 	if s.Value != nil {
 		if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
 			if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
@@ -255,15 +258,19 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	explicit := s.Type != nil
-	useAnn := explicit
-	if useAnn && c.typeHints {
+	useAnn := c.typeHints && typ != nil && !isAny(typ)
+	if explicit {
 		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
 		if needsTyping(typStr) {
 			c.imports["typing"] = "typing"
 		}
 		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	} else if useAnn {
-		c.writeln(fmt.Sprintf("%s = %s", name, value))
+		typStr := pyType(c.namedType(typ))
+		if needsTyping(typStr) {
+			c.imports["typing"] = "typing"
+		}
+		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	} else {
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	}
@@ -333,15 +340,21 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if s.Type != nil {
+		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
+		if c.typeHints && needsTyping(typStr) {
+			c.imports["typing"] = "typing"
+		}
 		if c.typeHints {
-			typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
-			if needsTyping(typStr) {
-				c.imports["typing"] = "typing"
-			}
 			c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 		} else {
 			c.writeln(fmt.Sprintf("%s = %s", name, value))
 		}
+	} else if c.typeHints && typ != nil && !isAny(typ) {
+		typStr := pyType(c.namedType(typ))
+		if needsTyping(typStr) {
+			c.imports["typing"] = "typing"
+		}
+		c.writeln(fmt.Sprintf("%s: %s = %s", name, typStr, value))
 	} else {
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
 	}
@@ -968,18 +981,18 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 		}
 		paramTypes[i] = typ
 	}
-       var retT types.Type = types.VoidType{}
-       if ft.Return != nil {
-               retT = ft.Return
-       } else if fun.Return != nil {
-               retT = c.resolveTypeRef(fun.Return)
-       } else if c.env != nil {
-               retT = c.inferFunReturnType(fun.Body)
-       }
-       retType := pyType(c.namedType(retT))
-       if c.typeHints && needsTyping(retType) {
-               needTyping = true
-       }
+	var retT types.Type = types.VoidType{}
+	if ft.Return != nil {
+		retT = ft.Return
+	} else if fun.Return != nil {
+		retT = c.resolveTypeRef(fun.Return)
+	} else if c.env != nil {
+		retT = c.inferFunReturnType(fun.Body)
+	}
+	retType := pyType(c.namedType(retT))
+	if c.typeHints && needsTyping(retType) {
+		needTyping = true
+	}
 	if c.typeHints {
 		c.buf.WriteString(") -> " + retType + ":\n")
 	} else {
@@ -1141,18 +1154,18 @@ func (c *Compiler) compileMethod(structName string, env *types.Env, fun *parser.
 		}
 		paramTypes[i] = typ
 	}
-       var retT types.Type = types.VoidType{}
-       if ft.Return != nil {
-               retT = ft.Return
-       } else if fun.Return != nil {
-               retT = c.resolveTypeRef(fun.Return)
-       } else if c.env != nil {
-               retT = c.inferFunReturnType(fun.Body)
-       }
-       retType := pyType(c.namedType(retT))
-       if c.typeHints && needsTyping(retType) {
-               needTyping = true
-       }
+	var retT types.Type = types.VoidType{}
+	if ft.Return != nil {
+		retT = ft.Return
+	} else if fun.Return != nil {
+		retT = c.resolveTypeRef(fun.Return)
+	} else if c.env != nil {
+		retT = c.inferFunReturnType(fun.Body)
+	}
+	retType := pyType(c.namedType(retT))
+	if c.typeHints && needsTyping(retType) {
+		needTyping = true
+	}
 	if c.typeHints {
 		c.buf.WriteString(") -> " + retType + ":\n")
 	} else {

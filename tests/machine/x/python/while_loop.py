@@ -1,4 +1,4 @@
-i = 0
+i: int = 0
 while i < 3:
     print(i)
     i = i + 1

@@ -1,4 +1,5 @@
-def boom():
+def boom() -> bool:
+    """boom() -> bool"""
     print("boom")
     return True
 

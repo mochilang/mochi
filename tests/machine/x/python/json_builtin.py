@@ -2,5 +2,5 @@
 from __future__ import annotations
 import json
 
-m = {"a": 1, "b": 2}
+m: dict[str, int] = {"a": 1, "b": 2}
 print(json.dumps(m, default=lambda o: vars(o)))
