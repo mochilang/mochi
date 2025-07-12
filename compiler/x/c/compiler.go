@@ -4541,6 +4541,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			}
 		} else if p.Call.Func == "sum" {
 			arg := c.compileExpr(p.Call.Args[0])
+			if isListIntExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					sum := c.newTemp()
+					loop := c.newLoopVar()
+					c.writeln(fmt.Sprintf("int %s = 0;", sum))
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s += %s[%s];", sum, arg, loop))
+					c.indent--
+					c.writeln("}")
+					return sum
+				}
+			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("sum", arg, elem)
 		} else if p.Call.Func == "avg" {
@@ -4564,10 +4577,44 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			return c.aggregateExpr("avg", arg, elem)
 		} else if p.Call.Func == "min" {
 			arg := c.compileExpr(p.Call.Args[0])
+			if isListIntExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					min := c.newTemp()
+					loop := c.newLoopVar()
+					if l > 0 {
+						c.writeln(fmt.Sprintf("int %s = %s[0];", min, arg))
+						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
+						c.indent++
+						c.writeln(fmt.Sprintf("if (%s[%s] < %s) %s = %s[%s];", arg, loop, min, min, arg, loop))
+						c.indent--
+						c.writeln("}")
+					} else {
+						c.writeln(fmt.Sprintf("int %s = 0;", min))
+					}
+					return min
+				}
+			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("min", arg, elem)
 		} else if p.Call.Func == "max" {
 			arg := c.compileExpr(p.Call.Args[0])
+			if isListIntExpr(p.Call.Args[0], c.env) {
+				if l, ok := c.listLens[arg]; ok {
+					max := c.newTemp()
+					loop := c.newLoopVar()
+					if l > 0 {
+						c.writeln(fmt.Sprintf("int %s = %s[0];", max, arg))
+						c.writeln(fmt.Sprintf("for (int %s=1; %s<%d; %s++) {", loop, loop, l, loop))
+						c.indent++
+						c.writeln(fmt.Sprintf("if (%s[%s] > %s) %s = %s[%s];", arg, loop, max, max, arg, loop))
+						c.indent--
+						c.writeln("}")
+					} else {
+						c.writeln(fmt.Sprintf("int %s = 0;", max))
+					}
+					return max
+				}
+			}
 			elem := listElemType(p.Call.Args[0], c.env)
 			return c.aggregateExpr("max", arg, elem)
 		} else if p.Call.Func == "reduce" {
