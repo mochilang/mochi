@@ -1,0 +1,10 @@
+// Rosetta Code task "Check output device is a terminal" implemented in Mochi
+// The Go version checks if stdout is a character device. Mochi does not yet
+// expose a builtin to query this, so we simply emit the message that would be
+// printed when stdout is a terminal.
+
+fun main() {
+  print("Hello terminal")
+}
+
+main()
