@@ -226,9 +226,9 @@ func pyType(t types.Type) string {
 	case types.VoidType:
 		return "None"
 	case types.AnyType:
-		return "typing.Any"
+		return "object"
 	default:
-		return "typing.Any"
+		return "object"
 	}
 }
 
