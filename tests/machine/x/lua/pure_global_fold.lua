@@ -11,7 +11,7 @@ function __add(a, b)
     end
 end
 function inc(x)
-  return __add(x, k)
+    return __add(x, k)
 end
 
 k = 2

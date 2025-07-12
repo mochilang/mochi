@@ -11,8 +11,8 @@ function __add(a, b)
     end
 end
 function makeAdder(n)
-  return function(x)
-    return __add(x, n)
+    return function(x)
+        return __add(x, n)
 end
 end
 
