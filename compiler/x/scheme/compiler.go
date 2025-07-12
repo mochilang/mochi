@@ -14,10 +14,20 @@ import (
 	"mochi/types"
 )
 
-const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chibi process) (chibi fmt) (chibi) (chibi string))
+const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chibi process) (chibi) (chibi string))
 
 (define (_to_string v)
   (call-with-output-string (lambda (p) (write v p))))
+
+(define (format fmt . args)
+  (cond
+    ((string=? fmt "~a")
+      (_to_string (car args)))
+    ((string=? fmt "~a: ~a")
+      (string-append (_to_string (car args)) ": " (_to_string (cadr args))))
+    ((string=? fmt "~a=~a")
+      (string-append (_to_string (car args)) "=" (_to_string (cadr args))))
+    (else "")))
 
 (define (_yaml_value v)
   (let ((n (string->number v)))
@@ -1766,7 +1776,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
-			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			b.WriteString(fmt.Sprintf("    (set! _res (_sort (map (lambda (%s) (cons %s "+sortExpr+")) _res)))\n", sanitizeName(q.Group.Name), sanitizeName(q.Group.Name)))
 			b.WriteString("    (set! _res (map car _res))\n")
 		}
 		if skipExpr != "" {
@@ -1949,7 +1959,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(fmt.Sprintf("    ) (_group_by _tmp (lambda (%s) %s)))\n", sanitizeName(q.Var), keyExpr))
 		if sortExpr != "" {
-			b.WriteString("    (set! _res (_sort (map (lambda (x) (cons x " + sortExpr + ")) _res)))\n")
+			b.WriteString(fmt.Sprintf("    (set! _res (_sort (map (lambda (%s) (cons %s "+sortExpr+")) _res)))\n", sanitizeName(q.Group.Name), sanitizeName(q.Group.Name)))
 			b.WriteString("    (set! _res (map car _res))\n")
 		}
 		if skipExpr != "" {

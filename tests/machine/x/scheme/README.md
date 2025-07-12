@@ -1,4 +1,4 @@
-# Scheme Machine Output (90/100 compiled and run)
+# Scheme Machine Output (92/100 compiled and run)
 
 This directory contains Scheme code generated from the Mochi programs in `tests/vm/valid`. Each program was executed with chibi-scheme. Successful runs have a `.out` file and failures provide a `.error`.
 
@@ -16,7 +16,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [ ] dataset_sort_take_limit
+ - [x] dataset_sort_take_limit
 - [x] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
@@ -27,7 +27,7 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] fun_three_args
 - [x] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+ - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
