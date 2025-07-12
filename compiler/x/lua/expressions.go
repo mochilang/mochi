@@ -573,7 +573,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 				orig := c.env
 				child := types.NewEnv(c.env)
-				child.SetVar(q.Var, types.AnyType{}, true)
+				child.SetVar(q.Var, c.elementType(q.Source), true)
 				c.env = child
 				var cond string
 				if q.Where != nil {
@@ -612,7 +612,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		orig := c.env
 		child := types.NewEnv(c.env)
-		child.SetVar(q.Var, types.AnyType{}, true)
+		child.SetVar(q.Var, c.elementType(q.Source), true)
 		c.env = child
 		var whereExpr string
 		if q.Where != nil {
@@ -628,7 +628,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: c.elementType(q.Source)}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -683,7 +683,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		orig := c.env
 		child := types.NewEnv(c.env)
-		child.SetVar(q.Var, types.AnyType{}, true)
+		child.SetVar(q.Var, c.elementType(q.Source), true)
 		c.env = child
 
 		fromSrcs := make([]string, len(q.Froms))
@@ -694,7 +694,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 			fromSrcs[i] = fs
-			child.SetVar(f.Var, types.AnyType{}, true)
+			child.SetVar(f.Var, c.elementType(f.Src), true)
 		}
 
 		joinSrcs := make([]string, len(q.Joins))
@@ -716,7 +716,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if j.Side != nil {
 				joinSides[i] = *j.Side
 			}
-			child.SetVar(j.Var, types.AnyType{}, true)
+			child.SetVar(j.Var, c.elementType(j.Src), true)
 		}
 
 		var whereExpr string
@@ -735,7 +735,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Elem: c.elementType(q.Source)}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -837,35 +837,47 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, c.elementType(q.Source), true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, c.elementType(f.Src), true)
+	}
+	c.env = child
 	iter := sanitizeName(q.Var)
 
 	var whereCond, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		whereCond, err = c.compileExpr(q.Where)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Take != nil {
 		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 
 	sel, err := c.compileExpr(q.Select)
+	c.env = orig
 	if err != nil {
 		return "", err
 	}
@@ -941,11 +953,21 @@ func (c *Compiler) compileQueryWithHelper(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	orig := c.env
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, c.elementType(q.Source), true)
+	for _, f := range q.Froms {
+		child.SetVar(f.Var, c.elementType(f.Src), true)
+	}
+	for _, j := range q.Joins {
+		child.SetVar(j.Var, c.elementType(j.Src), true)
+	}
 
 	fromSrcs := make([]string, len(q.Froms))
 	for i, f := range q.Froms {
 		fs, err := c.compileExpr(f.Src)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 		fromSrcs[i] = fs
@@ -957,9 +979,12 @@ func (c *Compiler) compileQueryWithHelper(q *parser.QueryExpr) (string, error) {
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
+		c.env = child
 		on, err := c.compileExpr(j.On)
+		c.env = orig
 		if err != nil {
 			return "", err
 		}
@@ -969,36 +994,42 @@ func (c *Compiler) compileQueryWithHelper(q *parser.QueryExpr) (string, error) {
 			joinSides[i] = *j.Side
 		}
 	}
-
+	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
+		c.env = orig
 		return "", err
 	}
 	var whereExpr, sortExpr, skipExpr, takeExpr string
 	if q.Where != nil {
 		whereExpr, err = c.compileExpr(q.Where)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Sort != nil {
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Skip != nil {
 		skipExpr, err = c.compileExpr(q.Skip)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
 	if q.Take != nil {
 		takeExpr, err = c.compileExpr(q.Take)
 		if err != nil {
+			c.env = orig
 			return "", err
 		}
 	}
+	c.env = orig
 
 	params := []string{sanitizeName(q.Var)}
 	for _, f := range q.Froms {
