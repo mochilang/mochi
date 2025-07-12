@@ -221,11 +221,11 @@ int main() {
     tmp = tmp16;
   }
   int tmp17[] = {};
-  list_int tmp18 = list_int_create(tmp17.len);
-  int *tmp21 = (int *)malloc(sizeof(int) * tmp17.len);
+  list_int tmp18 = list_int_create(0);
+  int *tmp21 = (int *)malloc(sizeof(int) * 0);
   int tmp19 = 0;
-  for (int tmp20 = 0; tmp20 < tmp17.len; tmp20++) {
-    int r = tmp17.data[tmp20];
+  for (int tmp20 = 0; tmp20 < 0; tmp20++) {
+    int r = tmp17[tmp20];
     tmp18.data[tmp19] = r;
     tmp21[tmp19] = r.tag;
     tmp19++;

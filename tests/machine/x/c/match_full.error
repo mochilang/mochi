@@ -3,7 +3,7 @@ error: output mismatch
 -- got --
 two
 relaxed
-1368014932
+793841748
 zero
 many
 -- want --
