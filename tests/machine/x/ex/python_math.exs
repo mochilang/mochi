@@ -3,13 +3,13 @@ defmodule Main do
   @r 3
   def main do
     # area :: float()
-    area = math.pi * math.pow.(@r, 2)
+    area = :math.pi() * :math.pow(@r, 2)
     # root :: float()
-    root = math.sqrt.(49)
+    root = :math.sqrt(49)
     # sin45 :: float()
-    sin45 = math.sin.(math.pi / 4)
+    sin45 = :math.sin(:math.pi() / 4)
     # log_e :: float()
-    log_e = math.log.(math.e)
+    log_e = :math.log(:math.exp(1))
     IO.puts(Enum.join(Enum.map(["Circle area with r =", @r, "=>", area], &inspect(&1)), " "))
     IO.puts(Enum.join(Enum.map(["Square root of 49:", root], &inspect(&1)), " "))
     IO.puts(Enum.join(Enum.map(["sin(π/4):", sin45], &inspect(&1)), " "))

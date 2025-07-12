@@ -21,7 +21,7 @@ defmodule Main do
 
          groups = _group_by(rows, fn [c, o] -> c.name end)
          items = groups
-         Enum.map(items, fn g -> %{name: g.key, count: _count(for r <- g.items, r.o, do: r)} end)
+        Enum.map(items, fn g -> %{name: g.key, count: _count(for [_, o] = r <- g.items, o, do: r)} end)
        end).()
 
     IO.puts("--- Group Left Join ---")
