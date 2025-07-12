@@ -325,6 +325,31 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.If != nil:
 		return c.compileIf(s.If)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternObject != nil, s.ExternType != nil:
+		root := ""
+		switch {
+		case s.ExternVar != nil:
+			root = s.ExternVar.Root
+		case s.ExternFun != nil:
+			root = s.ExternFun.Root
+		case s.ExternObject != nil:
+			root = s.ExternObject.Name
+		case s.ExternType != nil:
+			root = s.ExternType.Name
+		}
+		if _, ok := c.pyModules[root]; ok {
+			if c.pyAuto == nil {
+				c.pyAuto = map[string]bool{}
+			}
+			c.pyAuto[root] = true
+		}
+		if _, ok := c.goModules[root]; ok {
+			if c.goAuto == nil {
+				c.goAuto = map[string]bool{}
+			}
+			c.goAuto[root] = true
+		}
+		return nil
 	case s.Expect != nil:
 		return c.compileExpect(s.Expect)
 	case s.Expr != nil:
@@ -1075,6 +1100,49 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		}
 		if op.Field != nil {
 			fname := op.Field.Name
+			if rootIdent := identNameSimple(p.Target); rootIdent != "" {
+				if mod, ok := c.pyModules[rootIdent]; ok && c.pyAuto[rootIdent] && mod == "math" {
+					if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+						call := p.Ops[i+1].Call
+						args := make([]string, len(call.Args))
+						for ai, a := range call.Args {
+							v, err := c.compileExpr(a)
+							if err != nil {
+								return "", err
+							}
+							args[ai] = v
+						}
+						switch fname {
+						case "sqrt":
+							expr = fmt.Sprintf("(Math/sqrt %s)", args[0])
+						case "pow":
+							if len(args) == 2 {
+								expr = fmt.Sprintf("(Math/pow %s %s)", args[0], args[1])
+							}
+						case "sin":
+							expr = fmt.Sprintf("(Math/sin %s)", args[0])
+						case "log":
+							expr = fmt.Sprintf("(Math/log %s)", args[0])
+						default:
+							expr = fmt.Sprintf("(%s %s)", fname, strings.Join(args, " "))
+						}
+						i++
+						t = types.FloatType{}
+						continue
+					} else {
+						switch fname {
+						case "pi":
+							expr = "Math/PI"
+							t = types.FloatType{}
+							continue
+						case "e":
+							expr = "Math/E"
+							t = types.FloatType{}
+							continue
+						}
+					}
+				}
+			}
 			// Handle method call like x.contains(y) or x.starts_with(y)
 			if (fname == "contains" || fname == "starts_with") && i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
 				argExpr, err := c.compileExpr(p.Ops[i+1].Call.Args[0])
