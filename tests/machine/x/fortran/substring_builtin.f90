@@ -1,4 +1,6 @@
 program substring_builtin
   implicit none
-  print *, 'mochi'(1+1:4)
+  character(len=5) :: s
+  s = 'mochi'
+  print *, s(2:4)
 end program substring_builtin

@@ -1,0 +1,72 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:28:27:
+
+    3 |   type :: Nation
+      |                2           
+......
+   28 |   type(Nation) :: nation(1)
+      |                           1
+Error: Symbol ‘nation’ at (1) also declared as a type at (2)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:29:31:
+
+    7 |   type :: Customer
+      |                  2             
+......
+   29 |   type(Customer) :: customer(1)
+      |                               1
+Error: Symbol ‘customer’ at (1) also declared as a type at (2)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:31:31:
+
+   21 |   type :: LineItem
+      |                  2             
+......
+   31 |   type(LineItem) :: lineitem(2)
+      |                               1
+Error: Symbol ‘lineitem’ at (1) also declared as a type at (2)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:42:18:
+
+   42 |   if (lineitem(1)%l_returnflag == 'R' .and. orders(1)%o_custkey == customer(1)%c_custkey) then
+      |                  1
+Error: The leftmost part-ref in a data-ref cannot be a function reference at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:43:26:
+
+   43 |     revenue = lineitem(1)%l_extendedprice * (1.0 - lineitem(1)%l_discount)
+      |                          1
+Error: The leftmost part-ref in a data-ref cannot be a function reference at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:44:5:
+
+   44 |   end if
+      |     1
+Error: Expecting END PROGRAM statement at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:46:132:
+
+   46 |   write(*,'("map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:",F0.0,"]")') revenue
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:46:11:
+
+   46 |   write(*,'("map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:",F0.0,"]")') revenue
+      |           1
+Error: Syntax error in WRITE statement at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:34:3:
+
+   34 |   nation(1) = Nation(1,'BRAZIL')
+      |   1
+Error: No initializer for component ‘n_name’ given in the structure constructor at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:35:3:
+
+   35 |   customer(1) = Customer(1,'Alice',100.0,'123 St','123-456','Loyal',1)
+      |   1
+Error: No initializer for component ‘c_name’ given in the structure constructor at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:38:3:
+
+   38 |   lineitem(1) = LineItem(1000,'R',1000.0,0.1)
+      |   1
+Error: No initializer for component ‘l_returnflag’ given in the structure constructor at (1)
+/workspace/mochi/tests/machine/x/fortran/group_by_multi_join_sort.f90:39:3:
+
+   39 |   lineitem(2) = LineItem(2000,'N',500.0,0.0)
+      |   1
+Error: No initializer for component ‘l_returnflag’ given in the structure constructor at (1)
+f951: some warnings being treated as errors
+

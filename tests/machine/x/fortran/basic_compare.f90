@@ -1,10 +1,11 @@
 program basic_compare
-  implicit none
-  integer :: a
-  integer :: b
-  a = (10 - 3)
-  b = (2 + 2)
+  integer :: a, b
+  logical :: eq7, lt5
+  a = 10 - 3
+  b = 2 + 2
   print *, a
-  print *, (a == 7)
-  print *, (b < 5)
+  eq7 = (a == 7)
+  print *, eq7
+  lt5 = (b < 5)
+  print *, lt5
 end program basic_compare

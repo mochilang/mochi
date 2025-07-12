@@ -1,12 +1,10 @@
 program pure_global_fold
   implicit none
-  integer :: k
-  k = 2
+  integer, parameter :: k = 2
   print *, inc(3)
-  contains
-  recursive integer function inc(x) result(res)
+contains
+  integer function inc(x)
     integer, intent(in) :: x
-    res = (x + k)
-    return
+    inc = x + k
   end function inc
 end program pure_global_fold

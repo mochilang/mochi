@@ -1,0 +1,7 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/python_auto.f90:3:16:
+
+    3 |   print *, sqrt(16)
+      |                1
+Error: ‘x’ argument of ‘sqrt’ intrinsic at (1) must be REAL or COMPLEX
+
