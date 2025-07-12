@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/list_nested_assign.mochi
+
 var matrix = mutableListOf(mutableListOf(1, 2), mutableListOf(3, 4))
 
 fun main() {

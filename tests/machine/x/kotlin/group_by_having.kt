@@ -11,7 +11,9 @@ fun toJson(v: Any?): String = when (v) {
     else -> toJson(v.toString())
 }
 
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items
+// Code generated from tests/vm/valid/group_by_having.mochi
+
 data class People(var name: String, var city: String)
 
 data class Big(var city: Any?, var num: Int)
@@ -19,13 +21,13 @@ data class Big(var city: Any?, var num: Int)
 val people = mutableListOf(People(name = "Alice", city = "Paris"), People(name = "Bob", city = "Hanoi"), People(name = "Charlie", city = "Paris"), People(name = "Diana", city = "Hanoi"), People(name = "Eve", city = "Paris"), People(name = "Frank", city = "Hanoi"), People(name = "George", city = "Paris"))
 
 val big = run {
-    val __groups = mutableMapOf<Any?, Group>()
+    val __groups = mutableMapOf<Any?, Group<Any?, People>>()
     val __order = mutableListOf<Any?>()
     for (p in people) {
         val __k = p.city
         var __g = __groups[__k]
         if (__g == null) {
-            __g = Group(__k, mutableListOf())
+            __g = Group(__k, mutableListOf<People>())
             __groups[__k] = __g
             __order.add(__k)
         }

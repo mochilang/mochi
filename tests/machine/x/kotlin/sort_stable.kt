@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/sort_stable.mochi
+
 data class Item(var n: Int, var v: String)
 
 val items = mutableListOf(Item(n = 1, v = "a"), Item(n = 1, v = "b"), Item(n = 2, v = "c"))

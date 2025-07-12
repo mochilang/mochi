@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/break_continue.mochi
+
 val numbers = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9)
 
 fun main() {

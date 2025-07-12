@@ -106,9 +106,11 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+- [ ] q1.mochi (TPC-H)
 
 ## TODO
 
 - Implement dataset join and group-by operations in the Kotlin backend.
 - Provide better support for the Python `math` helpers and other foreign imports.
 - Finish compiling the remaining unchecked programs above.
+- Get TPC-H `q1.mochi` compiling and running successfully.

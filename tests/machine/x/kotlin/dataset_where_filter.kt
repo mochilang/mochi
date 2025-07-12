@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/dataset_where_filter.mochi
+
 data class People(var name: String, var age: Int)
 
 data class Adult(var name: Any?, var age: Any?, var is_senior: Boolean)

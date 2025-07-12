@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/map_literal_dynamic.mochi
+
 var x = 3
 
 var y = 4

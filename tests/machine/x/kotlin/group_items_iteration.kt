@@ -6,25 +6,27 @@ fun toInt(v: Any?): Int = when (v) {
     else -> 0
 }
 
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
+class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items
+// Code generated from tests/vm/valid/group_items_iteration.mochi
+
 data class Data(var tag: String, var `val`: Int)
 
 val data = mutableListOf(Data(tag = "a", `val` = 1), Data(tag = "a", `val` = 2), Data(tag = "b", `val` = 3))
 
 val groups = run {
-    val __groups = mutableMapOf<Any?, Group>()
+    val __groups = mutableMapOf<Any?, Group<Any?, Data>>()
     val __order = mutableListOf<Any?>()
     for (d in data) {
         val __k = d.tag
         var __g = __groups[__k]
         if (__g == null) {
-            __g = Group(__k, mutableListOf())
+            __g = Group(__k, mutableListOf<Data>())
             __groups[__k] = __g
             __order.add(__k)
         }
         __g.add(d)
     }
-    val __res = mutableListOf<Group>()
+    val __res = mutableListOf<Group<Any?, Data>>()
     for (k in __order) {
         val g = __groups[k]!!
         __res.add(g)

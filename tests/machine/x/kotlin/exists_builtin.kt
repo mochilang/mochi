@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/exists_builtin.mochi
+
 val data = mutableListOf(1, 2)
 
 val flag = run {

@@ -6,6 +6,8 @@ fun toBool(v: Any?): Boolean = when (v) {
     null -> false
     else -> true
 }
+// Code generated from tests/vm/valid/outer_join.mochi
+
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int, var total: Int)

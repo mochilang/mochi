@@ -1,3 +1,9 @@
+// Code generated from tests/vm/valid/bool_chain.mochi
+
+/**
+ * Auto-generated from Mochi
+ * @return Boolean
+ */
 fun boom(): Boolean {
     println("boom")
     return true

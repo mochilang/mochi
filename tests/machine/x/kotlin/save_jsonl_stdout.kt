@@ -22,6 +22,8 @@ fun toJson(v: Any?): String = when (v) {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }
+// Code generated from tests/vm/valid/save_jsonl_stdout.mochi
+
 data class People(var name: String, var age: Int)
 
 val people = mutableListOf(People(name = "Alice", age = 30), People(name = "Bob", age = 25))

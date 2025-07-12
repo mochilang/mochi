@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/match_full.mochi
+
 val x = 2
 
 val label = run {
@@ -32,6 +34,11 @@ val status = run {
     }
 }
 
+/**
+ * Auto-generated from Mochi
+ * @param n Int
+ * @return String
+ */
 fun classify(n: Int): String {
     return run {
     val __t = n

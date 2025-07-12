@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/join_multi.mochi
+
 data class Customer(var id: Int, var name: String)
 
 data class Order(var id: Int, var customerId: Int)

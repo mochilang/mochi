@@ -15,6 +15,8 @@ fun <T> intersect(a: MutableList<T>, b: MutableList<T>): MutableList<T> {
     for (x in a) if (b.contains(x)) res.add(x)
     return res
 }
+// Code generated from tests/vm/valid/list_set_ops.mochi
+
 fun main() {
     println(union(mutableListOf(1, 2).toMutableList(), mutableListOf(2, 3).toMutableList()))
     println(except(mutableListOf(1, 2, 3).toMutableList(), mutableListOf(2).toMutableList()))

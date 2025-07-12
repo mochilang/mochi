@@ -10,6 +10,8 @@ fun toJson(v: Any?): String = when (v) {
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }
+// Code generated from tests/vm/valid/json_builtin.mochi
+
 data class M(var a: Int, var b: Int)
 
 val m = M(a = 1, b = 2)

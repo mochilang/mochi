@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/update_stmt.mochi
+
 data class Person(var name: String, var age: Int, var status: String)
 
 val people: MutableList<Person> = mutableListOf(Person(name = "Alice", age = 17, status = "minor"), Person(name = "Bob", age = 25, status = "unknown"), Person(name = "Charlie", age = 18, status = "unknown"), Person(name = "Diana", age = 16, status = "minor"))

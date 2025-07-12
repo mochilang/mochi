@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/string_prefix_slice.mochi
+
 val prefix = "fore"
 
 val s1 = "forest"
