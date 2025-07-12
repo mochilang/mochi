@@ -65,7 +65,7 @@ func runTPCHQuery(t *testing.T, base string) {
 }
 
 func TestTypeScriptCompiler_TPCH(t *testing.T) {
-	for i := 1; i <= 4; i++ {
+	for i := 1; i <= 5; i++ {
 		base := fmt.Sprintf("q%d", i)
 		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
 	}
