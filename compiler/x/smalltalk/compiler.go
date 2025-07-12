@@ -568,9 +568,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
+			var k string
+			if id, ok := simpleIdent(it.Key); ok {
+				k = fmt.Sprintf("'%s'", id)
+			} else {
+				var err error
+				k, err = c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -578,7 +584,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs[i] = fmt.Sprintf("%s -> %s", k, v)
 		}
-		return "Dictionary newFrom: {" + strings.Join(pairs, ". ") + "}", nil
+		return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
 	case p.Load != nil:
 		return c.compileLoadExpr(p.Load)
 	case p.Save != nil:
@@ -674,6 +680,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("sum expects 1 arg")
 			}
 			return fmt.Sprintf("(%s inject: 0 into: [:s :x | s + x])", args[0]), nil
+		case "avg":
+			if len(args) != 1 {
+				return "", fmt.Errorf("avg expects 1 arg")
+			}
+			return fmt.Sprintf("((%s inject: 0 into: [:s :x | s + x]) / %s size)", args[0], args[0]), nil
 		case "min":
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
@@ -880,7 +891,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("  res := OrderedCollection new.\n")
 		b.WriteString("  groups keysAndValuesDo: [:k :items |\n")
 		b.WriteString("    | " + q.Group.Name + " |\n")
-		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom: {#key->k. #items->items}.\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary from: {#key->k. #items->items}.\n")
 		if having != "" {
 			b.WriteString("    (" + having + ") ifTrue: [\n")
 			b.WriteString("      res add: " + valExpr + ".\n")
@@ -1305,6 +1316,21 @@ func hasContinueIf(i *parser.IfStmt) bool {
 		return true
 	}
 	return hasContinueIf(i.ElseIf)
+}
+
+// simpleIdent checks if e is a bare identifier expression and returns its name.
+func simpleIdent(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return "", false
+	}
+	if sel := u.Value.Target; sel != nil && sel.Selector != nil && len(sel.Selector.Tail) == 0 {
+		return sel.Selector.Root, true
+	}
+	return "", false
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
