@@ -308,7 +308,22 @@ func FromExpr(e *parser.Expr) *Node {
 func FromUnary(u *parser.Unary) *Node {
 	n := FromPostfixExpr(u.Value)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		n = &Node{Kind: "unary", Value: u.Ops[i], Children: []*Node{n}}
+		op := u.Ops[i]
+		if op == "-" {
+			switch n.Kind {
+			case "int":
+				if v, ok := n.Value.(int); ok {
+					n.Value = -v
+					continue
+				}
+			case "float":
+				if v, ok := n.Value.(float64); ok {
+					n.Value = -v
+					continue
+				}
+			}
+		}
+		n = &Node{Kind: "unary", Value: op, Children: []*Node{n}}
 	}
 	return n
 }
