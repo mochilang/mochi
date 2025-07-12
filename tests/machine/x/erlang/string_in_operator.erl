@@ -3,5 +3,5 @@
 
 main(_) ->
     S = "catch",
-    io:format("~p~n", [string:str(S, "cat") > 0]),
-    io:format("~p~n", [string:str(S, "dog") > 0]).
+    io:format("~p~n", [string:str("catch", "cat") > 0]),
+    io:format("~p~n", [string:str("catch", "dog") > 0]).

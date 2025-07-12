@@ -1,2 +1,6 @@
+/workspace/mochi/tests/machine/x/erlang/string_in_operator.erl:5:5: Warning: variable 'S' is unused
+%    5|     S = "catch",
+%     |     ^
+
 true
 false

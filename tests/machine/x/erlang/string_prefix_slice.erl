@@ -4,6 +4,6 @@
 main(_) ->
     Prefix = "fore",
     S1 = "forest",
-    io:format("~p~n", [(string:substr(S1, (0)+1, (length(Prefix))-(0)) == Prefix)]),
+    io:format("~p~n", [(string:substr("forest", (0)+1, (length("fore"))-(0)) == "fore")]),
     S2 = "desert",
-    io:format("~p~n", [(string:substr(S2, (0)+1, (length(Prefix))-(0)) == Prefix)]).
+    io:format("~p~n", [(string:substr("desert", (0)+1, (length("fore"))-(0)) == "fore")]).

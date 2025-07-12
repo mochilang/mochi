@@ -4,4 +4,4 @@
 main(_) ->
     A = 10,
     B = 20,
-    io:format("~p~n", [(A + B)]).
+    io:format("~p~n", [(10 + 20)]).

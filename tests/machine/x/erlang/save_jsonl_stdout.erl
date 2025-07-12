@@ -5,12 +5,22 @@ main(_) ->
     People = [#{name => "Alice", age => 30}, #{name => "Bob", age => 25}],
     lists:foreach(fun(Row0) -> io:format("~s\n", [mochi_json_encode(Row0)]) end, People).
 
-mochi_json_value(V) when is_integer(V); is_float(V) -> io_lib:format("~p", [V]);
-mochi_json_value(V) when is_list(V) -> io_lib:format("~s", [V]);
-mochi_json_value(true) -> "true";
-mochi_json_value(false) -> "false";
-mochi_json_value(undefined) -> "null".
+mochi_escape_json([]) -> [];
+mochi_escape_json([H|T]) ->
+    E = case H of
+        $\ -> "\\";
+        $" -> "\"";
+        _ -> [H]
+    end,
+    E ++ mochi_escape_json(T).
 
-mochi_json_encode(M) ->
-    Pairs = [ io_lib:format("\"~s\":~s", [atom_to_list(K), mochi_json_value(V)]) || {K,V} <- maps:to_list(M) ],
-    lists:flatten(["{", string:join(Pairs, ","), "}"]).
+mochi_to_json(true) -> "true";
+mochi_to_json(false) -> "false";
+mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));
+mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";
+mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";
+mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";
+mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}".
+
+mochi_json(V) -> io:format("~s
+", [mochi_to_json(V)]).

@@ -1,2 +1,14 @@
+/workspace/mochi/tests/machine/x/erlang/string_prefix_slice.erl:5:5: Warning: variable 'Prefix' is unused
+%    5|     Prefix = "fore",
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/string_prefix_slice.erl:6:5: Warning: variable 'S1' is unused
+%    6|     S1 = "forest",
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/string_prefix_slice.erl:8:5: Warning: variable 'S2' is unused
+%    8|     S2 = "desert",
+%     |     ^
+
 true
 false

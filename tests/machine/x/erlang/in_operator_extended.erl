@@ -10,5 +10,5 @@ main(_) ->
     io:format("~p~n", [maps:is_key("a", M)]),
     io:format("~p~n", [maps:is_key("b", M)]),
     S = "hello",
-    io:format("~p~n", [string:str(S, "ell") > 0]),
-    io:format("~p~n", [string:str(S, "foo") > 0]).
+    io:format("~p~n", [string:str("hello", "ell") > 0]),
+    io:format("~p~n", [string:str("hello", "foo") > 0]).

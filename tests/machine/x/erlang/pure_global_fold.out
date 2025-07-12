@@ -1,0 +1,5 @@
+/workspace/mochi/tests/machine/x/erlang/pure_global_fold.erl:8:5: Warning: variable 'K' is unused
+%    8|     K = 2,
+%     |     ^
+
+5

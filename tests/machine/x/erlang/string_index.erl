@@ -3,4 +3,4 @@
 
 main(_) ->
     S = "mochi",
-    io:format("~p~n", [lists:nth((1)+1, S)]).
+    io:format("~p~n", [lists:nth((1)+1, "mochi")]).

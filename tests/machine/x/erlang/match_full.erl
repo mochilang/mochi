@@ -6,13 +6,13 @@ classify(N) ->
 
 main(_) ->
     X = 2,
-    Label = (case X of 1 -> "one"; 2 -> "two"; 3 -> "three"; _ -> "unknown" end),
+    Label = (case 2 of 1 -> "one"; 2 -> "two"; 3 -> "three"; _ -> "unknown" end),
     io:format("~p~n", [Label]),
     Day = "sun",
-    Mood = (case Day of "mon" -> "tired"; "fri" -> "excited"; "sun" -> "relaxed"; _ -> "normal" end),
+    Mood = (case "sun" of "mon" -> "tired"; "fri" -> "excited"; "sun" -> "relaxed"; _ -> "normal" end),
     io:format("~p~n", [Mood]),
     Ok = true,
-    Status = (case Ok of true -> "confirmed"; false -> "denied" end),
+    Status = (case true of true -> "confirmed"; false -> "denied" end),
     io:format("~p~n", [Status]),
     io:format("~p~n", [classify(0)]),
     io:format("~p~n", [classify(5)]).

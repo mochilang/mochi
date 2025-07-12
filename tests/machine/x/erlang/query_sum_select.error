@@ -1,2 +1,10 @@
 exit status 127
-escript: exception error: no function clause matching lists:sum(2,0) (lists.erl, line 319)
+escript: exception error: no function clause matching lists:sum(2,0) (lists.erl, line 488)
+  in function  query_sum_select_erl__escript__1752__320841__402930__8962:'-main/1-lc$^0/1-0-'/1 (/workspace/mochi/tests/machine/x/erlang/query_sum_select.erl, line 6)
+  in call from query_sum_select_erl__escript__1752__320841__402930__8962:main/1 (/workspace/mochi/tests/machine/x/erlang/query_sum_select.erl, line 6)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
+

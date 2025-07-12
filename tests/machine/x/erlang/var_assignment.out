@@ -1,2 +1,5 @@
-tests/machine/x/erlang_new/var_assignment.erl:5:5: Warning: variable 'X0' is unused
+/workspace/mochi/tests/machine/x/erlang/var_assignment.erl:5:5: Warning: variable 'X0' is unused
+%    5|     X0 = 1,
+%     |     ^
+
 2

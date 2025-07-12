@@ -3,4 +3,4 @@
 
 main(_) ->
     X = 5,
-    (if (X > 3) -> io:format("~p~n", ["big"]); true -> io:format("~p~n", ["small"]) end).
+    (case (5 > 3) of true -> io:format("~p~n", ["big"]); _ -> io:format("~p~n", ["small"]) end).

@@ -2,5 +2,5 @@
 % cast_struct.erl - generated from cast_struct.mochi
 
 main(_) ->
-    Todo = #{title => "hi"},
+    Todo = #{"title" => "hi"},
     io:format("~p~n", [maps:get(title, Todo)]).

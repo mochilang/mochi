@@ -1,1 +1,9 @@
+/workspace/mochi/tests/machine/x/erlang/let_and_print.erl:5:5: Warning: variable 'A' is unused
+%    5|     A = 10,
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/let_and_print.erl:6:5: Warning: variable 'B' is unused
+%    6|     B = 20,
+%     |     ^
+
 30

@@ -1,4 +1,0 @@
-exit status 127
-tests/machine/x/erlang_new/pure_global_fold.erl:5:10: variable 'K' is unbound
-tests/machine/x/erlang_new/pure_global_fold.erl:8:5: Warning: variable 'K' is unused
-escript: There were compilation errors.

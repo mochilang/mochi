@@ -1,0 +1,24 @@
+exit status 127
+/workspace/mochi/tests/machine/x/erlang/save_jsonl_stdout.erl:6:51: function mochi_json_encode/1 undefined
+%    6|     lists:foreach(fun(Row0) -> io:format("~s\n", [mochi_json_encode(Row0)]) end, People).
+%     |                                                   ^
+
+/workspace/mochi/tests/machine/x/erlang/save_jsonl_stdout.erl:8:1: Warning: function mochi_escape_json/1 is unused
+%    8| mochi_escape_json([]) -> [];
+%     | ^
+
+/workspace/mochi/tests/machine/x/erlang/save_jsonl_stdout.erl:17:1: Warning: function mochi_to_json/1 is unused
+%   17| mochi_to_json(true) -> "true";
+%     | ^
+
+/workspace/mochi/tests/machine/x/erlang/save_jsonl_stdout.erl:25:1: Warning: function mochi_json/1 is unused
+%   25| mochi_json(V) -> io:format("~s
+%     | ^
+
+escript: There were compilation errors.
+
+   4: main(_) ->
+   5:     People = [#{name => "Alice", age => 30}, #{name => "Bob", age => 25}],
+   6:     lists:foreach(fun(Row0) -> io:format("~s\n", [mochi_json_encode(Row0)]) end, People).
+   7: 
+   8: mochi_escape_json([]) -> [];

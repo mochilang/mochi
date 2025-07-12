@@ -6,7 +6,7 @@ main(_) ->
     Orders = [#{id => 100, customerId => 1, total => 250}, #{id => 101, customerId => 2, total => 125}, #{id => 102, customerId => 1, total => 300}, #{id => 103, customerId => 5, total => 80}],
     Result = [#{order => O, customer => C} || {O, C} <- mochi_outer_join(Orders, Customers, fun(O, C) -> (maps:get(customerId, O) == maps:get(id, C)) end)],
     io:format("~p~n", ["--- Outer Join using syntax ---"]),
-    lists:foreach(fun(Row) -> (if maps:get(order, Row) -> (if maps:get(customer, Row) -> io:format("~p ~p ~p ~p ~p ~p~n", ["Order", maps:get(id, maps:get(order, Row)), "by", maps:get(name, maps:get(customer, Row)), "- $", maps:get(total, maps:get(order, Row))]); true -> io:format("~p ~p ~p ~p ~p ~p~n", ["Order", maps:get(id, maps:get(order, Row)), "by", "Unknown", "- $", maps:get(total, maps:get(order, Row))]) end); true -> io:format("~p ~p ~p~n", ["Customer", maps:get(name, maps:get(customer, Row)), "has no orders"]) end) end, Result).
+    lists:foreach(fun(Row) -> (case maps:get(order, Row) of true -> (case maps:get(customer, Row) of true -> io:format("~p ~p ~p ~p ~p ~p~n", ["Order", maps:get(id, maps:get(order, Row)), "by", maps:get(name, maps:get(customer, Row)), "- $", maps:get(total, maps:get(order, Row))]); _ -> io:format("~p ~p ~p ~p ~p ~p~n", ["Order", maps:get(id, maps:get(order, Row)), "by", "Unknown", "- $", maps:get(total, maps:get(order, Row))]) end); _ -> io:format("~p ~p ~p~n", ["Customer", maps:get(name, maps:get(customer, Row)), "has no orders"]) end) end, Result).
 
 mochi_left_join_item(A, B, Fun) ->
     Matches = [ {A, J} || J <- B, Fun(A, J) ],
