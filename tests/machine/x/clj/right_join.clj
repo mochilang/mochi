@@ -1,5 +1,22 @@
 (ns main)
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
+(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))
 (defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
@@ -76,7 +93,7 @@
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it))))))))))))
+      (mapv #(apply (:select opts) %) it)))))))))))))
 (declare customers orders result)
 
 (defn -main []
@@ -84,7 +101,7 @@
   (def orders [{:id 100 :customerId 1 :total 250} {:id 101 :customerId 2 :total 125} {:id 102 :customerId 1 :total 300}]) ;; list of 
   (def result (let [_src customers]
   (_query _src [
-    {:items orders :leftKey (fn [c] (:customerId o)) :rightKey (fn [o] (:id c)) :right true}
+    {:items orders :leftKey (fn [c] (:id c)) :rightKey (fn [o] (:customerId o)) :right true}
   ] { :select (fn [c o] {:customerName (:name c) :order o}) }))) ;; list of 
   (println "--- Right Join using syntax ---")
   (loop [_tmp0 (seq result)]
@@ -119,4 +136,3 @@
 )
 
 (-main)
-)

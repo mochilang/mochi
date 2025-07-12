@@ -1,5 +1,17 @@
 (ns main)
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (defrecord _Group [key Items])
 
 (defn _group_by [src keyfn]
@@ -14,10 +26,16 @@
           (do
             (assoc! groups ks (_Group. k [it]))
             (conj! order ks))))
+    )
     (let [g (persistent! groups)
           o (persistent! order)]
-      (mapv #(get g %) o))) )
+      (mapv #(get g %) o))))
 
+(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))
 (defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
@@ -94,7 +112,7 @@
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it))))))))))))
+      (mapv #(apply (:select opts) %) it)))))))))))))
 (declare customers orders stats)
 
 (defn -main []
@@ -102,7 +120,7 @@
   (def orders [{:id 100 :customerId 1} {:id 101 :customerId 1} {:id 102 :customerId 2}]) ;; list of 
   (def stats (let [_src customers
       _rows (_query _src [
-        {:items orders :leftKey (fn [c] (:customerId o)) :rightKey (fn [o] (:id c)) :left true}
+        {:items orders :leftKey (fn [c] (:id c)) :rightKey (fn [o] (:customerId o)) :left true}
       ] { :select (fn [c o] [c o]) })
       _groups (_group_by _rows (fn [c o] (:name c)))
       ]
@@ -132,5 +150,3 @@
 )
 
 (-main)
-)
-)

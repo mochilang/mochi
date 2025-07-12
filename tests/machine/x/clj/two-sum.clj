@@ -6,6 +6,18 @@
       (throw (ex-info "index out of range" {}))
       (nth xs idx))))
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (declare result)
 
 ;; Function twoSum takes [nums: list of int, target: int] and returns list of int
@@ -18,7 +30,7 @@
           (loop [j (+ i 1)]
             (when (< j n)
               (let [r (try
-                (when (= (+ (_indexList nums i) (_indexList nums j)) target)
+                (when (_equal (+ (_indexList nums i) (_indexList nums j)) target)
                   (throw (ex-info "return" {:value [i j]}))
                 )
                 :next
