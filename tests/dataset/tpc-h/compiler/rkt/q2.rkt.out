@@ -1,122 +1,16 @@
 #lang racket
-(require racket/list json)
-
-(define (idx x i)
-  (cond [(string? x) (let* ([n (string-length x)] [idx (if (< i 0) (+ i n) i)]) (char->integer (string-ref x idx)))]
-        [(hash? x) (hash-ref x i)]
-        [else (let* ([n (length x)] [idx (if (< i 0) (+ i n) i)]) (list-ref x idx))]))
-(define (slice x s e)
-  (if (string? x)
-      (let* ([n (string-length x)]
-             [start (if (< s 0) (+ s n) s)]
-             [end (if (< e 0) (+ e n) e)]
-             [start (max 0 start)]
-             [end (min n end)]
-             [end (if (< end start) start end)])
-        (substring x start end))
-      (let* ([n (length x)]
-             [start (if (< s 0) (+ s n) s)]
-             [end (if (< e 0) (+ e n) e)]
-             [start (max 0 start)]
-             [end (min n end)]
-             [end (if (< end start) start end)])
-        (take (drop x start) (- end start)))))
-(define (count x)
-  (cond [(string? x) (string-length x)]
-        [(hash? x) (hash-count x)]
-        [else (length x)]))
-(define (avg x)
-  (let ([n (count x)])
-    (if (= n 0) 0
-        (/ (for/fold ([s 0.0]) ([v x]) (+ s (real->double-flonum v))) n))))
-(define (min-list xs)
-  (cond [(null? xs) 0]
-        [(for/and ([v xs]) (number? v)) (apply min xs)]
-        [(for/and ([v xs]) (string? v)) (for/fold ([m (car xs)]) ([v (cdr xs)]) (if (string<? v m) v m))]
-        [else (error "unsupported min operands")]))
-(define (_add a b)
-  (cond [(and (number? a) (number? b)) (+ a b)]
-        [(and (string? a) (string? b)) (string-append a b)]
-        [(and (list? a) (list? b)) (append a b)]
-        [else (error "unsupported + operands")]))
-(define (_div a b)
-  (cond [(and (integer? a) (integer? b)) (quotient a b)]
-        [else (/ a b)]))
-
-(define (expect cond) (unless cond (error "expect failed")))
-(define (to-jsexpr v)
-  (cond [(hash? v)
-         (for/hash ([(k val) (in-hash v)])
-           (values (if (string? k) (string->symbol k) k) (to-jsexpr val)))]
-        [(list? v)
-         (map to-jsexpr v)]
-        [else v]))(define (test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part)
-  (unless (equal? result (list (hash "s_acctbal" 1000 "s_name" "BestSupplier" "n_name" "FRANCE" "p_partkey" 1000 "p_mfgr" "M1" "s_address" "123 Rue" "s_phone" "123" "s_comment" "Fast and reliable" "ps_supplycost" 10))) (error "expect failed"))
-)
-
-(define region (list (hash "r_regionkey" 1 "r_name" "EUROPE") (hash "r_regionkey" 2 "r_name" "ASIA")))
-(define nation (list (hash "n_nationkey" 10 "n_regionkey" 1 "n_name" "FRANCE") (hash "n_nationkey" 20 "n_regionkey" 2 "n_name" "CHINA")))
-(define supplier (list (hash "s_suppkey" 100 "s_name" "BestSupplier" "s_address" "123 Rue" "s_nationkey" 10 "s_phone" "123" "s_acctbal" 1000 "s_comment" "Fast and reliable") (hash "s_suppkey" 200 "s_name" "AltSupplier" "s_address" "456 Way" "s_nationkey" 20 "s_phone" "456" "s_acctbal" 500 "s_comment" "Slow")))
-(define part (list (hash "p_partkey" 1000 "p_type" "LARGE BRASS" "p_size" 15 "p_mfgr" "M1") (hash "p_partkey" 2000 "p_type" "SMALL COPPER" "p_size" 15 "p_mfgr" "M2")))
-(define partsupp (list (hash "ps_partkey" 1000 "ps_suppkey" 100 "ps_supplycost" 10) (hash "ps_partkey" 1000 "ps_suppkey" 200 "ps_supplycost" 15)))
-(define europe_nations (let ([_res '()])
-  (for ([r region])
-    (for ([n nation])
-      (when (equal? (hash-ref n "n_regionkey") (hash-ref r "r_regionkey"))
-        (when (equal? (hash-ref r "r_name") "EUROPE")
-          (set! _res (append _res (list n)))
-        )
-      )
-    )
-  )
-  _res))
-(define europe_suppliers (let ([_res '()])
-  (for ([s supplier])
-    (for ([n europe_nations])
-      (when (equal? (hash-ref s "s_nationkey") (hash-ref n "n_nationkey"))
-        (set! _res (append _res (list (hash "s" s "n" n))))
-      )
-    )
-  )
-  _res))
-(define target_parts (let ([_res '()])
-  (for ([p part])
-    (when (and (equal? (hash-ref p "p_size") 15) (equal? (hash-ref p "p_type") "LARGE BRASS"))
-      (set! _res (append _res (list p)))
-    )
-  )
-  _res))
-(define target_partsupp (let ([_res '()])
-  (for ([ps partsupp])
-    (for ([p target_parts])
-      (when (equal? (hash-ref ps "ps_partkey") (hash-ref p "p_partkey"))
-        (for ([s europe_suppliers])
-          (when (equal? (hash-ref ps "ps_suppkey") (hash-ref (hash-ref s "s") "s_suppkey"))
-            (set! _res (append _res (list (hash "s_acctbal" (hash-ref (hash-ref s "s") "s_acctbal") "s_name" (hash-ref (hash-ref s "s") "s_name") "n_name" (hash-ref (hash-ref s "n") "n_name") "p_partkey" (hash-ref p "p_partkey") "p_mfgr" (hash-ref p "p_mfgr") "s_address" (hash-ref (hash-ref s "s") "s_address") "s_phone" (hash-ref (hash-ref s "s") "s_phone") "s_comment" (hash-ref (hash-ref s "s") "s_comment") "ps_supplycost" (hash-ref ps "ps_supplycost")))))
-          )
-        )
-      )
-    )
-  )
-  _res))
-(define costs (let ([_res '()])
-  (for ([x target_partsupp])
-    (set! _res (append _res (list (hash-ref x "ps_supplycost"))))
-  )
-  _res))
-(define min_cost (min-list costs))
-(define result (let ([_res '()])
-  (for ([x target_partsupp])
-    (when (equal? (hash-ref x "ps_supplycost") min_cost)
-      (set! _res (append _res (list (cons (- (hash-ref x "s_acctbal")) x))))
-    )
-  )
-  (set! _res (map cdr (sort _res (lambda (a b)
-    (let ([ak (car a)] [bk (car b)])
-      (cond [(and (number? ak) (number? bk)) (< ak bk)]
-            [(and (string? ak) (string? bk)) (string<? ak bk)]
-            [else (string<? (format "~a" ak) (format "~a" bk))])))
-  )))
-  _res))
-(displayln (jsexpr->string (to-jsexpr result)))
-(test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part)
+(require json)
+(define region (list (hash 'r_regionkey 1 'r_name "EUROPE") (hash 'r_regionkey 2 'r_name "ASIA")))
+(define nation (list (hash 'n_nationkey 10 'n_regionkey 1 'n_name "FRANCE") (hash 'n_nationkey 20 'n_regionkey 2 'n_name "CHINA")))
+(define supplier (list (hash 's_suppkey 100 's_name "BestSupplier" 's_address "123 Rue" 's_nationkey 10 's_phone "123" 's_acctbal 1000 's_comment "Fast and reliable") (hash 's_suppkey 200 's_name "AltSupplier" 's_address "456 Way" 's_nationkey 20 's_phone "456" 's_acctbal 500 's_comment "Slow")))
+(define part (list (hash 'p_partkey 1000 'p_type "LARGE BRASS" 'p_size 15 'p_mfgr "M1") (hash 'p_partkey 2000 'p_type "SMALL COPPER" 'p_size 15 'p_mfgr "M2")))
+(define partsupp (list (hash 'ps_partkey 1000 'ps_suppkey 100 'ps_supplycost 10) (hash 'ps_partkey 1000 'ps_suppkey 200 'ps_supplycost 15)))
+(define europe_nations (for*/list ([r region] [n nation] #:when (and (equal? (hash-ref n 'n_regionkey) (hash-ref r 'r_regionkey)) (string=? (hash-ref r 'r_name) "EUROPE"))) n))
+(define europe_suppliers (for*/list ([s supplier] [n europe_nations] #:when (and (equal? (hash-ref s 's_nationkey) (hash-ref n 'n_nationkey)))) (hash 's s 'n n)))
+(define target_parts (for*/list ([p part] #:when (and (and (equal? (hash-ref p 'p_size) 15) (string=? (hash-ref p 'p_type) "LARGE BRASS")))) p))
+(define target_partsupp (for*/list ([ps partsupp] [p target_parts] [s europe_suppliers] #:when (and (equal? (hash-ref ps 'ps_partkey) (hash-ref p 'p_partkey)) (equal? (hash-ref ps 'ps_suppkey) (hash-ref (hash-ref s 's) 's_suppkey)))) (hash 's_acctbal (hash-ref (hash-ref s 's) 's_acctbal) 's_name (hash-ref (hash-ref s 's) 's_name) 'n_name (hash-ref (hash-ref s 'n) 'n_name) 'p_partkey (hash-ref p 'p_partkey) 'p_mfgr (hash-ref p 'p_mfgr) 's_address (hash-ref (hash-ref s 's) 's_address) 's_phone (hash-ref (hash-ref s 's) 's_phone) 's_comment (hash-ref (hash-ref s 's) 's_comment) 'ps_supplycost (hash-ref ps 'ps_supplycost))))
+(define costs (for*/list ([x target_partsupp]) (hash-ref x 'ps_supplycost)))
+(define min_cost (apply min costs))
+(define result (for*/list ([x target_partsupp] #:when (and (equal? (hash-ref x 'ps_supplycost) min_cost))) x))
+(displayln (jsexpr->string result))
+(when (equal? result (list (hash 's_acctbal 1000 's_name "BestSupplier" 'n_name "FRANCE" 'p_partkey 1000 'p_mfgr "M1" 's_address "123 Rue" 's_phone "123" 's_comment "Fast and reliable" 'ps_supplycost 10))) (displayln "ok"))
