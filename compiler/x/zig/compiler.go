@@ -1371,6 +1371,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 			elemType = lt.Elem
 		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items"
+		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items"
+		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items"
+		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
 
@@ -1520,7 +1532,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		groupElem := strings.TrimPrefix(zigTypeOf(elemType), "[]const ")
 		resElem := strings.TrimPrefix(resType, "[]const ")
-		groupType := "struct { key: " + keyType + ", Items: std.ArrayList(" + groupElem + ") }"
+		groupStruct := c.newStructName()
+		groupType := groupStruct
+		if !c.structs[groupStruct] {
+			c.writeln(fmt.Sprintf("const %s = struct { key: %s, Items: std.ArrayList(%s) };", groupStruct, keyType, groupElem))
+			c.structs[groupStruct] = true
+		}
 		tmp := c.newTmp()
 		var b strings.Builder
 		c.needsEqual = true
