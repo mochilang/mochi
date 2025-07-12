@@ -238,11 +238,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	var typ string
 	var err error
+	explicit := false
 	if l.Type != nil {
 		typ, err = c.compileType(l.Type)
 		if err != nil {
 			typ = ""
 		}
+		explicit = true
 	}
 	var val string
 	if l.Value != nil {
@@ -288,11 +290,17 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		}
 		val = defaultValue(typ)
 	}
-	if typ != "" {
+	if explicit || l.Value == nil {
+		if typ == "" {
+			return fmt.Errorf("let without type at line %d", l.Pos.Line)
+		}
 		c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
 		c.vars[l.Name] = typ
 	} else {
 		c.writeln(fmt.Sprintf("let %s = %s", l.Name, val))
+		if typ != "" {
+			c.vars[l.Name] = typ
+		}
 	}
 	return nil
 }
@@ -300,11 +308,13 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	var typ string
 	var err error
+	explicit := false
 	if v.Type != nil {
 		typ, err = c.compileType(v.Type)
 		if err != nil {
 			typ = ""
 		}
+		explicit = true
 	}
 	var val string = "0"
 	if v.Value != nil {
@@ -363,11 +373,17 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	} else if typ != "" {
 		val = defaultValue(typ)
 	}
-	if typ != "" {
+	if explicit || v.Value == nil {
+		if typ == "" {
+			return fmt.Errorf("var without type at line %d", v.Pos.Line)
+		}
 		c.writeln(fmt.Sprintf("let mutable %s: %s = %s", v.Name, typ, val))
 		c.vars[v.Name] = typ
 	} else {
 		c.writeln(fmt.Sprintf("let mutable %s = %s", v.Name, val))
+		if typ != "" {
+			c.vars[v.Name] = typ
+		}
 	}
 	return nil
 }

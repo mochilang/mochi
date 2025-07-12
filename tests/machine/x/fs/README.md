@@ -109,3 +109,4 @@ This directory contains the F# source code and outputs generated from the Mochi 
 
 - Ensure new features continue to compile correctly.
 - Keep generated code in sync with `tests/human/x/fs` when changes occur.
+- Compiler now omits inferred type annotations for variables without explicit types.
