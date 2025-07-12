@@ -54,7 +54,8 @@ func TestFSCompiler_TPCH(t *testing.T) {
 			t.Fatalf("write error: %v", err)
 		}
 		exe := filepath.Join(dir, "main.exe")
-		cmd := exec.Command("fsharpc", "--target:exe", fmt.Sprintf("--out:%s", exe), fsPath)
+		jsonRef := "/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Text.Json.dll"
+		cmd := exec.Command("fsharpc", "--target:exe", fmt.Sprintf("--out:%s", exe), "-r:"+jsonRef, fsPath)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			t.Fatalf("fsharpc error: %v\n%s", err, out)

@@ -1242,6 +1242,12 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 		}
 		return fmt.Sprintf("%s(%s)", s.Name, strings.Join(vals, ", ")), nil
 	}
+	typ := c.ensureAnonStruct(names, types, typeMap)
+	_ = typ
+	return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+}
+
+func (c *Compiler) ensureAnonStruct(names, types []string, typeMap map[string]string) string {
 	key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
 	typ, ok := c.anon[key]
 	if !ok {
@@ -1255,7 +1261,7 @@ func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
 		}
 		c.prelude.WriteString("}\n")
 	}
-	return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+	return typ
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
@@ -1799,6 +1805,19 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			if p.Lit.Float != nil {
 				return "float"
 			}
+		}
+		if p.Struct != nil {
+			names := make([]string, len(p.Struct.Fields))
+			types := make([]string, len(p.Struct.Fields))
+			typeMap := make(map[string]string)
+			for i, f := range p.Struct.Fields {
+				t := c.inferType(f.Value)
+				n := sanitizeIdent(f.Name)
+				names[i] = n
+				types[i] = t
+				typeMap[n] = t
+			}
+			return c.ensureAnonStruct(names, types, typeMap)
 		}
 		if p.Selector != nil {
 			if t, ok := c.vars[p.Selector.Root]; ok {
