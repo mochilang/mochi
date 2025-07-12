@@ -319,8 +319,13 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				expr = fmt.Sprintf("(not (equal? %s %s))", l, r)
 			}
 		case "<", "<=", ">", ">=":
-			strOp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.op]
-			expr = fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])", l, strOp, l, r, r, strOp, l, r, op.op, l, r)
+			if ls || rs {
+				strOp := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op.op]
+				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
+				outStr = false
+			} else {
+				expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
+			}
 		case "&&":
 			expr = fmt.Sprintf("(and %s %s)", l, r)
 		case "||":
