@@ -210,11 +210,6 @@ func (c *Compiler) emitAutoStructs() {
 			c.indent++
 			c.writeln("return getattr(self, key)")
 			c.indent--
-			c.writeln("")
-			c.writeln("def __repr__(self):")
-			c.indent++
-			c.writeln("return str(self.__dict__)")
-			c.indent--
 		}
 		c.indent--
 		c.writeln("")

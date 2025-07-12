@@ -511,9 +511,16 @@ func runBuild(cmd *BuildCmd) error {
 	if lang == "" && cmd.Out != "" {
 		lang = strings.TrimPrefix(filepath.Ext(cmd.Out), ".")
 	}
-	data, err := compileProgram(lang, env, prog, modRoot, cmd.File)
-	if err != nil {
-		return err
+	var data []byte
+	var compileErr error
+	if lang == "py" || lang == "python" {
+		c := pycode.New(env)
+		data, compileErr = c.Compile(prog)
+	} else {
+		data, compileErr = compileProgram(lang, env, prog, modRoot, cmd.File)
+	}
+	if compileErr != nil {
+		return compileErr
 	}
 	if cmd.Out != "" {
 		return os.WriteFile(cmd.Out, data, 0644)

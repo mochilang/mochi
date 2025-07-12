@@ -2,75 +2,61 @@
 from __future__ import annotations
 import dataclasses
 import json
+import typing
 
 
 @dataclasses.dataclass
 class Nation:
-    n_nationkey: typing.Any
-    n_regionkey: typing.Any
-    n_name: typing.Any
+    n_nationkey: int
+    n_regionkey: int
+    n_name: str
 
     def __getitem__(self, key):
         return getattr(self, key)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
 
 @dataclasses.dataclass
 class Part:
-    p_partkey: typing.Any
-    p_type: typing.Any
-    p_size: typing.Any
-    p_mfgr: typing.Any
+    p_partkey: int
+    p_type: str
+    p_size: int
+    p_mfgr: str
 
     def __getitem__(self, key):
         return getattr(self, key)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
 
 @dataclasses.dataclass
 class Partsupp:
-    ps_partkey: typing.Any
-    ps_suppkey: typing.Any
-    ps_supplycost: typing.Any
+    ps_partkey: int
+    ps_suppkey: int
+    ps_supplycost: float
 
     def __getitem__(self, key):
         return getattr(self, key)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
 
 @dataclasses.dataclass
 class Region:
-    r_regionkey: typing.Any
-    r_name: typing.Any
+    r_regionkey: int
+    r_name: str
 
     def __getitem__(self, key):
         return getattr(self, key)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
 
 @dataclasses.dataclass
 class Supplier:
-    s_suppkey: typing.Any
-    s_name: typing.Any
-    s_address: typing.Any
-    s_nationkey: typing.Any
-    s_phone: typing.Any
-    s_acctbal: typing.Any
-    s_comment: typing.Any
+    s_suppkey: int
+    s_name: str
+    s_address: str
+    s_nationkey: int
+    s_phone: str
+    s_acctbal: float
+    s_comment: str
 
     def __getitem__(self, key):
         return getattr(self, key)
-
-    def __repr__(self):
-        return str(self.__dict__)
 
 
 from typing import Any, TypeVar, Generic, Callable
@@ -190,12 +176,15 @@ def test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part():
     ]
 
 
-region = [Region(r_regionkey=1, r_name="EUROPE"), Region(r_regionkey=2, r_name="ASIA")]
-nation = [
+region: list[Region] = [
+    Region(r_regionkey=1, r_name="EUROPE"),
+    Region(r_regionkey=2, r_name="ASIA"),
+]
+nation: list[Nation] = [
     Nation(n_nationkey=10, n_regionkey=1, n_name="FRANCE"),
     Nation(n_nationkey=20, n_regionkey=2, n_name="CHINA"),
 ]
-supplier = [
+supplier: list[Supplier] = [
     Supplier(
         s_suppkey=100,
         s_name="BestSupplier",
@@ -215,20 +204,20 @@ supplier = [
         s_comment="Slow",
     ),
 ]
-part = [
+part: list[Part] = [
     Part(p_partkey=1000, p_type="LARGE BRASS", p_size=15, p_mfgr="M1"),
     Part(p_partkey=2000, p_type="SMALL COPPER", p_size=15, p_mfgr="M2"),
 ]
-partsupp = [
+partsupp: list[Partsupp] = [
     Partsupp(ps_partkey=1000, ps_suppkey=100, ps_supplycost=10),
     Partsupp(ps_partkey=1000, ps_suppkey=200, ps_supplycost=15),
 ]
-europe_nations = _query(
+europe_nations: list[dict[str, typing.Any]] = _query(
     region,
     [{"items": nation, "on": lambda r, n: n["n_regionkey"] == r["r_regionkey"]}],
     {"select": lambda r, n: n, "where": lambda r, n: r["r_name"] == "EUROPE"},
 )
-europe_suppliers = _query(
+europe_suppliers: list[dict[str, dict[str, typing.Any]]] = _query(
     supplier,
     [
         {
@@ -238,8 +227,10 @@ europe_suppliers = _query(
     ],
     {"select": lambda s, n: {"s": s, "n": n}},
 )
-target_parts = [p for p in part if p["p_size"] == 15 and p["p_type"] == "LARGE BRASS"]
-target_partsupp = _query(
+target_parts: list[dict[str, typing.Any]] = [
+    p for p in part if p["p_size"] == 15 and p["p_type"] == "LARGE BRASS"
+]
+target_partsupp: list[dict[str, typing.Any]] = _query(
     partsupp,
     [
         {"items": target_parts, "on": lambda ps, p: ps["ps_partkey"] == p["p_partkey"]},
@@ -262,9 +253,9 @@ target_partsupp = _query(
         }
     },
 )
-costs = [x["ps_supplycost"] for x in target_partsupp]
+costs: list[typing.Any] = [x["ps_supplycost"] for x in target_partsupp]
 min_cost = _min(costs)
-result = [
+result: list[dict[str, typing.Any]] = [
     x
     for x in sorted(
         [x for x in target_partsupp if x["ps_supplycost"] == min_cost],
@@ -273,4 +264,3 @@ result = [
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part()
-
