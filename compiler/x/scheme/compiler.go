@@ -120,8 +120,26 @@ const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chib
     )
     (else (string<? (_to_string a) (_to_string b)))))
 
+(define (_le a b)
+  (or (_lt a b) (equal? a b)))
+
+(define (_gt a b)
+  (_lt b a))
+
+(define (_ge a b)
+  (or (_gt a b) (equal? a b)))
+
 (define (_sort pairs)
-  (sort pairs (lambda (a b) (_lt (cdr a) (cdr b)))))`
+  (letrec ((cmp (lambda (a b) (_lt (cdr a) (cdr b))))
+           (insert (lambda (x lst)
+                     (cond ((null? lst) (list x))
+                           ((cmp x (car lst)) (cons x lst))
+                           (else (cons (car lst) (insert x (cdr lst)))))))
+           (loop (lambda (xs out)
+                   (if (null? xs)
+                       out
+                       (loop (cdr xs) (insert (car xs) out))))) )
+    (loop pairs '())))`
 
 const listOpHelpers = `(define (_union_all a b)
   (append a b))
@@ -973,14 +991,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					c.needListOps = true
 					expr = fmt.Sprintf("(_intersect %s %s)", l, r)
 				case "<", "<=", ">", ">=":
-					if strFlags[i] || strFlags[i+1] {
-						fn := map[string]string{"<": "string<?", "<=": "string<=?", ">": "string>?", ">=": "string>=?"}[op]
-						expr = fmt.Sprintf("(%s %s %s)", fn, l, r)
-					} else {
-						expr = fmt.Sprintf("(%s %s %s)", op, l, r)
-					}
-				default:
-					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+					fn := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op]
+					expr = fmt.Sprintf("(%s %s %s)", fn, l, r)
+					c.needDataset = true
 				}
 				operands[i] = expr
 				strFlags[i] = strFlags[i] || strFlags[i+1]
