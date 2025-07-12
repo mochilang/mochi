@@ -502,8 +502,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
-	name := sanitizeName(s.Name)
-	value := "undefined"
+        name := sanitizeName(s.Name)
+        if s.Doc != "" {
+                for _, ln := range strings.Split(s.Doc, "\n") {
+                        c.writeln("// " + ln)
+                }
+        }
+        value := "undefined"
 	if s.Value != nil {
 		v, err := c.compileExpr(s.Value)
 		if err != nil {
@@ -541,8 +546,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
-	name := sanitizeName(s.Name)
-	value := "undefined"
+        name := sanitizeName(s.Name)
+        if s.Doc != "" {
+                for _, ln := range strings.Split(s.Doc, "\n") {
+                        c.writeln("// " + ln)
+                }
+        }
+        value := "undefined"
 	if s.Value != nil {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if c.env != nil {
@@ -972,7 +982,12 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-	name := sanitizeName(t.Name)
+        name := sanitizeName(t.Name)
+        if t.Doc != "" {
+                for _, ln := range strings.Split(t.Doc, "\n") {
+                        c.writeln("// " + ln)
+                }
+        }
 
 	if len(t.Variants) > 0 {
 		var variants []string
@@ -1200,13 +1215,18 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
-	name := sanitizeName(fun.Name)
-	c.writeIndent()
-	if c.asyncFuncs[name] {
-		c.buf.WriteString("async function " + name + "(")
-	} else {
-		c.buf.WriteString("function " + name + "(")
-	}
+        name := sanitizeName(fun.Name)
+        if fun.Doc != "" {
+                for _, ln := range strings.Split(fun.Doc, "\n") {
+                        c.writeln("// " + ln)
+                }
+        }
+        c.writeIndent()
+        if c.asyncFuncs[name] {
+                c.buf.WriteString("async function " + name + "(")
+        } else {
+                c.buf.WriteString("function " + name + "(")
+        }
 	var ft types.FuncType
 	if c.env != nil {
 		if t, err := c.env.GetVar(fun.Name); err == nil {
