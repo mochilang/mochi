@@ -1,0 +1,11 @@
+#lang racket
+(define math (hash 'pi 3.141592653589793 'e 2.718281828459045 'sqrt sqrt 'pow expt 'sin sin 'log log))
+(define r 3)
+(define area (* (hash-ref math 'pi) ((hash-ref math 'pow) r 2)))
+(define root ((hash-ref math 'sqrt) 49))
+(define sin45 ((hash-ref math 'sin) (/ (hash-ref math 'pi) 4)))
+(define log_e ((hash-ref math 'log) (hash-ref math 'e)))
+(displayln (string-join (map ~a (list "Circle area with r =" r "=>" area)) " "))
+(displayln (string-join (map ~a (list "Square root of 49:" root)) " "))
+(displayln (string-join (map ~a (list "sin(π/4):" sin45)) " "))
+(displayln (string-join (map ~a (list "log(e):" log_e)) " "))

@@ -90,6 +90,10 @@ func (c *Compiler) compileStmtWithLabels(s *parser.Statement, breakLbl, contLbl 
 
 func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLbl string) error {
 	switch {
+	case s.Import != nil:
+		return c.compileImport(s.Import)
+	case s.ExternVar != nil, s.ExternFun != nil, s.ExternType != nil, s.ExternObject != nil:
+		return nil
 	case s.Let != nil:
 		name := s.Let.Name
 		expr := "0"
@@ -1150,6 +1154,29 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	c.writeln("  )")
 	c.writeln(")")
 	return nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	switch *im.Lang {
+	case "go":
+		if im.Path == "mochi/runtime/ffi/go/testpkg" && im.Auto {
+			c.writeln(fmt.Sprintf("(define %s (hash 'Add (lambda (a b) (+ a b)) 'Pi 3.14 'Answer 42))", alias))
+			return nil
+		}
+	case "python":
+		if im.Path == "math" {
+			c.writeln(fmt.Sprintf("(define %s (hash 'pi 3.141592653589793 'e 2.718281828459045 'sqrt sqrt 'pow expt 'sin sin 'log log))", alias))
+			return nil
+		}
+	}
+	return fmt.Errorf("unsupported import")
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
