@@ -158,13 +158,13 @@ end
 customers = {{["id"]=1, ["name"]="Alice"}, {["id"]=2, ["name"]="Bob"}}
 orders = {{["id"]=100, ["customerId"]=1, ["total"]=250}, {["id"]=101, ["customerId"]=3, ["total"]=80}}
 result = (function()
-  local _src = orders
-  return __query(_src, {
-    { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end, left = true }
-  }, { selectFn = function(o, c) return {["orderId"]=o.id, ["customer"]=c, ["total"]=o.total} end })
+    local _src = orders
+    return __query(_src, {
+        { items = customers, on = function(o, c) return __eq(o.customerId, c.id) end, left = true }
+    }, { selectFn = function(o, c) return {["orderId"]=o.id, ["customer"]=c, ["total"]=o.total} end })
 end)()
 print("--- Left Join ---")
 for _, entry in ipairs(result) do
-  ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
-  ::__continue0::
+    print("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
+    ::__continue0::
 end

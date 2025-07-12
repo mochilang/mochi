@@ -416,6 +416,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("print(%s)", args[0]), nil
 			}
 		}
+		allSimple := true
+		for i := range args {
+			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
+				allSimple = false
+				break
+			}
+		}
+		if allSimple {
+			return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
+		}
 		for i := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
 				args[i] = "\"<nil>\""
