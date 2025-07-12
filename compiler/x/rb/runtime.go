@@ -448,6 +448,26 @@ end`
   items.each { |r| res << opts['select'].call(*r) }
   res
 end`
+
+	helperHashJoin = `def _hash_join(left, right, lk, rk)
+  idx = {}
+  right.each do |r|
+    k = rk.call(r)
+    arr = idx[k]
+    if arr
+      arr << r
+    else
+      idx[k] = [r]
+    end
+  end
+  out = []
+  left.each do |l|
+    arr = idx[lk.call(l)]
+    next unless arr
+    arr.each { |r| out << [l, r] }
+  end
+  out
+end`
 )
 
 var helperMap = map[string]string{
@@ -473,6 +493,7 @@ var helperMap = map[string]string{
 	"_reverse":     helperReverse,
 	"_splitString": helperSplitString,
 	"_joinStrings": helperJoinStrings,
+	"_hash_join":   helperHashJoin,
 }
 
 func (c *Compiler) use(name string) { c.helpers[name] = true }
