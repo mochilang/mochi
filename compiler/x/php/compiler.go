@@ -1146,6 +1146,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>json_decode($_k, true),'items'=> $__g];\n", gname))
 
 		genv := types.NewEnv(child)
+		keyType := types.TypeOfExprBasic(q.Group.Exprs[0], child)
 		vars := []string{q.Var}
 		for _, f := range q.Froms {
 			vars = append(vars, f.Var)
@@ -1155,9 +1156,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if len(vars) == 1 {
 			if vt, err := child.GetVar(vars[0]); err == nil {
-				genv.SetVar(q.Group.Name, types.GroupType{Elem: vt}, true)
+				genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: vt}, true)
 			} else {
-				genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+				genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.AnyType{}}, true)
 			}
 		} else {
 			st := types.StructType{Fields: map[string]types.Type{}, Order: []string{}}
@@ -1167,7 +1168,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					st.Order = append(st.Order, v)
 				}
 			}
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: st}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: st}, true)
 		}
 		oldEnv2 := c.env
 		c.env = genv
@@ -1592,6 +1593,7 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 	}
 
 	genv := types.NewEnv(child)
+	keyType := types.TypeOfExprBasic(q.Group.Exprs[0], child)
 	vars := []string{q.Var}
 	for _, f := range q.Froms {
 		vars = append(vars, f.Var)
@@ -1601,9 +1603,9 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 	}
 	if len(vars) == 1 {
 		if vt, err := child.GetVar(vars[0]); err == nil {
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: vt}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: vt}, true)
 		} else {
-			genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+			genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.AnyType{}}, true)
 		}
 	} else {
 		st := types.StructType{Fields: map[string]types.Type{}, Order: []string{}}
@@ -1613,7 +1615,7 @@ func (c *Compiler) compileQueryExprAdvanced(q *parser.QueryExpr) (string, error)
 				st.Order = append(st.Order, v)
 			}
 		}
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: st}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: st}, true)
 	}
 	gname := sanitizeName(q.Group.Name)
 	c.groupVars[gname] = true
