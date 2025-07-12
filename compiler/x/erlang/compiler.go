@@ -753,7 +753,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		joinSrc[i] = js
 		on := ""
 		if j.On != nil {
-			oc, err := c.compileExpr(j.On)
+			oc, err := c.compileBoolExpr(j.On)
 			if err != nil {
 				return "", err
 			}
@@ -816,7 +816,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	if q.Where != nil {
-		cnd, err := c.compileExpr(q.Where)
+		cnd, err := c.compileBoolExpr(q.Where)
 		if err != nil {
 			return "", err
 		}
@@ -909,7 +909,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 		having := ""
 		if q.Group.Having != nil {
-			h, err := c.compileExpr(q.Group.Having)
+			h, err := c.compileBoolExpr(q.Group.Having)
 			if err != nil {
 				return "", err
 			}
@@ -1738,6 +1738,20 @@ func isBoolExpr(e *parser.Expr) bool {
 		}
 	}
 	return false
+}
+
+// compileBoolExpr returns Erlang code evaluating e in boolean context.
+// If e already represents a boolean expression, it is compiled directly.
+// Otherwise the result is true when e is neither undefined nor false.
+func (c *Compiler) compileBoolExpr(e *parser.Expr) (string, error) {
+	expr, err := c.compileExpr(e)
+	if err != nil {
+		return "", err
+	}
+	if isBoolExpr(e) {
+		return expr, nil
+	}
+	return fmt.Sprintf("(case %s of undefined -> false; false -> false; _ -> true end)", expr), nil
 }
 
 func typeNameFromRef(tr *parser.TypeRef) string {
