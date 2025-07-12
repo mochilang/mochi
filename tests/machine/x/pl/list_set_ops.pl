@@ -18,17 +18,13 @@ intersect([_|T], B, Acc, R) :- intersect(T, B, Acc, R).
 :- initialization(main, main).
 main :-
     union([1, 2], [2, 3], _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     except([1, 2, 3], [2], _V1),
-    write(_V1),
-    nl,
+    writeln(_V1),
     intersect([1, 2, 3], [2, 4], _V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     append([1, 2], [2, 3], _V3),
     len_any(_V3, _V4),
     _V5 is _V4,
-    write(_V5),
-    nl,
+    writeln(_V5),
     true.

@@ -12,6 +12,5 @@ main :-
     Book = _V1,
     get_item(Book, 'author', _V2),
     get_item(_V2, 'name', _V3),
-    write(_V3),
-    nl,
+    writeln(_V3),
     true.

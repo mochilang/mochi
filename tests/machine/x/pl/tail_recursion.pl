@@ -11,6 +11,5 @@ sum_rec(N, Acc, _Res) :-
 :- initialization(main, main).
 main :-
     sum_rec(10, 0, _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     true.

@@ -10,9 +10,7 @@ math_log(X, R) :- R is log(X).
 main :-
     math_sqrt(16, _V0),
     _V1 is _V0,
-    write(_V1),
-    nl,
+    writeln(_V1),
     math_pi(_V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

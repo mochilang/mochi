@@ -10,6 +10,5 @@ main :-
     dict_create(_V0, map, [a-1, b-2]),
     len_any(_V0, _V1),
     _V2 is _V1,
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

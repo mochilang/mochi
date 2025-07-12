@@ -7,8 +7,7 @@ main :-
             between(1, _V0, I),
                 catch(
                     (
-                        write(I),
-                        nl,
+                        writeln(I),
                         true
                     ), continue, true),
                     fail

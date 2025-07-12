@@ -3,6 +3,5 @@
 main :-
     number_string(_V0, "1995"),
     _V1 is _V0,
-    write(_V1),
-    nl,
+    writeln(_V1),
     true.

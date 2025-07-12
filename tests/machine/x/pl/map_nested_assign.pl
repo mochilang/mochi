@@ -23,6 +23,5 @@ main :-
     nb_getval(data, _V5),
     get_item(_V5, "outer", _V6),
     get_item(_V6, "inner", _V7),
-    write(_V7),
-    nl,
+    writeln(_V7),
     true.

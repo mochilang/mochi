@@ -4,6 +4,5 @@ main :-
     A is 10,
     B is 20,
     _V0 is (A + B),
-    write(_V0),
-    nl,
+    writeln(_V0),
     true.

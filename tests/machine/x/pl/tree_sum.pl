@@ -11,6 +11,5 @@ main :-
     dict_create(_V1, p_node, ['left'-leaf, 'value'-1, 'right'-_V0]),
     T = _V1,
     sum_tree(T, _V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

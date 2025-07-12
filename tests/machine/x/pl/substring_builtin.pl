@@ -2,6 +2,5 @@
 :- initialization(main, main).
 main :-
     substring("mochi", 1, 4, _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     true.

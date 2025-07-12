@@ -9,6 +9,5 @@ get_item(List, Index, Val) :- nth0(Index, List, Val).
 main :-
     Xs = [10, 20, 30],
     get_item(Xs, 1, _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     true.

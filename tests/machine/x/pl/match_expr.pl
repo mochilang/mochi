@@ -6,6 +6,5 @@ main :-
     (X == 2 -> _V1 = "two" ; _V1 = _V0),
     (X == 1 -> _V2 = "one" ; _V2 = _V1),
     Label = _V2,
-    write(Label),
-    nl,
+    writeln(Label),
     true.

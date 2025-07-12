@@ -38,6 +38,5 @@ main :-
     people_update(People, _V10),
     People_11 = _V10,
     test_update_adult_status,
-    write("ok"),
-    nl,
+    writeln("ok"),
     true.

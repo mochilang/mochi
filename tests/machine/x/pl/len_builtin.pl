@@ -9,6 +9,5 @@ len_any(Value, Len) :- length(Value, Len).
 main :-
     len_any([1, 2, 3], _V0),
     _V1 is _V0,
-    write(_V1),
-    nl,
+    writeln(_V1),
     true.

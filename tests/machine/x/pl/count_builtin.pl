@@ -37,6 +37,5 @@ group_by(List, Fn, Groups) :- findall(K-V, (member(V, List), call(Fn, V, K)), Pa
 main :-
     count([1, 2, 3], _V0),
     _V1 is _V0,
-    write(_V1),
-    nl,
+    writeln(_V1),
     true.

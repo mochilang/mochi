@@ -9,6 +9,5 @@ add(A, B, _Res) :-
 main :-
     Add5 = p__partial0,
     call(Add5, 3, _V1),
-    write(_V1),
-    nl,
+    writeln(_V1),
     true.

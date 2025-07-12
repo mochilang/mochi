@@ -19,6 +19,5 @@ main :-
     nb_setval(scores, _V1),
     nb_getval(scores, _V2),
     get_item(_V2, "bob", _V3),
-    write(_V3),
-    nl,
+    writeln(_V3),
     true.

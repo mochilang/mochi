@@ -1,3 +1,0 @@
-ERROR: /workspace/mochi/tests/machine/x/pl/load_yaml.pl:21: Initialization goal raised exception:
-ERROR: source_sink `"../interpreter/valid/people.yaml"' does not exist
-

@@ -24,6 +24,5 @@ main :-
     inc(_V1, _V2),
     _V2,
     get_item(c, 'n', _V3),
-    write(_V3),
-    nl,
+    writeln(_V3),
     true.
