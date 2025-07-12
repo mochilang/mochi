@@ -35,6 +35,8 @@ type Compiler struct {
 
 	needJSON bool
 
+	needStructCast bool
+
 	aliases   map[string]string
 	groupKeys map[string]string
 
@@ -43,18 +45,19 @@ type Compiler struct {
 
 func New(srcPath string) *Compiler {
 	return &Compiler{
-		srcPath:       srcPath,
-		varVers:       make(map[string]int),
-		lets:          make(map[string]bool),
-		types:         make(map[string]string),
-		funs:          make(map[string]int),
-		needLeftJoin:  false,
-		needRightJoin: false,
-		needOuterJoin: false,
-		needJSON:      false,
-		aliases:       make(map[string]string),
-		groupKeys:     make(map[string]string),
-		globals:       make(map[string]string),
+		srcPath:        srcPath,
+		varVers:        make(map[string]int),
+		lets:           make(map[string]bool),
+		types:          make(map[string]string),
+		funs:           make(map[string]int),
+		needLeftJoin:   false,
+		needRightJoin:  false,
+		needOuterJoin:  false,
+		needJSON:       false,
+		needStructCast: false,
+		aliases:        make(map[string]string),
+		groupKeys:      make(map[string]string),
+		globals:        make(map[string]string),
 	}
 }
 
@@ -140,6 +143,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needRightJoin = false
 	c.needOuterJoin = false
 	c.needJSON = false
+	c.needStructCast = false
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
 	c.globals = make(map[string]string)
@@ -1120,8 +1124,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if t == "int" && typ == "string" {
 					val = fmt.Sprintf("list_to_integer(%s)", val)
 					typ = "int"
+				} else if unicode.IsUpper(rune(t[0])) {
+					val = fmt.Sprintf("mochi_struct_cast(%s)", val)
+					c.needStructCast = true
+					typ = "map"
 				} else {
-					// casting to a struct or other type is a no-op
+					// casting to other types is a no-op
 					typ = "map"
 				}
 			}
@@ -1828,6 +1836,19 @@ func (c *Compiler) writeRuntime() {
 		c.writeln("Left = mochi_left_join(L, R, Fun),")
 		c.writeln("Right = [ P || P = {undefined, _} <- mochi_right_join(L, R, Fun) ],")
 		c.writeln("Left ++ Right.")
+		c.indent--
+	}
+	if c.needStructCast {
+		c.writeln("")
+		c.writeln("mochi_to_atom_key(K) when is_atom(K) -> K;")
+		c.writeln("mochi_to_atom_key(K) when is_binary(K) -> list_to_atom(binary_to_list(K));")
+		c.writeln("mochi_to_atom_key(K) when is_list(K) -> list_to_atom(K);")
+		c.writeln("mochi_to_atom_key(K) -> K.")
+
+		c.writeln("")
+		c.writeln("mochi_struct_cast(M) ->")
+		c.indent++
+		c.writeln("maps:from_list([{mochi_to_atom_key(K), V} || {K,V} <- maps:to_list(M)]).")
 		c.indent--
 	}
 	if c.needJSON {
