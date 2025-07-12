@@ -1513,6 +1513,11 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 func (c *Compiler) compileMapAsMap(m *parser.MapLiteral) (string, error) {
 	c.helpers["map_of_entries"] = true
 	if len(m.Items) == 0 {
+		if t, ok := c.vars[c.curVar]; ok && strings.HasPrefix(t, "Map<") {
+			kt := mapKeyType(t)
+			vt := mapValueType(t)
+			return fmt.Sprintf("new LinkedHashMap<%s,%s>()", kt, vt), nil
+		}
 		return "new LinkedHashMap<>()", nil
 	}
 	var entries []string
@@ -1662,6 +1667,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
+	if v.Type != nil {
+		c.vars[v.Name] = typ
+	}
 	expr, err := c.compileExpr(v.Value)
 	c.curVar = orig
 	if err != nil {
@@ -1701,6 +1709,9 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
 	c.curVar = v.Name
+	if v.Type != nil {
+		c.vars[v.Name] = typ
+	}
 	expr, err := c.compileExpr(v.Value)
 	c.curVar = orig
 	if err != nil {
