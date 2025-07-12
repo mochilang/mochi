@@ -20,7 +20,7 @@ type PackageInfo struct {
 // Packages returns information about all Go packages accessible in the current environment.
 // It invokes `go list -json all` and parses the output into a slice of PackageInfo.
 func Packages() ([]PackageInfo, error) {
-	cmd := exec.Command("go", "list", "-json", "all")
+	cmd := exec.Command("go", "list", "-e", "-json", "all")
 	out, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("go list failed: %w", err)

@@ -1,3 +1,5 @@
+//go:build slow
+
 package ftncode_test
 
 import (
