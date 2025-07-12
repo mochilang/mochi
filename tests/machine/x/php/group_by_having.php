@@ -26,5 +26,5 @@ $big = (function() use ($people) {
     }
     return $result;
 })();
-json_encode($big);
+echo json_encode($big), PHP_EOL;
 ?>
