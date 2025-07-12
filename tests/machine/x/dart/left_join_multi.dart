@@ -33,8 +33,7 @@ var result = (() {
 
 void main() {
   print('--- Left Join Multi ---');
-  var _iter2 = result;
-  for (var r in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
+  for (var r in result) {
     print([r['orderId'], r['name'], r['item']].join(' '));
   }
 }

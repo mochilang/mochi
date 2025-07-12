@@ -1,4 +1,0 @@
-line 84: exit status 255
-              (x['l']['l_extendedprice'] as num) *
-                  ((1 - (x['l']['l_discount'] as int)) as num),
-            );

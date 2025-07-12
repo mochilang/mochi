@@ -7,7 +7,7 @@ int sum_tree(Tree t) {
       var left = (_t as Node).left;
       var value = (_t as Node).value;
       var right = (_t as Node).right;
-      return (sum_tree(left) + (value as int) as int) + sum_tree(right);
+      return (sum_tree(left) + (value as num) as num) + sum_tree(right);
     }
     return null;
   })();

@@ -29,8 +29,7 @@ var result = (() {
 
 void main() {
   print('--- Multi Join ---');
-  var _iter1 = result;
-  for (var r in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var r in result) {
     print([r['name'], 'bought item', r['sku']].join(' '));
   }
 }

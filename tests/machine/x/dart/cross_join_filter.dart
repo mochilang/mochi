@@ -6,7 +6,7 @@ var pairs = (() {
   var _q0 = <dynamic>[];
   for (var n in nums) {
     for (var l in letters) {
-      if (!(n % 2 == 0)) continue;
+      if (!((n % 2 as int) == 0)) continue;
       _q0.add({'n': n, 'l': l});
     }
   }
@@ -15,8 +15,7 @@ var pairs = (() {
 
 void main() {
   print('--- Even pairs ---');
-  var _iter1 = pairs;
-  for (var p in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var p in pairs) {
     print([p['n'], p['l']].join(' '));
   }
 }

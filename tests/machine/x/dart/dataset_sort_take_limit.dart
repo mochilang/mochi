@@ -25,9 +25,7 @@ var expensive = (() {
 
 void main() {
   print('--- Top products (excluding most expensive) ---');
-  var _iter1 = expensive;
-  for (var item
-      in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var item in expensive) {
     print([item['name'], 'costs \$', item['price']].join(' '));
   }
 }

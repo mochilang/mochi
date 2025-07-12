@@ -728,9 +728,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 				}
 				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
+				newType := types.ResultType(op.Op, leftType, rightType)
+				if _, ok := newType.(types.IntType); ok {
+					res = fmt.Sprintf("(%s as int)", res)
+				}
+				leftType = newType
 			}
 		}
-		leftType = types.ResultType(op.Op, leftType, rightType)
 	}
 	return res, nil
 }
@@ -1239,6 +1243,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	sel := c.mustExpr(q.Select)
+	var keyT types.Type
+	var elemT types.Type
 	if q.Group != nil {
 		keyVar = fmt.Sprintf("_k%d", c.tmp)
 		c.tmp++
@@ -1259,9 +1265,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
 
-		keyT := types.TypeOfExpr(q.Group.Exprs[0], c.env)
-
-		var elemT types.Type
+		keyT = types.TypeOfExpr(q.Group.Exprs[0], c.env)
 		if len(vars) == 1 {
 			if t, err := c.env.GetVar(vars[0]); err == nil {
 				elemT = t
@@ -1302,6 +1306,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		w(fmt.Sprintf("  for (var entry in %s.entries) {\n", groups))
 		w(fmt.Sprintf("    var %s = entry.value;\n", grpVar))
 		w(fmt.Sprintf("    var %s = entry.key;\n", keyVar))
+
+		// update environment so `g` refers to the list of items and
+		// the key variable has the proper type while compiling the select
+		groupEnv := types.NewEnv(c.env)
+		groupEnv.SetVar(grpVar, types.ListType{Elem: elemT}, true)
+		groupEnv.SetVar(keyVar, keyT, true)
+		origEnv := c.env
+		c.env = groupEnv
+
 		if q.Group.Having != nil {
 			condStr := c.mustExpr(q.Group.Having)
 			if isBoolType(types.TypeOfExpr(q.Group.Having, c.env)) {
@@ -1320,6 +1333,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		} else {
 			w(fmt.Sprintf("    %s.add(%s);\n", tmp, sel))
 		}
+		c.env = origEnv
 		w("  }\n")
 	}
 

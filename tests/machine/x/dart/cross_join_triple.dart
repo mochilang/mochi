@@ -18,8 +18,7 @@ var combos = (() {
 
 void main() {
   print('--- Cross Join of three lists ---');
-  var _iter1 = combos;
-  for (var c in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var c in combos) {
     print([c['n'], c['l'], c['b']].join(' '));
   }
 }

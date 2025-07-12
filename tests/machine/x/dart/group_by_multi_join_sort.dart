@@ -81,7 +81,7 @@ var result = (() {
           for (var x in g) {
             _q7.add(
               (x['l']['l_extendedprice'] as num) *
-                  ((1 - (x['l']['l_discount'] as int)) as num),
+                  ((1 - (x['l']['l_discount'] as num)) as num),
             );
           }
           return _q7;
@@ -97,7 +97,7 @@ var result = (() {
             for (var x in g) {
               _q5.add(
                 (x['l']['l_extendedprice'] as num) *
-                    ((1 - (x['l']['l_discount'] as int)) as num),
+                    ((1 - (x['l']['l_discount'] as num)) as num),
               );
             }
             return _q5;

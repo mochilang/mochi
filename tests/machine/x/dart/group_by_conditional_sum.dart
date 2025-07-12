@@ -21,26 +21,27 @@ var result = (() {
       {
         'cat': _k6,
         'share':
-            (() {
-              var _t8 = (() {
-                var _q7 = <dynamic>[];
-                for (var x in g) {
-                  _q7.add((x['flag'] ? x['val'] : 0));
-                }
-                return _q7;
-              })();
-              return _t8.reduce((a, b) => a + b);
-            })() /
-            (() {
-              var _t10 = (() {
-                var _q9 = <dynamic>[];
-                for (var x in g) {
-                  _q9.add(x['val']);
-                }
-                return _q9;
-              })();
-              return _t10.reduce((a, b) => a + b);
-            })(),
+            ((() {
+                      var _t8 = (() {
+                        var _q7 = <dynamic>[];
+                        for (var x in g) {
+                          _q7.add((x['flag'] ? x['val'] : 0));
+                        }
+                        return _q7;
+                      })();
+                      return _t8.reduce((a, b) => a + b);
+                    })() /
+                    (() {
+                      var _t10 = (() {
+                        var _q9 = <dynamic>[];
+                        for (var x in g) {
+                          _q9.add(x['val']);
+                        }
+                        return _q9;
+                      })();
+                      return _t10.reduce((a, b) => a + b);
+                    })()
+                as int),
       },
     ]);
   }
