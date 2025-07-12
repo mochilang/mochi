@@ -1,5 +1,5 @@
 #lang racket
-(define numbers (list 1 2 3 4 5 6 7 8 9))
+(define numbers '(1 2 3 4 5 6 7 8 9))
 (let/ec break
   (for ([n (if (hash? numbers) (hash-keys numbers) numbers)])
     (let/ec continue
@@ -9,7 +9,7 @@
   )
   (void)
 )
-(if (> n 7)
+(if (cond [(string? n) (string>? n 7)] [(string? 7) (string>? n 7)] [else (> n 7)])
   (begin
 (break)
   )

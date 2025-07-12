@@ -1,6 +1,6 @@
 #lang racket
 (define x 5)
-(if (> x 3)
+(if (cond [(string? x) (string>? x 3)] [(string? 3) (string>? x 3)] [else (> x 3)])
   (begin
 (displayln "big")
   )

@@ -1,6 +1,6 @@
 #lang racket
 (require racket/list)
-(define xs (list 1 2 3))
+(define xs '(1 2 3))
 (define ys (for*/list ([x xs] #:when (and (equal? (remainder x 2) 1))) x))
 (displayln (cond [(string? ys) (regexp-match? (regexp 1) ys)] [(hash? ys) (hash-has-key? ys 1)] [else (member 1 ys)]))
 (displayln (cond [(string? ys) (regexp-match? (regexp 2) ys)] [(hash? ys) (hash-has-key? ys 2)] [else (member 2 ys)]))

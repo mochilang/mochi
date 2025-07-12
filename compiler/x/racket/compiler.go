@@ -495,7 +495,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("avg expects 1 arg")
 			}
 			tmp := args[0]
-			return fmt.Sprintf("(let ([xs %s] [n (length %s)]) (if (= n 0) 0 (/ (for/fold ([s 0.0]) ([v xs]) (+ s (real->double-flonum v))) n)))", tmp, tmp), nil
+			return fmt.Sprintf("(let ([xs %s] [n (length %s)]) (if (= n 0) 0 (/ (for/fold ([s 0]) ([v xs]) (+ s v)) n)))", tmp, tmp), nil
 		case "sum":
 			if len(args) != 1 {
 				return "", fmt.Errorf("sum expects 1 arg")

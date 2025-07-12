@@ -4,7 +4,7 @@
   (for* ([d data]) (let* ([key (hash-ref d 'tag)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons d bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
   (for/list ([g _groups]) g)))
-(define tmp (list ))
+(define tmp '())
 (for ([g (if (hash? groups) (hash-keys groups) groups)])
 (define total 0)
 (for ([x (if (hash? (hash-ref g 'items)) (hash-keys (hash-ref g 'items)) (hash-ref g 'items))])
