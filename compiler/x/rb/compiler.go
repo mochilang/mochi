@@ -1969,7 +1969,8 @@ func (c *Compiler) compileBuiltinCall(name string, args []string, origArgs []*pa
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("avg expects 1 arg")
 		}
-		return fmt.Sprintf("((%[1]s).length > 0 ? (%[1]s).sum(0.0) / (%[1]s).length : 0)", args[0]), true, nil
+		c.use("_avg")
+		return fmt.Sprintf("_avg(%s)", args[0]), true, nil
 	case "sum":
 		if len(args) != 1 {
 			return "", true, fmt.Errorf("sum expects 1 arg")
