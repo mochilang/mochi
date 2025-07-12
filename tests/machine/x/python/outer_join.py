@@ -5,8 +5,8 @@ import dataclasses
 
 @dataclasses.dataclass
 class Customer:
-    id: typing.Any
-    name: typing.Any
+    id: int
+    name: str
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -17,9 +17,9 @@ class Customer:
 
 @dataclasses.dataclass
 class Order:
-    id: typing.Any
-    customerId: typing.Any
-    total: typing.Any
+    id: int
+    customerId: int
+    total: int
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -112,19 +112,19 @@ def _query(src, joins, opts):
     return res
 
 
-customers = [
+customers: list[Customer] = [
     Customer(id=1, name="Alice"),
     Customer(id=2, name="Bob"),
     Customer(id=3, name="Charlie"),
     Customer(id=4, name="Diana"),
 ]
-orders = [
+orders: list[Order] = [
     Order(id=100, customerId=1, total=250),
     Order(id=101, customerId=2, total=125),
     Order(id=102, customerId=1, total=300),
     Order(id=103, customerId=5, total=80),
 ]
-result = _query(
+result: list[dict[str, dict[str, int]]] = _query(
     orders,
     [
         {

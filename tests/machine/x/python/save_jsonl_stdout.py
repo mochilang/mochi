@@ -5,8 +5,8 @@ import dataclasses
 
 @dataclasses.dataclass
 class Person:
-    name: typing.Any
-    age: typing.Any
+    name: str
+    age: int
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -81,7 +81,7 @@ def _save(rows, path, opts):
             f.close()
 
 
-people = [Person(name="Alice", age=30), Person(name="Bob", age=25)]
+people: list[Person] = [Person(name="Alice", age=30), Person(name="Bob", age=25)]
 _save(
     people,
     "-",

@@ -1,2 +1,2 @@
-y = None
+y: int = None
 print(y)

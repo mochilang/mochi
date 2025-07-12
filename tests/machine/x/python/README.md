@@ -108,7 +108,7 @@ Compiled programs: 100/100 successful.
 - [x] Compare generated code with reference implementations
 - [ ] Add benchmarks for large datasets
 - [ ] Improve error reporting for runtime failures
-- [ ] Support optional type annotations
+- [x] Support optional type annotations
 - [ ] Integrate with Python packaging tools
 - [x] Generate docstrings for compiled functions
 - [x] Implement return type inference for functions

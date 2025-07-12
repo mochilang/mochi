@@ -1,4 +1,4 @@
-x = 5
+x: int = 5
 if x > 3:
     print("big")
 else:

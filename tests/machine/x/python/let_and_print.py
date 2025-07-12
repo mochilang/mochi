@@ -1,3 +1,3 @@
-a = 10
-b = 20
+a: int = 10
+b: int = 20
 print(a + b)

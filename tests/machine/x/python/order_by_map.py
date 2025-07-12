@@ -5,8 +5,8 @@ import dataclasses
 
 @dataclasses.dataclass
 class Data:
-    a: typing.Any
-    b: typing.Any
+    a: int
+    b: int
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -27,8 +27,8 @@ def _sort_key(k):
     return k
 
 
-data = [Data(a=1, b=2), Data(a=1, b=1), Data(a=0, b=5)]
-_sorted = [
+data: list[Data] = [Data(a=1, b=2), Data(a=1, b=1), Data(a=0, b=5)]
+_sorted: list[dict[str, int]] = [
     x
     for x in sorted(
         [x for x in data], key=lambda x: _sort_key({"a": x["a"], "b": x["b"]})
