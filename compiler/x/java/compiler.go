@@ -551,7 +551,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.buf.WriteString(code)
 	out := strings.ReplaceAll(c.buf.String(), "\t", "    ")
-	return []byte(out), nil
+	return FormatJava([]byte(out)), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
