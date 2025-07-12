@@ -43,18 +43,6 @@ error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:221:9: error: assignment to expression with array type
   221 |     tmp = tmp16;
       |         ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:224:41: error: request for member ‘len’ in something not a structure or union
-  224 |   list_int tmp18 = list_int_create(tmp17.len);
-      |                                         ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:225:49: error: request for member ‘len’ in something not a structure or union
-  225 |   int *tmp21 = (int *)malloc(sizeof(int) * tmp17.len);
-      |                                                 ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:227:36: error: request for member ‘len’ in something not a structure or union
-  227 |   for (int tmp20 = 0; tmp20 < tmp17.len; tmp20++) {
-      |                                    ^
-/workspace/mochi/tests/machine/x/c/group_items_iteration.c:228:18: error: request for member ‘data’ in something not a structure or union
-  228 |     int r = tmp17.data[tmp20];
-      |                  ^
 /workspace/mochi/tests/machine/x/c/group_items_iteration.c:230:21: error: request for member ‘tag’ in something not a structure or union
   230 |     tmp21[tmp19] = r.tag;
       |                     ^

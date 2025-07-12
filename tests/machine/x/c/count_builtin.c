@@ -3,6 +3,6 @@
 
 int main() {
   int tmp1[] = {1, 2, 3};
-  printf("%d\n", tmp1.len);
+  printf("%d\n", 3);
   return 0;
 }

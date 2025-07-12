@@ -10,10 +10,10 @@ static int _sum_int(list_int v) {
 int main() {
   int nums[] = {1, 2, 3};
   int tmp1[] = {1, 2, 3};
-  list_int tmp2 = list_int_create(tmp1.len);
+  list_int tmp2 = list_int_create(3);
   int tmp3 = 0;
-  for (int tmp4 = 0; tmp4 < tmp1.len; tmp4++) {
-    int n = tmp1.data[tmp4];
+  for (int tmp4 = 0; tmp4 < 3; tmp4++) {
+    int n = tmp1[tmp4];
     if (!(n > 1)) {
       continue;
     }
