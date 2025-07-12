@@ -293,7 +293,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteByte('\n')
 	}
 	out.Write(body)
-	return out.Bytes(), nil
+	code := escapeKeywords(out.String())
+	return []byte(code), nil
 }
 
 func (c *Compiler) stmt(s *parser.Statement) error {
@@ -2178,6 +2179,14 @@ func escapeIdent(name string) string {
 		return "`" + name + "`"
 	}
 	return name
+}
+
+func escapeKeywords(src string) string {
+	for kw := range kotlinKeywords {
+		re := regexp.MustCompile(`\.` + regexp.QuoteMeta(kw) + `\b`)
+		src = re.ReplaceAllString(src, ".`"+kw+"`")
+	}
+	return src
 }
 
 func isStructType(t types.Type) bool {
