@@ -24,7 +24,7 @@ var result = ({
 		}
 		if !_m {
 			let c: Any? = nil
-			_res.append(["customerName": c.name, "order": o])
+			_res.append(["customerName": nil, "order": o])
 		}
 	}
 	return _res

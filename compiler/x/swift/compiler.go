@@ -638,7 +638,8 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
-	leftIsFloat := isFloatExpr(left)
+	leftType := c.unaryType(b.Left)
+	leftIsFloat := leftType == "float" || leftType == "double" || leftType == "Double"
 	for _, op := range b.Right {
 		if !supportedOp(op.Op) {
 			return "", fmt.Errorf("unsupported operator %s at line %d", op.Op, op.Pos.Line)
@@ -647,7 +648,8 @@ func (c *compiler) binary(b *parser.BinaryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		rightIsFloat := isFloatExpr(r)
+		rightType := c.postfixType(op.Right)
+		rightIsFloat := rightType == "float" || rightType == "double" || rightType == "Double"
 		switch op.Op {
 		case "in":
 			typ := c.primaryType(op.Right.Target)
@@ -1840,7 +1842,7 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		et = "Any"
 	}
 	kt := swiftTypeOf(keyTyp)
-	if kt == "" {
+	if kt == "" || kt == "Any" {
 		kt = "AnyHashable"
 	}
 	useMapKey := kt == "[String:Any]"
@@ -1866,7 +1868,11 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString("        }\n")
 		b.WriteString(fmt.Sprintf("        _groups[_ks]!.Items.append(%s)\n", q.Var))
 	} else {
-		b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
+		if kt == "AnyHashable" {
+			b.WriteString(fmt.Sprintf("        _groups[_k as! AnyHashable, default: []].append(%s)\n", q.Var))
+		} else {
+			b.WriteString(fmt.Sprintf("        _groups[_k as! %s, default: []].append(%s)\n", kt, q.Var))
+		}
 	}
 	b.WriteString("    }\n")
 	if useMapKey {
@@ -2012,7 +2018,7 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		keyType = c.exprType(q.Group.Exprs[0])
 	}
 	kt := swiftTypeOf(keyType)
-	if kt == "" {
+	if kt == "" || kt == "Any" {
 		kt = "AnyHashable"
 	}
 	useMapKey := kt == "[String:Any]"
@@ -2140,7 +2146,11 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%s}\n", indent))
 			b.WriteString(fmt.Sprintf("%s_groups[_ks]!.Items.append(%s)\n", indent, itemExpr))
 		} else {
-			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+			if kt == "AnyHashable" {
+				b.WriteString(fmt.Sprintf("%s_groups[_k as! AnyHashable, default: []].append(%s)\n", indent, itemExpr))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_groups[_k as! %s, default: []].append(%s)\n", indent, kt, itemExpr))
+			}
 		}
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
@@ -2152,7 +2162,11 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%slet _ks = _keyStr(_k)\n", indent))
 			b.WriteString(fmt.Sprintf("%s_groups[_ks, default: _Group(_k)].Items.append(%s)\n", indent, itemExpr))
 		} else {
-			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+			if kt == "AnyHashable" {
+				b.WriteString(fmt.Sprintf("%s_groups[_k as! AnyHashable, default: []].append(%s)\n", indent, itemExpr))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_groups[_k as! %s, default: []].append(%s)\n", indent, kt, itemExpr))
+			}
 		}
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
@@ -2174,7 +2188,11 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%s}\n", indent))
 			b.WriteString(fmt.Sprintf("%s_groups[_ks]!.Items.append(%s)\n", indent, itemExpr))
 		} else {
-			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+			if kt == "AnyHashable" {
+				b.WriteString(fmt.Sprintf("%s_groups[_k as! AnyHashable, default: []].append(%s)\n", indent, itemExpr))
+			} else {
+				b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+			}
 		}
 		for range joinSrcs {
 			indent = indent[:len(indent)-1]
@@ -2431,7 +2449,8 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t\tif !_m {\n")
 		b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", qv))
-		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
+		selNil := replaceVarField(sel, qv)
+		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", selNil))
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t}\n")
 	} else {
@@ -2827,6 +2846,11 @@ func replaceIdent(s, name, repl string) string {
 	return re.ReplaceAllString(s, repl)
 }
 
+func replaceVarField(s, name string) string {
+	re := regexp.MustCompile(`\b` + regexp.QuoteMeta(name) + `\.[A-Za-z_][A-Za-z0-9_]*`)
+	return re.ReplaceAllString(s, "nil")
+}
+
 var floatLit = regexp.MustCompile(`^\d+\.\d+$`)
 
 func isFloatExpr(s string) bool {
@@ -2850,6 +2874,23 @@ func castCond(cond string) string {
 		}
 	}
 	return cond
+}
+
+func (c *compiler) unaryType(u *parser.Unary) string {
+	if u == nil {
+		return ""
+	}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+	return c.exprType(e)
+}
+
+func (c *compiler) postfixType(p *parser.PostfixExpr) string {
+	if p == nil {
+		return ""
+	}
+	u := &parser.Unary{Value: p}
+	e := &parser.Expr{Binary: &parser.BinaryExpr{Left: u}}
+	return c.exprType(e)
 }
 
 func (c *compiler) elementType(e *parser.Expr) string {
@@ -2974,7 +3015,7 @@ func (c *compiler) queryFieldTypes(q *parser.QueryExpr) map[string]string {
 			keyType = c.exprType(q.Group.Exprs[0])
 		}
 		kt := swiftTypeOf(keyType)
-		if kt == "" {
+		if kt == "" || kt == "Any" {
 			kt = "AnyHashable"
 		}
 		et := swiftTypeOf(c.elementType(q.Source))

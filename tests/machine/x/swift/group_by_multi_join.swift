@@ -26,19 +26,19 @@ var filtered = ({
 			for n in nations {
 				if !(n.id == s.nation) { continue }
 				if !(n.name == "A") { continue }
-				_res.append(["part": ps.part, "value": ps.cost * ps.qty])
+				_res.append(["part": ps.part, "value": ps.cost * Double(ps.qty)])
 			}
 		}
 	}
 	return _res
 }())
 var grouped = { () -> [Any] in
-    var _groups: [Any:[[String:Any]]] = [:]
+    var _groups: [AnyHashable:[[String:Any]]] = [:]
     for x in filtered {
         let _k = x["part"]!
-        _groups[_k, default: []].append(x)
+        _groups[_k as! AnyHashable, default: []].append(x)
     }
-    var _tmp: [(key: Any, items: [[String:Any]])] = []
+    var _tmp: [(key: AnyHashable, items: [[String:Any]])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
