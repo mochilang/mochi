@@ -9,7 +9,7 @@ class math {
 public class PythonMath {
     public static void main(String[] args) {
     double r = 3.000000;
-    int area = math.pi * math.pow(r, 2.000000);
+    double area = math.pi * math.pow(r, 2.000000);
     Object root = math.sqrt(49.000000);
     Object sin45 = math.sin(math.pi / 4.000000);
     Object log_e = math.log(math.e);

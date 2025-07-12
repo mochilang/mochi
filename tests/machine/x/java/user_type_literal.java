@@ -1,21 +1,5 @@
 import java.util.*;
 
-class Person {
-    String name;
-    int age;
-    Person(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-    @Override public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Person other)) return false;
-        return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age);
-    }
-    @Override public int hashCode() {
-        return Objects.hash(name, age);
-    }
-}
 class Book {
     String title;
     Person author;
@@ -30,6 +14,22 @@ class Book {
     }
     @Override public int hashCode() {
         return Objects.hash(title, author);
+    }
+}
+class Person {
+    String name;
+    int age;
+    Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person other)) return false;
+        return Objects.equals(this.name, other.name) && Objects.equals(this.age, other.age);
+    }
+    @Override public int hashCode() {
+        return Objects.hash(name, age);
     }
 }
 public class UserTypeLiteral {
