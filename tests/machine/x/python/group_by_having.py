@@ -2,13 +2,12 @@
 from __future__ import annotations
 import dataclasses
 import json
-import typing
 
 
 @dataclasses.dataclass
 class Person:
-    name: str
-    city: str
+    name: typing.Any
+    city: typing.Any
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -161,7 +160,7 @@ def _query(src, joins, opts):
     return res
 
 
-people: list[Person] = [
+people = [
     Person(name="Alice", city="Paris"),
     Person(name="Bob", city="Hanoi"),
     Person(name="Charlie", city="Paris"),
@@ -181,5 +180,5 @@ def _q0():
     return [{"city": _get(g, "key"), "num": len(g.Items)} for g in _items1]
 
 
-big: list[dict[str, typing.Any]] = _q0()
+big = _q0()
 print(json.dumps(big, default=lambda o: vars(o)))

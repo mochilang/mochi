@@ -5,8 +5,8 @@ import dataclasses
 
 @dataclasses.dataclass
 class Customer:
-    id: int
-    name: str
+    id: typing.Any
+    name: typing.Any
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -17,9 +17,9 @@ class Customer:
 
 @dataclasses.dataclass
 class Order:
-    id: int
-    customerId: int
-    total: int
+    id: typing.Any
+    customerId: typing.Any
+    total: typing.Any
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -28,17 +28,17 @@ class Order:
         return str(self.__dict__)
 
 
-customers: list[Customer] = [
+customers = [
     Customer(id=1, name="Alice"),
     Customer(id=2, name="Bob"),
     Customer(id=3, name="Charlie"),
 ]
-orders: list[Order] = [
+orders = [
     Order(id=100, customerId=1, total=250),
     Order(id=101, customerId=2, total=125),
     Order(id=102, customerId=1, total=300),
 ]
-result: list[dict[str, int]] = [
+result = [
     {
         "orderId": o["id"],
         "orderCustomerId": o["customerId"],

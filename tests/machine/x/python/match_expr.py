@@ -1,4 +1,4 @@
-x: int = 2
+x = 2
 
 
 def _match0(_t0):
@@ -13,5 +13,5 @@ def _match0(_t0):
             return "unknown"
 
 
-label: str = _match0(x)
+label = _match0(x)
 print(label)

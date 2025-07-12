@@ -1,5 +1,5 @@
-prefix: str = "fore"
-s1: str = "forest"
+prefix = "fore"
+s1 = "forest"
 print(str(s1[0 : len(prefix)] == prefix).lower())
-s2: str = "desert"
+s2 = "desert"
 print(str(s2[0 : len(prefix)] == prefix).lower())

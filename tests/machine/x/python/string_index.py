@@ -1,2 +1,2 @@
-s: str = "mochi"
+s = "mochi"
 print(s[1])
