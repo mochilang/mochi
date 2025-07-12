@@ -20,7 +20,7 @@ type record1 = { mutable n : int; mutable v : string }
 
 let items : record1 list = [{ n = 1; v = "a" };{ n = 1; v = "b" };{ n = 2; v = "c" }]
 let result : Obj.t list = (let __res0 = ref [] in
-  List.iter (fun i ->
+  List.iter (fun (i : record1) ->
       __res0 := Obj.obj (List.assoc "v" i) :: !__res0;
   ) items;
 List.rev !__res0)

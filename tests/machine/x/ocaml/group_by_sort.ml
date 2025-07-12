@@ -22,8 +22,8 @@ type record1 = { mutable cat : string; mutable val : int }
 type record2 = { mutable cat : Obj.t; mutable total : int }
 
 let items : record1 list = [{ cat = "a"; val = 3 };{ cat = "a"; val = 1 };{ cat = "b"; val = 5 };{ cat = "b"; val = 2 }]
-let grouped : record2 list = (let __groups0 = ref [] in
-  List.iter (fun i ->
+let grouped : record2 list = (let (__groups0 : (Obj.t * (string * Obj.t) list list) list ref) = ref [] in
+  List.iter (fun (i : record1) ->
       let key = Obj.obj (List.assoc "cat" i) in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in
       __groups0 := (key, i :: cur) :: List.remove_assoc key !__groups0;

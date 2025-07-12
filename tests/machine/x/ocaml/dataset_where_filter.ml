@@ -24,7 +24,7 @@
 
 let people : record1 list = [{ name = "Alice"; age = 30 };{ name = "Bob"; age = 15 };{ name = "Charlie"; age = 65 };{ name = "Diana"; age = 45 }]
 let adults : record2 list = (let __res0 = ref [] in
-  List.iter (fun person ->
+  List.iter (fun (person : record1) ->
       if (Obj.obj (List.assoc "age" person) >= 18) then
     __res0 := { name = Obj.obj (List.assoc "name" person); age = Obj.obj (List.assoc "age" person); is_senior = (Obj.obj (List.assoc "age" person) >= 60) } :: !__res0;
   ) people;

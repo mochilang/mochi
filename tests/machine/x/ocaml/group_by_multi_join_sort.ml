@@ -26,18 +26,18 @@ type record5 = { mutable c_custkey : Obj.t; mutable c_name : Obj.t; mutable c_ac
 type record6 = { mutable c_custkey : Obj.t; mutable c_name : Obj.t; mutable revenue : int; mutable c_acctbal : Obj.t; mutable n_name : Obj.t; mutable c_address : Obj.t; mutable c_phone : Obj.t; mutable c_comment : Obj.t }
 
 let nation : record1 list = [{ n_nationkey = 1; n_name = "BRAZIL" }]
-let customer : record2 list = [{ c_custkey = 1; c_name = "Alice"; c_acctbal = 100; c_nationkey = 1; c_address = "123 St"; c_phone = "123-456"; c_comment = "Loyal" }]
+let customer : record2 list = [{ c_custkey = 1; c_name = "Alice"; c_acctbal = 100.; c_nationkey = 1; c_address = "123 St"; c_phone = "123-456"; c_comment = "Loyal" }]
 let orders : record3 list = [{ o_orderkey = 1000; o_custkey = 1; o_orderdate = "1993-10-15" };{ o_orderkey = 2000; o_custkey = 1; o_orderdate = "1994-01-02" }]
-let lineitem : record4 list = [{ l_orderkey = 1000; l_returnflag = "R"; l_extendedprice = 1000; l_discount = 0.1 };{ l_orderkey = 2000; l_returnflag = "N"; l_extendedprice = 500; l_discount = 0 }]
+let lineitem : record4 list = [{ l_orderkey = 1000; l_returnflag = "R"; l_extendedprice = 1000.; l_discount = 0.1 };{ l_orderkey = 2000; l_returnflag = "N"; l_extendedprice = 500.; l_discount = 0. }]
 let start_date : string = "1993-10-01"
 let end_date : string = "1994-01-01"
-let result : record6 list = (let __groups0 = ref [] in
-  List.iter (fun c ->
-      List.iter (fun o ->
-            List.iter (fun l ->
-                    List.iter (fun n ->
+let result : record6 list = (let (__groups0 : (record5 * (string * Obj.t) list list) list ref) = ref [] in
+  List.iter (fun (c : record2) ->
+      List.iter (fun (o : record3) ->
+            List.iter (fun (l : record4) ->
+                    List.iter (fun (n : record1) ->
                                     if (Obj.obj (List.assoc "o_custkey" o) = Obj.obj (List.assoc "c_custkey" c)) && (Obj.obj (List.assoc "l_orderkey" l) = Obj.obj (List.assoc "o_orderkey" o)) && (Obj.obj (List.assoc "n_nationkey" n) = Obj.obj (List.assoc "c_nationkey" c)) && (((((Obj.obj (List.assoc "o_orderdate" o) >= start_date) && Obj.obj (List.assoc "o_orderdate" o)) < end_date) && Obj.obj (List.assoc "l_returnflag" l)) = "R") then (
-            let key = { c_custkey = Obj.obj (List.assoc "c_custkey" c); c_name = Obj.obj (List.assoc "c_name" c); c_acctbal = Obj.obj (List.assoc "c_acctbal" c); c_address = Obj.obj (List.assoc "c_address" c); c_phone = Obj.obj (List.assoc "c_phone" c); c_comment = Obj.obj (List.assoc "c_comment" c); n_name = Obj.obj (List.assoc "n_name" n) } in
+            let (key : record5) = { c_custkey = Obj.obj (List.assoc "c_custkey" c); c_name = Obj.obj (List.assoc "c_name" c); c_acctbal = Obj.obj (List.assoc "c_acctbal" c); c_address = Obj.obj (List.assoc "c_address" c); c_phone = Obj.obj (List.assoc "c_phone" c); c_comment = Obj.obj (List.assoc "c_comment" c); n_name = Obj.obj (List.assoc "n_name" n) } in
             let cur = try List.assoc key !__groups0 with Not_found -> [] in
             __groups0 := (key, c :: cur) :: List.remove_assoc key !__groups0);
                     ) nation;
@@ -45,7 +45,7 @@ let result : record6 list = (let __groups0 = ref [] in
       ) orders;
   ) customer;
   let __res0 = ref [] in
-  List.iter (fun (gKey,gItems) ->
+  List.iter (fun (gKey : record5,gItems) ->
     let g = { key = gKey; items = List.rev gItems } in
     __res0 := { c_custkey = g.key.c_custkey; c_name = g.key.c_name; revenue = (sum (let __res1 = ref [] in
   List.iter (fun x ->

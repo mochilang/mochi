@@ -26,9 +26,9 @@
 
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" }]
 let orders : record2 list = [{ id = 100; customerId = 1 };{ id = 101; customerId = 1 };{ id = 102; customerId = 2 }]
-let stats : record3 list = (let __groups0 = ref [] in
-  List.iter (fun c ->
-      List.iter (fun o ->
+let stats : record3 list = (let (__groups0 : (Obj.t * (string * Obj.t) list list) list ref) = ref [] in
+  List.iter (fun (c : record1) ->
+      List.iter (fun (o : record2) ->
               if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then (
         let key = Obj.obj (List.assoc "name" c) in
         let cur = try List.assoc key !__groups0 with Not_found -> [] in
