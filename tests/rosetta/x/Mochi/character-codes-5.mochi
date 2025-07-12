@@ -1,0 +1,10 @@
+fun chr(n: int): string {
+  if n == 97 { return "a" }
+  if n == 960 { return "π" }
+  if n == 65 { return "A" }
+  return "?"
+}
+
+print(chr(97))
+print(chr(960))
+print(chr(97) + chr(960))

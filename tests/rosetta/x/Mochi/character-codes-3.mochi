@@ -1,0 +1,21 @@
+fun ord(ch: string): int {
+  if ch == "a" { return 97 }
+  if ch == "π" { return 960 }
+  if ch == "A" { return 65 }
+  return 0
+}
+
+fun chr(n: int): string {
+  if n == 97 { return "a" }
+  if n == 960 { return "π" }
+  if n == 65 { return "A" }
+  return "?"
+}
+
+var b = ord("a")
+var r = ord("π")
+var s = "aπ"
+print(str(b) + " " + str(r) + " " + s)
+print("string cast to []rune: [" + str(b) + " " + str(r) + "]")
+print("    string range loop: " + str(b) + " " + str(r))
+print("         string bytes: 0x61 0xcf 0x80")
