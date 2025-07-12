@@ -2167,6 +2167,11 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 					c.builtinAliases = map[string]string{}
 				}
 				c.builtinAliases[alias] = "go_testpkg"
+				if c.env != nil {
+					c.env.SetFuncType(alias+".Add", types.FuncType{Params: []types.Type{types.IntType{}, types.IntType{}}, Return: types.IntType{}})
+					c.env.SetVar(alias+".Pi", types.FloatType{}, false)
+					c.env.SetVar(alias+".Answer", types.IntType{}, false)
+				}
 				return nil
 			}
 		case "python":
@@ -2181,6 +2186,14 @@ func (c *Compiler) addImport(im *parser.ImportStmt) error {
 					c.builtinAliases = map[string]string{}
 				}
 				c.builtinAliases[alias] = "python_math"
+				if c.env != nil {
+					c.env.SetVar(alias+".pi", types.FloatType{}, false)
+					c.env.SetVar(alias+".e", types.FloatType{}, false)
+					c.env.SetFuncType(alias+".sqrt", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}})
+					c.env.SetFuncType(alias+".pow", types.FuncType{Params: []types.Type{types.FloatType{}, types.FloatType{}}, Return: types.FloatType{}})
+					c.env.SetFuncType(alias+".sin", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}})
+					c.env.SetFuncType(alias+".log", types.FuncType{Params: []types.Type{types.FloatType{}}, Return: types.FloatType{}})
+				}
 				// builtin handled in compileCallExpr and selector
 				return nil
 			}
@@ -2595,7 +2608,7 @@ func (c *Compiler) compileCallOp(receiver string, call *parser.CallOp) (string, 
 					}
 				case "log":
 					if len(args) == 1 {
-						return fmt.Sprintf("std.math.log(%s)", args[0]), nil
+						return fmt.Sprintf("std.math.log(f64, std.math.e, %s)", args[0]), nil
 					}
 				}
 			case "go_testpkg":
@@ -2732,7 +2745,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					return fmt.Sprintf("std.math.log(%s)", a), nil
+					return fmt.Sprintf("std.math.log(f64, std.math.e, %s)", a), nil
 				}
 			case "go_testpkg":
 				if method == "Add" && len(call.Args) == 2 {
@@ -3036,6 +3049,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				lit := call.Args[0].Binary.Left.Value.Target.Lit.Str
 				return fmt.Sprintf("std.debug.print(%q, .{})", *lit+"\n"), nil
 			}
+			if c.isFloatExpr(call.Args[0]) {
+				arg, err := c.compileExpr(call.Args[0], false)
+				if err != nil {
+					return "", err
+				}
+				return fmt.Sprintf("std.debug.print(\"{d}\\n\", .{%s})", arg), nil
+			}
 		}
 		if len(call.Args) > 0 && c.isStringLiteralExpr(call.Args[0]) {
 			format := *call.Args[0].Binary.Left.Value.Target.Lit.Str
@@ -3053,7 +3073,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				switch c.inferExprType(a).(type) {
 				case types.StringType:
 					format += " {s}"
-				case types.IntType, types.Int64Type:
+				case types.IntType, types.Int64Type, types.FloatType:
 					format += " {d}"
 				case types.BoolType:
 					format += " {}"
@@ -3079,7 +3099,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			switch c.inferExprType(a).(type) {
 			case types.StringType:
 				fmtParts[i] = "{s}"
-			case types.IntType, types.Int64Type:
+			case types.IntType, types.Int64Type, types.FloatType:
 				fmtParts[i] = "{d}"
 			case types.BoolType:
 				fmtParts[i] = "{}"
