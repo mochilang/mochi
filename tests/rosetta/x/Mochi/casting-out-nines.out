@@ -1,0 +1,10 @@
+
+Test case base = 10, begin = 1, end = 100:
+Subset:  [1 9 10 18 19 27 28 36 37 45 46 54 55 63 64 72 73 81 82 90 91 99 100]
+Kaprekar:[1 9 45 55 99]
+Valid subset.
+
+Test case base = 17, begin = 10, end = gg:
+Subset:  [10 1f 1g 2e 2f 3d 3e 4c 4d 5b 5c 6a 6b 79 7a 88 89 97 98 a6 a7 b5 b6 c4 c5 d3 d4 e2 e3 f1 f2 g0 g1 gg]
+Kaprekar:[3d d4 gg]
+Valid subset.
