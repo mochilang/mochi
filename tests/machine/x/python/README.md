@@ -111,6 +111,7 @@ Compiled programs: 100/100 successful.
 - [ ] Support optional type annotations
 - [ ] Integrate with Python packaging tools
 - [x] Generate docstrings for compiled functions
+- [x] Implement return type inference for functions
 - [ ] Optimize stream handling performance
 - [ ] Expand test coverage for edge cases
 - [ ] Reduce external module dependencies

@@ -45,5 +45,26 @@ func (c *Compiler) inferPrimaryType(p *parser.Primary) types.Type {
 }
 
 func resultType(op string, left, right types.Type) types.Type {
-	return types.ResultType(op, left, right)
+        return types.ResultType(op, left, right)
+}
+
+// inferFunReturnType returns the unified type of all return statements in body.
+// If return statements have differing types it falls back to AnyType. When no
+// explicit return is present it yields VoidType.
+func (c *Compiler) inferFunReturnType(body []*parser.Statement) types.Type {
+        var ret types.Type
+        for _, st := range body {
+                if st.Return != nil {
+                        t := c.inferExprType(st.Return.Value)
+                        if ret == nil {
+                                ret = t
+                        } else if !equalTypes(ret, t) {
+                                return types.AnyType{}
+                        }
+                }
+        }
+        if ret == nil {
+                return types.VoidType{}
+        }
+        return ret
 }
