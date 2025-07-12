@@ -265,15 +265,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.useLinq && !bytes.Contains(code, []byte("using System.Linq;")) {
 		code = bytes.Replace(code, []byte("using System.Collections.Generic;\n"), []byte("using System.Collections.Generic;\nusing System.Linq;\n"), 1)
 	}
-	if _, ok := c.helpers["_cast"]; !ok {
-		if _, ok := c.helpers["_genStruct"]; !ok {
-			if _, ok := c.helpers["_fetch"]; !ok {
-				code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+	src := string(code)
+	if !strings.Contains(src, "JsonSerializer") {
+		if _, ok := c.helpers["_cast"]; !ok {
+			if _, ok := c.helpers["_genStruct"]; !ok {
+				if _, ok := c.helpers["_fetch"]; !ok {
+					code = bytes.Replace(code, []byte("using System.Text.Json;\n"), nil, 1)
+				}
 			}
 		}
 	}
 	// Remove unused using statements for cleaner output
-	src := string(code)
+	src = string(code)
 	if !strings.Contains(src, "List<") && !strings.Contains(src, "Dictionary<") {
 		code = bytes.Replace(code, []byte("using System.Collections.Generic;\n"), nil, 1)
 	}
