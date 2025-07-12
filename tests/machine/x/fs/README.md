@@ -109,10 +109,15 @@ This directory contains the F# source code and outputs generated from the Mochi 
 To run the F# compiler tests, install the `fsharp` package (e.g., `apt-get install -y fsharp`) and then execute:
 
 ```
- go test ./compiler/x/fs -tags slow
+go test ./compiler/x/fs -tags slow
 ```
+
+All 100 example programs compile successfully and produce output matching the
+hand-written versions under `tests/human/x/fs`.
 
 ## Remaining Tasks
 
 - Ensure new features continue to compile correctly.
 - Keep generated code in sync with `tests/human/x/fs` when changes occur.
+- Investigate compilation of `tests/dataset/tpc-h/q1.mochi` which currently
+  fails due to missing .NET references and type inference issues.
