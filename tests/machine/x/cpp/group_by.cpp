@@ -32,7 +32,7 @@ template <typename T> double __avg(const std::vector<T> &v) {
 struct Stat {
   decltype(std::declval<__struct2>().key) city;
   int count;
-  bool avg_age;
+  double avg_age;
 };
 inline bool operator==(const Stat &a, const Stat &b) {
   return a.city == b.city && a.count == b.count && a.avg_age == b.avg_age;
