@@ -66,11 +66,9 @@ int main() {
   }
   list_ProductsItem expensive = tmp2;
   printf("%s\n", "--- Top products (excluding most expensive) ---");
-  for (int tmp13 = 0; tmp13 < expensive.len; tmp13++) {
-    ProductsItem item = expensive.data[tmp13];
-    printf("%s ", item.name);
-    printf("%s ", "costs $");
-    printf("%d\n", item.price);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

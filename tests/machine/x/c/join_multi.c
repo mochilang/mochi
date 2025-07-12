@@ -113,11 +113,9 @@ int main() {
   tmp4.len = tmp5;
   list_ResultItem result = tmp4;
   printf("%s\n", "--- Multi Join ---");
-  for (int tmp9 = 0; tmp9 < result.len; tmp9++) {
-    ResultItem r = result.data[tmp9];
-    printf("%s ", r.name);
-    printf("%s ", "bought item");
-    printf("%s\n", r.sku);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

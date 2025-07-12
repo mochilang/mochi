@@ -70,11 +70,9 @@ int main() {
   list_OrdersItem orders = tmp2;
   list_StatsItem stats = 0;
   printf("%s\n", "--- Orders per customer ---");
-  for (int tmp3 = 0; tmp3 < stats.len; tmp3++) {
-    StatsItem s = stats.data[tmp3];
-    printf("%s ", s.name);
-    printf("%s ", "orders:");
-    printf("%d\n", s.count);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

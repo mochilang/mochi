@@ -1,8 +1,9 @@
 line: 0
 error: output mismatch
 -- got --
-
+--- Multi Join ---
 -- want --
-a
-b
+--- Multi Join ---
+Alice bought item a
+Bob bought item b
    1: #include <stdio.h>

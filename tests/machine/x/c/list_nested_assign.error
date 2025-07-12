@@ -1,0 +1,30 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:6:3: error: unknown type name ‘list_int’
+    6 |   list_int *data;
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c: In function ‘list_list_int_create’:
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:11:31: error: ‘list_int’ undeclared (first use in this function)
+   11 |   l.data = calloc(len, sizeof(list_int));
+      |                               ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:11:31: note: each undeclared identifier is reported only once for each function it appears in
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:21:3: error: unknown type name ‘list_int’
+   21 |   list_int tmp1_data[] = {tmp2, tmp3};
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:21:27: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+   21 |   list_int tmp1_data[] = {tmp2, tmp3};
+      |                           ^~~~
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:21:27: note: (near initialization for ‘tmp1_data[0]’)
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:21:33: warning: initialization of ‘int’ from ‘int *’ makes integer from pointer without a cast [-Wint-conversion]
+   21 |   list_int tmp1_data[] = {tmp2, tmp3};
+      |                                 ^~~~
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:21:33: note: (near initialization for ‘tmp1_data[1]’)
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:24:17: error: subscripted value is neither array nor pointer nor vector
+   24 |   matrix.data[1][0] = 5;
+      |                 ^
+/workspace/mochi/tests/machine/x/c/list_nested_assign.c:25:32: error: request for member ‘data’ in something not a structure or union
+   25 |   printf("%d\n", matrix.data[1].data[0]);
+      |                                ^
+
+   1: #include <stdio.h>

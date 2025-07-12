@@ -1,0 +1,14 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:44:51: error: request for member ‘len’ in something not a structure or union
+   44 |   list_PairsItem tmp3 = list_PairsItem_create(tmp2.len * letters.len);
+      |                                                   ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:46:35: error: request for member ‘len’ in something not a structure or union
+   46 |   for (int n_idx = 0; n_idx < tmp2.len; n_idx++) {
+      |                                   ^
+/workspace/mochi/tests/machine/x/c/cross_join_filter.c:47:17: error: request for member ‘data’ in something not a structure or union
+   47 |     int n = tmp2.data[n_idx];
+      |                 ^
+
+   1: #include <stdio.h>

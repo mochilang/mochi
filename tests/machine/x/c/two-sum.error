@@ -1,0 +1,23 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/two-sum.c:4:1: error: unknown type name ‘list_int’
+    4 | list_int twoSum(list_int nums, int target) {
+      | ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c:4:17: error: unknown type name ‘list_int’
+    4 | list_int twoSum(list_int nums, int target) {
+      |                 ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/two-sum.c:20:3: error: unknown type name ‘list_int’
+   20 |   list_int result = twoSum(tmp3, 9);
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c:20:21: warning: implicit declaration of function ‘twoSum’ [-Wimplicit-function-declaration]
+   20 |   list_int result = twoSum(tmp3, 9);
+      |                     ^~~~~~
+/workspace/mochi/tests/machine/x/c/two-sum.c:21:24: error: subscripted value is neither array nor pointer nor vector
+   21 |   printf("%d\n", result[0]);
+      |                        ^
+/workspace/mochi/tests/machine/x/c/two-sum.c:22:24: error: subscripted value is neither array nor pointer nor vector
+   22 |   printf("%d\n", result[1]);
+      |                        ^
+
+   1: #include <stdio.h>

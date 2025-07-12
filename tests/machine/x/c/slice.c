@@ -71,13 +71,11 @@ static void _print_list_int(list_int v) {
   }
 }
 int main() {
-  int tmp1_data[] = {1, 2, 3};
-  list_int tmp1 = {3, tmp1_data};
+  int tmp1[] = {1, 2, 3};
   list_int tmp2 = slice_list_int(tmp1, 1, 3);
   _print_list_int(tmp2);
   printf("\n");
-  int tmp3_data[] = {1, 2, 3};
-  list_int tmp3 = {3, tmp3_data};
+  int tmp3[] = {1, 2, 3};
   list_int tmp4 = slice_list_int(tmp3, 0, 2);
   _print_list_int(tmp4);
   printf("\n");

@@ -1,0 +1,32 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:4:21: error: unknown type name ‘list_int’
+    4 | static int _sum_int(list_int v) {
+      |                     ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/query_sum_select.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:13:3: error: unknown type name ‘list_int’
+   13 |   list_int tmp2 = list_int_create(tmp1.len);
+      |   ^~~~~~~~
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:13:19: warning: implicit declaration of function ‘list_int_create’ [-Wimplicit-function-declaration]
+   13 |   list_int tmp2 = list_int_create(tmp1.len);
+      |                   ^~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:13:39: error: request for member ‘len’ in something not a structure or union
+   13 |   list_int tmp2 = list_int_create(tmp1.len);
+      |                                       ^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:15:33: error: request for member ‘len’ in something not a structure or union
+   15 |   for (int tmp4 = 0; tmp4 < tmp1.len; tmp4++) {
+      |                                 ^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:16:17: error: request for member ‘data’ in something not a structure or union
+   16 |     int n = tmp1.data[tmp4];
+      |                 ^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:20:9: error: request for member ‘data’ in something not a structure or union
+   20 |     tmp2.data[tmp3] = n;
+      |         ^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:23:7: error: request for member ‘len’ in something not a structure or union
+   23 |   tmp2.len = tmp3;
+      |       ^
+/workspace/mochi/tests/machine/x/c/query_sum_select.c:24:19: warning: implicit declaration of function ‘_sum_int’ [-Wimplicit-function-declaration]
+   24 |   double result = _sum_int(tmp2);
+      |                   ^~~~~~~~
+
+   1: #include <stdio.h>

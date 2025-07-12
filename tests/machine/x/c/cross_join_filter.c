@@ -4,20 +4,6 @@
 
 typedef struct {
   int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
   char **data;
 } list_string;
 static list_string list_string_create(int len) {
@@ -50,16 +36,15 @@ static list_PairsItem list_PairsItem_create(int len) {
 }
 
 int main() {
-  int tmp1_data[] = {1, 2, 3};
-  list_int tmp1 = {3, tmp1_data};
-  list_int nums = tmp1;
-  char *tmp2_data[] = {"A", "B"};
-  list_string tmp2 = {2, tmp2_data};
-  list_string letters = tmp2;
-  list_PairsItem tmp3 = list_PairsItem_create(nums.len * letters.len);
+  int nums[] = {1, 2, 3};
+  char *tmp1_data[] = {"A", "B"};
+  list_string tmp1 = {2, tmp1_data};
+  list_string letters = tmp1;
+  int tmp2[] = {1, 2, 3};
+  list_PairsItem tmp3 = list_PairsItem_create(tmp2.len * letters.len);
   int tmp4 = 0;
-  for (int n_idx = 0; n_idx < nums.len; n_idx++) {
-    int n = nums.data[n_idx];
+  for (int n_idx = 0; n_idx < tmp2.len; n_idx++) {
+    int n = tmp2.data[n_idx];
     for (int l_idx = 0; l_idx < letters.len; l_idx++) {
       char *l = letters.data[l_idx];
       if (!(n % 2 == 0)) {
@@ -72,10 +57,9 @@ int main() {
   tmp3.len = tmp4;
   list_PairsItem pairs = tmp3;
   printf("%s\n", "--- Even pairs ---");
-  for (int tmp5 = 0; tmp5 < pairs.len; tmp5++) {
-    PairsItem p = pairs.data[tmp5];
-    printf("%d ", p.n);
-    printf("%s\n", p.l);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

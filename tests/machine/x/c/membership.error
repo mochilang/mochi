@@ -1,0 +1,21 @@
+line: 0
+error: cc error: exit status 1
+/workspace/mochi/tests/machine/x/c/membership.c: In function ‘main’:
+/workspace/mochi/tests/machine/x/c/membership.c:26:37: error: incompatible type for argument 1 of ‘contains_list_int’
+   26 |   printf("%s\n", (contains_list_int(nums, 2)) ? "true" : "false");
+      |                                     ^~~~
+      |                                     |
+      |                                     int *
+/workspace/mochi/tests/machine/x/c/membership.c:18:39: note: expected ‘list_int’ but argument is of type ‘int *’
+   18 | static int contains_list_int(list_int v, int item) {
+      |                              ~~~~~~~~~^
+/workspace/mochi/tests/machine/x/c/membership.c:27:37: error: incompatible type for argument 1 of ‘contains_list_int’
+   27 |   printf("%s\n", (contains_list_int(nums, 4)) ? "true" : "false");
+      |                                     ^~~~
+      |                                     |
+      |                                     int *
+/workspace/mochi/tests/machine/x/c/membership.c:18:39: note: expected ‘list_int’ but argument is of type ‘int *’
+   18 | static int contains_list_int(list_int v, int item) {
+      |                              ~~~~~~~~~^
+
+   1: #include <stdio.h>

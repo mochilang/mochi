@@ -22,9 +22,9 @@ static list_MItem list_MItem_create(int len) {
 
 int main() {
   MItem m = (MItem){.a = 1, .b = 2};
-  for (int tmp1 = 0; tmp1 < m.len; tmp1++) {
-    int k = m.data[tmp1];
-    printf("%d\n", k);
+  // unsupported dynamic list iteration
+  for (;;) {
+    break;
   }
   return 0;
 }

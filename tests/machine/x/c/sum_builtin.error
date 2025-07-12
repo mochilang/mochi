@@ -1,8 +1,7 @@
 line: 0
 error: output mismatch
 -- got --
-
+3.952525166729972e-323
 -- want --
-a
-b
+6
    1: #include <stdio.h>

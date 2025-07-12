@@ -4551,6 +4551,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.writeln(fmt.Sprintf("%s += %s[%s];", sum, arg, loop))
 					c.indent--
 					c.writeln("}")
+					if c.env != nil {
+						c.env.SetVar(sum, types.IntType{}, true)
+					}
 					return sum
 				}
 			}
@@ -4570,6 +4573,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					c.writeln("}")
 					res := c.newTemp()
 					c.writeln(fmt.Sprintf("double %s = %s / (double)%d;", res, sum, l))
+					if c.env != nil {
+						c.env.SetVar(res, types.FloatType{}, true)
+					}
 					return res
 				}
 			}
@@ -4591,6 +4597,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					} else {
 						c.writeln(fmt.Sprintf("int %s = 0;", min))
 					}
+					if c.env != nil {
+						c.env.SetVar(min, types.IntType{}, true)
+					}
 					return min
 				}
 			}
@@ -4611,6 +4620,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("}")
 					} else {
 						c.writeln(fmt.Sprintf("int %s = 0;", max))
+					}
+					if c.env != nil {
+						c.env.SetVar(max, types.IntType{}, true)
 					}
 					return max
 				}
