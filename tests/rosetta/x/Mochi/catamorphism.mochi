@@ -1,0 +1,21 @@
+// Mochi implementation of Rosetta "Catamorphism" task
+// Translated from Go version in tests/rosetta/x/Go/catamorphism.go
+
+fun add(a: int, b: int): int { return a + b }
+fun sub(a: int, b: int): int { return a - b }
+fun mul(a: int, b: int): int { return a * b }
+
+fun fold(f: fun(int, int): int, xs: list<int>): int {
+  var r = xs[0]
+  var i = 1
+  while i < len(xs) {
+    r = f(r, xs[i])
+    i = i + 1
+  }
+  return r
+}
+
+let n = [1, 2, 3, 4, 5]
+print(fold(fun(a: int, b: int): int => add(a, b), n))
+print(fold(fun(a: int, b: int): int => sub(a, b), n))
+print(fold(fun(a: int, b: int): int => mul(a, b), n))
