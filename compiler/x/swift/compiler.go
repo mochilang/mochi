@@ -1843,20 +1843,45 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	if kt == "" {
 		kt = "AnyHashable"
 	}
+	useMapKey := kt == "[String:Any]"
 	retType := "[Any]"
 	if selIsGroup {
 		retType = fmt.Sprintf("[(key: %s, items: [%s])]", kt, et)
 	}
 	b.WriteString(fmt.Sprintf("{ () -> %s in\n", retType))
-	b.WriteString(fmt.Sprintf("    var _groups: [%s:[%s]] = [:]\n", kt, et))
+	if useMapKey {
+		c.helpers["_group"] = true
+		b.WriteString("    var _groups: [String:_Group] = [:]\n")
+		b.WriteString("    var _order: [String] = []\n")
+	} else {
+		b.WriteString(fmt.Sprintf("    var _groups: [%s:[%s]] = [:]\n", kt, et))
+	}
 	b.WriteString(fmt.Sprintf("    for %s in %s {\n", q.Var, filtered))
 	b.WriteString(fmt.Sprintf("        let _k = %s\n", keyExpr))
-	b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
+	if useMapKey {
+		b.WriteString("        let _ks = _keyStr(_k)\n")
+		b.WriteString("        if _groups[_ks] == nil {\n")
+		b.WriteString("            _groups[_ks] = _Group(_k)\n")
+		b.WriteString("            _order.append(_ks)\n")
+		b.WriteString("        }\n")
+		b.WriteString(fmt.Sprintf("        _groups[_ks]!.Items.append(%s)\n", q.Var))
+	} else {
+		b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
+	}
 	b.WriteString("    }\n")
-	b.WriteString(fmt.Sprintf("    var _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
-	b.WriteString("    for (k, v) in _groups {\n")
-	b.WriteString("        _tmp.append((key: k, items: v))\n")
-	b.WriteString("    }\n")
+	if useMapKey {
+		b.WriteString(fmt.Sprintf("    var _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
+		b.WriteString("    for k in _order {\n")
+		b.WriteString("        if let g = _groups[k] {\n")
+		b.WriteString(fmt.Sprintf("            _tmp.append((key: g.key as! %s, items: g.Items.map { $0 as! %s }))\n", kt, et))
+		b.WriteString("        }\n")
+		b.WriteString("    }\n")
+	} else {
+		b.WriteString(fmt.Sprintf("    var _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
+		b.WriteString("    for (k, v) in _groups {\n")
+		b.WriteString("        _tmp.append((key: k, items: v))\n")
+		b.WriteString("    }\n")
+	}
 	if having != "" {
 		b.WriteString("    _tmp = _tmp.filter { " + gname + " in " + having + " }\n")
 	}
@@ -3306,6 +3331,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_group"] {
+		for _, line := range strings.Split(helperGroup, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 }
 
 const helperLoad = `func _parseVal(_ s: String) -> Any {
@@ -3364,6 +3398,20 @@ const helperSave = `func _save(_ rows: [[String:Any]], path: String, opts: [Stri
             handle.closeFile()
         }
     }
+}`
+
+const helperGroup = `class _Group {
+    var key: Any
+    var Items: [Any] = []
+    init(_ k: Any) { self.key = k }
+}
+
+func _keyStr(_ v: Any) -> String {
+    if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
+       let s = String(data: data, encoding: .utf8) {
+        return s
+    }
+    return String(describing: v)
 }`
 
 const helperJSON = `func _json(_ v: Any) {
