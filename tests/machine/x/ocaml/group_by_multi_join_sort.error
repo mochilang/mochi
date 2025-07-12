@@ -1,0 +1,18 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join_sort.ml", line 49, characters 32-33:
+49 |   List.iter (fun (gKey : record6,gItems) ->
+                                     ^
+Error: Syntax error: ')' expected
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join_sort.ml", line 49, characters 17-18:
+49 |   List.iter (fun (gKey : record6,gItems) ->
+                      ^
+  This '(' might be unmatched
+
+
+Context (around line 49):
+  47 |   ) customer;
+  48 |   let __res0 = ref [] in
+  49 |   List.iter (fun (gKey : record6,gItems) ->
+  50 |     let g = { key = gKey; items = List.rev gItems } in
+  51 |     __res0 := { c_custkey = g.key.c_custkey; c_name = g.key.c_name; revenue = (sum (let __res1 = ref [] in

@@ -19,7 +19,7 @@ let rec __show v =
 type record1 = { mutable title : string }
 
 type todo = { mutable title : string }
-let todo : todo = { title = "hi" }
+let todo : record1 = { title = "hi" }
 
 let () =
   print_endline (__show (todo.title));

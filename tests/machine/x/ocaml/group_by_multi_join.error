@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_multi_join.ml", line 35, characters 56-62:
+35 |         __res0 := { part = ps.part; value = (ps.cost *. ps.qty) } :: !__res0;
+                                                             ^^^^^^
+Error: This expression has type int but an expression was expected of type
+         float
+
+
+Context (around line 35):
+  33 |             List.iter (fun (n : record1) ->
+  34 |                         if (s.id = ps.supplier) && (n.id = s.nation) && (n.name = "A") then
+  35 |         __res0 := { part = ps.part; value = (ps.cost *. ps.qty) } :: !__res0;
+  36 |             ) nations;
+  37 |       ) suppliers;

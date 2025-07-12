@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/two-sum.ml", line 1:
+Warning 24 [bad-module-name]: bad source file name: "Two-sum" is not a valid module name.
+File "/workspace/mochi/tests/machine/x/ocaml/two-sum.ml", line 31, characters 17-21:
+31 |                 [i;j]
+                      ^^^^
+Error: This variant expression is expected to have type unit
+         because it is in the result of a conditional with no else branch
+       There is no constructor :: within type unit
+
+
+Context (around line 1):
+   1 | let rec __show v =
+   2 |   let open Obj in
+   3 |   let rec list_aux o =

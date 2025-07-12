@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/query_sum_select.ml", line 24, characters 19-20:
+24 |     __res0 := (sum n) :: !__res0;
+                        ^
+Error: This expression has type int but an expression was expected of type
+         int list
+
+
+Context (around line 24):
+  22 |   List.iter (fun n ->
+  23 |       if (n > 1) then
+  24 |     __res0 := (sum n) :: !__res0;
+  25 |   ) nums;
+  26 | List.rev !__res0)

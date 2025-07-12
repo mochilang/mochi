@@ -206,12 +206,14 @@ func (c *Compiler) compileGlobalLet(l *parser.LetStmt) error {
 	if l.Type != nil {
 		typ = c.typeRef(l.Type)
 	} else if l.Value != nil {
-		t := types.ExprType(l.Value, c.env)
-		typGuess := c.ocamlType(t)
-		if typGuess != "" && typGuess != "Obj.t" {
-			typ = typGuess
-		} else if st, ok := c.structTypeFromExpr(l.Value); ok {
+		if st, ok := c.structTypeFromExpr(l.Value); ok {
 			typ = c.ocamlType(st)
+		} else {
+			t := types.ExprType(l.Value, c.env)
+			typGuess := c.ocamlType(t)
+			if typGuess != "" && typGuess != "Obj.t" {
+				typ = typGuess
+			}
 		}
 	}
 	if typ != "" {
@@ -513,6 +515,17 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) error {
 	default:
 		elemType = types.AnyType{}
 	}
+	if name, ok := identName(fr.Source); ok {
+		if st, ok2 := c.varStructs[name]; ok2 {
+			elemType = st
+		}
+	} else if st, ok := c.structTypeFromExpr(fr.Source); ok {
+		if lt, ok2 := st.(types.ListType); ok2 {
+			if elem, ok3 := lt.Elem.(types.StructType); ok3 {
+				elemType = elem
+			}
+		}
+	}
 	oldEnv := c.env
 	loopEnv := types.NewEnv(oldEnv)
 	loopEnv.SetVar(fr.Name, elemType, true)
@@ -766,6 +779,20 @@ func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
 	env := types.NewEnv(c.env)
 
 	elem := func(e *parser.Expr) types.Type {
+		if name, ok := identName(e); ok {
+			if st, ok2 := c.varStructs[name]; ok2 {
+				return st
+			}
+		}
+		if st, ok := c.structTypeFromExpr(e); ok {
+			if lt, ok2 := st.(types.ListType); ok2 {
+				if elem, ok3 := lt.Elem.(types.StructType); ok3 {
+					return elem
+				}
+			} else if st2, ok2 := st.(types.StructType); ok2 {
+				return st2
+			}
+		}
 		t := types.ExprType(e, c.env)
 		switch tt := t.(type) {
 		case types.ListType:
@@ -2453,6 +2480,10 @@ func identConst(e *parser.Expr) (string, bool) {
 // structTypeFromMapLiteral returns a StructType representing ml if all keys are
 // constant identifiers or strings. The order of fields matches the literal.
 func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.StructType, bool) {
+	return c.structTypeFromMapLiteralEnv(ml, c.env)
+}
+
+func (c *Compiler) structTypeFromMapLiteralEnv(ml *parser.MapLiteral, env *types.Env) (types.StructType, bool) {
 	fields := map[string]types.Type{}
 	order := []string{}
 	for _, it := range ml.Items {
@@ -2464,7 +2495,7 @@ func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.Struct
 				return types.StructType{}, false
 			}
 		}
-		fields[key] = types.ExprType(it.Value, c.env)
+		fields[key] = types.ExprType(it.Value, env)
 		order = append(order, key)
 	}
 	return types.StructType{Name: "", Fields: fields, Order: order}, true
@@ -2474,20 +2505,37 @@ func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.Struct
 // constant keys and returns an appropriate StructType or ListType of that
 // struct.
 func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
+	return c.structTypeFromExprEnv(e, c.env)
+}
+
+func (c *Compiler) structTypeFromExprEnv(e *parser.Expr, env *types.Env) (types.Type, bool) {
 	if e == nil || e.Binary == nil || e.Binary.Left == nil {
 		return nil, false
 	}
 	u := e.Binary.Left
 	if ml := u.Value.Target.Map; ml != nil {
-		st, ok := c.structTypeFromMapLiteral(ml)
+		st, ok := c.structTypeFromMapLiteralEnv(ml, env)
 		if ok {
 			return st, true
+		}
+	}
+	if q := u.Value.Target.Query; q != nil {
+		qenv := c.queryEnv(q)
+		if st, ok := c.structTypeFromExprEnv(q.Select, qenv); ok {
+			if structType, ok2 := st.(types.StructType); ok2 {
+				return types.ListType{Elem: structType}, true
+			}
+			if lt, ok2 := st.(types.ListType); ok2 {
+				if elem, ok3 := lt.Elem.(types.StructType); ok3 {
+					return types.ListType{Elem: elem}, true
+				}
+			}
 		}
 	}
 	if ll := u.Value.Target.List; ll != nil && len(ll.Elems) > 0 {
 		if first := ll.Elems[0]; first.Binary != nil && first.Binary.Left != nil {
 			if ml := first.Binary.Left.Value.Target.Map; ml != nil {
-				st, ok := c.structTypeFromMapLiteral(ml)
+				st, ok := c.structTypeFromMapLiteralEnv(ml, env)
 				if ok {
 					return types.ListType{Elem: st}, true
 				}

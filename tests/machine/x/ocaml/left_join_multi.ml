@@ -22,7 +22,7 @@
   type record1 = { mutable id : int; mutable name : string }
   type record2 = { mutable id : int; mutable customerId : int }
   type record3 = { mutable orderId : int; mutable sku : string }
-  type record4 = { mutable orderId : int; mutable name : Obj.t; mutable item : (string * Obj.t) list }
+  type record4 = { mutable orderId : int; mutable name : string; mutable item : record3 }
 
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" }]
 let orders : record2 list = [{ id = 100; customerId = 1 };{ id = 101; customerId = 2 }]
@@ -32,13 +32,13 @@ let result : record4 list = (let __res0 = ref [] in
       List.iter (fun (c : record1) ->
       let matched = ref false in
       List.iter (fun i ->
-        if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) && (Obj.obj (List.assoc "id" o) = Obj.obj (List.assoc "orderId" i)) then (
-          __res0 := { orderId = Obj.obj (List.assoc "id" o); name = Obj.obj (List.assoc "name" c); item = i } :: !__res0;
+        if (o.customerId = c.id) && (o.id = i.orderId) then (
+          __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
           matched := true)
       ) items;
       if not !matched then (
         let i = Obj.magic () in
-        if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then __res0 := { orderId = Obj.obj (List.assoc "id" o); name = Obj.obj (List.assoc "name" c); item = i } :: !__res0;
+        if (o.customerId = c.id) then __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
       );
       ) customers;
   ) orders;
@@ -50,9 +50,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | r::rest ->
+      | (r : record4)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "orderId" r)) ^ " " ^ __show (Obj.obj (List.assoc "name" r)) ^ " " ^ __show (Obj.obj (List.assoc "item" r)));
+          print_endline (__show (r.orderId) ^ " " ^ __show (r.name) ^ " " ^ __show (r.item));
         with Continue -> ()
         ; __loop1 rest
     in

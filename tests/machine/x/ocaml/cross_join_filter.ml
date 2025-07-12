@@ -38,9 +38,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | p::rest ->
+      | (p : record1)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "n" p)) ^ " " ^ __show (Obj.obj (List.assoc "l" p)));
+          print_endline (__show (p.n) ^ " " ^ __show (p.l));
         with Continue -> ()
         ; __loop1 rest
     in

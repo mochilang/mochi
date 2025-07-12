@@ -1,0 +1,13 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/len_map.ml", line 23, characters 37-53:
+23 |   print_endline (__show (List.length { a = 1; b = 2 }));
+                                          ^^^^^^^^^^^^^^^^
+Error: This expression should not be a record, the expected type is 'a list
+
+
+Context (around line 23):
+  21 | 
+  22 | let () =
+  23 |   print_endline (__show (List.length { a = 1; b = 2 }));
+  24 | 

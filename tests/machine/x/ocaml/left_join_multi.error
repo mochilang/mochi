@@ -1,0 +1,15 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/left_join_multi.ml", line 36, characters 60-61:
+36 |           __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
+                                                                 ^
+Error: This expression has type record4
+       but an expression was expected of type record3
+
+
+Context (around line 36):
+  34 |       List.iter (fun i ->
+  35 |         if (o.customerId = c.id) && (o.id = i.orderId) then (
+  36 |           __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
+  37 |           matched := true)
+  38 |       ) items;

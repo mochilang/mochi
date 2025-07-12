@@ -21,7 +21,7 @@
 
   type record1 = { mutable id : int; mutable name : string }
   type record2 = { mutable id : int; mutable customerId : int; mutable total : int }
-  type record3 = { mutable customerName : Obj.t; mutable order : (string * Obj.t) list }
+  type record3 = { mutable customerName : string; mutable order : record2 }
 
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" };{ id = 4; name = "Diana" }]
 let orders : record2 list = [{ id = 100; customerId = 1; total = 250 };{ id = 101; customerId = 2; total = 125 };{ id = 102; customerId = 1; total = 300 }]
@@ -29,13 +29,13 @@ let result : record3 list = (let __res0 = ref [] in
   List.iter (fun (o : record2) ->
     let matched = ref false in
     List.iter (fun (c : record1) ->
-      if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then (
-        __res0 := { customerName = Obj.obj (List.assoc "name" c); order = o } :: !__res0;
+      if (o.customerId = c.id) then (
+        __res0 := { customerName = c.name; order = o } :: !__res0;
         matched := true)
     ) customers;
     if not !matched then (
       let c = Obj.magic () in
-      __res0 := { customerName = Obj.obj (List.assoc "name" c); order = o } :: !__res0;
+      __res0 := { customerName = c.name; order = o } :: !__res0;
     );
   ) orders;
   List.rev !__res0)
@@ -46,12 +46,12 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | entry::rest ->
+      | (entry : record3)::rest ->
         try
-          if Obj.obj (List.assoc "order" entry) then (
-            print_endline (__show ("Customer") ^ " " ^ __show (Obj.obj (List.assoc "customerName" entry)) ^ " " ^ __show ("has order") ^ " " ^ __show (Obj.obj (List.assoc "order" entry).id) ^ " " ^ __show ("- $") ^ " " ^ __show (Obj.obj (List.assoc "order" entry).total));
+          if entry.order then (
+            print_endline (__show ("Customer") ^ " " ^ __show (entry.customerName) ^ " " ^ __show ("has order") ^ " " ^ __show (entry.order.id) ^ " " ^ __show ("- $") ^ " " ^ __show (entry.order.total));
           ) else (
-            print_endline (__show ("Customer") ^ " " ^ __show (Obj.obj (List.assoc "customerName" entry)) ^ " " ^ __show ("has no orders"));
+            print_endline (__show ("Customer") ^ " " ^ __show (entry.customerName) ^ " " ^ __show ("has no orders"));
           ) ;
         with Continue -> ()
         ; __loop1 rest

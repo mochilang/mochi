@@ -40,9 +40,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | c::rest ->
+      | (c : record1)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "n" c)) ^ " " ^ __show (Obj.obj (List.assoc "l" c)) ^ " " ^ __show (Obj.obj (List.assoc "b" c)));
+          print_endline (__show (c.n) ^ " " ^ __show (c.l) ^ " " ^ __show (c.b));
         with Continue -> ()
         ; __loop1 rest
     in

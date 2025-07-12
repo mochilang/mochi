@@ -22,7 +22,7 @@
   type record1 = { mutable id : int; mutable name : string }
   type record2 = { mutable id : int; mutable customerId : int }
   type record3 = { mutable orderId : int; mutable sku : string }
-  type record4 = { mutable name : Obj.t; mutable sku : Obj.t }
+  type record4 = { mutable name : string; mutable sku : string }
 
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" }]
 let orders : record2 list = [{ id = 100; customerId = 1 };{ id = 101; customerId = 2 }]
@@ -31,8 +31,8 @@ let result : record4 list = (let __res0 = ref [] in
   List.iter (fun (o : record2) ->
       List.iter (fun (c : record1) ->
             List.iter (fun (i : record3) ->
-                        if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) && (Obj.obj (List.assoc "id" o) = Obj.obj (List.assoc "orderId" i)) then
-        __res0 := { name = Obj.obj (List.assoc "name" c); sku = Obj.obj (List.assoc "sku" i) } :: !__res0;
+                        if (o.customerId = c.id) && (o.id = i.orderId) then
+        __res0 := { name = c.name; sku = i.sku } :: !__res0;
             ) items;
       ) customers;
   ) orders;
@@ -44,9 +44,9 @@ let () =
   let rec __loop1 lst =
     match lst with
       | [] -> ()
-      | r::rest ->
+      | (r : record4)::rest ->
         try
-          print_endline (__show (Obj.obj (List.assoc "name" r)) ^ " " ^ __show ("bought item") ^ " " ^ __show (Obj.obj (List.assoc "sku" r)));
+          print_endline (__show (r.name) ^ " " ^ __show ("bought item") ^ " " ^ __show (r.sku));
         with Continue -> ()
         ; __loop1 rest
     in

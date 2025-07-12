@@ -21,7 +21,7 @@ type ('k,'v) group = { key : 'k; items : 'v list }
 type record1 = { mutable id : int; mutable name : string }
 type record2 = { mutable id : int; mutable nation : int }
 type record3 = { mutable part : int; mutable supplier : int; mutable cost : float; mutable qty : int }
-type record4 = { mutable part : Obj.t; mutable value : Obj.t }
+type record4 = { mutable part : int; mutable value : float }
 type record5 = { mutable part : Obj.t; mutable total : int }
 
 let nations : record1 list = [{ id = 1; name = "A" };{ id = 2; name = "B" }]
@@ -31,16 +31,16 @@ let filtered : record4 list = (let __res0 = ref [] in
   List.iter (fun (ps : record3) ->
       List.iter (fun (s : record2) ->
             List.iter (fun (n : record1) ->
-                        if (Obj.obj (List.assoc "id" s) = Obj.obj (List.assoc "supplier" ps)) && (Obj.obj (List.assoc "id" n) = Obj.obj (List.assoc "nation" s)) && (Obj.obj (List.assoc "name" n) = "A") then
-        __res0 := { part = Obj.obj (List.assoc "part" ps); value = (Obj.obj (List.assoc "cost" ps) * Obj.obj (List.assoc "qty" ps)) } :: !__res0;
+                        if (s.id = ps.supplier) && (n.id = s.nation) && (n.name = "A") then
+        __res0 := { part = ps.part; value = (ps.cost *. ps.qty) } :: !__res0;
             ) nations;
       ) suppliers;
   ) partsupp;
 List.rev !__res0)
 
 let grouped : record5 list = (let (__groups1 : (Obj.t * (string * Obj.t) list list) list ref) = ref [] in
-  List.iter (fun x ->
-      let key = Obj.obj (List.assoc "part" x) in
+  List.iter (fun (x : record4) ->
+      let key = x.part in
       let cur = try List.assoc key !__groups1 with Not_found -> [] in
       __groups1 := (key, x :: cur) :: List.remove_assoc key !__groups1;
   ) filtered;

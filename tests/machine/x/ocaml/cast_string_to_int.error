@@ -1,0 +1,14 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/cast_string_to_int.ml", line 21, characters 2-15:
+21 |   print_endline int_of_string "1995";
+       ^^^^^^^^^^^^^
+Error: This function has type string -> unit
+       It is applied to too many arguments; maybe you forgot a `;'.
+
+
+Context (around line 21):
+  19 | 
+  20 | let () =
+  21 |   print_endline int_of_string "1995";
+  22 | 

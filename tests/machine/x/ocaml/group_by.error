@@ -1,0 +1,16 @@
+stage: compile
+error:
+File "/workspace/mochi/tests/machine/x/ocaml/group_by.ml", line 30, characters 35-45:
+30 |       let cur = try List.assoc key !__groups0 with Not_found -> [] in
+                                        ^^^^^^^^^^
+Error: This expression has type (Obj.t * (string * Obj.t) list list) list
+       but an expression was expected of type (string * 'a) list
+       Type Obj.t is not compatible with type string 
+
+
+Context (around line 30):
+  28 |   List.iter (fun (person : record1) ->
+  29 |       let key = person.city in
+  30 |       let cur = try List.assoc key !__groups0 with Not_found -> [] in
+  31 |       __groups0 := (key, person :: cur) :: List.remove_assoc key !__groups0;
+  32 |   ) people;
