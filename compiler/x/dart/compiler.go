@@ -999,7 +999,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.mapVars[j.Var] = true
 			}
 		}
-		child.SetVar(j.Var, je, true)
+		if j.Side != nil && (*j.Side == "left" || *j.Side == "right" || *j.Side == "outer") {
+			child.SetVar(j.Var, types.OptionType{Elem: je}, true)
+			if *j.Side == "right" || *j.Side == "outer" {
+				// left side may be null
+				child.SetVar(q.Var, types.OptionType{Elem: elemType}, true)
+			}
+		} else {
+			child.SetVar(j.Var, je, true)
+		}
 	}
 	c.env = child
 
@@ -1251,17 +1259,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
 
+		keyT := types.TypeOfExpr(q.Group.Exprs[0], c.env)
+
+		var elemT types.Type
 		if len(vars) == 1 {
 			if t, err := c.env.GetVar(vars[0]); err == nil {
-				child.SetVar(grpVar, types.ListType{Elem: t}, true)
+				elemT = t
 			} else {
-				child.SetVar(grpVar, types.ListType{Elem: types.AnyType{}}, true)
+				elemT = types.AnyType{}
 			}
+			child.SetVar(grpVar, types.GroupType{Key: keyT, Elem: elemT}, true)
 			item := vars[0]
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
 		} else {
 			c.mapVars[grpVar] = true
-			child.SetVar(grpVar, types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}, true)
+			elemT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			child.SetVar(grpVar, types.GroupType{Key: keyT, Elem: elemT}, true)
 			parts := []string{"'" + q.Var + "': " + q.Var}
 			for _, f := range q.Froms {
 				parts = append(parts, "'"+f.Var+"': "+f.Var)
@@ -1473,6 +1486,9 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		}
 	}
 	typ, err := c.env.GetVar(root)
+	if ot, ok := typ.(types.OptionType); ok {
+		typ = ot.Elem
+	}
 	if ok := c.mapVars[root]; ok {
 		typ = types.MapType{}
 	}
@@ -1948,6 +1964,9 @@ func isNumericOp(op string) bool {
 }
 
 func isMapType(t types.Type) bool {
+	if ot, ok := t.(types.OptionType); ok {
+		t = ot.Elem
+	}
 	_, ok := t.(types.MapType)
 	return ok
 }
