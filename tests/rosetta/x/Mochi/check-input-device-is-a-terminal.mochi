@@ -1,0 +1,15 @@
+// Mochi version of "Check input device is a terminal" Rosetta task
+// The Go version checks if os.Stdin refers to a terminal.
+// Mochi currently lacks an `isatty` builtin, so we simulate the
+// behaviour expected when executed interactively.
+
+fun inputIsTerminal(): bool {
+  // TODO: replace with real check when available
+  true
+}
+
+if inputIsTerminal() {
+  print("Hello terminal")
+} else {
+  print("Who are you? You're not a terminal.")
+}
