@@ -106,3 +106,17 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+
+## Remaining tasks
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_items_iteration
+- [ ] left_join
+- [ ] left_join_multi
+- [ ] load_yaml
+- [ ] order_by_map
+- [ ] python_math (rounding difference)
+- [ ] save_jsonl_stdout
