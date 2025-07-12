@@ -1,7 +1,6 @@
-def inc(x: int) -> int:
-    """inc(x: int) -> int"""
+def inc(x):
     return x + k
 
 
-k: int = 2
+k = 2
 print(inc(3))

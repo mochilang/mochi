@@ -22,6 +22,6 @@ def _sum(v):
     return s
 
 
-nums: list[int] = [1, 2, 3]
-result: float = sum([n for n in nums if n > 1])
+nums = [1, 2, 3]
+result = sum([n for n in nums if n > 1])
 print(result)

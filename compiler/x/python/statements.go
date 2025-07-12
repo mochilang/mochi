@@ -207,12 +207,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		typ = c.inferExprType(s.Value)
 	}
 	if s.Value != nil {
-		if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
-			if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
-				value = val
-				typ = types.ListType{Elem: st}
-			} else if err != nil {
-				return err
+		if c.autoStructsEnabled {
+			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+				if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
+					value = val
+					typ = types.ListType{Elem: st}
+				} else if err != nil {
+					return err
+				}
 			}
 		}
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
@@ -293,12 +295,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		typ = c.resolveTypeRef(s.Type)
 	}
 	if s.Value != nil {
-		if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
-			if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
-				value = val
-				typ = types.ListType{Elem: st}
-			} else if err != nil {
-				return err
+		if c.autoStructsEnabled {
+			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
+				if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
+					value = val
+					typ = types.ListType{Elem: st}
+				} else if err != nil {
+					return err
+				}
 			}
 		}
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
