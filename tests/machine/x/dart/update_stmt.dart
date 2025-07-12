@@ -20,7 +20,7 @@ void main() {
     var status = _it1.status;
     if (age >= 18) {
       _it1.status = 'adult';
-      _it1.age = age + 1;
+      _it1.age = (age + 1 as int);
     }
     people[_i0] = _it1;
   }

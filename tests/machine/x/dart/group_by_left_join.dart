@@ -45,8 +45,7 @@ var stats = (() {
 
 void main() {
   print('--- Group Left Join ---');
-  var _iter6 = stats;
-  for (var s in (_iter6 is Map ? (_iter6 as Map).keys : _iter6) as Iterable) {
+  for (var s in stats) {
     print([s['name'], 'orders:', s['count']].join(' '));
   }
 }

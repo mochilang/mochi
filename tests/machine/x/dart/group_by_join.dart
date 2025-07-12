@@ -29,8 +29,7 @@ var stats = (() {
 
 void main() {
   print('--- Orders per customer ---');
-  var _iter3 = stats;
-  for (var s in (_iter3 is Map ? (_iter3 as Map).keys : _iter3) as Iterable) {
+  for (var s in stats) {
     print([s['name'], 'orders:', s['count']].join(' '));
   }
 }

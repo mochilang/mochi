@@ -26,9 +26,7 @@ var result = (() {
 
 void main() {
   print('--- Left Join ---');
-  var _iter2 = result;
-  for (var entry
-      in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
+  for (var entry in result) {
     print(
       [
         'Order',

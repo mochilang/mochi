@@ -37,8 +37,7 @@ var stats = (() {
 
 void main() {
   print('--- People grouped by city ---');
-  var _iter7 = stats;
-  for (var s in (_iter7 is Map ? (_iter7 as Map).keys : _iter7) as Iterable) {
+  for (var s in stats) {
     print(
       [
         s['city'],

@@ -72,8 +72,7 @@ var adults = (() {
 })();
 
 void main() {
-  var _iter1 = adults;
-  for (var a in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var a in adults) {
     print([a['name'], a['email']].join(' '));
   }
 }

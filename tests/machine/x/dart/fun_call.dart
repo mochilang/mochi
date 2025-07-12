@@ -1,5 +1,5 @@
 int add(int a, int b) {
-  return a + b;
+  return (a + b as int);
 }
 
 void main() {

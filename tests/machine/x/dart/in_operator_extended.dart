@@ -9,7 +9,7 @@ var xs = [1, 2, 3];
 var ys = (() {
   var _q0 = <dynamic>[];
   for (var x in xs) {
-    if (!(x % 2 == 1)) continue;
+    if (!((x % 2 as int) == 1)) continue;
     _q0.add(x);
   }
   return _q0;

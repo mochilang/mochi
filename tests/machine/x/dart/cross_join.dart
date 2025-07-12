@@ -27,9 +27,7 @@ var result = (() {
 
 void main() {
   print('--- Cross Join: All order-customer pairs ---');
-  var _iter1 = result;
-  for (var entry
-      in (_iter1 is Map ? (_iter1 as Map).keys : _iter1) as Iterable) {
+  for (var entry in result) {
     print(
       [
         'Order',

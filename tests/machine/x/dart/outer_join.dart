@@ -42,8 +42,7 @@ var result = (() {
 
 void main() {
   print('--- Outer Join using syntax ---');
-  var _iter2 = result;
-  for (var row in (_iter2 is Map ? (_iter2 as Map).keys : _iter2) as Iterable) {
+  for (var row in result) {
     if (row['order'] != null) {
       if (row['customer'] != null) {
         print(
