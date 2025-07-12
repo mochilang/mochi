@@ -12,6 +12,8 @@ The Python backend translates Mochi programs into standard Python source code. I
 - `runtime.go` – stringified runtime helpers injected into generated programs
 - `tools.go` – ensures `python3` is available for benchmarks and tests
 - Struct methods defined inside `type` blocks are emitted as Python class methods
+- `SetTypeHints` toggles optional type annotations
+- `SetLogger` enables logging of compiler phases
 
 ## Runtime Helpers
 

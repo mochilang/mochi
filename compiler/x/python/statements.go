@@ -667,13 +667,15 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
+	c.logf("finished type %s", name)
 	return nil
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
+	name := sanitizeName(t.Name)
+	c.logf("compile type %s", name)
 	c.imports["dataclasses"] = "dataclasses"
 	needTyping := false
-	name := sanitizeName(t.Name)
 	if len(t.Variants) > 0 {
 		c.writeln(fmt.Sprintf("class %s:", name))
 		c.indent++
@@ -945,6 +947,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 }
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	name := sanitizeName(fun.Name)
+	c.logf("compile function %s", name)
 	needTyping := false
 	c.writeIndent()
 	c.buf.WriteString("def " + name + "(")
@@ -1053,6 +1056,7 @@ func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
 	if needTyping && c.typeHints {
 		c.imports["typing"] = "typing"
 	}
+	c.logf("finished function %s", name)
 	return nil
 }
 
