@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/in_operator_extended.mochi
+
 data class M(var a: Int)
 
 val xs = mutableListOf(1, 2, 3)

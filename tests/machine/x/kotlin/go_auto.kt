@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/go_auto.mochi
+
 object testpkg {
     fun Add(a: Int, b: Int): Int = a + b
     const val Pi: Double = 3.14

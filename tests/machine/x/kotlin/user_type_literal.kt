@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/user_type_literal.mochi
+
 data class Person(var name: String, var age: Int)
 
 data class Book(var title: String, var author: Person)

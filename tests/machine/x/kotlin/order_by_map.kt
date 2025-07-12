@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/order_by_map.mochi
+
 data class Data(var a: Int, var b: Int)
 
 val data = mutableListOf(Data(a = 1, b = 2), Data(a = 1, b = 1), Data(a = 0, b = 5))

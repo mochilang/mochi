@@ -1,3 +1,11 @@
+// Code generated from tests/vm/valid/short_circuit.mochi
+
+/**
+ * Auto-generated from Mochi
+ * @param a Int
+ * @param b Int
+ * @return Boolean
+ */
 fun boom(a: Int, b: Int): Boolean {
     println("boom")
     return true

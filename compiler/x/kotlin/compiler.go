@@ -1025,7 +1025,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		t, _ := c.env.GetVar(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
 			if isStructType(t) || isStringType(t) {
-				name += "." + strings.Join(p.Selector.Tail, ".")
+				parts := make([]string, len(p.Selector.Tail))
+				for i, part := range p.Selector.Tail {
+					parts[i] = escapeIdent(part)
+				}
+				name += "." + strings.Join(parts, ".")
 			} else {
 				if mt, ok := t.(types.MapType); ok {
 					name = fmt.Sprintf("(%s as MutableMap<%s, %s>)", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
@@ -2164,6 +2168,9 @@ func kotlinTypeOf(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("MutableMap<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
 	case types.StructType:
+		if tt.Name == "" {
+			return "Any?"
+		}
 		return tt.Name
 	case types.GroupType:
 		return fmt.Sprintf("Group<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Elem))

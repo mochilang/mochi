@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/string_contains.mochi
+
 val s = "catch"
 
 fun main() {

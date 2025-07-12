@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/cross_join_triple.mochi
+
 data class Combo(var n: Any?, var l: Any?, var b: Any?)
 
 val nums = mutableListOf(1, 2)

@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/membership.mochi
+
 val nums = mutableListOf(1, 2, 3)
 
 fun main() {

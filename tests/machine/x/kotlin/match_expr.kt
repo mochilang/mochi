@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/match_expr.mochi
+
 val x = 2
 
 val label = run {

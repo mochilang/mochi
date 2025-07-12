@@ -47,6 +47,8 @@ fun parseSimpleValue(s: String): Any? {
         else -> t
     }
 }
+// Code generated from tests/vm/valid/load_yaml.mochi
+
 data class Person(var name: String, var age: Int, var email: String)
 
 data class Adult(var name: Any?, var email: Any?)

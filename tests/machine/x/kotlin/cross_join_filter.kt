@@ -1,3 +1,5 @@
+// Code generated from tests/vm/valid/cross_join_filter.mochi
+
 data class Pair(var n: Any?, var l: Any?)
 
 val nums = mutableListOf(1, 2, 3)
