@@ -542,7 +542,7 @@ func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
 		delete(c.aliases, k)
 		delete(c.lets, k)
 	}
-	updated := fmt.Sprintf("if %s -> %s#{%s}; true -> %s end", cond, item, strings.Join(setParts, ", "), item)
+	updated := fmt.Sprintf("case %s of true -> %s#{%s}; _ -> %s end", cond, item, strings.Join(setParts, ", "), item)
 	name := c.newVarName(st.Target)
 	return fmt.Sprintf("%s = [%s || %s <- %s]", name, updated, item, prev), nil
 }
@@ -816,6 +816,31 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	cond := strings.Join(conds, ", ")
+
+	// Special case simple aggregate selects like sum(n) -> lists:sum([...])
+	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+		if call := callExprFromExpr(q.Select); call != nil && len(call.Args) == 1 {
+			if selectIsVar(call.Args[0], q.Var) {
+				list := fmt.Sprintf("[%s || %s <- %s", capitalize(q.Var), capitalize(q.Var), src)
+				if cond != "" {
+					list += ", " + cond
+				}
+				list += "]"
+				switch call.Func {
+				case "sum":
+					return fmt.Sprintf("lists:sum(%s)", list), nil
+				case "count":
+					return fmt.Sprintf("length(%s)", list), nil
+				case "min":
+					return fmt.Sprintf("lists:min(%s)", list), nil
+				case "max":
+					return fmt.Sprintf("lists:max(%s)", list), nil
+				case "avg":
+					return fmt.Sprintf("(lists:sum(%s) / length(%s))", list, list), nil
+				}
+			}
+		}
+	}
 
 	res := ""
 
@@ -1506,7 +1531,7 @@ func (c *Compiler) compileSaveExpr(se *parser.SaveExpr) (string, error) {
 	if se.Path != nil && *se.Path == "-" {
 		c.needJSON = true
 		v := c.newVarName("row")
-		return fmt.Sprintf("lists:foreach(fun(%s) -> io:format(\"~s\\n\", [mochi_json_encode(%s)]) end, %s)", v, v, src), nil
+		return fmt.Sprintf("lists:foreach(fun(%s) -> io:format(\"~s\\n\", [mochi_to_json(%s)]) end, %s)", v, v, src), nil
 	}
 	return "ok", nil
 }
@@ -1788,6 +1813,18 @@ func selectIsVar(e *parser.Expr, name string) bool {
 		return s.Root == name && len(s.Tail) == 0
 	}
 	return false
+}
+
+// callExprFromExpr extracts a CallExpr if e directly represents a function call.
+func callExprFromExpr(e *parser.Expr) *parser.CallExpr {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 {
+		return nil
+	}
+	return u.Value.Target.Call
 }
 
 func (c *Compiler) writeRuntime() {

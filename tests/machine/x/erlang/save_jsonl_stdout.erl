@@ -3,7 +3,7 @@
 
 main(_) ->
     People = [#{name => "Alice", age => 30}, #{name => "Bob", age => 25}],
-    lists:foreach(fun(Row0) -> io:format("~s\n", [mochi_json_encode(Row0)]) end, People).
+    lists:foreach(fun(Row0) -> io:format("~s\n", [mochi_to_json(Row0)]) end, People).
 
 mochi_escape_json([]) -> [];
 mochi_escape_json([H|T]) ->

@@ -12,9 +12,9 @@ exit status 127
 %     | ^
 
 escript: exception error: bad filter #{id => 101,customerId => 1}
-  in function  group_by_left_join_erl__escript__1752__320816__956867__8965:'-main/1-lc$^5/1-1-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
-  in call from group_by_left_join_erl__escript__1752__320816__956867__8965:'-main/1-lc$^4/1-0-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
-  in call from group_by_left_join_erl__escript__1752__320816__956867__8965:main/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in function  group_by_left_join_erl__escript__1752__328606__281028__8964:'-main/1-lc$^5/1-1-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in call from group_by_left_join_erl__escript__1752__328606__281028__8964:'-main/1-lc$^4/1-0-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in call from group_by_left_join_erl__escript__1752__328606__281028__8964:main/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 
