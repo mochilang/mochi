@@ -2171,8 +2171,10 @@ var kotlinKeywords = map[string]bool{
 	"when":   true,
 }
 
+var identRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
 func escapeIdent(name string) string {
-	if kotlinKeywords[name] {
+	if kotlinKeywords[name] || !identRE.MatchString(name) {
 		return "`" + name + "`"
 	}
 	return name
