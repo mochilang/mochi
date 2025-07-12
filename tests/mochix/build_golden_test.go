@@ -73,3 +73,15 @@ func TestBuildXDart(t *testing.T) {
 		return runMochix(t, "buildx", "--target", "dart", src)
 	})
 }
+
+func TestBuildXC(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".c.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "c", src)
+	})
+}
+
+func TestBuildXJava(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".java.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "java", src)
+	})
+}
