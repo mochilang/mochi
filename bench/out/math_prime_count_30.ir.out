@@ -53,7 +53,7 @@ L0:
   // let duration = (end - start) / 1000
   SubInt       r20, r19, r4
   Const        r21, 1000
-  DivFloat     r22, r20, r21
+  DivInt       r22, r20, r21
   // "duration_us": duration,
   Const        r23, "duration_us"
   // "output": last,
