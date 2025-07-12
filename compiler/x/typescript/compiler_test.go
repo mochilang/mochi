@@ -16,6 +16,7 @@ import (
 )
 
 func findRepoRoot(t *testing.T) string {
+	t.Helper()
 	dir, err := os.Getwd()
 	if err != nil {
 		t.Fatal(err)
