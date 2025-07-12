@@ -586,7 +586,8 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 			c.writeln(fmt.Sprintf("DISPLAY %s", val))
 			return nil
 		}
-		if isComparisonExpr(arg) || isBoolExpr(arg) {
+		if isComparisonExpr(arg) || isBoolExpr(arg) ||
+			func() bool { _, ok := types.TypeOfExpr(arg, c.env).(types.BoolType); return ok }() {
 			cond, err := c.compileExpr(arg)
 			if err != nil {
 				return err
@@ -626,7 +627,8 @@ func (c *Compiler) compilePrint(call *parser.CallExpr) error {
 			parts[i] = val
 			continue
 		}
-		if isComparisonExpr(arg) || isBoolExpr(arg) {
+		if isComparisonExpr(arg) || isBoolExpr(arg) ||
+			func() bool { _, ok := types.TypeOfExpr(arg, c.env).(types.BoolType); return ok }() {
 			cond, err := c.compileExpr(arg)
 			if err != nil {
 				return err
@@ -1015,7 +1017,10 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 			if types.IsStringType(leftType) && types.IsStringType(rightType) {
-				res = fmt.Sprintf("FUNCTION INDEX(%s, %s) > 0", r, res)
+				tmp := c.ensureTmpVar()
+				c.writeln(fmt.Sprintf("MOVE 0 TO %s", tmp))
+				c.writeln(fmt.Sprintf("INSPECT %s TALLYING %s FOR ALL %s", r, tmp, res))
+				res = fmt.Sprintf("%s > 0", tmp)
 				leftType = types.BoolType{}
 				continue
 			}
@@ -1204,8 +1209,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 			if i, ok := intLiteral(idx.Start); ok {
-				val = fmt.Sprintf("%s-E%d", val, i+1)
-				typ = types.AnyType{}
+				if types.IsStringType(typ) {
+					val = fmt.Sprintf("%s(%d:1)", val, i+1)
+					typ = types.StringType{}
+				} else {
+					val = fmt.Sprintf("%s-E%d", val, i+1)
+					typ = types.AnyType{}
+				}
 				continue
 			}
 			if s, ok := stringLiteral(idx.Start); ok {
@@ -1233,7 +1243,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					val = fmt.Sprintf("FUNCTION INDEX(%s, %s) > 0", recv, arg)
+					tmp := c.ensureTmpVar()
+					c.writeln(fmt.Sprintf("MOVE 0 TO %s", tmp))
+					c.writeln(fmt.Sprintf("INSPECT %s TALLYING %s FOR ALL %s", recv, tmp, arg))
+					val = fmt.Sprintf("%s > 0", tmp)
 					continue
 				}
 			}
