@@ -413,6 +413,21 @@ func (c *Compiler) newTmp() string {
 	return fmt.Sprintf("tmp%d", c.tmp)
 }
 
+// isIntLiteral checks if the expression is an integer literal.
+func isIntLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 || u.Value == nil || len(u.Value.Ops) != 0 {
+		return false
+	}
+	if u.Value.Target == nil || u.Value.Target.Lit == nil || u.Value.Target.Lit.Int == nil {
+		return false
+	}
+	return true
+}
+
 func titleCase(s string) string {
 	if s == "" {
 		return s
@@ -933,7 +948,11 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		if types.IsMapType(t) {
 			target = fmt.Sprintf("%s[%s]", target, idxStr)
 		} else {
-			target = fmt.Sprintf("%s[%s as usize]", target, idxStr)
+			if isIntLiteral(idx.Start) {
+				target = fmt.Sprintf("%s[%s]", target, idxStr)
+			} else {
+				target = fmt.Sprintf("%s[%s as usize]", target, idxStr)
+			}
 		}
 		prefix.Value.Ops = append(prefix.Value.Ops, &parser.PostfixOp{Index: idx})
 	}
@@ -1525,9 +1544,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = fmt.Sprintf("%s.len()", val)
 				}
 				if types.IsStringType(t) {
-					val = fmt.Sprintf("&%s[%s as usize..%s as usize]", val, start, end)
+					if isIntLiteral(op.Index.Start) && op.Index.End != nil && isIntLiteral(op.Index.End) {
+						val = fmt.Sprintf("&%s[%s..%s]", val, start, end)
+					} else {
+						val = fmt.Sprintf("&%s[%s as usize..%s as usize]", val, start, end)
+					}
 				} else {
-					val = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", val, start, end)
+					if isIntLiteral(op.Index.Start) && op.Index.End != nil && isIntLiteral(op.Index.End) {
+						val = fmt.Sprintf("%s[%s..%s].to_vec()", val, start, end)
+					} else {
+						val = fmt.Sprintf("%s[%s as usize..%s as usize].to_vec()", val, start, end)
+					}
 				}
 			} else {
 				if op.Index.Start == nil {
@@ -1540,9 +1567,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if types.IsMapType(t) {
 					val = fmt.Sprintf("%s[&%s]", val, idxVal)
 				} else if types.IsStringType(t) {
-					val = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", val, idxVal)
+					if isIntLiteral(op.Index.Start) {
+						val = fmt.Sprintf("%s.chars().nth(%s).unwrap()", val, idxVal)
+					} else {
+						val = fmt.Sprintf("%s.chars().nth(%s as usize).unwrap()", val, idxVal)
+					}
 				} else {
-					val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+					if isIntLiteral(op.Index.Start) {
+						val = fmt.Sprintf("%s[%s]", val, idxVal)
+					} else {
+						val = fmt.Sprintf("%s[%s as usize]", val, idxVal)
+					}
 				}
 			}
 		case op.Field != nil:
@@ -3462,6 +3497,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 args")
+		}
+		if isIntLiteral(call.Args[1]) && isIntLiteral(call.Args[2]) {
+			return fmt.Sprintf("&%s[%s..%s]", args[0], args[1], args[2]), nil
 		}
 		return fmt.Sprintf("&%s[%s as usize..%s as usize]", args[0], args[1], args[2]), nil
 	case "json":

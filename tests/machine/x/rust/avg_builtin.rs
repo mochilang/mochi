@@ -1,6 +1,6 @@
-fn avg(v: &[i32]) -> f64 {
-    let sum: i32 = v.iter().sum();
-    sum as f64 / v.len() as f64
+fn avg<T>(v: &[T]) -> f64 where T: Into<f64> + Copy {
+    let sum: f64 = v.iter().map(|&x| x.into()).sum();
+    sum / v.len() as f64
 }
 
 fn main() {
