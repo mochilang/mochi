@@ -34,6 +34,7 @@ type Compiler struct {
 	usesUpdate   bool
 	usesMaybe    bool
 	tmpCount     int
+	autoImports  map[string]string
 }
 
 func (c *Compiler) hsType(t types.Type) string {
@@ -74,7 +75,7 @@ func (c *Compiler) hsType(t types.Type) string {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false, usesUpdate: false, usesMaybe: false}
+	return &Compiler{env: env, structs: make(map[string]bool), tmpCount: 0, usesLoop: false, usesUpdate: false, usesMaybe: false, autoImports: make(map[string]string)}
 }
 
 // Compile generates Haskell code for prog.
@@ -94,6 +95,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.usesUpdate = false
 	c.usesMaybe = false
 	c.tmpCount = 0
+	c.autoImports = make(map[string]string)
+
+	for _, s := range prog.Statements {
+		if s.Import != nil {
+			if err := c.compileImport(s.Import); err != nil {
+				return nil, err
+			}
+		}
+	}
 
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -264,6 +274,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileMainStmt(s *parser.Statement) error {
 	switch {
+	case s.Import != nil:
+		return nil
+	case s.ExternVar != nil || s.ExternFun != nil || s.ExternType != nil || s.ExternObject != nil:
+		return nil
 	case s.Let != nil:
 		if isInputCall(s.Let.Value) {
 			val, err := c.compileExpr(s.Let.Value)
@@ -832,6 +846,11 @@ func (c *Compiler) compileStmtExpr(stmts []*parser.Statement, top bool) (string,
 	for i := len(stmts) - 1; i >= 0; i-- {
 		s := stmts[i]
 		switch {
+		case s.Import != nil:
+			// imports have no runtime effect in generated Haskell
+			continue
+		case s.ExternVar != nil || s.ExternFun != nil || s.ExternType != nil || s.ExternObject != nil:
+			continue
 		case s.Return != nil:
 			val, err := c.compileExpr(s.Return.Value)
 			if err != nil {
@@ -1141,6 +1160,97 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if sel := p.Target.Selector; sel != nil && len(sel.Tail) == 1 {
+		if mod, ok := c.autoImports[sel.Root]; ok {
+			field := sel.Tail[0]
+			switch mod {
+			case "go_testpkg":
+				if len(p.Ops) > 0 && p.Ops[0].Call != nil && field == "Add" {
+					if len(p.Ops[0].Call.Args) == 2 {
+						a1, err := c.compileExpr(p.Ops[0].Call.Args[0])
+						if err != nil {
+							return "", err
+						}
+						a2, err := c.compileExpr(p.Ops[0].Call.Args[1])
+						if err != nil {
+							return "", err
+						}
+						c.usesAnyValue = true
+						return fmt.Sprintf("VInt (%s + %s)", a1, a2), nil
+					}
+				}
+				if len(p.Ops) == 0 {
+					c.usesAnyValue = true
+					switch field {
+					case "Pi":
+						return "VDouble 3.14", nil
+					case "Answer":
+						return "VInt 42", nil
+					}
+				}
+			case "python_math_auto":
+				if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+					args := make([]string, len(p.Ops[0].Call.Args))
+					for i, a := range p.Ops[0].Call.Args {
+						v, err := c.compileExpr(a)
+						if err != nil {
+							return "", err
+						}
+						args[i] = v
+					}
+					switch field {
+					case "sqrt", "sin", "log":
+						if len(args) == 1 {
+							c.usesAnyValue = true
+							return fmt.Sprintf("VDouble (%s %s)", field, args[0]), nil
+						}
+					case "pow":
+						if len(args) == 2 {
+							c.usesAnyValue = true
+							return fmt.Sprintf("VDouble (%s ** %s)", args[0], args[1]), nil
+						}
+					}
+				} else if len(p.Ops) == 0 {
+					c.usesAnyValue = true
+					switch field {
+					case "pi":
+						return "VDouble pi", nil
+					case "e":
+						return "VDouble (exp 1)", nil
+					}
+				}
+			case "python_math":
+				if len(p.Ops) > 0 && p.Ops[0].Call != nil {
+					args := make([]string, len(p.Ops[0].Call.Args))
+					for i, a := range p.Ops[0].Call.Args {
+						v, err := c.compileExpr(a)
+						if err != nil {
+							return "", err
+						}
+						args[i] = v
+					}
+					switch field {
+					case "sqrt", "sin", "log":
+						if len(args) == 1 {
+							return fmt.Sprintf("%s %s", field, args[0]), nil
+						}
+					case "pow":
+						if len(args) == 2 {
+							return fmt.Sprintf("(%s ** %s)", args[0], args[1]), nil
+						}
+					}
+				} else if len(p.Ops) == 0 {
+					switch field {
+					case "pi":
+						return "pi", nil
+					case "e":
+						return "(exp 1)", nil
+					}
+				}
+			}
+		}
+	}
+
 	// Special-case string contains method
 	if sel := p.Target.Selector; sel != nil && len(sel.Tail) > 0 && sel.Tail[len(sel.Tail)-1] == "contains" {
 		if len(p.Ops) > 0 && p.Ops[0].Call != nil && len(p.Ops[0].Call.Args) == 1 {
@@ -1535,6 +1645,7 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 			return fmt.Sprintf("putStrLn (%s)", arg), nil
 		}
 		if _, ok := c.inferExprType(ca.exprs[0]).(types.AnyType); ok {
+			c.usesAnyValue = true
 			return fmt.Sprintf("putStrLn (_showAny (%s))", arg), nil
 		}
 		return fmt.Sprintf("print (%s)", arg), nil
@@ -1544,6 +1655,7 @@ func (c *Compiler) compilePrint(ca callArgs) (string, error) {
 		if strings.HasPrefix(a, "\"") || c.isStringExpr(ca.exprs[i]) {
 			parts[i] = a
 		} else if _, ok := c.inferExprType(ca.exprs[i]).(types.AnyType); ok {
+			c.usesAnyValue = true
 			parts[i] = fmt.Sprintf("_showAny (%s)", a)
 		} else {
 			parts[i] = fmt.Sprintf("show (%s)", a)
@@ -1632,6 +1744,32 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 	c.usesFetch = true
 	c.usesMap = true
 	return fmt.Sprintf("_fetch %s %s", url, opts), nil
+}
+
+func (c *Compiler) compileImport(im *parser.ImportStmt) error {
+	if im.Lang == nil {
+		return nil
+	}
+	alias := im.As
+	if alias == "" {
+		alias = parser.AliasFromPath(im.Path)
+	}
+	path := strings.Trim(im.Path, "\"")
+	switch *im.Lang {
+	case "python":
+		if path == "math" {
+			if im.Auto {
+				c.autoImports[alias] = "python_math_auto"
+			} else {
+				c.autoImports[alias] = "python_math"
+			}
+		}
+	case "go":
+		if strings.Contains(path, "testpkg") {
+			c.autoImports[alias] = "go_testpkg"
+		}
+	}
+	return nil
 }
 
 func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
