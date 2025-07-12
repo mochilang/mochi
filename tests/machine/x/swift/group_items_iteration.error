@@ -1,4 +1,0 @@
-line 32: exit status 1
-}
-var result = tmp.map { r in (value: r, key: r["tag"] as! String) }.sorted { $0.key < $1.key }.map { $0.value }
-print(result)

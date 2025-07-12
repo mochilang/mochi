@@ -4,7 +4,7 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 95/100 programs
+Compiled: 100/100 programs
 
 ## Checklist
 
@@ -108,12 +108,3 @@ Compiled: 95/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-## Remaining tasks
-
-The compiler still fails on some programs due to unsupported query features.
-The following examples did not compile or run successfully:
-- group_by_multi_join.mochi
-- group_by_multi_join_sort.mochi
-- group_items_iteration.mochi
-- outer_join.mochi
-- right_join.mochi

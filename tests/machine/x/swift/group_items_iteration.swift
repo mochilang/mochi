@@ -13,7 +13,7 @@ var groups = { () -> [(key: String, items: [Auto1])] in
     var _groups: [String:[Auto1]] = [:]
     for d in data {
         let _k = d.tag
-        _groups[_k, default: []].append(d)
+        _groups[_k as! String, default: []].append(d)
     }
     var _tmp: [(key: String, items: [Auto1])] = []
     for (k, v) in _groups {

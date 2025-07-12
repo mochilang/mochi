@@ -1,4 +1,0 @@
-line 78: exit status 1
-	}
-	_tmp.sort { $0.items.map { x in x["l"] as! Auto4["l_extendedprice"]! * (1 - x["l"] as! Auto4["l_discount"]!) }.reduce(0, +) > $1.items.map { x in x["l"] as! Auto4["l_extendedprice"]! * (1 - x["l"] as! Auto4["l_discount"]!) }.reduce(0, +) }
-	return _tmp.map { g in ["c_custkey": g.key.c_custkey, "c_name": g.key.c_name, "revenue": g.items.map { x in x["l"] as! Auto4["l_extendedprice"]! * (1 - x["l"] as! Auto4["l_discount"]!) }.reduce(0, +), "c_acctbal": g.key.c_acctbal, "n_name": g.key.n_name, "c_address": g.key.c_address, "c_phone": g.key.c_phone, "c_comment": g.key.c_comment] }
