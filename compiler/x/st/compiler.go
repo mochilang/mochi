@@ -588,7 +588,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs[i] = fmt.Sprintf("%s->%s", k, v)
 		}
-		return "Dictionary newFrom:{" + strings.Join(pairs, ". ") + "}", nil
+		return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
 	case p.Load != nil:
@@ -802,6 +802,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		joinConds[i] = jc
 	}
 
+	savedVars := c.vars
+	c.vars = make(map[string]bool, len(savedVars)+len(vars))
+	for k, v := range savedVars {
+		c.vars[k] = v
+	}
+	for _, v := range vars {
+		c.vars[v] = true
+	}
+	defer func() { c.vars = savedVars }()
+
 	if len(q.Joins) == 1 && q.Joins[0].Side != nil && *q.Joins[0].Side == "outer" &&
 		len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil &&
 		q.Take == nil && !q.Distinct {
@@ -873,7 +883,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i, v := range vars {
 			fields[i] = fmt.Sprintf("#%s->%s", v, v)
 		}
-		row = "Dictionary newFrom: {" + strings.Join(fields, ". ") + "}"
+		row = "Dictionary from: {" + strings.Join(fields, ". ") + "}"
 		k, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
@@ -910,7 +920,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		b.WriteString("  groups keysAndValuesDo: [:k :grp |\n")
 		b.WriteString("    | " + q.Group.Name + " |\n")
-		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom:{#key->k. #items->grp}.\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary from: {'key'->k. 'items'->grp}.\n")
 		b.WriteString("    tmp add: " + sel + ".\n")
 		b.WriteString("  ].\n")
 	}
@@ -1142,9 +1152,9 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		if err != nil {
 			return "", err
 		}
-		fields[i] = fmt.Sprintf("#%s->%s", f.Name, v)
+		fields[i] = fmt.Sprintf("'%s'->%s", f.Name, v)
 	}
-	return "Dictionary newFrom: {" + strings.Join(fields, ". ") + "}", nil
+	return "Dictionary from: {" + strings.Join(fields, ". ") + "}", nil
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
@@ -1154,7 +1164,7 @@ func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
 			if u.Value.Target != nil {
 				if sel := u.Value.Target.Selector; sel != nil && len(sel.Tail) == 0 {
 					if !c.vars[sel.Root] {
-						return "#" + sel.Root, nil
+						return "'" + sel.Root + "'", nil
 					}
 				}
 			}
