@@ -1200,9 +1200,21 @@ func collectQueryVars(e *parser.Expr, env *types.Env, vars map[string]string) {
 				}
 				vars[f.Var] = fe
 			}
+			for _, j := range p.Query.Joins {
+				jt := types.TypeOfExpr(j.Src, env)
+				je := "integer"
+				if lt, ok := jt.(types.ListType); ok {
+					je = typeString(lt.Elem)
+				}
+				vars[j.Var] = je
+			}
 			collectQueryVars(p.Query.Source, env, vars)
 			for _, f := range p.Query.Froms {
 				collectQueryVars(f.Src, env, vars)
+			}
+			for _, j := range p.Query.Joins {
+				collectQueryVars(j.Src, env, vars)
+				collectQueryVars(j.On, env, vars)
 			}
 			collectQueryVars(p.Query.Select, env, vars)
 			collectQueryVars(p.Query.Where, env, vars)
