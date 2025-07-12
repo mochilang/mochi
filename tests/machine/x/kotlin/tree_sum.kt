@@ -12,6 +12,11 @@ data class Node(val left: Tree, val value: Int, val right: Tree) : Tree()
 
 val t = Node(left = Leaf, value = 1, right = Node(left = Leaf, value = 2, right = Leaf))
 
+/**
+ * Auto-generated from Mochi
+ * @param t Tree
+ * @return Int
+ */
 fun sum_tree(t: Tree): Int {
     return run {
     val __t = t

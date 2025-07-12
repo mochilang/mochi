@@ -7,6 +7,11 @@ fun toInt(v: Any?): Int = when (v) {
 }
 val add10 = makeAdder(10)
 
+/**
+ * Auto-generated from Mochi
+ * @param n Int
+ * @return (Int) -> Int
+ */
 fun makeAdder(n: Int): (Int) -> Int {
     return { x: Int -> toInt(x) + n }
 }

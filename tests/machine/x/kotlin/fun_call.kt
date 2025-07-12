@@ -1,3 +1,9 @@
+/**
+ * Auto-generated from Mochi
+ * @param a Int
+ * @param b Int
+ * @return Int
+ */
 fun add(a: Int, b: Int): Int {
     return a + b
 }

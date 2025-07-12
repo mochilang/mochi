@@ -1,16 +1,16 @@
-class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items
-data class Customer(var id: Int, var name: String)
-
+class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items
 data class Order(var id: Int, var customerId: Int)
 
 data class Stat(var name: Any?, var count: Int)
+
+data class Customer(var id: Int, var name: String)
 
 val customers = mutableListOf(Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
 
 val orders = mutableListOf(Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
 
 val stats = run {
-    val __groups = mutableMapOf<Any?, Group>()
+    val __groups = mutableMapOf<Any?, Group<Any?, MutableMap<String, Any?>>>()
     val __order = mutableListOf<Any?>()
     for (o in orders) {
         for (c in customers) {
@@ -18,7 +18,7 @@ val stats = run {
                 val __k = c.name
                 var __g = __groups[__k]
                 if (__g == null) {
-                    __g = Group(__k, mutableListOf())
+                    __g = Group(__k, mutableListOf<MutableMap<String, Any?>>())
                     __groups[__k] = __g
                     __order.add(__k)
                 }

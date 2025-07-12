@@ -1,5 +1,11 @@
 val result = twoSum(mutableListOf(2, 7, 11, 15), 9)
 
+/**
+ * Auto-generated from Mochi
+ * @param nums MutableList<Int>
+ * @param target Int
+ * @return MutableList<Int>
+ */
 fun twoSum(nums: MutableList<Int>, target: Int): MutableList<Int> {
     val n = nums.size
     for (i in 0 until n) {

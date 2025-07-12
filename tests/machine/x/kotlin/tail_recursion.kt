@@ -1,4 +1,10 @@
-fun sum_rec(n: Int, acc: Int): Int {
+/**
+ * Auto-generated from Mochi
+ * @param n Int
+ * @param acc Int
+ * @return Int
+ */
+tailrec fun sum_rec(n: Int, acc: Int): Int {
     if (n == 0) {
         return acc
     }

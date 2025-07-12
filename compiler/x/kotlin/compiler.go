@@ -2114,7 +2114,7 @@ func fieldType(t types.Type, path []string) types.Type {
 }
 
 func kotlinCastType(t types.Type) string {
-	switch t.(type) {
+	switch tt := t.(type) {
 	case types.IntType:
 		return "Int"
 	case types.FloatType:
@@ -2123,6 +2123,11 @@ func kotlinCastType(t types.Type) string {
 		return "String"
 	case types.BoolType:
 		return "Boolean"
+	case types.StructType:
+		if tt.Name == "" {
+			return "Any"
+		}
+		return tt.Name
 	default:
 		return ""
 	}
@@ -2156,6 +2161,9 @@ func kotlinTypeOf(t types.Type) string {
 	case types.MapType:
 		return fmt.Sprintf("MutableMap<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Value))
 	case types.StructType:
+		if tt.Name == "" {
+			return "Any?"
+		}
 		return tt.Name
 	case types.GroupType:
 		return fmt.Sprintf("Group<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Elem))

@@ -2,18 +2,18 @@ object math {
     const val pi: Double = kotlin.math.PI
     const val e: Double = kotlin.math.E
     fun sqrt(x: Double): Double = kotlin.math.sqrt(x)
-    fun pow(x: Double, y: Double): Double = kotlin.math.pow(x, y)
+    fun pow(x: Double, y: Double): Double = Math.pow(x, y)
     fun sin(x: Double): Double = kotlin.math.sin(x)
     fun log(x: Double): Double = kotlin.math.ln(x)
 }
 
-val r = 3
+val r = 3.0
 
-val area = math.pi * math.pow(r, 2)
+val area = math.pi * math.pow(r, 2.0)
 
-val root = math.sqrt(49)
+val root = math.sqrt(49.0)
 
-val sin45 = math.sin(math.pi / 4)
+val sin45 = math.sin(math.pi / 4.0)
 
 val log_e = math.log(math.e)
 

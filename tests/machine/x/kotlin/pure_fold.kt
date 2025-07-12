@@ -1,3 +1,8 @@
+/**
+ * Auto-generated from Mochi
+ * @param x Int
+ * @return Int
+ */
 fun triple(x: Int): Int {
     return x * 3
 }
