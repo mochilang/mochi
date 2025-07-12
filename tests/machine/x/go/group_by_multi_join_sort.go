@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	var nation []NationItem = []NationItem{NationItem{
+	nation := []NationItem{NationItem{
 		1,
 		"BRAZIL",
 	}}
 	_ = nation
-	var customer []CustomerItem = []CustomerItem{CustomerItem{
+	customer := []CustomerItem{CustomerItem{
 		1,
 		"Alice",
 		100.0,
@@ -25,7 +25,7 @@ func main() {
 		"123-456",
 		"Loyal",
 	}}
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		1000,
 		1,
 		"1993-10-15",
@@ -35,7 +35,7 @@ func main() {
 		"1994-01-02",
 	}}
 	_ = orders
-	var lineitem []LineitemItem = []LineitemItem{LineitemItem{
+	lineitem := []LineitemItem{LineitemItem{
 		1000,
 		"R",
 		1000.0,
@@ -47,9 +47,9 @@ func main() {
 		0.0,
 	}}
 	_ = lineitem
-	var start_date string = "1993-10-01"
-	var end_date string = "1994-01-01"
-	var result []Result = func() []Result {
+	start_date := "1993-10-01"
+	end_date := "1994-01-01"
+	result := func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customer {

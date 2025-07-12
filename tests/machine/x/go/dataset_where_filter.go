@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var people []PeopleItem = []PeopleItem{
+	people := []PeopleItem{
 		PeopleItem{
 			"Alice",
 			30,
@@ -25,7 +25,7 @@ func main() {
 			45,
 		},
 	}
-	var adults []Adults = func() []Adults {
+	adults := func() []Adults {
 		results := []Adults{}
 		for _, person := range people {
 			if person.Age >= 18 {

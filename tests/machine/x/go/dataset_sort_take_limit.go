@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var products []ProductsItem = []ProductsItem{
+	products := []ProductsItem{
 		ProductsItem{
 			"Laptop",
 			1500,
@@ -38,7 +38,7 @@ func main() {
 			200,
 		},
 	}
-	var expensive []ProductsItem = func() []ProductsItem {
+	expensive := func() []ProductsItem {
 		src := _toAnySlice(products)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			tmp0 := _a[0]

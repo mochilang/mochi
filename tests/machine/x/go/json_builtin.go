@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var m M = M{
+	m := M{
 		1,
 		2,
 	}

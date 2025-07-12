@@ -1,6 +1,6 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/sort_stable.go:12:14: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:12:13: undefined: ItemsItem
 ../../../tests/machine/x/go/sort_stable.go:15:5: undefined: ItemsItem
 ../../../tests/machine/x/go/sort_stable.go:18:5: undefined: ItemsItem
 ../../../tests/machine/x/go/sort_stable.go:26:10: undefined: ItemsItem

@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
+	dataVar := []DataVarItem{DataVarItem{
 		"a",
 		1,
 	}, DataVarItem{
@@ -21,7 +21,7 @@ func main() {
 		"b",
 		3,
 	}}
-	var groups []*data.Group = func() []*data.Group {
+	groups := func() []*data.Group {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, d := range dataVar {
@@ -42,9 +42,9 @@ func main() {
 		}
 		return results
 	}()
-	var tmp []any = []any{}
+	tmp := []any{}
 	for _, g := range groups {
-		var total int = 0
+		total := 0
 		for _, x := range g.Items {
 			total = (total + x.Val)
 		}
@@ -53,7 +53,7 @@ func main() {
 			Total: total,
 		})
 	}
-	var result []any = func() []any {
+	result := func() []any {
 		src := tmp
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any { r := _a[0]; _ = r; return r }, sortKey: func(_a ...any) any { r := _a[0]; _ = r; return _toAnyMap(r)["tag"] }, skip: -1, take: -1})
 		out := make([]any, len(resAny))

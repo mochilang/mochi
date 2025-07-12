@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var nums []int = []int{3, 1, 4}
+	nums := []int{3, 1, 4}
 	fmt.Println(_minOrdered[int](nums))
 	fmt.Println(_maxOrdered[int](nums))
 }

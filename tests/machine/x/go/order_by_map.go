@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
+	dataVar := []DataVarItem{DataVarItem{
 		1,
 		2,
 	}, DataVarItem{
@@ -19,7 +19,7 @@ func main() {
 		0,
 		5,
 	}}
-	var sorted []DataVarItem = func() []DataVarItem {
+	sorted := func() []DataVarItem {
 		src := _toAnySlice(dataVar)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			tmp0 := _a[0]

@@ -22,8 +22,8 @@ func classify(n int) string {
 }
 
 func main() {
-	var x int = 2
-	var label string = func() string {
+	x := 2
+	label := func() string {
 		_t := x
 		if _equal(_t, 1) {
 			return "one"
@@ -37,8 +37,8 @@ func main() {
 		return "unknown"
 	}()
 	fmt.Println(label)
-	var day string = "sun"
-	var mood string = func() string {
+	day := "sun"
+	mood := func() string {
 		_t := day
 		if _equal(_t, "mon") {
 			return "tired"
@@ -52,8 +52,8 @@ func main() {
 		return "normal"
 	}()
 	fmt.Println(mood)
-	var ok bool = true
-	var status string = func() string {
+	ok := true
+	status := func() string {
 		_t := ok
 		if _equal(_t, true) {
 			return "confirmed"

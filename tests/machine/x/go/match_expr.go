@@ -8,8 +8,8 @@ import (
 )
 
 func main() {
-	var x int = 2
-	var label string = func() string {
+	x := 2
+	label := func() string {
 		_t := x
 		if _equal(_t, 1) {
 			return "one"

@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	var nations []NationsItem = []NationsItem{NationsItem{
+	nations := []NationsItem{NationsItem{
 		1,
 		"A",
 	}, NationsItem{
@@ -18,7 +18,7 @@ func main() {
 		"B",
 	}}
 	_ = nations
-	var suppliers []SuppliersItem = []SuppliersItem{SuppliersItem{
+	suppliers := []SuppliersItem{SuppliersItem{
 		1,
 		1,
 	}, SuppliersItem{
@@ -26,7 +26,7 @@ func main() {
 		2,
 	}}
 	_ = suppliers
-	var partsupp []PartsuppItem = []PartsuppItem{PartsuppItem{
+	partsupp := []PartsuppItem{PartsuppItem{
 		100,
 		1,
 		10.0,
@@ -42,7 +42,7 @@ func main() {
 		5.0,
 		3,
 	}}
-	var filtered []Filtered = func() []Filtered {
+	filtered := func() []Filtered {
 		results := []Filtered{}
 		for _, ps := range partsupp {
 			for _, s := range suppliers {
@@ -66,7 +66,7 @@ func main() {
 		}
 		return results
 	}()
-	var grouped []Grouped = func() []Grouped {
+	grouped := func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, x := range filtered {

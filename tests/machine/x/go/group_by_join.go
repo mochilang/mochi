@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
+	customers := []CustomersItem{CustomersItem{
 		1,
 		"Alice",
 	}, CustomersItem{
@@ -16,7 +16,7 @@ func main() {
 		"Bob",
 	}}
 	_ = customers
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		100,
 		1,
 	}, OrdersItem{
@@ -26,7 +26,7 @@ func main() {
 		102,
 		2,
 	}}
-	var stats []Stats = func() []Stats {
+	stats := func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, o := range orders {

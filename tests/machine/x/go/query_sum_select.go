@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	var nums []int = []int{1, 2, 3}
-	var result []int = _sumOrdered[int](func() []int {
+	nums := []int{1, 2, 3}
+	result := _sumOrdered[int](func() []int {
 		results := []int{}
 		for _, n := range nums {
 			if n > 1 {

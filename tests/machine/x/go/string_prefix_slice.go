@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	var prefix string = "fore"
-	var s1 string = "forest"
+	prefix := "fore"
+	s1 := "forest"
 	fmt.Println((string([]rune(s1)[0:4]) == prefix))
-	var s2 string = "desert"
+	s2 := "desert"
 	fmt.Println((string([]rune(s2)[0:4]) == prefix))
 }

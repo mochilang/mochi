@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
-	var nums []int = []int{1, 2}
-	var letters []string = []string{"A", "B"}
+	nums := []int{1, 2}
+	letters := []string{"A", "B"}
 	_ = letters
-	var bools []bool = []bool{true, false}
+	bools := []bool{true, false}
 	_ = bools
-	var combos []Combos = func() []Combos {
+	combos := func() []Combos {
 		results := []Combos{}
 		for _, n := range nums {
 			for _, l := range letters {

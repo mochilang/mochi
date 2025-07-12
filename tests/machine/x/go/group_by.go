@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	var people []PeopleItem = []PeopleItem{
+	people := []PeopleItem{
 		PeopleItem{
 			"Alice",
 			30,
@@ -42,7 +42,7 @@ func main() {
 			"Hanoi",
 		},
 	}
-	var stats []Stats = func() []Stats {
+	stats := func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, person := range people {

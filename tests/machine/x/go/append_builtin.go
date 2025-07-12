@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var a []int = []int{1, 2}
+	a := []int{1, 2}
 	_print(append(a, 3))
 }
 

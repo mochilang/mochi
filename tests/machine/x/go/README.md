@@ -109,5 +109,5 @@ Checklist:
 
 ## Remaining Tasks
 
-- [x] Simplify slice conversions and printing logic
+- [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`

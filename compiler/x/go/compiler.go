@@ -1179,11 +1179,6 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 		return nil
 	}
 
-	c.writeIndent()
-	c.buf.WriteString("for {\n")
-	c.indent++
-
-	// Evaluate the loop condition at the start of each iteration.
 	cond, err := c.compileExpr(stmt.Cond)
 	if err != nil {
 		return err
@@ -1192,13 +1187,10 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	if !isBool(ct) {
 		cond = c.castExpr(cond, ct, types.BoolType{})
 	}
+
 	c.writeIndent()
-	c.buf.WriteString("if !(" + cond + ") {\n")
+	c.buf.WriteString("for " + cond + " {\n")
 	c.indent++
-	c.writeln("break")
-	c.indent--
-	c.writeIndent()
-	c.buf.WriteString("}\n")
 
 	if err := c.compileStmtList(stmt.Body); err != nil {
 		return err
@@ -4064,7 +4056,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
-		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
+		simple := true
+		if c.env != nil {
+			for _, a := range call.Args {
+				t := c.inferExprType(a)
+				if isList(t) || isMap(t) || (isAny(t) && isListOrMapExpr(a)) {
+					simple = false
+					break
+				}
+			}
+		}
+		if simple {
+			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
+		}
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
