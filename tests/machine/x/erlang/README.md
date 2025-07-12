@@ -31,7 +31,7 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 - [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [ ] group_by_left_join (error)
+ - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
@@ -69,17 +69,17 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 - [x] min_max_builtin
 - [x] nested_function
 - [x] order_by_map
-- [ ] outer_join (error)
+ - [x] outer_join
 - [x] partial_application
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
 - [ ] python_auto (error)
 - [ ] python_math (error)
-- [ ] query_sum_select (error)
+ - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout (error)
+ - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable
