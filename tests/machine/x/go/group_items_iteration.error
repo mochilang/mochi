@@ -1,7 +1,9 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/group_items_iteration.go:14:16: undefined: DataVarItem
-tests/machine/x/go/group_items_iteration.go:17:5: undefined: DataVarItem
-tests/machine/x/go/group_items_iteration.go:20:5: undefined: DataVarItem
-tests/machine/x/go/group_items_iteration.go:49:23: x.Val undefined (type any has no field or method Val)
-tests/machine/x/go/group_items_iteration.go:51:21: undefined: v
+../../../tests/machine/x/go/group_items_iteration.go:14:16: undefined: DataVarItem
+../../../tests/machine/x/go/group_items_iteration.go:17:5: undefined: DataVarItem
+../../../tests/machine/x/go/group_items_iteration.go:20:5: undefined: DataVarItem
+../../../tests/machine/x/go/group_items_iteration.go:49:23: x.Val undefined (type any has no field or method Val)
+../../../tests/machine/x/go/group_items_iteration.go:51:21: undefined: v
+
+1: //go:build ignore

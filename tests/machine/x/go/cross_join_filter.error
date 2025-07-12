@@ -1,5 +1,7 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/cross_join_filter.go:14:14: undefined: Pairs
-tests/machine/x/go/cross_join_filter.go:15:16: undefined: Pairs
-tests/machine/x/go/cross_join_filter.go:19:32: undefined: Pairs
+../../../tests/machine/x/go/cross_join_filter.go:13:14: undefined: Pairs
+../../../tests/machine/x/go/cross_join_filter.go:14:16: undefined: Pairs
+../../../tests/machine/x/go/cross_join_filter.go:18:32: undefined: Pairs
+
+1: //go:build ignore

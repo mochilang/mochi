@@ -1,13 +1,15 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/left_join_multi.go:12:18: undefined: CustomersItem
-tests/machine/x/go/left_join_multi.go:15:5: undefined: CustomersItem
-tests/machine/x/go/left_join_multi.go:20:15: undefined: OrdersItem
-tests/machine/x/go/left_join_multi.go:23:5: undefined: OrdersItem
-tests/machine/x/go/left_join_multi.go:27:14: undefined: ItemsItem
-tests/machine/x/go/left_join_multi.go:32:15: undefined: Result
-tests/machine/x/go/left_join_multi.go:37:11: undefined: OrdersItem
-tests/machine/x/go/left_join_multi.go:39:16: undefined: OrdersItem
-tests/machine/x/go/left_join_multi.go:43:11: undefined: CustomersItem
-tests/machine/x/go/left_join_multi.go:45:16: undefined: CustomersItem
-tests/machine/x/go/left_join_multi.go:45:16: too many errors
+../../../tests/machine/x/go/left_join_multi.go:11:18: undefined: CustomersItem
+../../../tests/machine/x/go/left_join_multi.go:14:5: undefined: CustomersItem
+../../../tests/machine/x/go/left_join_multi.go:19:15: undefined: OrdersItem
+../../../tests/machine/x/go/left_join_multi.go:22:5: undefined: OrdersItem
+../../../tests/machine/x/go/left_join_multi.go:26:14: undefined: ItemsItem
+../../../tests/machine/x/go/left_join_multi.go:31:15: undefined: Result
+../../../tests/machine/x/go/left_join_multi.go:36:11: undefined: OrdersItem
+../../../tests/machine/x/go/left_join_multi.go:38:16: undefined: OrdersItem
+../../../tests/machine/x/go/left_join_multi.go:42:11: undefined: CustomersItem
+../../../tests/machine/x/go/left_join_multi.go:44:16: undefined: CustomersItem
+../../../tests/machine/x/go/left_join_multi.go:44:16: too many errors
+
+1: //go:build ignore

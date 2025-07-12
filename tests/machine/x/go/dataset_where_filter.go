@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 )
 
 func main() {
@@ -43,7 +42,7 @@ func main() {
 	}()
 	fmt.Println("--- Adults ---")
 	for _, person := range adults {
-		_print(person.Name, "is", person.Age, func() string {
+		fmt.Println(person.Name, "is", person.Age, func() string {
 			if person.Is_senior {
 				return " (senior)"
 			} else {
@@ -51,41 +50,4 @@ func main() {
 			}
 		}())
 	}
-}
-
-func _print(args ...any) {
-	first := true
-	for _, a := range args {
-		if !first {
-			fmt.Print(" ")
-		}
-		first = false
-		rv := reflect.ValueOf(a)
-		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
-			fmt.Print("<nil>")
-			continue
-		}
-		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
-			for i := 0; i < rv.Len(); i++ {
-				if i > 0 {
-					fmt.Print(" ")
-				}
-				fmt.Print(_sprint(rv.Index(i).Interface()))
-			}
-			continue
-		}
-		fmt.Print(_sprint(a))
-	}
-	fmt.Println()
-}
-
-func _sprint(v any) string {
-	if v == nil {
-		return "<nil>"
-	}
-	rv := reflect.ValueOf(v)
-	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
-		return "<nil>"
-	}
-	return fmt.Sprint(v)
 }

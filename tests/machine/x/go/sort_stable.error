@@ -1,9 +1,11 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/sort_stable.go:12:14: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:15:5: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:18:5: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:26:10: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:28:15: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:34:10: undefined: ItemsItem
-tests/machine/x/go/sort_stable.go:36:15: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:12:14: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:15:5: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:18:5: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:26:10: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:28:15: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:34:10: undefined: ItemsItem
+../../../tests/machine/x/go/sort_stable.go:36:15: undefined: ItemsItem
+
+1: //go:build ignore
