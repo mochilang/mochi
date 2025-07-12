@@ -1,0 +1,8 @@
+error: /workspace/mochi/tests/machine/x/rb/python_math.rb:2:in `<main>': undefined local variable or method `math' for main:Object (NameError)
+
+$area = (math.pi * math.pow.call($r, 2.0))
+         ^^^^
+1: $r = 3.0
+2: $area = (math.pi * math.pow.call($r, 2.0))
+3: $root = math.sqrt.call(49.0)
+4: $sin45 = math.sin.call((math.pi / 4.0))

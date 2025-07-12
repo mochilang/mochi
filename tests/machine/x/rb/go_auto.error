@@ -1,0 +1,8 @@
+error: /workspace/mochi/tests/machine/x/rb/go_auto.rb:1:in `<main>': undefined local variable or method `testpkg' for main:Object (NameError)
+
+puts(testpkg.Add.call(2, 3))
+     ^^^^^^^
+Did you mean?  test
+1: puts(testpkg.Add.call(2, 3))
+2: puts(testpkg.Pi)
+3: puts(testpkg.Answer)
