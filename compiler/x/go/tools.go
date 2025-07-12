@@ -117,7 +117,14 @@ func EnsureGopls() error {
 // additional cleanup. The input is returned with a trailing newline.
 func FormatGo(src []byte) []byte {
 	header := meta.Header("//")
-	src = append(header, src...)
+	var prefix []byte
+	if bytes.HasPrefix(src, []byte("//go:")) || bytes.HasPrefix(src, []byte("// +build")) {
+		if i := bytes.IndexByte(src, '\n'); i != -1 {
+			prefix = append([]byte(nil), src[:i+1]...)
+			src = src[i+1:]
+		}
+	}
+	src = append(prefix, append(header, src...)...)
 
 	if out, err := format.Source(src); err == nil {
 		src = out
