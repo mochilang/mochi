@@ -3209,7 +3209,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			}
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.items.len);", listC, res, listC, src))
+			if listC == "list_int" {
+				c.stackListInt(res, fmt.Sprintf("%s.items.len", src), "0")
+			} else {
+				c.writeln(fmt.Sprintf("%s %s = %s_create(%s.items.len);", listC, res, listC, src))
+			}
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			loop := c.newLoopVar()
 			c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.items.len; %s++) {", loop, loop, src, loop))
@@ -3306,7 +3310,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		tmp := c.newTemp()
 		idxTmp := c.newTemp()
 		iter := c.newTemp()
-		c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, tmp, listC, src))
+		if listC == "list_int" {
+			c.stackListInt(tmp, c.listLenExpr(src), "0")
+		} else {
+			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, tmp, listC, src))
+		}
 		c.writeln(fmt.Sprintf("int %s = 0;", idxTmp))
 		c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src, iter))
 		c.indent++
@@ -3358,7 +3366,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			keyType = "int"
 		}
 	}
-	c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, src))
+	if listC == "list_int" {
+		c.stackListInt(res, c.listLenExpr(src), "0")
+	} else {
+		c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, src))
+	}
 	if keyType != "" {
 		keyArr = c.newTemp()
 		c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, src))
