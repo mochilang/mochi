@@ -1,13 +1,15 @@
 program partial_application
   implicit none
-  integer :: add5
-  add5 = add(5)
   print *, add5(3)
-  contains
-  recursive integer function add(a,b) result(res)
-    integer, intent(in) :: a
-    integer, intent(in) :: b
-    res = (a + b)
-    return
+contains
+  function add(a,b) result(res)
+    integer, intent(in) :: a,b
+    integer :: res
+    res = a + b
   end function add
+  function add5(b) result(res)
+    integer, intent(in) :: b
+    integer :: res
+    res = add(5,b)
+  end function add5
 end program partial_application

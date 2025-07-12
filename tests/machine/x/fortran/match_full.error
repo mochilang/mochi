@@ -1,0 +1,47 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:17:33:
+
+   17 |   character(len=3) :: day = 'sun'
+      |                                 1
+Error: Unexpected data declaration statement at (1)
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:18:27:
+
+   18 |   character(len=10) :: mood
+      |                           1
+Error: Unexpected data declaration statement at (1)
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:31:24:
+
+   31 |   logical :: ok = .true.
+      |                        1
+Error: Unexpected data declaration statement at (1)
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:32:29:
+
+   32 |   character(len=10) :: status
+      |                             1
+Error: Unexpected data declaration statement at (1)
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:19:18:
+
+   19 |   select case (day)
+      |                  1
+Error: Symbol ‘day’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:21:8:
+
+   21 |     mood = 'tired'
+      |        1
+Error: Symbol ‘mood’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:33:8:
+
+   33 |   if (ok) then
+      |        1
+Error: Symbol ‘ok’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:34:10:
+
+   34 |     status = 'confirmed'
+      |          1
+Error: Symbol ‘status’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/machine/x/fortran/match_full.f90:19:15:
+
+   19 |   select case (day)
+      |               1
+Error: Argument of SELECT statement at (1) cannot be UNKNOWN
+

@@ -1,4 +1,8 @@
 program cast_string_to_int
   implicit none
-  print *, 1995
+  character(len=4) :: s
+  integer :: i
+  s = '1995'
+  read(s,'(I4)') i
+  print *, i
 end program cast_string_to_int

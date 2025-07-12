@@ -1,0 +1,25 @@
+error: gfortran: exit status 1
+/workspace/mochi/tests/machine/x/fortran/user_type_literal.f90:11:20:
+
+    7 |   type :: Book
+      |              2      
+......
+   11 |   type(Book) :: book
+      |                    1
+Error: Symbol ‘book’ at (1) also declared as a type at (2)
+/workspace/mochi/tests/machine/x/fortran/user_type_literal.f90:13:7:
+
+   13 |   book%title = 'Go'
+      |       1
+Error: Derived type ‘book’ cannot be used as a variable at (1)
+/workspace/mochi/tests/machine/x/fortran/user_type_literal.f90:14:7:
+
+   14 |   book%author = Person('Bob', 42)
+      |       1
+Error: Derived type ‘book’ cannot be used as a variable at (1)
+/workspace/mochi/tests/machine/x/fortran/user_type_literal.f90:16:21:
+
+   16 |   print *, trim(book%author%name)
+      |                     1
+Error: Function ‘book’ requires an argument list at (1)
+
