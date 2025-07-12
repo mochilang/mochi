@@ -9,7 +9,11 @@ typedef struct {
 static list_int list_int_create(int len) {
   list_int l;
   l.len = len;
-  l.data = (int *)malloc(sizeof(int) * len);
+  l.data = calloc(len, sizeof(int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -19,7 +23,11 @@ typedef struct {
 static list_float list_float_create(int len) {
   list_float l;
   l.len = len;
-  l.data = (double *)malloc(sizeof(double) * len);
+  l.data = calloc(len, sizeof(double));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -29,7 +37,11 @@ typedef struct {
 static list_string list_string_create(int len) {
   list_string l;
   l.len = len;
-  l.data = (char **)malloc(sizeof(char *) * len);
+  l.data = calloc(len, sizeof(char *));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -39,7 +51,11 @@ typedef struct {
 static list_list_int list_list_int_create(int len) {
   list_list_int l;
   l.len = len;
-  l.data = (list_int *)malloc(sizeof(list_int) * len);
+  l.data = calloc(len, sizeof(list_int));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return l;
 }
 typedef struct {
@@ -47,8 +63,11 @@ typedef struct {
   int value;
 } map_int_bool_item;
 static map_int_bool_item *map_int_bool_item_new(int key, int value) {
-  map_int_bool_item *it =
-      (map_int_bool_item *)malloc(sizeof(map_int_bool_item));
+  map_int_bool_item *it = calloc(1, sizeof(map_int_bool_item));
+  if (!it) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   it->key = key;
   it->value = value;
   return it;
@@ -62,8 +81,11 @@ static map_int_bool map_int_bool_create(int cap) {
   map_int_bool m;
   m.len = 0;
   m.cap = cap;
-  m.data = cap ? (map_int_bool_item **)malloc(sizeof(map_int_bool_item *) * cap)
-               : NULL;
+  m.data = cap ? calloc(cap, sizeof(map_int_bool_item *)) : NULL;
+  if (cap && !m.data) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
   return m;
 }
 static void map_int_bool_put(map_int_bool *m, int key, int value) {
@@ -124,72 +146,150 @@ static void _json_list_list_int(list_list_int v) {
   }
   printf("]");
 }
+typedef struct {
+  int l_quantity;
+  double l_extendedprice;
+  double l_discount;
+  double l_tax;
+  char *l_returnflag;
+  char *l_linestatus;
+  char *l_shipdate;
+} LineitemItem;
+typedef struct {
+  int len;
+  LineitemItem *data;
+} list_LineitemItem;
+static list_LineitemItem list_LineitemItem_create(int len) {
+  list_LineitemItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(LineitemItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int returnflag;
+  int linestatus;
+  double sum_qty;
+  double sum_base_price;
+  double sum_disc_price;
+  double sum_charge;
+  double avg_qty;
+  double avg_price;
+  double avg_disc;
+  int count_order;
+} ResultItem;
+typedef struct {
+  int len;
+  ResultItem *data;
+} list_ResultItem;
+static list_ResultItem list_ResultItem_create(int len) {
+  list_ResultItem l;
+  l.len = len;
+  l.data = calloc(len, sizeof(ResultItem));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
 static void
 test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-  list_int _t1 = list_int_create(1);
-  map_int_bool _t2 = map_int_bool_create(10);
-  map_int_bool_put(&_t2, returnflag, "N");
-  map_int_bool_put(&_t2, linestatus, "O");
-  map_int_bool_put(&_t2, sum_qty, 53);
-  map_int_bool_put(&_t2, sum_base_price, 3000);
-  map_int_bool_put(&_t2, sum_disc_price, (950.0 + 1800.0));
-  map_int_bool_put(&_t2, sum_charge, (((950.0 * 1.07)) + ((1800.0 * 1.05))));
-  map_int_bool_put(&_t2, avg_qty, 26.5);
-  map_int_bool_put(&_t2, avg_price, 1500);
-  map_int_bool_put(&_t2, avg_disc, 0.07500000000000001);
-  map_int_bool_put(&_t2, count_order, 2);
-  _t1.data[0] = _t2;
-  if (!((result == _t1))) {
+  map_int_bool tmp2 = map_int_bool_create(10);
+  map_int_bool_put(&tmp2, "returnflag", "N");
+  map_int_bool_put(&tmp2, "linestatus", "O");
+  map_int_bool_put(&tmp2, "sum_qty", 53);
+  map_int_bool_put(&tmp2, "sum_base_price", 3000);
+  map_int_bool_put(&tmp2, "sum_disc_price", 950.0 + 1800.0);
+  map_int_bool_put(&tmp2, "sum_charge", (950.0 * 1.07) + (1800.0 * 1.05));
+  map_int_bool_put(&tmp2, "avg_qty", 26.5);
+  map_int_bool_put(&tmp2, "avg_price", 1500);
+  map_int_bool_put(&tmp2, "avg_disc", 0.07500000000000001);
+  map_int_bool_put(&tmp2, "count_order", 2);
+  int tmp1[] = {tmp2};
+  if (!(result == tmp1)) {
     fprintf(stderr, "expect failed\n");
     exit(1);
   }
 }
 
 int main() {
-  typedef struct {
-    int l_quantity;
-    double l_extendedprice;
-    double l_discount;
-    double l_tax;
-    char *l_returnflag;
-    char *l_linestatus;
-    char *l_shipdate;
-  } lineitemItem;
-  typedef struct {
-    int len;
-    lineitemItem *data;
-  } list_lineitemItem;
-  static list_lineitemItem list_lineitemItem_create(int len) {
-    list_lineitemItem l;
-    l.len = len;
-    l.data = (lineitemItem *)malloc(sizeof(lineitemItem) * len);
-    return l;
+  LineitemItem tmp3_data[] = {(LineitemItem){.l_quantity = 17,
+                                             .l_extendedprice = 1000.0,
+                                             .l_discount = 0.05,
+                                             .l_tax = 0.07,
+                                             .l_returnflag = "N",
+                                             .l_linestatus = "O",
+                                             .l_shipdate = "1998-08-01"},
+                              (LineitemItem){.l_quantity = 36,
+                                             .l_extendedprice = 2000.0,
+                                             .l_discount = 0.1,
+                                             .l_tax = 0.05,
+                                             .l_returnflag = "N",
+                                             .l_linestatus = "O",
+                                             .l_shipdate = "1998-09-01"},
+                              (LineitemItem){.l_quantity = 25,
+                                             .l_extendedprice = 1500.0,
+                                             .l_discount = 0.0,
+                                             .l_tax = 0.08,
+                                             .l_returnflag = "R",
+                                             .l_linestatus = "F",
+                                             .l_shipdate = "1998-09-03"}};
+  list_LineitemItem tmp3 = {3, tmp3_data};
+  list_LineitemItem lineitem = tmp3;
+  list_ResultItem result = 0;
+  printf("[");
+  for (int i4 = 0; i4 < result.len; i4++) {
+    if (i4 > 0)
+      printf(",");
+    ResultItem it = result.data[i4];
+    printf("{");
+    _json_string("returnflag");
+    printf(":");
+    _json_int(it.returnflag);
+    printf(",");
+    _json_string("linestatus");
+    printf(":");
+    _json_int(it.linestatus);
+    printf(",");
+    _json_string("sum_qty");
+    printf(":");
+    _json_float(it.sum_qty);
+    printf(",");
+    _json_string("sum_base_price");
+    printf(":");
+    _json_float(it.sum_base_price);
+    printf(",");
+    _json_string("sum_disc_price");
+    printf(":");
+    _json_float(it.sum_disc_price);
+    printf(",");
+    _json_string("sum_charge");
+    printf(":");
+    _json_float(it.sum_charge);
+    printf(",");
+    _json_string("avg_qty");
+    printf(":");
+    _json_float(it.avg_qty);
+    printf(",");
+    _json_string("avg_price");
+    printf(":");
+    _json_float(it.avg_price);
+    printf(",");
+    _json_string("avg_disc");
+    printf(":");
+    _json_float(it.avg_disc);
+    printf(",");
+    _json_string("count_order");
+    printf(":");
+    _json_int(it.count_order);
+    printf("}");
   }
-  list_lineitemItem _t3 = list_lineitemItem_create(3);
-  _t3.data[0] = (lineitemItem){.l_quantity = 17,
-                               .l_extendedprice = 1000.0,
-                               .l_discount = 0.05,
-                               .l_tax = 0.07,
-                               .l_returnflag = "N",
-                               .l_linestatus = "O",
-                               .l_shipdate = "1998-08-01"};
-  _t3.data[1] = (lineitemItem){.l_quantity = 36,
-                               .l_extendedprice = 2000.0,
-                               .l_discount = 0.1,
-                               .l_tax = 0.05,
-                               .l_returnflag = "N",
-                               .l_linestatus = "O",
-                               .l_shipdate = "1998-09-01"};
-  _t3.data[2] = (lineitemItem){.l_quantity = 25,
-                               .l_extendedprice = 1500.0,
-                               .l_discount = 0.0,
-                               .l_tax = 0.08,
-                               .l_returnflag = "R",
-                               .l_linestatus = "F",
-                               .l_shipdate = "1998-09-03"};
-  int lineitem = _t3;
-  list_int result = 0;
-  _json_int(result);
+  printf("]");
   test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
   return 0;
 }
