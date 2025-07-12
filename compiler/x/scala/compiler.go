@@ -1061,6 +1061,9 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 			if err != nil {
 				return err
 			}
+			if isIfExpr(a) {
+				v = "(" + v + ")"
+			}
 			args[i] = v
 		}
 		if len(args) == 1 {
@@ -1659,7 +1662,7 @@ func (c *Compiler) compileMap(m *parser.MapLiteral, mutable bool) (string, error
 		if err != nil {
 			return "", err
 		}
-		items[i] = fmt.Sprintf("%s -> (%s)", k, v)
+		items[i] = fmt.Sprintf("%s -> %s", k, v)
 		vals[i] = v
 	}
 	prefix := "Map"
@@ -2303,6 +2306,21 @@ func simplePostfixIdent(p *parser.PostfixExpr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func isIfExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.If == nil {
+		return false
+	}
+	return true
 }
 
 func identName(e *parser.Expr) (string, bool) {

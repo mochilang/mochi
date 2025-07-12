@@ -104,5 +104,10 @@ The following Mochi programs were compiled to Scala using the automated compiler
 - [x] while_loop.mochi
 All programs compiled successfully.
 
+Recent improvements:
+- Map literal values no longer include extraneous parentheses.
+- Conditional expressions used in print statements are now wrapped in
+  parentheses for valid Scala syntax.
+
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style
