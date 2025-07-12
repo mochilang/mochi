@@ -10,7 +10,7 @@ type
 var
   _tmp0: specialize TFPGMap<string, integer>;
   _tmp1: integer;
-  k: specialize TFPGMap<string, integer>;
+  k: string;
   m: specialize TFPGMap<string, integer>;
 
 begin
