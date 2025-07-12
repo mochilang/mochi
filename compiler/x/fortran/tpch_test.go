@@ -18,7 +18,7 @@ import (
 func TestFortranCompiler_TPCH(t *testing.T) {
 	gfortran := ensureFortran(t)
 	root := testutil.FindRepoRoot(t)
-	for _, q := range []string{"q1", "q2"} {
+	for _, q := range []string{"q1", "q2", "q3"} {
 		q := q
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
