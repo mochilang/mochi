@@ -114,7 +114,7 @@ Compiled: 100/100 programs
 - [x] Use template strings for string concatenation
 - [x] Leverage built-in array helpers instead of manual loops
 - [x] Add async function support for I/O operations
-- [ ] Preserve comments from source Mochi code
+- [x] Preserve comments from source Mochi code
 - [ ] Generate discriminated union helpers
 - [ ] Optimize query translations to use map/reduce
 - [ ] Support optional chaining and nullish coalescing
