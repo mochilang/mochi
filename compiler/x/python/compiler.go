@@ -18,49 +18,57 @@ import (
 
 // Compiler translates a Mochi AST into Python source code.
 type Compiler struct {
-	buf          bytes.Buffer
-	indent       int
-	helpers      map[string]bool
-	imports      map[string]string
-	env          *types.Env
-	structs      map[string]bool
-	agents       map[string]bool
-	handlerCount int
-	tmpCount     int
-	models       bool
-	methodFields map[string]bool
-	tupleFields  map[string]map[string]int
-	currentGroup string
-	groupFields  map[string]bool
-	autoStructs  map[string]types.StructType
-	structKeys   map[string]string
-	autoCount    int
-	typeHints    bool
+	buf                bytes.Buffer
+	indent             int
+	helpers            map[string]bool
+	imports            map[string]string
+	env                *types.Env
+	structs            map[string]bool
+	agents             map[string]bool
+	handlerCount       int
+	tmpCount           int
+	models             bool
+	methodFields       map[string]bool
+	tupleFields        map[string]map[string]int
+	currentGroup       string
+	groupFields        map[string]bool
+	autoStructs        map[string]types.StructType
+	structKeys         map[string]string
+	autoCount          int
+	typeHints          bool
+	autoStructsEnabled bool
 }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		helpers:      make(map[string]bool),
-		imports:      make(map[string]string),
-		env:          env,
-		structs:      make(map[string]bool),
-		agents:       make(map[string]bool),
-		models:       false,
-		tmpCount:     0,
-		methodFields: nil,
-		tupleFields:  make(map[string]map[string]int),
-		currentGroup: "",
-		groupFields:  nil,
-		autoStructs:  make(map[string]types.StructType),
-		structKeys:   make(map[string]string),
-		autoCount:    0,
-		typeHints:    true,
+		helpers:            make(map[string]bool),
+		imports:            make(map[string]string),
+		env:                env,
+		structs:            make(map[string]bool),
+		agents:             make(map[string]bool),
+		models:             false,
+		tmpCount:           0,
+		methodFields:       nil,
+		tupleFields:        make(map[string]map[string]int),
+		currentGroup:       "",
+		groupFields:        nil,
+		autoStructs:        make(map[string]types.StructType),
+		structKeys:         make(map[string]string),
+		autoCount:          0,
+		typeHints:          true,
+		autoStructsEnabled: true,
 	}
 }
 
 // SetTypeHints enables or disables type annotations in generated code.
 func (c *Compiler) SetTypeHints(v bool) {
 	c.typeHints = v
+}
+
+// SetAutoStructs enables or disables automatic dataclass generation for
+// list literals that look like structs.
+func (c *Compiler) SetAutoStructs(v bool) {
+	c.autoStructsEnabled = v
 }
 
 func containsStreamCode(stmts []*parser.Statement) bool {

@@ -26,11 +26,11 @@ def _get(obj, name):
     raise Exception("field not found: " + name)
 
 
-r: float = 3
-area: float = _get(math, "pi") * _get(math, "pow")(r, 2)
-root: float = _get(math, "sqrt")(49)
-sin45: float = _get(math, "sin")(_get(math, "pi") / 4)
-log_e: float = _get(math, "log")(_get(math, "e"))
+r = 3
+area = _get(math, "pi") * _get(math, "pow")(r, 2)
+root = _get(math, "sqrt")(49)
+sin45 = _get(math, "sin")(_get(math, "pi") / 4)
+log_e = _get(math, "log")(_get(math, "e"))
 print("Circle area with r =", r, "=>", area)
 print("Square root of 49:", root)
 print("sin(π/4):", sin45)
