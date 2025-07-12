@@ -948,7 +948,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		selectFn := fmt.Sprintf("fn %s -> [%s] end", allParams, allParams)
 		whereFn := ""
 		if cond != "" {
-			whereFn = fmt.Sprintf("fn %s -> %s end", allParams, cond)
+			whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
 		}
 		var b strings.Builder
 		b.WriteString("(fn ->\n")
@@ -1170,7 +1170,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		selectFn := fmt.Sprintf("fn %s -> %s end", allParams, sel)
 		whereFn := ""
 		if cond != "" {
-			whereFn = fmt.Sprintf("fn %s -> %s end", allParams, cond)
+			whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
 		}
 		sortFn := ""
 		if sortExpr != "" {
