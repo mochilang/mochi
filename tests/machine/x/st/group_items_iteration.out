@@ -2,3 +2,8 @@ Object: Dictionary error: did not understand #newFrom:
 MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
 Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
 UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:2)
+Object: nil error: did not understand #do:
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:6)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:3)

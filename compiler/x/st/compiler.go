@@ -588,7 +588,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			pairs[i] = fmt.Sprintf("%s->%s", k, v)
 		}
-		return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
+		return "Dictionary newFrom:{" + strings.Join(pairs, ". ") + "}", nil
 	case p.Struct != nil:
 		return c.compileStructLiteral(p.Struct)
 	case p.Load != nil:
@@ -883,7 +883,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		for i, v := range vars {
 			fields[i] = fmt.Sprintf("#%s->%s", v, v)
 		}
-		row = "Dictionary from: {" + strings.Join(fields, ". ") + "}"
+		row = "Dictionary newFrom:{" + strings.Join(fields, ". ") + "}"
 		k, err := c.compileExpr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
@@ -920,7 +920,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		b.WriteString("  groups keysAndValuesDo: [:k :grp |\n")
 		b.WriteString("    | " + q.Group.Name + " |\n")
-		b.WriteString("    " + q.Group.Name + " := Dictionary from: {'key'->k. 'items'->grp}.\n")
+		b.WriteString("    " + q.Group.Name + " := Dictionary newFrom:{'key'->k. 'items'->grp}.\n")
 		b.WriteString("    tmp add: " + sel + ".\n")
 		b.WriteString("  ].\n")
 	}
@@ -1154,7 +1154,7 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 		}
 		fields[i] = fmt.Sprintf("'%s'->%s", f.Name, v)
 	}
-	return "Dictionary from: {" + strings.Join(fields, ". ") + "}", nil
+	return "Dictionary newFrom:{" + strings.Join(fields, ". ") + "}", nil
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {

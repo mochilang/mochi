@@ -6,7 +6,7 @@ pairs := [ | tmp |
   nums do: [:n |
     letters do: [:l |
       (((n % 2) = 0)) ifTrue: [
-        tmp add: Dictionary newFrom:{#n->n. #l->l}.
+        tmp add: Dictionary newFrom:{n->n. l->l}.
       ].
     ].
   ].

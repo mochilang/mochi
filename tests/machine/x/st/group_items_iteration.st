@@ -1,16 +1,16 @@
 | data groups tmp g total x result |
-data := {Dictionary newFrom:{#tag->'a'. #val->1}. Dictionary newFrom:{#tag->'a'. #val->2}. Dictionary newFrom:{#tag->'b'. #val->3}}.
+data := {Dictionary newFrom:{'tag'->'a'. 'val'->1}. Dictionary newFrom:{'tag'->'a'. 'val'->2}. Dictionary newFrom:{'tag'->'b'. 'val'->3}}.
 groups := [ | groups tmp |
   groups := Dictionary new.
   tmp := OrderedCollection new.
   data do: [:d |
     | g |
-    g := groups at: d.tag ifAbsentPut:[OrderedCollection new].
-    g add: Dictionary newFrom: {#d->d}.
+    g := groups at: d at: 'tag' ifAbsentPut:[OrderedCollection new].
+    g add: Dictionary newFrom:{#d->d}.
   ].
   groups keysAndValuesDo: [:k :grp |
     | g |
-    g := Dictionary newFrom:{#key->k. #items->grp}.
+    g := Dictionary newFrom:{'key'->k. 'items'->grp}.
     tmp add: g.
   ].
   tmp
@@ -22,7 +22,7 @@ g at: 'items' do: [:x |.
 total := (total + x at: 'val').
 ].
 .
-tmp := tmp copyWith: Dictionary newFrom:{#tag->g at: 'key'. total->total}.
+tmp := tmp copyWith: Dictionary newFrom:{'tag'->g at: 'key'. total->total}.
 ].
 .
 result := [ | tmp |
@@ -30,7 +30,7 @@ result := [ | tmp |
   tmp do: [:r |
     tmp add: r.
   ].
-  tmp := tmp asSortedCollection: [:a :b | a.tag < b.tag].
+  tmp := tmp asSortedCollection: [:a :b | a at: 'tag' < b at: 'tag'].
   tmp
 ] value.
 Transcript show: (result) printString; cr.
