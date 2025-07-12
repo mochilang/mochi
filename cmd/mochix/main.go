@@ -33,11 +33,37 @@ import (
 	ffiinfo "mochi/runtime/ffi/infer"
 	python "mochi/runtime/ffi/python"
 
+	ccode "mochi/compiler/x/c"
 	cljcode "mochi/compiler/x/clj"
+	cobolcode "mochi/compiler/x/cobol"
+	cppcode "mochi/compiler/x/cpp"
+	cscode "mochi/compiler/x/cs"
 	dartcode "mochi/compiler/x/dart"
+	erlangcode "mochi/compiler/x/erlang"
+	excode "mochi/compiler/x/ex"
+	ftncode "mochi/compiler/x/fortran"
+	fscode "mochi/compiler/x/fs"
 	gocode "mochi/compiler/x/go"
+	hscode "mochi/compiler/x/hs"
+	javacode "mochi/compiler/x/java"
+	kotlincode "mochi/compiler/x/kotlin"
+	luacode "mochi/compiler/x/lua"
+	ocamlcode "mochi/compiler/x/ocaml"
+	pascode "mochi/compiler/x/pascal"
+	phpcode "mochi/compiler/x/php"
+	plcode "mochi/compiler/x/pl"
 	pycode "mochi/compiler/x/python"
+	racketcode "mochi/compiler/x/racket"
+	rbcode "mochi/compiler/x/rb"
+	rustcode "mochi/compiler/x/rust"
+	scalacode "mochi/compiler/x/scala"
+	schemecode "mochi/compiler/x/scheme"
+	smalltalkcode "mochi/compiler/x/smalltalk"
+	stcode "mochi/compiler/x/st"
+	swiftcode "mochi/compiler/x/swift"
 	tscode "mochi/compiler/x/ts"
+	typescriptcode "mochi/compiler/x/typescript"
+	zigcode "mochi/compiler/x/zig"
 
 	"mochi/ast"
 	"mochi/interpreter"
@@ -485,7 +511,7 @@ func runBuild(cmd *BuildCmd) error {
 	if lang == "" && cmd.Out != "" {
 		lang = strings.TrimPrefix(filepath.Ext(cmd.Out), ".")
 	}
-	data, err := compileProgram(lang, env, prog, modRoot)
+	data, err := compileProgram(lang, env, prog, modRoot, cmd.File)
 	if err != nil {
 		return err
 	}
@@ -514,7 +540,7 @@ func runBuildX(cmd *BuildXCmd) error {
 		return fmt.Errorf("aborted due to type errors")
 	}
 	lang := strings.ToLower(cmd.Target)
-	data, err := compileProgram(lang, env, prog, modRoot)
+	data, err := compileProgram(lang, env, prog, modRoot, cmd.File)
 	if err != nil {
 		return err
 	}
@@ -667,18 +693,70 @@ func normalizeType(t string) string {
 	return t
 }
 
-func compileProgram(lang string, env *types.Env, prog *parser.Program, root string) ([]byte, error) {
+func compileProgram(lang string, env *types.Env, prog *parser.Program, root, src string) ([]byte, error) {
 	switch lang {
 	case "go":
 		return gocode.New(env).Compile(prog)
-	case "ts", "typescript":
+	case "ts":
 		return tscode.New(env, root).Compile(prog)
+	case "typescript":
+		return typescriptcode.New().Compile(prog)
 	case "py", "python":
 		return pycode.New(env).Compile(prog)
 	case "clj":
 		return cljcode.New(env).Compile(prog)
 	case "dart":
 		return dartcode.New(env).Compile(prog)
+	case "c":
+		return ccode.New(env).Compile(prog)
+	case "cobol":
+		return cobolcode.New(env).Compile(prog)
+	case "cpp", "c++":
+		return cppcode.New().Compile(prog)
+	case "cs", "csharp":
+		return cscode.New(env).Compile(prog)
+	case "erlang", "erl":
+		return erlangcode.New(src).Compile(prog)
+	case "ex", "elixir":
+		return excode.New(env).Compile(prog)
+	case "fortran", "ftn":
+		return ftncode.New(env).Compile(prog)
+	case "fs", "fsharp":
+		return fscode.New().Compile(prog)
+	case "hs", "haskell":
+		return hscode.New(env).Compile(prog)
+	case "java":
+		return javacode.New().Compile(prog)
+	case "kotlin", "kt":
+		return kotlincode.New(env, root).Compile(prog)
+	case "lua":
+		return luacode.New(env).Compile(prog)
+	case "ocaml":
+		return ocamlcode.New(env).Compile(prog, src)
+	case "pas", "pascal":
+		return pascode.New(env).Compile(prog)
+	case "php":
+		return phpcode.New(env).Compile(prog)
+	case "pl", "prolog":
+		return plcode.New().Compile(prog)
+	case "racket", "rkt":
+		return racketcode.New().Compile(prog)
+	case "rb", "ruby":
+		return rbcode.New(env).Compile(prog)
+	case "rust":
+		return rustcode.New(env).Compile(prog)
+	case "scala":
+		return scalacode.New(env).Compile(prog)
+	case "scheme":
+		return schemecode.New(env).Compile(prog)
+	case "smalltalk":
+		return smalltalkcode.New().Compile(prog)
+	case "st":
+		return stcode.New().Compile(prog)
+	case "swift":
+		return swiftcode.New(env).Compile(prog)
+	case "zig":
+		return zigcode.New(env).Compile(prog)
 	default:
 		return nil, fmt.Errorf("unsupported language: %s", lang)
 	}
