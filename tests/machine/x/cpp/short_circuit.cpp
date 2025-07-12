@@ -7,7 +7,7 @@ bool boom(int a, int b) {
 }
 
 int main() {
-  std::cout << std::boolalpha << (false && boom(1, 2)) << std::endl;
-  std::cout << std::boolalpha << (true || boom(1, 2)) << std::endl;
+  std::cout << ((false && boom(1, 2)) ? "true" : "false") << std::endl;
+  std::cout << ((true || boom(1, 2)) ? "true" : "false") << std::endl;
   return 0;
 }
