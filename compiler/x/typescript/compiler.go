@@ -42,6 +42,7 @@ type Compiler struct {
 	indent             int
 	tmp                int
 	needContainsHelper bool
+	needJSONHelper     bool
 	funParams          map[string]int
 	variants           map[string][]string
 	repoRoot           string
@@ -258,6 +259,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.needContainsHelper = false
+	c.needJSONHelper = false
 	c.funParams = make(map[string]int)
 	c.variants = make(map[string][]string)
 	for _, st := range prog.Statements {
@@ -312,6 +314,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		helper := "function contains(a: any, b: any) {\n" +
 			"  if (Array.isArray(a) || typeof a === \"string\") return a.includes(b);\n" +
 			"  return Object.prototype.hasOwnProperty.call(a, b);\n" +
+			"}\n"
+		code = append([]byte(helper), code...)
+	}
+	if c.needJSONHelper {
+		helper := "function _json(v: any) {\n" +
+			"  function _sort(x: any): any {\n" +
+			"    if (Array.isArray(x)) return x.map(_sort);\n" +
+			"    if (x && typeof x === \"object\") {\n" +
+			"      const keys = Object.keys(x).sort();\n" +
+			"      const o: any = {};\n" +
+			"      for (const k of keys) o[k] = _sort(x[k]);\n" +
+			"      return o;\n" +
+			"    }\n" +
+			"    return x;\n" +
+			"  }\n" +
+			"  return JSON.stringify(_sort(v));\n" +
 			"}\n"
 		code = append([]byte(helper), code...)
 	}
@@ -784,6 +802,9 @@ func (c *Compiler) funExpr(fe *parser.FunExpr) (string, error) {
 		}
 		if sub.needContainsHelper {
 			c.needContainsHelper = true
+		}
+		if sub.needJSONHelper {
+			c.needJSONHelper = true
 		}
 		lines := strings.Split(strings.TrimRight(sub.buf.String(), "\n"), "\n")
 		for i, l := range lines {
@@ -1532,7 +1553,8 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		case "json":
 			if len(args) == 1 {
-				return fmt.Sprintf("console.log(JSON.stringify(%s))", args[0]), nil
+				c.needJSONHelper = true
+				return fmt.Sprintf("console.log(_json(%s))", args[0]), nil
 			}
 			return "", fmt.Errorf("json expects 1 arg")
 		case "min":
