@@ -1,3 +1,4 @@
+// pure_global_fold.mochi
 public class PureGlobalFold {
     static int k = 2;
     static int inc(int x) {

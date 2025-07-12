@@ -1,3 +1,4 @@
+// cross_join.mochi
 import java.util.*;
 
 class IdName {
@@ -62,13 +63,13 @@ public class CrossJoin {
     List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie")));
     List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 2, 125), new IdCustomerIdTotal(102, 1, 300)));
     List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> result = (new java.util.function.Supplier<List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal>>(){public List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> get(){
-    List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> _res0 = new ArrayList<>();
+    List<OrderIdOrderCustomerIdPairedCustomerNameOrderTotal> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
-            _res0.add(new OrderIdOrderCustomerIdPairedCustomerNameOrderTotal(o.id, o.customerId, c.name, o.total));
+            res0.add(new OrderIdOrderCustomerIdPairedCustomerNameOrderTotal(o.id, o.customerId, c.name, o.total));
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Cross Join: All order-customer pairs ---");
     for (OrderIdOrderCustomerIdPairedCustomerNameOrderTotal entry : result) {

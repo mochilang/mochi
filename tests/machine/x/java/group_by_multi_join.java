@@ -1,3 +1,4 @@
+// group_by_multi_join.mochi
 import java.util.*;
 
 class IdName {
@@ -90,46 +91,53 @@ class PartTotal {
     int size() { return 2; }
 }
 public class GroupByMultiJoin {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<IdName> nations = new ArrayList<>(Arrays.asList(new IdName(1, "A"), new IdName(2, "B")));
     List<IdNation> suppliers = new ArrayList<>(Arrays.asList(new IdNation(1, 1), new IdNation(2, 2)));
     List<PartSupplierCostQty> partsupp = new ArrayList<>(Arrays.asList(new PartSupplierCostQty(100, 1, 10.000000, 2), new PartSupplierCostQty(100, 2, 20.000000, 1), new PartSupplierCostQty(200, 1, 5.000000, 3)));
     List<PartValue> filtered = (new java.util.function.Supplier<List<PartValue>>(){public List<PartValue> get(){
-    List<PartValue> _res0 = new ArrayList<>();
+    List<PartValue> res0 = new ArrayList<>();
     for (var ps : partsupp) {
         for (var s : suppliers) {
             if (!(Objects.equals(s.id, ps.supplier))) continue;
             for (var n : nations) {
                 if (!(Objects.equals(n.id, s.nation))) continue;
                 if (!(Objects.equals(n.name, "A"))) continue;
-                _res0.add(new PartValue(ps.part, ps.cost * ps.qty));
+                res0.add(new PartValue(ps.part, ps.cost * ps.qty));
             }
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     List<PartTotal> grouped = (new java.util.function.Supplier<List<PartTotal>>(){public List<PartTotal> get(){
-    List<PartTotal> _res1 = new ArrayList<>();
-    Map<Integer,List<PartValue>> _groups2 = new LinkedHashMap<>();
+    List<PartTotal> res1 = new ArrayList<>();
+    Map<Integer,List<PartValue>> groups2 = new LinkedHashMap<>();
     for (var x : filtered) {
-        var _row3 = x;
-        int _key4 = x.part;
-        List<PartValue> _b5 = _groups2.get(_key4);
-        if (_b5 == null) { _b5 = new ArrayList<>(); _groups2.put(_key4, _b5); }
-        _b5.add(_row3);
+        var row3 = x;
+        int key4 = x.part;
+        List<PartValue> bucket5 = groups2.get(key4);
+        if (bucket5 == null) { bucket5 = new ArrayList<>(); groups2.put(key4, bucket5); }
+        bucket5.add(row3);
     }
-    for (Map.Entry<Integer,List<PartValue>> __e : _groups2.entrySet()) {
+    for (Map.Entry<Integer,List<PartValue>> __e : groups2.entrySet()) {
         int g_key = __e.getKey();
-        List<PartValue> g = __e.getValue();
-        _res1.add(new PartTotal(g_key, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
-    List<Double> _res6 = new ArrayList<>();
+        Group<Integer,PartValue> g = new Group<>(g_key, __e.getValue());
+        res1.add(new PartTotal(g.key, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+    List<Double> res6 = new ArrayList<>();
     for (var r : g) {
-        _res6.add(r.value);
+        res6.add(r.value);
     }
-    return _res6;
+    return res6;
 }}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()));
     }
-    return _res1;
+    return res1;
 }}).get();
     System.out.println(grouped);
     }

@@ -1,3 +1,4 @@
+// fun_call.mochi
 public class FunCall {
     static int add(int a, int b) {
         return a + b;

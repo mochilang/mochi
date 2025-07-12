@@ -1,3 +1,4 @@
+// group_items_iteration.mochi
 import java.util.*;
 
 class TagVal {
@@ -40,39 +41,46 @@ public class GroupItemsIteration {
         res.add(item);
         return res;
     }
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<TagVal> data = new ArrayList<>(Arrays.asList(new TagVal("a", 1), new TagVal("a", 2), new TagVal("b", 3)));
-    List<Object> groups = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-    List<Object> _res0 = new ArrayList<>();
-    Map<String,List<TagVal>> _groups1 = new LinkedHashMap<>();
+    List<Group<String,TagVal>> groups = (new java.util.function.Supplier<List<Group<String,TagVal>>>(){public List<Group<String,TagVal>> get(){
+    List<Group<String,TagVal>> res0 = new ArrayList<>();
+    Map<String,List<TagVal>> groups1 = new LinkedHashMap<>();
     for (var d : data) {
-        var _row2 = d;
-        String _key3 = d.tag;
-        List<TagVal> _b4 = _groups1.get(_key3);
-        if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-        _b4.add(_row2);
+        var row2 = d;
+        String key3 = d.tag;
+        List<TagVal> bucket4 = groups1.get(key3);
+        if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+        bucket4.add(row2);
     }
-    for (Map.Entry<String,List<TagVal>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<TagVal>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<TagVal> g = __e.getValue();
-        _res0.add(new LinkedHashMap<>(Map.ofEntries(Map.entry("key", g_key), Map.entry("items", g))));
+        Group<String,TagVal> g = new Group<>(g_key, __e.getValue());
+        res0.add(g);
     }
-    return _res0;
+    return res0;
 }}).get();
     List<Object> tmp = new ArrayList<>(Arrays.asList());
-    for (Object g : groups) {
+    for (Group<String,TagVal> g : groups) {
         int total = 0;
-        for (TagVal x : (List<TagVal>)((Map)g).get("items")) {
+        for (TagVal x : g.items) {
             total = (int)(total + x.val);
         }
-        tmp.add(new TagTotal(((Map)g).get("key"), total));
+        tmp.add(new TagTotal(g.key, total));
     }
     List<Object> result = (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-    List<Object> _res5 = new ArrayList<>();
+    List<Object> res5 = new ArrayList<>();
     for (var r : tmp) {
-        _res5.add(r);
+        res5.add(r);
     }
-    return _res5;
+    return res5;
 }}).get();
     System.out.println(result);
     }

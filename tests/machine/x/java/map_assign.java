@@ -1,3 +1,4 @@
+// map_assign.mochi
 import java.util.*;
 
 class Alice {

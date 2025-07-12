@@ -1,3 +1,4 @@
+// group_by_multi_join_sort.mochi
 import java.util.*;
 
 class NNationkeyNName {
@@ -162,6 +163,13 @@ class CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName {
     int size() { return 7; }
 }
 public class GroupByMultiJoinSort {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<NNationkeyNName> nation = new ArrayList<>(Arrays.asList(new NNationkeyNName(1, "BRAZIL")));
     List<CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment> customer = new ArrayList<>(Arrays.asList(new CCustkeyCNameCAcctbalCNationkeyCAddressCPhoneCComment(1, "Alice", 100.000000, 1, "123 St", "123-456", "Loyal")));
@@ -170,8 +178,8 @@ public class GroupByMultiJoinSort {
     String start_date = "1993-10-01";
     String end_date = "1994-01-01";
     List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> result = (new java.util.function.Supplier<List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment>>(){public List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> get(){
-    List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> _res0 = new ArrayList<>();
-    Map<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> _groups1 = new LinkedHashMap<>();
+    List<CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment> res0 = new ArrayList<>();
+    Map<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> groups1 = new LinkedHashMap<>();
     for (var c : customer) {
         for (var o : orders) {
             if (!(Objects.equals(o.o_custkey, c.c_custkey))) continue;
@@ -179,28 +187,28 @@ public class GroupByMultiJoinSort {
                 if (!(Objects.equals(l.l_orderkey, o.o_orderkey))) continue;
                 for (var n : nation) {
                     if (!(Objects.equals(n.n_nationkey, c.c_nationkey))) continue;
-                    if (!(Objects.equals(String.valueOf(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && o.o_orderdate != null).compareTo(String.valueOf(end_date)) < 0 && l.l_returnflag != null, "R"))) continue;
-                    COLN _row2 = new COLN(c, o, l, n);
-                    CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName _key3 = new CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);
-                    List<COLN> _b4 = _groups1.get(_key3);
-                    if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-                    _b4.add(_row2);
+                    if (!(String.valueOf(o.o_orderdate).compareTo(String.valueOf(start_date)) >= 0 && String.valueOf(o.o_orderdate).compareTo(String.valueOf(end_date)) < 0 && Objects.equals(l.l_returnflag, "R"))) continue;
+                    COLN row2 = new COLN(c, o, l, n);
+                    CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName key3 = new CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName(c.c_custkey, c.c_name, c.c_acctbal, c.c_address, c.c_phone, c.c_comment, n.n_name);
+                    List<COLN> bucket4 = groups1.get(key3);
+                    if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+                    bucket4.add(row2);
                 }
             }
         }
     }
-    for (Map.Entry<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> __e : _groups1.entrySet()) {
+    for (Map.Entry<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,List<COLN>> __e : groups1.entrySet()) {
         CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName g_key = __e.getKey();
-        List<COLN> g = __e.getValue();
-        _res0.add(new CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment(g_key.c_custkey, g_key.c_name, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
-    List<Double> _res5 = new ArrayList<>();
+        Group<CCustkeyCNameCAcctbalCAddressCPhoneCCommentNName,COLN> g = new Group<>(g_key, __e.getValue());
+        res0.add(new CCustkeyCNameRevenueCAcctbalNNameCAddressCPhoneCComment(g.key.c_custkey, g.key.c_name, (new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+    List<Double> res5 = new ArrayList<>();
     for (var x : g) {
-        _res5.add(x.l.l_extendedprice * (1 - x.l.l_discount));
+        res5.add(x.l.l_extendedprice * (1 - x.l.l_discount));
     }
-    return _res5;
-}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum(), g_key.c_acctbal, g_key.n_name, g_key.c_address, g_key.c_phone, g_key.c_comment));
+    return res5;
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum(), g.key.c_acctbal, g.key.n_name, g.key.c_address, g.key.c_phone, g.key.c_comment));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println(result);
     }

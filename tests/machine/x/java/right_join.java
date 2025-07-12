@@ -1,3 +1,4 @@
+// right_join.mochi
 import java.util.*;
 
 class IdName {
@@ -58,20 +59,20 @@ public class RightJoin {
     List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie"), new IdName(4, "Diana")));
     List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 2, 125), new IdCustomerIdTotal(102, 1, 300)));
     List<CustomerNameOrder> result = (new java.util.function.Supplier<List<CustomerNameOrder>>(){public List<CustomerNameOrder> get(){
-    List<CustomerNameOrder> _res0 = new ArrayList<>();
+    List<CustomerNameOrder> res0 = new ArrayList<>();
     for (var c : customers) {
-        List<IdCustomerIdTotal> _tmp1 = new ArrayList<>();
-        for (var _it2 : orders) {
-            var o = _it2;
+        List<IdCustomerIdTotal> tmp1 = new ArrayList<>();
+        for (var it2 : orders) {
+            var o = it2;
             if (!(Objects.equals(o.customerId, c.id))) continue;
-            _tmp1.add(_it2);
+            tmp1.add(it2);
         }
-        if (_tmp1.isEmpty()) _tmp1.add(null);
-        for (var o : _tmp1) {
-            _res0.add(new CustomerNameOrder(c.name, o));
+        if (tmp1.isEmpty()) tmp1.add(null);
+        for (var o : tmp1) {
+            res0.add(new CustomerNameOrder(c.name, o));
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Right Join using syntax ---");
     for (CustomerNameOrder entry : result) {

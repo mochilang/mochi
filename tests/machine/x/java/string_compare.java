@@ -1,8 +1,9 @@
+// string_compare.mochi
 public class StringCompare {
     public static void main(String[] args) {
-    System.out.println("a".compareTo("b") < 0);
-    System.out.println("a".compareTo("a") <= 0);
-    System.out.println("b".compareTo("a") > 0);
-    System.out.println("b".compareTo("b") >= 0);
+    System.out.println(String.valueOf("a").compareTo(String.valueOf("b")) < 0);
+    System.out.println(String.valueOf("a").compareTo(String.valueOf("a")) <= 0);
+    System.out.println(String.valueOf("b").compareTo(String.valueOf("a")) > 0);
+    System.out.println(String.valueOf("b").compareTo(String.valueOf("b")) >= 0);
     }
 }

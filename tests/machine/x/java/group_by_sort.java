@@ -1,3 +1,4 @@
+// group_by_sort.mochi
 import java.util.*;
 
 class CatVal {
@@ -35,30 +36,37 @@ class CatTotal {
     int size() { return 2; }
 }
 public class GroupBySort {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<CatVal> items = new ArrayList<>(Arrays.asList(new CatVal("a", 3), new CatVal("a", 1), new CatVal("b", 5), new CatVal("b", 2)));
     List<CatTotal> grouped = (new java.util.function.Supplier<List<CatTotal>>(){public List<CatTotal> get(){
-    List<CatTotal> _res0 = new ArrayList<>();
-    Map<String,List<CatVal>> _groups1 = new LinkedHashMap<>();
+    List<CatTotal> res0 = new ArrayList<>();
+    Map<String,List<CatVal>> groups1 = new LinkedHashMap<>();
     for (var i : items) {
-        var _row2 = i;
-        String _key3 = i.cat;
-        List<CatVal> _b4 = _groups1.get(_key3);
-        if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-        _b4.add(_row2);
+        var row2 = i;
+        String key3 = i.cat;
+        List<CatVal> bucket4 = groups1.get(key3);
+        if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+        bucket4.add(row2);
     }
-    for (Map.Entry<String,List<CatVal>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<CatVal>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<CatVal> g = __e.getValue();
-        _res0.add(new CatTotal(g_key, (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-    List<Integer> _res5 = new ArrayList<>();
+        Group<String,CatVal> g = new Group<>(g_key, __e.getValue());
+        res0.add(new CatTotal(g.key, (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+    List<Integer> res5 = new ArrayList<>();
     for (var x : g) {
-        _res5.add(x.val);
+        res5.add(x.val);
     }
-    return _res5;
+    return res5;
 }}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println(grouped);
     }

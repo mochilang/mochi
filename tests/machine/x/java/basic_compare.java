@@ -1,3 +1,4 @@
+// basic_compare.mochi
 public class BasicCompare {
     public static void main(String[] args) {
     int a = 10 - 3;

@@ -1,3 +1,4 @@
+// group_by_left_join.mochi
 import java.util.*;
 
 class IdName {
@@ -69,41 +70,48 @@ class CO {
     int size() { return 2; }
 }
 public class GroupByLeftJoin {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob"), new IdName(3, "Charlie")));
     List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 1), new IdCustomerId(102, 2)));
     List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
-    List<NameCount> _res0 = new ArrayList<>();
-    Map<String,List<CO>> _groups1 = new LinkedHashMap<>();
+    List<NameCount> res0 = new ArrayList<>();
+    Map<String,List<CO>> groups1 = new LinkedHashMap<>();
     for (var c : customers) {
-        List<IdCustomerId> _tmp2 = new ArrayList<>();
-        for (var _it3 : orders) {
-            var o = _it3;
+        List<IdCustomerId> tmp2 = new ArrayList<>();
+        for (var it3 : orders) {
+            var o = it3;
             if (!(Objects.equals(o.customerId, c.id))) continue;
-            _tmp2.add(_it3);
+            tmp2.add(it3);
         }
-        if (_tmp2.isEmpty()) _tmp2.add(null);
-        for (var o : _tmp2) {
-            CO _row4 = new CO(c, o);
-            String _key5 = c.name;
-            List<CO> _b6 = _groups1.get(_key5);
-            if (_b6 == null) { _b6 = new ArrayList<>(); _groups1.put(_key5, _b6); }
-            _b6.add(_row4);
+        if (tmp2.isEmpty()) tmp2.add(null);
+        for (var o : tmp2) {
+            CO row4 = new CO(c, o);
+            String key5 = c.name;
+            List<CO> bucket6 = groups1.get(key5);
+            if (bucket6 == null) { bucket6 = new ArrayList<>(); groups1.put(key5, bucket6); }
+            bucket6.add(row4);
         }
     }
-    for (Map.Entry<String,List<CO>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<CO>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<CO> g = __e.getValue();
-        _res0.add(new NameCount(g_key, (new java.util.function.Supplier<List<CO>>(){public List<CO> get(){
-    List<CO> _res7 = new ArrayList<>();
+        Group<String,CO> g = new Group<>(g_key, __e.getValue());
+        res0.add(new NameCount(g.key, (new java.util.function.Supplier<List<CO>>(){public List<CO> get(){
+    List<CO> res7 = new ArrayList<>();
     for (var r : g) {
         if (!(r.o != null)) continue;
-        _res7.add(r);
+        res7.add(r);
     }
-    return _res7;
+    return res7;
 }}).get().size()));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Group Left Join ---");
     for (NameCount s : stats) {

@@ -1,3 +1,4 @@
+// cast_struct.mochi
 import java.util.*;
 
 class Todo {

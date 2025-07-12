@@ -82,6 +82,12 @@ func (c *Compiler) writeln(s string) {
 	c.buf.WriteByte('\n')
 }
 
+func (c *Compiler) tmpName(prefix string) string {
+	name := fmt.Sprintf("%s%d", prefix, c.tmpCount)
+	c.tmpCount++
+	return name
+}
+
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Determine which globals are referenced inside functions
 	c.globalVars = make(map[string]bool)
@@ -732,10 +738,26 @@ func mapKeyType(t string) string {
 
 func listElemType(t string) string {
 	t = strings.TrimSpace(t)
-	if !strings.HasPrefix(t, "List<") || !strings.HasSuffix(t, ">") {
-		return "Object"
+	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+		return strings.TrimSpace(t[5 : len(t)-1])
 	}
-	return strings.TrimSpace(t[5 : len(t)-1])
+	if strings.HasPrefix(t, "Group<") && strings.HasSuffix(t, ">") {
+		inner := t[6 : len(t)-1]
+		depth := 0
+		for i := 0; i < len(inner); i++ {
+			switch inner[i] {
+			case '<':
+				depth++
+			case '>':
+				depth--
+			case ',':
+				if depth == 0 {
+					return strings.TrimSpace(inner[i+1:])
+				}
+			}
+		}
+	}
+	return "Object"
 }
 
 func (c *Compiler) maybeNumber(expr string) string {
@@ -1000,6 +1022,15 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			c.vars[j.Var] = listElemType(jt)
 		}
 		et := c.inferType(p.Query.Select)
+		if p.Query.Group != nil {
+			if id, ok := identName(p.Query.Select); ok && id == p.Query.Group.Name {
+				keyType := c.inferType(p.Query.Group.Exprs[0])
+				if keyType == "var" {
+					keyType = "Object"
+				}
+				et = fmt.Sprintf("Group<%s,%s>", wrapperType(keyType), listElemType(srcType))
+			}
+		}
 		if et == "var" {
 			et = "Object"
 		}
@@ -2746,8 +2777,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		c.vars[j.Var] = listElemType(jt)
 	}
 
-	resVar := fmt.Sprintf("_res%d", c.tmpCount)
-	c.tmpCount++
+	resVar := c.tmpName("res")
 	resultElem := c.inferType(q.Select)
 	if q.Group != nil {
 		if id, ok := identName(q.Select); ok && id == q.Group.Name {
@@ -2770,8 +2800,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.vars = oldVars
 			return "", fmt.Errorf("unsupported multi-key group")
 		}
-		groupsVar = fmt.Sprintf("_groups%d", c.tmpCount)
-		c.tmpCount++
+		groupsVar = c.tmpName("groups")
 	}
 
 	rowVars := []string{q.Var}
@@ -2807,8 +2836,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				c.vars = oldVars
 				return "", err
 			}
-			tmpList := fmt.Sprintf("_tmp%d", c.tmpCount)
-			c.tmpCount++
+			tmpList := c.tmpName("tmp")
 			var b strings.Builder
 			b.WriteString(fmt.Sprintf("(new java.util.function.Supplier<%s>(){public %s get(){\n", listType, listType))
 			b.WriteString(fmt.Sprintf("\t%s %s = new ArrayList<>();\n", listType, resVar))
@@ -2817,9 +2845,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			}
 			b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
 			b.WriteString(fmt.Sprintf("\t\tList<%s> %s = new ArrayList<>();\n", c.vars[j.Var], tmpList))
-			b.WriteString(fmt.Sprintf("\t\tfor (var _it%d : %s) {\n", c.tmpCount, js))
-			iter := fmt.Sprintf("_it%d", c.tmpCount)
-			c.tmpCount++
+			iter := c.tmpName("it")
+			b.WriteString(fmt.Sprintf("\t\tfor (var %s : %s) {\n", iter, js))
 			b.WriteString(fmt.Sprintf("\t\t\tvar %s = %s;\n", j.Var, iter))
 			b.WriteString(fmt.Sprintf("\t\t\tif (!(%s)) continue;\n", on))
 			b.WriteString(fmt.Sprintf("\t\t\t%[1]s.add(%s);\n", tmpList, iter))
@@ -2906,10 +2933,8 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		if j.Side != nil && *j.Side == "left" {
-			tmpList := fmt.Sprintf("_tmp%d", c.tmpCount)
-			c.tmpCount++
-			iterVar := fmt.Sprintf("_it%d", c.tmpCount)
-			c.tmpCount++
+			tmpList := c.tmpName("tmp")
+			iterVar := c.tmpName("it")
 			b.WriteString(fmt.Sprintf("%sList<%s> %s = new ArrayList<>();\n", indent, c.vars[j.Var], tmpList))
 			b.WriteString(fmt.Sprintf("%sfor (var %s : %s) {\n", indent, iterVar, js))
 			indent += "\t"
@@ -2950,8 +2975,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sif (!(%s)) continue;\n", indent, cond))
 	}
 	if groupsVar != "" {
-		rowVar := fmt.Sprintf("_row%d", c.tmpCount)
-		c.tmpCount++
+		rowVar := c.tmpName("row")
 		vars := []string{q.Var}
 		for _, fr := range q.Froms {
 			vars = append(vars, fr.Var)
@@ -2972,16 +2996,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.vars = oldVars
 			return "", err
 		}
-		keyVar := fmt.Sprintf("_key%d", c.tmpCount)
-		c.tmpCount++
+		keyVar := c.tmpName("key")
 		keyType := c.inferType(q.Group.Exprs[0])
 		if keyType == "var" {
 			keyType = "Object"
 		}
 		b.WriteString(fmt.Sprintf("%s%s %s = %s;\n", indent, keyType, keyVar, keyExpr))
 		c.vars[keyVar] = keyType
-		bucketVar := fmt.Sprintf("_b%d", c.tmpCount)
-		c.tmpCount++
+		bucketVar := c.tmpName("bucket")
 		b.WriteString(fmt.Sprintf("%sList<%s> %s = %s.get(%s);\n", indent, rowType, bucketVar, groupsVar, keyVar))
 		b.WriteString(fmt.Sprintf("%sif (%s == null) { %s = new ArrayList<>(); %s.put(%s, %s); }\n", indent, bucketVar, bucketVar, groupsVar, keyVar, bucketVar))
 		b.WriteString(fmt.Sprintf("%s%s.add(%s);\n", indent, bucketVar, rowVar))
@@ -3078,8 +3100,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	tmp := fmt.Sprintf("_t%d", c.tmpCount)
-	c.tmpCount++
+	tmp := c.tmpName("t")
 	// infer return type of cases
 	retType := "Object"
 	for _, cs := range m.Cases {
@@ -3111,8 +3132,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		}
 		if call, ok := callPattern(cs.Pattern); ok {
 			if parent, ok2 := c.variantOf[call.Func]; ok2 {
-				varVar := fmt.Sprintf("_v%d", c.tmpCount)
-				c.tmpCount++
+				varVar := c.tmpName("v")
 				b.WriteString(fmt.Sprintf("\tif (%s instanceof %s.%s %s) {\n", tmp, parent, call.Func, varVar))
 				for idx, arg := range call.Args {
 					if id, ok := identName(arg); ok && id != "_" {

@@ -1,3 +1,4 @@
+// while_loop.mochi
 public class WhileLoop {
     public static void main(String[] args) {
     int i = 0;

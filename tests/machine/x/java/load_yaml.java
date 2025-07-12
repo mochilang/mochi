@@ -1,3 +1,4 @@
+// load_yaml.mochi
 import java.util.*;
 import java.io.*;
 
@@ -74,12 +75,12 @@ public class LoadYaml {
     public static void main(String[] args) {
     List<Map<String,Object>> people = loadYaml("../interpreter/valid/people.yaml");
     List<NameEmail> adults = (new java.util.function.Supplier<List<NameEmail>>(){public List<NameEmail> get(){
-    List<NameEmail> _res0 = new ArrayList<>();
+    List<NameEmail> res0 = new ArrayList<>();
     for (var p : people) {
         if (!(((Number)((Map)p).get("age")).doubleValue() >= 18)) continue;
-        _res0.add(new NameEmail(((Map)p).get("name"), ((Map)p).get("email")));
+        res0.add(new NameEmail(((Map)p).get("name"), ((Map)p).get("email")));
     }
-    return _res0;
+    return res0;
 }}).get();
     for (NameEmail a : adults) {
         System.out.println(a.name + " " + a.email);

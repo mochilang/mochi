@@ -1,3 +1,4 @@
+// short_circuit.mochi
 public class ShortCircuit {
     static boolean boom(int a, int b) {
         System.out.println("boom");

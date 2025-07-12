@@ -1,3 +1,4 @@
+// map_nested_assign.mochi
 import java.util.*;
 
 class Inner {

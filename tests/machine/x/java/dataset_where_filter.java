@@ -1,3 +1,4 @@
+// dataset_where_filter.mochi
 import java.util.*;
 
 class NameAge {
@@ -40,12 +41,12 @@ public class DatasetWhereFilter {
     public static void main(String[] args) {
     List<NameAge> people = new ArrayList<>(Arrays.asList(new NameAge("Alice", 30), new NameAge("Bob", 15), new NameAge("Charlie", 65), new NameAge("Diana", 45)));
     List<NameAgeIsSenior> adults = (new java.util.function.Supplier<List<NameAgeIsSenior>>(){public List<NameAgeIsSenior> get(){
-    List<NameAgeIsSenior> _res0 = new ArrayList<>();
+    List<NameAgeIsSenior> res0 = new ArrayList<>();
     for (var person : people) {
         if (!(person.age >= 18)) continue;
-        _res0.add(new NameAgeIsSenior(person.name, person.age, person.age >= 60));
+        res0.add(new NameAgeIsSenior(person.name, person.age, person.age >= 60));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Adults ---");
     for (NameAgeIsSenior person : adults) {
