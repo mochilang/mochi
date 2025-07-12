@@ -1169,8 +1169,14 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 	}
 	if stmt.Value != nil {
-		if isListIntType(t) {
-			if vals, ok := c.evalListIntExpr(stmt.Value); ok {
+		if vals, ok := c.evalListIntExpr(stmt.Value); ok && (isListIntType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.IntType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, false)
+				}
+			}
+			{
 				parts := make([]string, len(vals))
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
@@ -1178,9 +1184,6 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
-				if c.env != nil {
-					c.env.SetVar(stmt.Name, t, false)
-				}
 				return nil
 			}
 		}
@@ -1365,8 +1368,14 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 		typ = "__auto_type"
 	}
 	if stmt.Value != nil {
-		if isListIntType(t) {
-			if vals, ok := c.evalListIntExpr(stmt.Value); ok {
+		if vals, ok := c.evalListIntExpr(stmt.Value); ok && (isListIntType(t) || t == nil || types.ContainsAny(t)) {
+			if t == nil || types.ContainsAny(t) {
+				t = types.ListType{Elem: types.IntType{}}
+				if c.env != nil {
+					c.env.SetVar(stmt.Name, t, true)
+				}
+			}
+			{
 				parts := make([]string, len(vals))
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
@@ -1374,9 +1383,6 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
-				if c.env != nil {
-					c.env.SetVar(stmt.Name, t, true)
-				}
 				return nil
 			}
 		}
@@ -4343,13 +4349,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln("printf(\" \");")
 					}
 				} else if isListIntExpr(a, c.env) {
-					c.need(needListListInt)
-					c.need(needPrintListInt)
-					c.writeln(fmt.Sprintf("_print_list_int(%s);", argExpr))
-					if i == len(p.Call.Args)-1 {
-						c.writeln("printf(\"\\n\");")
+					if l, ok := c.listLens[argExpr]; ok {
+						loop := c.newLoopVar()
+						c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
+						c.indent++
+						c.writeln(fmt.Sprintf("if(%s>0) printf(\" \");", loop))
+						c.writeln(fmt.Sprintf("printf(\"%s\", %s[%s]);", "%d", argExpr, loop))
+						c.indent--
+						c.writeln("}")
+						if i == len(p.Call.Args)-1 {
+							c.writeln("printf(\"\\n\");")
+						} else {
+							c.writeln("printf(\" \");")
+						}
 					} else {
-						c.writeln("printf(\" \");")
+						c.need(needListListInt)
+						c.need(needPrintListInt)
+						c.writeln(fmt.Sprintf("_print_list_int(%s);", argExpr))
+						if i == len(p.Call.Args)-1 {
+							c.writeln("printf(\"\\n\");")
+						} else {
+							c.writeln("printf(\" \");")
+						}
 					}
 				} else if isListFloatExpr(a, c.env) {
 					c.need(needListFloat)
