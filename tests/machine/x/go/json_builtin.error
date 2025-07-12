@@ -1,0 +1,3 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/json_builtin.go:11:8: undefined: M

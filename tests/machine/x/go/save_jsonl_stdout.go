@@ -11,22 +11,13 @@ import (
 )
 
 func main() {
-	type PeopleItem struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-	}
-
 	var people []PeopleItem = []PeopleItem{PeopleItem{
-		Name: "Alice",
-		Age:  30,
+		"Alice",
+		30,
 	}, PeopleItem{
-		Name: "Bob",
-		Age:  25,
+		"Bob",
+		25,
 	}}
-	type v struct {
-		Format string `json:"format"`
-	}
-
 	_save(people, "-", _toAnyMap(v{Format: "jsonl"}))
 }
 

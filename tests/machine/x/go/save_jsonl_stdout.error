@@ -1,0 +1,5 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/save_jsonl_stdout.go:14:15: undefined: PeopleItem
+tests/machine/x/go/save_jsonl_stdout.go:17:5: undefined: PeopleItem
+tests/machine/x/go/save_jsonl_stdout.go:21:31: undefined: v

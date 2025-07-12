@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	fmt.Println(_union[int]([]int{1, 2}, []int{2, 3}))
-	fmt.Println(_except[int]([]int{1, 2, 3}, []int{2}))
-	fmt.Println(_intersect[int]([]int{1, 2, 3}, []int{2, 4}))
+	_print(_union[int]([]int{1, 2}, []int{2, 3}))
+	_print(_except[int]([]int{1, 2, 3}, []int{2}))
+	_print(_intersect[int]([]int{1, 2, 3}, []int{2, 4}))
 	fmt.Println(len(append(append([]int{}, []int{1, 2}...), []int{2, 3}...)))
 }
 
@@ -91,6 +91,43 @@ func _intersect[T any](a, b []T) []T {
 		}
 	}
 	return res
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _union[T any](a, b []T) []T {

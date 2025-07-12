@@ -11,20 +11,15 @@ import (
 )
 
 func main() {
-	type DataVarItem struct {
-		Tag string `json:"tag"`
-		Val int    `json:"val"`
-	}
-
 	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
-		Tag: "a",
-		Val: 1,
+		"a",
+		1,
 	}, DataVarItem{
-		Tag: "a",
-		Val: 2,
+		"a",
+		2,
 	}, DataVarItem{
-		Tag: "b",
-		Val: 3,
+		"b",
+		3,
 	}}
 	var groups []*data.Group = func() []*data.Group {
 		groups := map[string]*data.Group{}
@@ -53,11 +48,6 @@ func main() {
 		for _, x := range g.Items {
 			total = (total + x.Val)
 		}
-		type v struct {
-			Tag   string `json:"tag"`
-			Total int    `json:"total"`
-		}
-
 		tmp = append(tmp, v{
 			Tag:   g.Key,
 			Total: total,
@@ -72,7 +62,33 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(result)
+	_print(result)
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
 }
 
 type _joinSpec struct {
@@ -307,6 +323,17 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

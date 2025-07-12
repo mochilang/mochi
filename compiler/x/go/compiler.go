@@ -252,32 +252,18 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		}
 		exprT := c.inferExprTypeHint(s.Return.Value, retT)
 		if retT != nil {
-			retGo := goType(retT)
-			exprGo := goType(exprT)
-			if rl, ok := retT.(types.ListType); ok {
-				if el, ok := exprT.(types.ListType); ok && equalTypes(rl.Elem, el.Elem) {
-					if retGo != exprGo {
-						c.use("_convSlice")
-						expr = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(el.Elem), goType(rl.Elem), expr)
-					}
-				} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
-					expr = c.castExpr(expr, exprT, retT)
-				}
-			} else if retGo != exprGo || !equalTypes(retT, exprT) || isAny(exprT) {
-				if ut, ok := retT.(types.UnionType); ok {
-					if st, ok := exprT.(types.StructType); ok {
-						if _, ok := ut.Variants[st.Name]; ok {
-							// struct variant implements union interface
-							// no cast needed
-						} else {
-							expr = c.castExpr(expr, exprT, retT)
-						}
+			if ut, ok := retT.(types.UnionType); ok {
+				if st, ok := exprT.(types.StructType); ok {
+					if _, ok := ut.Variants[st.Name]; ok {
+						// struct variant implements union interface
 					} else {
 						expr = c.castExpr(expr, exprT, retT)
 					}
 				} else {
 					expr = c.castExpr(expr, exprT, retT)
 				}
+			} else {
+				expr = c.castExpr(expr, exprT, retT)
 			}
 		}
 		c.writeln("return " + expr)
@@ -503,10 +489,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 				return err
 			}
 			exprT := c.inferExprTypeHint(s.Value, typ)
-			if lt, ok := typ.(types.ListType); ok {
-				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
-					c.use("_convSlice")
-					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+			if _, ok := typ.(types.ListType); ok {
+				if _, ok := exprT.(types.ListType); ok {
+					v = c.castExpr(v, exprT, typ)
 				}
 			}
 			value = v
@@ -599,10 +584,9 @@ func (c *Compiler) compileAssign(s *parser.AssignStmt) error {
 		}
 		if typ != nil {
 			exprT := c.inferExprTypeHint(s.Value, typ)
-			if lt, ok := typ.(types.ListType); ok {
-				if et, ok := exprT.(types.ListType); ok && !containsAny(et.Elem) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
-					c.use("_convSlice")
-					value = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), value)
+			if _, ok := typ.(types.ListType); ok {
+				if _, ok := exprT.(types.ListType); ok {
+					value = c.castExpr(value, exprT, typ)
 				}
 			}
 			exprGo := goType(exprT)
@@ -1722,8 +1706,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 				}
 			} else if equalTypes(lt.Elem, rt.Elem) {
 				if goType(lt.Elem) != goType(rt.Elem) {
-					c.use("_convSlice")
-					right = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+					right = c.castExpr(right, rightType, leftType)
 				}
 				expr = fmt.Sprintf("append(append([]%s{}, %s...), %s...)", goType(lt.Elem), left, right)
 				next = leftType
@@ -1867,8 +1850,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		if equalTypes(lt.Elem, rt.Elem) {
 			elemGo = goType(lt.Elem)
 			if goType(lt.Elem) != goType(rt.Elem) {
-				c.use("_convSlice")
-				right = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(rt.Elem), goType(lt.Elem), right)
+				right = c.castExpr(right, rightType, leftType)
 			}
 		} else {
 			c.use("_toAnySlice")
@@ -2311,9 +2293,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				c.use("_toAnySlice")
 				v = fmt.Sprintf("_toAnySlice(%s)", v)
 			} else if elt, ok := elemT.(types.ListType); ok {
-				if etl, ok := et.(types.ListType); ok && equalTypes(elt.Elem, etl.Elem) && goType(elt.Elem) != goType(etl.Elem) {
-					c.use("_convSlice")
-					v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(etl.Elem), goType(elt.Elem), v)
+				if etl, ok := et.(types.ListType); ok && equalTypes(elt.Elem, etl.Elem) {
+					v = c.castExpr(v, et, elt)
 				}
 			}
 			elems[i] = v
@@ -4018,11 +3999,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if lt, ok := paramTypes[i].(types.ListType); ok {
 				if et, ok := at.(types.ListType); ok {
 					if isListOfAny(et) && !isListOfAny(lt) {
-						c.use("_convSlice")
-						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
-					} else if !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) && goType(lt.Elem) != goType(et.Elem) {
-						c.use("_convSlice")
-						v = fmt.Sprintf("_convSlice[%s,%s](%s)", goType(et.Elem), goType(lt.Elem), v)
+						v = c.castExpr(v, at, lt)
+					} else if !isListOfAny(et) && equalTypes(lt.Elem, et.Elem) {
+						v = c.castExpr(v, at, lt)
 					}
 				}
 			}

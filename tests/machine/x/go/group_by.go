@@ -10,50 +10,38 @@ import (
 )
 
 func main() {
-	type PeopleItem struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-		City string `json:"city"`
-	}
-
 	var people []PeopleItem = []PeopleItem{
 		PeopleItem{
-			Name: "Alice",
-			Age:  30,
-			City: "Paris",
+			"Alice",
+			30,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Bob",
-			Age:  15,
-			City: "Hanoi",
+			"Bob",
+			15,
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Charlie",
-			Age:  65,
-			City: "Paris",
+			"Charlie",
+			65,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Diana",
-			Age:  45,
-			City: "Hanoi",
+			"Diana",
+			45,
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Eve",
-			Age:  70,
-			City: "Paris",
+			"Eve",
+			70,
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Frank",
-			Age:  22,
-			City: "Hanoi",
+			"Frank",
+			22,
+			"Hanoi",
 		},
 	}
-	type Stats struct {
-		City    any     `json:"city"`
-		Count   int     `json:"count"`
-		Avg_age float64 `json:"avg_age"`
-	}
-
 	var stats []Stats = func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -72,9 +60,9 @@ func main() {
 		for _, ks := range order {
 			g := groups[ks]
 			results = append(results, Stats{
-				City:  g.Key,
-				Count: len(g.Items),
-				Avg_age: _avg(func() []any {
+				g.Key,
+				len(g.Items),
+				_avg(func() []any {
 					results := []any{}
 					for _, p := range g.Items {
 						results = append(results, _toAnyMap(p)["age"])
@@ -87,7 +75,7 @@ func main() {
 	}()
 	fmt.Println("--- People grouped by city ---")
 	for _, s := range stats {
-		fmt.Println(s.City, ": count =", s.Count, ", avg_age =", s.Avg_age)
+		_print(s.City, ": count =", s.Count, ", avg_age =", s.Avg_age)
 	}
 }
 
@@ -140,6 +128,43 @@ func _avg(v any) float64 {
 		}
 	}
 	return sum / float64(len(items))
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnyMap(m any) map[string]any {

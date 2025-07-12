@@ -1,0 +1,3 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/cast_struct.go:14:11: undefined: Todo1

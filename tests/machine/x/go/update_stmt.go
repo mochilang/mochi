@@ -47,10 +47,10 @@ type Person struct {
 
 func test_update_adult_status() {
 	expect(_equal(people, []Person{
-		Person{Name: "Alice", Age: 17, Status: "minor"},
-		Person{Name: "Bob", Age: 26, Status: "adult"},
-		Person{Name: "Charlie", Age: 19, Status: "adult"},
-		Person{Name: "Diana", Age: 16, Status: "minor"},
+		Person{"Alice", 17, "minor"},
+		Person{"Bob", 26, "adult"},
+		Person{"Charlie", 19, "adult"},
+		Person{"Diana", 16, "minor"},
 	}))
 }
 
@@ -58,10 +58,10 @@ var people []Person
 
 func main() {
 	people = []Person{
-		Person{Name: "Alice", Age: 17, Status: "minor"},
-		Person{Name: "Bob", Age: 25, Status: "unknown"},
-		Person{Name: "Charlie", Age: 18, Status: "unknown"},
-		Person{Name: "Diana", Age: 16, Status: "minor"},
+		Person{"Alice", 17, "minor"},
+		Person{"Bob", 25, "unknown"},
+		Person{"Charlie", 18, "unknown"},
+		Person{"Diana", 16, "minor"},
 	}
 	for i0, v1 := range people {
 		age := v1.Age

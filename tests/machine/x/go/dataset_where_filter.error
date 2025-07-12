@@ -1,12 +1,10 @@
-Error on line 0: output mismatch
--- got --
---- Adults ---
-Alice is 30 
-Charlie is 65  (senior)
-Diana is 45
--- want --
---- Adults ---
-Alice is 30
-Charlie is 65  (senior)
-Diana is 45
-1: //go:build ignore
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/dataset_where_filter.go:11:15: undefined: PeopleItem
+tests/machine/x/go/dataset_where_filter.go:12:3: undefined: PeopleItem
+tests/machine/x/go/dataset_where_filter.go:16:3: undefined: PeopleItem
+tests/machine/x/go/dataset_where_filter.go:20:3: undefined: PeopleItem
+tests/machine/x/go/dataset_where_filter.go:24:3: undefined: PeopleItem
+tests/machine/x/go/dataset_where_filter.go:29:15: undefined: Adults
+tests/machine/x/go/dataset_where_filter.go:30:16: undefined: Adults
+tests/machine/x/go/dataset_where_filter.go:34:32: undefined: Adults

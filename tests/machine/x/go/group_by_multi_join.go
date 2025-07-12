@@ -10,11 +10,6 @@ import (
 )
 
 func main() {
-	type NationsItem struct {
-		Id   int    `json:"id"`
-		Name string `json:"name"`
-	}
-
 	var nations []NationsItem = []NationsItem{NationsItem{
 		1,
 		"A",
@@ -23,11 +18,6 @@ func main() {
 		"B",
 	}}
 	_ = nations
-	type SuppliersItem struct {
-		Id     int `json:"id"`
-		Nation int `json:"nation"`
-	}
-
 	var suppliers []SuppliersItem = []SuppliersItem{SuppliersItem{
 		1,
 		1,
@@ -36,13 +26,6 @@ func main() {
 		2,
 	}}
 	_ = suppliers
-	type PartsuppItem struct {
-		Part     int     `json:"part"`
-		Supplier int     `json:"supplier"`
-		Cost     float64 `json:"cost"`
-		Qty      int     `json:"qty"`
-	}
-
 	var partsupp []PartsuppItem = []PartsuppItem{PartsuppItem{
 		100,
 		1,
@@ -59,11 +42,6 @@ func main() {
 		5.0,
 		3,
 	}}
-	type Filtered struct {
-		Part  any `json:"part"`
-		Value any `json:"value"`
-	}
-
 	var filtered []Filtered = func() []Filtered {
 		results := []Filtered{}
 		for _, ps := range partsupp {
@@ -88,11 +66,6 @@ func main() {
 		}
 		return results
 	}()
-	type Grouped struct {
-		Part  any `json:"part"`
-		Total int `json:"total"`
-	}
-
 	var grouped []Grouped = func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -123,7 +96,44 @@ func main() {
 		}
 		return results
 	}()
-	fmt.Println(grouped)
+	_print(grouped)
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {

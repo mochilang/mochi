@@ -17,7 +17,7 @@ type Book struct {
 }
 
 func main() {
-	var book Book = Book{Title: "Go", Author: Person{Name: "Bob", Age: 42}}
+	var book Book = Book{"Go", Person{"Bob", 42}}
 	_ = book
 	fmt.Println(book.Author.Name)
 }

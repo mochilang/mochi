@@ -339,6 +339,17 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 		return expr
 	}
 
+	// Handle list conversions specially to avoid unnecessary helper calls.
+	if fl, ok := from.(types.ListType); ok {
+		if tl, ok := to.(types.ListType); ok {
+			if equalTypes(fl.Elem, tl.Elem) {
+				return fmt.Sprintf("%s(%s)", toGo, expr)
+			}
+			c.use("_convSlice")
+			return fmt.Sprintf("_convSlice[%s,%s](%s)", goType(fl.Elem), goType(tl.Elem), expr)
+		}
+	}
+
 	if isNumeric(from) && isNumeric(to) {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}

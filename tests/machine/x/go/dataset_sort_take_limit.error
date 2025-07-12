@@ -1,0 +1,13 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/dataset_sort_take_limit.go:11:17: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:12:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:16:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:20:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:24:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:28:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:32:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:36:3: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:41:18: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:45:10: undefined: ProductsItem
+tests/machine/x/go/dataset_sort_take_limit.go:45:10: too many errors

@@ -1,5 +1,3 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/cast_string_to_int.go:10:18: cannot convert "1995" (untyped string constant) to type int
-
-1: //go:build ignore
+tests/machine/x/go/cast_string_to_int.go:10:18: cannot convert "1995" (untyped string constant) to type int

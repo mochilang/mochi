@@ -1,0 +1,11 @@
+run error: exit status 1
+# command-line-arguments
+tests/machine/x/go/cross_join.go:11:18: undefined: CustomersItem
+tests/machine/x/go/cross_join.go:14:5: undefined: CustomersItem
+tests/machine/x/go/cross_join.go:17:5: undefined: CustomersItem
+tests/machine/x/go/cross_join.go:22:15: undefined: OrdersItem
+tests/machine/x/go/cross_join.go:26:5: undefined: OrdersItem
+tests/machine/x/go/cross_join.go:30:5: undefined: OrdersItem
+tests/machine/x/go/cross_join.go:35:15: undefined: Result
+tests/machine/x/go/cross_join.go:36:16: undefined: Result
+tests/machine/x/go/cross_join.go:39:31: undefined: Result

@@ -4,30 +4,21 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
 func main() {
-	type DataVarItem struct {
-		A int `json:"a"`
-		B int `json:"b"`
-	}
-
 	var dataVar []DataVarItem = []DataVarItem{DataVarItem{
-		A: 1,
-		B: 2,
+		1,
+		2,
 	}, DataVarItem{
-		A: 1,
-		B: 1,
+		1,
+		1,
 	}, DataVarItem{
-		A: 0,
-		B: 5,
+		0,
+		5,
 	}}
-	type v struct {
-		A int `json:"a"`
-		B int `json:"b"`
-	}
-
 	var sorted []DataVarItem = func() []DataVarItem {
 		src := _toAnySlice(dataVar)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
@@ -56,7 +47,33 @@ func main() {
 		}
 		return out
 	}()
-	fmt.Println(sorted)
+	_print(sorted)
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
 }
 
 type _joinSpec struct {
@@ -291,6 +308,17 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _toAnySlice[T any](s []T) []any {

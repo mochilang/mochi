@@ -9,46 +9,36 @@ import (
 )
 
 func main() {
-	type PeopleItem struct {
-		Name string `json:"name"`
-		City string `json:"city"`
-	}
-
 	var people []PeopleItem = []PeopleItem{
 		PeopleItem{
-			Name: "Alice",
-			City: "Paris",
+			"Alice",
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Bob",
-			City: "Hanoi",
+			"Bob",
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Charlie",
-			City: "Paris",
+			"Charlie",
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Diana",
-			City: "Hanoi",
+			"Diana",
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "Eve",
-			City: "Paris",
+			"Eve",
+			"Paris",
 		},
 		PeopleItem{
-			Name: "Frank",
-			City: "Hanoi",
+			"Frank",
+			"Hanoi",
 		},
 		PeopleItem{
-			Name: "George",
-			City: "Paris",
+			"George",
+			"Paris",
 		},
 	}
-	type Big struct {
-		City any `json:"city"`
-		Num  int `json:"num"`
-	}
-
 	var big []Big = func() []Big {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -70,8 +60,8 @@ func main() {
 				continue
 			}
 			results = append(results, Big{
-				City: g.Key,
-				Num:  len(g.Items),
+				g.Key,
+				len(g.Items),
 			})
 		}
 		return results

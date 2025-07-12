@@ -9,15 +9,7 @@ import (
 
 func main() {
 	var a []int = []int{1, 2}
-	_print(append(_convSlice[int, any](a), 3))
-}
-
-func _convSlice[T any, U any](s []T) []U {
-	out := []U{}
-	for _, v := range s {
-		out = append(out, any(v).(U))
-	}
-	return out
+	_print(append(a, 3))
 }
 
 func _print(args ...any) {

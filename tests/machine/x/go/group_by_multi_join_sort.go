@@ -11,93 +11,44 @@ import (
 )
 
 func main() {
-	type NationItem struct {
-		N_nationkey int    `json:"n_nationkey"`
-		N_name      string `json:"n_name"`
-	}
-
 	var nation []NationItem = []NationItem{NationItem{
-		N_nationkey: 1,
-		N_name:      "BRAZIL",
+		1,
+		"BRAZIL",
 	}}
 	_ = nation
-	type CustomerItem struct {
-		C_custkey   int     `json:"c_custkey"`
-		C_name      string  `json:"c_name"`
-		C_acctbal   float64 `json:"c_acctbal"`
-		C_nationkey int     `json:"c_nationkey"`
-		C_address   string  `json:"c_address"`
-		C_phone     string  `json:"c_phone"`
-		C_comment   string  `json:"c_comment"`
-	}
-
 	var customer []CustomerItem = []CustomerItem{CustomerItem{
-		C_custkey:   1,
-		C_name:      "Alice",
-		C_acctbal:   100.0,
-		C_nationkey: 1,
-		C_address:   "123 St",
-		C_phone:     "123-456",
-		C_comment:   "Loyal",
+		1,
+		"Alice",
+		100.0,
+		1,
+		"123 St",
+		"123-456",
+		"Loyal",
 	}}
-	type OrdersItem struct {
-		O_orderkey  int    `json:"o_orderkey"`
-		O_custkey   int    `json:"o_custkey"`
-		O_orderdate string `json:"o_orderdate"`
-	}
-
 	var orders []OrdersItem = []OrdersItem{OrdersItem{
-		O_orderkey:  1000,
-		O_custkey:   1,
-		O_orderdate: "1993-10-15",
+		1000,
+		1,
+		"1993-10-15",
 	}, OrdersItem{
-		O_orderkey:  2000,
-		O_custkey:   1,
-		O_orderdate: "1994-01-02",
+		2000,
+		1,
+		"1994-01-02",
 	}}
 	_ = orders
-	type LineitemItem struct {
-		L_orderkey      int     `json:"l_orderkey"`
-		L_returnflag    string  `json:"l_returnflag"`
-		L_extendedprice float64 `json:"l_extendedprice"`
-		L_discount      float64 `json:"l_discount"`
-	}
-
 	var lineitem []LineitemItem = []LineitemItem{LineitemItem{
-		L_orderkey:      1000,
-		L_returnflag:    "R",
-		L_extendedprice: 1000.0,
-		L_discount:      0.1,
+		1000,
+		"R",
+		1000.0,
+		0.1,
 	}, LineitemItem{
-		L_orderkey:      2000,
-		L_returnflag:    "N",
-		L_extendedprice: 500.0,
-		L_discount:      0.0,
+		2000,
+		"N",
+		500.0,
+		0.0,
 	}}
 	_ = lineitem
 	var start_date string = "1993-10-01"
 	var end_date string = "1994-01-01"
-	type Result struct {
-		C_custkey any `json:"c_custkey"`
-		C_name    any `json:"c_name"`
-		Revenue   int `json:"revenue"`
-		C_acctbal any `json:"c_acctbal"`
-		N_name    any `json:"n_name"`
-		C_address any `json:"c_address"`
-		C_phone   any `json:"c_phone"`
-		C_comment any `json:"c_comment"`
-	}
-
-	type v struct {
-		C_custkey int     `json:"c_custkey"`
-		C_name    string  `json:"c_name"`
-		C_acctbal float64 `json:"c_acctbal"`
-		C_address string  `json:"c_address"`
-		C_phone   string  `json:"c_phone"`
-		C_comment string  `json:"c_comment"`
-		N_name    string  `json:"n_name"`
-	}
-
 	var result []Result = func() []Result {
 		groups := map[string]*data.Group{}
 		order := []string{}
@@ -132,21 +83,25 @@ func main() {
 								order = append(order, ks)
 							}
 							_item := map[string]any{}
-							for k, v := range _toAnyMap(c) {
-								_item[k] = v
-							}
+							_item["c_custkey"] = c.C_custkey
+							_item["c_name"] = c.C_name
+							_item["c_acctbal"] = c.C_acctbal
+							_item["c_nationkey"] = c.C_nationkey
+							_item["c_address"] = c.C_address
+							_item["c_phone"] = c.C_phone
+							_item["c_comment"] = c.C_comment
 							_item["c"] = c
-							for k, v := range _toAnyMap(o) {
-								_item[k] = v
-							}
+							_item["o_orderkey"] = o.O_orderkey
+							_item["o_custkey"] = o.O_custkey
+							_item["o_orderdate"] = o.O_orderdate
 							_item["o"] = o
-							for k, v := range _toAnyMap(l) {
-								_item[k] = v
-							}
+							_item["l_orderkey"] = l.L_orderkey
+							_item["l_returnflag"] = l.L_returnflag
+							_item["l_extendedprice"] = l.L_extendedprice
+							_item["l_discount"] = l.L_discount
 							_item["l"] = l
-							for k, v := range _toAnyMap(n) {
-								_item[k] = v
-							}
+							_item["n_nationkey"] = n.N_nationkey
+							_item["n_name"] = n.N_name
 							_item["n"] = n
 							g.Items = append(g.Items, _item)
 						}
@@ -202,25 +157,62 @@ func main() {
 		results := []Result{}
 		for _, g := range items {
 			results = append(results, Result{
-				C_custkey: _toAnyMap(g.Key)["c_custkey"],
-				C_name:    _toAnyMap(g.Key)["c_name"],
-				Revenue: _sum(func() []any {
+				_toAnyMap(g.Key)["c_custkey"],
+				_toAnyMap(g.Key)["c_name"],
+				_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, ((_toAnyMap(_toAnyMap(x)["l"])["l_extendedprice"]).(float64) * (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)).(float64)))
 					}
 					return results
 				}()),
-				C_acctbal: _toAnyMap(g.Key)["c_acctbal"],
-				N_name:    _toAnyMap(g.Key)["n_name"],
-				C_address: _toAnyMap(g.Key)["c_address"],
-				C_phone:   _toAnyMap(g.Key)["c_phone"],
-				C_comment: _toAnyMap(g.Key)["c_comment"],
+				_toAnyMap(g.Key)["c_acctbal"],
+				_toAnyMap(g.Key)["n_name"],
+				_toAnyMap(g.Key)["c_address"],
+				_toAnyMap(g.Key)["c_phone"],
+				_toAnyMap(g.Key)["c_comment"],
 			})
 		}
 		return results
 	}()
-	fmt.Println(result)
+	_print(result)
+}
+
+func _print(args ...any) {
+	first := true
+	for _, a := range args {
+		if !first {
+			fmt.Print(" ")
+		}
+		first = false
+		rv := reflect.ValueOf(a)
+		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+			fmt.Print("<nil>")
+			continue
+		}
+		if rv.Kind() == reflect.Slice && rv.Type().Elem().Kind() != reflect.Uint8 {
+			for i := 0; i < rv.Len(); i++ {
+				if i > 0 {
+					fmt.Print(" ")
+				}
+				fmt.Print(_sprint(rv.Index(i).Interface()))
+			}
+			continue
+		}
+		fmt.Print(_sprint(a))
+	}
+	fmt.Println()
+}
+
+func _sprint(v any) string {
+	if v == nil {
+		return "<nil>"
+	}
+	rv := reflect.ValueOf(v)
+	if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
+		return "<nil>"
+	}
+	return fmt.Sprint(v)
 }
 
 func _sum(v any) float64 {
