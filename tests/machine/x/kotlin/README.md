@@ -150,6 +150,6 @@ Successfully ran: 100/100 programs
 - [ ] Offer debug mode with verbose compiler logs
 - [ ] Integrate static analyzers for generated Kotlin
 - [ ] Reduce temporary variable allocations
-- [ ] Emit top-level properties as `const val` when possible
+ - [x] Emit top-level properties as `const val` when possible
 - [ ] Validate generated code using `kotlinc` before output
 - [ ] Document compiler flags in this README
