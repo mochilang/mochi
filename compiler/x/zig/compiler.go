@@ -1385,10 +1385,37 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		orig := c.env
 		c.env = child
-		keyExpr, err := c.compileExpr(q.Group.Exprs[0], false)
-		if err != nil {
-			c.env = orig
-			return "", err
+		var keyExpr string
+		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
+		if ml := extractMapLiteral(q.Group.Exprs[0]); ml != nil {
+			structName := c.newStructName()
+			decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if ok {
+				if !c.structs[structName] {
+					c.writeln(decl)
+					c.structs[structName] = true
+				}
+				if st, ok2 := c.structTypeFromMapLiteral(ml, structName); ok2 {
+					if orig != nil {
+						orig.SetStruct(structName, st)
+					}
+					child.SetStruct(structName, st)
+				}
+				keyExpr = init
+				keyType = structName
+			}
+		}
+		if keyExpr == "" {
+			var err error
+			keyExpr, err = c.compileExpr(q.Group.Exprs[0], false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
 		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
@@ -1464,7 +1491,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		resType := zigTypeOf(resTT)
-		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
 		c.env = orig
 
 		groupElem := strings.TrimPrefix(zigTypeOf(elemType), "[]const ")
