@@ -3,6 +3,7 @@
 package gocode
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strings"
@@ -566,5 +567,12 @@ func zeroValue(t types.Type) string {
 		return fmt.Sprintf("%s{}", sanitizeName(tt.Name))
 	default:
 		return "nil"
+	}
+}
+
+// assignStructFields copies fields from varName into itemVar as a map.
+func (c *Compiler) assignStructFields(buf *bytes.Buffer, indent, itemVar, varName string, st types.StructType) {
+	for _, fn := range st.Order {
+		buf.WriteString(fmt.Sprintf("%s%s[\"%s\"] = %s.%s\n", indent, itemVar, fn, varName, exportName(sanitizeName(fn))))
 	}
 }
