@@ -1,9 +1,11 @@
 object python_math {
+  def _safe_div(a: Double, b: Double): Double = if(b == 0) 0 else a / b
+
   def main(args: Array[String]): Unit = {
     val r = 3
     val area = scala.math.Pi * scala.math.pow(r, 2)
     val root = scala.math.sqrt(49)
-    val sin45 = scala.math.sin(scala.math.Pi / 4)
+    val sin45 = scala.math.sin(_safe_div(scala.math.Pi, 4))
     val log_e = scala.math.log(scala.math.E)
     println(("Circle area with r =") + " " + (r) + " " + ("=>") + " " + (area))
     println(("Square root of 49:") + " " + (root))

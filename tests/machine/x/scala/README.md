@@ -127,7 +127,7 @@ Executed successfully: 100
 - [ ] Generate scaladoc comments for functions.
 - [ ] Improve formatting of generated tuples.
 - [ ] Add warnings for unused variables.
-- [ ] Provide helper for safe division.
+ - [x] Provide helper for safe division.
 - [ ] Support multi-module compilation.
 - [ ] Improve REPL integration tests.
 - [ ] Explore native-image compilation with GraalVM.

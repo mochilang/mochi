@@ -4,6 +4,8 @@ object group_by_left_join {
   case class Stat(c: Customer, o: Option[Order])
   case class Stat1(name: String, count: Int)
 
+  case class _Group[K,T](key: K, items: List[T])
+
   def _truthy(v: Any): Boolean = v match {
     case null => false
     case b: Boolean => b
@@ -19,7 +21,7 @@ object group_by_left_join {
 
   val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"))
   val orders = List[Order](Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))
-  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); Stat1(name = g.key, count = (for { r <- g._2; if _truthy(r.o) } yield r).size) } }.toList
+  val stats = ((for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield (c.name, Stat(c = c, o = o))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => { val g = g; Stat1(name = g.key, count = (for { r <- g; if _truthy(r.o) } yield r).size) } }.toList
   def main(args: Array[String]): Unit = {
     println(("--- Group Left Join ---"))
     for(s <- stats) {

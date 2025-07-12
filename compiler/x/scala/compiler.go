@@ -151,6 +151,8 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 				pad + "  out.flush()\n" +
 				pad + "  if(out ne Console.out) out.close()\n" +
 				pad + "}\n")
+		case "_safe_div":
+			out.WriteString(pad + "def _safe_div(a: Double, b: Double): Double = if(b == 0) 0 else a / b\n")
 		case "_truthy":
 			out.WriteString(pad + "def _truthy(v: Any): Boolean = v match {\n" +
 				pad + "  case null => false\n" +
@@ -988,7 +990,12 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			if _, ok := rightType.(types.AnyType); ok {
 				rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
 			}
-			s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
+			if op.Op == "/" {
+				c.use("_safe_div")
+				s = fmt.Sprintf("_safe_div(%s, %s)", ls, rs)
+			} else {
+				s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
+			}
 			switch op.Op {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
 				leftType = types.BoolType{}
@@ -1289,14 +1296,15 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
+		c.use("_safe_div")
 		if qarg, ok := queryExpr(call.Args[0]); ok {
 			inner, err := c.compileQueryExpr(qarg)
 			if err != nil {
 				return "", err
 			}
-			return fmt.Sprintf("(%s).sum.toDouble / (%s).size", inner, inner), nil
+			return fmt.Sprintf("_safe_div((%s).sum.toDouble, (%s).size)", inner, inner), nil
 		}
-		return fmt.Sprintf("(%s).sum.toDouble / (%s).size", args[0], args[0]), nil
+		return fmt.Sprintf("_safe_div((%s).sum.toDouble, (%s).size)", args[0], args[0]), nil
 	case "count":
 		if len(args) != 1 {
 			return "", fmt.Errorf("count expects 1 arg")
