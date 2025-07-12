@@ -1,7 +1,7 @@
 const std = @import("std");
 
-const a = (10 - 3); // i32
-const b = (2 + 2); // i32
+const a = 7; // i32
+const b = 4; // i32
 
 pub fn main() void {
     std.debug.print("{d}\n", .{a});

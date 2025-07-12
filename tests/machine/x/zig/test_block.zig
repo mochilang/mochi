@@ -5,7 +5,7 @@ fn expect(cond: bool) void {
 }
 
 fn test_addition_works() void {
-    const x = (1 + 2); // i32
+    const x = 3; // i32
     expect((x == 3));
 }
 

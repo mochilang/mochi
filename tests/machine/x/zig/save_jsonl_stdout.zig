@@ -41,7 +41,7 @@ const people = &[_]PeopleItem{
     .name = "Bob",
     .age = 25,
 },
-}; // []const Peopleitem
+}; // []const PeopleItem
 
 pub fn main() void {
     _save_json(people, "-");
