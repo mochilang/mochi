@@ -143,7 +143,7 @@ int main() {
                                              .l_discount = 0.0}};
   list_LineitemItem tmp4 = {2, tmp4_data};
   list_LineitemItem lineitem = tmp4;
-  list_ResultItem result = 0;
+  list_ResultItem result = (list_ResultItem){0, NULL};
   for (int i5 = 0; i5 < result.len; i5++) {
     ResultItem it = result.data[i5];
     if (i5 > 0)

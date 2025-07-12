@@ -1,8 +1,10 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/group_by_left_join.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_left_join.c:72:26: error: invalid initializer
-   72 |   list_StatsItem stats = 0;
-      |                          ^
-
+error: output mismatch
+-- got --
+--- Group Left Join ---
+-- want --
+--- Group Left Join ---
+Alice orders: 2
+Bob orders: 1
+Charlie orders: 0
    1: #include <stdio.h>

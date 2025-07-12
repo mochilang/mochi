@@ -69,7 +69,7 @@ int main() {
                             (OrdersItem){.id = 102, .customerId = 2}};
   list_OrdersItem tmp2 = {3, tmp2_data};
   list_OrdersItem orders = tmp2;
-  list_StatsItem stats = 0;
+  list_StatsItem stats = (list_StatsItem){0, NULL};
   printf("%s\n", "--- Group Left Join ---");
   // unsupported dynamic list iteration
   for (;;) {

@@ -1,8 +1,7 @@
 line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/group_by_multi_join_sort.c:146:28: error: invalid initializer
-  146 |   list_ResultItem result = 0;
-      |                            ^
+error: output mismatch
+-- got --
 
+-- want --
+map[c_acctbal:100 c_address:123 St c_comment:Loyal c_custkey:1 c_name:Alice c_phone:123-456 n_name:BRAZIL revenue:900]
    1: #include <stdio.h>
