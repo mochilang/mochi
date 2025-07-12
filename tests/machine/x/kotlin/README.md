@@ -32,3 +32,4 @@ Successful programs have matching `.kt` and `.out` files.
 - Provide better support for the Python `math` helpers and other foreign
   imports.
 - Finish compiling the remaining programs listed above.
+- Escape Kotlin keywords such as `val` when used as record fields.
