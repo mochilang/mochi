@@ -166,7 +166,7 @@ var runtimePieces = map[string]string{
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }`,
-	"Group": `class Group(val key: Any?, val items: MutableList<Any?>) : MutableList<Any?> by items`,
+	"Group": `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
 }
 
 var runtimeOrder = []string{"append", "avg", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
@@ -213,8 +213,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.inferred = make(map[string]types.StructType)
 	c.mapNodes = make(map[*parser.MapLiteral]string)
 
-       // Structural inference infers struct types from map literals.
-       c.discoverStructs(prog)
+	// Structural inference infers struct types from map literals.
+	c.discoverStructs(prog)
 
 	// handle builtin imports
 	for _, s := range prog.Statements {
@@ -1189,12 +1189,12 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 			c.use("toDouble")
 			return fmt.Sprintf("%s.map{ toDouble(it) }.average()", args[0]), true
 		}
-       case "sum":
-               if len(args) == 1 {
-                        c.use("sum")
-                        c.use("toInt")
-                        return fmt.Sprintf("sum(%s)", args[0]), true
-               }
+	case "sum":
+		if len(args) == 1 {
+			c.use("sum")
+			c.use("toInt")
+			return fmt.Sprintf("sum(%s)", args[0]), true
+		}
 	case "max":
 		if len(args) == 1 {
 			return fmt.Sprintf("%s.maxOrNull() ?: 0", args[0]), true
@@ -1376,12 +1376,18 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if t := selectorType(q.Select, selEnv); t != nil {
 		selType = t
 	}
+
 	if ml, ok := mapLiteral(q.Select); ok {
 		if name, ok := c.mapNodes[ml]; ok {
 			if st, ok := c.env.GetStruct(name); ok {
 				selType = st
 			}
 		}
+	}
+
+	var keyType types.Type
+	if q.Group != nil {
+		keyType = c.inferExprType(q.Group.Exprs[0])
 	}
 
 	oldEnv := c.env
@@ -1402,9 +1408,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString(indent(lvl))
 	if q.Group != nil {
 		c.use("Group")
-		b.WriteString("val __groups = mutableMapOf<Any?, Group>()\n")
+		b.WriteString(fmt.Sprintf("val __groups = mutableMapOf<%s, Group<%s, %s>>()\n", kotlinTypeOf(keyType), kotlinTypeOf(keyType), kotlinTypeOf(elem)))
 		b.WriteString(indent(lvl))
-		b.WriteString("val __order = mutableListOf<Any?>()\n")
+		b.WriteString(fmt.Sprintf("val __order = mutableListOf<%s>()\n", kotlinTypeOf(keyType)))
 	} else {
 		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
 	}
@@ -1456,7 +1462,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	selEnv = c.env
 	if q.Group != nil {
 		genv := types.NewEnv(c.env)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elem}, true)
 		selEnv = genv
 		c.env = selEnv
 	}
@@ -1496,7 +1502,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("if (__g == null) {\n")
 		lvl++
 		b.WriteString(indent(lvl))
-		b.WriteString("__g = Group(__k, mutableListOf())\n")
+		b.WriteString(fmt.Sprintf("__g = Group(__k, mutableListOf<%s>())\n", kotlinTypeOf(elem)))
 		b.WriteString(indent(lvl))
 		b.WriteString("__groups[__k] = __g\n")
 		b.WriteString(indent(lvl))
@@ -2151,7 +2157,7 @@ func kotlinTypeOf(t types.Type) string {
 	case types.StructType:
 		return tt.Name
 	case types.GroupType:
-		return "Group"
+		return fmt.Sprintf("Group<%s, %s>", kotlinTypeOf(tt.Key), kotlinTypeOf(tt.Elem))
 	default:
 		return "Any?"
 	}
