@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_multi_join.scala:15: error: value map is not a member of group_by_multi_join._Group[Int,group_by_multi_join.Grouped]
-  val grouped = ((for { x <- filtered } yield (x.part, Grouped(x = x))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Grouped1(part = g.key, total = (for { r <- g } yield r.value).sum) }.toList
-                                                                                                                                                                                                    ^
-one error found

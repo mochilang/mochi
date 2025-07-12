@@ -1854,18 +1854,26 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			return n
 		}()...)
-		elem := types.StructType{Fields: make(map[string]types.Type), Order: names}
-		for _, n := range names {
-			if t, err := child.GetVar(n); err == nil {
-				elem.Fields[n] = t
+		var tuple string
+		var elem types.Type
+		if len(names) == 1 {
+			elem, _ = child.GetVar(names[0])
+			tuple = names[0]
+		} else {
+			st := types.StructType{Fields: make(map[string]types.Type), Order: names}
+			for _, n := range names {
+				if t, err := child.GetVar(n); err == nil {
+					st.Fields[n] = t
+				}
 			}
+			st = c.ensureStructName(st)
+			partsExpr := make([]string, len(names))
+			for i, n := range names {
+				partsExpr[i] = fmt.Sprintf("%s = %s", sanitizeField(n), n)
+			}
+			tuple = fmt.Sprintf("%s(%s)", st.Name, strings.Join(partsExpr, ", "))
+			elem = st
 		}
-		elem = c.ensureStructName(elem)
-		partsExpr := make([]string, len(names))
-		for i, n := range names {
-			partsExpr[i] = fmt.Sprintf("%s = %s", sanitizeField(n), n)
-		}
-		tuple := fmt.Sprintf("%s(%s)", elem.Name, strings.Join(partsExpr, ", "))
 		tmp := fmt.Sprintf("for { %s } yield (%s, %s)", strings.Join(parts, "; "), keyExpr, tuple)
 		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList", tmp)
 		c.use("_Group")

@@ -1,5 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/group_by_having.scala:9: error: value size is not a member of group_by_having._Group[String,group_by_having.Big]
-  val big = (((for { p <- people } yield (p.city, Big(p = p))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).filter{ g => (g).size >= 4 }).map{ g => Map[String, Any]("city" -> (g.key), "num" -> ((g).size)) }.toList
-                                                                                                                                                       ^
-one error found
