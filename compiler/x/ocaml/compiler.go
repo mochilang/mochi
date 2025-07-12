@@ -1342,12 +1342,31 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 		}
 	}
 
+	srcType0 := types.ExprType(q.Source, c.env)
+	var elemType types.Type
+	switch t := srcType0.(type) {
+	case types.ListType:
+		elemType = t.Elem
+	case types.GroupType:
+		elemType = t.Elem
+	default:
+		elemType = types.AnyType{}
+	}
+	elemTyp := c.ocamlType(elemType)
+	if elemTyp == "" {
+		elemTyp = "Obj.t"
+	}
+	groupKeyTyp := keyTyp
+	if groupKeyTyp == "" {
+		groupKeyTyp = "Obj.t"
+	}
+
 	resName := fmt.Sprintf("__res%d", c.loop)
 	groups := fmt.Sprintf("__groups%d", c.loop)
 	c.loop++
 
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("(let %s = ref [] in\n", groups))
+	buf.WriteString(fmt.Sprintf("(let (%s : (%s * %s list) list ref) = ref [] in\n", groups, groupKeyTyp, elemTyp))
 	for i := 0; i < total; i++ {
 		for j := 0; j <= i; j++ {
 			buf.WriteString(strings.Repeat("  ", j+1))
@@ -2112,6 +2131,12 @@ func (c *Compiler) ocamlType(t types.Type) string {
 		return c.ocamlType(tt.Elem) + " list"
 	case types.MapType:
 		return fmt.Sprintf("(%s * Obj.t) list", c.ocamlType(tt.Key))
+	case types.OptionType:
+		inner := c.ocamlType(tt.Elem)
+		if inner == "" {
+			inner = "Obj.t"
+		}
+		return inner + " option"
 	case types.GroupType:
 		key := c.ocamlType(tt.Key)
 		if key == "" {
