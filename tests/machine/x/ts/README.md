@@ -113,7 +113,7 @@ Compiled: 100/100 programs
 - [ ] Improve formatting of generated interfaces
 - [x] Use template strings for string concatenation
 - [x] Leverage built-in array helpers instead of manual loops
-- [ ] Add async function support for I/O operations
+- [x] Add async function support for I/O operations
 - [ ] Preserve comments from source Mochi code
 - [ ] Generate discriminated union helpers
 - [ ] Optimize query translations to use map/reduce
