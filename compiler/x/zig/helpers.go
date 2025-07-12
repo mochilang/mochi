@@ -490,17 +490,36 @@ func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
 		}
 	}
 	if ll := u.Value.Target.List; ll != nil && len(ll.Elems) > 0 {
-		if first := ll.Elems[0]; first.Binary != nil && first.Binary.Left != nil {
-			if ml := first.Binary.Left.Value.Target.Map; ml != nil {
-				st, ok := c.structTypeFromMapLiteral(ml, "")
-				if ok {
-					if name, ok2 := c.matchStructFromMapLiteral(ml); ok2 {
-						st.Name = name
+		var st types.StructType
+		for i, el := range ll.Elems {
+			if el.Binary == nil || el.Binary.Left == nil {
+				return nil, false
+			}
+			ml := el.Binary.Left.Value.Target.Map
+			if ml == nil {
+				return nil, false
+			}
+			st2, ok := c.structTypeFromMapLiteral(ml, "")
+			if !ok {
+				return nil, false
+			}
+			if i == 0 {
+				st = st2
+			} else {
+				if len(st2.Fields) != len(st.Fields) {
+					return nil, false
+				}
+				for k, t1 := range st.Fields {
+					if t2, ok := st2.Fields[k]; !ok || !equalTypes(t1, t2) {
+						return nil, false
 					}
-					return types.ListType{Elem: st}, true
 				}
 			}
 		}
+		if name, ok := c.matchStructFromMapLiteral(ll.Elems[0].Binary.Left.Value.Target.Map); ok {
+			st.Name = name
+		}
+		return types.ListType{Elem: st}, true
 	}
 	return nil, false
 }
