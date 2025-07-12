@@ -76,10 +76,10 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 - [x] pure_global_fold
 - [ ] python_auto (error)
 - [ ] python_math (error)
-- [ ] query_sum_select (error)
+ - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
-- [ ] save_jsonl_stdout (error)
+ - [x] save_jsonl_stdout
 - [x] short_circuit
 - [x] slice
 - [x] sort_stable

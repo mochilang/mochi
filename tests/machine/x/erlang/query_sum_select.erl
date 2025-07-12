@@ -3,5 +3,5 @@
 
 main(_) ->
     Nums = [1, 2, 3],
-    Result = [lists:sum(N) || N <- Nums, (N > 1)],
+    Result = lists:sum([N || N <- Nums, (N > 1)]),
     io:format("~p~n", [Result]).

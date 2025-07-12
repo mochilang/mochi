@@ -7,7 +7,7 @@ escript: exception error: bad map: undefined
   in function  map_get/2
      called as map_get(name,undefined)
      *** argument 2: not a map
-  in call from outer_join_erl__escript__1752__320838__519850__8963:'-main/1-fun-2-'/1 (/workspace/mochi/tests/machine/x/erlang/outer_join.erl, line 9)
+  in call from outer_join_erl__escript__1752__328621__801805__8962:'-main/1-fun-2-'/1 (/workspace/mochi/tests/machine/x/erlang/outer_join.erl, line 9)
   in call from lists:foreach_1/2 (lists.erl, line 2310)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
