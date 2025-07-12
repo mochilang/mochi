@@ -4,7 +4,11 @@ package pycode
 
 import "sort"
 
-var helperPrelude = "from typing import Any, TypeVar, Generic, Callable\nT = TypeVar('T')\nK = TypeVar('K')\n"
+var helperPrelude = "from typing import Any, TypeVar, Generic, Callable, Optional\n" +
+	"T = TypeVar('T')\n" +
+	"K = TypeVar('K')\n" +
+	"L = TypeVar('L')\n" +
+	"R = TypeVar('R')\n"
 
 // Runtime helpers emitted by the Python compiler.
 
@@ -85,6 +89,51 @@ var helperMax = "def _max(v):\n" +
 	"    if not vals:\n" +
 	"        return 0\n" +
 	"    return max(vals)\n"
+
+var helperJoin = "def _join(left: list[L], right: list[R], on: Callable[[L, R], bool] | None = None, left_join: bool = False, right_join: bool = False) -> list[tuple[Optional[L], Optional[R]]]:\n" +
+	"    out: list[tuple[Optional[L], Optional[R]]] = []\n" +
+	"    if on is None:\n" +
+	"        for l in left:\n" +
+	"            for r in right:\n" +
+	"                out.append((l, r))\n" +
+	"        return out\n" +
+	"    if left_join and right_join:\n" +
+	"        matched = [False] * len(right)\n" +
+	"        for l in left:\n" +
+	"            m = False\n" +
+	"            for ri, r in enumerate(right):\n" +
+	"                if on(l, r):\n" +
+	"                    m = True; matched[ri] = True\n" +
+	"                    out.append((l, r))\n" +
+	"            if not m:\n" +
+	"                out.append((l, None))\n" +
+	"        for ri, r in enumerate(right):\n" +
+	"            if not matched[ri]:\n" +
+	"                out.append((None, r))\n" +
+	"        return out\n" +
+	"    if left_join:\n" +
+	"        for l in left:\n" +
+	"            m = False\n" +
+	"            for r in right:\n" +
+	"                if on(l, r):\n" +
+	"                    m = True; out.append((l, r))\n" +
+	"            if not m:\n" +
+	"                out.append((l, None))\n" +
+	"        return out\n" +
+	"    if right_join:\n" +
+	"        for r in right:\n" +
+	"            m = False\n" +
+	"            for l in left:\n" +
+	"                if on(l, r):\n" +
+	"                    m = True; out.append((l, r))\n" +
+	"            if not m:\n" +
+	"                out.append((None, r))\n" +
+	"        return out\n" +
+	"    for l in left:\n" +
+	"        for r in right:\n" +
+	"            if on(l, r):\n" +
+	"                out.append((l, r))\n" +
+	"    return out\n"
 
 var helperGroupClass = "class _Group(Generic[K, T]):\n" +
 	"    def __init__(self, key: K):\n" +
@@ -523,6 +572,7 @@ var helperMap = map[string]string{
 	"_min":        helperMin,
 	"_max":        helperMax,
 	"_first":      helperFirst,
+	"_join":       helperJoin,
 	"_union_all":  helperUnionAll,
 	"_union":      helperUnion,
 	"_except":     helperExcept,
