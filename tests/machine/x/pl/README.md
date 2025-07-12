@@ -6,7 +6,7 @@
 - [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
-- [ ] closure.mochi
+- [x] closure.mochi
 - [x] count_builtin.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
@@ -100,7 +100,7 @@
 - [x] while_loop.mochi
 
 ### Remaining tasks
-- [ ] closure.mochi
+- [x] closure.mochi
 - [ ] cross_join.mochi
 - [ ] cross_join_filter.mochi
 - [ ] cross_join_triple.mochi

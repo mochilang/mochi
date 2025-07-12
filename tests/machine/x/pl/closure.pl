@@ -1,9 +1,12 @@
 :- style_check(-singleton).
-p__lambda0(X, _Res) :-
+p__lambda0_impl(N, X, _Res) :-
     _Res is (X + N).
 
+p__lambda1(P0, _Res) :-
+    p__lambda0_impl(N, P0, _Res).
+
 makeAdder(N, _Res) :-
-    _Res = p__lambda0.
+    _Res = p__lambda1.
 
 :- initialization(main, main).
 main :-

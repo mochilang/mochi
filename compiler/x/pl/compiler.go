@@ -1430,6 +1430,14 @@ func (c *Compiler) newTmp() string {
 	return s
 }
 
+func makeParamNames(n int) []string {
+	params := make([]string, n)
+	for i := 0; i < n; i++ {
+		params[i] = fmt.Sprintf("P%d", i)
+	}
+	return params
+}
+
 func sanitizeVar(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
 	s = strings.ReplaceAll(s, " ", "_")
@@ -1796,15 +1804,31 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
 }
 
 func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
-	name := fmt.Sprintf("p__lambda%d", c.tmp)
+	// collect captured variables from current scope
+	keys := make([]string, 0, len(c.vars))
+	for k := range c.vars {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// implementation predicate that takes captured vars plus params
+	implName := fmt.Sprintf("p__lambda%d_impl", c.tmp)
 	c.tmp++
+
 	var body []*parser.Statement
 	if fn.ExprBody != nil {
 		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
 	} else {
 		body = fn.BlockBody
 	}
-	fs := &parser.FunStmt{Name: name, Params: fn.Params, Body: body}
+
+	implParams := make([]*parser.Param, 0, len(keys)+len(fn.Params))
+	for _, k := range keys {
+		implParams = append(implParams, &parser.Param{Name: sanitizeVar(k)})
+	}
+	implParams = append(implParams, fn.Params...)
+
+	fs := &parser.FunStmt{Name: implName, Params: implParams, Body: body}
 	oldIndent := c.indent
 	oldOut := c.out
 	c.indent = 0
@@ -1814,9 +1838,27 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
 		c.out = oldOut
 		return "", false, err
 	}
+	c.funcArity[implName] = len(implParams)
+
+	// wrapper predicate that partially applies captured vars
+	lambdaName := fmt.Sprintf("p__lambda%d", c.tmp)
+	c.tmp++
+	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambdaName, strings.Join(makeParamNames(len(fn.Params)), ", ")))
+	c.indent++
+	capturedVals := make([]string, 0, len(keys)+len(fn.Params))
+	for _, k := range keys {
+		capturedVals = append(capturedVals, c.lookupVar(k))
+	}
+	for i := 0; i < len(fn.Params); i++ {
+		capturedVals = append(capturedVals, fmt.Sprintf("P%d", i))
+	}
+	c.writeln(fmt.Sprintf("%s(%s, _Res).", sanitizeAtom(implName), strings.Join(capturedVals, ", ")))
+	c.indent--
+	c.writeln("")
 	c.indent = oldIndent
 	c.out = oldOut
-	return name, false, nil
+	c.funcArity[lambdaName] = len(fn.Params)
+	return lambdaName, false, nil
 }
 
 func (c *Compiler) compilePartialCall(call *parser.CallExpr, arity int) (string, bool, error) {
