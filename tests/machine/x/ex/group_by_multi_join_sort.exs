@@ -45,7 +45,7 @@ defmodule Main do
              ],
              %{
                select: fn c, o, l, n -> [c, o, l, n] end,
-               where: fn c, o, l, n ->
+               where: fn [c, o, l, n] ->
                  o.o_orderdate >= @start_date && o.o_orderdate < @end_date &&
                    l.l_returnflag == "R"
                end
