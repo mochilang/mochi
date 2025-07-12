@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:5:16: warning: forced cast of '[[String : Any]]' to same type has no effect
-3 | var pairs = nums.flatMap { n in letters.compactMap { l in n % 2 == 0 ? (["n": n, "l": l]) : nil } }
-4 | print("--- Even pairs ---")
-5 | for p in pairs as! [[String:Any]] {
-  |                `- warning: forced cast of '[[String : Any]]' to same type has no effect
-6 |     print(p["n"]!, p["l"]!)
-7 | }
+/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:14:16: warning: forced cast of '[[String : Any]]' to same type has no effect
+12 | }())
+13 | print("--- Even pairs ---")
+14 | for p in pairs as! [[String:Any]] {
+   |                `- warning: forced cast of '[[String : Any]]' to same type has no effect
+15 |     print(p["n"]!, p["l"]!)
+16 | }
 --- Even pairs ---
 2 A
 2 B

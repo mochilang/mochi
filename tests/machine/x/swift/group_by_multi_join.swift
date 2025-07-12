@@ -17,7 +17,7 @@ struct Auto3: Equatable {
 
 var nations = [Auto1(id: 1, name: "A"), Auto1(id: 2, name: "B")]
 var suppliers = [Auto2(id: 1, nation: 1), Auto2(id: 2, nation: 2)]
-var partsupp = [Auto3(cost: 10, part: 100, qty: 2, supplier: 1), Auto3(cost: 20, part: 100, qty: 1, supplier: 2), Auto3(cost: 5, part: 200, qty: 3, supplier: 1)]
+var partsupp = [Auto3(cost: 10.0, part: 100, qty: 2, supplier: 1), Auto3(cost: 20.0, part: 100, qty: 1, supplier: 2), Auto3(cost: 5.0, part: 200, qty: 3, supplier: 1)]
 var filtered = ({
 	var _res: [[String:Any]] = []
 	for ps in partsupp {

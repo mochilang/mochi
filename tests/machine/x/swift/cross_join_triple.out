@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:6:17: warning: forced cast of '[[String : Any]]' to same type has no effect
-4 | var combos = nums.flatMap { n in letters.flatMap { l in bools.map { b in ["n": n, "l": l, "b": b] } } }
-5 | print("--- Cross Join of three lists ---")
-6 | for c in combos as! [[String:Any]] {
-  |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
-7 |     print(c["n"]!, c["l"]!, c["b"]!)
-8 | }
+/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:16:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+14 | }())
+15 | print("--- Cross Join of three lists ---")
+16 | for c in combos as! [[String:Any]] {
+   |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
+17 |     print(c["n"]!, c["l"]!, c["b"]!)
+18 | }
 --- Cross Join of three lists ---
 1 A true
 1 A false

@@ -5,4 +5,4 @@
    |                           `- warning: conditional cast from 'Any' to 'Any' always succeeds
 14 |        let data = try? JSONSerialization.data(withJSONObject: obj),
 15 |        let s = String(data: data, encoding: .utf8) {
-{"a":1,"b":2}
+{"b":2,"a":1}

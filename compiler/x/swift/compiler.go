@@ -2488,7 +2488,7 @@ func (c *compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil && len(q.Joins) > 0 && !q.Distinct {
 		return c.groupJoinQuery(q)
 	}
-	if len(q.Joins) > 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
+	if (len(q.Joins) > 0 || len(q.Froms) > 0) && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		return c.joinQuery(q)
 	}
 	if len(q.Joins) > 0 || q.Distinct {

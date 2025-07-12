@@ -1,61 +1,21 @@
-/workspace/mochi/tests/machine/x/swift/left_join.swift:10:25: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
- 8 | 		var _m = false
- 9 | 		for c in _join {
-10 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-   |                         `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-11 | 			_m = true
-12 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
+/workspace/mochi/tests/machine/x/swift/left_join.swift:27:46: warning: expression implicitly coerced from 'Any?' to 'Any'
+25 | 		if !_m {
+26 | 			let c: Any? = nil
+27 | 			_res.append(["orderId": o.id, "customer": c, "total": o.total])
+   |                                              |- warning: expression implicitly coerced from 'Any?' to 'Any'
+   |                                              |- note: provide a default value to avoid this warning
+   |                                              |- note: force-unwrap the value to avoid this warning
+   |                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
+28 | 		}
+29 | 	}
 
-/workspace/mochi/tests/machine/x/swift/left_join.swift:12:36: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-10 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-11 | 			_m = true
-12 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
-   |                                    `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-13 | 		}
-14 | 		if !_m {
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:12:80: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-10 | 			if !(o["customerId"] as! Int == c["id"] as! Int) { continue }
-11 | 			_m = true
-12 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
-   |                                                                                `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-13 | 		}
-14 | 		if !_m {
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:16:36: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-14 | 		if !_m {
-15 | 			let c: Any? = nil
-16 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
-   |                                    `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-17 | 		}
-18 | 	}
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:16:80: warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-14 | 		if !_m {
-15 | 			let c: Any? = nil
-16 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
-   |                                                                                `- warning: forced cast from 'Int?' to 'Int' only unwraps optionals; did you mean to use '!'?
-17 | 		}
-18 | 	}
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:16:57: warning: expression implicitly coerced from 'Any?' to 'Any'
-14 | 		if !_m {
-15 | 			let c: Any? = nil
-16 | 			_res.append(["orderId": o["id"] as! Int, "customer": c, "total": o["total"] as! Int])
-   |                                                         |- warning: expression implicitly coerced from 'Any?' to 'Any'
-   |                                                         |- note: provide a default value to avoid this warning
-   |                                                         |- note: force-unwrap the value to avoid this warning
-   |                                                         `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-17 | 		}
-18 | 	}
-
-/workspace/mochi/tests/machine/x/swift/left_join.swift:22:21: warning: forced cast of '[[String : Any]]' to same type has no effect
-20 | }())
-21 | print("--- Left Join ---")
-22 | for entry in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/left_join.swift:33:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+31 | }())
+32 | print("--- Left Join ---")
+33 | for entry in result as! [[String:Any]] {
    |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
-23 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
-24 | }
+34 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
+35 | }
 --- Left Join ---
-Order 100 customer ["name": "Alice", "id": 1] total 250
+Order 100 customer Auto1(id: 1, name: "Alice") total 250
 Order 101 customer nil total 80

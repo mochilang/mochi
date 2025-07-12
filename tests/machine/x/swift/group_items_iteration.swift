@@ -3,7 +3,7 @@ struct Auto1: Equatable {
     var val: Int
 }
 
-struct Auto2: Equatable {
+struct Group: Equatable {
     var items: [Auto1]
     var key: String
 }
