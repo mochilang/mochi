@@ -116,3 +116,5 @@ dataset joins, grouping, or advanced built-ins. Outstanding tasks include:
 - Add full grouping logic so `group_by` and `group_items_iteration` work.
 - Improve built-in handling for YAML loading and `sum_builtin`.
 - Finish translation for programs like `two-sum` and `update_stmt`.
+- Extend grouping logic to handle structured keys so dataset queries like
+  `tests/dataset/tpc-h/q1.mochi` can compile.
