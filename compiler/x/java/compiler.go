@@ -542,6 +542,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.buf.WriteString(code)
 	out := strings.ReplaceAll(c.buf.String(), "\t", "    ")
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
 	return []byte(out), nil
 }
 
