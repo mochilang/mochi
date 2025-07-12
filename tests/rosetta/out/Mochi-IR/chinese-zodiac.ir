@@ -1,0 +1,127 @@
+func main (regs=52)
+  // let animal = ["Rat","Ox","Tiger","Rabbit","Dragon","Snake","Horse","Goat","Monkey","Rooster","Dog","Pig"]
+  Const        r0, ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"]
+  // let yinYang = ["Yang","Yin"]
+  Const        r1, ["Yang", "Yin"]
+  // let element = ["Wood","Fire","Earth","Metal","Water"]
+  Const        r2, ["Wood", "Fire", "Earth", "Metal", "Water"]
+  // let stemChArr = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"]
+  Const        r3, ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
+  // let branchChArr = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"]
+  Const        r4, ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
+  // for yr in [1935,1938,1968,1972,1976] {
+  Const        r5, [1935, 1938, 1968, 1972, 1976]
+  IterPrep     r6, r5
+  Len          r7, r6
+  Const        r8, 0
+L1:
+  LessInt      r9, r8, r7
+  JumpIfFalse  r9, L0
+  Index        r10, r6, r8
+  Move         r11, r10
+  // let r = cz(yr, animal, yinYang, element, stemChArr, branchChArr)
+  Move         r12, r11
+  Const        r18, ["Rat", "Ox", "Tiger", "Rabbit", "Dragon", "Snake", "Horse", "Goat", "Monkey", "Rooster", "Dog", "Pig"]
+  Move         r13, r18
+  Const        r19, ["Yang", "Yin"]
+  Move         r14, r19
+  Const        r20, ["Wood", "Fire", "Earth", "Metal", "Water"]
+  Move         r15, r20
+  Const        r21, ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
+  Move         r16, r21
+  Const        r22, ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"]
+  Move         r17, r22
+  Call         r23, cz, r12, r13, r14, r15, r16, r17
+  // print(str(yr) + ": " + r.element + " " + r.animal + ", " + r.yinYang + ", Cycle year " + str(r.cycle) + " " + r.stemBranch)
+  Str          r24, r11
+  Const        r25, ": "
+  Add          r26, r24, r25
+  Const        r27, "element"
+  Index        r28, r23, r27
+  Add          r29, r26, r28
+  Const        r30, " "
+  Add          r31, r29, r30
+  Const        r32, "animal"
+  Index        r33, r23, r32
+  Add          r34, r31, r33
+  Const        r35, ", "
+  Add          r36, r34, r35
+  Const        r37, "yinYang"
+  Index        r38, r23, r37
+  Add          r39, r36, r38
+  Const        r40, ", Cycle year "
+  Add          r41, r39, r40
+  Const        r42, "cycle"
+  Index        r43, r23, r42
+  Str          r44, r43
+  Add          r45, r41, r44
+  Const        r30, " "
+  Add          r46, r45, r30
+  Const        r47, "stemBranch"
+  Index        r48, r23, r47
+  Add          r49, r46, r48
+  Print        r49
+  // for yr in [1935,1938,1968,1972,1976] {
+  Const        r50, 1
+  AddInt       r51, r8, r50
+  Move         r8, r51
+  Jump         L1
+L0:
+  Return       r0
+
+  // fun cz(yr: int, animal: list<string>, yinYang: list<string>, element: list<string>, sc: list<string>, bc: list<string>): Info {
+func cz (regs=43)
+  // var y = yr - 4
+  Const        r6, 4
+  Sub          r7, r0, r6
+  Move         r8, r7
+  // let stem = y % 10
+  Const        r9, 10
+  Mod          r10, r8, r9
+  // let branch = y % 12
+  Const        r11, 12
+  Mod          r12, r8, r11
+  // let sb = sc[stem] + bc[branch]
+  Index        r13, r4, r10
+  Index        r14, r5, r12
+  Add          r15, r13, r14
+  // animal: animal[branch] as string,
+  Index        r16, r1, r12
+  Cast         r17, r16, string
+  // yinYang: yinYang[stem % 2] as string,
+  Const        r18, 2
+  Mod          r19, r10, r18
+  Index        r20, r2, r19
+  Cast         r21, r20, string
+  // element: element[(stem / 2) as int] as string,
+  Const        r18, 2
+  Div          r22, r10, r18
+  Cast         r23, r22, int
+  Index        r24, r3, r23
+  Cast         r25, r24, string
+  // cycle: y % 60 + 1,
+  Const        r26, 60
+  Mod          r27, r8, r26
+  Const        r28, 1
+  Add          r29, r27, r28
+  // return Info{
+  Const        r30, "__name"
+  Const        r31, "Info"
+  // animal: animal[branch] as string,
+  Const        r32, "animal"
+  Move         r33, r17
+  // yinYang: yinYang[stem % 2] as string,
+  Const        r34, "yinYang"
+  Move         r35, r21
+  // element: element[(stem / 2) as int] as string,
+  Const        r36, "element"
+  Move         r37, r25
+  // stemBranch: sb,
+  Const        r38, "stemBranch"
+  Move         r39, r15
+  // cycle: y % 60 + 1,
+  Const        r40, "cycle"
+  Move         r41, r29
+  // return Info{
+  MakeMap      r42, 6, r30
+  Return       r42
