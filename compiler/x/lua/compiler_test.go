@@ -153,7 +153,7 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 	}
 
 	root := findRepoRoot(t)
-	for i := 1; i <= 2; i++ {
+       for i := 1; i <= 3; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
