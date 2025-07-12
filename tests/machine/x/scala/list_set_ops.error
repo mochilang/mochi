@@ -1,7 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/list_set_ops.scala:6: error: type mismatch;
- found   : Int
- required: scala.collection.GenTraversableOnce[?]
-    println((List[Int](1, 2) ++ List[Int](2, 3).length))
-                                                ^
-one error found

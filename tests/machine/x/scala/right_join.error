@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/right_join.scala:14: error: value id is not a member of Option[right_join.Order]
-        println(("Customer") + " " + (entry.customerName) + " " + ("has order") + " " + (entry.order.id) + " " + ("- $") + " " + (entry.order.total))
-                                                                                                     ^
-/workspace/mochi/tests/machine/x/scala/right_join.scala:14: error: value total is not a member of Option[right_join.Order]
-        println(("Customer") + " " + (entry.customerName) + " " + ("has order") + " " + (entry.order.id) + " " + ("- $") + " " + (entry.order.total))
-                                                                                                                                              ^
-two errors found
