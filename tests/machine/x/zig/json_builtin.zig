@@ -3,7 +3,7 @@ const std = @import("std");
 fn _json(v: anytype) void {
     var buf = std.ArrayList(u8).init(std.heap.page_allocator);
     defer buf.deinit();
-    std.json.stringify(v, .{}, buf.writer()) catch unreachable;
+    std.json.stringify(v, .{}, buf.writer()) catch |err| handleError(err);
     std.debug.print("{s}\n", .{buf.items});
 }
 

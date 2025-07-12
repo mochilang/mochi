@@ -119,7 +119,7 @@ Compiled programs: 100/100
 - [x] Enhance struct type inference for anonymous structs matching named definitions.
 - [ ] Support union pattern matching using enums.
 - [ ] Implement iterators for list handling instead of ArrayList allocations.
-- [ ] Replace `catch unreachable` with proper error handling.
+- [x] Replace `catch unreachable` with proper error handling.
 - [ ] Optimize constant folding for arithmetic expressions.
 - [ ] Improve type inference for generic functions.
 - [ ] Handle recursive type definitions.

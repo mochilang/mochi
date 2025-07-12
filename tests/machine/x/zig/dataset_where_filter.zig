@@ -1,5 +1,9 @@
 const std = @import("std");
 
+fn handleError(err: anyerror) noreturn {
+    std.debug.panic("{any}", .{err});
+}
+
 const PeopleItem = struct {
     name: []const u8,
     age: i32,
@@ -21,7 +25,7 @@ const people = &[_]PeopleItem{
     .name = "Diana",
     .age = 45,
 },
-}; // []const PeopleItem
+}; // []const Peopleitem
 const adults = blk0: { var _tmp0 = std.ArrayList(struct {
     name: []const u8,
     age: i32,
@@ -34,7 +38,7 @@ const adults = blk0: { var _tmp0 = std.ArrayList(struct {
     .name = person.name,
     .age = person.age,
     .is_senior = (person.age >= 60),
-}) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
+}) catch |err| handleError(err); } const _tmp1 = _tmp0.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Adults ---\n", .{});

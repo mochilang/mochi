@@ -1,5 +1,9 @@
 const std = @import("std");
 
+fn handleError(err: anyerror) noreturn {
+    std.debug.panic("{any}", .{err});
+}
+
 var m: std.StringHashMap(i32) = undefined; // std.StringHashMap(i32)
 
 pub fn main() void {
