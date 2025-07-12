@@ -1112,15 +1112,23 @@ func collectVars(stmts []*parser.Statement, env *types.Env, vars map[string]stri
 						typ = typeString(t)
 					}
 				}
+				var srcT types.Type
 				if typ == "integer" {
-					typT := types.TypeOfExprBasic(s.For.Source, env)
-					typ = typeString(typT)
+					srcT = types.TypeOfExprBasic(s.For.Source, env)
+					switch tt := srcT.(type) {
+					case types.ListType:
+						typ = typeString(tt.Elem)
+					case types.MapType:
+						typ = typeString(tt.Key)
+					case types.StringType:
+						typ = "char"
+					default:
+						typ = typeString(tt)
+					}
 				}
 				if strings.HasPrefix(typ, "specialize TArray<") {
 					inner := strings.TrimSuffix(strings.TrimPrefix(typ, "specialize TArray<"), ">")
 					typ = inner
-				} else if typ == "string" {
-					typ = "char"
 				}
 				vars[s.For.Name] = typ
 			}
