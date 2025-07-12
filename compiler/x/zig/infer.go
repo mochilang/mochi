@@ -12,6 +12,15 @@ func (c *Compiler) inferExprType(e *parser.Expr) types.Type {
 	if e == nil {
 		return types.AnyType{}
 	}
+	// Handle casts early so that type assertions propagate.
+	if len(e.Binary.Right) == 0 {
+		u := e.Binary.Left
+		if len(u.Value.Ops) > 0 {
+			if cast := u.Value.Ops[len(u.Value.Ops)-1].Cast; cast != nil {
+				return c.resolveTypeRef(cast.Type)
+			}
+		}
+	}
 	// Handle simple literals directly for better inference.
 	if len(e.Binary.Right) == 0 {
 		u := e.Binary.Left
