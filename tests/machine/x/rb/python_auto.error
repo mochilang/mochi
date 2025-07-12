@@ -1,0 +1,7 @@
+error: /workspace/mochi/tests/machine/x/rb/python_auto.rb:1:in `<main>': undefined local variable or method `math' for main:Object (NameError)
+
+puts(math.sqrt.call(16.0))
+     ^^^^
+1: puts(math.sqrt.call(16.0))
+2: puts(math.pi)
+3: 

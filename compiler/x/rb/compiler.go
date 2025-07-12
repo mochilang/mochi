@@ -1210,7 +1210,6 @@ return b.String(), nil
 }
 }
 }
-	}
 
 	var sortVal string
 	if q.Sort != nil {
