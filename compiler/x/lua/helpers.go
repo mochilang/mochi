@@ -351,3 +351,15 @@ func literalValue(e *parser.Expr) (any, bool) {
 	}
 	return nil, false
 }
+
+// elementType returns the element type of list or group expressions.
+func (c *Compiler) elementType(e *parser.Expr) types.Type {
+	t := c.inferExprType(e)
+	switch tt := t.(type) {
+	case types.ListType:
+		return tt.Elem
+	case types.GroupType:
+		return tt.Elem
+	}
+	return types.AnyType{}
+}
