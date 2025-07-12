@@ -117,47 +117,33 @@ func (c *Compiler) binaryOp(left operand, op string, right operand) (operand, er
 		res.code = append(res.code, fmt.Sprintf("intersect(%s, %s, %s),", left.expr.val, right.expr.val, tmp))
 		res.val = tmp
 		return operand{expr: res, isList: true}, nil
-	case "==":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s == %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s = %s", left.expr.val, right.expr.val)
+	case "==", "!=", "<", "<=", ">", ">=":
+		var opStr string
+		switch op {
+		case "==":
+			if left.isStr && right.isStr {
+				opStr = fmt.Sprintf("%s == %s", left.expr.val, right.expr.val)
+			} else {
+				opStr = fmt.Sprintf("%s = %s", left.expr.val, right.expr.val)
+			}
+		case "!=":
+			if left.isStr && right.isStr {
+				opStr = fmt.Sprintf("%s \\== %s", left.expr.val, right.expr.val)
+			} else {
+				opStr = fmt.Sprintf("%s \\= %s", left.expr.val, right.expr.val)
+			}
+		case "<":
+			opStr = fmt.Sprintf("%s @< %s", left.expr.val, right.expr.val)
+		case "<=":
+			opStr = fmt.Sprintf("%s @=< %s", left.expr.val, right.expr.val)
+		case ">":
+			opStr = fmt.Sprintf("%s @> %s", left.expr.val, right.expr.val)
+		case ">=":
+			opStr = fmt.Sprintf("%s @>= %s", left.expr.val, right.expr.val)
 		}
-		return operand{expr: res}, nil
-	case "!=":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s \\== %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s \\= %s", left.expr.val, right.expr.val)
-		}
-		return operand{expr: res}, nil
-	case "<":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s @< %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s < %s", left.expr.val, right.expr.val)
-		}
-		return operand{expr: res}, nil
-	case "<=":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s @=< %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s =< %s", left.expr.val, right.expr.val)
-		}
-		return operand{expr: res}, nil
-	case ">":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s @> %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s > %s", left.expr.val, right.expr.val)
-		}
-		return operand{expr: res}, nil
-	case ">=":
-		if left.isStr && right.isStr {
-			res.val = fmt.Sprintf("%s @>= %s", left.expr.val, right.expr.val)
-		} else {
-			res.val = fmt.Sprintf("%s >= %s", left.expr.val, right.expr.val)
-		}
+		tmp := c.newVar()
+		res.code = append(res.code, fmt.Sprintf("(%s -> %s = true ; %s = false),", opStr, tmp, tmp))
+		res.val = tmp
 		return operand{expr: res}, nil
 	case "&&":
 		res.val = fmt.Sprintf("(%s, %s)", left.expr.val, right.expr.val)

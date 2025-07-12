@@ -93,7 +93,7 @@ const helperMapKeys = "map_keys(Dict, Keys) :-\n" +
 	"    findall(K, member(K-_, Pairs), Keys).\n\n"
 
 const helperDatasetFilter = "dataset_filter([], _, []).\n" +
-	"dataset_filter([H|T], Pred, [H|R]) :- call(Pred, H), !, dataset_filter(T, Pred, R).\n" +
+	"dataset_filter([H|T], Pred, [H|R]) :- call(Pred, H, Res), Res, !, dataset_filter(T, Pred, R).\n" +
 	"dataset_filter([_|T], Pred, R) :- dataset_filter(T, Pred, R).\n\n"
 
 const helperDatasetPaginate = "dataset_paginate(List, Skip, Take, Out) :-\n" +
