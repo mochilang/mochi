@@ -2831,23 +2831,67 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 
 	var sortExpr, sortKeyType string
 	if q.Sort != nil {
-		sortExpr, err = c.compileExpr(q.Sort)
-		if err != nil {
-			c.aliases = oldAliases
-			return "", err
-		}
-		sortKeyTypeExpr := sortExpr
-		if strings.Contains(sortExpr, q.Group.Name) {
-			sortKeyTypeExpr = strings.ReplaceAll(sortExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
-		}
-		sortKeyType = fmt.Sprintf("decltype(%s)", sortKeyTypeExpr)
-		if strings.Contains(sortKeyTypeExpr, "__avg") || strings.Contains(sortKeyTypeExpr, "__sum") {
-			sortKeyType = "double"
-		} else if strings.Contains(sortKeyTypeExpr, "std::accumulate") {
-			if strings.Contains(sortKeyTypeExpr, ".") {
+		if q.Sort.Binary != nil && len(q.Sort.Binary.Right) == 0 &&
+			q.Sort.Binary.Left != nil && q.Sort.Binary.Left.Value != nil &&
+			q.Sort.Binary.Left.Value.Target != nil && q.Sort.Binary.Left.Value.Target.List != nil &&
+			len(q.Sort.Binary.Left.Value.Target.List.Elems) > 1 {
+			elems := q.Sort.Binary.Left.Value.Target.List.Elems
+			exprs := make([]string, len(elems))
+			types := make([]string, len(elems))
+			for i, el := range elems {
+				ex, err := c.compileExpr(el)
+				if err != nil {
+					c.aliases = oldAliases
+					return "", err
+				}
+				exprs[i] = ex
+				typExpr := ex
+				if strings.Contains(ex, q.Group.Name) {
+					typExpr = strings.ReplaceAll(ex, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
+				}
+				t := fmt.Sprintf("decltype(%s)", typExpr)
+				if strings.Contains(typExpr, "__avg") || strings.Contains(typExpr, "__sum") {
+					t = "double"
+				} else if strings.Contains(typExpr, "std::accumulate") {
+					if strings.Contains(typExpr, ".") {
+						t = "double"
+					} else {
+						t = "int"
+					}
+				}
+				types[i] = t
+			}
+			name := fmt.Sprintf("__struct%d", c.structCount+1)
+			c.structCount++
+			info := &structInfo{Name: name}
+			for i, t := range types {
+				info.Fields = append(info.Fields, fmt.Sprintf("f%d", i))
+				info.Types = append(info.Types, t)
+			}
+			c.structByName[name] = info
+			c.structMap[name] = info
+			c.defineStruct(info)
+			sortKeyType = name
+			sortExpr = fmt.Sprintf("%s{%s}", name, strings.Join(exprs, ", "))
+		} else {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.aliases = oldAliases
+				return "", err
+			}
+			sortKeyTypeExpr := sortExpr
+			if strings.Contains(sortExpr, q.Group.Name) {
+				sortKeyTypeExpr = strings.ReplaceAll(sortExpr, q.Group.Name, fmt.Sprintf("std::declval<%s>()", groupStruct))
+			}
+			sortKeyType = fmt.Sprintf("decltype(%s)", sortKeyTypeExpr)
+			if strings.Contains(sortKeyTypeExpr, "__avg") || strings.Contains(sortKeyTypeExpr, "__sum") {
 				sortKeyType = "double"
-			} else {
-				sortKeyType = "int"
+			} else if strings.Contains(sortKeyTypeExpr, "std::accumulate") {
+				if strings.Contains(sortKeyTypeExpr, ".") {
+					sortKeyType = "double"
+				} else {
+					sortKeyType = "int"
+				}
 			}
 		}
 	}
