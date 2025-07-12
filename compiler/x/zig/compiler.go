@@ -167,10 +167,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			continue
 		}
 		if s.Let != nil && c.constGlobals[sanitizeName(s.Let.Name)] {
-			continue
+			if _, ok := c.globalInits[sanitizeName(s.Let.Name)]; !ok {
+				continue
+			}
 		}
 		if s.Var != nil && c.constGlobals[sanitizeName(s.Var.Name)] {
-			continue
+			if _, ok := c.globalInits[sanitizeName(s.Var.Name)]; !ok {
+				continue
+			}
 		}
 		if err := c.compileStmt(s, false); err != nil {
 			return nil, err
@@ -456,6 +460,19 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 				c.env.SetVar(s.Let.Name, typ, false)
 			}
 			if s.Let.Value != nil {
+				if isQueryExpr(s.Let.Value) {
+					v, err := c.compileExpr(s.Let.Value, false)
+					if err != nil {
+						return err
+					}
+					if c.globalInits == nil {
+						c.globalInits = map[string]string{}
+					}
+					c.writelnType(fmt.Sprintf("var %s: %s = undefined;", name, zigTypeOf(typ)), typ)
+					c.globalInits[name] = fmt.Sprintf("%s = %s;", name, v)
+					c.constGlobals[name] = true
+					continue
+				}
 				var v string
 				if ll := extractListLiteral(s.Let.Value); ll != nil && len(ll.Elems) > 0 && s.Let.Type == nil {
 					if extractMapLiteral(ll.Elems[0]) != nil {
@@ -736,6 +753,12 @@ func (c *Compiler) compileStmt(s *parser.Statement, inFun bool) error {
 	switch {
 	case s.Let != nil:
 		name := sanitizeName(s.Let.Name)
+		if !inFun && c.constGlobals[name] {
+			if init, ok := c.globalInits[name]; ok {
+				c.writeln(init)
+				return nil
+			}
+		}
 		var typ types.Type = types.AnyType{}
 		if c.env != nil {
 			if s.Let.Type != nil {
@@ -1499,16 +1522,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		resElem := strings.TrimPrefix(resType, "[]const ")
 		groupType := "struct { key: " + keyType + ", Items: std.ArrayList(" + groupElem + ") }"
 		tmp := c.newTmp()
-		idxMap := c.newTmp()
 		var b strings.Builder
 		c.needsEqual = true
 		lbl := c.newLabel()
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator); ")
-		idxMapType := "std.AutoHashMap(" + keyType + ", usize)"
-		if keyType == "[]const u8" {
-			idxMapType = "std.StringHashMap(usize)"
-		}
-		b.WriteString("var " + idxMap + " = " + idxMapType + ".init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
 		for i, fs := range fromSrcs {
 			b.WriteString(" for (" + fs + ") |" + sanitizeName(q.Froms[i].Var) + "| {")
@@ -1522,9 +1539,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		keyVar := c.newTmp()
 		b.WriteString(" const " + keyVar + " = " + keyExpr + ";")
-		b.WriteString(" if (" + idxMap + ".get(" + keyVar + ")) |idx| {")
-		b.WriteString(" " + tmp + ".items[idx].Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + ";")
-		b.WriteString(" } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + "; " + tmp + ".append(g)" + c.catchHandler() + "; " + idxMap + ".put(" + keyVar + ", " + tmp + ".items.len - 1)" + c.catchHandler() + "; }")
+		b.WriteString(" var _found = false; var _idx: usize = 0; for (" + tmp + ".items, 0..) |it, i| { if (_equal(it.key, " + keyVar + ")) { _found = true; _idx = i; break; } }")
+		b.WriteString(" if (_found) { " + tmp + ".items[_idx].Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + ";" + " } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + "; " + tmp + ".append(g)" + c.catchHandler() + "; }")
 		for i := 0; i < len(q.Joins); i++ {
 			b.WriteString(" }")
 		}
@@ -3659,6 +3675,20 @@ func fetchExprOnly(e *parser.Expr) *parser.FetchExpr {
 		return nil
 	}
 	return u.Value.Target.Fetch
+}
+
+func isQueryExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 {
+		return false
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) > 0 {
+		return false
+	}
+	return u.Value.Target.Query != nil
 }
 
 func isFunExpr(e *parser.Expr) bool {
