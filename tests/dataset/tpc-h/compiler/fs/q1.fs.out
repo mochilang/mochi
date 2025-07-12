@@ -31,10 +31,10 @@ let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
     if groups.TryGetValue(ks, &g) then ()
     else
       g <- _Group<'T>(key)
-      groups[ks] <- g
+      groups.[ks] <- g
       order.Add(ks)
     g.Items.Add(it)
-  [ for ks in order -> groups[ks] ]
+  [ for ks in order -> groups.[ks] ]
 let rec _to_json (v: obj) : string =
   match v with
   | null -> "null"
