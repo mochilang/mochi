@@ -1736,8 +1736,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 			}
 		} else {
 			if strings.HasPrefix(typ, "Map<") {
-				target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
-				typ = mapValueType(typ)
+				vt := mapValueType(typ)
+				cast := "Map"
+				if vt != "Object" {
+					cast = vt
+				}
+				target = fmt.Sprintf("((%s)%s.get(%s))", cast, target, ix)
+				typ = vt
 			} else if strings.HasPrefix(typ, "List<") {
 				target = fmt.Sprintf("((List)%s.get(%s))", target, ix)
 				typ = listElemType(typ)
@@ -1745,8 +1750,13 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 				target = fmt.Sprintf("%s.%s", target, field)
 				typ = c.fieldType(typ, field)
 			} else {
-				target = fmt.Sprintf("((Map)%s.get(%s))", target, ix)
-				typ = mapValueType(typ)
+				vt := mapValueType(typ)
+				cast := "Map"
+				if vt != "Object" {
+					cast = vt
+				}
+				target = fmt.Sprintf("((%s)%s.get(%s))", cast, target, ix)
+				typ = vt
 			}
 		}
 	}
@@ -2209,8 +2219,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 				} else {
 					if strings.HasPrefix(typ, "Map<") {
-						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
-						typ = mapValueType(typ)
+						vt := mapValueType(typ)
+						cast := "Map"
+						if vt != "Object" {
+							cast = vt
+						}
+						val = fmt.Sprintf("((%s)%s.get(%s))", cast, val, idx)
+						typ = vt
 					} else if strings.HasPrefix(typ, "List<") {
 						val = fmt.Sprintf("((List)%s.get(%s))", val, idx)
 						typ = listElemType(typ)
@@ -2219,11 +2234,22 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 							val = fmt.Sprintf("%s.%s", val, field)
 							typ = c.fieldType(typ, field)
 						} else {
-							val = fmt.Sprintf("((Map)%s).get(%s)", val, idx)
-							typ = mapValueType(typ)
+							vt := mapValueType(typ)
+							cast := "Map"
+							if vt != "Object" {
+								cast = vt
+							}
+							val = fmt.Sprintf("((%s)%s).get(%s)", cast, val, idx)
+							typ = vt
 						}
 					} else {
-						val = fmt.Sprintf("((Map)%s.get(%s))", val, idx)
+						vt := mapValueType(typ)
+						cast := "Map"
+						if vt != "Object" {
+							cast = vt
+						}
+						val = fmt.Sprintf("((%s)%s.get(%s))", cast, val, idx)
+						typ = vt
 					}
 				}
 			}
