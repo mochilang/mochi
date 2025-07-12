@@ -1559,9 +1559,14 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 					c.writeln(fmt.Sprintf("%s %s = %s[%s];", elemC, name, src, idx))
 				}
 			} else {
-				c.writeln("// unsupported dynamic list iteration")
-				c.writeln("for (;;){ break; }")
-				return nil
+				c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", idx, idx, c.listLenExpr(src), idx))
+				c.indent++
+				if useVar {
+					if elemC == "" {
+						elemC = "int"
+					}
+					c.writeln(fmt.Sprintf("%s %s = %s;", elemC, name, c.listItemExpr(src, idx)))
+				}
 			}
 		}
 		oldEnv := c.env
@@ -3390,7 +3395,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
 	if hasStruct {
-		listC = "list_" + sanitizeName(selStruct.Name)
+		listC = "list_" + sanitizeTypeName(selStruct.Name)
 	}
 	if listC == "" {
 		listC = "list_int"
