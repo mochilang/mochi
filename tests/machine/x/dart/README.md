@@ -111,7 +111,7 @@ Checklist:
 
 - [ ] Support slices and range expressions
 - [ ] Implement pattern matching translation
-- [ ] Generate struct type definitions
+- [x] Generate struct type definitions
 - [ ] Improve query optimization
 - [ ] Add asynchronous I/O support
 - [ ] Enhance error reporting in generated code

@@ -409,6 +409,34 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileType(td *parser.TypeDecl) error {
+	// handle union types with variants
+	if ut, ok := c.env.GetUnion(td.Name); ok && len(ut.Variants) > 0 {
+		c.writeln(fmt.Sprintf("abstract class %s {}", td.Name))
+		for _, v := range td.Variants {
+			if st, ok := c.env.GetStruct(v.Name); ok {
+				c.writeln(fmt.Sprintf("class %s extends %s {", v.Name, td.Name))
+				c.indent++
+				fields := make([]string, len(st.Order))
+				for i, name := range st.Order {
+					typ := dartTypeFromType(st.Fields[name])
+					if typ == "" {
+						typ = "dynamic"
+					}
+					c.writeln(fmt.Sprintf("%s %s;", typ, name))
+					fields[i] = "this." + name
+				}
+				if len(fields) == 0 {
+					c.writeln(fmt.Sprintf("%s();", v.Name))
+				} else {
+					c.writeln(fmt.Sprintf("%s(%s);", v.Name, strings.Join(fields, ", ")))
+				}
+				c.indent--
+				c.writeln("}")
+			}
+		}
+		return nil
+	}
+
 	st, ok := c.env.GetStruct(td.Name)
 	if !ok {
 		return nil
