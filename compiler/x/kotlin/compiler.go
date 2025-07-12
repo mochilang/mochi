@@ -1038,6 +1038,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "(" + s + ")", nil
 	case p.List != nil:
+		if len(p.List.Elems) == 0 {
+			return "mutableListOf<Any?>()", nil
+		}
 		parts := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			s, err := c.expr(e)
@@ -1387,7 +1390,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 
 	var keyType types.Type
 	if q.Group != nil {
-		keyType = c.inferExprType(q.Group.Exprs[0])
+		keyType = types.ExprType(q.Group.Exprs[0], child)
 	}
 
 	oldEnv := c.env
@@ -1523,10 +1526,22 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			if t, err := c.env.GetVar(q.Var); err == nil && isStructType(t) {
 				row = q.Var
 			} else {
-				row = "mutableMapOf(" + rowParts[0] + ") as MutableMap<Any?, Any?>"
+				keyT := "Any?"
+				valT := "Any?"
+				if mt, ok := elem.(types.MapType); ok {
+					keyT = kotlinTypeOf(mt.Key)
+					valT = kotlinTypeOf(mt.Value)
+				}
+				row = fmt.Sprintf("mutableMapOf(%s) as MutableMap<%s, %s>", rowParts[0], keyT, valT)
 			}
 		} else {
-			row = "mutableMapOf(" + strings.Join(rowParts, ", ") + ") as MutableMap<Any?, Any?>"
+			keyT := "Any?"
+			valT := "Any?"
+			if mt, ok := elem.(types.MapType); ok {
+				keyT = kotlinTypeOf(mt.Key)
+				valT = kotlinTypeOf(mt.Value)
+			}
+			row = fmt.Sprintf("mutableMapOf(%s) as MutableMap<%s, %s>", strings.Join(rowParts, ", "), keyT, valT)
 		}
 		b.WriteString(fmt.Sprintf("__g.add(%s)\n", row))
 	} else {
@@ -2030,9 +2045,36 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 				if keys == nil || len(keys) == 0 {
 					continue
 				}
+				childEnv := types.NewEnv(c.env)
+				srcType := c.inferExprType(q.Source)
+				if lt, ok := srcType.(types.ListType); ok {
+					childEnv.SetVar(q.Var, lt.Elem, true)
+				} else if gt, ok := srcType.(types.GroupType); ok {
+					childEnv.SetVar(q.Var, gt.Elem, true)
+				} else {
+					childEnv.SetVar(q.Var, types.AnyType{}, true)
+				}
+				for _, f := range q.Froms {
+					if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+						childEnv.SetVar(f.Var, lt.Elem, true)
+					} else if gt, ok := c.inferExprType(f.Src).(types.GroupType); ok {
+						childEnv.SetVar(f.Var, gt.Elem, true)
+					} else {
+						childEnv.SetVar(f.Var, types.AnyType{}, true)
+					}
+				}
+				for _, j := range q.Joins {
+					if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+						childEnv.SetVar(j.Var, lt.Elem, true)
+					} else if gt, ok := c.inferExprType(j.Src).(types.GroupType); ok {
+						childEnv.SetVar(j.Var, gt.Elem, true)
+					} else {
+						childEnv.SetVar(j.Var, types.AnyType{}, true)
+					}
+				}
 				fields := map[string]types.Type{}
 				for i, it := range ml.Items {
-					fields[keys[i]] = c.inferExprType(it.Value)
+					fields[keys[i]] = types.ExprType(it.Value, childEnv)
 				}
 				structName := structNameFromVar(name)
 				stype := types.StructType{Name: structName, Fields: fields, Order: keys}
