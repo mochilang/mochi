@@ -1,0 +1,67 @@
+line 46:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:46:33: error: type expected
+    val __groups = mutableMapOf<, Group<, MutableMap<String, Any?>>>()
+                                ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:46:41: error: type expected
+    val __groups = mutableMapOf<, Group<, MutableMap<String, Any?>>>()
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:47:33: error: type expected
+    val __order = mutableListOf<>()
+                                ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:63:45: error: type mismatch: inferred type is MutableMap<Any?, Any?> but MutableMap<String, Any?> was expected
+                                    __g.add(mutableMapOf("c" to c, "o" to o, "l" to l, "n" to n) as MutableMap<Any?, Any?>)
+                                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:78:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:78:65: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:78:86: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun times(other: Byte): Double defined in kotlin.Double
+public final operator fun times(other: Double): Double defined in kotlin.Double
+public final operator fun times(other: Float): Double defined in kotlin.Double
+public final operator fun times(other: Int): Double defined in kotlin.Double
+public final operator fun times(other: Long): Double defined in kotlin.Double
+public final operator fun times(other: Short): Double defined in kotlin.Double
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                     ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:78:108: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                           ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:78:144: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<String, Any?>)["l"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["l"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                                                               ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:86:15: error: for-loop range must have an 'iterator()' method
+    for (x in it) {
+              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:29: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:66: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:87: error: none of the following functions can be called with the arguments supplied: 
+public final operator fun times(other: Byte): Double defined in kotlin.Double
+public final operator fun times(other: Double): Double defined in kotlin.Double
+public final operator fun times(other: Float): Double defined in kotlin.Double
+public final operator fun times(other: Int): Double defined in kotlin.Double
+public final operator fun times(other: Long): Double defined in kotlin.Double
+public final operator fun times(other: Short): Double defined in kotlin.Double
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                      ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:109: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun <@OnlyInputTypes K, V> Map<out String, Any?>.get(key: String): Any? defined in kotlin.collections
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                            ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_multi_join_sort.kt:87:146: error: no get method providing array access
+        __res.add((toDouble((x as MutableMap<String, Any?>)["it"]["l_extendedprice"]) * toDouble((1 - toInt((x as MutableMap<String, Any?>)["it"]["l_discount"]))) as MutableMap<String, Any?>))
+                                                                                                                                                 ^
+
+ 45: val result = run {
+ 46:     val __groups = mutableMapOf<, Group<, MutableMap<String, Any?>>>()
+ 47:     val __order = mutableListOf<>()

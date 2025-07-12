@@ -1,0 +1,9 @@
+line 34:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_left_join.kt:34:25: error: type mismatch: inferred type is MutableMap<Any?, Any?> but MutableMap<String, Any?> was expected
+                __g.add(mutableMapOf("c" to c, "o" to o) as MutableMap<Any?, Any?>)
+                        ^
+
+ 33:                 }
+ 34:                 __g.add(mutableMapOf("c" to c, "o" to o) as MutableMap<Any?, Any?>)
+ 35:             }

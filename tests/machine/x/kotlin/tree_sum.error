@@ -1,0 +1,27 @@
+line 23:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:23:5: error: 'when' expression must be exhaustive, add necessary 'is Node' branch or 'else' branch instead
+    when (__t) {
+    ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:14: error: unresolved reference: left
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+             ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:20: error: unresolved reference: value
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                   ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:27: error: unresolved reference: right
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                          ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:52: error: unresolved reference: left
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                   ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:66: error: unresolved reference: value
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                                 ^
+/workspace/mochi/tests/machine/x/kotlin/tree_sum.kt:25:85: error: unresolved reference: right
+        Node(left, value, right) -> toInt(sum_tree(left) + toInt(value)) + sum_tree(right)
+                                                                                    ^
+
+ 22:     val __t = t
+ 23:     when (__t) {
+ 24:         Leaf -> 0
