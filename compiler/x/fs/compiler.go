@@ -156,10 +156,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.prelude.WriteString("        if groups.TryGetValue(ks, &g) then ()\n")
 		c.prelude.WriteString("        else\n")
 		c.prelude.WriteString("            g <- _Group<'K,'T>(key)\n")
-		c.prelude.WriteString("            groups[ks] <- g\n")
+		c.prelude.WriteString("            groups.[ks] <- g\n")
 		c.prelude.WriteString("            order.Add(ks)\n")
 		c.prelude.WriteString("        g.Items.Add(it)\n")
-		c.prelude.WriteString("    [ for ks in order -> groups[ks] ]\n\n")
+		c.prelude.WriteString("    [ for ks in order -> groups.[ks] ]\n\n")
 	}
 	var final bytes.Buffer
 	final.Write(header.Bytes())
@@ -1120,16 +1120,8 @@ func (c *Compiler) compileFunExpr(f *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
-	allSimple := true
-	names := make([]string, len(m.Items))
-	values := make([]string, len(m.Items))
-	types := make([]string, len(m.Items))
-	typeMap := make(map[string]string)
 	for i, it := range m.Items {
-		name, ok := c.simpleIdentifier(it.Key)
-		if !ok {
-			allSimple = false
-		}
+		_, _ = c.simpleIdentifier(it.Key)
 		k, err := c.compileMapKey(it.Key)
 		if err != nil {
 			return "", err
@@ -1139,123 +1131,24 @@ func (c *Compiler) compileMap(m *parser.MapLiteral) (string, error) {
 			return "", err
 		}
 		items[i] = fmt.Sprintf("(%s, %s)", k, v)
-		if ok {
-			names[i] = sanitizeIdent(name)
-			values[i] = v
-			t := c.inferType(it.Value)
-			types[i] = t
-			typeMap[sanitizeIdent(name)] = t
-		}
-	}
-	if allSimple {
-		key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
-		typ, ok := c.anon[key]
-		if !ok {
-			c.anonCnt++
-			typ = fmt.Sprintf("Anon%d", c.anonCnt)
-			c.anon[key] = typ
-			c.structs[typ] = typeMap
-			c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
-			for i, n := range names {
-				c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
-			}
-			c.prelude.WriteString("}\n")
-		}
-		fields := make([]string, len(names))
-		for i, n := range names {
-			fields[i] = fmt.Sprintf("%s = %s", n, values[i])
-		}
-		return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
 	}
 	return "dict [" + strings.Join(items, "; ") + "]", nil
 }
 
 func (c *Compiler) mapLiteralType(m *parser.MapLiteral) string {
-	names := make([]string, len(m.Items))
-	types := make([]string, len(m.Items))
-	allSimple := true
-	sameType := true
-	var valueType string
-	typeMap := make(map[string]string)
-	for i, it := range m.Items {
-		name, ok := c.simpleIdentifier(it.Key)
-		if !ok {
-			allSimple = false
-		} else {
-			names[i] = sanitizeIdent(name)
-		}
-		t := c.inferType(it.Value)
-		types[i] = t
-		typeMap[sanitizeIdent(name)] = t
-		if valueType == "" {
-			valueType = t
-		} else if valueType != t {
-			sameType = false
-		}
-	}
-	if allSimple {
-		key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
-		typ, ok := c.anon[key]
-		if !ok {
-			c.anonCnt++
-			typ = fmt.Sprintf("Anon%d", c.anonCnt)
-			c.anon[key] = typ
-			c.structs[typ] = typeMap
-			c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
-			for i, n := range names {
-				c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
-			}
-			c.prelude.WriteString("}\n")
-		}
-		return typ
-	}
-	if sameType && valueType != "" {
-		return fmt.Sprintf("System.Collections.Generic.IDictionary<string, %s>", valueType)
-	}
-	return ""
+	return "System.Collections.Generic.IDictionary<string,obj>"
 }
 
 func (c *Compiler) compileStruct(s *parser.StructLiteral) (string, error) {
-	fields := make([]string, len(s.Fields))
-	names := make([]string, len(s.Fields))
-	types := make([]string, len(s.Fields))
-	typeMap := make(map[string]string)
+	items := make([]string, len(s.Fields))
 	for i, f := range s.Fields {
 		v, err := c.compileExpr(f.Value)
 		if err != nil {
 			return "", err
 		}
-		t := c.inferType(f.Value)
-		fname := sanitizeIdent(f.Name)
-		fields[i] = fmt.Sprintf("%s = %s", fname, v)
-		names[i] = fname
-		types[i] = t
-		typeMap[fname] = t
+		items[i] = fmt.Sprintf("(\"%s\", %s)", sanitizeIdent(f.Name), v)
 	}
-	if s.Name != "" {
-		if _, ok := c.structs[s.Name]; ok {
-			return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
-		}
-		vals := make([]string, len(s.Fields))
-		for i := range s.Fields {
-			vals[i] = strings.SplitN(fields[i], " = ", 2)[1]
-		}
-		return fmt.Sprintf("%s(%s)", s.Name, strings.Join(vals, ", ")), nil
-	}
-	key := strings.Join(names, ",") + "|" + strings.Join(types, ",")
-	typ, ok := c.anon[key]
-	if !ok {
-		c.anonCnt++
-		typ = fmt.Sprintf("Anon%d", c.anonCnt)
-		c.anon[key] = typ
-		c.structs[typ] = typeMap
-		c.prelude.WriteString(fmt.Sprintf("type %s = {\n", typ))
-		for i, n := range names {
-			c.prelude.WriteString(fmt.Sprintf("    %s: %s\n", n, types[i]))
-		}
-		c.prelude.WriteString("}\n")
-	}
-	return fmt.Sprintf("{ %s }", strings.Join(fields, "; ")), nil
+	return "Map.ofList [" + strings.Join(items, "; ") + "]", nil
 }
 
 func (c *Compiler) compileMapKey(e *parser.Expr) (string, error) {
