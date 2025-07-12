@@ -84,6 +84,19 @@ const (
 	helperGroup = `(defrecord _Group [key Items])
 `
 
+	helperEqual = `(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+`
+
 	helperGroupBy = `(defn _group_by [src keyfn]
   (let [groups (transient {})
         order (transient [])]
@@ -96,9 +109,10 @@ const (
           (do
             (assoc! groups ks (_Group. k [it]))
             (conj! order ks))))
+    )
     (let [g (persistent! groups)
           o (persistent! order)]
-      (mapv #(get g %) o))) )
+      (mapv #(get g %) o))))
 `
 
 	helperParseCSV = `(defn _parse_csv [text header delim]
@@ -381,6 +395,7 @@ var helperMap = map[string]string{
 	"_sum":              helperSum,
 	"_min":              helperMin,
 	"_max":              helperMax,
+	"_equal":            helperEqual,
 	"_Group":            helperGroup,
 	"_group_by":         helperGroupBy,
 	"_parse_csv":        helperParseCSV,
@@ -414,6 +429,7 @@ var helperOrder = []string{
 	"_sum",
 	"_min",
 	"_max",
+	"_equal",
 	"_Group",
 	"_group_by",
 	"_parse_csv",
