@@ -1,96 +1,28 @@
 #!/usr/bin/env escript
--module(main).
--export([main/1, test_q1_aggregates_revenue_and_quantity_by_returnflag___linestatus/0]).
-
-test_q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() ->
-	mochi_expect((Result == [#{returnflag => "N", linestatus => "O", sum_qty => 53, sum_base_price => 3000, sum_disc_price => (950 + 1800), sum_charge => ((950 * 1.07) + (1800 * 1.05)), avg_qty => 26.5, avg_price => 1500, avg_disc => 0.07500000000000001, count_order => 2}])).
+% q1.erl - generated from q1.mochi
 
 main(_) ->
-	Lineitem = [#{l_quantity => 17, l_extendedprice => 1000, l_discount => 0.05, l_tax => 0.07, l_returnflag => "N", l_linestatus => "O", l_shipdate => "1998-08-01"}, #{l_quantity => 36, l_extendedprice => 2000, l_discount => 0.1, l_tax => 0.05, l_returnflag => "N", l_linestatus => "O", l_shipdate => "1998-09-01"}, #{l_quantity => 25, l_extendedprice => 1500, l_discount => 0, l_tax => 0.08, l_returnflag => "R", l_linestatus => "F", l_shipdate => "1998-09-03"}],
-	Result = [#{returnflag => maps:get(returnflag, maps:get(key, G)), linestatus => maps:get(linestatus, maps:get(key, G)), sum_qty => mochi_sum([maps:get(l_quantity, X) || X <- G]), sum_base_price => mochi_sum([maps:get(l_extendedprice, X) || X <- G]), sum_disc_price => mochi_sum([(maps:get(l_extendedprice, X) * (1 - maps:get(l_discount, X))) || X <- G]), sum_charge => mochi_sum([((maps:get(l_extendedprice, X) * (1 - maps:get(l_discount, X))) * (1 + maps:get(l_tax, X))) || X <- G]), avg_qty => mochi_avg([maps:get(l_quantity, X) || X <- G]), avg_price => mochi_avg([maps:get(l_extendedprice, X) || X <- G]), avg_disc => mochi_avg([maps:get(l_discount, X) || X <- G]), count_order => mochi_count(G)} || G <- mochi_group_by([Row || Row <- Lineitem, (maps:get(l_shipdate, Row) =< "1998-09-02")], fun(Row) -> #{returnflag => maps:get(l_returnflag, Row), linestatus => maps:get(l_linestatus, Row)} end)],
-	mochi_json(Result)
-,
-	mochi_run_test("Q1 aggregates revenue and quantity by returnflag + linestatus", fun test_q1_aggregates_revenue_and_quantity_by_returnflag___linestatus/0).
+    Lineitem = [#{l_quantity => 17, l_extendedprice => 1000, l_discount => 0.05, l_tax => 0.07, l_returnflag => "N", l_linestatus => "O", l_shipdate => "1998-08-01"}, #{l_quantity => 36, l_extendedprice => 2000, l_discount => 0.1, l_tax => 0.05, l_returnflag => "N", l_linestatus => "O", l_shipdate => "1998-09-01"}, #{l_quantity => 25, l_extendedprice => 1500, l_discount => 0, l_tax => 0.08, l_returnflag => "R", l_linestatus => "F", l_shipdate => "1998-09-03"}],
+    Result = [#{returnflag => maps:get(returnflag, Key0), linestatus => maps:get(linestatus, Key0), sum_qty => lists:sum([maps:get(l_quantity, X) || X <- Val0]), sum_base_price => lists:sum([maps:get(l_extendedprice, X) || X <- Val0]), sum_disc_price => lists:sum([(maps:get(l_extendedprice, X) * ((1 - maps:get(l_discount, X)))) || X <- Val0]), sum_charge => lists:sum([((maps:get(l_extendedprice, X) * ((1 - maps:get(l_discount, X)))) * ((1 + maps:get(l_tax, X)))) || X <- Val0]), avg_qty => (lists:sum([maps:get(l_quantity, X) || X <- Val0]) / length([maps:get(l_quantity, X) || X <- Val0])), avg_price => (lists:sum([maps:get(l_extendedprice, X) || X <- Val0]) / length([maps:get(l_extendedprice, X) || X <- Val0])), avg_disc => (lists:sum([maps:get(l_discount, X) || X <- Val0]) / length([maps:get(l_discount, X) || X <- Val0])), count_order => length(Val0)} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{returnflag => maps:get(l_returnflag, Row), linestatus => maps:get(l_linestatus, Row)}, Row} || Row <- Lineitem, (maps:get(l_shipdate, Row) =< "1998-09-02")]))],
+    mochi_json(Result),
+    (case (Result == [#{returnflag => "N", linestatus => "O", sum_qty => 53, sum_base_price => 3000, sum_disc_price => (950 + 1800), sum_charge => (((950 * 1.07)) + ((1800 * 1.05))), avg_qty => 26.5, avg_price => 1500, avg_disc => 0.07500000000000001, count_order => 2}]) of true -> ok; _ -> erlang:error(test_failed) end).
 
-mochi_count(X) when is_list(X) -> length(X);
-mochi_count(X) when is_map(X), maps:is_key('Items', X) -> length(maps:get('Items', X));
-mochi_count(X) when is_map(X) -> maps:size(X);
-mochi_count(X) when is_binary(X) -> byte_size(X);
-mochi_count(_) -> erlang:error(badarg).
+mochi_escape_json([]) -> [];
+mochi_escape_json([H|T]) ->
+    E = case H of
+        $\ -> "\\";
+        $" -> "\"";
+        _ -> [H]
+    end,
+    E ++ mochi_escape_json(T).
 
-mochi_avg([]) -> 0;
-mochi_avg(M) when is_map(M), maps:is_key('Items', M) -> mochi_avg(maps:get('Items', M));
-mochi_avg(L) when is_list(L) ->
-	Sum = lists:foldl(fun(X, Acc) ->
-		case X of
-			I when is_integer(I) -> Acc + I;
-			F when is_float(F) -> Acc + F;
-			_ -> erlang:error(badarg) end
-		end, 0, L),
-		Sum / length(L);
-	mochi_avg(_) -> erlang:error(badarg).
+mochi_to_json(true) -> "true";
+mochi_to_json(false) -> "false";
+mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));
+mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";
+mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";
+mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";
+mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}".
 
-mochi_sum([]) -> 0;
-mochi_sum(M) when is_map(M), maps:is_key('Items', M) -> mochi_sum(maps:get('Items', M));
-mochi_sum(L) when is_list(L) ->
-	lists:foldl(fun(X, Acc) ->
-		case X of
-			I when is_integer(I) -> Acc + I;
-			F when is_float(F) -> Acc + F;
-			_ -> erlang:error(badarg) end
-		end, 0, L);
-	mochi_sum(_) -> erlang:error(badarg).
-
-
-mochi_group_by(Src, KeyFun) ->
-	{Groups, Order} = lists:foldl(fun(It, {G,O}) ->
-		Key = KeyFun(It),
-		KS = lists:flatten(io_lib:format("~p", [Key])),
-		case maps:get(KS, G, undefined) of
-			undefined ->
-				Group = #{key => Key, 'Items' => [It]},
-				{maps:put(KS, Group, G), O ++ [KS]};
-			Group0 ->
-				Items = maps:get('Items', Group0) ++ [It],
-				Group1 = maps:put('Items', Items, Group0),
-				{maps:put(KS, Group1, G), O}
-			end
-		end, {#{}, []}, Src),
-		[ maps:get(K, Groups) || K <- Order ].
-	
-	mochi_escape_json([]) -> [];
-	mochi_escape_json([H|T]) ->
-		E = case H of
-			$\\ -> "\\\\";
-			$" -> "\\"";
-			_ -> [H]
-		end,
-		E ++ mochi_escape_json(T).
-	
-	mochi_to_json(true) -> "true";
-	mochi_to_json(false) -> "false";
-	mochi_to_json(V) when is_integer(V); is_float(V) -> lists:flatten(io_lib:format("~p", [V]));
-	mochi_to_json(V) when is_binary(V) -> "\"" ++ mochi_escape_json(binary_to_list(V)) ++ "\"";
-	mochi_to_json(V) when is_list(V), (V =:= [] orelse is_integer(hd(V))) -> "\"" ++ mochi_escape_json(V) ++ "\"";
-	mochi_to_json(V) when is_list(V) -> "[" ++ lists:join(",", [mochi_to_json(X) || X <- V]) ++ "]";
-	mochi_to_json(V) when is_map(V) -> "{" ++ lists:join(",", ["\"" ++ atom_to_list(K) ++ "\":" ++ mochi_to_json(Val) || {K,Val} <- maps:to_list(V)]) ++ "}";
-	
-	mochi_json(V) -> io:format("~s~n", [mochi_to_json(V)]).
-	
-	mochi_expect(true) -> ok;
-	mochi_expect(_) -> erlang:error(expect_failed).
-	
-	mochi_test_start(Name) -> io:format("   test ~s ...", [Name]).
-	mochi_test_pass(Dur) -> io:format(" ok (~p)~n", [Dur]).
-	mochi_test_fail(Err, Dur) -> io:format(" fail ~p (~p)~n", [Err, Dur]).
-	
-	mochi_run_test(Name, Fun) ->
-		mochi_test_start(Name),
-		Start = erlang:monotonic_time(millisecond),
-		try Fun() of _ ->
-			Duration = erlang:monotonic_time(millisecond) - Start,
-			mochi_test_pass(Duration)
-		catch C:R ->
-			Duration = erlang:monotonic_time(millisecond) - Start,
-			mochi_test_fail({C,R}, Duration)
-		end.
+mochi_json(V) -> io:format("~s
+", [mochi_to_json(V)]).
