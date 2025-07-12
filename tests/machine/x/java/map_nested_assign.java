@@ -39,7 +39,7 @@ public class MapNestedAssign {
     }
     public static void main(String[] args) {
     Map<String,Inner> data = mapOfEntries(entry("outer", new Inner(1)));
-    ((Map)data.get("outer")).inner = 2;
-    System.out.println(((Map)data.get("outer")).inner);
+    ((Inner)data.get("outer")).inner = 2;
+    System.out.println(((Inner)data.get("outer")).inner);
     }
 }
