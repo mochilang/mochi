@@ -71,6 +71,31 @@ func (c *Compiler) SetAutoStructs(v bool) {
 	c.autoStructsEnabled = v
 }
 
+// CompileFile parses the Mochi source at src and returns generated Python code.
+func CompileFile(src string) ([]byte, error) {
+	prog, err := parser.Parse(src)
+	if err != nil {
+		return nil, err
+	}
+	env := types.NewEnv(nil)
+	if errs := types.Check(prog, env); len(errs) > 0 {
+		return nil, errs[0]
+	}
+	return New(env).Compile(prog)
+}
+
+// WriteFile compiles srcPath and writes Python code to dstPath.
+func WriteFile(srcPath, dstPath string) error {
+	code, err := CompileFile(srcPath)
+	if err != nil {
+		return err
+	}
+	if err := os.MkdirAll(filepath.Dir(dstPath), 0o755); err != nil {
+		return err
+	}
+	return os.WriteFile(dstPath, code, 0o644)
+}
+
 func containsStreamCode(stmts []*parser.Statement) bool {
 	for _, s := range stmts {
 		if stmtHasStream(s) {
