@@ -1,23 +1,23 @@
-struct Auto1: Equatable {
-    var id: Int
-    var name: String
-}
-
-struct Auto2: Equatable {
-    var id: Int
-    var nation: Int
-}
-
-struct Auto3: Equatable {
+struct CostPart: Equatable {
     var cost: Double
     var part: Int
     var qty: Int
     var supplier: Int
 }
 
-var nations = [Auto1(id: 1, name: "A"), Auto1(id: 2, name: "B")]
-var suppliers = [Auto2(id: 1, nation: 1), Auto2(id: 2, nation: 2)]
-var partsupp = [Auto3(cost: 10, part: 100, qty: 2, supplier: 1), Auto3(cost: 20, part: 100, qty: 1, supplier: 2), Auto3(cost: 5, part: 200, qty: 3, supplier: 1)]
+struct IdName: Equatable {
+    var id: Int
+    var name: String
+}
+
+struct IdNation: Equatable {
+    var id: Int
+    var nation: Int
+}
+
+var nations = [IdName(id: 1, name: "A"), IdName(id: 2, name: "B")]
+var suppliers = [IdNation(id: 1, nation: 1), IdNation(id: 2, nation: 2)]
+var partsupp = [CostPart(cost: 10.0, part: 100, qty: 2, supplier: 1), CostPart(cost: 20.0, part: 100, qty: 1, supplier: 2), CostPart(cost: 5.0, part: 200, qty: 3, supplier: 1)]
 var filtered = ({
 	var _res: [[String:Any]] = []
 	for ps in partsupp {

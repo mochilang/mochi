@@ -1,0 +1,4 @@
+line 27: exit status 1
+	return _tmp.map { g in ["name": g.key, "count": g.items.count] }
+}())
+print("--- Orders per customer ---")

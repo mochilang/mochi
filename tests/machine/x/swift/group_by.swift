@@ -1,17 +1,17 @@
-struct Auto1: Equatable {
+struct AgeCity: Equatable {
     var age: Int
     var city: String
     var name: String
 }
 
-var people = [Auto1(age: 30, city: "Paris", name: "Alice"), Auto1(age: 15, city: "Hanoi", name: "Bob"), Auto1(age: 65, city: "Paris", name: "Charlie"), Auto1(age: 45, city: "Hanoi", name: "Diana"), Auto1(age: 70, city: "Paris", name: "Eve"), Auto1(age: 22, city: "Hanoi", name: "Frank")]
+var people = [AgeCity(age: 30, city: "Paris", name: "Alice"), AgeCity(age: 15, city: "Hanoi", name: "Bob"), AgeCity(age: 65, city: "Paris", name: "Charlie"), AgeCity(age: 45, city: "Hanoi", name: "Diana"), AgeCity(age: 70, city: "Paris", name: "Eve"), AgeCity(age: 22, city: "Hanoi", name: "Frank")]
 var stats = { () -> [Any] in
-    var _groups: [String:[Auto1]] = [:]
+    var _groups: [String:[AgeCity]] = [:]
     for person in people {
         let _k = person.city
         _groups[_k, default: []].append(person)
     }
-    var _tmp: [(key: String, items: [Auto1])] = []
+    var _tmp: [(key: String, items: [AgeCity])] = []
     for (k, v) in _groups {
         _tmp.append((key: k, items: v))
     }
