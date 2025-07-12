@@ -1,3 +1,0 @@
-exit status 127
-tests/machine/x/erlang_new/group_by.erl:6:337: syntax error before: '}'
-escript: There were compilation errors.

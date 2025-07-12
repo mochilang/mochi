@@ -1,0 +1,20 @@
+exit status 127
+/workspace/mochi/tests/machine/x/erlang/cast_struct.erl:6:24: Warning: the call to map_get/2 will fail with a '{badkey,title}' exception
+%    6|     io:format("~p~n", [maps:get(title, Todo)]).
+%     |                        ^
+
+escript: exception error: bad key: title
+  in function  map_get/2
+     called as map_get(title,#{"title" => "hi"})
+     *** argument 1: not present in map
+  in call from cast_struct_erl__escript__1752__320805__806080__8965:main/1 (/workspace/mochi/tests/machine/x/erlang/cast_struct.erl, line 4)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
+
+   4: main(_) ->
+   5:     Todo = #{"title" => "hi"},
+   6:     io:format("~p~n", [maps:get(title, Todo)]).
+   7: 

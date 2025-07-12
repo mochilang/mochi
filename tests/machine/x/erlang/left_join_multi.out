@@ -1,6 +1,15 @@
-tests/machine/x/erlang_new/left_join_multi.erl:8:116: Warning: variable 'O' shadowed in generate
-tests/machine/x/erlang_new/left_join_multi.erl:8:160: Warning: variable 'O' shadowed in 'fun'
-tests/machine/x/erlang_new/left_join_multi.erl:19:1: Warning: function mochi_left_join/3 is unused
+/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:8:116: Warning: variable 'O' shadowed in generate
+%    8|     Result = [#{orderId => maps:get(id, O), name => maps:get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (maps:get(id, O) == maps:get(orderId, I)) end), (maps:get(customerId, O) == maps:get(id, C))],
+%     |                                                                                                                    ^
+
+/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:8:160: Warning: variable 'O' shadowed in 'fun'
+%    8|     Result = [#{orderId => maps:get(id, O), name => maps:get(name, C), item => I} || O <- Orders, C <- Customers, {O, I} <- mochi_left_join_item(O, Items, fun(O, I) -> (maps:get(id, O) == maps:get(orderId, I)) end), (maps:get(customerId, O) == maps:get(id, C))],
+%     |                                                                                                                                                                ^
+
+/workspace/mochi/tests/machine/x/erlang/left_join_multi.erl:19:1: Warning: function mochi_left_join/3 is unused
+%   19| mochi_left_join(L, R, Fun) ->
+%     | ^
+
 "--- Left Join Multi ---"
 100 "Alice" #{orderId => 100,sku => "a"}
 101 "Bob" undefined

@@ -1,1 +1,5 @@
+/workspace/mochi/tests/machine/x/erlang/if_then_else_nested.erl:5:5: Warning: variable 'X' is unused
+%    5|     X = 8,
+%     |     ^
+
 "medium"

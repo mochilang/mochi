@@ -1,3 +1,28 @@
 exit status 127
-tests/machine/x/erlang_new/group_items_iteration.erl:6:189: syntax error before: '}'
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:180: variable 'Total1' is unbound
+%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+%     |                                                                                                                                                                                    ^
+
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:9:78: variable 'Tmp1' is unbound
+%    9|     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
+%     |                                                                              ^
+
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:6:24: Warning: variable 'Key0' is unused
+%    6|     Groups = [Val0 || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(tag, D), D} || D <- Data]))],
+%     |                        ^
+
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:65: Warning: variable 'Total1' is unused
+%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+%     |                                                                 ^
+
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:128: Warning: variable 'Tmp1' is unused
+%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+%     |                                                                                                                                ^
+
 escript: There were compilation errors.
+
+   6:     Groups = [Val0 || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(tag, D), D} || D <- Data]))],
+   7:     Tmp0 = [],
+   8:     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+   9:     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
+  10:     io:format("~p~n", [Result]).

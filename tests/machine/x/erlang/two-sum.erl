@@ -3,7 +3,7 @@
 
 twoSum(Nums, Target) ->
     N = length(Nums),
-    lists:foreach(fun(I) -> lists:foreach(fun(J) -> (if ((maps:get(I, Nums) + maps:get(J, Nums)) == Target) -> [I, J]; true -> ok end) end, lists:seq((I + 1), (N)-1)) end, lists:seq(0, (N)-1)),
+    lists:foreach(fun(I) -> lists:foreach(fun(J) -> (case ((lists:nth((I)+1, Nums) + lists:nth((J)+1, Nums)) == Target) of true -> [I, J]; _ -> ok end) end, lists:seq((I + 1), (N)-1)) end, lists:seq(0, (N)-1)),
     [-1, -1].
 
 main(_) ->

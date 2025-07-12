@@ -1,0 +1,11 @@
+/workspace/mochi/tests/machine/x/erlang/group_by_multi_join_sort.erl:9:5: Warning: variable 'Start_date' is unused
+%    9|     Start_date = "1993-10-01",
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/group_by_multi_join_sort.erl:10:5: Warning: variable 'End_date' is unused
+%   10|     End_date = "1994-01-01",
+%     |     ^
+
+[#{n_name => "BRAZIL",c_custkey => 1,c_name => "Alice",c_acctbal => 100,
+   c_address => "123 St",c_phone => "123-456",c_comment => "Loyal",
+   revenue => 900.0}]

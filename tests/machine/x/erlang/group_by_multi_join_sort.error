@@ -1,3 +1,0 @@
-exit status 127
-tests/machine/x/erlang_new/group_by_multi_join_sort.erl:11:961: syntax error before: ','
-escript: There were compilation errors.

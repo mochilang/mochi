@@ -1,0 +1,4 @@
+"--- Right Join using syntax ---"
+"Customer" "Alice" "has no orders"
+"Customer" "Bob" "has no orders"
+"Customer" "Alice" "has no orders"

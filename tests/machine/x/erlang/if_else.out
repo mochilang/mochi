@@ -1,1 +1,5 @@
+/workspace/mochi/tests/machine/x/erlang/if_else.erl:5:5: Warning: variable 'X' is unused
+%    5|     X = 5,
+%     |     ^
+
 "big"

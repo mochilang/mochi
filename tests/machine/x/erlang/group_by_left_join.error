@@ -1,3 +1,28 @@
 exit status 127
-tests/machine/x/erlang_new/group_by_left_join.erl:7:251: syntax error before: ','
-escript: There were compilation errors.
+/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl:7:285: Warning: variable 'C' shadowed in generate
+%    7|     Stats = [#{name => Key0, count => length([R || R <- Val0, maps:get(o, R)])} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(name, C), #{c => C, o => O}} || C <- Customers, {C, O} <- mochi_left_join_item(C, Orders, fun(C, O) -> (maps:get(customerId, O) == maps:get(id, C)) end)]))],
+%     |                                                                                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl:7:330: Warning: variable 'C' shadowed in 'fun'
+%    7|     Stats = [#{name => Key0, count => length([R || R <- Val0, maps:get(o, R)])} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(name, C), #{c => C, o => O}} || C <- Customers, {C, O} <- mochi_left_join_item(C, Orders, fun(C, O) -> (maps:get(customerId, O) == maps:get(id, C)) end)]))],
+%     |                                                                                                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl:18:1: Warning: function mochi_left_join/3 is unused
+%   18| mochi_left_join(L, R, Fun) ->
+%     | ^
+
+escript: exception error: bad filter #{id => 101,customerId => 1}
+  in function  group_by_left_join_erl__escript__1752__320816__956867__8965:'-main/1-lc$^5/1-1-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in call from group_by_left_join_erl__escript__1752__320816__956867__8965:'-main/1-lc$^4/1-0-'/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in call from group_by_left_join_erl__escript__1752__320816__956867__8965:main/1 (/workspace/mochi/tests/machine/x/erlang/group_by_left_join.erl, line 7)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
+
+   5:     Customers = [#{id => 1, name => "Alice"}, #{id => 2, name => "Bob"}, #{id => 3, name => "Charlie"}],
+   6:     Orders = [#{id => 100, customerId => 1}, #{id => 101, customerId => 1}, #{id => 102, customerId => 2}],
+   7:     Stats = [#{name => Key0, count => length([R || R <- Val0, maps:get(o, R)])} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(name, C), #{c => C, o => O}} || C <- Customers, {C, O} <- mochi_left_join_item(C, Orders, fun(C, O) -> (maps:get(customerId, O) == maps:get(id, C)) end)]))],
+   8:     io:format("~p~n", ["--- Group Left Join ---"]),
+   9:     lists:foreach(fun(S) -> io:format("~p ~p ~p~n", [maps:get(name, S), "orders:", maps:get(count, S)]) end, Stats).

@@ -1,3 +1,15 @@
+/workspace/mochi/tests/machine/x/erlang/match_full.erl:8:5: Warning: variable 'X' is unused
+%    8|     X = 2,
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/match_full.erl:11:5: Warning: variable 'Day' is unused
+%   11|     Day = "sun",
+%     |     ^
+
+/workspace/mochi/tests/machine/x/erlang/match_full.erl:14:5: Warning: variable 'Ok' is unused
+%   14|     Ok = true,
+%     |     ^
+
 "two"
 "relaxed"
 "confirmed"

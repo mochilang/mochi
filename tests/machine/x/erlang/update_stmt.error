@@ -1,4 +1,16 @@
 exit status 127
-tests/machine/x/erlang_new/update_stmt.erl:6:20: illegal guard expression
-tests/machine/x/erlang_new/update_stmt.erl:6:5: Warning: variable 'People0' is unused
+/workspace/mochi/tests/machine/x/erlang/update_stmt.erl:6:20: illegal guard expression
+%    6|     People0 = [if (maps:get(age, PeopleItem0) >= 18) -> PeopleItem0#{status => "adult", age => (maps:get(age, PeopleItem0) + 1)}; true -> PeopleItem0 end || PeopleItem0 <- People],
+%     |                    ^
+
+/workspace/mochi/tests/machine/x/erlang/update_stmt.erl:6:5: Warning: variable 'People0' is unused
+%    6|     People0 = [if (maps:get(age, PeopleItem0) >= 18) -> PeopleItem0#{status => "adult", age => (maps:get(age, PeopleItem0) + 1)}; true -> PeopleItem0 end || PeopleItem0 <- People],
+%     |     ^
+
 escript: There were compilation errors.
+
+   4: main(_) ->
+   5:     People = [#{"__name" => "Person", name => "Alice", age => 17, status => "minor"}, #{"__name" => "Person", name => "Bob", age => 25, status => "unknown"}, #{"__name" => "Person", name => "Charlie", age => 18, status => "unknown"}, #{"__name" => "Person", name => "Diana", age => 16, status => "minor"}],
+   6:     People0 = [if (maps:get(age, PeopleItem0) >= 18) -> PeopleItem0#{status => "adult", age => (maps:get(age, PeopleItem0) + 1)}; true -> PeopleItem0 end || PeopleItem0 <- People],
+   7:     (case (People == [#{"__name" => "Person", name => "Alice", age => 17, status => "minor"}, #{"__name" => "Person", name => "Bob", age => 26, status => "adult"}, #{"__name" => "Person", name => "Charlie", age => 19, status => "adult"}, #{"__name" => "Person", name => "Diana", age => 16, status => "minor"}]) of true -> ok; _ -> erlang:error(test_failed) end),
+   8:     io:format("~p~n", ["ok"]).

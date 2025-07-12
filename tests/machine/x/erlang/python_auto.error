@@ -1,0 +1,4 @@
+line 1: unsupported statement at line 1
+   1: import python "math" as math auto
+   2: 
+   3: print(math.sqrt(16.0))

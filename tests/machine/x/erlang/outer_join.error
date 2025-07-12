@@ -1,4 +1,17 @@
 exit status 127
-tests/machine/x/erlang_new/outer_join.erl:9:35: illegal guard expression
-tests/machine/x/erlang_new/outer_join.erl:9:63: illegal guard expression
-escript: There were compilation errors.
+"--- Outer Join using syntax ---"
+"Customer" "Alice" "has no orders"
+"Customer" "Bob" "has no orders"
+"Customer" "Alice" "has no orders"
+escript: exception error: bad map: undefined
+  in function  map_get/2
+     called as map_get(name,undefined)
+     *** argument 2: not a map
+  in call from outer_join_erl__escript__1752__320838__519850__8963:'-main/1-fun-2-'/1 (/workspace/mochi/tests/machine/x/erlang/outer_join.erl, line 9)
+  in call from lists:foreach_1/2 (lists.erl, line 2310)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
+

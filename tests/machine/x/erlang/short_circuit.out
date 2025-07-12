@@ -1,4 +1,10 @@
-tests/machine/x/erlang_new/short_circuit.erl:4:6: Warning: variable 'A' is unused
-tests/machine/x/erlang_new/short_circuit.erl:4:9: Warning: variable 'B' is unused
+/workspace/mochi/tests/machine/x/erlang/short_circuit.erl:4:6: Warning: variable 'A' is unused
+%    4| boom(A, B) ->
+%     |      ^
+
+/workspace/mochi/tests/machine/x/erlang/short_circuit.erl:4:9: Warning: variable 'B' is unused
+%    4| boom(A, B) ->
+%     |         ^
+
 false
 true
