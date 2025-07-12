@@ -27,7 +27,7 @@ func TestCPPCompiler_TPCHQueries(t *testing.T) {
 		t.Skip("g++ not installed")
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 2; i++ {
 		base := fmt.Sprintf("q%d", i)
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".cpp.out")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".out")
