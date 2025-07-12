@@ -7,6 +7,7 @@ import (
 	"fmt"
 	yaml "gopkg.in/yaml.v3"
 	"io/fs"
+	"mochi/compiler/meta"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -159,6 +160,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	base := strings.TrimSuffix(filepath.Base(c.srcPath), filepath.Ext(c.srcPath))
 	c.writeln("#!/usr/bin/env escript")
+	c.writeln(strings.TrimSuffix(string(meta.Header("%")), "\n"))
 	c.writeln(fmt.Sprintf("%% %s.erl - generated from %s", base, filepath.Base(c.srcPath)))
 	c.writeln("")
 
