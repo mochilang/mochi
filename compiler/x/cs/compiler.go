@@ -35,6 +35,7 @@ type Compiler struct {
 	extraStructs []types.StructType
 	structCount  int
 	Namespace    string
+	testArgs     map[string][]string
 }
 
 // New creates a new C# compiler.
@@ -53,6 +54,7 @@ func New(env *types.Env) *Compiler {
 		extraStructs: nil,
 		structCount:  0,
 		Namespace:    "",
+		testArgs:     make(map[string][]string),
 	}
 }
 
@@ -224,7 +226,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(name + "();")
+			args := strings.Join(c.testArgs[name], ", ")
+			c.writeln(fmt.Sprintf("%s(%s);", name, args))
 		}
 	}
 	c.indent--
@@ -376,7 +379,24 @@ func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
-	c.writeln(fmt.Sprintf("static void %s() {", name))
+	aliasSet := map[string]struct{}{}
+	for _, s := range t.Body {
+		if s.Expect != nil {
+			for v := range exprAliases(s.Expect.Value) {
+				aliasSet[sanitizeName(v)] = struct{}{}
+			}
+		}
+	}
+	args := []string{}
+	for v := range aliasSet {
+		tname := c.varTypes[v]
+		if tname == "" {
+			tname = "dynamic"
+		}
+		args = append(args, fmt.Sprintf("%s %s", tname, v))
+		c.testArgs[name] = append(c.testArgs[name], v)
+	}
+	c.writeln(fmt.Sprintf("static void %s(%s) {", name, strings.Join(args, ", ")))
 	c.indent++
 	for _, s := range t.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -1596,7 +1616,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 
 		if q.Group != nil {
+			keyT := c.assignTypeNames(c.inferExprType(q.Group.Exprs[0]), "Key")
+			c.registerStructs(keyT)
+			c.structHint = "Key"
 			keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+			c.structHint = ""
 			if err != nil {
 				c.env = orig
 				return "", err
@@ -1606,8 +1630,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 				groupT = lt.Elem
 			}
-			keyT := c.assignTypeNames(c.inferExprType(q.Group.Exprs[0]), "Key")
-			c.registerStructs(keyT)
 			groupT = c.assignTypeNames(groupT, "Item").(types.Type)
 			c.registerStructs(groupT)
 			genv.SetVar(q.Group.Name, groupT, true)
@@ -2607,7 +2629,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if gt, ok := typ.(types.GroupType); ok {
 				field := p.Selector.Tail[0]
 				if field == "key" {
-					expr = fmt.Sprintf("%s.Key", expr)
+					expr = fmt.Sprintf("%s.key", expr)
 					typ = types.AnyType{}
 				} else if field == "items" {
 					expr = fmt.Sprintf("%s", expr)
