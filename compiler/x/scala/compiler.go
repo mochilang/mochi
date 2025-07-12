@@ -121,6 +121,8 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 			out.WriteString(pad + "def _right_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], B)] = for(y <- b) yield (a.find(x => cond(x,y)), y)\n")
 		case "_outer_join":
 			out.WriteString(pad + "def _outer_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], Option[B])] = { val left = _left_join(a,b)(cond).map{ case(x,y) => (Some(x), y) }; val right = _right_join(a,b)(cond).collect{ case(None, r) => (None, Some(r)) }; left ++ right }\n")
+		case "_Group":
+			out.WriteString(pad + "case class _Group[K,T](key: K, items: List[T])\n")
 		case "_load_yaml":
 			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String,String]] = {\n" +
 				pad + "  val lines = scala.io.Source.fromFile(path).getLines().toList\n" +
@@ -1226,7 +1228,7 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	}
 	if len(s.Tail) == 0 {
 		if _, ok := t.(types.GroupType); ok {
-			return fmt.Sprintf("%s._2", base)
+			return base
 		}
 		return base
 	}
@@ -1239,6 +1241,19 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		case types.OptionType:
 			base = fmt.Sprintf("%s.get", base)
 			t = tt.Elem
+		case types.GroupType:
+			if f == "key" {
+				base = fmt.Sprintf("%s.key", base)
+				t = tt.Key
+				continue
+			}
+			if strings.ToLower(f) == "items" {
+				base = fmt.Sprintf("%s.items", base)
+				t = types.ListType{Elem: tt.Elem}
+				continue
+			}
+			base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
+			t = types.AnyType{}
 		}
 		if st, ok := t.(types.StructType); ok && st.Name != "" {
 			base = fmt.Sprintf("%s.%s", base, sanitizeField(f))
@@ -1719,7 +1734,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		tuple := fmt.Sprintf("%s(%s)", elem.Name, strings.Join(partsExpr, ", "))
 		tmp := fmt.Sprintf("for { %s } yield (%s, %s)", strings.Join(parts, "; "), keyExpr, tuple)
-		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList", tmp)
+		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList", tmp)
+		c.use("_Group")
 
 		groupEnv := types.NewEnv(c.env)
 		keyT := types.ExprType(q.Group.Exprs[0], c.env)
@@ -1748,7 +1764,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.use("_truthy")
 				cond = fmt.Sprintf("_truthy(%s)", cond)
 			}
-			groups = fmt.Sprintf("(%s).filter{ case(%s,%s) => { val %s = (%s, %s); %s } }", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", cond)
+			groups = fmt.Sprintf("(%s).filter{ g => { val %s = g; %s } }", groups, q.Group.Name, cond)
 		}
 
 		c.env = groupEnv
@@ -1757,7 +1773,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = oldEnv
 			return "", err
 		}
-		expr = fmt.Sprintf("(%s).map{ case(%s,%s) => { val %s = (%s, %s); %s } }.toList", groups, q.Group.Name+"Key", q.Group.Name+"Items", q.Group.Name, q.Group.Name+"Key", q.Group.Name+"Items", sel)
+		expr = fmt.Sprintf("(%s).map{ g => { val %s = g; %s } }.toList", groups, q.Group.Name, sel)
 	} else {
 		// handle simple aggregations without GROUP BY
 		if call, ok := callPattern(q.Select); ok {
