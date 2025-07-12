@@ -390,6 +390,17 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
+	if c.helpers["group"] {
+		c.writeln("static class Group<K,V> implements Iterable<V> {")
+		c.indent++
+		c.writeln("K key;")
+		c.writeln("List<V> items;")
+		c.writeln("Group(K key, List<V> items) { this.key = key; this.items = items; }")
+		c.writeln("public Iterator<V> iterator() { return items.iterator(); }")
+		c.writeln("int size() { return items.size(); }")
+		c.indent--
+		c.writeln("}")
+	}
 	if c.helpers["load_yaml"] {
 		c.writeln("static List<Map<String,Object>> loadYaml(String path) {")
 		c.indent++
@@ -2296,19 +2307,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 		}
 		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
-			if len(p.Selector.Tail) == 1 && p.Selector.Tail[0] == "key" {
-				return keyVar, nil
-			}
 			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
-				s = keyVar
+				s = fmt.Sprintf("%s.key", p.Selector.Root)
 				typ = c.vars[keyVar]
+				if len(p.Selector.Tail) == 1 {
+					return s, nil
+				}
 				pTail := p.Selector.Tail[1:]
 				for _, f := range pTail {
-					if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
-						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
+					if strings.HasPrefix(typ, "Map<") {
 						typ = mapValueType(typ)
+						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
 					} else {
 						s += "." + f
+						typ = c.fieldType(typ, f)
 					}
 				}
 				return s, nil
@@ -2316,7 +2328,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if itemType, ok := c.groupItems[p.Selector.Root]; ok {
 			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "items" {
-				s = fmt.Sprintf("((Map)%s).get(\"items\")", s)
+				s = fmt.Sprintf("%s.items", p.Selector.Root)
 				typ = fmt.Sprintf("List<%s>", wrapperType(itemType))
 				if len(p.Selector.Tail) == 1 {
 					return s, nil
@@ -2324,7 +2336,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				// access fields on elements of the items list
 				typ = itemType
 				for _, f := range p.Selector.Tail[1:] {
-					if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
+					if strings.HasPrefix(typ, "Map<") {
 						s = fmt.Sprintf("((Map)%s).get(\"%s\")", s, f)
 						typ = mapValueType(typ)
 					} else {
@@ -2740,6 +2752,16 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	resVar := fmt.Sprintf("_res%d", c.tmpCount)
 	c.tmpCount++
 	resultElem := c.inferType(q.Select)
+	if q.Group != nil {
+		if id, ok := identName(q.Select); ok && id == q.Group.Name {
+			keyType := c.inferType(q.Group.Exprs[0])
+			if keyType == "var" {
+				keyType = "Object"
+			}
+			resultElem = fmt.Sprintf("Group<%s,%s>", wrapperType(keyType), elemType)
+			c.helpers["group"] = true
+		}
+	}
 	if resultElem == "var" {
 		resultElem = "Object"
 	}
@@ -2992,17 +3014,18 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if groupsVar != "" {
 		gName := q.Group.Name
 		keyVar := fmt.Sprintf("%s_key", gName)
-		c.groupKeys[gName] = keyVar
-		c.vars[gName] = fmt.Sprintf("List<%s>", rowType)
-		c.groupItems[gName] = rowType
 		keyType := c.inferType(q.Group.Exprs[0])
 		if keyType == "var" {
 			keyType = "Object"
 		}
+		c.groupKeys[gName] = keyVar
+		c.groupItems[gName] = rowType
 		c.vars[keyVar] = keyType
+		c.vars[gName] = fmt.Sprintf("Group<%s,%s>", wrapperType(keyType), rowType)
+		c.helpers["group"] = true
 		b.WriteString(fmt.Sprintf("\tfor (Map.Entry<%s,List<%s>> __e : %s.entrySet()) {\n", wrapperType(keyType), rowType, groupsVar))
 		b.WriteString(fmt.Sprintf("\t\t%[1]s %s = __e.getKey();\n", keyType, keyVar))
-		b.WriteString(fmt.Sprintf("\t\tList<%s> %s = __e.getValue();\n", rowType, gName))
+		b.WriteString(fmt.Sprintf("\t\tGroup<%s,%s> %s = new Group<>(%s, __e.getValue());\n", wrapperType(keyType), rowType, gName, keyVar))
 		if q.Group.Having != nil {
 			cond, err := c.compileExpr(q.Group.Having)
 			if err != nil {
@@ -3013,7 +3036,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("\t\tif (!(%s)) continue;\n", cond))
 		}
 		if id, ok := identName(q.Select); ok && id == gName {
-			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(new LinkedHashMap<>(Map.ofEntries(Map.entry(\"key\", %s), Map.entry(\"items\", %s))));\n", resVar, keyVar, gName))
+			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(%s);\n", resVar, gName))
 		} else {
 			sel, err := c.compileExpr(q.Select)
 			if err != nil {
