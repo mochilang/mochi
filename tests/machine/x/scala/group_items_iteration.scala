@@ -3,8 +3,10 @@ object group_items_iteration {
   case class Data(tag: String, `val`: Int)
   case class Group(d: Data)
 
+  case class _Group[K,T](key: K, items: List[T])
+
   val data = List[Data](Data(tag = "a", `val` = 1), Data(tag = "a", `val` = 2), Data(tag = "b", `val` = 3))
-  val groups = ((for { d <- data } yield (d.tag, Group(d = d))).groupBy(_._1).map{ case(k,list) => (k, list.map(_._2)) }.toList).map{ case(gKey,gItems) => { val g = (gKey, gItems); g._2 } }.toList
+  val groups = ((for { d <- data } yield (d.tag, Group(d = d))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => { val g = g; g } }.toList
   def main(args: Array[String]): Unit = {
     var tmp = scala.collection.mutable.ArrayBuffer[Any]()
     for(g <- groups) {
