@@ -1,0 +1,9 @@
+error running python_math:
+ERROR on line 20 of file /workspace/mochi/tests/machine/x/scheme/python_math.scm: non procedure application: ()
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+
+context (line 20):
+(define r 3.0)
+(define area (* (map-get math 'pi) ((map-get math 'pow) r 2.0)))
+(define root ((map-get math 'sqrt) 49.0))
