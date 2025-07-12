@@ -1779,12 +1779,27 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		joinOns[i] = on
 
 		if leftExpr, rightExpr, ok := joinEqParts(j.On); ok {
-			lkey, err := c.compileExpr(leftExpr)
-			if err == nil {
-				rkey, err2 := c.compileExpr(rightExpr)
-				if err2 == nil {
-					joinLeftKeys[i] = lkey
-					joinRightKeys[i] = rkey
+			leftVars := varsInExpr(leftExpr)
+			rightVars := varsInExpr(rightExpr)
+			lkeyExpr := leftExpr
+			rkeyExpr := rightExpr
+			if leftVars[j.Var] && !rightVars[j.Var] {
+				lkeyExpr = rightExpr
+				rkeyExpr = leftExpr
+			} else if rightVars[j.Var] && !leftVars[j.Var] {
+				// lkeyExpr and rkeyExpr already correct
+			} else {
+				lkeyExpr = nil
+				rkeyExpr = nil
+			}
+			if lkeyExpr != nil && rkeyExpr != nil {
+				lkey, err := c.compileExpr(lkeyExpr)
+				if err == nil {
+					rkey, err2 := c.compileExpr(rkeyExpr)
+					if err2 == nil {
+						joinLeftKeys[i] = lkey
+						joinRightKeys[i] = rkey
+					}
 				}
 			}
 		}
@@ -2358,12 +2373,27 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		joinOns[i] = on
 
 		if leftExpr, rightExpr, ok := joinEqParts(j.On); ok {
-			lkey, err := c.compileExpr(leftExpr)
-			if err == nil {
-				rkey, err2 := c.compileExpr(rightExpr)
-				if err2 == nil {
-					joinLeftKeys[i] = lkey
-					joinRightKeys[i] = rkey
+			leftVars := varsInExpr(leftExpr)
+			rightVars := varsInExpr(rightExpr)
+			lkeyExpr := leftExpr
+			rkeyExpr := rightExpr
+			if leftVars[j.Var] && !rightVars[j.Var] {
+				lkeyExpr = rightExpr
+				rkeyExpr = leftExpr
+			} else if rightVars[j.Var] && !leftVars[j.Var] {
+				// orientation correct
+			} else {
+				lkeyExpr = nil
+				rkeyExpr = nil
+			}
+			if lkeyExpr != nil && rkeyExpr != nil {
+				lkey, err := c.compileExpr(lkeyExpr)
+				if err == nil {
+					rkey, err2 := c.compileExpr(rkeyExpr)
+					if err2 == nil {
+						joinLeftKeys[i] = lkey
+						joinRightKeys[i] = rkey
+					}
 				}
 			}
 		}
