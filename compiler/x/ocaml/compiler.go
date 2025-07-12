@@ -2484,6 +2484,9 @@ func (c *Compiler) structTypeFromMapLiteral(ml *parser.MapLiteral) (types.Struct
 }
 
 func (c *Compiler) structTypeFromMapLiteralEnv(ml *parser.MapLiteral, env *types.Env) (types.StructType, bool) {
+	if len(ml.Items) < 2 {
+		return types.StructType{}, false
+	}
 	fields := map[string]types.Type{}
 	order := []string{}
 	for _, it := range ml.Items {
@@ -2513,6 +2516,18 @@ func (c *Compiler) structTypeFromExprEnv(e *parser.Expr, env *types.Env) (types.
 		return nil, false
 	}
 	u := e.Binary.Left
+	if name, ok := identName(e); ok {
+		if t, err := env.GetVar(name); err == nil {
+			switch tt := t.(type) {
+			case types.StructType:
+				return tt, true
+			case types.ListType:
+				if elem, ok2 := tt.Elem.(types.StructType); ok2 {
+					return types.ListType{Elem: elem}, true
+				}
+			}
+		}
+	}
 	if ml := u.Value.Target.Map; ml != nil {
 		st, ok := c.structTypeFromMapLiteralEnv(ml, env)
 		if ok {

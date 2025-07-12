@@ -1,15 +1,14 @@
 stage: compile
 error:
-File "/workspace/mochi/tests/machine/x/ocaml/map_nested_assign.ml", line 29, characters 53-66:
-29 | let data : (string * Obj.t) list ref = ref { outer = { inner = 1 } }
-                                                          ^^^^^^^^^^^^^
-Error: This expression should not be a record, the expected type is
-       (string * Obj.t) list
+File "/workspace/mochi/tests/machine/x/ocaml/map_nested_assign.ml", line 30, characters 53-60:
+30 |   print_endline (__show (Obj.obj (List.assoc "inner" Obj.obj (List.assoc "outer" (!data)))));
+                                                          ^^^^^^^
+Error: This expression has type Obj.t -> 'a
+       but an expression was expected of type (string * ('b -> 'c)) list
 
 
-Context (around line 29):
-  27 | type record2 = { mutable inner : int }
-  28 | 
-  29 | let data : (string * Obj.t) list ref = ref { outer = { inner = 1 } }
-  30 | 
-  31 | let () =
+Context (around line 30):
+  28 | let () =
+  29 |   data := map_set !data "outer" (map_set (map_get !data "outer") "inner" 2);
+  30 |   print_endline (__show (Obj.obj (List.assoc "inner" Obj.obj (List.assoc "outer" (!data)))));
+  31 | 
