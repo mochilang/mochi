@@ -159,6 +159,15 @@ func isListFloatType(t types.Type) bool {
 	return false
 }
 
+func isListBoolType(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok2 := lt.Elem.(types.BoolType); ok2 {
+			return true
+		}
+	}
+	return false
+}
+
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok

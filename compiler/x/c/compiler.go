@@ -951,7 +951,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			if isListIntType(curT) {
+			if isListIntType(curT) || isListBoolType(curT) {
 				target = fmt.Sprintf("%s[%s]", target, ix)
 			} else {
 				target = fmt.Sprintf("%s.data[%s]", target, ix)
@@ -1169,7 +1169,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 		}
 	}
 	if stmt.Value != nil {
-		if vals, ok := c.evalListIntExpr(stmt.Value); ok && (isListIntType(t) || t == nil || types.ContainsAny(t)) {
+		if vals, ok := c.evalListIntExpr(stmt.Value); ok && (isListIntType(t) || isListBoolType(t) || t == nil || types.ContainsAny(t)) {
 			if t == nil || types.ContainsAny(t) {
 				t = types.ListType{Elem: types.IntType{}}
 				if c.env != nil {
@@ -1220,7 +1220,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
-			} else if isListIntType(t) {
+			} else if isListIntType(t) || isListBoolType(t) {
 				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
@@ -1418,7 +1418,7 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
-			} else if isListIntType(t) {
+			} else if isListIntType(t) || isListBoolType(t) {
 				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
@@ -4753,6 +4753,12 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
+	if len(s.Tail) == 1 && s.Tail[0] == "len" {
+		root := sanitizeName(s.Root)
+		if l, ok := c.listLens[root]; ok {
+			return strconv.Itoa(l)
+		}
+	}
 	if mod, ok := c.builtinAliases[s.Root]; ok && len(s.Tail) == 1 {
 		switch mod {
 		case "python_math":
