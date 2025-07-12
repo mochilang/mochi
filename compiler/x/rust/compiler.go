@@ -3031,6 +3031,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
+	// If the literal matches an existing struct type, emit that struct
+	// literal instead of a generic map for stronger typing.
+	if keys, ok := c.mapLiteralKeys(m); ok {
+		if st, ok2 := c.structForKeys(keys); ok2 {
+			return c.compileStructLiteralFromMap(st.Name, m)
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("{ let mut m = std::collections::BTreeMap::new();")
 	for _, it := range m.Items {
@@ -3237,6 +3245,47 @@ func (c *Compiler) mapKeys(e *parser.Expr) ([]string, bool) {
 		keys[i] = str
 	}
 	return keys, true
+}
+
+// mapLiteralKeys extracts simple string keys from a map literal.
+func (c *Compiler) mapLiteralKeys(m *parser.MapLiteral) ([]string, bool) {
+	keys := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		str, ok := c.simpleKey(it.Key)
+		if !ok {
+			return nil, false
+		}
+		keys[i] = str
+	}
+	return keys, true
+}
+
+// structForKeys searches known structs matching the given ordered keys.
+func (c *Compiler) structForKeys(keys []string) (types.StructType, bool) {
+	match := func(st types.StructType) bool {
+		if len(st.Order) != len(keys) {
+			return false
+		}
+		for i, k := range st.Order {
+			if k != keys[i] {
+				return false
+			}
+		}
+		return true
+	}
+	for _, st := range c.structs {
+		if match(st) {
+			return st, true
+		}
+	}
+	if c.env != nil {
+		for _, st := range c.env.Structs() {
+			if match(st) {
+				return st, true
+			}
+		}
+	}
+	return types.StructType{}, false
 }
 
 func tryListLiteral(e *parser.Expr) *parser.ListLiteral {
