@@ -15,21 +15,19 @@ fun isPrime(n: int): bool {
 }
 
 var circs: list<int> = []
-fun alreadyFound(n: int): bool {
-  for x in circs { if x == n { return true } }
-  return false
-}
 
 fun isCircular(n: int): bool {
   var nn = n
   var pow = 1
-  while nn > 0 { pow = pow * 10; nn = nn / 10 }
+  while nn > 0 {
+    pow = pow * 10
+    nn = nn / 10
+  }
   nn = n
   while true {
     nn = nn * 10
     let f = nn / pow
     nn = nn + f * (1 - pow)
-    if alreadyFound(nn) { return false }
     if nn == n { break }
     if !isPrime(nn) { return false }
   }
@@ -42,18 +40,33 @@ var q = [1,2,3,5,7,9]
 var fq = [1,2,3,5,7,9]
 var count = 0
 while true {
-  let f = q[0]; let fd = fq[0]
+  let f = q[0]
+  let fd = fq[0]
   if isPrime(f) && isCircular(f) {
     circs = append(circs, f)
     count = count + 1
     if count == 19 { break }
   }
-  q = q[1:]; fq = fq[1:]
+  q = q[1:]
+  fq = fq[1:]
   if f != 2 && f != 5 {
-    for d in digits { if d >= fd { q = append(q, f*10+d); fq = append(fq, fd) } }
+    for d in digits {
+      q = append(q, f*10+d)
+      fq = append(fq, fd)
+    }
   }
 }
-print(str(circs))
+fun showList(xs: list<int>): string {
+  var out = "["
+  var i = 0
+  while i < len(xs) {
+    out = out + str(xs[i])
+    if i < len(xs) - 1 { out = out + ", " }
+    i = i + 1
+  }
+  return out + "]"
+}
+print(showList(circs))
 print("\nThe next 4 circular primes, in repunit format, are:")
 print("[R(19) R(23) R(317) R(1031)]")
 print("\nThe following repunits are probably circular primes:")
