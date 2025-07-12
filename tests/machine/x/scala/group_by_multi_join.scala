@@ -6,7 +6,7 @@ object group_by_multi_join {
   case class Partsupp(part: Int, supplier: Int, cost: Double, qty: Int)
   case class Supplier(id: Int, nation: Int)
 
-  case class _Group[K,T](key: K, items: List[T])
+  case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   val nations = List[Nation](Nation(id = 1, name = "A"), Nation(id = 2, name = "B"))
   val suppliers = List[Supplier](Supplier(id = 1, nation = 1), Supplier(id = 2, nation = 2))

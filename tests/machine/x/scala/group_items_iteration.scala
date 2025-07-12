@@ -3,7 +3,7 @@ object group_items_iteration {
   case class Data(tag: String, `val`: Int)
   case class Group(d: Data)
 
-  case class _Group[K,T](key: K, items: List[T])
+  case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   val data = List[Data](Data(tag = "a", `val` = 1), Data(tag = "a", `val` = 2), Data(tag = "b", `val` = 3))
   val groups = ((for { d <- data } yield (d.tag, Group(d = d))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => g }.toList

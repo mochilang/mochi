@@ -90,6 +90,10 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) use(name string) {
 	if c.helpers != nil {
 		c.helpers[name] = true
+		if name == "_outer_join" {
+			c.helpers["_left_join"] = true
+			c.helpers["_right_join"] = true
+		}
 	}
 }
 
@@ -139,7 +143,7 @@ func (c *Compiler) emitHelpers(out *bytes.Buffer, indent int) {
 		case "_outer_join":
 			out.WriteString(pad + "def _outer_join[A,B](a: List[A], b: List[B])(cond: (A,B) => Boolean): List[(Option[A], Option[B])] = { val left = _left_join(a,b)(cond).map{ case(x,y) => (Some(x), y) }; val right = _right_join(a,b)(cond).collect{ case(None, r) => (None, Some(r)) }; left ++ right }\n")
 		case "_Group":
-			out.WriteString(pad + "case class _Group[K,T](key: K, items: List[T])\n")
+			out.WriteString(pad + "case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }\n")
 		case "_load_yaml":
 			out.WriteString(pad + "def _load_yaml(path: String): List[Map[String,String]] = {\n" +
 				pad + "  val lines = scala.io.Source.fromFile(path).getLines().toList\n" +
@@ -1250,15 +1254,21 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		}
 		return base
 	}
-	for _, f := range s.Tail {
+	for i, f := range s.Tail {
+		remaining := len(s.Tail) - i - 1
 		switch tt := t.(type) {
 		case types.MapType:
 			base = fmt.Sprintf("%s(%q)", base, f)
 			t = tt.Value
 			continue
 		case types.OptionType:
-			base = fmt.Sprintf("%s.get", base)
-			t = tt.Elem
+			if remaining > 0 {
+				base = fmt.Sprintf("%s.get", base)
+				t = tt.Elem
+			} else {
+				// last field, keep option as is
+				t = tt
+			}
 		case types.GroupType:
 			if f == "key" {
 				base = fmt.Sprintf("%s.key", base)
