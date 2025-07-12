@@ -11,7 +11,7 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 - [x] bool_chain
 - [x] break_continue
 - [x] cast_string_to_int
-- [ ] cast_struct (error)
+- [x] cast_struct
 - [x] closure
 - [x] count_builtin
 - [x] cross_join
