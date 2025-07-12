@@ -350,6 +350,18 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 		}
 	}
 
+	if isString(from) {
+		c.imports["strconv"] = true
+		switch {
+		case isInt(to):
+			return fmt.Sprintf("func() int { v, _ := strconv.Atoi(%s); return v }()", expr)
+		case isInt64(to):
+			return fmt.Sprintf("func() int64 { v, _ := strconv.ParseInt(%s, 10, 64); return v }()", expr)
+		case isFloat(to):
+			return fmt.Sprintf("func() float64 { v, _ := strconv.ParseFloat(%s, 64); return v }()", expr)
+		}
+	}
+
 	if isNumeric(from) && isNumeric(to) {
 		return fmt.Sprintf("%s(%s)", toGo, expr)
 	}

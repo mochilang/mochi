@@ -4,8 +4,10 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 func main() {
-	fmt.Println(int("1995"))
+	n, _ := strconv.Atoi("1995")
+	fmt.Println(n)
 }
