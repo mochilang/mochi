@@ -1000,39 +1000,64 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		for _, v := range t.Variants {
 			vname := sanitizeName(v.Name)
 			variants = append(variants, vname)
-			c.writeln(fmt.Sprintf("type %s = {", vname))
-			c.indent++
-			c.writeln(fmt.Sprintf("__name: \"%s\";", v.Name))
+
+			var fields []string
+			fields = append(fields, fmt.Sprintf("__name: \"%s\"", v.Name))
 			for _, f := range v.Fields {
 				ts := tsType(c.resolveTypeRef(f.Type))
+				field := sanitizeName(f.Name) + ": "
 				if ts != "" {
-					c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(f.Name), ts))
+					field += ts
 				} else {
-					c.writeln(fmt.Sprintf("%s: any;", sanitizeName(f.Name)))
+					field += "any"
 				}
+				fields = append(fields, field)
 			}
-			c.indent--
-			c.writeln("}")
+
+			flat := fmt.Sprintf("type %s = { %s }", vname, strings.Join(fields, "; "))
+			if len(fields) <= 2 && len(flat) <= 60 {
+				c.writeln(flat)
+			} else {
+				c.writeln(fmt.Sprintf("type %s = {", vname))
+				c.indent++
+				for _, f := range fields {
+					c.writeln(f + ";")
+				}
+				c.indent--
+				c.writeln("}")
+			}
 			c.writeln("")
 		}
 		c.writeln(fmt.Sprintf("type %s = %s", name, strings.Join(variants, " | ")))
 		return nil
 	}
 
-	c.writeln(fmt.Sprintf("type %s = {", name))
-	c.indent++
+	var fields []string
 	for _, m := range t.Members {
 		if m.Field != nil {
 			ts := tsType(c.resolveTypeRef(m.Field.Type))
+			field := sanitizeName(m.Field.Name) + ": "
 			if ts != "" {
-				c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(m.Field.Name), ts))
+				field += ts
 			} else {
-				c.writeln(fmt.Sprintf("%s: any;", sanitizeName(m.Field.Name)))
+				field += "any"
 			}
+			fields = append(fields, field)
 		}
 	}
-	c.indent--
-	c.writeln("}")
+
+	flat := fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; "))
+	if len(fields) <= 2 && len(flat) <= 60 {
+		c.writeln(flat)
+	} else {
+		c.writeln(fmt.Sprintf("type %s = {", name))
+		c.indent++
+		for _, f := range fields {
+			c.writeln(f + ";")
+		}
+		c.indent--
+		c.writeln("}")
+	}
 	return nil
 }
 

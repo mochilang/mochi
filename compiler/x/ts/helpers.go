@@ -118,20 +118,35 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-	c.writeln(fmt.Sprintf("type %s = {", name))
-	c.indent++
+
+	var fields []string
 	for _, fn := range st.Order {
+		field := sanitizeName(fn) + ": "
 		if typ, ok := st.Fields[fn]; ok {
 			ts := tsType(typ)
 			if ts != "" {
-				c.writeln(fmt.Sprintf("%s: %s;", sanitizeName(fn), ts))
-				continue
+				field += ts
+			} else {
+				field += "any"
 			}
+		} else {
+			field += "any"
 		}
-		c.writeln(fmt.Sprintf("%s: any;", sanitizeName(fn)))
+		fields = append(fields, field)
 	}
-	c.indent--
-	c.writeln("}")
+
+	flat := fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; "))
+	if len(fields) <= 2 && len(flat) <= 60 {
+		c.writeln(flat)
+	} else {
+		c.writeln(fmt.Sprintf("type %s = {", name))
+		c.indent++
+		for _, f := range fields {
+			c.writeln(f + ";")
+		}
+		c.indent--
+		c.writeln("}")
+	}
 	c.writeln("")
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {

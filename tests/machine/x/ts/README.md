@@ -110,7 +110,7 @@ Compiled: 100/100 programs
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-- [ ] Improve formatting of generated interfaces
+- [x] Improve formatting of generated interfaces
 - [x] Use template strings for string concatenation
 - [x] Leverage built-in array helpers instead of manual loops
 - [x] Add async function support for I/O operations
