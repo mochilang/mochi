@@ -1,0 +1,4 @@
+run error: exit status 1
+# command-line-arguments
+../../tests/rosetta/out/Go/catalan-numbers-1.go:44:6: main redeclared in this block
+	../../tests/rosetta/out/Go/catalan-numbers-1.go:38:6: other declaration of main

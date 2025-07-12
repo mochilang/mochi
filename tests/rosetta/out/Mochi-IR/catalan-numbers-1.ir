@@ -1,0 +1,91 @@
+func main (regs=1)
+  // main()
+  Call         r0, main, 
+  Return       r0
+
+  // fun binom(n: int, k: int): int {
+func binom (regs=19)
+  // if k < 0 || k > n { return 0 }
+  Const        r2, 0
+  Less         r3, r1, r2
+  Less         r4, r0, r1
+  Move         r5, r3
+  JumpIfTrue   r5, L0
+  Move         r5, r4
+L0:
+  JumpIfFalse  r5, L1
+  Const        r2, 0
+  Return       r2
+L1:
+  // var kk = k
+  Move         r6, r1
+  // if kk > n - kk { kk = n - kk }
+  Sub          r7, r0, r6
+  Less         r8, r7, r6
+  JumpIfFalse  r8, L2
+  Sub          r9, r0, r6
+  Move         r6, r9
+L2:
+  // var res = 1
+  Const        r10, 1
+  Move         r11, r10
+  // var i = 0
+  Const        r2, 0
+  Move         r12, r2
+L4:
+  // while i < kk {
+  Less         r13, r12, r6
+  JumpIfFalse  r13, L3
+  // res = (res * (n - i))
+  Sub          r14, r0, r12
+  Mul          r15, r11, r14
+  Move         r11, r15
+  // i = i + 1
+  Const        r10, 1
+  AddInt       r16, r12, r10
+  Move         r12, r16
+  // res = (res / i) as int
+  Div          r17, r11, r12
+  Cast         r18, r17, int
+  Move         r11, r18
+  // while i < kk {
+  Jump         L4
+L3:
+  // return res
+  Return       r11
+
+  // fun catalan(n: int): int {
+func catalan (regs=10)
+  // return (binom(2*n, n) / (n + 1)) as int
+  Const        r3, 2
+  Mul          r4, r3, r0
+  Move         r1, r4
+  Move         r2, r0
+  Call2        r5, binom, r1, r2
+  Const        r6, 1
+  Add          r7, r0, r6
+  Div          r8, r5, r7
+  Cast         r9, r8, int
+  Return       r9
+
+  // fun main() {
+func main (regs=9)
+  // for i in 0..15 {
+  Const        r0, 0
+  Const        r1, 15
+  Move         r2, r0
+L1:
+  LessInt      r3, r2, r1
+  JumpIfFalse  r3, L0
+  // print(str(catalan(i)))
+  Move         r4, r2
+  Call         r5, catalan, r4
+  Str          r6, r5
+  Print        r6
+  // for i in 0..15 {
+  Const        r7, 1
+  AddInt       r8, r2, r7
+  Move         r2, r8
+  Jump         L1
+L0:
+  Return       r0
