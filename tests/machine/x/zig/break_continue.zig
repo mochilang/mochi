@@ -10,7 +10,7 @@ const numbers = &[_]i32{
     7,
     8,
     9,
-};
+}; // []const i32
 
 pub fn main() void {
     for (numbers) |n| {

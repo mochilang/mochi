@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var x = 1;
+var x = 1; // i32
 
 pub fn main() void {
     x = 2;

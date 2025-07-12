@@ -13,7 +13,7 @@ const t = Tree{ .Node = .{
     .value = 2,
     .right = &Tree{ .Leaf = {} },
 } },
-} };
+} }; // i32
 
 fn sum_tree(t: *Tree) i32 {
     return switch (t.*) {.Leaf => 0, .Node => |_tmp0| ((sum_tree(&_tmp0.left) + _tmp0.value) + sum_tree(&_tmp0.right)), };

@@ -9,7 +9,7 @@ const m = M{
     .a = 1,
     .b = 2,
     .c = 3,
-};
+}; // M
 
 pub fn main() void {
     std.debug.print("{any}\n", .{values(m)});

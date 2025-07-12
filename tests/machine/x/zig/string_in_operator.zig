@@ -5,7 +5,7 @@ fn _contains_list_int(v: []const i32, item: i32) bool {
     return false;
 }
 
-const s = "catch";
+const s = "catch"; // []const u8
 
 pub fn main() void {
     std.debug.print("{}\n", .{_contains_list_int(s, "cat")});

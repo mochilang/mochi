@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var m: std.StringHashMap(i32) = undefined;
+var m: std.StringHashMap(i32) = undefined; // std.StringHashMap(i32)
 
 pub fn main() void {
     var _tmp1 = m.keyIterator();

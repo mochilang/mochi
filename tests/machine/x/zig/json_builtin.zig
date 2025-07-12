@@ -14,7 +14,7 @@ const M = struct {
 const m = M{
     .a = 1,
     .b = 2,
-};
+}; // M
 
 pub fn main() void {
     _json(m);
