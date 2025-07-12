@@ -1,8 +1,0 @@
-line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/string_index.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/string_index.c:7:19: error: request for member ‘data’ in something not a structure or union
-    7 |   printf("%d\n", s.data[1]);
-      |                   ^
-
-   1: #include <stdio.h>

@@ -1,52 +1,32 @@
 line: 0
 error: cc error: exit status 1
 /workspace/mochi/tests/machine/x/c/in_operator_extended.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:47:39: error: request for member ‘len’ in something not a structure or union
-   47 |   list_int tmp2 = list_int_create(tmp1.len);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:51:39: error: request for member ‘len’ in something not a structure or union
+   51 |   list_int tmp2 = list_int_create(tmp1.len);
       |                                       ^
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:49:33: error: request for member ‘len’ in something not a structure or union
-   49 |   for (int tmp4 = 0; tmp4 < tmp1.len; tmp4++) {
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:53:33: error: request for member ‘len’ in something not a structure or union
+   53 |   for (int tmp4 = 0; tmp4 < tmp1.len; tmp4++) {
       |                                 ^
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:50:17: error: request for member ‘data’ in something not a structure or union
-   50 |     int x = tmp1.data[tmp4];
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:54:17: error: request for member ‘data’ in something not a structure or union
+   54 |     int x = tmp1.data[tmp4];
       |                 ^
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:62:21: error: expected ‘)’ before ‘in’
-   62 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:66:21: error: expected ‘)’ before ‘in’
+   66 |   printf("%d\n", "a" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:62:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   62 |   printf("%d\n", "a" in m);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:66:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   66 |   printf("%d\n", "a" in m);
       |           ~^     ~~~
       |            |     |
       |            int   char *
       |           %s
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:63:21: error: expected ‘)’ before ‘in’
-   63 |   printf("%d\n", "b" in m);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:67:21: error: expected ‘)’ before ‘in’
+   67 |   printf("%d\n", "b" in m);
       |         ~           ^~~
       |                     )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:63:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   63 |   printf("%d\n", "b" in m);
+/workspace/mochi/tests/machine/x/c/in_operator_extended.c:67:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+   67 |   printf("%d\n", "b" in m);
       |           ~^     ~~~
-      |            |     |
-      |            int   char *
-      |           %s
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:64:23: error: expected ‘)’ before ‘in’
-   64 |   printf("%d\n", "ell" in s);
-      |         ~             ^~~
-      |                       )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:64:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   64 |   printf("%d\n", "ell" in s);
-      |           ~^     ~~~~~
-      |            |     |
-      |            int   char *
-      |           %s
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:65:23: error: expected ‘)’ before ‘in’
-   65 |   printf("%d\n", "foo" in s);
-      |         ~             ^~~
-      |                       )
-/workspace/mochi/tests/machine/x/c/in_operator_extended.c:65:12: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
-   65 |   printf("%d\n", "foo" in s);
-      |           ~^     ~~~~~
       |            |     |
       |            int   char *
       |           %s

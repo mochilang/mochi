@@ -11,13 +11,13 @@ int main() {
   char *label =
       (x == 1 ? "one" : (x == 2 ? "two" : (x == 3 ? "three" : "unknown")));
   printf("%s\n", label);
-  int mood =
+  char *mood =
       (day == "mon" ? "tired"
                     : (day == "fri" ? "excited"
                                     : (day == "sun" ? "relaxed" : "normal")));
-  printf("%d\n", mood);
-  int status = (ok == 1 ? "confirmed" : (ok == 0 ? "denied" : 0));
-  printf("%d\n", status);
+  printf("%s\n", mood);
+  char *status = (ok == 1 ? "confirmed" : (ok == 0 ? "denied" : 0));
+  printf("%s\n", status);
   printf("%s\n", classify(0));
   printf("%s\n", classify(5));
   return 0;
