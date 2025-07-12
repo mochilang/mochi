@@ -174,5 +174,4 @@ for _, row in ipairs(result) do
     else
         print("Customer", row.customer.name, "has no orders")
     end
-    ::__continue0::
 end

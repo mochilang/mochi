@@ -170,5 +170,4 @@ for _, entry in ipairs(result) do
     else
         print("Customer", entry.customerName, "has no orders")
     end
-    ::__continue0::
 end

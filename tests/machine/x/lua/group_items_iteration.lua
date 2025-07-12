@@ -87,10 +87,8 @@ for _, g in ipairs(groups) do
     local total = 0
     for _, x in __iter(g.items) do
         total = __add(total, x.val)
-        ::__continue1::
     end
     tmp = __append(tmp, {["tag"]=g.key, ["total"]=total})
-    ::__continue0::
 end
 result = (function()
     local _res = {}

@@ -14,5 +14,4 @@ end)()
 print("--- Even pairs ---")
 for _, p in ipairs(pairs) do
     print(p.n, p.l)
-    ::__continue0::
 end

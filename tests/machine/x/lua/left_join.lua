@@ -166,5 +166,4 @@ end)()
 print("--- Left Join ---")
 for _, entry in ipairs(result) do
     print("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
-    ::__continue0::
 end

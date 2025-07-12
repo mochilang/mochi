@@ -12,5 +12,4 @@ end)()
 print("--- Cross Join: All order-customer pairs ---")
 for _, entry in ipairs(result) do
     print("Order", entry.orderId, "(customerId:", entry.orderCustomerId, ", total: $", entry.orderTotal, ") paired with", entry.pairedCustomerName)
-    ::__continue0::
 end

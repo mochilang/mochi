@@ -17,5 +17,4 @@ for _, person in ipairs(adults) do
         return ""
     end
 end)())
-    ::__continue0::
 end

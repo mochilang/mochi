@@ -168,5 +168,4 @@ end)()
 print("--- Multi Join ---")
 for _, r in ipairs(result) do
     print(r.name, "bought item", r.sku)
-    ::__continue0::
 end

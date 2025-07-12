@@ -342,7 +342,11 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 }
 
 func (c *Compiler) compileFor(s *parser.ForStmt) error {
-	label := c.pushLoopLabel()
+	needLabel := hasContinue(s.Body)
+	label := ""
+	if needLabel {
+		label = c.pushLoopLabel()
+	}
 	name := sanitizeName(s.Name)
 	if s.RangeEnd != nil {
 		start, err := c.compileExpr(s.Source)
@@ -410,18 +414,29 @@ func (c *Compiler) compileFor(s *parser.ForStmt) error {
 	}
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
+			if needLabel {
+				c.popLoopLabel()
+			}
 			return err
 		}
 	}
-	c.writeln("::" + label + "::")
+	if needLabel {
+		c.writeln("::" + label + "::")
+	}
 	c.indent--
 	c.writeln("end")
-	c.popLoopLabel()
+	if needLabel {
+		c.popLoopLabel()
+	}
 	return nil
 }
 
 func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
-	label := c.pushLoopLabel()
+	needLabel := hasContinue(s.Body)
+	label := ""
+	if needLabel {
+		label = c.pushLoopLabel()
+	}
 	cond, err := c.compileExpr(s.Cond)
 	if err != nil {
 		return err
@@ -430,13 +445,20 @@ func (c *Compiler) compileWhile(s *parser.WhileStmt) error {
 	c.indent++
 	for _, st := range s.Body {
 		if err := c.compileStmt(st); err != nil {
+			if needLabel {
+				c.popLoopLabel()
+			}
 			return err
 		}
 	}
-	c.writeln("::" + label + "::")
+	if needLabel {
+		c.writeln("::" + label + "::")
+	}
 	c.indent--
 	c.writeln("end")
-	c.popLoopLabel()
+	if needLabel {
+		c.popLoopLabel()
+	}
 	return nil
 }
 
@@ -451,6 +473,38 @@ func (c *Compiler) popLoopLabel() {
 	if len(c.loopLabels) > 0 {
 		c.loopLabels = c.loopLabels[:len(c.loopLabels)-1]
 	}
+}
+
+func hasContinue(stmts []*parser.Statement) bool {
+	for _, st := range stmts {
+		switch {
+		case st.Continue != nil:
+			return true
+		case st.If != nil:
+			if hasContinue(st.If.Then) {
+				return true
+			}
+			cur := st.If
+			for cur.ElseIf != nil {
+				if hasContinue(cur.ElseIf.Then) {
+					return true
+				}
+				cur = cur.ElseIf
+			}
+			if hasContinue(cur.Else) {
+				return true
+			}
+		case st.For != nil:
+			if hasContinue(st.For.Body) {
+				return true
+			}
+		case st.While != nil:
+			if hasContinue(st.While.Body) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileFun(fun *parser.FunStmt, local bool) error {

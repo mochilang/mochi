@@ -53,9 +53,7 @@ function twoSum(nums, target)
             if __eq(__add(__index(nums, i), __index(nums, j)), target) then
                 return {i, j}
             end
-            ::__continue1::
         end
-        ::__continue0::
     end
     return {-1, -1}
 end

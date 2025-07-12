@@ -166,5 +166,4 @@ end)()
 print("--- Orders with customer info ---")
 for _, entry in ipairs(result) do
     print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
-    ::__continue0::
 end
