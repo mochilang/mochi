@@ -18,6 +18,5 @@ main :-
     nb_setval(nums, _V0),
     nb_getval(nums, _V1),
     get_item(_V1, 1, _V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

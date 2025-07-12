@@ -21,6 +21,5 @@ main :-
     nb_getval(matrix, _V3),
     get_item(_V3, 1, _V4),
     get_item(_V4, 0, _V5),
-    write(_V5),
-    nl,
+    writeln(_V5),
     true.

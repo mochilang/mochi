@@ -6,6 +6,5 @@ inc(X, _Res) :-
 main :-
     K is 2,
     inc(3, _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     true.

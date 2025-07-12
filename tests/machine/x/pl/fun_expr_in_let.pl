@@ -6,6 +6,5 @@ p__lambda0(X, _Res) :-
 main :-
     Square = p__lambda0,
     call(Square, 6, _V1),
-    write(_V1),
-    nl,
+    writeln(_V1),
     true.

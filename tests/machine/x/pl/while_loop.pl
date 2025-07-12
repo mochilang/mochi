@@ -11,8 +11,7 @@ main :-
                 catch(
                     (
                         nb_getval(i, _V2),
-                        write(_V2),
-                        nl,
+                        writeln(_V2),
                         nb_getval(i, _V3),
                         _V4 is (_V3 + 1),
                         nb_setval(i, _V4),

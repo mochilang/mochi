@@ -9,10 +9,8 @@ contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).
 main :-
     Xs = [1, 2, 3],
     contains(Xs, 2, _V0),
-    write(_V0),
-    nl,
+    writeln(_V0),
     contains(Xs, 5, _V1),
     (_V1 -> _V2 = false ; _V2 = true),
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

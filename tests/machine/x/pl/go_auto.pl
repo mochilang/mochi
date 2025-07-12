@@ -7,12 +7,9 @@ testpkg_answer(A) :- A is 42.
 main :-
     testpkg_add(2, 3, _V0),
     _V1 is _V0,
-    write(_V1),
-    nl,
+    writeln(_V1),
     testpkg_pi(_V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     testpkg_answer(_V3),
-    write(_V3),
-    nl,
+    writeln(_V3),
     true.

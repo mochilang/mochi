@@ -50,9 +50,7 @@ twoSum(Nums, Target, _Res) :-
                     twoSum([2, 7, 11, 15], 9, _V0),
                     Result = _V0,
                     get_item(Result, 0, _V1),
-                    write(_V1),
-                    nl,
+                    writeln(_V1),
                     get_item(Result, 1, _V2),
-                    write(_V2),
-                    nl,
+                    writeln(_V2),
                     true.

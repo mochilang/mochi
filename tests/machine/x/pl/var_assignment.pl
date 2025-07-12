@@ -6,6 +6,5 @@ main :-
     _V1 is 2,
     nb_setval(x, _V1),
     nb_getval(x, _V2),
-    write(_V2),
-    nl,
+    writeln(_V2),
     true.

@@ -6,8 +6,7 @@ main :-
             member(N, [1, 2, 3]),
                 catch(
                     (
-                        write(N),
-                        nl,
+                        writeln(N),
                         true
                     ), continue, true),
                     fail

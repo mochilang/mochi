@@ -5,6 +5,5 @@ main :-
     ((X @> 5) -> _V0 = "medium" ; _V0 = "small"),
     ((X @> 10) -> _V1 = "big" ; _V1 = _V0),
     Msg = _V1,
-    write(Msg),
-    nl,
+    writeln(Msg),
     true.

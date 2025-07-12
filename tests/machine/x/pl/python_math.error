@@ -1,0 +1,7 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/python_math.pl:10:
+ERROR:    Type error: `callable' expected, found `_9878 is 3,math_pi(_9890),math_pow(_9878,2,_9904),_9914 is _9890*_9904,math_sqrt(49,_9934),_9944 is _9934,math_pi(_9956),math_sin(_9956/4,_9968),_9984 is _9968,math_e(_9996),math_log(_9996,_10008),_10018 is _10008,write("Circle area with r ="),write(' '),write(_9878),write(' '),("=>"->_10082=true;_10082=false),write(_10082),write(' '),write(_9914),nl,write("Square root of 49:"),write(' '),write(_9944),nl,write("sin(π/4):"),write(' '),write(_9984),nl,write("log(e):"),write(' '),write(_10018),nl,true' (a compound)
+ERROR: /workspace/mochi/tests/machine/x/pl/python_math.pl:9: user:main catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0
+

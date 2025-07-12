@@ -9,8 +9,7 @@ main :-
             member(K, _V1),
                 catch(
                     (
-                        write(K),
-                        nl,
+                        writeln(K),
                         true
                     ), continue, true),
                     fail

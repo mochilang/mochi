@@ -3,12 +3,10 @@
 main :-
     X is 5,
     ((X @> 3) ->
-        write("big"),
-        nl,
+        writeln("big"),
         true
     ;
-        write("small"),
-        nl,
+        writeln("small"),
         true
     ),
     true.

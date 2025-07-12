@@ -9,6 +9,5 @@ expect(Cond) :- (Cond -> true ; throw(error('expect failed'))).
 :- initialization(main, main).
 main :-
     test_addition_works,
-    write("ok"),
-    nl,
+    writeln("ok"),
     true.

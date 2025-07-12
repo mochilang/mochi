@@ -1,0 +1,3 @@
+run: exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/map_nested_assign.pl:14: user:main Type error: `integer' expected, found `"outer"' (a string)
+
