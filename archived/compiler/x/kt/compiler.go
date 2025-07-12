@@ -879,8 +879,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		keyType := c.inferExprType(q.Group.Exprs[0])
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.AnyType{}}, true)
 		c.env = genv
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -1114,8 +1115,9 @@ func (c *Compiler) compileAdvancedQueryExpr(q *parser.QueryExpr, src string) (st
 			return "", err
 		}
 		keyExpr = k
+		keyType := c.inferExprType(q.Group.Exprs[0])
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: types.AnyType{}}, true)
 		c.env = genv
 		gs, err := c.compileExpr(q.Select)
 		if err != nil {
@@ -1911,7 +1913,7 @@ func ktUnpackArgs(names []string, indent string, env *types.Env) string {
 				case types.StructType, types.UnionType:
 					b.WriteString(" as " + ktType(tt))
 				case types.GroupType:
-					b.WriteString(" as _Group")
+					b.WriteString(" as _Group<" + ktType(tt.Key) + ">")
 				}
 			}
 		}

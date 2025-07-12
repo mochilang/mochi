@@ -317,7 +317,7 @@ inline fun <reified T> _cast(v: Any?): T {
             }
             if (items != null) list = items as List<Any?>
         }
-        is _Group -> list = v.Items
+        is _Group<*> -> list = v.Items
     }
     if (list == null || list.isEmpty()) return 0.0
     var sum = 0.0
@@ -339,7 +339,7 @@ inline fun <reified T> _cast(v: Any?): T {
             }
             if (items != null) list = items as List<Any?>
         }
-        is _Group -> list = v.Items
+        is _Group<*> -> list = v.Items
     }
     if (list == null || list.isEmpty()) return 0.0
     var sum = 0.0
@@ -361,7 +361,7 @@ inline fun <reified T> _cast(v: Any?): T {
             }
             if (items != null) list = items as List<Any?>
         }
-        is _Group -> list = v.Items
+        is _Group<*> -> list = v.Items
     }
     if (list == null || list.isEmpty()) return 0
     var m = list[0]
@@ -383,7 +383,7 @@ inline fun <reified T> _cast(v: Any?): T {
             }
             if (items != null) list = items as List<Any?>
         }
-        is _Group -> list = v.Items
+        is _Group<*> -> list = v.Items
     }
     if (list == null || list.isEmpty()) return 0
     var m = list[0]
@@ -393,14 +393,14 @@ inline fun <reified T> _cast(v: Any?): T {
     return m
 }`
 
-	helperGroup = `class _Group(var key: Any?) {
+	helperGroup = `class _Group<K>(var key: K) {
     val Items = mutableListOf<Any?>()
     val size: Int
         get() = Items.size
 }`
 
-	helperGroupBy = `fun _group_by(src: List<Any?>, keyfn: (Any?) -> Any?): List<_Group> {
-    val groups = mutableMapOf<String, _Group>()
+	helperGroupBy = `fun <T, K> _group_by(src: List<T>, keyfn: (T) -> K): List<_Group<K>> {
+    val groups = mutableMapOf<String, _Group<K>>()
     val order = mutableListOf<String>()
     for (it in src) {
         val key = keyfn(it)
