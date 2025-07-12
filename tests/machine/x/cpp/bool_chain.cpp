@@ -7,11 +7,12 @@ bool boom() {
 }
 
 int main() {
-  std::cout << std::boolalpha << ((((1 < 2)) && ((2 < 3))) && ((3 < 4)))
+  std::cout << (((((1 < 2)) && ((2 < 3))) && ((3 < 4))) ? "true" : "false")
             << std::endl;
-  std::cout << std::boolalpha << ((((1 < 2)) && ((2 > 3))) && boom())
+  std::cout << (((((1 < 2)) && ((2 > 3))) && boom()) ? "true" : "false")
             << std::endl;
-  std::cout << std::boolalpha
-            << (((((1 < 2)) && ((2 < 3))) && ((3 > 4))) && boom()) << std::endl;
+  std::cout << ((((((1 < 2)) && ((2 < 3))) && ((3 > 4))) && boom()) ? "true"
+                                                                    : "false")
+            << std::endl;
   return 0;
 }

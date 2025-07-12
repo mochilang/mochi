@@ -15,7 +15,7 @@ int main() {
   std::vector<int> nums = std::vector<int>{1, 2};
   std::vector<std::string> letters =
       std::vector<std::string>{std::string("A"), std::string("B")};
-  std::vector<bool> bools = std::vector<decltype(true)>{true, false};
+  std::vector<bool> bools = std::vector<bool>{true, false};
   auto combos = ([&]() {
     std::vector<Combo> __items;
     for (auto n : nums) {

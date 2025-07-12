@@ -3081,6 +3081,17 @@ func (c *Compiler) inferType(expr string) string {
 			}
 			return "int"
 		}
+		if trimmed == "true" || trimmed == "false" {
+			return "bool"
+		}
+		if !strings.ContainsAny(trimmed, "{}?:") {
+			if strings.Contains(trimmed, "==") || strings.Contains(trimmed, "!=") ||
+				strings.Contains(trimmed, "<=") || strings.Contains(trimmed, ">=") ||
+				strings.Contains(trimmed, " && ") || strings.Contains(trimmed, " || ") ||
+				strings.HasPrefix(trimmed, "!") || strings.Contains(trimmed, " < ") || strings.Contains(trimmed, " > ") {
+				return "bool"
+			}
+		}
 	}
 	return ""
 }
