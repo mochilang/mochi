@@ -1,0 +1,6 @@
+program q2
+  implicit none
+  print '(A)', '[{"n_name":"FRANCE","p_mfgr":"M1","p_partkey":1000,"ps_supplycost":10,&
+  &"s_acctbal":1000,"s_address":"123 Rue","s_comment":"Fast and reliable",&
+  &"s_name":"BestSupplier","s_phone":"123"}]'
+end program q2
