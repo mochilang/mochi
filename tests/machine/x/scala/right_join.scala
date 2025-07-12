@@ -4,26 +4,13 @@ object right_join {
   case class Result(customerName: String, order: Option[Order])
   case class Result1(customerName: String, order: Order)
 
-  def _truthy(v: Any): Boolean = v match {
-    case null => false
-    case b: Boolean => b
-    case i: Int => i != 0
-    case l: Long => l != 0L
-    case d: Double => d != 0.0
-    case s: String => s.nonEmpty
-    case m: scala.collection.Map[_, _] => m.nonEmpty
-    case it: Iterable[_] => it.nonEmpty
-    case opt: Option[_] => opt.nonEmpty
-    case _ => true
-  }
-
   val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"), Customer(id = 3, name = "Charlie"), Customer(id = 4, name = "Diana"))
   val orders = List[Order](Order(id = 100, customerId = 1, total = 250), Order(id = 101, customerId = 2, total = 125), Order(id = 102, customerId = 1, total = 300))
   val result = for { c <- customers; o = orders.find(o => (o.customerId).asInstanceOf[Int] == c.id) } yield Result(customerName = c.name, order = o)
   def main(args: Array[String]): Unit = {
     println(("--- Right Join using syntax ---"))
     for(entry <- result) {
-      if (_truthy(entry.order)) {
+      if (entry.order != null) {
         println(("Customer") + " " + (entry.customerName) + " " + ("has order") + " " + (entry.order.id) + " " + ("- $") + " " + (entry.order.total))
       } else {
         println(("Customer") + " " + (entry.customerName) + " " + ("has no orders"))

@@ -1,0 +1,20 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/group_by.scala:9: error: value size is not a member of group_by._Group[String,group_by.Stat]
+  val stats = ((for { person <- people } yield (person.city, Stat(person = person))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat1(city = g.key, count = (g).size, avg_age = (for { p <- g } yield p.age).sum.toDouble / (for { p <- g } yield p.age).size) }.toList
+                                                                                                                                                                                                      ^
+/workspace/mochi/tests/machine/x/scala/group_by.scala:9: error: value map is not a member of group_by._Group[String,group_by.Stat]
+  val stats = ((for { person <- people } yield (person.city, Stat(person = person))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat1(city = g.key, count = (g).size, avg_age = (for { p <- g } yield p.age).sum.toDouble / (for { p <- g } yield p.age).size) }.toList
+                                                                                                                                                                                                                                  ^
+/workspace/mochi/tests/machine/x/scala/group_by.scala:9: error: value map is not a member of group_by._Group[String,group_by.Stat]
+  val stats = ((for { person <- people } yield (person.city, Stat(person = person))).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList).map{ g => Stat1(city = g.key, count = (g).size, avg_age = (for { p <- g } yield p.age).sum.toDouble / (for { p <- g } yield p.age).size) }.toList
+                                                                                                                                                                                                                                                                              ^
+/workspace/mochi/tests/machine/x/scala/group_by.scala:13: error: value city is not a member of Nothing
+      println((s.city) + " " + (": count =") + " " + (s.count) + " " + (", avg_age =") + " " + (s.avg_age))
+                 ^
+/workspace/mochi/tests/machine/x/scala/group_by.scala:13: error: value count is not a member of Nothing
+      println((s.city) + " " + (": count =") + " " + (s.count) + " " + (", avg_age =") + " " + (s.avg_age))
+                                                        ^
+/workspace/mochi/tests/machine/x/scala/group_by.scala:13: error: value avg_age is not a member of Nothing
+      println((s.city) + " " + (": count =") + " " + (s.count) + " " + (", avg_age =") + " " + (s.avg_age))
+                                                                                                  ^
+6 errors found

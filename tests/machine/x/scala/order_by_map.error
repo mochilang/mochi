@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/order_by_map.scala:5: error: No implicit Ordering defined for order_by_map.Data.
+  val sorted = (for { x <- data } yield x).sortBy(x => Data(a = x.a, b = x.b)).map(x => x)
+                                                 ^
+one error found
