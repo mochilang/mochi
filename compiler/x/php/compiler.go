@@ -146,9 +146,17 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		params[i] = "$" + sanitizeName(p.Name)
 	}
 	c.writeln(fmt.Sprintf("function %s(%s) {", sanitizeName(fn.Name), strings.Join(params, ", ")))
+	child := types.NewEnv(c.env)
+	for _, p := range fn.Params {
+		typ := resolveTypeRef(p.Type, c.env)
+		child.SetVar(p.Name, typ, true)
+	}
+	origEnv := c.env
+	c.env = child
 	c.indent++
 	for _, st := range fn.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.env = origEnv
 			return err
 		}
 	}
@@ -157,6 +165,7 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	}
 	c.indent--
 	c.writeln("}")
+	c.env = origEnv
 	return nil
 }
 
@@ -889,17 +898,22 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	for i, p := range fn.Params {
 		params[i] = "$" + sanitizeName(p.Name)
 	}
+	capture := funFreeVars(fn, c.env)
+	use := ""
+	if len(capture) > 0 {
+		use = " use (" + strings.Join(capture, ", ") + ")"
+	}
 	if fn.ExprBody != nil {
 		body, err := c.compileExpr(fn.ExprBody)
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("function(%s) { return %s; }", strings.Join(params, ", "), body), nil
+		return fmt.Sprintf("function(%s)%s { return %s; }", strings.Join(params, ", "), use, body), nil
 	}
 
 	// Support block-bodied anonymous functions
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("function(%s) {\n", strings.Join(params, ", ")))
+	buf.WriteString(fmt.Sprintf("function(%s)%s {\n", strings.Join(params, ", "), use))
 
 	// Temporarily switch buffer and indentation to compile the body
 	origBuf := c.buf
