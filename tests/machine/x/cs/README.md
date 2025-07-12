@@ -118,7 +118,7 @@ Checklist:
 - [ ] Implement caching for compiled queries
 - [ ] Refactor runtime helpers into partial classes
 - [ ] Add CLI flag to output generated C#
-- [ ] Emit XML documentation comments
+ - [x] Emit XML documentation comments
 - [ ] Use C# record types for structs when possible
 - [ ] Investigate Roslyn-based formatting
 - [ ] Add unit tests for generated code

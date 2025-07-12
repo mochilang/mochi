@@ -293,6 +293,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
+	if fn.Doc != "" {
+		c.xmlDoc(fn.Doc)
+	}
 	params := make([]string, len(fn.Params))
 	origVars := c.varTypes
 	c.varTypes = make(map[string]string)
@@ -333,9 +336,7 @@ func (c *Compiler) compileFunStmt(fn *parser.FunStmt) error {
 
 func (c *Compiler) compileTypeMethod(fn *parser.FunStmt) error {
 	if fn.Doc != "" {
-		for _, ln := range strings.Split(fn.Doc, "\n") {
-			c.writeln("// " + ln)
-		}
+		c.xmlDoc(fn.Doc)
 	}
 	params := make([]string, len(fn.Params))
 	origVars := c.varTypes
@@ -398,9 +399,7 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	name := sanitizeName(t.Name)
 	if t.Doc != "" {
-		for _, ln := range strings.Split(t.Doc, "\n") {
-			c.writeln("// " + ln)
-		}
+		c.xmlDoc(t.Doc)
 	}
 	if len(t.Variants) > 0 {
 		iface := fmt.Sprintf("public interface %s { void is%s(); }", name, name)

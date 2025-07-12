@@ -329,3 +329,21 @@ func (c *Compiler) registerStructs(t types.Type) {
 		c.registerStructs(tt.Value)
 	}
 }
+
+func xmlEscape(s string) string {
+	s = strings.ReplaceAll(s, "&", "&amp;")
+	s = strings.ReplaceAll(s, "<", "&lt;")
+	s = strings.ReplaceAll(s, ">", "&gt;")
+	return s
+}
+
+func (c *Compiler) xmlDoc(doc string) {
+	if doc == "" {
+		return
+	}
+	c.writeln("/// <summary>")
+	for _, ln := range strings.Split(doc, "\n") {
+		c.writeln("/// " + xmlEscape(ln))
+	}
+	c.writeln("/// </summary>")
+}
