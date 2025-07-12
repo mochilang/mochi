@@ -1,13 +1,15 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/inner_join.go:11:18: undefined: CustomersItem
-tests/machine/x/go/inner_join.go:14:5: undefined: CustomersItem
-tests/machine/x/go/inner_join.go:17:5: undefined: CustomersItem
-tests/machine/x/go/inner_join.go:22:15: undefined: OrdersItem
-tests/machine/x/go/inner_join.go:23:3: undefined: OrdersItem
-tests/machine/x/go/inner_join.go:28:3: undefined: OrdersItem
-tests/machine/x/go/inner_join.go:33:3: undefined: OrdersItem
-tests/machine/x/go/inner_join.go:38:3: undefined: OrdersItem
-tests/machine/x/go/inner_join.go:44:15: undefined: Result
-tests/machine/x/go/inner_join.go:45:16: undefined: Result
-tests/machine/x/go/inner_join.go:45:16: too many errors
+../../../tests/machine/x/go/inner_join.go:10:18: undefined: CustomersItem
+../../../tests/machine/x/go/inner_join.go:13:5: undefined: CustomersItem
+../../../tests/machine/x/go/inner_join.go:16:5: undefined: CustomersItem
+../../../tests/machine/x/go/inner_join.go:21:15: undefined: OrdersItem
+../../../tests/machine/x/go/inner_join.go:22:3: undefined: OrdersItem
+../../../tests/machine/x/go/inner_join.go:27:3: undefined: OrdersItem
+../../../tests/machine/x/go/inner_join.go:32:3: undefined: OrdersItem
+../../../tests/machine/x/go/inner_join.go:37:3: undefined: OrdersItem
+../../../tests/machine/x/go/inner_join.go:43:15: undefined: Result
+../../../tests/machine/x/go/inner_join.go:44:16: undefined: Result
+../../../tests/machine/x/go/inner_join.go:44:16: too many errors
+
+1: //go:build ignore

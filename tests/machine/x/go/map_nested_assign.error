@@ -1,1 +1,2 @@
-cannot index into type DataVar
+Error on line 0: compile error: cannot index into type DataVar
+1: var data = {"outer": {"inner": 1}}

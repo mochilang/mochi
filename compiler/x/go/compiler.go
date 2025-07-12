@@ -3806,6 +3806,19 @@ func mapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return e.Binary.Left.Value.Target.Map
 }
 
+func isListOrMapExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	if e.Binary.Left.Value.Target.List != nil {
+		return true
+	}
+	if e.Binary.Left.Value.Target.Map != nil {
+		return true
+	}
+	return false
+}
+
 func (c *Compiler) callKey(call *parser.CallExpr) string {
 	parts := make([]string, len(call.Args)+1)
 	parts[0] = call.Func
@@ -4051,7 +4064,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.env != nil {
 			for i, a := range call.Args {
 				t := c.inferExprType(a)
-				if isList(t) || isMap(t) || isAny(t) {
+				if isList(t) || isMap(t) || (isAny(t) && isListOrMapExpr(a)) {
 					simple = false
 					_ = i // silence unused warning if later changed
 					break

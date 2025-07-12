@@ -1,1 +1,2 @@
-cannot index into type M
+Error on line 0: compile error: cannot index into type M
+1: let m = {"a": 1, "b": 2}

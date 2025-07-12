@@ -1,13 +1,15 @@
-run error: exit status 1
+Error on line 0: run error: exit status 1
 # command-line-arguments
-tests/machine/x/go/group_by_multi_join_sort.go:14:15: undefined: NationItem
-tests/machine/x/go/group_by_multi_join_sort.go:19:17: undefined: CustomerItem
-tests/machine/x/go/group_by_multi_join_sort.go:28:15: undefined: OrdersItem
-tests/machine/x/go/group_by_multi_join_sort.go:32:5: undefined: OrdersItem
-tests/machine/x/go/group_by_multi_join_sort.go:38:17: undefined: LineitemItem
-tests/machine/x/go/group_by_multi_join_sort.go:43:5: undefined: LineitemItem
-tests/machine/x/go/group_by_multi_join_sort.go:52:15: undefined: Result
-tests/machine/x/go/group_by_multi_join_sort.go:69:15: undefined: v
-tests/machine/x/go/group_by_multi_join_sort.go:126:95: invalid operation: (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)) (value of type float64) is not an interface
-tests/machine/x/go/group_by_multi_join_sort.go:157:16: undefined: Result
-tests/machine/x/go/group_by_multi_join_sort.go:157:16: too many errors
+../../../tests/machine/x/go/group_by_multi_join_sort.go:14:15: undefined: NationItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:19:17: undefined: CustomerItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:28:15: undefined: OrdersItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:32:5: undefined: OrdersItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:38:17: undefined: LineitemItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:43:5: undefined: LineitemItem
+../../../tests/machine/x/go/group_by_multi_join_sort.go:52:15: undefined: Result
+../../../tests/machine/x/go/group_by_multi_join_sort.go:69:15: undefined: v
+../../../tests/machine/x/go/group_by_multi_join_sort.go:126:95: invalid operation: (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)) (value of type float64) is not an interface
+../../../tests/machine/x/go/group_by_multi_join_sort.go:157:16: undefined: Result
+../../../tests/machine/x/go/group_by_multi_join_sort.go:157:16: too many errors
+
+1: //go:build ignore
