@@ -675,16 +675,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		out.WriteString("    v.push(item);\n    v\n}\n\n")
 	}
 	if c.helpers["avg"] {
-		out.WriteString("fn avg(v: &[i32]) -> f64 {\n    let sum: i32 = v.iter().sum();\n    sum as f64 / v.len() as f64\n}\n\n")
+		out.WriteString("fn avg<T>(v: &[T]) -> f64 where T: Into<f64> + Copy {\n    let sum: f64 = v.iter().map(|&x| x.into()).sum();\n    sum / v.len() as f64\n}\n\n")
 	}
 	if c.helpers["sum"] {
 		out.WriteString("fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {\n    v.iter().copied().sum()\n}\n\n")
 	}
 	if c.helpers["min"] {
-		out.WriteString("fn min(v: &[i32]) -> i32 {\n    *v.iter().min().unwrap()\n}\n\n")
+		out.WriteString("fn min<T: PartialOrd + Copy>(v: &[T]) -> T {\n    *v.iter().min_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()\n}\n\n")
 	}
 	if c.helpers["max"] {
-		out.WriteString("fn max(v: &[i32]) -> i32 {\n    *v.iter().max().unwrap()\n}\n\n")
+		out.WriteString("fn max<T: PartialOrd + Copy>(v: &[T]) -> T {\n    *v.iter().max_by(|a,b| a.partial_cmp(b).unwrap()).unwrap()\n}\n\n")
 	}
 	if c.helpers["_union"] {
 		out.WriteString("fn _union<T: Eq + std::hash::Hash + Clone + Ord>(a: Vec<T>, b: Vec<T>) -> Vec<T> {\n    use std::collections::HashSet;\n    let mut set: HashSet<T> = a.into_iter().collect();\n    set.extend(b.into_iter());\n    let mut v: Vec<T> = set.into_iter().collect();\n    v.sort();\n    v\n}\n\n")
