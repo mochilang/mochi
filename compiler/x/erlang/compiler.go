@@ -203,6 +203,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileLet(l *parser.LetStmt) (string, error) {
+	if l.Value != nil && isLiteralExpr(l.Value) {
+		// inline constant literals; no variable declaration needed
+		return "", nil
+	}
 	c.lets[l.Name] = true
 	val := "undefined"
 	if l.Value != nil {
