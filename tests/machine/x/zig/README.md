@@ -114,6 +114,7 @@ Compiled programs: 100/100
 - [x] Generate named structs from constant map literals for readability.
 - [x] Improve struct inference when map literals match existing definitions.
 - [x] Enhance struct type inference for cast expressions.
+- [x] Enhance struct type inference for list literals with uniform fields.
 - [ ] Support union pattern matching using enums.
 - [ ] Implement iterators for list handling instead of ArrayList allocations.
 - [ ] Replace `catch unreachable` with proper error handling.
