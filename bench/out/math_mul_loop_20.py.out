@@ -5,7 +5,8 @@ import time
 
 
 def mul(n: int) -> int:
-    result: int = 1
+    """mul(n: int) -> int"""
+    result = 1
     for i in range(1, n):
         result = result * i
     return result

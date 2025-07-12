@@ -2,18 +2,18 @@
 from __future__ import annotations
 import json
 import time
-import typing
 
 
 def matmul(a: list[list[int]], b: list[list[int]]) -> list[list[int]]:
-    n = len(a)
-    m = len(b[0])
-    p = len(b)
+    """matmul(a: list[list[int]], b: list[list[int]]) -> list[list[int]]"""
+    n: int = len(a)
+    m: int = len(b[0])
+    p: int = len(b)
     result: list[list[int]] = []
     for i in range(0, n):
         row: list[int] = []
         for j in range(0, m):
-            sum: typing.Callable[[typing.Any], float] = 0
+            sum: int = 0
             for k in range(0, p):
                 sum = sum + a[i][k] * b[k][j]
             row = row + [sum]

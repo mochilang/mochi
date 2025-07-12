@@ -5,10 +5,11 @@ import time
 
 
 def fib(n: int) -> int:
-    a: int = 0
-    b: int = 1
+    """fib(n: int) -> int"""
+    a = 0
+    b = 1
     for i in range(0, n):
-        tmp = a + b
+        tmp: int = a + b
         a = b
         b = tmp
     return a

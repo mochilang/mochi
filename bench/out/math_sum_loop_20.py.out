@@ -5,7 +5,8 @@ import time
 
 
 def sum_loop(n: int) -> int:
-    total: int = 0
+    """sum_loop(n: int) -> int"""
+    total = 0
     for i in range(1, n):
         total = total + i
     return total

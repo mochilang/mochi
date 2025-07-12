@@ -5,6 +5,7 @@ import time
 
 
 def fact_rec(n: int) -> int:
+    """fact_rec(n: int) -> int"""
     if n == 0:
         return 1
     return n * fact_rec(n - 1)
