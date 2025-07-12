@@ -103,8 +103,8 @@ The files in this directory were produced by the Zig compiler tests. Each Mochi 
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
+- [ ] q1.mochi
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-
-No outstanding tasks.
+* Fix compilation errors for `q1.mochi` (TPCH query).
