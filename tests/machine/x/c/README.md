@@ -106,3 +106,7 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## TODO
+
+- [ ] Replace remaining dynamic `list_int_create` usages with stack arrays.
