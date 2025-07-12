@@ -2092,6 +2092,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, bool, error) {
 			return "", false, err
 		}
 		tmp := c.newTmp()
+		// equality is used here instead of unification so that pattern
+		// variables are not bound when the clause does not match.
 		c.writeln(fmt.Sprintf("(%s == %s -> %s = %s ; %s = %s),", target, pat, tmp, res, tmp, cur))
 		cur = tmp
 		ar = ar && resAr
