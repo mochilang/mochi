@@ -376,6 +376,41 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 	return p.Target.Call, true
 }
 
+// eqJoinKeys checks if expression e represents an equality comparison between
+// fields of the left and right query variables. If so it returns the compiled
+// expressions for the left and right keys. Both sides must have the same type
+// according to the current environment.
+func (c *Compiler) eqJoinKeys(e *parser.Expr, leftVar, rightVar string) (string, string, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return "", "", false
+	}
+	op := e.Binary.Right[0]
+	if op.Op != "==" {
+		return "", "", false
+	}
+	lhs := e.Binary.Left
+	rhs := op.Right
+	if len(lhs.Ops) != 0 || len(rhs.Ops) != 0 || lhs.Value == nil || rhs.Target == nil {
+		return "", "", false
+	}
+	ls := lhs.Value.Target.Selector
+	rs := rhs.Target.Selector
+	if ls == nil || rs == nil {
+		return "", "", false
+	}
+	lExpr := c.compileExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: lhs}})
+	rExpr := c.compileExpr(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}})
+	lt := c.exprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: lhs}})
+	rt := c.exprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}})
+	if ls.Root == leftVar && rs.Root == rightVar && equalTypes(lt, rt) {
+		return lExpr, rExpr, true
+	}
+	if ls.Root == rightVar && rs.Root == leftVar && equalTypes(lt, rt) {
+		return rExpr, lExpr, true
+	}
+	return "", "", false
+}
+
 func formatFuncPtrDecl(typ, name, val string) string {
 	if strings.Contains(typ, "(*") {
 		typ = strings.Replace(typ, "(*", "(*"+name, 1)

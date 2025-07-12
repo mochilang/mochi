@@ -3023,6 +3023,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			if !ok {
 				return "0"
 			}
+			if _, _, ok := c.eqJoinKeys(j.On, q.Var, j.Var); !ok {
+				return "0"
+			}
 			on := c.compileExpr(j.On)
 			left := false
 			if j.Side != nil && *j.Side == "left" {
