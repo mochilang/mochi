@@ -4,7 +4,7 @@ object group_by_join {
   case class Stat(o: Order, c: Customer)
   case class Stat1(name: String, count: Int)
 
-  case class _Group[K,T](key: K, items: List[T])
+  case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   val customers = List[Customer](Customer(id = 1, name = "Alice"), Customer(id = 2, name = "Bob"))
   val orders = List[Order](Order(id = 100, customerId = 1), Order(id = 101, customerId = 1), Order(id = 102, customerId = 2))

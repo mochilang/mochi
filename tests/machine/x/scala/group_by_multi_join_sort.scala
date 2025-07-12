@@ -7,7 +7,7 @@ object group_by_multi_join_sort {
   case class Result1(c: Customer, o: Order, l: Lineitem, n: Nation)
   case class Result2(c_custkey: Int, c_name: String, revenue: Int, c_acctbal: Double, n_name: String, c_address: String, c_phone: String, c_comment: String)
 
-  case class _Group[K,T](key: K, items: List[T])
+  case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
   val nation = List[Nation](Nation(n_nationkey = 1, n_name = "BRAZIL"))
   val customer = List[Customer](Customer(c_custkey = 1, c_name = "Alice", c_acctbal = 100, c_nationkey = 1, c_address = "123 St", c_phone = "123-456", c_comment = "Loyal"))
