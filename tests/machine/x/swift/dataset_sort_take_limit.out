@@ -1,10 +1,3 @@
-/workspace/mochi/tests/machine/x/swift/dataset_sort_take_limit.swift:4:23: warning: forced cast of '[[String : Any]]' to same type has no effect
-2 | var expensive = products.map { p in (value: p, key: p["price"] as! Int) }.sorted { $0.key > $1.key }.dropFirst(1).prefix(3).map { $0.value }
-3 | print("--- Top products (excluding most expensive) ---")
-4 | for item in expensive as! [[String:Any]] {
-  |                       `- warning: forced cast of '[[String : Any]]' to same type has no effect
-5 |     print(item["name"] as! String, "costs $", item["price"] as! Int)
-6 | }
 --- Top products (excluding most expensive) ---
 Smartphone costs $ 900
 Tablet costs $ 600
