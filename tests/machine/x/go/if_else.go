@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var x int = 5
+	x := 5
 	if x > 3 {
 		fmt.Println("big")
 	} else {

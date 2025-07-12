@@ -17,7 +17,7 @@ type Person struct {
 }
 
 func main() {
-	var people []Person = func() []Person {
+	people := func() []Person {
 		rows := _load("../../../tests/interpreter/valid/people.yaml", _toAnyMap(v{Format: "yaml"}))
 		out := make([]Person, len(rows))
 		for i, r := range rows {
@@ -25,7 +25,7 @@ func main() {
 		}
 		return out
 	}()
-	var adults []Adults = func() []Adults {
+	adults := func() []Adults {
 		results := []Adults{}
 		for _, p := range people {
 			if p.Age >= 18 {

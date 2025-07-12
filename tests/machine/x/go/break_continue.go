@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var numbers []int = []int{
+	numbers := []int{
 		1,
 		2,
 		3,

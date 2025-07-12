@@ -8,6 +8,5 @@ import (
 )
 
 func main() {
-	n, _ := strconv.Atoi("1995")
-	fmt.Println(n)
+	fmt.Println(func() int { v, _ := strconv.Atoi("1995"); return v }())
 }

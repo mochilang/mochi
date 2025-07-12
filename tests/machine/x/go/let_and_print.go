@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var a int = 10
+	a := 10
 	var b int = 20
 	fmt.Println((a + b))
 }

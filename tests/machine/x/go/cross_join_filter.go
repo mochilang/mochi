@@ -7,10 +7,10 @@ import (
 )
 
 func main() {
-	var nums []int = []int{1, 2, 3}
-	var letters []string = []string{"A", "B"}
+	nums := []int{1, 2, 3}
+	letters := []string{"A", "B"}
 	_ = letters
-	var pairs []Pairs = func() []Pairs {
+	pairs := func() []Pairs {
 		results := []Pairs{}
 		for _, n := range nums {
 			if (n % 2) == 0 {

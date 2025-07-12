@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	var x int = 12
+	x := 12
 	_ = x
-	var msg string = func() string {
+	msg := func() string {
 		if x > 10 {
 			return "yes"
 		} else {

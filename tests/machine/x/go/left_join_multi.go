@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
+	customers := []CustomersItem{CustomersItem{
 		1,
 		"Alice",
 	}, CustomersItem{
@@ -16,19 +16,19 @@ func main() {
 		"Bob",
 	}}
 	_ = customers
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		100,
 		1,
 	}, OrdersItem{
 		101,
 		2,
 	}}
-	var items []ItemsItem = []ItemsItem{ItemsItem{
+	items := []ItemsItem{ItemsItem{
 		100,
 		"a",
 	}}
 	_ = items
-	var result []Result = func() []Result {
+	result := func() []Result {
 		src := _toAnySlice(orders)
 		resAny := _query(src, []_joinSpec{
 			{items: _toAnySlice(customers), on: func(_a ...any) bool {

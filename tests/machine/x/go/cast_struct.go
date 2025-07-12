@@ -11,7 +11,7 @@ type Todo struct {
 }
 
 func main() {
-	var todo Todo1 = Todo1{"hi"}
+	todo := Todo1{"hi"}
 	_ = todo
 	fmt.Println(todo.Title)
 }

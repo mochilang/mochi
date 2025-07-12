@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var items []ItemsItem = []ItemsItem{
+	items := []ItemsItem{
 		ItemsItem{
 			"a",
 			3,
@@ -29,7 +29,7 @@ func main() {
 			2,
 		},
 	}
-	var grouped []Grouped = func() []Grouped {
+	grouped := func() []Grouped {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, i := range items {

@@ -39,7 +39,7 @@ func printTestFail(err error, d time.Duration) {
 }
 
 func test_addition_works() {
-	var x int = (1 + 2)
+	x := (1 + 2)
 	_ = x
 	expect((x == 3))
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
+	customers := []CustomersItem{CustomersItem{
 		1,
 		"Alice",
 	}, CustomersItem{
@@ -18,7 +18,7 @@ func main() {
 		"Charlie",
 	}}
 	_ = customers
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		100,
 		1,
 		250,
@@ -31,7 +31,7 @@ func main() {
 		1,
 		300,
 	}}
-	var result []Result = func() []Result {
+	result := func() []Result {
 		results := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {

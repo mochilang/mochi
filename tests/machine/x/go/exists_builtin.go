@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	var dataVar []int = []int{1, 2}
-	var flag bool = len(func() []int {
+	dataVar := []int{1, 2}
+	flag := len(func() []int {
 		results := []int{}
 		for _, x := range dataVar {
 			if x == 1 {

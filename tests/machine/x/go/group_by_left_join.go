@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
+	customers := []CustomersItem{CustomersItem{
 		1,
 		"Alice",
 	}, CustomersItem{
@@ -20,7 +20,7 @@ func main() {
 		3,
 		"Charlie",
 	}}
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		100,
 		1,
 	}, OrdersItem{
@@ -31,7 +31,7 @@ func main() {
 		2,
 	}}
 	_ = orders
-	var stats []Stats = func() []Stats {
+	stats := func() []Stats {
 		groups := map[string]*data.Group{}
 		order := []string{}
 		for _, c := range customers {

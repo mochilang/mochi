@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var m map[int]string = map[int]string{1: "a", 2: "b"}
+	m := map[int]string{1: "a", 2: "b"}
 	key0 := 1
 	m1 := m
 	_, ok2 := m1[key0]

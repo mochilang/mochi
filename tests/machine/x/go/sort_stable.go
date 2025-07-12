@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	var items []ItemsItem = []ItemsItem{ItemsItem{
+	items := []ItemsItem{ItemsItem{
 		1,
 		"a",
 	}, ItemsItem{
@@ -19,7 +19,7 @@ func main() {
 		2,
 		"c",
 	}}
-	var result []string = func() []string {
+	result := func() []string {
 		src := _toAnySlice(items)
 		resAny := _query(src, []_joinSpec{}, _queryOpts{selectFn: func(_a ...any) any {
 			tmp0 := _a[0]

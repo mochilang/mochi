@@ -8,7 +8,7 @@ import (
 
 // line 1
 func twoSum(nums []int, target int) []int {
-	var n int = len(nums)
+	n := len(nums)
 	for i := 0; i < n; i++ {
 		for j := (i + 1); j < n; j++ {
 			if (nums[i] + nums[j]) == target {
@@ -20,7 +20,7 @@ func twoSum(nums []int, target int) []int {
 }
 
 func main() {
-	var result []int = twoSum([]int{
+	result := twoSum([]int{
 		2,
 		7,
 		11,

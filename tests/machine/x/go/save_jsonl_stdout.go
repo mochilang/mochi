@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	var people []PeopleItem = []PeopleItem{PeopleItem{
+	people := []PeopleItem{PeopleItem{
 		"Alice",
 		30,
 	}, PeopleItem{

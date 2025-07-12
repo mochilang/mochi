@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	var m map[int]string = map[int]string{1: "a", 2: "b"}
+	m := map[int]string{1: "a", 2: "b"}
 	fmt.Println(m[1])
 }

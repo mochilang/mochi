@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var customers []CustomersItem = []CustomersItem{CustomersItem{
+	customers := []CustomersItem{CustomersItem{
 		1,
 		"Alice",
 	}, CustomersItem{
@@ -15,14 +15,14 @@ func main() {
 		"Bob",
 	}}
 	_ = customers
-	var orders []OrdersItem = []OrdersItem{OrdersItem{
+	orders := []OrdersItem{OrdersItem{
 		100,
 		1,
 	}, OrdersItem{
 		101,
 		2,
 	}}
-	var items []ItemsItem = []ItemsItem{ItemsItem{
+	items := []ItemsItem{ItemsItem{
 		100,
 		"a",
 	}, ItemsItem{
@@ -30,7 +30,7 @@ func main() {
 		"b",
 	}}
 	_ = items
-	var result []Result = func() []Result {
+	result := func() []Result {
 		results := []Result{}
 		for _, o := range orders {
 			for _, c := range customers {

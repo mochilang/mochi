@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	var s string = "mochi"
+	s := "mochi"
 	fmt.Println(string([]rune(s)[1]))
 }
