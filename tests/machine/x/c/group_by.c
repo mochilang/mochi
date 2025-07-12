@@ -167,9 +167,13 @@ int main() {
   tmp7.len = tmp8;
   list_StatsItem stats = tmp7;
   printf("%s\n", "--- People grouped by city ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp14 = 0; tmp14 < stats.len; tmp14++) {
+    StatsItem s = stats.data[tmp14];
+    printf("%s ", s.city);
+    printf("%s ", ": count =");
+    printf("%d ", s.count);
+    printf("%s ", ", avg_age =");
+    printf("%.16g\n", s.avg_age);
   }
   return 0;
 }

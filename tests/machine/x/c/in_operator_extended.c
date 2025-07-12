@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct {
   int len;
@@ -20,6 +21,9 @@ static int contains_list_int(list_int v, int item) {
     if (v.data[i] == item)
       return 1;
   return 0;
+}
+static int contains_string(char *s, char *sub) {
+  return strstr(s, sub) != NULL;
 }
 static char *s = "hello";
 
@@ -61,7 +65,7 @@ int main() {
   MItem m = (MItem){.a = 1};
   printf("%d\n", "a" in m);
   printf("%d\n", "b" in m);
-  printf("%d\n", "ell" in s);
-  printf("%d\n", "foo" in s);
+  printf("%s\n", (contains_string(s, "ell")) ? "true" : "false");
+  printf("%s\n", (contains_string(s, "foo")) ? "true" : "false");
   return 0;
 }

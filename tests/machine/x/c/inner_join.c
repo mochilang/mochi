@@ -90,9 +90,14 @@ int main() {
   tmp3.len = tmp4;
   list_ResultItem result = tmp3;
   printf("%s\n", "--- Orders with customer info ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp7 = 0; tmp7 < result.len; tmp7++) {
+    ResultItem entry = result.data[tmp7];
+    printf("%s ", "Order");
+    printf("%d ", entry.orderId);
+    printf("%s ", "by");
+    printf("%s ", entry.customerName);
+    printf("%s ", "- $");
+    printf("%d\n", entry.total);
   }
   return 0;
 }

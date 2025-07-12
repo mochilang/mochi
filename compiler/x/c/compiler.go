@@ -4512,15 +4512,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						} else if name, okn := identName(a); okn && c.env != nil {
 							if vt, err := c.env.GetVar(name); err == nil {
 								if _, okf := vt.(types.FloatType); okf {
-									fmtStr = "%.17g"
+									fmtStr = "%.16g"
 								}
 							}
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {

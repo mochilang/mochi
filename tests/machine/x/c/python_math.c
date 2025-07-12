@@ -16,14 +16,14 @@ int main() {
   double sin45 = __builtin_sin(3.141592653589793 / 4.0);
   double log_e = __builtin_log(2.718281828459045);
   printf("%s ", "Circle area with r =");
-  printf("%.17g ", r);
+  printf("%.16g ", r);
   printf("%s ", "=>");
-  printf("%.17g\n", area);
+  printf("%.16g\n", area);
   printf("%s ", "Square root of 49:");
-  printf("%.17g\n", root);
+  printf("%.16g\n", root);
   printf("%s ", "sin(π/4):");
-  printf("%.17g\n", sin45);
+  printf("%.16g\n", sin45);
   printf("%s ", "log(e):");
-  printf("%.17g\n", log_e);
+  printf("%.16g\n", log_e);
   return 0;
 }

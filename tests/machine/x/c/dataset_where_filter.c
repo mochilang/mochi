@@ -47,7 +47,7 @@ int main() {
                             (PeopleItem){.name = "Diana", .age = 45}};
   list_PeopleItem tmp1 = {4, tmp1_data};
   list_PeopleItem people = tmp1;
-  list_adultsItem tmp2 = list_adultsItem_create(people.len);
+  list_AdultsItem tmp2 = list_AdultsItem_create(people.len);
   int tmp3 = 0;
   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
     PeopleItem person = people.data[tmp4];
@@ -61,9 +61,12 @@ int main() {
   tmp2.len = tmp3;
   list_AdultsItem adults = tmp2;
   printf("%s\n", "--- Adults ---");
-  // unsupported dynamic list iteration
-  for (;;) {
-    break;
+  for (int tmp5 = 0; tmp5 < adults.len; tmp5++) {
+    AdultsItem person = adults.data[tmp5];
+    printf("%s ", person.name);
+    printf("%s ", "is");
+    printf("%d ", person.age);
+    printf("%s\n", (person.is_senior ? " (senior)" : ""));
   }
   return 0;
 }
