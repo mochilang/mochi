@@ -1,0 +1,7 @@
++++ "Alice" connected +++
++++ "Bob" connected +++
+Alice> Hello Bob!
+Bob> Hi Alice!
+--- "Bob" disconnected ---
+--- "Alice" disconnected ---
+Server stopping!
