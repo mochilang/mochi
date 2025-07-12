@@ -92,17 +92,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 					resStr = false
 				case "/":
-					if nums[i] && nums[i+1] {
-						if isInt(typesList[i]) && isInt(typesList[i+1]) {
-							expr = fmt.Sprintf("(%s // %s)", l, r)
-						} else {
-							expr = fmt.Sprintf("(%s / %s)", l, r)
-						}
-						resNum = true
-					} else {
-						c.helpers["div"] = true
-						expr = fmt.Sprintf("__div(%s, %s)", l, r)
-					}
+					expr = fmt.Sprintf("(%s / %s)", l, r)
+					resNum = true
 				case "*", "%", "-":
 					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
 					if nums[i] && nums[i+1] {
@@ -407,29 +398,18 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	argStr := strings.Join(args, ", ")
 	switch name {
 	case "print":
-		if len(call.Args) == 1 {
-			if isList(c.inferExprType(call.Args[0])) {
-				a := args[0]
-				return fmt.Sprintf("print(table.concat(%s, \" \"))", a), nil
-			}
-			if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-				return fmt.Sprintf("print(%s)", args[0]), nil
-			}
-		}
-		for i := range args {
-			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
-				args[i] = "\"<nil>\""
-			}
-		}
-		return fmt.Sprintf(";(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(%s)", strings.Join(args, ", ")), nil
+		c.helpers["print"] = true
+		c.helpers["str"] = true
+		return fmt.Sprintf("__print(%s)", strings.Join(args, ", ")), nil
 	case "str":
+		c.helpers["str"] = true
 		if len(args) == 1 {
 			if v, ok := literalValue(call.Args[0]); ok {
 				return strconv.Quote(fmt.Sprint(v)), nil
 			}
-			return fmt.Sprintf("tostring(%s)", args[0]), nil
+			return fmt.Sprintf("__str(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("tostring(%s)", argStr), nil
+		return fmt.Sprintf("__str(%s)", argStr), nil
 	case "input":
 		c.helpers["input"] = true
 		return "__input()", nil

@@ -112,6 +112,52 @@ const (
 		"    return line\n" +
 		"end\n"
 
+	helperStr = "function __str(v)\n" +
+		"    if v == nil then return '<nil>' end\n" +
+		"    local t = type(v)\n" +
+		"    if t == 'number' then\n" +
+		"        if math.type and math.type(v) == 'integer' then\n" +
+		"            return string.format('%d', v)\n" +
+		"        else\n" +
+		"            return string.format('%.16g', v)\n" +
+		"        end\n" +
+		"    elseif t == 'string' then\n" +
+		"        return v\n" +
+		"    elseif t == 'boolean' then\n" +
+		"        return tostring(v)\n" +
+		"    elseif t == 'table' then\n" +
+		"        if v[1] ~= nil or #v > 0 then\n" +
+		"            local parts = {}\n" +
+		"            for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
+		"            return '['..table.concat(parts, ' ')..']'\n" +
+		"        else\n" +
+		"            local keys = {}\n" +
+		"            for k in pairs(v) do keys[#keys+1] = k end\n" +
+		"            table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)\n" +
+		"            local parts = {}\n" +
+		"            for _,k in ipairs(keys) do parts[#parts+1] = tostring(k)..':'..__str(v[k]) end\n" +
+		"            return 'map['..table.concat(parts, ' ')..']'\n" +
+		"        end\n" +
+		"    else\n" +
+		"        return tostring(v)\n" +
+		"    end\n" +
+		"end\n"
+
+	helperPrint = "function __print(...)\n" +
+		"    if select('#', ...) == 1 then\n" +
+		"        local v = select(1, ...)\n" +
+		"        if type(v) == 'table' and (v[1] ~= nil or #v > 0) then\n" +
+		"            local parts = {}\n" +
+		"            for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
+		"            print(table.concat(parts, ' '))\n" +
+		"            return\n" +
+		"        end\n" +
+		"    end\n" +
+		"    local parts = {}\n" +
+		"    for i=1,select('#', ...) do parts[#parts+1] = __str(select(i, ...)) end\n" +
+		"    print(table.concat(parts, ' '))\n" +
+		"end\n"
+
 	helperCount = "function __count(v)\n" +
 		"    if type(v) == 'table' then\n" +
 		"        if v.items ~= nil then return #v.items end\n" +
@@ -852,6 +898,8 @@ var helperMap = map[string]string{
 	"eq":             helperEq,
 	"contains":       helperContains,
 	"input":          helperInput,
+	"str":            helperStr,
+	"print":          helperPrint,
 	"count":          helperCount,
 	"exists":         helperExists,
 	"avg":            helperAvg,
