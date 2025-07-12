@@ -1750,7 +1750,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 
 	case p.Map != nil:
 		var keyT, valT Type
-		for _, item := range p.Map.Items {
+		fields := map[string]Type{}
+		order := make([]string, len(p.Map.Items))
+		allID := true
+		for i, item := range p.Map.Items {
 			var kt Type
 			if _, ok := stringKey(item.Key); ok {
 				kt = StringType{}
@@ -1775,12 +1778,27 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 			} else if !unify(valT, vt, nil) {
 				valT = AnyType{}
 			}
+			if id, ok := identName(item.Key); ok {
+				order[i] = id
+				if ft, ok2 := fields[id]; ok2 {
+					if !unify(ft, vt, nil) {
+						fields[id] = AnyType{}
+					}
+				} else {
+					fields[id] = vt
+				}
+			} else {
+				allID = false
+			}
 		}
 		if keyT == nil {
 			keyT = AnyType{}
 		}
 		if valT == nil {
 			valT = AnyType{}
+		}
+		if allID {
+			return StructType{Fields: fields, Order: order}, nil
 		}
 		return MapType{Key: keyT, Value: valT}, nil
 
