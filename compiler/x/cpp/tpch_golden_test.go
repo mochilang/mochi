@@ -17,6 +17,8 @@ import (
 	"mochi/types"
 )
 
+var update = flag.Bool("update", false, "update golden files")
+
 func shouldUpdate() bool {
 	f := flag.Lookup("update")
 	return f != nil && f.Value.String() == "true"
@@ -27,7 +29,7 @@ func TestCPPCompiler_TPCHQueries(t *testing.T) {
 		t.Skip("g++ not installed")
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 3; i++ {
 		base := fmt.Sprintf("q%d", i)
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".cpp.out")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".out")
