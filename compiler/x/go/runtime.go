@@ -439,14 +439,14 @@ const (
 		"}\n"
 
 	helperToAnySlice = "func _toAnySlice[T any](s []T) []any {\n" +
-		"    out := []any{}\n" +
-		"    for _, v := range s { out = append(out, v) }\n" +
+		"    out := make([]any, len(s))\n" +
+		"    for i, v := range s { out[i] = v }\n" +
 		"    return out\n" +
 		"}\n"
 
 	helperConvSlice = "func _convSlice[T any, U any](s []T) []U {\n" +
-		"    out := []U{}\n" +
-		"    for _, v := range s { out = append(out, any(v).(U)) }\n" +
+		"    out := make([]U, len(s))\n" +
+		"    for i, v := range s { out[i] = any(v).(U) }\n" +
 		"    return out\n" +
 		"}\n"
 
@@ -540,8 +540,9 @@ const (
 		"    for _, a := range args {\n" +
 		"        if !first { fmt.Print(\" \") }\n" +
 		"        first = false\n" +
+		"        if a == nil { fmt.Print(\"<nil>\"); continue }\n" +
 		"        rv := reflect.ValueOf(a)\n" +
-		"        if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {\n" +
+		"        if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {\n" +
 		"            fmt.Print(\"<nil>\")\n" +
 		"            continue\n" +
 		"        }\n" +
