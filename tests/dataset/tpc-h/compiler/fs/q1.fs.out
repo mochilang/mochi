@@ -1,122 +1,65 @@
 open System
+open System.Text.Json
 
-let l_quantity = "l_quantity"
-let l_extendedprice = "l_extendedprice"
-let l_discount = "l_discount"
-let l_tax = "l_tax"
-let l_returnflag = "l_returnflag"
-let l_linestatus = "l_linestatus"
-let l_shipdate = "l_shipdate"
-let returnflag = "returnflag"
-let linestatus = "linestatus"
-let sum_qty = "sum_qty"
-let sum_base_price = "sum_base_price"
-let sum_disc_price = "sum_disc_price"
-let sum_charge = "sum_charge"
-let avg_qty = "avg_qty"
-let avg_price = "avg_price"
-let avg_disc = "avg_disc"
-let count_order = "count_order"
-type _Group<'T>(key: obj) =
-  member val key = key with get, set
-  member val Items = System.Collections.Generic.List<'T>() with get
-  member this.size = this.Items.Count
-let _group_by (src: 'T list) (keyfn: 'T -> obj) : _Group<'T> list =
-  let groups = System.Collections.Generic.Dictionary<string,_Group<'T>>()
-  let order = System.Collections.Generic.List<string>()
-  for it in src do
-    let key = keyfn it
-    let ks = string key
-    let mutable g = Unchecked.defaultof<_Group<'T>>
-    if groups.TryGetValue(ks, &g) then ()
-    else
-      g <- _Group<'T>(key)
-      groups[ks] <- g
-      order.Add(ks)
-    g.Items.Add(it)
-  [ for ks in order -> groups[ks] ]
-let rec _to_json (v: obj) : string =
-  match v with
-  | null -> "null"
-  | :? string as s ->
-      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-  | :? bool
-  | :? int | :? int64
-  | :? double -> string v
-  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
-      m
-      |> Seq.map (fun (KeyValue(k,v)) ->
-          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
-      |> String.concat ","
-      |> fun s -> "{" + s + "}"
-  | :? System.Collections.IEnumerable as e ->
-      e
-      |> Seq.cast<obj>
-      |> Seq.map _to_json
-      |> String.concat ","
-      |> fun s -> "[" + s + "]"
-  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-let _json (v: obj) : unit =
-  printfn "%s" (_to_json v)
-let _run_test (name: string) (f: unit -> unit) : bool =
-  printf "%s ... " name
-  try
-    f()
-    printfn "PASS"
-    true
-  with e ->
-    printfn "FAIL (%s)" e.Message
-    false
-let inline sum (xs: seq< ^T >) : ^T =
-  Seq.sum xs
-let inline avg (xs: seq< ^T >) : ^T =
-  Seq.average xs
-let inline _min (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.min xs
-let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.max xs
-let count (xs: seq<'T>) : int =
-  Seq.length xs
+type Anon1 = {
+    l_quantity: int
+    l_extendedprice: float
+    l_discount: float
+    l_tax: float
+    l_returnflag: string
+    l_linestatus: string
+    l_shipdate: string
+}
+type Anon2 = {
+    returnflag: obj
+    linestatus: obj
+    sum_qty: obj
+    sum_base_price: obj
+    sum_disc_price: obj
+    sum_charge: obj
+    avg_qty: obj
+    avg_price: obj
+    avg_disc: obj
+    count_order: obj
+}
+type Anon3 = {
+    returnflag: obj
+    linestatus: obj
+}
+type Anon4 = {
+    returnflag: string
+    linestatus: string
+    sum_qty: int
+    sum_base_price: int
+    sum_disc_price: float
+    sum_charge: obj
+    avg_qty: float
+    avg_price: int
+    avg_disc: float
+    count_order: int
+}
+type _Group<'K,'T>(key: 'K) =
+    member val key = key with get, set
+    member val Items = System.Collections.Generic.List<'T>() with get
+    member this.size = this.Items.Count
 
-let lineitem = [|Map.ofList [(l_quantity, 17); (l_extendedprice, 1000.0); (l_discount, 0.05); (l_tax, 0.07); (l_returnflag, "N"); (l_linestatus, "O"); (l_shipdate, "1998-08-01")]; Map.ofList [(l_quantity, 36); (l_extendedprice, 2000.0); (l_discount, 0.1); (l_tax, 0.05); (l_returnflag, "N"); (l_linestatus, "O"); (l_shipdate, "1998-09-01")]; Map.ofList [(l_quantity, 25); (l_extendedprice, 1500.0); (l_discount, 0.0); (l_tax, 0.08); (l_returnflag, "R"); (l_linestatus, "F"); (l_shipdate, "1998-09-03")]|]
-let result = [| for g in _group_by [|
-    for row in lineitem do
-        if (row.l_shipdate <= "1998-09-02") then
-            yield row
-|] (fun row -> Map.ofList [(returnflag, row.l_returnflag); (linestatus, row.l_linestatus)]) do let g = g yield Map.ofList [(returnflag, g.key.returnflag); (linestatus, g.key.linestatus); (sum_qty, sum 
-    [|
-    for x in g do
-        yield x.l_quantity
-    |]); (sum_base_price, sum 
-    [|
-    for x in g do
-        yield x.l_extendedprice
-    |]); (sum_disc_price, sum 
-    [|
-    for x in g do
-        yield (x.l_extendedprice * ((1 - x.l_discount)))
-    |]); (sum_charge, sum 
-    [|
-    for x in g do
-        yield ((x.l_extendedprice * ((1 - x.l_discount))) * ((1 + x.l_tax)))
-    |]); (avg_qty, avg 
-    [|
-    for x in g do
-        yield x.l_quantity
-    |]); (avg_price, avg 
-    [|
-    for x in g do
-        yield x.l_extendedprice
-    |]); (avg_disc, avg 
-    [|
-    for x in g do
-        yield x.l_discount
-    |]); (count_order, count g)] |]
-ignore (_json result)
-let test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() =
-    if not ((result = [|Map.ofList [(returnflag, "N"); (linestatus, "O"); (sum_qty, 53); (sum_base_price, 3000); (sum_disc_price, (950.0 + 1800.0)); (sum_charge, (((950.0 * 1.07)) + ((1800.0 * 1.05)))); (avg_qty, 26.5); (avg_price, 1500); (avg_disc, 0.07500000000000001); (count_order, 2)]|])) then failwith "expect failed"
+let _group_by (src: 'T list) (keyfn: 'T -> 'K) : _Group<'K,'T> list =
+    let groups = System.Collections.Generic.Dictionary<string,_Group<'K,'T>>()
+    let order = System.Collections.Generic.List<string>()
+    for it in src do
+        let key = keyfn it
+        let ks = string key
+        let mutable g = Unchecked.defaultof<_Group<'K,'T>>
+        if groups.TryGetValue(ks, &g) then ()
+        else
+            g <- _Group<'K,'T>(key)
+            groups.Add(ks, g)
+            order.Add(ks)
+        g.Items.Add(it)
+    [ for ks in order -> groups[ks] ]
 
-let mutable failures = 0
-if not (_run_test "Q1 aggregates revenue and quantity by returnflag + linestatus" test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus) then failures <- failures + 1
-if failures > 0 then
-    printfn "\n[FAIL] %d test(s) failed." failures
+let lineitem: obj list = [{ l_quantity = 17; l_extendedprice = 1000; l_discount = 0.05; l_tax = 0.07; l_returnflag = "N"; l_linestatus = "O"; l_shipdate = "1998-08-01" }; { l_quantity = 36; l_extendedprice = 2000; l_discount = 0.1; l_tax = 0.05; l_returnflag = "N"; l_linestatus = "O"; l_shipdate = "1998-09-01" }; { l_quantity = 25; l_extendedprice = 1500; l_discount = 0; l_tax = 0.08; l_returnflag = "R"; l_linestatus = "F"; l_shipdate = "1998-09-03" }]
+let result: obj list = [ for g in _group_by [ for row in lineitem do if row.l_shipdate <= "1998-09-02" then yield row ] (fun row -> { returnflag = row.l_returnflag; linestatus = row.l_linestatus }) do
+    yield { returnflag = g.key.returnflag; linestatus = g.key.linestatus; sum_qty = List.sum [ for x in g do yield x.l_quantity ]; sum_base_price = List.sum [ for x in g do yield x.l_extendedprice ]; sum_disc_price = List.sum [ for x in g do yield x.l_extendedprice * (1 - x.l_discount) ]; sum_charge = List.sum [ for x in g do yield x.l_extendedprice * (1 - x.l_discount) * (1 + x.l_tax) ]; avg_qty = (List.sum [ for x in g do yield x.l_quantity ] / List.length [ for x in g do yield x.l_quantity ]); avg_price = (List.sum [ for x in g do yield x.l_extendedprice ] / List.length [ for x in g do yield x.l_extendedprice ]); avg_disc = (List.sum [ for x in g do yield x.l_discount ] / List.length [ for x in g do yield x.l_discount ]); count_order = List.length g.items } ]
+printfn "%A" (JsonSerializer.Serialize(result))
+assert (result = [{ returnflag = "N"; linestatus = "O"; sum_qty = 53; sum_base_price = 3000; sum_disc_price = 950 + 1800; sum_charge = (950 * 1.07) + (1800 * 1.05); avg_qty = 26.5; avg_price = 1500; avg_disc = 0.07500000000000001; count_order = 2 }])

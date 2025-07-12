@@ -1,0 +1,70 @@
+open System
+open System.Text.Json
+
+type Anon1 = {
+    c_custkey: int
+    c_mktsegment: string
+}
+type Anon2 = {
+    o_orderkey: int
+    o_custkey: int
+    o_orderdate: string
+    o_shippriority: int
+}
+type Anon3 = {
+    l_orderkey: int
+    l_extendedprice: float
+    l_discount: float
+    l_shipdate: string
+}
+type Anon4 = {
+    l_orderkey: obj
+    revenue: obj
+    o_orderdate: obj
+    o_shippriority: obj
+}
+type Anon5 = {
+    o_orderkey: obj
+    o_orderdate: obj
+    o_shippriority: obj
+}
+type Anon6 = {
+    l_orderkey: int
+    revenue: float
+    o_orderdate: string
+    o_shippriority: int
+}
+type _Group<'K,'T>(key: 'K) =
+    member val key = key with get, set
+    member val Items = System.Collections.Generic.List<'T>() with get
+    member this.size = this.Items.Count
+
+let _group_by (src: 'T list) (keyfn: 'T -> 'K) : _Group<'K,'T> list =
+    let groups = System.Collections.Generic.Dictionary<string,_Group<'K,'T>>()
+    let order = System.Collections.Generic.List<string>()
+    for it in src do
+        let key = keyfn it
+        let ks = string key
+        let mutable g = Unchecked.defaultof<_Group<'K,'T>>
+        if groups.TryGetValue(ks, &g) then ()
+        else
+            g <- _Group<'K,'T>(key)
+            groups.Add(ks, g)
+            order.Add(ks)
+        g.Items.Add(it)
+    [ for ks in order -> groups[ks] ]
+
+let customer: obj list = [{ c_custkey = 1; c_mktsegment = "BUILDING" }; { c_custkey = 2; c_mktsegment = "AUTOMOBILE" }]
+let orders: obj list = [{ o_orderkey = 100; o_custkey = 1; o_orderdate = "1995-03-14"; o_shippriority = 1 }; { o_orderkey = 200; o_custkey = 2; o_orderdate = "1995-03-10"; o_shippriority = 2 }]
+let lineitem: obj list = [{ l_orderkey = 100; l_extendedprice = 1000; l_discount = 0.05; l_shipdate = "1995-03-16" }; { l_orderkey = 100; l_extendedprice = 500; l_discount = 0; l_shipdate = "1995-03-20" }; { l_orderkey = 200; l_extendedprice = 1000; l_discount = 0.1; l_shipdate = "1995-03-14" }]
+let cutoff: string = "1995-03-15"
+let segment: string = "BUILDING"
+let building_customers: obj list = [ for c in customer do if c.c_mktsegment = segment then yield c ]
+let valid_orders: obj list = [ for o in orders do 
+  for c in building_customers do if o.o_custkey = c.c_custkey && o.o_orderdate < cutoff then yield o ]
+let valid_lineitems: obj list = [ for l in lineitem do if l.l_shipdate > cutoff then yield l ]
+let order_line_join: obj list = [ for g in _group_by [ for o in valid_orders do 
+  for l in valid_lineitems do if l.l_orderkey = o.o_orderkey then yield (o, l) ] (fun (o, l) -> { o_orderkey = o.o_orderkey; o_orderdate = o.o_orderdate; o_shippriority = o.o_shippriority }) |> List.sortBy (fun gTmp -> let g = gTmp in [-List.sum [ for r in g do yield r.l.l_extendedprice * (1 - r.l.l_discount) ]; g.key.o_orderdate]) do
+    yield { l_orderkey = g.key.o_orderkey; revenue = List.sum [ for r in g do yield r.l.l_extendedprice * (1 - r.l.l_discount) ]; o_orderdate = g.key.o_orderdate; o_shippriority = g.key.o_shippriority } ]
+printfn "%A" (JsonSerializer.Serialize(order_line_join))
+assert (order_line_join = [{ l_orderkey = 100; revenue = 1000 * 0.95 + 500; o_orderdate = "1995-03-14"; o_shippriority = 1 }])
