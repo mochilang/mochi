@@ -1,0 +1,22 @@
+warning: variable "name" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 19 │         %{name: name, age: age, status: status} = it
+    │                 ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/update_stmt.exs:19:17: Main.main/0
+
+    warning: variable "status" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 19 │         %{name: name, age: age, status: status} = it
+    │                                         ~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/update_stmt.exs:19:41: Main.main/0
+
+    warning: variable "people" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 17 │     people =
+    │     ~~~~~~
+    │
+    └─ /workspace/mochi/tests/machine/x/ex/update_stmt.exs:17:5: Main.main/0
+
+ok

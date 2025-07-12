@@ -65,6 +65,9 @@ func assignedVars(stmts []*parser.Statement) []string {
 			if s.Assign != nil {
 				set[s.Assign.Name] = struct{}{}
 			}
+			if s.Update != nil {
+				set[s.Update.Target] = struct{}{}
+			}
 			if s.Var != nil {
 				decl[s.Var.Name] = struct{}{}
 			}
@@ -138,6 +141,47 @@ func usesLoopControl(stmts []*parser.Statement) bool {
 	}
 
 	return walk(stmts)
+}
+
+// mutatedVars returns the set of variable names that are assigned within the
+// provided statements, ignoring declarations.
+func mutatedVars(stmts []*parser.Statement) map[string]struct{} {
+	vars := map[string]struct{}{}
+
+	var walkIf func(*parser.IfStmt)
+	var walk func([]*parser.Statement)
+
+	walkIf = func(ifst *parser.IfStmt) {
+		if ifst == nil {
+			return
+		}
+		walk(ifst.Then)
+		walk(ifst.Else)
+		walkIf(ifst.ElseIf)
+	}
+
+	walk = func(st []*parser.Statement) {
+		for _, s := range st {
+			if s.Assign != nil {
+				vars[s.Assign.Name] = struct{}{}
+			}
+			if s.Update != nil {
+				vars[s.Update.Target] = struct{}{}
+			}
+			if s.For != nil {
+				walk(s.For.Body)
+			}
+			if s.While != nil {
+				walk(s.While.Body)
+			}
+			if s.If != nil {
+				walkIf(s.If)
+			}
+		}
+	}
+
+	walk(stmts)
+	return vars
 }
 
 func New(env *types.Env) *Compiler {
@@ -215,6 +259,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// collect top-level constants as module attributes
 	helperRe := regexp.MustCompile(`_[a-zA-Z0-9]+\(`)
 	letNames := []string{}
+	mutated := mutatedVars(prog.Statements)
 	for _, s := range prog.Statements {
 		if s.Let != nil {
 			letNames = append(letNames, sanitizeName(s.Let.Name))
@@ -243,7 +288,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			}
 			name := sanitizeName(s.Let.Name)
 			// only emit module attribute for simple constant expressions
-			if isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
+			if _, ok := mutated[s.Let.Name]; !ok && isConstExpr(s.Let.Value) && !helperRe.MatchString(val) && !containsVar(val, name) {
 				c.attrs[name] = val
 				c.writeln(fmt.Sprintf("@%s %s", name, val))
 			}

@@ -2,7 +2,7 @@
 
 This directory contains Elixir source code generated from Mochi programs and the corresponding outputs.
 
-Compiled programs: 91/100
+Compiled programs: 92/100
 
 Checklist:
 
@@ -101,7 +101,7 @@ Checklist:
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
-- [ ] update_stmt
+- [x] update_stmt
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
@@ -116,15 +116,3 @@ Checklist:
 - [ ] load_yaml
 - [ ] python_auto
 - [ ] python_math
-- [ ] update_stmt
-- [ ] implement macros
-- [ ] optimize Enum usage
-- [ ] support concurrency features
-- [ ] enhance pattern matching
-- [ ] add more dataset tests
-- [ ] implement generics
-- [ ] custom protocols
-- [x] richer type annotations
-- [ ] advanced error handling
-- [ ] integrate with ExUnit
-- [ ] packaging as Mix project
