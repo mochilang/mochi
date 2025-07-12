@@ -102,10 +102,10 @@ All standard test programs compile and run successfully except for a few that de
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-- [ ] go_auto.mochi (missing testpkg bindings)
-- [ ] python_auto.mochi (missing Python `math` bindings)
-- [ ] python_math.mochi (missing Python `math` bindings)
+- [x] go_auto.mochi
+- [x] python_auto.mochi
+- [x] python_math.mochi
 
 ## Remaining tasks
 
-- Provide Ruby wrappers or stubs for the external packages used in `go_auto`, `python_auto` and `python_math` so those examples can run successfully.
+None
