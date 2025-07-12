@@ -1,7 +1,7 @@
 # Lua Machine Translations
 
 This directory stores Lua code generated from the Mochi programs in `tests/vm/valid`.
-Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file.  The compiler now emits direct Lua code without relying on the large runtime helper library when simple operations are detected.
+Each program was compiled and executed using the Lua compiler. Successful runs produce a `.out` file, while failures have a `.error` file. The compiler removes helper functions like `__div` when simple arithmetic is detected.
 
 Compiled programs: 100/100
 
@@ -106,34 +106,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-## Remaining Tasks
-- [ ] Compare generated code with reference implementations
-- [ ] Handle advanced dataset operations
-- [ ] Support agent initialization with field values
-- [ ] Implement extern object declarations
-- [ ] Add YAML dataset saving support
-- [ ] Enable right and outer joins in queries
-- [ ] Implement try/catch error handling
-- [ ] Add concurrency primitives like channels
-- [ ] Optimize generated code formatting
-- [ ] Expand LLM helper coverage
-- [ ] Improve error messages for Lua runtime
-- [ ] Generate idiomatic for-in loops for tables
-- [x] Reduce reliance on helper functions
-- [ ] Support pattern matching with tables
-- [ ] Implement generics for Lua functions
-- [ ] Support asynchronous I/O operations
-- [ ] Add support for metatables in struct types
-- [ ] Provide CLI for running compiled Lua
-- [ ] Implement incremental compilation caching
-- [ ] Add automated regression tests for Lua compiler
-- [x] Implement constant folding optimization
-- [ ] Integrate static analysis tools
-- [ ] Allow custom Lua module paths
-- [ ] Add debugging support with breakpoints
-- [ ] Support cross-compilation to LuaJIT
-- [ ] Document compiler internals for contributors
-- [ ] Provide VSCode extension for syntax highlighting
-- [ ] Add support for optional strict typing
-- [ ] Optimize tail-call elimination
-- [ ] Generate LuaDoc comments automatically

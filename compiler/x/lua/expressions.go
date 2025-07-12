@@ -92,9 +92,22 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					}
 					resStr = false
 				case "/":
-					c.helpers["div"] = true
-					expr = fmt.Sprintf("__div(%s, %s)", l, r)
-					resStr = false
+					if nums[i] && nums[i+1] {
+						if isInt(typesList[i]) && isInt(typesList[i+1]) {
+							expr = fmt.Sprintf("(%s // %s)", l, r)
+						} else {
+							expr = fmt.Sprintf("(%s / %s)", l, r)
+						}
+						resNum = true
+					} else {
+						c.helpers["div"] = true
+						expr = fmt.Sprintf("__div(%s, %s)", l, r)
+					}
+				case "*", "%", "-":
+					expr = fmt.Sprintf("(%s %s %s)", l, opstr, r)
+					if nums[i] && nums[i+1] {
+						resNum = true
+					}
 				case "+":
 					if strs[i] && strs[i+1] {
 						expr = fmt.Sprintf("(%s .. %s)", l, r)
