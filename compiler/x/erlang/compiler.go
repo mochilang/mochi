@@ -831,16 +831,22 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			keyExpr = "{" + strings.Join(keyParts, ", ") + "}"
 		}
 
-		vars := []string{capitalize(q.Var)}
+		vars := []string{q.Var}
 		for _, fr := range q.Froms {
-			vars = append(vars, capitalize(fr.Var))
+			vars = append(vars, fr.Var)
 		}
 		for _, j := range q.Joins {
-			vars = append(vars, capitalize(j.Var))
+			vars = append(vars, j.Var)
 		}
-		elemMap := strings.Join(vars, ", ")
-		if len(vars) > 1 {
-			elemMap = "{" + elemMap + "}"
+		parts := make([]string, len(vars))
+		for i, v := range vars {
+			parts[i] = fmt.Sprintf("%s => %s", v, capitalize(v))
+		}
+		elemMap := ""
+		if len(parts) == 1 {
+			elemMap = capitalize(vars[0])
+		} else {
+			elemMap = "#{" + strings.Join(parts, ", ") + "}"
 		}
 
 		pairList := "[{" + keyExpr + ", " + elemMap + "} || " + strings.Join(gens, ", ")
