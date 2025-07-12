@@ -495,11 +495,8 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return nil
 	case s.Expr != nil:
 		if call := getPrintCall(s.Expr.Expr); call != nil {
-			for i, a := range call.Args {
-				if i > 0 {
-					c.writeln("write(' '),")
-				}
-				val, arith, err := c.compileExpr(a)
+			if len(call.Args) == 1 {
+				val, arith, err := c.compileExpr(call.Args[0])
 				if err != nil {
 					return err
 				}
@@ -512,9 +509,29 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", val, tmp, tmp))
 					val = tmp
 				}
-				c.writeln(fmt.Sprintf("write(%s),", val))
+				c.writeln(fmt.Sprintf("writeln(%s),", val))
+			} else {
+				for i, a := range call.Args {
+					if i > 0 {
+						c.writeln("write(' '),")
+					}
+					val, arith, err := c.compileExpr(a)
+					if err != nil {
+						return err
+					}
+					if arith {
+						tmp := c.newTmp()
+						c.writeln(fmt.Sprintf("%s is %s,", tmp, val))
+						val = tmp
+					} else if isBoolExpr(val) {
+						tmp := c.newTmp()
+						c.writeln(fmt.Sprintf("(%s -> %s = true ; %s = false),", val, tmp, tmp))
+						val = tmp
+					}
+					c.writeln(fmt.Sprintf("write(%s),", val))
+				}
+				c.writeln("nl,")
 			}
-			c.writeln("nl,")
 			return nil
 		}
 		if call := getSimpleCall(s.Expr.Expr); call != nil {
