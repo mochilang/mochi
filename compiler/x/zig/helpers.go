@@ -372,6 +372,24 @@ func equalTypes(a, b types.Type) bool {
 			return equalTypes(ma.Key, mb.Key) && equalTypes(ma.Value, mb.Value)
 		}
 	}
+	if sa, ok := a.(types.StructType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if sa.Name != "" && sb.Name != "" {
+				if sa.Name == sb.Name {
+					return true
+				}
+			}
+			if len(sa.Fields) != len(sb.Fields) {
+				return false
+			}
+			for _, f := range sa.Order {
+				if !equalTypes(sa.Fields[f], sb.Fields[f]) {
+					return false
+				}
+			}
+			return true
+		}
+	}
 	if ua, ok := a.(types.UnionType); ok {
 		if sb, ok := b.(types.StructType); ok {
 			if _, ok := ua.Variants[sb.Name]; ok {
@@ -439,7 +457,11 @@ func (c *Compiler) nameNestedStructs(prefix string, t types.Type) types.Type {
 	switch tt := t.(type) {
 	case types.StructType:
 		if prefix != "" && tt.Name == "" {
-			tt.Name = pascalCase(prefix)
+			if prefix == strings.ToLower(prefix) || strings.ContainsAny(prefix, "_- .") {
+				tt.Name = pascalCase(prefix)
+			} else {
+				tt.Name = sanitizeName(prefix)
+			}
 		}
 		for _, f := range tt.Order {
 			tt.Fields[f] = c.nameNestedStructs(tt.Name+pascalCase(f), tt.Fields[f])
