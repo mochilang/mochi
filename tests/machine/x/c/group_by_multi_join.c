@@ -213,7 +213,8 @@ int main() {
   tmp4.len = tmp5;
   list_FilteredItem filtered = tmp4;
   list_FilteredItem tmp9 = list_FilteredItem_create(filtered.len);
-  list_int tmp10 = list_int_create(filtered.len);
+  int tmp10_data[filtered.len];
+  list_int tmp10 = {0, tmp10_data};
   int tmp11 = 0;
   for (int i12 = 0; i12 < filtered.len; i12++) {
     FilteredItem x = filtered.data[i12];

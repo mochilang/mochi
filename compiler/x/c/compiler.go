@@ -148,6 +148,12 @@ func (c *Compiler) newLoopVar() string {
 	return c.newTempPrefix("i")
 }
 
+func (c *Compiler) stackListInt(name, lenExpr, initLen string) {
+	data := name + "_data"
+	c.writeln(fmt.Sprintf("int %s[%s];", data, lenExpr))
+	c.writeln(fmt.Sprintf("list_int %s = {%s, %s};", name, initLen, data))
+}
+
 func (c *Compiler) need(key string) {
 	if c.needs == nil {
 		c.needs = map[string]bool{}
@@ -1966,7 +1972,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					if cond != "" {
 						filtered := c.newTemp()
 						idxVar := c.newTemp()
-						c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s);", filtered, c.listLenExpr(src)))
+						c.stackListInt(filtered, c.listLenExpr(src), "0")
 						c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 						loop := c.newLoopVar()
 						c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
@@ -2300,7 +2306,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.compileStructListType(st)
 					}
 					c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
-					c.writeln(fmt.Sprintf("list_int %s = list_int_create(%s);", keys, c.listLenExpr(src)))
+					c.stackListInt(keys, c.listLenExpr(src), "0")
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 					loop := c.newLoopVar()
 					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loop, loop, c.listLenExpr(src), loop))
@@ -4477,7 +4483,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			case types.IntType, types.BoolType:
 				c.need(needConcatListInt)
 				tmp := c.newTemp()
-				c.writeln(fmt.Sprintf("list_int %s = list_int_create(1);", tmp))
+				c.stackListInt(tmp, "1", "1")
 				c.writeln(fmt.Sprintf("%s.data[0] = %s;", tmp, val))
 				name := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = concat_list_int(%s, %s);", name, lst, tmp))
