@@ -165,6 +165,58 @@ func isMapType(t types.Type) bool {
 	return ok
 }
 
+func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
+	if t == nil {
+		return types.AnyType{}
+	}
+	if t.Generic != nil {
+		name := t.Generic.Name
+		args := t.Generic.Args
+		if name == "list" && len(args) == 1 {
+			return types.ListType{Elem: resolveTypeRef(args[0], env)}
+		}
+		if name == "map" && len(args) == 2 {
+			return types.MapType{Key: resolveTypeRef(args[0], env), Value: resolveTypeRef(args[1], env)}
+		}
+		if name == "group" && len(args) == 2 {
+			return types.GroupType{Key: resolveTypeRef(args[0], env), Elem: resolveTypeRef(args[1], env)}
+		}
+		return types.AnyType{}
+	}
+	if t.Struct != nil {
+		fields := map[string]types.Type{}
+		order := make([]string, len(t.Struct.Fields))
+		for i, f := range t.Struct.Fields {
+			fields[f.Name] = resolveTypeRef(f.Type, env)
+			order[i] = f.Name
+		}
+		return types.StructType{Fields: fields, Order: order}
+	}
+	if t.Simple != nil {
+		switch *t.Simple {
+		case "int":
+			return types.IntType{}
+		case "float":
+			return types.FloatType{}
+		case "string":
+			return types.StringType{}
+		case "bool":
+			return types.BoolType{}
+		default:
+			if env != nil {
+				if st, ok := env.GetStruct(*t.Simple); ok {
+					return st
+				}
+				if ut, ok := env.GetUnion(*t.Simple); ok {
+					return ut
+				}
+			}
+			return types.AnyType{}
+		}
+	}
+	return types.AnyType{}
+}
+
 func formatList(elems []string) string {
 	flat := "[" + strings.Join(elems, ", ") + "]"
 	if len(elems) <= 3 && len(flat) <= 40 {
@@ -407,4 +459,74 @@ func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 	}
 	sort.Strings(out)
 	return out
+}
+
+func funFreeVars(fn *parser.FunExpr, env *types.Env) []string {
+	vars := map[string]struct{}{}
+	scanExpr(fn.ExprBody, vars)
+	for _, st := range fn.BlockBody {
+		scanStmt(st, vars)
+	}
+	defs := map[string]struct{}{}
+	for _, p := range fn.Params {
+		defs[p.Name] = struct{}{}
+	}
+	for _, st := range fn.BlockBody {
+		collectDefs(st, defs)
+	}
+	for name := range defs {
+		delete(vars, name)
+	}
+	outMap := map[string]struct{}{}
+	for k := range vars {
+		if env != nil {
+			if _, err := env.GetVar(k); err != nil {
+				continue
+			}
+		}
+		outMap["$"+sanitizeName(k)] = struct{}{}
+	}
+	out := make([]string, 0, len(outMap))
+	for k := range outMap {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func collectDefs(s *parser.Statement, defs map[string]struct{}) {
+	switch {
+	case s.Let != nil:
+		defs[s.Let.Name] = struct{}{}
+	case s.Var != nil:
+		defs[s.Var.Name] = struct{}{}
+	case s.Fun != nil:
+		defs[s.Fun.Name] = struct{}{}
+		for _, st := range s.Fun.Body {
+			collectDefs(st, defs)
+		}
+	case s.For != nil:
+		defs[s.For.Name] = struct{}{}
+		for _, st := range s.For.Body {
+			collectDefs(st, defs)
+		}
+	case s.While != nil:
+		for _, st := range s.While.Body {
+			collectDefs(st, defs)
+		}
+	case s.If != nil:
+		for _, st := range s.If.Then {
+			collectDefs(st, defs)
+		}
+		if s.If.ElseIf != nil {
+			collectDefs(&parser.Statement{If: s.If.ElseIf}, defs)
+		}
+		for _, st := range s.If.Else {
+			collectDefs(st, defs)
+		}
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			collectDefs(st, defs)
+		}
+	}
 }
