@@ -3,12 +3,6 @@
 
 module Main where
 
-import Data.List (intercalate, isInfixOf, isPrefixOf)
-import qualified Data.List as List
-import qualified Data.Map as Map
-import Data.Maybe (fromMaybe)
-import Data.Time.Clock.POSIX (getPOSIXTime)
-
 a = [1, 2]
 
 main :: IO ()
