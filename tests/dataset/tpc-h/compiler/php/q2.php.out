@@ -1,133 +1,145 @@
 <?php
-function mochi_test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part() {
-	global $n_name, $p_mfgr, $p_partkey, $ps_supplycost, $result, $s_acctbal, $s_address, $s_comment, $s_name, $s_phone;
-	if (!(($result == [["s_acctbal" => 1000.0, "s_name" => "BestSupplier", "n_name" => "FRANCE", "p_partkey" => 1000, "p_mfgr" => "M1", "s_address" => "123 Rue", "s_phone" => "123", "s_comment" => "Fast and reliable", "ps_supplycost" => 10.0]]))) { throw new Exception('expect failed'); }
-}
-
-$region = [["r_regionkey" => 1, "r_name" => "EUROPE"], ["r_regionkey" => 2, "r_name" => "ASIA"]];
-$nation = [["n_nationkey" => 10, "n_regionkey" => 1, "n_name" => "FRANCE"], ["n_nationkey" => 20, "n_regionkey" => 2, "n_name" => "CHINA"]];
-$supplier = [["s_suppkey" => 100, "s_name" => "BestSupplier", "s_address" => "123 Rue", "s_nationkey" => 10, "s_phone" => "123", "s_acctbal" => 1000.0, "s_comment" => "Fast and reliable"], ["s_suppkey" => 200, "s_name" => "AltSupplier", "s_address" => "456 Way", "s_nationkey" => 20, "s_phone" => "456", "s_acctbal" => 500.0, "s_comment" => "Slow"]];
-$part = [["p_partkey" => 1000, "p_type" => "LARGE BRASS", "p_size" => 15, "p_mfgr" => "M1"], ["p_partkey" => 2000, "p_type" => "SMALL COPPER", "p_size" => 15, "p_mfgr" => "M2"]];
-$partsupp = [["ps_partkey" => 1000, "ps_suppkey" => 100, "ps_supplycost" => 10.0], ["ps_partkey" => 1000, "ps_suppkey" => 200, "ps_supplycost" => 15.0]];
+$region = [
+    [
+        "r_regionkey" => 1,
+        "r_name" => "EUROPE"
+    ],
+    ["r_regionkey" => 2, "r_name" => "ASIA"]
+];
+$nation = [
+    [
+        "n_nationkey" => 10,
+        "n_regionkey" => 1,
+        "n_name" => "FRANCE"
+    ],
+    [
+        "n_nationkey" => 20,
+        "n_regionkey" => 2,
+        "n_name" => "CHINA"
+    ]
+];
+$supplier = [
+    [
+        "s_suppkey" => 100,
+        "s_name" => "BestSupplier",
+        "s_address" => "123 Rue",
+        "s_nationkey" => 10,
+        "s_phone" => "123",
+        "s_acctbal" => 1000,
+        "s_comment" => "Fast and reliable"
+    ],
+    [
+        "s_suppkey" => 200,
+        "s_name" => "AltSupplier",
+        "s_address" => "456 Way",
+        "s_nationkey" => 20,
+        "s_phone" => "456",
+        "s_acctbal" => 500,
+        "s_comment" => "Slow"
+    ]
+];
+$part = [
+    [
+        "p_partkey" => 1000,
+        "p_type" => "LARGE BRASS",
+        "p_size" => 15,
+        "p_mfgr" => "M1"
+    ],
+    [
+        "p_partkey" => 2000,
+        "p_type" => "SMALL COPPER",
+        "p_size" => 15,
+        "p_mfgr" => "M2"
+    ]
+];
+$partsupp = [
+    [
+        "ps_partkey" => 1000,
+        "ps_suppkey" => 100,
+        "ps_supplycost" => 10
+    ],
+    [
+        "ps_partkey" => 1000,
+        "ps_suppkey" => 200,
+        "ps_supplycost" => 15
+    ]
+];
 $europe_nations = (function() use ($nation, $region) {
-	$_src = array_values(array_filter((is_string($region) ? str_split($region) : $region), function($r) use ($nation, $region) { return (($r['r_name'] == "EUROPE")); }));
-	return _query($_src, [
-		[ 'items' => $nation, 'on' => function($r, $n) use ($nation, $region) { return ($n['n_regionkey'] == $r['r_regionkey']); } ]
-	], [ 'select' => function($r, $n) use ($nation, $region) { return $n; }, 'where' => function($r, $n) use ($nation, $region) { return (($r['r_name'] == "EUROPE")); } ]);
+    $result = [];
+    foreach ($region as $r) {
+        foreach ($nation as $n) {
+            if ($n['n_regionkey'] == $r['r_regionkey']) {
+                if ($r['r_name'] == "EUROPE") {
+                    $result[] = $n;
+                }
+            }
+        }
+    }
+    return $result;
 })();
 $europe_suppliers = (function() use ($europe_nations, $supplier) {
-	$_src = $supplier;
-	return _query($_src, [
-		[ 'items' => $europe_nations, 'on' => function($s, $n) use ($europe_nations, $supplier) { return ($s['s_nationkey'] == $n['n_nationkey']); } ]
-	], [ 'select' => function($s, $n) use ($europe_nations, $supplier) { return ["s" => $s, "n" => $n]; } ]);
+    $result = [];
+    foreach ($supplier as $s) {
+        foreach ($europe_nations as $n) {
+            if ($s['s_nationkey'] == $n['n_nationkey']) {
+                $result[] = ["s" => $s, "n" => $n];
+            }
+        }
+    }
+    return $result;
 })();
 $target_parts = (function() use ($part) {
-	$res = [];
-	foreach ((is_string($part) ? str_split($part) : $part) as $p) {
-		if (!((($p['p_size'] == 15) && ($p['p_type'] == "LARGE BRASS")))) { continue; }
-		$res[] = $p;
-	}
-	return $res;
+    $result = [];
+    foreach ($part as $p) {
+        if ($p['p_size'] == 15 && $p['p_type'] == "LARGE BRASS") {
+            $result[] = $p;
+        }
+    }
+    return $result;
 })();
 $target_partsupp = (function() use ($europe_suppliers, $partsupp, $target_parts) {
-	$_src = $partsupp;
-	return _query($_src, [
-		[ 'items' => $target_parts, 'on' => function($ps, $p) use ($europe_suppliers, $partsupp, $target_parts) { return ($ps['ps_partkey'] == $p['p_partkey']); } ],
-		[ 'items' => $europe_suppliers, 'on' => function($ps, $p, $s) use ($europe_suppliers, $partsupp, $target_parts) { return ($ps['ps_suppkey'] == $s['s']['s_suppkey']); } ]
-	], [ 'select' => function($ps, $p, $s) use ($europe_suppliers, $partsupp, $target_parts) { return ["s_acctbal" => $s['s']['s_acctbal'], "s_name" => $s['s']['s_name'], "n_name" => $s['n']['n_name'], "p_partkey" => $p['p_partkey'], "p_mfgr" => $p['p_mfgr'], "s_address" => $s['s']['s_address'], "s_phone" => $s['s']['s_phone'], "s_comment" => $s['s']['s_comment'], "ps_supplycost" => $ps['ps_supplycost']]; } ]);
+    $result = [];
+    foreach ($partsupp as $ps) {
+        foreach ($target_parts as $p) {
+            if ($ps['ps_partkey'] == $p['p_partkey']) {
+                foreach ($europe_suppliers as $s) {
+                    if ($ps['ps_suppkey'] == $s['s']['s_suppkey']) {
+                        $result[] = [
+    "s_acctbal" => $s['s']['s_acctbal'],
+    "s_name" => $s['s']['s_name'],
+    "n_name" => $s['n']['n_name'],
+    "p_partkey" => $p['p_partkey'],
+    "p_mfgr" => $p['p_mfgr'],
+    "s_address" => $s['s']['s_address'],
+    "s_phone" => $s['s']['s_phone'],
+    "s_comment" => $s['s']['s_comment'],
+    "ps_supplycost" => $ps['ps_supplycost']
+];
+                    }
+                }
+            }
+        }
+    }
+    return $result;
 })();
 $costs = (function() use ($target_partsupp) {
-	$res = [];
-	foreach ((is_string($target_partsupp) ? str_split($target_partsupp) : $target_partsupp) as $x) {
-		$res[] = $x['ps_supplycost'];
-	}
-	return $res;
+    $result = [];
+    foreach ($target_partsupp as $x) {
+        $result[] = $x['ps_supplycost'];
+    }
+    return $result;
 })();
 $min_cost = min($costs);
 $result = (function() use ($min_cost, $target_partsupp) {
-	$_src = $target_partsupp;
-	return _query($_src, [
-	], [ 'select' => function($x) use ($min_cost, $target_partsupp) { return $x; }, 'where' => function($x) use ($min_cost, $target_partsupp) { return (($x['ps_supplycost'] == $min_cost)); }, 'sortKey' => function($x) use ($min_cost, $target_partsupp) { return (-$x['s_acctbal']); } ]);
+    $result = [];
+    foreach ($target_partsupp as $x) {
+        if ($x['ps_supplycost'] == $min_cost) {
+            $result[] = [-$x['s_acctbal'], $x];
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
 })();
 echo json_encode($result), PHP_EOL;
-mochi_test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part();
-
-function _query($src, $joins, $opts) {
-    $items = array_map(fn($v) => [$v], $src);
-    foreach ($joins as $j) {
-        $joined = [];
-        if (!empty($j['right']) && !empty($j['left'])) {
-            $matched = array_fill(0, count($j['items']), false);
-            foreach ($items as $left) {
-                $m = false;
-                foreach ($j['items'] as $ri => $right) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $matched[$ri] = true;
-                    $joined[] = array_merge($left, [$right]);
-                }
-                if (!$m) { $joined[] = array_merge($left, [null]); }
-            }
-            foreach ($j['items'] as $ri => $right) {
-                if (!$matched[$ri]) {
-                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
-                    $joined[] = array_merge($undef, [$right]);
-                }
-            }
-        } elseif (!empty($j['right'])) {
-            foreach ($j['items'] as $right) {
-                $m = false;
-                foreach ($items as $left) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $joined[] = array_merge($left, [$right]);
-                }
-                if (!$m) {
-                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
-                    $joined[] = array_merge($undef, [$right]);
-                }
-            }
-        } else {
-            foreach ($items as $left) {
-                $m = false;
-                foreach ($j['items'] as $right) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $joined[] = array_merge($left, [$right]);
-                }
-                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
-            }
-        }
-        $items = $joined;
-    }
-    if (isset($opts['where'])) {
-        $filtered = [];
-        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
-        $items = $filtered;
-    }
-    if (isset($opts['sortKey'])) {
-        $pairs = [];
-        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
-        usort($pairs, function($a, $b) {
-            $ak = $a['key']; $bk = $b['key'];
-            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
-            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
-            return strcmp(strval($ak), strval($bk));
-        });
-        $items = array_map(fn($p) => $p['item'], $pairs);
-    }
-    if (array_key_exists('skip', $opts)) {
-        $n = $opts['skip'];
-        $items = $n < count($items) ? array_slice($items, $n) : [];
-    }
-    if (array_key_exists('take', $opts)) {
-        $n = $opts['take'];
-        if ($n < count($items)) $items = array_slice($items, 0, $n);
-    }
-    $res = [];
-    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
-    return $res;
-}
+?>

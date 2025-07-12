@@ -846,7 +846,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
 		}
-		return fmt.Sprintf("json_encode(%s)", args[0]), nil
+		return fmt.Sprintf("echo json_encode(%s), PHP_EOL", args[0]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
