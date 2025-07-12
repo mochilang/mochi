@@ -1,0 +1,8 @@
+
+Unhandled Exception:
+System.NotSupportedException: Exception of type 'System.NotSupportedException' was thrown.
+  at Microsoft.FSharp.Core.ExtraTopLevelOperators+dictRefType@101-1[TKey,T].System-Collections-Generic-IDictionary`2-set_Item (TKey key, T value) [0x00015] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$map_assign>.$Map_assign.main@ () [0x00029] in <687299d53dc0aaefa7450383d5997268>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.NotSupportedException: Exception of type 'System.NotSupportedException' was thrown.
+  at Microsoft.FSharp.Core.ExtraTopLevelOperators+dictRefType@101-1[TKey,T].System-Collections-Generic-IDictionary`2-set_Item (TKey key, T value) [0x00015] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$map_assign>.$Map_assign.main@ () [0x00029] in <687299d53dc0aaefa7450383d5997268>:0 

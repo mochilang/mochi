@@ -1,0 +1,20 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(40,13): error FS0374: Invalid expression on left of assignment
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(49,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (48:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(49,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (48:28). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.

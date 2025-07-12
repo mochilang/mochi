@@ -1,0 +1,11 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/list_assign.fs(3,25): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    'a []    
+
+/workspace/mochi/tests/machine/x/fs/list_assign.fs(4,1): error FS0039: The field, constructor or member 'Item' is not defined
+
+/workspace/mochi/tests/machine/x/fs/list_assign.fs(5,15): error FS0039: The field, constructor or member 'Item' is not defined

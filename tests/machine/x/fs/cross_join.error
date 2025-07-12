@@ -1,0 +1,32 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(21,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (20:26). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(21,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (20:26). Try indenting this token further or using standard formatting conventions.
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(21,33): error FS1129: The type 'obj' does not contain a field 'orderId'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(24,61): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon3    
+The type 'obj' is not compatible with the type 'Anon3'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(24,106): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon3    
+The type 'obj' is not compatible with the type 'Anon3'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(24,157): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon3    
+The type 'obj' is not compatible with the type 'Anon3'
+
+/workspace/mochi/tests/machine/x/fs/cross_join.fs(24,206): error FS0193: Type constraint mismatch. The type 
+    obj    
+is not compatible with type
+    Anon3    
+The type 'obj' is not compatible with the type 'Anon3'
