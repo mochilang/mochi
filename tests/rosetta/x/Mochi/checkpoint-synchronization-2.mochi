@@ -1,0 +1,24 @@
+fun lower(ch: string): string {
+  let upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  let lower = "abcdefghijklmnopqrstuvwxyz"
+  var i = 0
+  while i < len(upper) {
+    if ch == substring(upper, i, i+1) { return substring(lower, i, i+1) }
+    i = i + 1
+  }
+  return ch
+}
+
+var partList = ["A", "B", "C", "D"]
+var nAssemblies = 3
+
+for cycle in 1..(nAssemblies + 1) {
+  print("begin assembly cycle " + str(cycle))
+  var a = ""
+  for p in partList {
+    print(p + " worker begins part")
+    print(p + " worker completed " + lower(p))
+    a = a + lower(p)
+  }
+  print(a + " assembled.  cycle " + str(cycle) + " complete")
+}

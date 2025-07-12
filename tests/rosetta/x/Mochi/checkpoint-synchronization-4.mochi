@@ -1,0 +1,16 @@
+var nMech = 5
+var detailsPerMech = 4
+
+for mech in 1..(nMech + 1) {
+  let id = mech
+  print("worker " + str(id) + " contracted to assemble " + str(detailsPerMech) + " details")
+  print("worker " + str(id) + " enters shop")
+  var d = 0
+  while d < detailsPerMech {
+    print("worker " + str(id) + " assembling")
+    print("worker " + str(id) + " completed detail")
+    d = d + 1
+  }
+  print("worker " + str(id) + " leaves shop")
+  print("mechanism " + str(mech) + " completed")
+}
