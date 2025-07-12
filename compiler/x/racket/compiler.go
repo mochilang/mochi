@@ -1075,6 +1075,61 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	if len(bindings) > 0 {
 		body = fmt.Sprintf("(let (%s) %s)", strings.Join(bindings, " "), body)
 	}
+
+	// handle sort/skip/take for non-group queries
+	if q.Sort != nil || q.Skip != nil || q.Take != nil {
+		items := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, q.Var)
+		tmp := fmt.Sprintf("_items%d", c.tmpCount)
+		c.tmpCount++
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("(let ([%s %s])\n", tmp, items))
+		if q.Sort != nil {
+			keyExpr := q.Sort
+			desc := false
+			if keyExpr != nil && keyExpr.Binary != nil && len(keyExpr.Binary.Right) == 0 {
+				u := keyExpr.Binary.Left
+				if u != nil && len(u.Ops) == 1 && u.Ops[0] == "-" {
+					keyExpr = &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: u.Value}, Right: nil}}
+					desc = true
+				}
+			}
+			k, err := c.compileExpr(keyExpr)
+			if err != nil {
+				return "", err
+			}
+			c.needListLib = true
+			strOrd := "string<?"
+			numOrd := "<"
+			if desc {
+				strOrd = "string>?"
+				numOrd = ">"
+			}
+			cmp := fmt.Sprintf("(cond [(string? (let ([%s a]) %s)) (%s (let ([%s a]) %s) (let ([%s b]) %s))] [(string? (let ([%s b]) %s)) (%s (let ([%s a]) %s) (let ([%s b]) %s))] [else (%s (let ([%s a]) %s) (let ([%s b]) %s))])",
+				q.Var, k, strOrd, q.Var, k, q.Var, k,
+				q.Var, k, strOrd, q.Var, k, q.Var, k,
+				numOrd, q.Var, k, q.Var, k)
+			buf.WriteString(fmt.Sprintf("  (set! %s (sort %s (lambda (a b) %s)))\n", tmp, tmp, cmp))
+		}
+		if q.Skip != nil {
+			sk, err := c.compileExpr(q.Skip)
+			if err != nil {
+				return "", err
+			}
+			c.needListLib = true
+			buf.WriteString(fmt.Sprintf("  (set! %s (drop %s (max %s 0)))\n", tmp, tmp, sk))
+		}
+		if q.Take != nil {
+			tk, err := c.compileExpr(q.Take)
+			if err != nil {
+				return "", err
+			}
+			c.needListLib = true
+			buf.WriteString(fmt.Sprintf("  (set! %s (take %s (max %s 0)))\n", tmp, tmp, tk))
+		}
+		buf.WriteString(fmt.Sprintf("  (for/list ([%s %s]) %s))", q.Var, tmp, body))
+		return buf.String(), nil
+	}
+
 	expr := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, body)
 	return expr, nil
 }
