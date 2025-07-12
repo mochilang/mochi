@@ -736,6 +736,19 @@ func mapKeyType(t string) string {
 	return "Object"
 }
 
+func castMapType(t string) string {
+	t = strings.TrimSpace(t)
+	if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
+		kt := wrapperType(mapKeyType(t))
+		vt := wrapperType(mapValueType(t))
+		if kt == "Object" && vt == "Object" {
+			return "Map<?,?>"
+		}
+		return fmt.Sprintf("Map<%s,%s>", kt, vt)
+	}
+	return "Map<?,?>"
+}
+
 func listElemType(t string) string {
 	t = strings.TrimSpace(t)
 	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
@@ -1772,10 +1785,10 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 				if c.hasField(typ, field) {
 					c.writeln(fmt.Sprintf("%s.%s = %s;", target, field, expr))
 				} else {
-					c.writeln(fmt.Sprintf("((Map<?,?>)%s).put(%s, %s);", target, ix, expr))
+					c.writeln(fmt.Sprintf("((%s)%s).put(%s, %s);", castMapType(typ), target, ix, expr))
 				}
 			} else {
-				c.writeln(fmt.Sprintf("((Map<?,?>)%s).put(%s, %s);", target, ix, expr))
+				c.writeln(fmt.Sprintf("((%s)%s).put(%s, %s);", castMapType(typ), target, ix, expr))
 			}
 		} else {
 			if strings.HasPrefix(typ, "Map<") {
@@ -2258,10 +2271,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 							val = fmt.Sprintf("%s.%s", val, field)
 							typ = c.fieldType(typ, field)
 						} else {
-							val = fmt.Sprintf("((Map<?,?>)%s).get(%s)", val, idx)
+							val = fmt.Sprintf("((%s)%s).get(%s)", castMapType(typ), val, idx)
 						}
 					} else {
-						val = fmt.Sprintf("((Map<?,?>)%s).get(%s)", val, idx)
+						val = fmt.Sprintf("((%s)%s).get(%s)", castMapType(typ), val, idx)
 					}
 				} else {
 					if strings.HasPrefix(typ, "Map<") {
@@ -2344,8 +2357,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				pTail := p.Selector.Tail[1:]
 				for _, f := range pTail {
 					if strings.HasPrefix(typ, "Map<") {
+						mapT := typ
 						typ = mapValueType(typ)
-						s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
+						s = fmt.Sprintf("((%s)%s).get(\"%s\")", castMapType(mapT), s, f)
 					} else {
 						s += "." + f
 						typ = c.fieldType(typ, f)
@@ -2365,8 +2379,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				typ = itemType
 				for _, f := range p.Selector.Tail[1:] {
 					if strings.HasPrefix(typ, "Map<") {
-						s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
-						typ = mapValueType(typ)
+						mapT := typ
+						s = fmt.Sprintf("((%s)%s).get(\"%s\")", castMapType(mapT), s, f)
+						typ = mapValueType(mapT)
 					} else {
 						s += "." + f
 						typ = c.fieldType(typ, f)
@@ -2377,8 +2392,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		for _, f := range p.Selector.Tail {
 			if strings.HasPrefix(typ, "Map<") || typ == "Map" || typ == "Object" || typ == "" {
-				s = fmt.Sprintf("((Map<?,?>)%s).get(\"%s\")", s, f)
-				typ = mapValueType(typ)
+				mapT := typ
+				s = fmt.Sprintf("((%s)%s).get(\"%s\")", castMapType(mapT), s, f)
+				typ = mapValueType(mapT)
 			} else {
 				s += "." + f
 			}
