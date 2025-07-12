@@ -25,7 +25,7 @@ func runTPCHQuery(t *testing.T, base string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	c := kotlin.New(env, src)
+	c := kotlin.New(env, filepath.Base(src))
 	code, err := c.Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
@@ -64,7 +64,7 @@ func TestKotlinCompiler_TPCH(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-       for _, base := range []string{"q1", "q2"} {
-               t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
-       }
+	for _, base := range []string{"q1", "q2"} {
+		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
+	}
 }
