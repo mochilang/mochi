@@ -1,12 +1,18 @@
 // Mochi translation of Rosetta "Circles of given radius through two points" task
 // Based on Go version
 
-struct Point { x: float, y: float }
+type Point {
+  x: float
+  y: float
+}
 
 fun sqrtApprox(x: float): float {
   var g = x
   var i = 0
-  while i < 20 { g = (g + x / g) / 2.0; i = i + 1 }
+  while i < 40 {
+    g = (g + x / g) / 2.0
+    i = i + 1
+  }
   return g
 }
 
@@ -19,45 +25,55 @@ let CoR0 = "Coincident points with r==0.0 describe a degenerate circle."
 let Diam = "Points form a diameter and describe only a single circle."
 let Far = "Points too far apart to form circles."
 
-fun circles(p1: Point, p2: Point, r: float): [Point, Point, string] {
+fun circles(p1: Point, p2: Point, r: float): list<any> {
   if p1.x == p2.x && p1.y == p2.y {
-    if r == 0.0 { return [p1, p1, CoR0] }
-    return [p1, p2, Co]
+    if r == 0.0 { return [p1, p1, "Coincident points with r==0.0 describe a degenerate circle."] }
+    return [p1, p2, "Coincident points describe an infinite number of circles."]
   }
-  if r == 0.0 { return [p1, p2, R0] }
+  if r == 0.0 { return [p1, p2, "R==0.0 does not describe circles."] }
   let dx = p2.x - p1.x
   let dy = p2.y - p1.y
   let q = hypot(dx, dy)
-  if q > 2.0 * r { return [p1, p2, Far] }
-  let m = Point{ (p1.x + p2.x)/2.0, (p1.y + p2.y)/2.0 }
-  if q == 2.0 * r { return [m, m, Diam] }
+  if q > 2.0 * r { return [p1, p2, "Points too far apart to form circles."] }
+  let m = Point{ x: (p1.x + p2.x)/2.0, y: (p1.y + p2.y)/2.0 }
+  if q == 2.0 * r { return [m, m, "Points form a diameter and describe only a single circle."] }
   let d = sqrtApprox(r*r - q*q/4.0)
   let ox = d * dx / q
   let oy = d * dy / q
-  return [Point{m.x - oy, m.y + ox}, Point{m.x + oy, m.y - ox}, Two]
+  return [
+    Point{ x: m.x - oy, y: m.y + ox },
+    Point{ x: m.x + oy, y: m.y - ox },
+    "Two circles."
+  ]
 }
 
 var td = [
-  [Point{0.1234,0.9876}, Point{0.8765,0.2345}, 2.0],
-  [Point{0.0,2.0}, Point{0.0,0.0}, 1.0],
-  [Point{0.1234,0.9876}, Point{0.1234,0.9876}, 2.0],
-  [Point{0.1234,0.9876}, Point{0.8765,0.2345}, 0.5],
-  [Point{0.1234,0.9876}, Point{0.1234,0.9876}, 0.0]
+  [Point{x:0.1234, y:0.9876}, Point{x:0.8765, y:0.2345}, 2.0],
+  [Point{x:0.0, y:2.0}, Point{x:0.0, y:0.0}, 1.0],
+  [Point{x:0.1234, y:0.9876}, Point{x:0.1234, y:0.9876}, 2.0],
+  [Point{x:0.1234, y:0.9876}, Point{x:0.8765, y:0.2345}, 0.5],
+  [Point{x:0.1234, y:0.9876}, Point{x:0.1234, y:0.9876}, 0.0]
 ]
 
 for tc in td {
-  let p1 = tc[0]; let p2 = tc[1]; let r = tc[2]
+  let p1 = tc[0]
+  let p2 = tc[1]
+  let r = tc[2]
   print("p1:  {" + str(p1.x) + " " + str(p1.y) + "}")
   print("p2:  {" + str(p2.x) + " " + str(p2.y) + "}")
   print("r:  " + str(r))
-  let res = circles(p1,p2,r)
-  let c1 = res[0]; let c2 = res[1]; let Case = res[2]
-  print("   " + Case)
-  if Case == CoR0 || Case == Diam {
+  let res = circles(p1, p2, r)
+  let c1 = res[0]
+  let c2 = res[1]
+  let caseStr = res[2]
+  print("   " + caseStr)
+  if caseStr == "Points form a diameter and describe only a single circle." || caseStr == "Coincident points with r==0.0 describe a degenerate circle." {
     print("   Center:  {" + str(c1.x) + " " + str(c1.y) + "}")
-  } else if Case == Two {
-    print("   Center 1:  {" + str(c1.x) + " " + str(c1.y) + "}")
-    print("   Center 2:  {" + str(c2.x) + " " + str(c2.y) + "}")
+  } else {
+    if caseStr == "Two circles." {
+      print("   Center 1:  {" + str(c1.x) + " " + str(c1.y) + "}")
+      print("   Center 2:  {" + str(c2.x) + " " + str(c2.y) + "}")
+    }
   }
   print("")
 }
