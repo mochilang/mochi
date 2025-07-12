@@ -1031,6 +1031,7 @@ func (c *Compiler) compileIf(stmt *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
+	cond = stripOuterParens(cond)
 	c.writeln(fmt.Sprintf("if (%s) {", cond))
 	c.indent++
 	for _, st := range stmt.Then {
@@ -1065,6 +1066,7 @@ func (c *Compiler) compileWhile(stmt *parser.WhileStmt) error {
 	if err != nil {
 		return err
 	}
+	cond = stripOuterParens(cond)
 	c.writeln(fmt.Sprintf("while (%s) {", cond))
 	c.indent++
 	for _, st := range stmt.Body {
@@ -4160,6 +4162,24 @@ func (c *Compiler) isListVar(name string) bool {
 		}
 	}
 	return false
+}
+
+func stripOuterParens(s string) string {
+	if len(s) >= 2 && s[0] == '(' && s[len(s)-1] == ')' {
+		depth := 0
+		for i := 0; i < len(s); i++ {
+			switch s[i] {
+			case '(':
+				depth++
+			case ')':
+				depth--
+				if depth == 0 && i == len(s)-1 {
+					return s[1 : len(s)-1]
+				}
+			}
+		}
+	}
+	return s
 }
 
 func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, *parser.Expr, bool) {
