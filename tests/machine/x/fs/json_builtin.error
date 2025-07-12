@@ -1,0 +1,6 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/json_builtin.fs(2,18): error FS0039: The namespace 'Json' is not defined
+
+/workspace/mochi/tests/machine/x/fs/json_builtin.fs(9,15): error FS0039: The namespace or module 'JsonSerializer' is not defined

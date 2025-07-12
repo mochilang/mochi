@@ -105,6 +105,13 @@ This directory contains the F# source code and outputs generated from the Mochi 
 - [x] var_assignment
 - [x] while_loop
 
+## Running the tests
+To run the F# compiler tests, install the `fsharp` package (e.g., `apt-get install -y fsharp`) and then execute:
+
+```
+ go test ./compiler/x/fs -tags slow
+```
+
 ## Remaining Tasks
 
 - Ensure new features continue to compile correctly.
