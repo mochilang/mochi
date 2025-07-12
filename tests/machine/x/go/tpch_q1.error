@@ -1,0 +1,12 @@
+# command-line-arguments
+tests/machine/x/go/tpch_q1.go:46:26: undefined: v
+tests/machine/x/go/tpch_q1.go:60:16: undefined: LineitemItem
+tests/machine/x/go/tpch_q1.go:61:14: undefined: v
+tests/machine/x/go/tpch_q1.go:64:24: undefined: v
+tests/machine/x/go/tpch_q1.go:64:27: undefined: LineitemItem
+tests/machine/x/go/tpch_q1.go:64:52: undefined: v
+tests/machine/x/go/tpch_q1.go:64:55: undefined: LineitemItem
+tests/machine/x/go/tpch_q1.go:64:80: undefined: v
+tests/machine/x/go/tpch_q1.go:64:83: undefined: LineitemItem
+tests/machine/x/go/tpch_q1.go:72:5: undefined: LineitemItem
+tests/machine/x/go/tpch_q1.go:72:5: too many errors

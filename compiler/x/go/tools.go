@@ -12,7 +12,6 @@ import (
 	"runtime"
 
 	"golang.org/x/tools/imports"
-	meta "mochi/compiler/meta"
 )
 
 // EnsureMochi builds the Mochi command and returns its path. It is used by
@@ -116,7 +115,6 @@ func EnsureGopls() error {
 // formatter and then, if available, attempts to run `goimports` or `gofmt` for
 // additional cleanup. The input is returned with a trailing newline.
 func FormatGo(src []byte) []byte {
-	header := meta.Header("//")
 	var prefix []byte
 	if bytes.HasPrefix(src, []byte("//go:")) || bytes.HasPrefix(src, []byte("// +build")) {
 		if i := bytes.IndexByte(src, '\n'); i != -1 {
@@ -124,7 +122,7 @@ func FormatGo(src []byte) []byte {
 			src = src[i+1:]
 		}
 	}
-	src = append(prefix, append(header, src...)...)
+	src = append(prefix, src...)
 
 	if out, err := format.Source(src); err == nil {
 		src = out
