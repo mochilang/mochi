@@ -1,8 +1,6 @@
-def outer(x: int) -> int:
-    """outer(x: int) -> int"""
+def outer(x):
 
-    def inner(y: int) -> int:
-        """inner(y: int) -> int"""
+    def inner(y):
         return x + y
 
     return inner(5)

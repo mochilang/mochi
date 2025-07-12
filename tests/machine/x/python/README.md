@@ -137,3 +137,4 @@ Compiled programs: 100/100 successful.
 - [ ] Support advanced slicing operations
 - [ ] Document integration with Jupyter notebooks
 - [ ] Add pattern matching support
+- [x] Infer types for empty list literals
