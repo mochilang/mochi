@@ -1074,13 +1074,15 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
-				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
-					t = st
-					if c.env != nil {
-						c.env.SetStruct(st.Name, st)
+				if !(isMapStringIntLiteral(ml, c.env) || isMapIntStringLiteral(ml, c.env)) {
+					if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+						t = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
+						c.compileStructType(st)
+						c.structLits[ml] = st
 					}
-					c.compileStructType(st)
-					c.structLits[ml] = st
 				}
 			}
 		}
@@ -1108,13 +1110,15 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				}
 			}
 		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
-			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
-				t = st
-				if c.env != nil {
-					c.env.SetStruct(st.Name, st)
+			if !(isMapStringIntLiteral(ml, c.env) || isMapIntStringLiteral(ml, c.env)) {
+				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+					t = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.structLits[ml] = st
 				}
-				c.compileStructType(st)
-				c.structLits[ml] = st
 			}
 		} else if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 			if ml := asMapLiteral(q.Select); ml != nil && c.env != nil {
@@ -1355,13 +1359,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 					}
 				}
 			} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
-				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
-					t = st
-					if c.env != nil {
-						c.env.SetStruct(st.Name, st)
+				if !(isMapStringIntLiteral(ml, c.env) || isMapIntStringLiteral(ml, c.env)) {
+					if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+						t = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
+						c.compileStructType(st)
+						c.structLits[ml] = st
 					}
-					c.compileStructType(st)
-					c.structLits[ml] = st
 				}
 			}
 		}
@@ -1384,13 +1390,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				}
 			}
 		} else if ml := stmt.Value.Binary.Left.Value.Target.Map; ml != nil {
-			if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
-				t = st
-				if c.env != nil {
-					c.env.SetStruct(st.Name, st)
+			if !(isMapStringIntLiteral(ml, c.env) || isMapIntStringLiteral(ml, c.env)) {
+				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
+					t = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.structLits[ml] = st
 				}
-				c.compileStructType(st)
-				c.structLits[ml] = st
 			}
 		}
 	}
