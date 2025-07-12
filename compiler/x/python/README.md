@@ -54,6 +54,7 @@ var helperMap = map[string]string{
     "_group_by":   helperGroupBy,
     "_count":      helperCount,
     "_avg":        helperAvg,
+    "_join":       helperJoin,
     "_union_all":  helperUnionAll,
     "_union":      helperUnion,
     "_except":     helperExcept,
