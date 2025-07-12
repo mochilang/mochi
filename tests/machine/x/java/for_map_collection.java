@@ -1,3 +1,4 @@
+// for_map_collection.mochi
 import java.util.*;
 
 class AB {

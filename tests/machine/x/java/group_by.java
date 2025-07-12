@@ -1,3 +1,4 @@
+// group_by.mochi
 import java.util.*;
 
 class NameAgeCity {
@@ -39,30 +40,37 @@ class CityCountAvgAge {
     int size() { return 3; }
 }
 public class GroupBy {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<NameAgeCity> people = new ArrayList<>(Arrays.asList(new NameAgeCity("Alice", 30, "Paris"), new NameAgeCity("Bob", 15, "Hanoi"), new NameAgeCity("Charlie", 65, "Paris"), new NameAgeCity("Diana", 45, "Hanoi"), new NameAgeCity("Eve", 70, "Paris"), new NameAgeCity("Frank", 22, "Hanoi")));
     List<CityCountAvgAge> stats = (new java.util.function.Supplier<List<CityCountAvgAge>>(){public List<CityCountAvgAge> get(){
-    List<CityCountAvgAge> _res0 = new ArrayList<>();
-    Map<String,List<NameAgeCity>> _groups1 = new LinkedHashMap<>();
+    List<CityCountAvgAge> res0 = new ArrayList<>();
+    Map<String,List<NameAgeCity>> groups1 = new LinkedHashMap<>();
     for (var person : people) {
-        var _row2 = person;
-        String _key3 = person.city;
-        List<NameAgeCity> _b4 = _groups1.get(_key3);
-        if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-        _b4.add(_row2);
+        var row2 = person;
+        String key3 = person.city;
+        List<NameAgeCity> bucket4 = groups1.get(key3);
+        if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+        bucket4.add(row2);
     }
-    for (Map.Entry<String,List<NameAgeCity>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<NameAgeCity>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<NameAgeCity> g = __e.getValue();
-        _res0.add(new CityCountAvgAge(g_key, g.size(), (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
-    List<Integer> _res5 = new ArrayList<>();
+        Group<String,NameAgeCity> g = new Group<>(g_key, __e.getValue());
+        res0.add(new CityCountAvgAge(g.key, g.size(), (new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+    List<Integer> res5 = new ArrayList<>();
     for (var p : g) {
-        _res5.add(p.age);
+        res5.add(p.age);
     }
-    return _res5;
+    return res5;
 }}).get().stream().mapToDouble(n -> ((Number)n).doubleValue()).average().orElse(0)));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- People grouped by city ---");
     for (CityCountAvgAge s : stats) {

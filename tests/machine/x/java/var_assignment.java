@@ -1,3 +1,4 @@
+// var_assignment.mochi
 public class VarAssignment {
     public static void main(String[] args) {
     int x = 1;

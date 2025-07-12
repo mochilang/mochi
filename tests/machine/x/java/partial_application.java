@@ -1,3 +1,4 @@
+// partial_application.mochi
 import java.util.function.*;
 
 public class PartialApplication {

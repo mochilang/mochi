@@ -1,3 +1,4 @@
+// sort_stable.mochi
 import java.util.*;
 
 class NV {
@@ -21,11 +22,11 @@ public class SortStable {
     public static void main(String[] args) {
     List<NV> items = new ArrayList<>(Arrays.asList(new NV(1, "a"), new NV(1, "b"), new NV(2, "c")));
     List<String> result = (new java.util.function.Supplier<List<String>>(){public List<String> get(){
-    List<String> _res0 = new ArrayList<>();
+    List<String> res0 = new ArrayList<>();
     for (var i : items) {
-        _res0.add(i.v);
+        res0.add(i.v);
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println(result);
     }

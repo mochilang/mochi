@@ -1,3 +1,4 @@
+// query_sum_select.mochi
 import java.util.*;
 
 public class QuerySumSelect {

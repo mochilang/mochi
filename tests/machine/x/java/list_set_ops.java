@@ -1,30 +1,11 @@
+// list_set_ops.mochi
 import java.util.*;
 
 public class ListSetOps {
-    static <T> List<T> union_all(List<T> a, List<T> b) {
-        List<T> res = new ArrayList<>(a);
-        res.addAll(b);
-        return res;
-    }
-    static <T> List<T> union(List<T> a, List<T> b) {
-        LinkedHashSet<T> s = new LinkedHashSet<>(a);
-        s.addAll(b);
-        return new ArrayList<>(s);
-    }
-    static <T> List<T> except(List<T> a, List<T> b) {
-        List<T> res = new ArrayList<>();
-        for (T x : a) if (!b.contains(x)) res.add(x);
-        return res;
-    }
-    static <T> List<T> intersect(List<T> a, List<T> b) {
-        List<T> res = new ArrayList<>();
-        for (T x : a) if (b.contains(x) && !res.contains(x)) res.add(x);
-        return res;
-    }
     public static void main(String[] args) {
-    System.out.println(union(Arrays.asList(1, 2), Arrays.asList(2, 3)));
-    System.out.println(except(Arrays.asList(1, 2, 3), Arrays.asList(2)));
-    System.out.println(intersect(Arrays.asList(1, 2, 3), Arrays.asList(2, 4)));
-    System.out.println(union_all(Arrays.asList(1, 2), Arrays.asList(2, 3)).size());
+    System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).distinct().collect(java.util.stream.Collectors.toList()));
+    System.out.println(Arrays.asList(1, 2, 3).stream().filter(x -> !Arrays.asList(2).contains(x)).collect(java.util.stream.Collectors.toList()));
+    System.out.println(Arrays.asList(1, 2, 3).stream().filter(Arrays.asList(2, 4)::contains).distinct().collect(java.util.stream.Collectors.toList()));
+    System.out.println(java.util.stream.Stream.concat(Arrays.asList(1, 2).stream(), Arrays.asList(2, 3).stream()).collect(java.util.stream.Collectors.toList()).size());
     }
 }

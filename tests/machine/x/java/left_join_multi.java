@@ -1,3 +1,4 @@
+// left_join_multi.mochi
 import java.util.*;
 
 class IdName {
@@ -76,23 +77,23 @@ public class LeftJoinMulti {
     List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 2)));
     List<OrderIdSku> items = new ArrayList<>(Arrays.asList(new OrderIdSku(100, "a")));
     List<OrderIdNameItem> result = (new java.util.function.Supplier<List<OrderIdNameItem>>(){public List<OrderIdNameItem> get(){
-    List<OrderIdNameItem> _res0 = new ArrayList<>();
+    List<OrderIdNameItem> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(Objects.equals(o.customerId, c.id))) continue;
-            List<OrderIdSku> _tmp1 = new ArrayList<>();
-            for (var _it2 : items) {
-                var i = _it2;
+            List<OrderIdSku> tmp1 = new ArrayList<>();
+            for (var it2 : items) {
+                var i = it2;
                 if (!(Objects.equals(o.id, i.orderId))) continue;
-                _tmp1.add(_it2);
+                tmp1.add(it2);
             }
-            if (_tmp1.isEmpty()) _tmp1.add(null);
-            for (var i : _tmp1) {
-                _res0.add(new OrderIdNameItem(o.id, c.name, i));
+            if (tmp1.isEmpty()) tmp1.add(null);
+            for (var i : tmp1) {
+                res0.add(new OrderIdNameItem(o.id, c.name, i));
             }
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Left Join Multi ---");
     for (OrderIdNameItem r : result) {

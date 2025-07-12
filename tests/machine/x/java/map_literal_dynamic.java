@@ -1,3 +1,4 @@
+// map_literal_dynamic.mochi
 import java.util.*;
 
 class AB {

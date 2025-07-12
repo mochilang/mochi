@@ -1,3 +1,4 @@
+// closure.mochi
 import java.util.function.*;
 
 public class Closure {

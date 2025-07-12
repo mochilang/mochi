@@ -1,3 +1,4 @@
+// user_type_literal.mochi
 import java.util.*;
 
 class Person {

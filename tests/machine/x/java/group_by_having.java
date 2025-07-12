@@ -1,3 +1,4 @@
+// group_by_having.mochi
 import java.util.*;
 
 class NameCity {
@@ -35,6 +36,13 @@ class CityNum {
     int size() { return 2; }
 }
 public class GroupByHaving {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     static String toJson(Object o) {
         if (o instanceof Map<?,?> m) {
             StringJoiner j = new StringJoiner(",", "{", "}");
@@ -53,22 +61,22 @@ public class GroupByHaving {
     public static void main(String[] args) {
     List<NameCity> people = new ArrayList<>(Arrays.asList(new NameCity("Alice", "Paris"), new NameCity("Bob", "Hanoi"), new NameCity("Charlie", "Paris"), new NameCity("Diana", "Hanoi"), new NameCity("Eve", "Paris"), new NameCity("Frank", "Hanoi"), new NameCity("George", "Paris")));
     List<CityNum> big = (new java.util.function.Supplier<List<CityNum>>(){public List<CityNum> get(){
-    List<CityNum> _res0 = new ArrayList<>();
-    Map<String,List<NameCity>> _groups1 = new LinkedHashMap<>();
+    List<CityNum> res0 = new ArrayList<>();
+    Map<String,List<NameCity>> groups1 = new LinkedHashMap<>();
     for (var p : people) {
-        var _row2 = p;
-        String _key3 = p.city;
-        List<NameCity> _b4 = _groups1.get(_key3);
-        if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-        _b4.add(_row2);
+        var row2 = p;
+        String key3 = p.city;
+        List<NameCity> bucket4 = groups1.get(key3);
+        if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+        bucket4.add(row2);
     }
-    for (Map.Entry<String,List<NameCity>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<NameCity>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<NameCity> g = __e.getValue();
+        Group<String,NameCity> g = new Group<>(g_key, __e.getValue());
         if (!(g.size() >= 4)) continue;
-        _res0.add(new CityNum(g_key, g.size()));
+        res0.add(new CityNum(g.key, g.size()));
     }
-    return _res0;
+    return res0;
 }}).get();
     json(big);
     }

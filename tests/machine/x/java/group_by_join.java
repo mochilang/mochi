@@ -1,3 +1,4 @@
+// group_by_join.mochi
 import java.util.*;
 
 class IdName {
@@ -69,28 +70,35 @@ class OC {
     int size() { return 2; }
 }
 public class GroupByJoin {
+    static class Group<K,V> implements Iterable<V> {
+        K key;
+        List<V> items;
+        Group(K key, List<V> items) { this.key = key; this.items = items; }
+        public Iterator<V> iterator() { return items.iterator(); }
+        int size() { return items.size(); }
+    }
     public static void main(String[] args) {
     List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob")));
     List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 1), new IdCustomerId(102, 2)));
     List<NameCount> stats = (new java.util.function.Supplier<List<NameCount>>(){public List<NameCount> get(){
-    List<NameCount> _res0 = new ArrayList<>();
-    Map<String,List<OC>> _groups1 = new LinkedHashMap<>();
+    List<NameCount> res0 = new ArrayList<>();
+    Map<String,List<OC>> groups1 = new LinkedHashMap<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(Objects.equals(o.customerId, c.id))) continue;
-            OC _row2 = new OC(o, c);
-            String _key3 = c.name;
-            List<OC> _b4 = _groups1.get(_key3);
-            if (_b4 == null) { _b4 = new ArrayList<>(); _groups1.put(_key3, _b4); }
-            _b4.add(_row2);
+            OC row2 = new OC(o, c);
+            String key3 = c.name;
+            List<OC> bucket4 = groups1.get(key3);
+            if (bucket4 == null) { bucket4 = new ArrayList<>(); groups1.put(key3, bucket4); }
+            bucket4.add(row2);
         }
     }
-    for (Map.Entry<String,List<OC>> __e : _groups1.entrySet()) {
+    for (Map.Entry<String,List<OC>> __e : groups1.entrySet()) {
         String g_key = __e.getKey();
-        List<OC> g = __e.getValue();
-        _res0.add(new NameCount(g_key, g.size()));
+        Group<String,OC> g = new Group<>(g_key, __e.getValue());
+        res0.add(new NameCount(g.key, g.size()));
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Orders per customer ---");
     for (NameCount s : stats) {

@@ -1,3 +1,4 @@
+// tree_sum.mochi
 import java.util.function.*;
 
 class Tree {
@@ -17,12 +18,12 @@ public class TreeSum {
     static Tree t = new Tree.Node(new Tree.Leaf(), 1, new Tree.Node(new Tree.Leaf(), 2, new Tree.Leaf()));
     static int sum_tree(Tree t) {
         return (new java.util.function.Supplier<Integer>(){public Integer get(){
-    var _t0 = t;
-    if (_t0 instanceof Tree.Leaf) return 0;
-    if (_t0 instanceof Tree.Node _v1) {
-        var left = _v1.left;
-        var value = _v1.value;
-        var right = _v1.right;
+    var t0 = t;
+    if (t0 instanceof Tree.Leaf) return 0;
+    if (t0 instanceof Tree.Node v1) {
+        var left = v1.left;
+        var value = v1.value;
+        var right = v1.right;
         return sum_tree(left) + value + sum_tree(right);
     }
     return null;

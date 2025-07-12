@@ -1,3 +1,4 @@
+// min_max_builtin.mochi
 import java.util.*;
 
 public class MinMaxBuiltin {

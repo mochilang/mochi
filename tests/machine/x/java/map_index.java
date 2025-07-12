@@ -1,3 +1,4 @@
+// map_index.mochi
 import java.util.*;
 
 class AB {

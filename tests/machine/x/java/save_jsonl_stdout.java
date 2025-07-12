@@ -1,3 +1,4 @@
+// save_jsonl_stdout.mochi
 import java.util.*;
 
 class NameAge {

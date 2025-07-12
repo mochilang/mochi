@@ -1,3 +1,4 @@
+// python_auto.mochi
 class math {
     static double pi = Math.PI;
     static double e = Math.E;

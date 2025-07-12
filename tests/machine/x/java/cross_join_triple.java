@@ -1,3 +1,4 @@
+// cross_join_triple.mochi
 import java.util.*;
 
 class NLB {
@@ -25,15 +26,15 @@ public class CrossJoinTriple {
     List<String> letters = new ArrayList<>(Arrays.asList("A", "B"));
     List<Boolean> bools = new ArrayList<>(Arrays.asList(true, false));
     List<NLB> combos = (new java.util.function.Supplier<List<NLB>>(){public List<NLB> get(){
-    List<NLB> _res0 = new ArrayList<>();
+    List<NLB> res0 = new ArrayList<>();
     for (var n : nums) {
         for (var l : letters) {
             for (var b : bools) {
-                _res0.add(new NLB(n, l, b));
+                res0.add(new NLB(n, l, b));
             }
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Cross Join of three lists ---");
     for (NLB c : combos) {

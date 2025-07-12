@@ -1,3 +1,4 @@
+// left_join.mochi
 import java.util.*;
 
 class IdName {
@@ -60,20 +61,20 @@ public class LeftJoin {
     List<IdName> customers = new ArrayList<>(Arrays.asList(new IdName(1, "Alice"), new IdName(2, "Bob")));
     List<IdCustomerIdTotal> orders = new ArrayList<>(Arrays.asList(new IdCustomerIdTotal(100, 1, 250), new IdCustomerIdTotal(101, 3, 80)));
     List<OrderIdCustomerTotal> result = (new java.util.function.Supplier<List<OrderIdCustomerTotal>>(){public List<OrderIdCustomerTotal> get(){
-    List<OrderIdCustomerTotal> _res0 = new ArrayList<>();
+    List<OrderIdCustomerTotal> res0 = new ArrayList<>();
     for (var o : orders) {
-        List<IdName> _tmp1 = new ArrayList<>();
-        for (var _it2 : customers) {
-            var c = _it2;
+        List<IdName> tmp1 = new ArrayList<>();
+        for (var it2 : customers) {
+            var c = it2;
             if (!(Objects.equals(o.customerId, c.id))) continue;
-            _tmp1.add(_it2);
+            tmp1.add(it2);
         }
-        if (_tmp1.isEmpty()) _tmp1.add(null);
-        for (var c : _tmp1) {
-            _res0.add(new OrderIdCustomerTotal(o.id, c, o.total));
+        if (tmp1.isEmpty()) tmp1.add(null);
+        for (var c : tmp1) {
+            res0.add(new OrderIdCustomerTotal(o.id, c, o.total));
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Left Join ---");
     for (OrderIdCustomerTotal entry : result) {

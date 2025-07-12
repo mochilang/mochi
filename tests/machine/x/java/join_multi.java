@@ -1,3 +1,4 @@
+// join_multi.mochi
 import java.util.*;
 
 class IdName {
@@ -74,17 +75,17 @@ public class JoinMulti {
     List<IdCustomerId> orders = new ArrayList<>(Arrays.asList(new IdCustomerId(100, 1), new IdCustomerId(101, 2)));
     List<OrderIdSku> items = new ArrayList<>(Arrays.asList(new OrderIdSku(100, "a"), new OrderIdSku(101, "b")));
     List<NameSku> result = (new java.util.function.Supplier<List<NameSku>>(){public List<NameSku> get(){
-    List<NameSku> _res0 = new ArrayList<>();
+    List<NameSku> res0 = new ArrayList<>();
     for (var o : orders) {
         for (var c : customers) {
             if (!(Objects.equals(o.customerId, c.id))) continue;
             for (var i : items) {
                 if (!(Objects.equals(o.id, i.orderId))) continue;
-                _res0.add(new NameSku(c.name, i.sku));
+                res0.add(new NameSku(c.name, i.sku));
             }
         }
     }
-    return _res0;
+    return res0;
 }}).get();
     System.out.println("--- Multi Join ---");
     for (NameSku r : result) {

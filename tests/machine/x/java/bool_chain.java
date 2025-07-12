@@ -1,3 +1,4 @@
+// bool_chain.mochi
 public class BoolChain {
     static boolean boom() {
         System.out.println("boom");
