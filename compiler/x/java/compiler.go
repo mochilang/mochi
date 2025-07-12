@@ -2047,17 +2047,13 @@ func (c *Compiler) compileBinaryOp(left string, op *parser.BinaryOp, right strin
 		return fmt.Sprintf("inOp(%s, %s)", left, right), nil
 	case "union":
 		if op.All {
-			c.helpers["union_all"] = true
-			return fmt.Sprintf("union_all(%s, %s)", left, right), nil
+			return fmt.Sprintf("java.util.stream.Stream.concat(%s.stream(), %s.stream()).collect(java.util.stream.Collectors.toList())", left, right), nil
 		}
-		c.helpers["union"] = true
-		return fmt.Sprintf("union(%s, %s)", left, right), nil
+		return fmt.Sprintf("java.util.stream.Stream.concat(%s.stream(), %s.stream()).distinct().collect(java.util.stream.Collectors.toList())", left, right), nil
 	case "except":
-		c.helpers["except"] = true
-		return fmt.Sprintf("except(%s, %s)", left, right), nil
+		return fmt.Sprintf("%s.stream().filter(x -> !%s.contains(x)).collect(java.util.stream.Collectors.toList())", left, right), nil
 	case "intersect":
-		c.helpers["intersect"] = true
-		return fmt.Sprintf("intersect(%s, %s)", left, right), nil
+		return fmt.Sprintf("%s.stream().filter(%s::contains).distinct().collect(java.util.stream.Collectors.toList())", left, right), nil
 	case "<", "<=", ">", ">=":
 		if isStringVal(left, c) || isStringVal(right, c) {
 			return fmt.Sprintf("String.valueOf(%s).compareTo(String.valueOf(%s)) %s 0", left, right, op.Op), nil
