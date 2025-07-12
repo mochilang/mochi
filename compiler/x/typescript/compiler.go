@@ -931,7 +931,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		writeln(fmt.Sprintf("const _k = JSON.stringify(%s);", keyStr))
 		writeln("let g = groups[_k];")
 		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
-		if len(q.Froms)+len(q.Joins) <= 1 {
+		if len(q.Froms)+len(q.Joins) < 1 {
 			writeln(fmt.Sprintf("g.push(%s);", q.Var))
 		} else {
 			parts := []string{fmt.Sprintf("%s: %s", q.Var, q.Var)}
