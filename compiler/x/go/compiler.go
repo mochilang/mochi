@@ -39,6 +39,7 @@ type Compiler struct {
 	externObjects map[string]bool
 
 	tempVarCount int
+	varCounts    map[string]int
 
 	returnType types.Type
 
@@ -68,6 +69,7 @@ func New(env *types.Env) *Compiler {
 		tsAuto:          map[string]bool{},
 		externObjects:   map[string]bool{},
 		tempVarCount:    0,
+		varCounts:       map[string]int{},
 		anonStructCount: 0,
 	}
 }
