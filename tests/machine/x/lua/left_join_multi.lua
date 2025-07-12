@@ -168,5 +168,4 @@ end)()
 print("--- Left Join Multi ---")
 for _, r in ipairs(result) do
     print(r.orderId, r.name, r.item)
-    ::__continue0::
 end

@@ -25,5 +25,4 @@ end)()
 print("--- Top products (excluding most expensive) ---")
 for _, item in ipairs(expensive) do
     print(item.name, "costs $", item.price)
-    ::__continue0::
 end

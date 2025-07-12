@@ -79,5 +79,4 @@ end)()
 print("--- People grouped by city ---")
 for _, s in ipairs(stats) do
     print(s.city, ": count =", s.count, ", avg_age =", s.avg_age)
-    ::__continue0::
 end

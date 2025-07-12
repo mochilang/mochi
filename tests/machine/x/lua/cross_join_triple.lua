@@ -15,5 +15,4 @@ end)()
 print("--- Cross Join of three lists ---")
 for _, c in ipairs(combos) do
     print(c.n, c.l, c.b)
-    ::__continue0::
 end

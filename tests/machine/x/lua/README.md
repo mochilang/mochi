@@ -106,3 +106,9 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Status
+All programs executed successfully.
+
+## Remaining tasks
+- [ ] Generate simpler print statements using string concatenation

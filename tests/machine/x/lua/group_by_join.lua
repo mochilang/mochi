@@ -229,5 +229,4 @@ end)()
 print("--- Orders per customer ---")
 for _, s in ipairs(stats) do
     print(s.name, "orders:", s.count)
-    ::__continue0::
 end

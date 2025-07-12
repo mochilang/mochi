@@ -18,5 +18,4 @@ adults = (function()
 end)()
 for _, a in ipairs(adults) do
     print(a.name, a.email)
-    ::__continue0::
 end
