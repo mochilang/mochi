@@ -1,2 +1,14 @@
-The three dogs are named Benjamin, Samba and Bernie.
+Package sees: Salt Pepper Mustard
+There are 3 dogs.
 
+Package sees: Salt Pepper Mustard
+Main sees:   Benjamin Pepper Mustard
+There are 4 dogs.
+
+Package sees: Salt Samba Mustard
+Main sees:   Benjamin Samba Mustard
+There are 4 dogs.
+
+Package sees: Salt Samba Mustard
+Main sees:   Benjamin Samba Bernie
+There are 5 dogs.

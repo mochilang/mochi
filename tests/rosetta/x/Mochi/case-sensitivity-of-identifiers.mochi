@@ -1,8 +1,47 @@
-// Mochi version of Rosetta "Case-sensitivity of identifiers" task
-// Demonstrates that identifiers with different case are distinct.
+// Mochi implementation of Rosetta "Case sensitivity of identifiers" task
 
-var dog = "Benjamin"
-var Dog = "Samba"
-var DOG = "Bernie"
+fun main() {
+  // variables belonging to the package
+  var pkg_dog = "Salt"
+  var Dog = "Pepper"
+  var pkg_DOG = "Mustard"
 
-print("The three dogs are named " + dog + ", " + Dog + " and " + DOG + ".")
+  fun packageSees(d1: string, d2: string, d3: string): map<string, bool> {
+    print("Package sees: " + d1 + " " + d2 + " " + d3)
+    return {"pkg_dog": true, "Dog": true, "pkg_DOG": true}
+  }
+
+  // three dogs from the package
+  var d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print("There are " + str(len(d)) + " dogs.\n")
+
+  // declare a new variable in main
+  var dog = "Benjamin"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  print("There are " + str(len(d)) + " dogs.\n")
+
+  // change the exported Dog variable
+  Dog = "Samba"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  print("There are " + str(len(d)) + " dogs.\n")
+
+  // shadow the package DOG variable with a new one
+  var DOG = "Bernie"
+  d = packageSees(pkg_dog, Dog, pkg_DOG)
+  print("Main sees:   " + dog + " " + Dog + " " + DOG)
+  d["dog"] = true
+  d["Dog"] = true
+  d["pkg_DOG"] = true
+  d["DOG"] = true
+  print("There are " + str(len(d)) + " dogs.")
+}
+
+main()
