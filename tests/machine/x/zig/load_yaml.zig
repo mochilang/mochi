@@ -1,19 +1,23 @@
 const std = @import("std");
 
+fn handleError(err: anyerror) noreturn {
+    std.debug.panic("{any}", .{err});
+}
+
 fn _read_input(path: ?[]const u8) []const u8 {
     const alloc = std.heap.page_allocator;
     if (path == null or std.mem.eql(u8, path.?, "-")) {
-        return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;
+        return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch |err| handleError(err);
     } else {
-        return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;
+        return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch |err| handleError(err);
     }
 }
 
 fn _write_output(path: ?[]const u8, data: []const u8) void {
     if (path == null or std.mem.eql(u8, path.?, "-")) {
-        std.io.getStdOut().writeAll(data) catch unreachable;
+        std.io.getStdOut().writeAll(data) catch |err| handleError(err);
     } else {
-        std.fs.cwd().writeFile(path.?, data) catch unreachable;
+        std.fs.cwd().writeFile(path.?, data) catch |err| handleError(err);
     }
 }
 
@@ -38,7 +42,7 @@ const adults = blk0: { var _tmp0 = std.ArrayList(struct {
 }{
     .name = p.name,
     .email = p.email,
-}) catch unreachable; } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap([]const u8)
+}) catch |err| handleError(err); } const _tmp1 = _tmp0.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp1; }; // []const std.StringHashMap([]const u8)
 
 pub fn main() void {
     for (adults) |a| {

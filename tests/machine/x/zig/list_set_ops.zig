@@ -8,31 +8,31 @@ fn _contains(comptime T: type, v: []const T, item: T) bool {
 fn _union_all(comptime T: type, a: []const T, b: []const T) []T {
     var res = std.ArrayList(T).init(std.heap.page_allocator);
     defer res.deinit();
-    for (a) |it| { res.append(it) catch unreachable; }
-    for (b) |it| { res.append(it) catch unreachable; }
-    return res.toOwnedSlice() catch unreachable;
+    for (a) |it| { res.append(it) catch |err| handleError(err); }
+    for (b) |it| { res.append(it) catch |err| handleError(err); }
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 fn _union(comptime T: type, a: []const T, b: []const T) []T {
     var res = std.ArrayList(T).init(std.heap.page_allocator);
     defer res.deinit();
-    for (a) |it| { res.append(it) catch unreachable; }
-    for (b) |it| { if (!_contains(T, res.items, it)) res.append(it) catch unreachable; }
-    return res.toOwnedSlice() catch unreachable;
+    for (a) |it| { res.append(it) catch |err| handleError(err); }
+    for (b) |it| { if (!_contains(T, res.items, it)) res.append(it) catch |err| handleError(err); }
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 fn _except(comptime T: type, a: []const T, b: []const T) []T {
     var res = std.ArrayList(T).init(std.heap.page_allocator);
     defer res.deinit();
-    for (a) |it| { if (!_contains(T, b, it)) res.append(it) catch unreachable; }
-    return res.toOwnedSlice() catch unreachable;
+    for (a) |it| { if (!_contains(T, b, it)) res.append(it) catch |err| handleError(err); }
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 fn _intersect(comptime T: type, a: []const T, b: []const T) []T {
     var res = std.ArrayList(T).init(std.heap.page_allocator);
     defer res.deinit();
-    for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it) catch unreachable; }
-    return res.toOwnedSlice() catch unreachable;
+    for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it) catch |err| handleError(err); }
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 pub fn main() void {

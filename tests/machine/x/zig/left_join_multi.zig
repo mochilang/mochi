@@ -1,5 +1,9 @@
 const std = @import("std");
 
+fn handleError(err: anyerror) noreturn {
+    std.debug.panic("{any}", .{err});
+}
+
 const CustomersItem = struct {
     id: i32,
     name: []const u8,
@@ -13,7 +17,7 @@ const customers = &[_]CustomersItem{
     .id = 2,
     .name = "Bob",
 },
-}; // []const CustomersItem
+}; // []const Customersitem
 const OrdersItem = struct {
     id: i32,
     customerId: i32,
@@ -27,7 +31,7 @@ const orders = &[_]OrdersItem{
     .id = 101,
     .customerId = 2,
 },
-}; // []const OrdersItem
+}; // []const Ordersitem
 const ItemsItem = struct {
     orderId: i32,
     sku: []const u8,
@@ -35,7 +39,7 @@ const ItemsItem = struct {
 const items = &[_]ItemsItem{ItemsItem{
     .orderId = 100,
     .sku = "a",
-}}; // []const ItemsItem
+}}; // []const Itemsitem
 const result = blk0: { var _tmp0 = std.ArrayList(struct {
     orderId: i32,
     name: []const u8,
@@ -48,7 +52,7 @@ const result = blk0: { var _tmp0 = std.ArrayList(struct {
     .orderId = o.id,
     .name = c.name,
     .item = i,
-}) catch unreachable; } } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
+}) catch |err| handleError(err); } } } const _tmp1 = _tmp0.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Left Join Multi ---\n", .{});

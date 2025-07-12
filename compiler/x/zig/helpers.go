@@ -432,6 +432,13 @@ func pascalCase(s string) string {
 	return sanitizeName(strings.Join(parts, ""))
 }
 
+// catchHandler returns the Zig error handling suffix and marks that the
+// generated program needs the runtime error handler.
+func (c *Compiler) catchHandler() string {
+	c.needsErrHandler = true
+	return " catch |err| handleError(err)"
+}
+
 // nameNestedStructs assigns generated names to nested struct types within t.
 // The prefix is used as the base for generated type names. The returned type
 // will have any new struct names registered in the environment.

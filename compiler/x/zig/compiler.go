@@ -51,6 +51,7 @@ type Compiler struct {
 	needsFetch        bool
 	needsFetchJSON    bool
 	needsExpect       bool
+	needsErrHandler   bool
 	needsAppend       bool
 	needsPrintList    bool
 	tests             []string
@@ -1163,7 +1164,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 				}
 				return err
 			}
-			c.writeln(fmt.Sprintf("_ = %s.put(%s, %s) catch unreachable;", itemVar, keyExpr, val))
+			c.writeln(fmt.Sprintf("_ = %s.put(%s, %s)%s;", itemVar, keyExpr, val, c.catchHandler()))
 		}
 	}
 
@@ -1466,8 +1467,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyVar := c.newTmp()
 		b.WriteString(" const " + keyVar + " = " + keyExpr + ";")
 		b.WriteString(" if (" + idxMap + ".get(" + keyVar + ")) |idx| {")
-		b.WriteString(" " + tmp + ".items[idx].Items.append(" + sanitizeName(q.Var) + ") catch unreachable;")
-		b.WriteString(" } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ") catch unreachable; " + tmp + ".append(g) catch unreachable; " + idxMap + ".put(" + keyVar + ", " + tmp + ".items.len - 1) catch unreachable; }")
+		b.WriteString(" " + tmp + ".items[idx].Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + ";")
+		b.WriteString(" } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + "; " + tmp + ".append(g)" + c.catchHandler() + "; " + idxMap + ".put(" + keyVar + ", " + tmp + ".items.len - 1)" + c.catchHandler() + "; }")
 		for i := 0; i < len(q.Joins); i++ {
 			b.WriteString(" }")
 		}
@@ -1481,13 +1482,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if havingExpr != "" {
 			b.WriteString(" if (!(" + havingExpr + ")) continue;")
 		}
-		b.WriteString(" " + itemsVar + ".append(" + sanitizeName(q.Group.Name) + ") catch unreachable; }")
+		b.WriteString(" " + itemsVar + ".append(" + sanitizeName(q.Group.Name) + ")" + c.catchHandler() + "; }")
 		if sortExpr != "" {
 			keyType := zigTypeOf(c.inferExprType(q.Sort))
 			pairType := "struct { item: " + groupType + ", key: " + keyType + " }"
 			sortTmp := c.newTmp()
 			b.WriteString(" var " + sortTmp + " = std.ArrayList(" + pairType + ").init(std.heap.page_allocator);")
-			b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + sortTmp + ".append(.{ .item = " + sanitizeName(q.Group.Name) + ", .key = " + sortExpr + " }) catch unreachable; }")
+			b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + sortTmp + ".append(.{ .item = " + sanitizeName(q.Group.Name) + ", .key = " + sortExpr + " })" + c.catchHandler() + "; }")
 			b.WriteString(" for (0.." + sortTmp + ".items.len) |i| { for (i+1.." + sortTmp + ".items.len) |j| {")
 			cmp := sortTmp + ".items[j].key < " + sortTmp + ".items[i].key"
 			if zigTypeOf(c.inferExprType(q.Sort)) == "[]const u8" {
@@ -1497,13 +1498,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(" } }")
 			itemsVar2 := c.newTmp()
 			b.WriteString(" var " + itemsVar2 + " = std.ArrayList(" + groupType + ").init(std.heap.page_allocator);")
-			b.WriteString("for (" + sortTmp + ".items) |p| { " + itemsVar2 + ".append(p.item) catch unreachable; }")
+			b.WriteString("for (" + sortTmp + ".items) |p| { " + itemsVar2 + ".append(p.item)" + c.catchHandler() + "; }")
 			itemsVar = itemsVar2
 		}
 		resVar := c.newTmp()
 		b.WriteString(" var " + resVar + " = std.ArrayList(" + resElem + ").init(std.heap.page_allocator);")
-		b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ") catch unreachable; }")
-		b.WriteString(" const " + resVar + "Slice = " + resVar + ".toOwnedSlice() catch unreachable;")
+		b.WriteString("for (" + itemsVar + ".items) |" + sanitizeName(q.Group.Name) + "| { " + resVar + ".append(" + sel + ")" + c.catchHandler() + "; }")
+		b.WriteString(" const " + resVar + "Slice = " + resVar + ".toOwnedSlice()" + c.catchHandler() + ";")
 		if skipExpr != "" || takeExpr != "" {
 			c.needsSlice = true
 			start := "0"
@@ -1582,14 +1583,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if cond != "" {
 				b.WriteString(" if (!(" + cond + ")) { continue; }")
 			}
-			b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+			b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			b.WriteString(" if (!matched) { const " + jv + ": ?" + joinElem + " = null;")
 			if cond != "" {
-				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			} else {
-				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+				b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + ";")
 			}
-			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice()" + c.catchHandler() + "; break :" + lbl + " res; }")
 			return b.String(), nil
 		}
 		// handle simple right join without extra clauses
@@ -1648,14 +1649,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if cond != "" {
 				b.WriteString(" if (!(" + cond + ")) { continue; }")
 			}
-			b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+			b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			b.WriteString(" if (!matched) { const " + lv + ": ?" + elemElem + " = null;")
 			if cond != "" {
-				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			} else {
-				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+				b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + ";")
 			}
-			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice()" + c.catchHandler() + "; break :" + lbl + " res; }")
 			return b.String(), nil
 		}
 		// handle simple outer join without extra clauses
@@ -1715,17 +1716,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString("for (" + src + ", 0..) |" + lv + ", _i| { var " + jv + ": ?" + joinElem + " = null; var mi: usize = 0; for (" + joinSrc + ", 0..) |j, ji| {")
 			b.WriteString(" if (!(" + on + ")) continue; " + jv + " = j; mi = ji; " + matched + ".put(ji, true) catch {}; break; }")
 			if cond != "" {
-				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			} else {
-				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+				b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + ";")
 			}
 			b.WriteString(" } for (" + joinSrc + ", 0..) |j, ji| { if (!" + matched + ".contains(ji)) { const " + lv + ": ?" + elemElem + " = null; " + jv + " = j;")
 			if cond != "" {
-				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ") catch unreachable; }")
+				b.WriteString(" if (" + cond + ") { " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 			} else {
-				b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+				b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + ";")
 			}
-			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice() catch unreachable; break :" + lbl + " res; }")
+			b.WriteString(" } } const res = " + tmp + ".toOwnedSlice()" + c.catchHandler() + "; break :" + lbl + " res; }")
 			return b.String(), nil
 		}
 		if q.Group != nil {
@@ -1810,7 +1811,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
-		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable;")
+		b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + ";")
 		for i := 0; i < len(q.Joins); i++ {
 			b.WriteString(" }")
 		}
@@ -1819,7 +1820,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" }")
 		resVar := c.newTmp()
-		b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+		b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 		b.WriteString(" break :" + lbl + " " + resVar + "; }")
 		return b.String(), nil
 	}
@@ -1889,7 +1890,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
-		b.WriteString(" " + tmp + ".append(.{ .item = " + sel + ", .key = " + sortExpr + " }) catch unreachable; }")
+		b.WriteString(" " + tmp + ".append(.{ .item = " + sel + ", .key = " + sortExpr + " })" + c.catchHandler() + "; }")
 		b.WriteString(" for (0.." + tmp + ".items.len) |i| { for (i+1.." + tmp + ".items.len) |j| {")
 		cmp := tmp + ".items[j].key < " + tmp + ".items[i].key"
 		if keyType == "[]const u8" {
@@ -1899,7 +1900,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(" } }")
 		listTmp := c.newTmp()
 		b.WriteString(" var " + listTmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator);")
-		b.WriteString("for (" + tmp + ".items) |p| { " + listTmp + ".append(p.item) catch unreachable; }")
+		b.WriteString("for (" + tmp + ".items) |p| { " + listTmp + ".append(p.item)" + c.catchHandler() + "; }")
 		tmp = listTmp
 	} else {
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
@@ -1907,10 +1908,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if cond != "" {
 			b.WriteString(" if (!(" + cond + ")) continue;")
 		}
-		b.WriteString(" " + tmp + ".append(" + sel + ") catch unreachable; }")
+		b.WriteString(" " + tmp + ".append(" + sel + ")" + c.catchHandler() + "; }")
 	}
 	resVar := c.newTmp()
-	b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice() catch unreachable;")
+	b.WriteString(" const " + resVar + " = " + tmp + ".toOwnedSlice()" + c.catchHandler() + ";")
 	if skipExpr != "" || takeExpr != "" {
 		c.needsSlice = true
 		start := "0"
@@ -2176,7 +2177,7 @@ func (c *Compiler) compileAssign(st *parser.AssignStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("_ = %s.put(%s, %s) catch unreachable;", lhs, key, val))
+		c.writeln(fmt.Sprintf("_ = %s.put(%s, %s)%s;", lhs, key, val, c.catchHandler()))
 		return nil
 	}
 	for i, idx := range st.Index {
@@ -2484,7 +2485,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr, asReturn bool) (string,
 			if !handled {
 				typ := c.zigType(op.Cast.Type)
 				if _, ok := rt.(types.IntType); ok && c.isStringPrimary(p.Target) {
-					expr = fmt.Sprintf("std.fmt.parseInt(%s, %s, 10) catch unreachable", typ, expr)
+					expr = fmt.Sprintf("std.fmt.parseInt(%s, %s, 10)%s", typ, expr, c.catchHandler())
 				} else {
 					expr = fmt.Sprintf("@as(%s, %s)", typ, expr)
 				}
@@ -2844,8 +2845,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		var b strings.Builder
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
 		b.WriteString("defer " + tmp + ".deinit(); ")
-		b.WriteString(tmp + ".appendSlice(" + listArg + ") catch unreachable; ")
-		b.WriteString(tmp + ".append(" + elemArg + ") catch unreachable; ")
+		b.WriteString(tmp + ".appendSlice(" + listArg + ")" + c.catchHandler() + "; ")
+		b.WriteString(tmp + ".append(" + elemArg + ")" + c.catchHandler() + "; ")
 		b.WriteString("break :" + lbl + " " + tmp + ".items; }")
 		return b.String(), nil
 	}
@@ -2939,7 +2940,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		case types.FloatType:
 			fmtStr = "{d}"
 		}
-		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, %q, .{%s}) catch unreachable", fmtStr, arg), nil
+		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, %q, .{%s})%s", fmtStr, arg, c.catchHandler()), nil
 	}
 	if name == "now" && len(call.Args) == 0 {
 		return "std.time.nanoTimestamp()", nil
@@ -3300,7 +3301,7 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral, forceMap bool) (strin
 		if err != nil {
 			return "", err
 		}
-		b.WriteString(tmpMap + ".put(" + keyExpr + ", " + v + ") catch unreachable; ")
+		b.WriteString(tmpMap + ".put(" + keyExpr + ", " + v + ")" + c.catchHandler() + "; ")
 	}
 	b.WriteString("break :" + lbl + " " + tmpMap + "; })")
 	return b.String(), nil

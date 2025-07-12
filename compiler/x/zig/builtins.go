@@ -3,6 +3,7 @@
 package zigcode
 
 func (c *Compiler) writeBuiltins() {
+	c.writeErrorHandler()
 	if c.needsAvgInt {
 		c.writeln("fn _avg_int(v: []const i32) i32 {")
 		c.indent++
@@ -116,9 +117,9 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("res.appendSlice(v) catch unreachable;")
-		c.writeln("res.append(x) catch unreachable;")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("res.appendSlice(v)" + c.catchHandler() + ";")
+		c.writeln("res.append(x)" + c.catchHandler() + ";")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -154,9 +155,9 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
-		c.writeln("for (b) |it| { res.append(it) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("for (a) |it| { res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("for (b) |it| { res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -165,9 +166,9 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
-		c.writeln("for (b) |it| { if (!_contains(T, res.items, it)) res.append(it) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("for (a) |it| { res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("for (b) |it| { if (!_contains(T, res.items, it)) res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -176,8 +177,8 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("for (a) |it| { if (!_contains(T, b, it)) res.append(it) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("for (a) |it| { if (!_contains(T, b, it)) res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -186,8 +187,8 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("for (a) |it| { if (_contains(T, b, it) and !_contains(T, res.items, it)) res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -197,7 +198,7 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var buf = std.ArrayList(u8).init(std.heap.page_allocator);")
 		c.writeln("defer buf.deinit();")
-		c.writeln("std.json.stringify(v, .{}, buf.writer()) catch unreachable;")
+		c.writeln("std.json.stringify(v, .{}, buf.writer())" + c.catchHandler() + ";")
 		c.writeln("std.debug.print(\"{s}\\n\", .{buf.items});")
 		c.indent--
 		c.writeln("}")
@@ -209,11 +210,11 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("const alloc = std.heap.page_allocator;")
 		c.writeln("if (path == null or std.mem.eql(u8, path.?, \"-\")) {")
 		c.indent++
-		c.writeln("return std.io.getStdIn().readAllAlloc(alloc, 1 << 20) catch unreachable;")
+		c.writeln("return std.io.getStdIn().readAllAlloc(alloc, 1 << 20)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("} else {")
 		c.indent++
-		c.writeln("return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20) catch unreachable;")
+		c.writeln("return std.fs.cwd().readFileAlloc(alloc, path.?, 1 << 20)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.indent--
@@ -223,11 +224,11 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("if (path == null or std.mem.eql(u8, path.?, \"-\")) {")
 		c.indent++
-		c.writeln("std.io.getStdOut().writeAll(data) catch unreachable;")
+		c.writeln("std.io.getStdOut().writeAll(data)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("} else {")
 		c.indent++
-		c.writeln("std.fs.cwd().writeFile(path.?, data) catch unreachable;")
+		c.writeln("std.fs.cwd().writeFile(path.?, data)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.indent--
@@ -250,11 +251,11 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("defer buf.deinit();")
 		c.writeln("if (rows.len == 1) {")
 		c.indent++
-		c.writeln("std.json.stringify(rows[0], .{}, buf.writer()) catch unreachable;")
+		c.writeln("std.json.stringify(rows[0], .{}, buf.writer())" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("} else {")
 		c.indent++
-		c.writeln("std.json.stringify(rows, .{}, buf.writer()) catch unreachable;")
+		c.writeln("std.json.stringify(rows, .{}, buf.writer())" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("_write_output(path, buf.items);")
@@ -269,14 +270,14 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("const alloc = std.heap.page_allocator;")
 		c.writeln("if (std.mem.startsWith(u8, url, \"file://\")) {")
 		c.indent++
-		c.writeln("return std.fs.cwd().readFileAlloc(alloc, url[7..], 1 << 20) catch unreachable;")
+		c.writeln("return std.fs.cwd().readFileAlloc(alloc, url[7..], 1 << 20)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("var child = std.ChildProcess.init(&.{\"curl\", \"-s\", url}, alloc);")
 		c.writeln("child.stdout_behavior = .Pipe;")
-		c.writeln("child.spawn() catch unreachable;")
-		c.writeln("defer { if (child.stdout) |s| { s.close(); } child.wait() catch unreachable; }")
-		c.writeln("return child.stdout.?.readToEndAlloc(alloc, 1 << 20) catch unreachable;")
+		c.writeln("child.spawn()" + c.catchHandler() + ";")
+		c.writeln("defer { if (child.stdout) |s| { s.close(); } child.wait()" + c.catchHandler() + "; }")
+		c.writeln("return child.stdout.?.readToEndAlloc(alloc, 1 << 20)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -334,10 +335,10 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var i: i32 = s;")
 		c.writeln("while ((st > 0 and i < e) or (st < 0 and i > e)) : (i += st) {")
 		c.indent++
-		c.writeln("res.append(v[@as(usize, @intCast(i))]) catch unreachable;")
+		c.writeln("res.append(v[@as(usize, @intCast(i))])" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -361,10 +362,10 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var i: i32 = sidx;")
 		c.writeln("while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {")
 		c.indent++
-		c.writeln("res.append(s[@as(usize, @intCast(i))]) catch unreachable;")
+		c.writeln("res.append(s[@as(usize, @intCast(i))])" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -374,9 +375,9 @@ func (c *Compiler) writeBuiltins() {
 		c.indent++
 		c.writeln("var res = std.ArrayList(T).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
-		c.writeln("for (a) |it| { res.append(it) catch unreachable; }")
-		c.writeln("for (b) |it| { res.append(it) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("for (a) |it| { res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("for (b) |it| { res.append(it)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -384,7 +385,7 @@ func (c *Compiler) writeBuiltins() {
 	if c.needsConcatString {
 		c.writeln("fn _concat_string(a: []const u8, b: []const u8) []const u8 {")
 		c.indent++
-		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b }) catch unreachable;")
+		c.writeln("return std.mem.concat(u8, &[_][]const u8{ a, b })" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -395,8 +396,8 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var res = std.ArrayList([]const u8).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
 		c.writeln("var it = std.mem.split(u8, s, sep);")
-		c.writeln("while (it.next()) |p| { res.append(p) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("while (it.next()) |p| { res.append(p)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -405,7 +406,7 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("fn _join_strings(parts: []const []const u8, sep: []const u8) []const u8 {")
 		c.indent++
 		c.writeln("const alloc = std.heap.page_allocator;")
-		c.writeln("return std.mem.join(u8, sep, parts, alloc) catch unreachable;")
+		c.writeln("return std.mem.join(u8, sep, parts, alloc)" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -430,8 +431,8 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var res = std.ArrayList(K).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
 		c.writeln("var it = m.keyIterator();")
-		c.writeln("while (it.next()) |k_ptr| { res.append(k_ptr.*) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("while (it.next()) |k_ptr| { res.append(k_ptr.*)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -442,8 +443,8 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("var res = std.ArrayList(V).init(std.heap.page_allocator);")
 		c.writeln("defer res.deinit();")
 		c.writeln("var it = m.valueIterator();")
-		c.writeln("while (it.next()) |v_ptr| { res.append(v_ptr.*) catch unreachable; }")
-		c.writeln("return res.toOwnedSlice() catch unreachable;")
+		c.writeln("while (it.next()) |v_ptr| { res.append(v_ptr.*)" + c.catchHandler() + "; }")
+		c.writeln("return res.toOwnedSlice()" + c.catchHandler() + ";")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")
@@ -485,6 +486,18 @@ func (c *Compiler) writeExpectFunc() {
 	c.writeln("fn expect(cond: bool) void {")
 	c.indent++
 	c.writeln("if (!cond) @panic(\"expect failed\");")
+	c.indent--
+	c.writeln("}")
+	c.writeln("")
+}
+
+func (c *Compiler) writeErrorHandler() {
+	if !c.needsErrHandler {
+		return
+	}
+	c.writeln("fn handleError(err: anyerror) noreturn {")
+	c.indent++
+	c.writeln("std.debug.panic(\"{any}\", .{err});")
 	c.indent--
 	c.writeln("}")
 	c.writeln("")

@@ -1,5 +1,9 @@
 const std = @import("std");
 
+fn handleError(err: anyerror) noreturn {
+    std.debug.panic("{any}", .{err});
+}
+
 const nums = &[_]i32{
     1,
     2,
@@ -18,7 +22,7 @@ const pairs = blk0: { var _tmp0 = std.ArrayList(struct {
 }{
     .n = n,
     .l = l,
-}) catch unreachable; } } const _tmp1 = _tmp0.toOwnedSlice() catch unreachable; break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
+}) catch |err| handleError(err); } } const _tmp1 = _tmp0.toOwnedSlice() catch |err| handleError(err); break :blk0 _tmp1; }; // []const std.StringHashMap(i32)
 
 pub fn main() void {
     std.debug.print("--- Even pairs ---\n", .{});

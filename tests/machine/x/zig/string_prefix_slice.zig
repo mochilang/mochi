@@ -16,9 +16,9 @@ fn _slice_string(s: []const u8, start: i32, end: i32, step: i32) []const u8 {
     defer res.deinit();
     var i: i32 = sidx;
     while ((stp > 0 and i < eidx) or (stp < 0 and i > eidx)) : (i += stp) {
-        res.append(s[@as(usize, @intCast(i))]) catch unreachable;
+        res.append(s[@as(usize, @intCast(i))]) catch |err| handleError(err);
     }
-    return res.toOwnedSlice() catch unreachable;
+    return res.toOwnedSlice() catch |err| handleError(err);
 }
 
 const prefix = "fore"; // []const u8
