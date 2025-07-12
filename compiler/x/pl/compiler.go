@@ -1547,6 +1547,10 @@ func (c *Compiler) compileExists(name string, q *parser.QueryExpr) error {
 }
 
 func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, bool, error) {
+	// perform a basic type check on query sources and clauses
+	if err := c.checkQueryTypes(q); err != nil {
+		return "", false, err
+	}
 	oldVars := c.vars
 	c.vars = make(map[string]string)
 	for k, v := range oldVars {
