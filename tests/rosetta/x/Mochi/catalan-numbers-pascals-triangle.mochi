@@ -1,0 +1,31 @@
+// Catalan numbers from Pascal's triangle in Mochi
+
+let n = 15
+
+// initialize t list of length n+2 with zeros
+var t: list<int> = []
+for _ in 0..(n+2) {
+  t = append(t, 0)
+}
+// set t[1] = 1
+t[1] = 1
+
+for i in 1..(n+1) {
+  var j = i
+  while j > 1 {
+    t[j] = t[j] + t[j-1]
+    j = j - 1
+  }
+  t[i+1] = t[i]
+  j = i + 1
+  while j > 1 {
+    t[j] = t[j] + t[j-1]
+    j = j - 1
+  }
+  let cat = t[i+1] - t[i]
+  if i < 10 {
+    print(" " + str(i) + " : " + str(cat))
+  } else {
+    print(str(i) + " : " + str(cat))
+  }
+}
