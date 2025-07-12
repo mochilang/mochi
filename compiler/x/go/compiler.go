@@ -404,6 +404,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	} else if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
+	} else if s.Type == nil && c.indent > 0 {
+		c.writeln(fmt.Sprintf("%s := %s", name, value))
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
@@ -503,6 +505,8 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	} else if fn := pureFunExpr(s.Value); fn != nil && exprUsesVarFun(fn, s.Name) {
 		c.writeln(fmt.Sprintf("var %s %s", name, typStr))
 		c.writeln(fmt.Sprintf("%s = %s", name, value))
+	} else if s.Type == nil && c.indent > 0 {
+		c.writeln(fmt.Sprintf("%s := %s", name, value))
 	} else {
 		c.writeln(fmt.Sprintf("var %s %s = %s", name, typStr, value))
 	}
@@ -4060,22 +4064,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
-		simple := true
-		if c.env != nil {
-			for i, a := range call.Args {
-				t := c.inferExprType(a)
-				if isList(t) || isMap(t) || (isAny(t) && isListOrMapExpr(a)) {
-					simple = false
-					_ = i // silence unused warning if later changed
-					break
-				}
-			}
-		}
-		if simple {
-			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
-		}
-		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil
