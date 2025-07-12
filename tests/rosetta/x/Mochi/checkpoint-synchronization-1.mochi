@@ -1,0 +1,13 @@
+var partList = ["A", "B", "C", "D"]
+var nAssemblies = 3
+
+for cycle in 1..(nAssemblies + 1) {
+  print("begin assembly cycle " + str(cycle))
+  for p in partList {
+    print(p + " worker begins part")
+  }
+  for p in partList {
+    print(p + " worker completes part")
+  }
+  print("assemble.  cycle " + str(cycle) + " complete")
+}
