@@ -28,10 +28,16 @@ const (
 `
 
 	helperRelPath = `(defn _rel_path [p]
-  (let [base (.getParent (java.io.File. *file*))]
-    (-> (java.nio.file.Paths/get base (into-array String [p]))
-        .normalize
-        .toString)))`
+  (let [start (.getParentFile (java.io.File. *file*))]
+    (loop [dir start i 0]
+      (let [candidate (-> (java.nio.file.Paths/get (.getPath dir)
+                                              (into-array String [p]))
+                          .normalize
+                          .toString)]
+        (cond
+          (.exists (java.io.File. candidate)) candidate
+          (< i 5) (recur (.getParentFile dir) (inc i))
+          :else candidate))))`
 
 	helperCount = `(defn _count [v]
   (cond
