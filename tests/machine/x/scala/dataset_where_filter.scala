@@ -7,7 +7,7 @@ object dataset_where_filter {
   def main(args: Array[String]): Unit = {
     println("--- Adults ---")
     for(person <- adults) {
-      println(person.name + " " + "is" + " " + person.age + " " + if (person.is_senior) " (senior)" else "")
+      println(person.name + " " + "is" + " " + person.age + " " + (if (person.is_senior) " (senior)" else ""))
     }
   }
 }

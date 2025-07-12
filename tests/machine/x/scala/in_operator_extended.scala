@@ -6,7 +6,7 @@ object in_operator_extended {
   def main(args: Array[String]): Unit = {
     println(ys.contains(1))
     println(ys.contains(2))
-    val m = Map("a" -> (1))
+    val m = Map("a" -> 1)
     println(m.contains("a"))
     println(m.contains("b"))
     val s = "hello"
