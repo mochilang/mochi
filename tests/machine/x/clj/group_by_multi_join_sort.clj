@@ -8,6 +8,18 @@
     (reduce + 0 lst))
   )
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (defrecord _Group [key Items])
 
 (defn _group_by [src keyfn]
@@ -22,9 +34,10 @@
           (do
             (assoc! groups ks (_Group. k [it]))
             (conj! order ks))))
+    )
     (let [g (persistent! groups)
           o (persistent! order)]
-      (mapv #(get g %) o))) )
+      (mapv #(get g %) o))))
 
 (defn _sort_key [k]
   (cond
@@ -107,7 +120,7 @@
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it))))))))))))
+      (mapv #(apply (:select opts) %) it)))))))))))))
 (declare nation customer orders lineitem start_date end_date result)
 
 (defn -main []
@@ -119,10 +132,10 @@
   (def end_date "1994-01-01") ;; string
   (def result (let [_src customer
       _rows (_query _src [
-        {:items orders :leftKey (fn [c] (:o_custkey o)) :rightKey (fn [o] (:c_custkey c))}
-        {:items lineitem :leftKey (fn [c o] (:l_orderkey l)) :rightKey (fn [l] (:o_orderkey o))}
-        {:items nation :leftKey (fn [c o l] (:n_nationkey n)) :rightKey (fn [n] (:c_nationkey c))}
-      ] { :select (fn [c o l n] [c o l n]) :where (fn [c o l n] (and (and (>= (compare (:o_orderdate o) start_date) 0) (< (compare (:o_orderdate o) end_date) 0)) (= (:l_returnflag l) "R"))) })
+        {:items orders :leftKey (fn [c] (:c_custkey c)) :rightKey (fn [o] (:o_custkey o))}
+        {:items lineitem :leftKey (fn [c o] (:o_orderkey o)) :rightKey (fn [l] (:l_orderkey l))}
+        {:items nation :leftKey (fn [c o l] (:c_nationkey c)) :rightKey (fn [n] (:n_nationkey n))}
+      ] { :select (fn [c o l n] [c o l n]) :where (fn [c o l n] (and (and (>= (compare (:o_orderdate o) start_date) 0) (< (compare (:o_orderdate o) end_date) 0)) (_equal (:l_returnflag l) "R"))) })
       _groups (_group_by _rows (fn [c o l n] {:c_custkey (:c_custkey c) :c_name (:c_name c) :c_acctbal (:c_acctbal c) :c_address (:c_address c) :c_phone (:c_phone c) :c_comment (:c_comment c) :n_name (:n_name n)}))
       ]
   (vec (map (fn [g] {:c_custkey (:c_custkey (:key g)) :c_name (:c_name (:key g)) :revenue (_sum (vec (->> (for [x (:Items g)] (* (:l_extendedprice (:l x)) (- 1 (:l_discount (:l x)))))))) :c_acctbal (:c_acctbal (:key g)) :n_name (:n_name (:key g)) :c_address (:c_address (:key g)) :c_phone (:c_phone (:key g)) :c_comment (:c_comment (:key g))}) _groups)))) ;; list of 
@@ -130,5 +143,3 @@
 )
 
 (-main)
-)
-)

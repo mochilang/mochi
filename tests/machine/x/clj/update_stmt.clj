@@ -1,5 +1,17 @@
 (ns main)
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (defn _cast_struct [ctor m]
   (let [fields (or (some->> ctor meta :arglists first (map keyword))
                    (keys m))]
@@ -14,7 +26,7 @@
 
 
 (defn test_update_adult_status []
-  (assert (= people [{:__name "Person" :name "Alice" :age 17 :status "minor"} {:__name "Person" :name "Bob" :age 26 :status "adult"} {:__name "Person" :name "Charlie" :age 19 :status "adult"} {:__name "Person" :name "Diana" :age 16 :status "minor"}]) "expect failed")
+  (assert (_equal people [{:__name "Person" :name "Alice" :age 17 :status "minor"} {:__name "Person" :name "Bob" :age 26 :status "adult"} {:__name "Person" :name "Charlie" :age 19 :status "adult"} {:__name "Person" :name "Diana" :age 16 :status "minor"}]) "expect failed")
 )
 
 (defn -main []

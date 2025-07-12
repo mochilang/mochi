@@ -1,6 +1,6 @@
 exit status 1
 Execution error (FileNotFoundException) at java.io.FileInputStream/open0 (FileInputStream.java:-2).
-../interpreter/valid/people.yaml (No such file or directory)
+/workspace/mochi/tests/machine/x/interpreter/valid/people.yaml (No such file or directory)
 
 Full report at:
-/tmp/clojure-9013067736103223602.edn
+/tmp/clojure-14042751378679712154.edn

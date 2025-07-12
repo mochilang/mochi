@@ -2530,6 +2530,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 		c.use("_query")
 		c.use("_group_by")
 		c.use("_Group")
+		c.use("_sort_key")
 		return b.String(), nil
 	}
 	b.WriteString("(let [_src " + src + "]\n  (_query _src [\n")
@@ -2542,6 +2543,7 @@ func (c *Compiler) compileQueryHelper(q *parser.QueryExpr) (string, error) {
 	b.WriteString("\n  ] " + opts + "))")
 	c.env = origEnv
 	c.use("_query")
+	c.use("_sort_key")
 	return b.String(), nil
 }
 

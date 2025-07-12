@@ -1,5 +1,17 @@
 (ns main)
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (declare numbers)
 
 (defn -main []
@@ -8,7 +20,7 @@
     (when _tmp0
       (let [n (clojure.core/first _tmp0)]
         (let [r (try
-          (when (= (mod n 2) 0)
+          (when (_equal (mod n 2) 0)
             (throw (ex-info "continue" {}))
           )
           (when (> n 7)

@@ -1,5 +1,10 @@
 (ns main)
 
+(defn _rel_path [p]
+  (let [base (.getParent (java.io.File. *file*))]
+    (-> (java.nio.file.Paths/get base (into-array String [p]))
+        .normalize
+        .toString)))
 (defn _parse_csv [text header delim]
   (let [lines (->> (clojure.string/split-lines text)
                    (remove clojure.string/blank?))
@@ -53,7 +58,7 @@
 
 
 (defn -main []
-  (def people (mapv Person (_load "../interpreter/valid/people.yaml" {:format "yaml"}))) ;; list of Person
+  (def people (mapv Person (_load (_rel_path "../interpreter/valid/people.yaml") {:format "yaml"}))) ;; list of Person
   (def adults (vec (->> (for [p people :when (>= (:age p) 18)] {:name (:name p) :email (:email p)})))) ;; list of 
   (loop [_tmp0 (seq adults)]
     (when _tmp0

@@ -6,6 +6,18 @@
     (and (map? v) (contains? v :Items)) (count (:Items v))
     :else (throw (ex-info "count() expects list or group" {}))))
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (defrecord _Group [key Items])
 
 (defn _group_by [src keyfn]
@@ -20,10 +32,16 @@
           (do
             (assoc! groups ks (_Group. k [it]))
             (conj! order ks))))
+    )
     (let [g (persistent! groups)
           o (persistent! order)]
-      (mapv #(get g %) o))) )
+      (mapv #(get g %) o))))
 
+(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))
 (defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
@@ -100,7 +118,7 @@
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it))))))))))))
+      (mapv #(apply (:select opts) %) it)))))))))))))
 (declare customers orders stats)
 
 (defn -main []
@@ -138,5 +156,3 @@
 )
 
 (-main)
-)
-)

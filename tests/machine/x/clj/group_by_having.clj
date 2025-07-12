@@ -14,9 +14,10 @@
           (do
             (assoc! groups ks (_Group. k [it]))
             (conj! order ks))))
+    )
     (let [g (persistent! groups)
           o (persistent! order)]
-      (mapv #(get g %) o))) )
+      (mapv #(get g %) o))))
 
 (defn _escape_json [s]
   (-> s
@@ -46,4 +47,3 @@
 )
 
 (-main)
-)

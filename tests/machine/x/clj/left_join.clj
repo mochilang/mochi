@@ -1,5 +1,22 @@
 (ns main)
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
+(defn _sort_key [k]
+  (cond
+    (map? k) (pr-str (into (sorted-map) k))
+    (sequential? k) (vec k)
+    :else k))
 (defn _query [src joins opts]
   (let [items (atom (mapv vector src))]
     (doseq [j joins]
@@ -76,7 +93,7 @@
                it)
           it (if (contains? opts :skip) (vec (drop (:skip opts) it)) it)
           it (if (contains? opts :take) (vec (take (:take opts) it)) it)]
-      (mapv #(apply (:select opts) %) it))))))))))))
+      (mapv #(apply (:select opts) %) it)))))))))))))
 (declare customers orders result)
 
 (defn -main []
@@ -111,4 +128,3 @@
 )
 
 (-main)
-)
