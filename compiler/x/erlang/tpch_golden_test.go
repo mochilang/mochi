@@ -19,6 +19,8 @@ func TestErlangCompiler_TPCHQueries(t *testing.T) {
 	if _, err := exec.LookPath("escript"); err != nil {
 		t.Skip("escript not installed")
 	}
+	os.Setenv("MOCHI_HEADER_TIME", "2020-01-02T15:04:05Z")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := repoRoot(t)
 	for i := 1; i <= 3; i++ {
 		base := fmt.Sprintf("q%d", i)
