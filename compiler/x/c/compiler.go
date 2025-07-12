@@ -2719,9 +2719,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 		res := c.newTemp()
 		idx := c.newTemp()
-		lenExpr := sources[0].expr + ".len"
+		lenExpr := c.listLenExpr(sources[0].expr)
 		for i := 1; i < len(sources); i++ {
-			lenExpr = fmt.Sprintf("%s * %s.len", lenExpr, sources[i].expr)
+			lenExpr = fmt.Sprintf("%s * %s", lenExpr, c.listLenExpr(sources[i].expr))
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
@@ -2730,9 +2730,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		loop = func(i int) {
 			src := sources[i]
 			iter := sanitizeName(src.varName) + "_idx"
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iter, iter, src.expr, iter))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iter, iter, c.listLenExpr(src.expr), iter))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(src.elem), sanitizeName(src.varName), src.expr, iter))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(src.elem), sanitizeName(src.varName), c.listItemExpr(src.expr, iter)))
 			if i+1 < len(sources) {
 				loop(i + 1)
 			} else {
@@ -2815,18 +2815,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len * %s.len);", listC, res, listC, rightExpr, leftExpr))
+			c.writeln(fmt.Sprintf("%s %s = %s_create(%s * %s);", listC, res, listC, c.listLenExpr(rightExpr), c.listLenExpr(leftExpr)))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			iterR := c.newTemp()
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterR, iterR, c.listLenExpr(rightExpr), iterR))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), c.listItemExpr(rightExpr, iterR)))
 			matched := c.newTemp()
 			c.writeln(fmt.Sprintf("int %s = 0;", matched))
 			iterL := c.newTemp()
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterL, iterL, c.listLenExpr(leftExpr), iterL))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), c.listItemExpr(leftExpr, iterL)))
 			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", joinOn))
 			c.writeln(fmt.Sprintf("%s = 1;", matched))
 			if cond != "" {
@@ -2916,20 +2916,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 			res := c.newTemp()
 			idx := c.newTemp()
-			c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len * %s.len + %s.len + %s.len);", listC, res, listC, leftExpr, rightExpr, leftExpr, rightExpr))
+			c.writeln(fmt.Sprintf("%s %s = %s_create(%s * %s + %s + %s);", listC, res, listC, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr), c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
 			c.writeln(fmt.Sprintf("int %s = 0;", idx))
 			leftMatched := c.newTemp()
 			rightMatched := c.newTemp()
-			c.writeln(fmt.Sprintf("int *%s = calloc(%s.len, sizeof(int));", leftMatched, leftExpr))
-			c.writeln(fmt.Sprintf("int *%s = calloc(%s.len, sizeof(int));", rightMatched, rightExpr))
+			c.writeln(fmt.Sprintf("int *%s = calloc(%s, sizeof(int));", leftMatched, c.listLenExpr(leftExpr)))
+			c.writeln(fmt.Sprintf("int *%s = calloc(%s, sizeof(int));", rightMatched, c.listLenExpr(rightExpr)))
 			iterL := c.newTemp()
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterL, iterL, c.listLenExpr(leftExpr), iterL))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), c.listItemExpr(leftExpr, iterL)))
 			iterR := c.newTemp()
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterR, iterR, c.listLenExpr(rightExpr), iterR))
 			c.indent++
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), c.listItemExpr(rightExpr, iterR)))
 			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", joinOn))
 			c.writeln(fmt.Sprintf("%s[%s] = 1;", leftMatched, iterL))
 			c.writeln(fmt.Sprintf("%s[%s] = 1;", rightMatched, iterR))
@@ -2942,10 +2942,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.writeln("}")
 			c.indent--
 			c.writeln("}")
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterL, iterL, leftExpr, iterL))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterL, iterL, c.listLenExpr(leftExpr), iterL))
 			c.indent++
 			c.writeln(fmt.Sprintf("if (%s[%s]) continue;", leftMatched, iterL))
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), leftExpr, iterL))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), c.listItemExpr(leftExpr, iterL)))
 			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), defaultCValue(rightLt.Elem)))
 			if cond != "" {
 				c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
@@ -2958,10 +2958,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.indent--
 			c.writeln("}")
 			iterR = c.newTemp()
-			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s.len; %s++) {", iterR, iterR, rightExpr, iterR))
+			c.writeln(fmt.Sprintf("for (int %s = 0; %s < %s; %s++) {", iterR, iterR, c.listLenExpr(rightExpr), iterR))
 			c.indent++
 			c.writeln(fmt.Sprintf("if (%s[%s]) continue;", rightMatched, iterR))
-			c.writeln(fmt.Sprintf("%s %s = %s.data[%s];", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), rightExpr, iterR))
+			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), c.listItemExpr(rightExpr, iterR)))
 			c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), defaultCValue(leftLt.Elem)))
 			if cond != "" {
 				c.writeln(fmt.Sprintf("if (!(%s)) { } else {", cond))
@@ -4198,9 +4198,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		if nested {
 			c.need(needListListInt)
+			c.need(needListInt)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
-				vals[i] = c.compileExpr(el)
+				v := c.compileExpr(el)
+				if l, ok := c.listLens[v]; ok {
+					vals[i] = fmt.Sprintf("{%d, %s}", l, v)
+				} else {
+					vals[i] = v
+				}
 			}
 			data := name + "_data"
 			c.writeln(fmt.Sprintf("list_int %s[] = {%s};", data, strings.Join(vals, ", ")))
@@ -6302,4 +6308,18 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 	c.listLens[name] = len(vals)
 	c.listVals[name] = vals
 	return name
+}
+
+func (c *Compiler) listLenExpr(name string) string {
+	if l, ok := c.listLens[name]; ok {
+		return strconv.Itoa(l)
+	}
+	return name + ".len"
+}
+
+func (c *Compiler) listItemExpr(name, idx string) string {
+	if _, ok := c.listLens[name]; ok {
+		return fmt.Sprintf("%s[%s]", name, idx)
+	}
+	return fmt.Sprintf("%s.data[%s]", name, idx)
 }
