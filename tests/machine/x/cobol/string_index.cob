@@ -5,5 +5,5 @@
        01 S PIC X(5) VALUE "mochi".
        01 TMP PIC 9(9) VALUE 0.
        PROCEDURE DIVISION.
-       DISPLAY S((1 + 1):1)
+       DISPLAY S(2:1)
        STOP RUN.
