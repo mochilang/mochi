@@ -1,7 +1,7 @@
 line: 0
 error: output mismatch
 -- got --
-3.952525166729972e-323
+5.928787750094959e-323
 -- want --
 6
    1: #include <stdio.h>

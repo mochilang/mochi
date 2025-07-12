@@ -31,6 +31,7 @@ const (
 	needMaxFloat             = "max_float"
 	needMaxString            = "max_string"
 	needInListInt            = "in_list_int"
+	needInArrayInt           = "in_array_int"
 	needInListString         = "in_list_string"
 	needInString             = "in_string"
 	needSliceListFloat       = "slice_list_float"

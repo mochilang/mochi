@@ -41,10 +41,10 @@ int main() {
   list_string tmp1 = {2, tmp1_data};
   list_string letters = tmp1;
   int tmp2[] = {1, 2, 3};
-  list_PairsItem tmp3 = list_PairsItem_create(tmp2.len * letters.len);
+  list_PairsItem tmp3 = list_PairsItem_create(3 * letters.len);
   int tmp4 = 0;
-  for (int n_idx = 0; n_idx < tmp2.len; n_idx++) {
-    int n = tmp2.data[n_idx];
+  for (int n_idx = 0; n_idx < 3; n_idx++) {
+    int n = tmp2[n_idx];
     for (int l_idx = 0; l_idx < letters.len; l_idx++) {
       char *l = letters.data[l_idx];
       if (!(n % 2 == 0)) {
