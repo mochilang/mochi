@@ -15,6 +15,11 @@ import (
 
 // EnsureZig verifies that the Zig compiler is installed.
 func EnsureZig() (string, error) {
+	if env := os.Getenv("ZIG"); env != "" {
+		if _, err := os.Stat(env); err == nil {
+			return env, nil
+		}
+	}
 	if path, err := exec.LookPath("zig"); err == nil {
 		return path, nil
 	}
@@ -79,6 +84,11 @@ func EnsureZig() (string, error) {
 // EnsureFormatter ensures the zig formatter is available. It attempts to
 // install Zig if the binary cannot be found.
 func EnsureFormatter() error {
+	if env := os.Getenv("ZIG"); env != "" {
+		if _, err := os.Stat(env); err == nil {
+			return nil
+		}
+	}
 	if _, err := exec.LookPath("zig"); err == nil {
 		return nil
 	}
@@ -90,7 +100,10 @@ func EnsureFormatter() error {
 // isn't available, the input is returned unchanged.
 func Format(src []byte) []byte {
 	if err := EnsureFormatter(); err == nil {
-		path, _ := exec.LookPath("zig")
+		path := os.Getenv("ZIG")
+		if path == "" {
+			path, _ = exec.LookPath("zig")
+		}
 		cmd := exec.Command(path, "fmt", "--stdin")
 		cmd.Stdin = bytes.NewReader(src)
 		var out bytes.Buffer
