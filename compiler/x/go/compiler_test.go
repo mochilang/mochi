@@ -135,6 +135,8 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
 	buf.WriteString("Checklist:\n\n")
 	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
+	buf.WriteString("\n\n## Remaining Tasks\n\n")
+	buf.WriteString("- [ ] Simplify slice conversions and printing logic\n")
+	buf.WriteString("- [ ] Expand coverage to more examples in `tests/vm/valid`\n")
 	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0o644)
 }
