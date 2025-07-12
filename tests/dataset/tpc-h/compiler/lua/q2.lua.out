@@ -12,6 +12,7 @@ function __eq(a, b)
     return true
 end
 function __json(v)
+    if type(v) == 'table' and next(v) == nil then print('[]'); return end
     local function sort(x)
         if type(x) ~= 'table' then return x end
         if x[1] ~= nil or #x > 0 then
@@ -128,9 +129,8 @@ function __query(src, joins, opts)
             end
             for ri, right in ipairs(jitems) do
                 if not matched[ri] then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -159,9 +159,8 @@ function __query(src, joins, opts)
                     end
                 end
                 if not m then
-                    local undef = {}
-                    if #items > 0 then for _=1,#items[1] do undef[#undef+1]=nil end end
-                    local row = {table.unpack(undef)}
+                    local row = {}
+                    for _=1,ji do row[#row+1] = nil end
                     row[#row+1] = right
                     if ji == #joins and whereFn and not whereFn(table.unpack(row)) then
                     else
@@ -319,4 +318,3 @@ __json(result)
 local __tests = {
     {name="Q2 returns only supplier with min cost in Europe for brass part", fn=test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part},
 }
-__run_tests(__tests)

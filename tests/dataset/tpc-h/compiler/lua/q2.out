@@ -1,2 +1,1 @@
-[{"s_comment":"Fast and reliable","s_name":"BestSupplier","p_partkey":1000,"p_mfgr":"M1","s_phone":"123","s_address":"123 Rue","n_name":"FRANCE","s_acctbal":1000,"ps_supplycost":10}]
-   test Q2 returns only supplier with min cost in Europe for brass part ... ok (7.0µs)
+[{"s_address":"123 Rue","p_partkey":1000,"n_name":"FRANCE","s_phone":"123","s_comment":"Fast and reliable","ps_supplycost":10,"s_name":"BestSupplier","s_acctbal":1000,"p_mfgr":"M1"}]
