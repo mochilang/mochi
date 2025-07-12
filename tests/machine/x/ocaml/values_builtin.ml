@@ -16,7 +16,9 @@ let rec __show v =
     | _ -> "<value>"
 
 
-let m : (string * Obj.t) list = [("a",Obj.repr (1));("b",Obj.repr (2));("c",Obj.repr (3))]
+type record1 = { mutable a : int; mutable b : int; mutable c : int }
+
+let m : (string * Obj.t) list = { a = 1; b = 2; c = 3 }
 
 let () =
   print_endline (__show (List.map snd m));

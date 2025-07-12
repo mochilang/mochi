@@ -1413,17 +1413,17 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 	buf.WriteString(fmt.Sprintf("  List.iter (fun %s ->\n", param))
 	buf.WriteString(fmt.Sprintf("    let %s = { key = %sKey; items = List.rev %sItems } in\n", q.Group.Name, q.Group.Name, q.Group.Name))
 	srcType := types.ExprType(q.Source, c.env)
-	var elemType types.Type
+	var elemType2 types.Type
 	switch t := srcType.(type) {
 	case types.ListType:
-		elemType = t.Elem
+		elemType2 = t.Elem
 	case types.GroupType:
-		elemType = t.Elem
+		elemType2 = t.Elem
 	default:
-		elemType = types.AnyType{}
+		elemType2 = types.AnyType{}
 	}
 	selEnv := types.NewEnv(qenv)
-	selEnv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+	selEnv.SetVar(q.Group.Name, types.GroupType{Elem: elemType2}, true)
 	sel, err := c.compileExprWithEnv(q.Select, selEnv)
 	if err != nil {
 		return "", err

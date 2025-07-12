@@ -26,9 +26,9 @@
 let customers : record1 list = [{ id = 1; name = "Alice" };{ id = 2; name = "Bob" };{ id = 3; name = "Charlie" };{ id = 4; name = "Diana" }]
 let orders : record2 list = [{ id = 100; customerId = 1; total = 250 };{ id = 101; customerId = 2; total = 125 };{ id = 102; customerId = 1; total = 300 }]
 let result : record3 list = (let __res0 = ref [] in
-  List.iter (fun o ->
+  List.iter (fun (o : record2) ->
     let matched = ref false in
-    List.iter (fun c ->
+    List.iter (fun (c : record1) ->
       if (Obj.obj (List.assoc "customerId" o) = Obj.obj (List.assoc "id" c)) then (
         __res0 := { customerName = Obj.obj (List.assoc "name" c); order = o } :: !__res0;
         matched := true)

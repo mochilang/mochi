@@ -23,7 +23,7 @@
 
 let products : record1 list = [{ name = "Laptop"; price = 1500 };{ name = "Smartphone"; price = 900 };{ name = "Tablet"; price = 600 };{ name = "Monitor"; price = 300 };{ name = "Keyboard"; price = 100 };{ name = "Mouse"; price = 50 };{ name = "Headphones"; price = 200 }]
 let expensive : (string * Obj.t) list list = (let __res0 = ref [] in
-  List.iter (fun p ->
+  List.iter (fun (p : record1) ->
       __res0 := p :: !__res0;
   ) products;
 List.rev !__res0)

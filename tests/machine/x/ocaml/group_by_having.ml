@@ -5,8 +5,8 @@ type record2 = { mutable city : Obj.t; mutable num : int }
 type record3 = { mutable city : string; mutable num : int }
 
 let people : record1 list = [{ name = "Alice"; city = "Paris" };{ name = "Bob"; city = "Hanoi" };{ name = "Charlie"; city = "Paris" };{ name = "Diana"; city = "Hanoi" };{ name = "Eve"; city = "Paris" };{ name = "Frank"; city = "Hanoi" };{ name = "George"; city = "Paris" }]
-let big : record3 list = (let __groups0 = ref [] in
-  List.iter (fun p ->
+let big : record3 list = (let (__groups0 : (Obj.t * (string * Obj.t) list list) list ref) = ref [] in
+  List.iter (fun (p : record1) ->
       let key = Obj.obj (List.assoc "city" p) in
       let cur = try List.assoc key !__groups0 with Not_found -> [] in
       __groups0 := (key, p :: cur) :: List.remove_assoc key !__groups0;
