@@ -149,6 +149,7 @@ func (c *Compiler) newLoopVar() string {
 }
 
 func (c *Compiler) stackListInt(name, lenExpr, initLen string) {
+	c.need(needListInt)
 	data := name + "_data"
 	c.writeln(fmt.Sprintf("int %s[%s];", data, lenExpr))
 	c.writeln(fmt.Sprintf("list_int %s = {%s, %s};", name, initLen, data))
@@ -4085,7 +4086,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				} else {
 					c.need(needSliceListInt)
-					c.need(needListInt)
+					if _, ok := c.listLens[expr]; ok {
+						// wrap stack-based array as list_int
+						wrapper := c.newTemp()
+						c.need(needListInt)
+						c.writeln(fmt.Sprintf("list_int %s = {%s, %s};", wrapper, c.listLenExpr(expr), expr))
+						expr = wrapper
+					} else {
+						c.need(needListInt)
+					}
 					c.writeln(fmt.Sprintf("list_int %s = slice_list_int(%s, %s, %s);", name, expr, start, end))
 					if c.env != nil {
 						c.env.SetVar(name, types.ListType{Elem: types.IntType{}}, true)

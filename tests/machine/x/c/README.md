@@ -106,3 +106,13 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining work
+
+The C backend still fails to compile several Mochi programs that rely on complex
+dataset joins, grouping, or advanced built-ins. Outstanding tasks include:
+
+- Implement join support for `left_join`, `right_join`, and related examples.
+- Add full grouping logic so `group_by` and `group_items_iteration` work.
+- Improve built-in handling for YAML loading and `sum_builtin`.
+- Finish translation for programs like `two-sum` and `update_stmt`.
