@@ -1075,6 +1075,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, error) {
 	if lt, ok := hint.(types.ListType); ok {
 		if ll := e.Binary.Left.Value.Target.List; ll != nil {
+			if len(ll.Elems) == 0 {
+				typStr := fmt.Sprintf("typing.cast(list[%s], [])", pyType(c.namedType(lt.Elem)))
+				if needsTyping(typStr) {
+					c.imports["typing"] = "typing"
+				}
+				return typStr, nil
+			}
 			elems := make([]string, len(ll.Elems))
 			for i, el := range ll.Elems {
 				ev, err := c.compileExprHint(el, lt.Elem)

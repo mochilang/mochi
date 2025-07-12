@@ -6,8 +6,8 @@ import typing
 
 @dataclasses.dataclass
 class Data:
-    tag: str
-    val: int
+    tag: typing.Any
+    val: typing.Any
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -158,7 +158,7 @@ def _sort_key(k):
     return k
 
 
-data: list[Data] = [Data(tag="a", val=1), Data(tag="a", val=2), Data(tag="b", val=3)]
+data = [Data(tag="a", val=1), Data(tag="a", val=2), Data(tag="b", val=3)]
 
 
 def _q0():
@@ -169,14 +169,12 @@ def _q0():
     return [g for g in _items1]
 
 
-groups: list[_Group[Any, dict[str, typing.Any]]] = _q0()
-tmp: list[typing.Any] = []
+groups = _q0()
+tmp = typing.cast(list[typing.Any], [])
 for g in groups:
     total = 0
     for x in _get(g, "items"):
         total = total + x["val"]
     tmp = tmp + [{"tag": _get(g, "key"), "total": total}]
-result: list[typing.Any] = [
-    r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))
-]
+result = [r for r in sorted([r for r in tmp], key=lambda r: _sort_key(_get(r, "tag")))]
 print(result)
