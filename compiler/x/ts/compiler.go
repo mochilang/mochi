@@ -129,7 +129,9 @@ func (c *Compiler) collectGlobals(stmts []*parser.Statement) {
 			name := sanitizeName(s.Let.Name)
 			var typ types.Type = types.AnyType{}
 			if c.env != nil {
-				if s.Let.Type != nil {
+				if t, err := c.env.GetVar(s.Let.Name); err == nil {
+					typ = t
+				} else if s.Let.Type != nil {
 					typ = c.resolveTypeRef(s.Let.Type)
 				} else if s.Let.Value != nil {
 					typ = c.inferExprType(s.Let.Value)
@@ -145,7 +147,9 @@ func (c *Compiler) collectGlobals(stmts []*parser.Statement) {
 			name := sanitizeName(s.Var.Name)
 			var typ types.Type = types.AnyType{}
 			if c.env != nil {
-				if s.Var.Type != nil {
+				if t, err := c.env.GetVar(s.Var.Name); err == nil {
+					typ = t
+				} else if s.Var.Type != nil {
 					typ = c.resolveTypeRef(s.Var.Type)
 				} else if s.Var.Value != nil {
 					typ = c.inferExprType(s.Var.Value)
@@ -502,13 +506,13 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 }
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
-        name := sanitizeName(s.Name)
-        if s.Doc != "" {
-                for _, ln := range strings.Split(s.Doc, "\n") {
-                        c.writeln("// " + ln)
-                }
-        }
-        value := "undefined"
+	name := sanitizeName(s.Name)
+	if s.Doc != "" {
+		for _, ln := range strings.Split(s.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
+	value := "undefined"
 	if s.Value != nil {
 		v, err := c.compileExpr(s.Value)
 		if err != nil {
@@ -518,7 +522,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
-		if s.Type != nil {
+		if t, err := c.env.GetVar(s.Name); err == nil {
+			typ = t
+		} else if s.Type != nil {
 			typ = c.resolveTypeRef(s.Type)
 		} else if s.Value != nil {
 			typ = c.inferExprType(s.Value)
@@ -546,13 +552,13 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 }
 
 func (c *Compiler) compileVar(s *parser.VarStmt) error {
-        name := sanitizeName(s.Name)
-        if s.Doc != "" {
-                for _, ln := range strings.Split(s.Doc, "\n") {
-                        c.writeln("// " + ln)
-                }
-        }
-        value := "undefined"
+	name := sanitizeName(s.Name)
+	if s.Doc != "" {
+		for _, ln := range strings.Split(s.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
+	value := "undefined"
 	if s.Value != nil {
 		if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil && len(ml.Items) == 0 {
 			if c.env != nil {
@@ -982,12 +988,12 @@ func (c *Compiler) compileAgentOn(agentName string, env *types.Env, h *parser.On
 }
 
 func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
-        name := sanitizeName(t.Name)
-        if t.Doc != "" {
-                for _, ln := range strings.Split(t.Doc, "\n") {
-                        c.writeln("// " + ln)
-                }
-        }
+	name := sanitizeName(t.Name)
+	if t.Doc != "" {
+		for _, ln := range strings.Split(t.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
 
 	if len(t.Variants) > 0 {
 		var variants []string
@@ -1215,18 +1221,18 @@ func (c *Compiler) compileFor(stmt *parser.ForStmt) error {
 }
 
 func (c *Compiler) compileFunStmt(fun *parser.FunStmt) error {
-        name := sanitizeName(fun.Name)
-        if fun.Doc != "" {
-                for _, ln := range strings.Split(fun.Doc, "\n") {
-                        c.writeln("// " + ln)
-                }
-        }
-        c.writeIndent()
-        if c.asyncFuncs[name] {
-                c.buf.WriteString("async function " + name + "(")
-        } else {
-                c.buf.WriteString("function " + name + "(")
-        }
+	name := sanitizeName(fun.Name)
+	if fun.Doc != "" {
+		for _, ln := range strings.Split(fun.Doc, "\n") {
+			c.writeln("// " + ln)
+		}
+	}
+	c.writeIndent()
+	if c.asyncFuncs[name] {
+		c.buf.WriteString("async function " + name + "(")
+	} else {
+		c.buf.WriteString("function " + name + "(")
+	}
 	var ft types.FuncType
 	if c.env != nil {
 		if t, err := c.env.GetVar(fun.Name); err == nil {

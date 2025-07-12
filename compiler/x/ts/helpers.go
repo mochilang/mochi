@@ -265,7 +265,12 @@ func tsType(t types.Type) string {
 		}
 		return elem + "[]"
 	case types.MapType:
-		return "{ [key: " + tsType(tt.Key) + "]: " + tsType(tt.Value) + " }"
+		key := tsType(tt.Key)
+		val := tsType(tt.Value)
+		if key == "string" && val == "any" {
+			return "Record<string, any>"
+		}
+		return "{ [key: " + key + "]: " + val + " }"
 	case types.StructType:
 		name := sanitizeName(tt.Name)
 		if name != "" {
