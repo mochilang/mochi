@@ -2,7 +2,7 @@
 
 This directory contains Racket source code generated from the Mochi programs in `tests/vm/valid` using the Racket backend. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 97/100
+Compiled programs: 100/100
 
 ## Checklist
 
@@ -28,7 +28,7 @@ Compiled programs: 97/100
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [ ] go_auto
+- [x] go_auto
 - [x] group_by
 - [x] group_by_conditional_sum
 - [x] group_by_having
@@ -76,8 +76,8 @@ Compiled programs: 97/100
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [ ] python_auto
-- [ ] python_math
+- [x] python_auto
+- [x] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -107,7 +107,8 @@ Compiled programs: 97/100
 - [x] var_assignment
 - [x] while_loop
 
-## TODO
+## Remaining Tasks
 
-- [ ] Support Go FFI via `import go` (go_auto)
-- [ ] Support Python auto-import (python_auto, python_math)
+- Ensure new features continue to compile correctly.
+- Keep generated code in sync with `tests/human/x/racket`.
+
