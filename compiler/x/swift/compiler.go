@@ -2007,11 +2007,21 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		c.mapFields = savedFields
 		return "", err
 	}
+	keyType := c.fieldType(q.Group.Exprs[0])
+	if keyType == "" {
+		keyType = c.exprType(q.Group.Exprs[0])
+	}
+	kt := swiftTypeOf(keyType)
+	if kt == "" {
+		kt = "AnyHashable"
+	}
+	useMapKey := kt == "[String:Any]"
+
 	gname := q.Group.Name
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
-	c.groupElemType[gname] = ""
+	c.groupElemType[gname] = "map"
 	names := []string{q.Var}
 	for _, f := range q.Froms {
 		names = append(names, f.Var)
@@ -2089,9 +2099,22 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	}
 	itemExpr := "[" + strings.Join(parts, ", ") + "]"
 
+	selIsGroup := sel == gname
+	et := "[String:Any]"
+	retType := "[Any]"
+	if selIsGroup {
+		retType = fmt.Sprintf("[(key: %s, items: [%s])]", kt, et)
+	}
+
 	var b strings.Builder
-	b.WriteString("({\n")
-	b.WriteString("\tvar _groups: [AnyHashable:[Any]] = [:]\n")
+	b.WriteString(fmt.Sprintf("{ () -> %s in\n", retType))
+	if useMapKey {
+		c.helpers["_group"] = true
+		b.WriteString("\tvar _groups: [String:_Group] = [:]\n")
+		b.WriteString("\tvar _order: [String] = []\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\tvar _groups: [%s:[%s]] = [:]\n", kt, et))
+	}
 	b.WriteString(fmt.Sprintf("\tfor %s in %s {\n", q.Var, src))
 	indent := "\t\t"
 	for i, fs := range fromSrcs {
@@ -2109,14 +2132,28 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, on))
 		b.WriteString(fmt.Sprintf("%s_m = true\n", indent))
 		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
-		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		if useMapKey {
+			b.WriteString(fmt.Sprintf("%slet _ks = _keyStr(_k)\n", indent))
+			b.WriteString(fmt.Sprintf("%sif _groups[_ks] == nil {\n", indent))
+			b.WriteString(fmt.Sprintf("%s    _groups[_ks] = _Group(_k)\n", indent))
+			b.WriteString(fmt.Sprintf("%s    _order.append(_ks)\n", indent))
+			b.WriteString(fmt.Sprintf("%s}\n", indent))
+			b.WriteString(fmt.Sprintf("%s_groups[_ks]!.Items.append(%s)\n", indent, itemExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		}
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
 		b.WriteString(fmt.Sprintf("%sif !_m {\n", indent))
 		indent += "\t"
 		b.WriteString(fmt.Sprintf("%slet %s: Any? = nil\n", indent, jv))
 		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
-		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		if useMapKey {
+			b.WriteString(fmt.Sprintf("%slet _ks = _keyStr(_k)\n", indent))
+			b.WriteString(fmt.Sprintf("%s_groups[_ks, default: _Group(_k)].Items.append(%s)\n", indent, itemExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		}
 		indent = indent[:len(indent)-1]
 		b.WriteString(indent + "}\n")
 	} else {
@@ -2129,7 +2166,16 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("%sif !(%s) { continue }\n", indent, cond))
 		}
 		b.WriteString(fmt.Sprintf("%slet _k = %s\n", indent, keyExpr))
-		b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		if useMapKey {
+			b.WriteString(fmt.Sprintf("%slet _ks = _keyStr(_k)\n", indent))
+			b.WriteString(fmt.Sprintf("%sif _groups[_ks] == nil {\n", indent))
+			b.WriteString(fmt.Sprintf("%s    _groups[_ks] = _Group(_k)\n", indent))
+			b.WriteString(fmt.Sprintf("%s    _order.append(_ks)\n", indent))
+			b.WriteString(fmt.Sprintf("%s}\n", indent))
+			b.WriteString(fmt.Sprintf("%s_groups[_ks]!.Items.append(%s)\n", indent, itemExpr))
+		} else {
+			b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
+		}
 		for range joinSrcs {
 			indent = indent[:len(indent)-1]
 			b.WriteString(indent + "}\n")
@@ -2140,7 +2186,19 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indent + "}\n")
 	}
 	b.WriteString("\t}\n")
-	b.WriteString("\tvar _tmp = _groups.map { (k, v) in (key: k, items: v) }\n")
+	if useMapKey {
+		b.WriteString(fmt.Sprintf("\tvar _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
+		b.WriteString("\tfor k in _order {\n")
+		b.WriteString("\t    if let g = _groups[k] {\n")
+		b.WriteString(fmt.Sprintf("\t        _tmp.append((key: g.key as! %s, items: g.Items.map { $0 as! %s }))\n", kt, et))
+		b.WriteString("\t    }\n")
+		b.WriteString("\t}\n")
+	} else {
+		b.WriteString(fmt.Sprintf("\tvar _tmp: [(key: %s, items: [%s])] = []\n", kt, et))
+		b.WriteString("\tfor (k, v) in _groups {\n")
+		b.WriteString("\t    _tmp.append((key: k, items: v))\n")
+		b.WriteString("\t}\n")
+	}
 	if having != "" {
 		b.WriteString(fmt.Sprintf("\t_tmp = _tmp.filter { %s in %s }\n", gname, having))
 	}
