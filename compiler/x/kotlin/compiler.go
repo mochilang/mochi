@@ -1197,11 +1197,11 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "max":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.maxOrNull() ?: 0", args[0]), true
+			return fmt.Sprintf("%s.max() ?: 0", args[0]), true
 		}
 	case "min":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.minOrNull() ?: 0", args[0]), true
+			return fmt.Sprintf("%s.min() ?: 0", args[0]), true
 		}
 	case "values":
 		if len(args) == 1 {
@@ -2256,7 +2256,9 @@ func (c *Compiler) builtinImport(im *parser.ImportStmt) (bool, error) {
 			c.writeln("const val pi: Double = kotlin.math.PI")
 			c.writeln("const val e: Double = kotlin.math.E")
 			c.writeln("fun sqrt(x: Double): Double = kotlin.math.sqrt(x)")
-			c.writeln("fun pow(x: Double, y: Double): Double = kotlin.math.pow(x, y)")
+			// Kotlin 1.3 does not provide a top-level pow function.
+			// Use java.lang.Math.pow for portability.
+			c.writeln("fun pow(x: Double, y: Double): Double = Math.pow(x, y)")
 			c.writeln("fun sin(x: Double): Double = kotlin.math.sin(x)")
 			c.writeln("fun log(x: Double): Double = kotlin.math.ln(x)")
 			c.indent--

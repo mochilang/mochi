@@ -1,0 +1,27 @@
+line 41:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:41:37: error: expecting property name or receiver type
+        __res.add(if (x.flag) x.val else 0)
+                                    ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:41:41: error: expecting ','
+        __res.add(if (x.flag) x.val else 0)
+                                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:47:24: error: expecting property name or receiver type
+        __res.add(x.val)
+                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:47:25: error: expecting ')'
+        __res.add(x.val)
+                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:38:47: error: type mismatch: inferred type is Int but Double was expected
+        __res.add(Result(cat = g.key, share = sum(run {
+                                              ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:41:19: error: 'if' must have both main and 'else' branches if used as an expression
+        __res.add(if (x.flag) x.val else 0)
+                  ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_conditional_sum.kt:53:17: error: unresolved reference: key
+}.sortedBy { it.key as Comparable<Any> }
+                ^
+
+ 40:     for (x in g) {
+ 41:         __res.add(if (x.flag) x.val else 0)
+ 42:     }

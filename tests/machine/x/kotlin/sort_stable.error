@@ -1,0 +1,9 @@
+line 11:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/sort_stable.kt:11:17: error: unresolved reference: n
+}.sortedBy { it.n as Comparable<Any> }
+                ^
+
+ 10:     __res
+ 11: }.sortedBy { it.n as Comparable<Any> }
+ 12: 

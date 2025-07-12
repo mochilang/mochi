@@ -1,0 +1,21 @@
+line 41:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:41:24: error: expecting property name or receiver type
+        __res.add(x.val)
+                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:41:25: error: expecting ')'
+        __res.add(x.val)
+                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:50:24: error: expecting property name or receiver type
+        __res.add(x.val)
+                       ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:50:25: error: expecting ')'
+        __res.add(x.val)
+                        ^
+/workspace/mochi/tests/machine/x/kotlin/group_by_sort.kt:49:15: error: for-loop range must have an 'iterator()' method
+    for (x in it) {
+              ^
+
+ 40:     for (x in g) {
+ 41:         __res.add(x.val)
+ 42:     }

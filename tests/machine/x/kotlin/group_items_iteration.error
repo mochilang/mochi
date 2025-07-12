@@ -1,0 +1,11 @@
+line 35:
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/workspace/mochi/tests/machine/x/kotlin/group_items_iteration.kt:35:11: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+var tmp = mutableListOf()
+          ^
+
+ 34: 
+ 35: var tmp = mutableListOf()
+ 36: 
