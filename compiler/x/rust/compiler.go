@@ -1696,13 +1696,13 @@ func (c *Compiler) compileMatchPattern(e *parser.Expr) (string, error) {
 			call := u.Value.Target.Call
 			if info, ok := c.variantInfo[call.Func]; ok {
 				if len(call.Args) != len(info.Order) {
-					return "", fmt.Errorf("pattern arg mismatch")
+					return "", fmt.Errorf("pattern arg mismatch at line %d", call.Pos.Line)
 				}
 				parts := make([]string, len(call.Args))
 				for i, a := range call.Args {
 					id, ok := c.simpleIdent(a)
 					if !ok {
-						return "", fmt.Errorf("complex pattern not supported")
+						return "", fmt.Errorf("complex pattern not supported at line %d", a.Pos.Line)
 					}
 					parts[i] = fmt.Sprintf("%s: %s", info.Order[i], id)
 				}
