@@ -145,7 +145,7 @@
 (define people (_load "tests/interpreter/valid/people.yaml" (list (cons 'format "yaml"))))
 (define adults (let ((_res '()))
   (for-each (lambda (p)
-    (when (_ge (map-get p 'age) 18)
+    (when (>= (map-get p 'age) 18)
       (set! _res (append _res (list (list (cons 'name (map-get p 'name)) (cons 'email (map-get p 'email))))))
     )
   ) (if (string? people) (string->list people) people))

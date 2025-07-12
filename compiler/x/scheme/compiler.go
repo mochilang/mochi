@@ -994,9 +994,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					c.needListOps = true
 					expr = fmt.Sprintf("(_intersect %s %s)", l, r)
 				case "<", "<=", ">", ">=":
-					fn := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op]
-					expr = fmt.Sprintf("(%s %s %s)", fn, l, r)
-					c.needDataset = true
+					if !(strFlags[i] || strFlags[i+1] || listFlags[i] || listFlags[i+1]) {
+						expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+					} else {
+						fn := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op]
+						expr = fmt.Sprintf("(%s %s %s)", fn, l, r)
+						c.needDataset = true
+					}
 				}
 				operands[i] = expr
 				strFlags[i] = strFlags[i] || strFlags[i+1]
