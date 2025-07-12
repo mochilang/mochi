@@ -2808,8 +2808,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if _, ok := t.(types.StringType); ok {
 			return fmt.Sprintf("%s.Length", args[0]), nil
 		}
-		c.useLinq = true
-		return fmt.Sprintf("Enumerable.Count(%s)", args[0]), nil
+		switch t.(type) {
+		case types.ListType, types.MapType:
+			c.useLinq = true
+			return fmt.Sprintf("%s.Count()", args[0]), nil
+		default:
+			c.useLinq = true
+			return fmt.Sprintf("Enumerable.Count(%s)", args[0]), nil
+		}
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
@@ -2853,8 +2859,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		t := c.inferExprType(call.Args[0])
 		if lt, ok := t.(types.ListType); ok && isNumeric(lt.Elem) {
 			c.useLinq = true
-			v := c.newVar()
-			return fmt.Sprintf("Enumerable.Average(%s.Select(%s=>Convert.ToDouble(%s)))", args[0], v, v), nil
+			return fmt.Sprintf("Enumerable.Average(%s)", args[0]), nil
 		}
 		c.use("_avg")
 		return fmt.Sprintf("_avg(%s)", args[0]), nil
@@ -2865,8 +2870,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		t := c.inferExprType(call.Args[0])
 		if lt, ok := t.(types.ListType); ok && isNumeric(lt.Elem) {
 			c.useLinq = true
-			v := c.newVar()
-			return fmt.Sprintf("Enumerable.Sum(%s.Select(%s=>Convert.ToDouble(%s)))", args[0], v, v), nil
+			return fmt.Sprintf("Enumerable.Sum(%s)", args[0]), nil
 		}
 		c.use("_sum")
 		return fmt.Sprintf("_sum(%s)", args[0]), nil
