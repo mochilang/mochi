@@ -17,8 +17,7 @@ main :-
     Products = [_V0, _V1, _V2, _V3, _V4, _V5, _V6],
     findall(_V7, (member(P, Products), true, _V7 = P), _V8),
     Expensive = _V8,
-    write("--- Top products (excluding most expensive) ---"),
-    nl,
+    writeln("--- Top products (excluding most expensive) ---"),
     catch(
         (
             member(Item, Expensive),

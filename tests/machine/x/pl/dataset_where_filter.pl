@@ -14,8 +14,7 @@ main :-
     People = [_V0, _V1, _V2, _V3],
     findall(_V9, (member(Person, People), get_item(Person, 'age', _V4), (_V4 @>= 18), get_item(Person, 'name', _V5), get_item(Person, 'age', _V6), get_item(Person, 'age', _V7), dict_create(_V8, map, [name-_V5, age-_V6, is_senior-(_V7 @>= 60)]), _V9 = _V8), _V10),
     Adults = _V10,
-    write("--- Adults ---"),
-    nl,
+    writeln("--- Adults ---"),
     catch(
         (
             member(Person, Adults),
