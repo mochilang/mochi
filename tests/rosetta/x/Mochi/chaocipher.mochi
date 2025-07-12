@@ -1,0 +1,56 @@
+fun indexOf(s: string, ch: string): int {
+  var i = 0
+  while i < len(s) {
+    if s[i:i+1] == ch {
+      return i
+    }
+    i = i + 1
+  }
+  return -1
+}
+
+fun rotate(s: string, n: int): string {
+  return s[n:] + s[:n]
+}
+
+fun scrambleLeft(s: string): string {
+  return s[0:1] + s[2:14] + s[1:2] + s[14:]
+}
+
+fun scrambleRight(s: string): string {
+  return s[1:3] + s[4:15] + s[3:4] + s[15:] + s[0:1]
+}
+
+fun chao(text: string, encode: bool): string {
+  var left = "HXUCZVAMDSLKPEFJRIGTWOBNYQ"
+  var right = "PTLNBQDEOYSFAVZKGJRIHWXUMC"
+  var out = ""
+  var i = 0
+  while i < len(text) {
+    let ch = text[i:i+1]
+    var idx = 0
+    if encode {
+      idx = indexOf(right, ch)
+      out = out + left[idx:idx+1]
+    } else {
+      idx = indexOf(left, ch)
+      out = out + right[idx:idx+1]
+    }
+    left = rotate(left, idx)
+    right = rotate(right, idx)
+    left = scrambleLeft(left)
+    right = scrambleRight(right)
+    i = i + 1
+  }
+  return out
+}
+
+fun main() {
+  let plain = "WELLDONEISBETTERTHANWELLSAID"
+  let cipher = chao(plain, true)
+  print(plain)
+  print(cipher)
+  print(chao(cipher, false))
+}
+
+main()
