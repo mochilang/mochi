@@ -128,6 +128,11 @@ func Format(src []byte) ([]byte, error) {
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("  "))
+	lines := bytes.Split(src, []byte("\n"))
+	for i, line := range lines {
+		lines[i] = bytes.TrimRight(line, " ")
+	}
+	src = bytes.Join(lines, []byte("\n"))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
