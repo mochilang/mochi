@@ -467,12 +467,7 @@ func (c *Compiler) writeBuiltins() {
 		c.writeln("fn _equal(a: anytype, b: anytype) bool {")
 		c.indent++
 		c.writeln("if (@TypeOf(a) != @TypeOf(b)) return false;")
-		c.writeln("return switch (@typeInfo(@TypeOf(a))) {")
-		c.indent++
-		c.writeln(".Struct, .Union, .Array, .Vector, .Pointer, .Slice => std.meta.eql(a, b),")
-		c.writeln("else => a == b,")
-		c.indent--
-		c.writeln("};")
+		c.writeln("return std.meta.eql(a, b);")
 		c.indent--
 		c.writeln("}")
 		c.writeln("")

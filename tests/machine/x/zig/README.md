@@ -107,4 +107,5 @@ The files in this directory were produced by the Zig compiler tests. Each Mochi 
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-* Fix compilation errors for `q1.mochi` (TPCH query).
+* Fix compilation errors for `q1.mochi` (TPCH query). Current output still
+  fails due to incorrect struct field types and slice handling.
