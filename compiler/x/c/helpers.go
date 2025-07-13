@@ -450,6 +450,39 @@ func freeVarsStmt(fn *parser.FunStmt, params []string) []string {
 	return out
 }
 
+// freeVarsTestBlock returns the variable names referenced within the test block.
+func freeVarsTestBlock(tb *parser.TestBlock) []string {
+	vars := map[string]struct{}{}
+	for _, st := range tb.Body {
+		scanStmt(st, vars)
+	}
+	out := make([]string, 0, len(vars))
+	for k := range vars {
+		out = append(out, k)
+	}
+	sort.Strings(out)
+	return out
+}
+
+func isListPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+	if p == nil || len(p.Ops) > 0 {
+		return false
+	}
+	if p.Target != nil {
+		if p.Target.List != nil {
+			return true
+		}
+		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
+			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
+				if _, ok := t.(types.ListType); ok {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func scanStmt(s *parser.Statement, vars map[string]struct{}) {
 	switch {
 	case s.Let != nil:
