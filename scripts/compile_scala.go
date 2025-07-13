@@ -40,7 +40,11 @@ func main() {
 			os.Remove(scalaPath)
 			continue
 		}
-		code, err := scalacode.New(env).Compile(prog)
+		c := scalacode.New(env)
+		if os.Getenv("PREFER_MUTABLE") != "" {
+			c.SetPreferMutable(true)
+		}
+		code, err := c.Compile(prog)
 		if err != nil {
 			os.WriteFile(errPath, []byte(err.Error()), 0644)
 			os.Remove(scalaPath)

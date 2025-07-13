@@ -102,7 +102,8 @@ The following Mochi programs were compiled to Scala using the automated compiler
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-All programs compiled successfully.
+- [x] tpch_q1.mochi
+All programs listed above compiled successfully, including the TPCH query.
 
 Recent improvements:
 - Map literal values no longer include extraneous parentheses.
@@ -113,3 +114,4 @@ Recent improvements:
 - [ ] Review generated Scala code for idiomatic style
 - [x] Investigate TPCH `q1.mochi` compilation failures and update helper
       functions as needed
+- [ ] Compile additional TPCH queries
