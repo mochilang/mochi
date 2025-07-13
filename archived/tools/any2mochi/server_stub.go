@@ -1,3 +1,5 @@
+//go:build archive
+
 package any2mochi
 
 // LanguageServer represents an external parser command.

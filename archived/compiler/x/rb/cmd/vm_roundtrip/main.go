@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	rubyconv "mochi/archived/tools/any2mochi/x/ruby"
 	rbcode "mochi/archived/x/rb"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	rubyconv "mochi/archived/tools/any2mochi/x/ruby"
 	"mochi/types"
 )
 

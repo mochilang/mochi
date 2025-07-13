@@ -1,4 +1,4 @@
-//go:build archived && csroundtrip
+//go:build archive && csroundtrip
 
 package cscode_test
 
@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
+	converter "mochi/archived/tools/any2mochi/x/cs"
 	cscode "mochi/archived/x/cs"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	converter "mochi/archived/tools/any2mochi/x/cs"
 	"mochi/types"
 )
 

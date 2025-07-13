@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package java
 
@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	javacode "mochi/archived/x/java"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

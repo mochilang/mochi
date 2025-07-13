@@ -1,4 +1,4 @@
-//go:build go_vm
+//go:build archive && go_vm
 
 package golang
 

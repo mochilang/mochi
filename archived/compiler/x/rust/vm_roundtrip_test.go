@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package rscode_test
 
@@ -8,10 +8,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	rscode "mochi/archived/x/rust"
-	"mochi/parser"
 	any2mochi "mochi/archived/tools/any2mochi"
 	rconv "mochi/archived/tools/any2mochi/x/rust"
+	rscode "mochi/archived/x/rust"
+	"mochi/parser"
 	"mochi/types"
 )
 

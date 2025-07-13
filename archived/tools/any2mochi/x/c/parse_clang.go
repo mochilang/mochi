@@ -1,3 +1,5 @@
+//go:build archive
+
 package c
 
 import (

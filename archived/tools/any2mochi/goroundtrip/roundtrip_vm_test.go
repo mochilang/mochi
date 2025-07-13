@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package goroundtrip
 
@@ -10,10 +10,10 @@ import (
 	"testing"
 
 	gocode "mochi/archived/go"
-	"mochi/parser"
-	"mochi/runtime/vm"
 	any2mochi "mochi/archived/tools/any2mochi"
 	golang "mochi/archived/tools/any2mochi/go"
+	"mochi/parser"
+	"mochi/runtime/vm"
 	"mochi/types"
 )
 

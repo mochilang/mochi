@@ -1,4 +1,4 @@
-//go:build archived && slow && tcc && libtcc
+//go:build archive && slow && tcc && libtcc
 
 package ccode_test
 

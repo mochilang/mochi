@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	luacode "mochi/archived/x/lua"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

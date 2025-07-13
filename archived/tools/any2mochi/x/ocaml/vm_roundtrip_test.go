@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package ocaml
 
@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	mlcode "mochi/archived/x/ocaml"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

@@ -1,3 +1,5 @@
+//go:build archive
+
 package any2mochi
 
 // Basic types mirroring the subset of LSP structures used by converters.

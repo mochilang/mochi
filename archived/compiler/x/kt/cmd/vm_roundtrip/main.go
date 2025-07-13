@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 
+	converter "mochi/archived/tools/any2mochi/x/kt"
 	ktcode "mochi/archived/x/kt"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	converter "mochi/archived/tools/any2mochi/x/kt"
 	"mochi/types"
 )
 

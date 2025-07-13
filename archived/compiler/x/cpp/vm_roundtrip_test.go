@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package cppcode_test
 
@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	cppcode "mochi/archived/x/cpp"
-	"mochi/parser"
 	any2mochi "mochi/archived/tools/any2mochi"
 	cppconv "mochi/archived/tools/any2mochi/x/cpp"
+	cppcode "mochi/archived/x/cpp"
+	"mochi/parser"
 	"mochi/types"
 )
 

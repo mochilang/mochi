@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package cobolcode_test
 
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	cob2mochi "mochi/archived/tools/any2mochi/x/cobol"
 	cobolcode "mochi/archived/x/cobol"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	cob2mochi "mochi/archived/tools/any2mochi/x/cobol"
 	"mochi/types"
 )
 

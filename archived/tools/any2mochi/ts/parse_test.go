@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package ts
 
@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"testing"
 
-	tscode "mochi/archived/ts"
 	parent "mochi/archived/tools/any2mochi"
+	tscode "mochi/archived/ts"
 )
 
 func requireBinary(t *testing.T, name string) {

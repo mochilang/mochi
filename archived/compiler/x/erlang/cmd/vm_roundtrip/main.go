@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	converter "mochi/archived/tools/any2mochi/x/erlang"
 	erlcode "mochi/archived/x/erlang"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	converter "mochi/archived/tools/any2mochi/x/erlang"
 	"mochi/types"
 )
 

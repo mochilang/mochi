@@ -1,12 +1,12 @@
-//go:build slow
+//go:build archive && slow
 
 package racket
 
 import (
 	"fmt"
+	any2mochi "mochi/archived/tools/any2mochi"
 	rktcode "mochi/archived/x/rkt"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 	"path/filepath"
 	"testing"

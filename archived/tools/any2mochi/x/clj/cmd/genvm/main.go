@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -10,10 +10,10 @@ import (
 	"sort"
 	"strings"
 
+	cljconv "mochi/archived/tools/any2mochi/x/clj"
 	cljcode "mochi/archived/x/clj"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	cljconv "mochi/archived/tools/any2mochi/x/clj"
 	"mochi/types"
 )
 

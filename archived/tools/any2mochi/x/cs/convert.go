@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package cs
 
@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	cscode "mochi/archived/x/cs"
 	any2mochi "mochi/archived/tools/any2mochi"
+	cscode "mochi/archived/x/cs"
 )
 
 var (

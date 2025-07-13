@@ -1,4 +1,4 @@
-//go:build archived && ocamlroundtrip
+//go:build archive && ocamlroundtrip
 
 package mlcode_test
 
@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	mlcode "mochi/archived/x/ocaml"
 	any2mochi "mochi/archived/tools/any2mochi"
+	mlcode "mochi/archived/x/ocaml"
 )
 
 func TestOCaml_RoundTripVM(t *testing.T) {

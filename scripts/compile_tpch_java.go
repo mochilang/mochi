@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package main
 
@@ -49,9 +49,9 @@ func main() {
 	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java")
 	_ = os.MkdirAll(outDir, 0o755)
 
-    // Generate golden Java files for additional TPCH queries.
-    // This script previously generated q11-q13; extend it with q14-q15.
-    for i := 14; i <= 15; i++ {
+	// Generate golden Java files for additional TPCH queries.
+	// This script previously generated q11-q13; extend it with q14-q15.
+	for i := 14; i <= 15; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)

@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package cpp
 
@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	cppcode "mochi/archived/x/cpp"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

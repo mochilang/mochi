@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package excode_test
 
@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	excode "mochi/archived/x/ex"
-	"mochi/parser"
 	any2mochi "mochi/archived/tools/any2mochi"
 	exconv "mochi/archived/tools/any2mochi/x/ex"
+	excode "mochi/archived/x/ex"
+	"mochi/parser"
 	"mochi/types"
 )
 

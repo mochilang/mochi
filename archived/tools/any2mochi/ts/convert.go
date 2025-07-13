@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package ts
 
@@ -12,8 +12,8 @@ import (
 	"runtime"
 	"strings"
 
-	tscode "mochi/archived/ts"
 	parent "mochi/archived/tools/any2mochi"
+	tscode "mochi/archived/ts"
 )
 
 // UseLanguageServer controls whether the TypeScript language server is

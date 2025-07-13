@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package swift
 
@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	gocode "mochi/archived/go"
-	swiftcode "mochi/archived/x/swift"
 	any2mochi "mochi/archived/tools/any2mochi"
+	swiftcode "mochi/archived/x/swift"
 )
 
 func TestConvertSwift_Golden(t *testing.T) {

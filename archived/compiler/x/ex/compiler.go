@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 // Package excode translates Mochi ASTs into Elixir source code.
 package excode
