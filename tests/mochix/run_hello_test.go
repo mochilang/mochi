@@ -135,3 +135,183 @@ func TestRunJava(t *testing.T) {
 		return buildAndRun(t, "buildx", "java", src, ".java")
 	})
 }
+
+func TestRunCobol(t *testing.T) {
+	if _, err := exec.LookPath("cobc"); err != nil {
+		t.Skip("cobc not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".cobol.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "cobol", src, ".cob")
+	})
+}
+
+func TestRunCS(t *testing.T) {
+	if _, err := exec.LookPath("dotnet"); err != nil {
+		t.Skip("dotnet not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".cs.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "cs", src, ".cs")
+	})
+}
+
+func TestRunErlang(t *testing.T) {
+	if _, err := exec.LookPath("escript"); err != nil {
+		t.Skip("escript not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".erlang.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "erlang", src, ".erl")
+	})
+}
+
+func TestRunEx(t *testing.T) {
+	if _, err := exec.LookPath("elixir"); err != nil {
+		t.Skip("elixir not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".ex.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "ex", src, ".exs")
+	})
+}
+
+func TestRunFortran(t *testing.T) {
+	if _, err := exec.LookPath("gfortran"); err != nil {
+		t.Skip("gfortran not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".fortran.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "fortran", src, ".f90")
+	})
+}
+
+func TestRunFS(t *testing.T) {
+	if _, err := exec.LookPath("fsharpc"); err != nil {
+		t.Skip("fsharpc not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".fs.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "fs", src, ".fs")
+	})
+}
+
+func TestRunHS(t *testing.T) {
+	if _, err := exec.LookPath("runhaskell"); err != nil {
+		t.Skip("runhaskell not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".hs.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "hs", src, ".hs")
+	})
+}
+
+func TestRunKotlin(t *testing.T) {
+	if _, err := exec.LookPath("kotlinc"); err != nil {
+		t.Skip("kotlinc not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".kotlin.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "kotlin", src, ".kt")
+	})
+}
+
+func TestRunLua(t *testing.T) {
+	if _, err := exec.LookPath("lua"); err != nil {
+		t.Skip("lua not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".lua.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "lua", src, ".lua")
+	})
+}
+
+func TestRunOcaml(t *testing.T) {
+	if _, err := exec.LookPath("ocaml"); err != nil {
+		t.Skip("ocaml not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".ocaml.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "ocaml", src, ".ml")
+	})
+}
+
+func TestRunPascal(t *testing.T) {
+	if _, err := exec.LookPath("fpc"); err != nil {
+		t.Skip("fpc not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".pascal.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "pascal", src, ".pas")
+	})
+}
+
+func TestRunPHP(t *testing.T) {
+	if _, err := exec.LookPath("php"); err != nil {
+		t.Skip("php not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".php.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "php", src, ".php")
+	})
+}
+
+func TestRunPL(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".pl.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "pl", src, ".pl")
+	})
+}
+
+func TestRunRacket(t *testing.T) {
+	if _, err := exec.LookPath("racket"); err != nil {
+		t.Skip("racket not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".racket.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "racket", src, ".rkt")
+	})
+}
+
+func TestRunRuby(t *testing.T) {
+	if _, err := exec.LookPath("ruby"); err != nil {
+		t.Skip("ruby not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".rb.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "rb", src, ".rb")
+	})
+}
+
+func TestRunScala(t *testing.T) {
+	if _, err := exec.LookPath("scala"); err != nil {
+		t.Skip("scala not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".scala.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "scala", src, ".scala")
+	})
+}
+
+func TestRunScheme(t *testing.T) {
+	if _, err := exec.LookPath("chibi-scheme"); err != nil {
+		t.Skip("scheme not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".scheme.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "scheme", src, ".scm")
+	})
+}
+
+func TestRunSmalltalk(t *testing.T) {
+	if _, err := exec.LookPath("gst"); err != nil {
+		t.Skip("gst not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".smalltalk.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "smalltalk", src, ".st")
+	})
+}
+
+func TestRunST(t *testing.T) {
+	if _, err := exec.LookPath("gst"); err != nil {
+		t.Skip("gst not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".st.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "st", src, ".st")
+	})
+}
+
+func TestRunZig(t *testing.T) {
+	if _, err := exec.LookPath("zig"); err != nil {
+		t.Skip("zig not installed")
+	}
+	golden.Run(t, "tests/mochix", ".mochi", ".zig.run", func(src string) ([]byte, error) {
+		return buildAndRun(t, "buildx", "zig", src, ".zig")
+	})
+}

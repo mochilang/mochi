@@ -144,6 +144,9 @@ func normalizeOutput(root string, b []byte) []byte {
 	// slightly between runs and would cause flakey golden tests.
 	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
 	out = durRE.ReplaceAllString(out, "(X)")
+	// Replace timestamps like 2006-01-02T15:04:05Z with a fixed placeholder.
+	tsRE := regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`)
+	out = tsRE.ReplaceAllString(out, "2006-01-02T15:04:05Z")
 	out = strings.TrimSpace(out)
 	if !strings.HasSuffix(out, "\n") {
 		out += "\n"
