@@ -1106,41 +1106,41 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 					parts[i] = fmt.Sprintf("${%s}", a)
 				}
 			}
-                        msg := strings.Join(parts, " ")
-                        msg = strings.ReplaceAll(msg, " :", ":")
-                        msg = strings.ReplaceAll(msg, " ,", ",")
-                        msg = strings.ReplaceAll(msg, " ;", ";")
-                        msg = strings.ReplaceAll(msg, " .", ".")
-                        msg = strings.ReplaceAll(msg, " ?", "?")
-                        msg = strings.ReplaceAll(msg, " !", "!")
-                        msg = strings.ReplaceAll(msg, " )", ")")
-                        msg = strings.ReplaceAll(msg, "( ", "(")
-                        msg = strings.ReplaceAll(msg, "$ ${", "$$${")
-                        c.writeln(fmt.Sprintf("println(s\"%s\")", msg))
-                }
-                return nil
-        }
-        if ok && call.Func == "json" {
-                if len(call.Args) != 1 {
-                        return fmt.Errorf("json expects 1 arg")
-                }
-                argExpr := call.Args[0]
-                arg, err := c.compileExpr(argExpr)
-                if err != nil {
-                        return err
-                }
-                t := types.ExprType(argExpr, c.env)
-                switch t.(type) {
-                case types.MapType, types.StructType, types.UnionType:
-                        c.writeln(fmt.Sprintf("println(scala.util.parsing.json.JSONObject(%s.asInstanceOf[scala.collection.immutable.Map[String,Any]]).toString())", arg))
-                case types.ListType:
-                        c.writeln(fmt.Sprintf("println(scala.util.parsing.json.JSONArray(%s.asInstanceOf[List[Any]]).toString())", arg))
-                default:
-                        c.use("_to_json")
-                        c.writeln(fmt.Sprintf("println(_to_json(%s))", arg))
-                }
-                return nil
-        }
+			msg := strings.Join(parts, " ")
+			msg = strings.ReplaceAll(msg, " :", ":")
+			msg = strings.ReplaceAll(msg, " ,", ",")
+			msg = strings.ReplaceAll(msg, " ;", ";")
+			msg = strings.ReplaceAll(msg, " .", ".")
+			msg = strings.ReplaceAll(msg, " ?", "?")
+			msg = strings.ReplaceAll(msg, " !", "!")
+			msg = strings.ReplaceAll(msg, " )", ")")
+			msg = strings.ReplaceAll(msg, "( ", "(")
+			msg = strings.ReplaceAll(msg, "$ ${", "$$${")
+			c.writeln(fmt.Sprintf("println(s\"%s\")", msg))
+		}
+		return nil
+	}
+	if ok && call.Func == "json" {
+		if len(call.Args) != 1 {
+			return fmt.Errorf("json expects 1 arg")
+		}
+		argExpr := call.Args[0]
+		arg, err := c.compileExpr(argExpr)
+		if err != nil {
+			return err
+		}
+		t := types.ExprType(argExpr, c.env)
+		switch t.(type) {
+		case types.MapType, types.StructType, types.UnionType:
+			c.writeln(fmt.Sprintf("println(scala.util.parsing.json.JSONObject(%s.asInstanceOf[scala.collection.immutable.Map[String,Any]]).toString())", arg))
+		case types.ListType:
+			c.writeln(fmt.Sprintf("println(scala.util.parsing.json.JSONArray(%s.asInstanceOf[List[Any]]).toString())", arg))
+		default:
+			c.use("_to_json")
+			c.writeln(fmt.Sprintf("println(_to_json(%s))", arg))
+		}
+		return nil
+	}
 	expr, err := c.compileExpr(s.Expr)
 	if err != nil {
 		return err
@@ -1302,7 +1302,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					s = fmt.Sprintf("%s.charAt(%s)", s, idxExpr)
 					typ = types.StringType{}
 				} else {
-					s = fmt.Sprintf("%s(%s)", s, idxExpr)
+					s = fmt.Sprintf("(%s).apply(%s)", s, idxExpr)
 					switch tt := typ.(type) {
 					case types.ListType:
 						typ = tt.Elem
@@ -1476,21 +1476,21 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		args[i] = v
 	}
 	switch call.Func {
-        case "append":
-                if len(args) != 2 {
-                        return "", fmt.Errorf("append expects 2 args")
-                }
-                if name, ok := simpleIdent(call.Args[0]); ok && c.env != nil {
-                        if vt, err := c.env.GetVar(name); err == nil {
-                                if lt, ok2 := vt.(types.ListType); ok2 {
-                                        if _, any := lt.Elem.(types.AnyType); any {
-                                                elemT := c.namedType(types.ExprType(call.Args[1], c.env))
-                                                c.env.SetVar(name, types.ListType{Elem: elemT}, true)
-                                        }
-                                }
-                        }
-                }
-                return fmt.Sprintf("%s :+ %s", args[0], args[1]), nil
+	case "append":
+		if len(args) != 2 {
+			return "", fmt.Errorf("append expects 2 args")
+		}
+		if name, ok := simpleIdent(call.Args[0]); ok && c.env != nil {
+			if vt, err := c.env.GetVar(name); err == nil {
+				if lt, ok2 := vt.(types.ListType); ok2 {
+					if _, any := lt.Elem.(types.AnyType); any {
+						elemT := c.namedType(types.ExprType(call.Args[1], c.env))
+						c.env.SetVar(name, types.ListType{Elem: elemT}, true)
+					}
+				}
+			}
+		}
+		return fmt.Sprintf("%s :+ %s", args[0], args[1]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
@@ -1580,20 +1580,20 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("values expects 1 arg")
 		}
 		return fmt.Sprintf("%s.values.toList", args[0]), nil
-        case "json":
-                if len(args) != 1 {
-                        return "", fmt.Errorf("json expects 1 arg")
-                }
-                t := types.ExprType(call.Args[0], c.env)
-                switch t.(type) {
-                case types.MapType, types.StructType, types.UnionType:
-                        return fmt.Sprintf("scala.util.parsing.json.JSONObject(%s.asInstanceOf[scala.collection.immutable.Map[String,Any]]).toString()", args[0]), nil
-                case types.ListType:
-                        return fmt.Sprintf("scala.util.parsing.json.JSONArray(%s.asInstanceOf[List[Any]]).toString()", args[0]), nil
-                default:
-                        c.use("_to_json")
-                        return fmt.Sprintf("_to_json(%s)", args[0]), nil
-                }
+	case "json":
+		if len(args) != 1 {
+			return "", fmt.Errorf("json expects 1 arg")
+		}
+		t := types.ExprType(call.Args[0], c.env)
+		switch t.(type) {
+		case types.MapType, types.StructType, types.UnionType:
+			return fmt.Sprintf("scala.util.parsing.json.JSONObject(%s.asInstanceOf[scala.collection.immutable.Map[String,Any]]).toString()", args[0]), nil
+		case types.ListType:
+			return fmt.Sprintf("scala.util.parsing.json.JSONArray(%s.asInstanceOf[List[Any]]).toString()", args[0]), nil
+		default:
+			c.use("_to_json")
+			return fmt.Sprintf("_to_json(%s)", args[0]), nil
+		}
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 arg")
@@ -1619,17 +1619,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 }
 
 func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, error) {
-        prefix := "List"
-        if mutable || c.preferMutable {
-                prefix = "scala.collection.mutable.ArrayBuffer"
-        }
+	prefix := "List"
+	if mutable || c.preferMutable {
+		prefix = "scala.collection.mutable.ArrayBuffer"
+	}
 
-        if len(l.Elems) == 0 {
-                if prefix == "scala.collection.mutable.ArrayBuffer" {
-                        return fmt.Sprintf("%s[Any]()", prefix), nil
-                }
-                return fmt.Sprintf("%s()", prefix), nil
-        }
+	if len(l.Elems) == 0 {
+		if prefix == "scala.collection.mutable.ArrayBuffer" {
+			return fmt.Sprintf("%s[Any]()", prefix), nil
+		}
+		return fmt.Sprintf("%s()", prefix), nil
+	}
 
 	// determine element type before compiling elements so that map literals
 	// can be rendered as case class instances
@@ -1932,15 +1932,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		parts = append(parts, fmt.Sprintf("if %s", cond))
 	}
 	var expr string
-        if q.Group != nil {
-                oldHint := c.structHint
-                c.structHint = q.Group.Name
-                keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-                c.structHint = oldHint
-                if err != nil {
-                        c.env = oldEnv
-                        return "", err
-                }
+	if q.Group != nil {
+		oldHint := c.structHint
+		c.structHint = q.Group.Name
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		c.structHint = oldHint
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
 		names := append([]string{q.Var}, func() []string {
 			n := make([]string, len(q.Froms)+len(q.Joins))
 			for i, f := range q.Froms {
@@ -1975,9 +1975,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		groups := fmt.Sprintf("(%s).groupBy(_._1).map{ case(k,list) => _Group(k, list.map(_._2)) }.toList", tmp)
 		c.use("_Group")
 
-                groupEnv := types.NewEnv(c.env)
-                keyT := c.namedType(types.ExprType(q.Group.Exprs[0], child))
-                groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, false)
+		groupEnv := types.NewEnv(c.env)
+		keyT := c.namedType(types.ExprType(q.Group.Exprs[0], child))
+		groupEnv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem}, false)
 
 		if q.Sort != nil {
 			c.env = groupEnv
