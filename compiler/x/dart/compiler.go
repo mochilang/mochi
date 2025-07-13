@@ -52,6 +52,18 @@ dynamic _min(dynamic v) {
     return m;
 }
 
+num _sum(dynamic v) {
+    Iterable<dynamic>? list;
+    if (v is Iterable) list = v;
+    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
+    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
+    else { try { var it = (v as dynamic).items; if (it is Iterable) list = it; } catch (_) {} }
+    if (list == null) return 0;
+    num s = 0;
+    for (var n in list) s += (n as num);
+    return s;
+}
+
 bool _runTest(String name, void Function() f) {
     stdout.write('   test $name ...');
     var start = DateTime.now();
@@ -1662,7 +1674,7 @@ func (c *Compiler) aggregateExpr(name, list string) string {
 	case "count", "len":
 		return fmt.Sprintf("%s.length", list)
 	case "sum":
-		return fmt.Sprintf("%s.reduce((a, b) => a + b)", list)
+		return fmt.Sprintf("_sum(%s)", list)
 	case "avg":
 		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
 	case "min":
@@ -1838,16 +1850,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		if arg := call.Args[0]; arg != nil && arg.Binary != nil && len(arg.Binary.Right) == 0 && arg.Binary.Left != nil && arg.Binary.Left.Value != nil && arg.Binary.Left.Value.Target != nil && arg.Binary.Left.Value.Target.Query != nil {
 			if expr, ok := c.simpleMapQuery(arg.Binary.Left.Value.Target.Query); ok {
-				return fmt.Sprintf("%s.reduce((a, b) => a + b)", expr), nil
+				return fmt.Sprintf("_sum(%s)", expr), nil
 			}
 		}
 		a := args[0]
 		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
-			return fmt.Sprintf("%s.reduce((a, b) => a + b)", a), nil
+			return fmt.Sprintf("_sum(%s)", a), nil
 		}
 		tmp := fmt.Sprintf("_t%d", c.tmp)
 		c.tmp++
-		return fmt.Sprintf("(() { var %s = %s; return %s.reduce((a, b) => a + b); })()", tmp, a, tmp), nil
+		return fmt.Sprintf("(() { var %s = %s; return _sum(%s); })()", tmp, a, tmp), nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
