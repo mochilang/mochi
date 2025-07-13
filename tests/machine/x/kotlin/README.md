@@ -109,6 +109,13 @@ The table below lists every Mochi example and whether the generated Kotlin code 
  - [x] q1.mochi (TPC-H)
  - [ ] q2.mochi (TPC-H)
 
+## Running TPC-H q1
+
+1. Ensure `kotlinc` and `java` are installed and on your `PATH`.
+2. Run `go test ./compiler/x/kotlin -tags slow -run TestKotlinCompiler_TPCH -count=1`.
+3. Generated code is written to `tests/machine/x/kotlin/q1.kt` with output in `q1.out`.
+4. Compare the output with the expected results.
+
 ## TODO
 
 - Implement dataset join and group-by operations in the Kotlin backend.
