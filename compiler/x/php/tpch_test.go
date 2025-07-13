@@ -17,7 +17,7 @@ func TestPHPCompiler_TPCH(t *testing.T) {
 	if _, err := exec.LookPath("php"); err != nil {
 		t.Skip("php not installed")
 	}
-	for i := 1; i <= 8; i++ {
+	for i := 1; i <= 12; i++ {
 		q := fmt.Sprintf("q%d", i)
 		testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
 			return phpcode.New(env).Compile(prog)
