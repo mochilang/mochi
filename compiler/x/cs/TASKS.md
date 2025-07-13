@@ -1,8 +1,8 @@
 # C# Compiler TODO
 
-## Recent Updates (2025-07-13 09:27)
+## Recent Updates (2025-07-13 09:54)
 - Auto-enable `DictMode` only when grouped queries use anonymous structs or maps.
-- Regenerated `cross_join` without dictionary indexing.
+- Fixed LINQ compiler to register join variables before compiling query select, removing dictionary indexing in `cross_join`.
 
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.
