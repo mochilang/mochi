@@ -29,6 +29,8 @@ type Compiler struct {
 	Module         string
 	attrs          map[string]string
 	builtinAliases map[string]string
+	currentGroup   string
+	groupFields    map[string]bool
 }
 
 var atomIdent = regexp.MustCompile(`^[a-z_][a-zA-Z0-9_]*$`)
@@ -157,7 +159,17 @@ func usesLoopControl(stmts []*parser.Statement) bool {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, helpers: make(map[string]bool), funcs: make(map[string]bool), structs: make(map[string]types.StructType), Module: "Main", structDefs: []string{}, attrs: make(map[string]string), builtinAliases: make(map[string]string)}
+	return &Compiler{
+		env:            env,
+		helpers:        make(map[string]bool),
+		funcs:          make(map[string]bool),
+		structs:        make(map[string]types.StructType),
+		Module:         "Main",
+		structDefs:     []string{},
+		attrs:          make(map[string]string),
+		builtinAliases: make(map[string]string),
+		groupFields:    nil,
+	}
 }
 
 func (c *Compiler) writeln(s string) {
@@ -967,6 +979,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	c.env = envWithGroup
 
+	// variables reused across query compilation stages
+	// cond, sortExpr, skipExpr and takeExpr hold optional clauses
+	// and are initialized below when needed
+	var cond, sortExpr, skipExpr, takeExpr string
+
 	// simple group-by without joins or filters
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
@@ -979,6 +996,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
 		}
 		c.env = orig
 		c.use("_group_by")
@@ -1000,7 +1024,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	var cond, sortExpr, skipExpr, takeExpr string
+	// reuse previously declared cond, sortExpr, skipExpr and takeExpr
 	if q.Where != nil {
 		cond, err = c.compileExpr(q.Where)
 		if err != nil {
@@ -1008,7 +1032,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		sortExpr, err = c.compileExpr(q.Sort)
 		if err != nil {
 			c.env = orig
@@ -1076,11 +1100,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		keyNames := groupKeyNames(q.Group.Exprs[0])
+		prevGroup := c.currentGroup
+		prevFields := c.groupFields
+		if len(keyNames) > 0 {
+			c.currentGroup = sanitizeName(q.Group.Name)
+			f := make(map[string]bool, len(keyNames))
+			for _, n := range keyNames {
+				f[n] = true
+			}
+			c.groupFields = f
+		}
+		defer func() {
+			c.currentGroup = prevGroup
+			c.groupFields = prevFields
+		}()
 		c.env = envWithGroup
 		val, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		if q.Sort != nil {
+			sortExpr, err = c.compileExpr(q.Sort)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
 		}
 		c.env = orig
 		selectFn := ""
@@ -1099,11 +1145,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		whereFn := ""
 		if cond != "" {
-			if len(paramCopy) == 1 {
-				whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
-			} else {
-				whereFn = fmt.Sprintf("fn %%{ %s } -> %s end", strings.Join(pairs, ", "), cond)
-			}
+			whereFn = fmt.Sprintf("fn [%s] -> %s end", allParams, cond)
 		}
 		var b strings.Builder
 		b.WriteString("(fn ->\n")
