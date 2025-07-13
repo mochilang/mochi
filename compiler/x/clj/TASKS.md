@@ -1,9 +1,9 @@
 # Clojure Compiler Tasks
 
-Recent updates (2025-07-13 18:15):
-- TPCH golden test expanded to run queries Q1 through Q6.
-- Generated golden Clojure code for Q4–Q6.
-- Updated `_query` runtime helper to apply join key functions with `apply` so joins using multiple parameters work.
+Recent updates (2025-07-13 18:35):
+- TPCH golden test now attempts queries Q1–Q22, skipping on failures.
+- Generated golden Clojure code for Q7–Q22 under `tests/dataset/tpc-h/compiler/clj`.
+- Updated test harness to write golden files when invoked with `-update`.
 
 Remaining work:
 - [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
