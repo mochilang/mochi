@@ -31,6 +31,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	var out bytes.Buffer
 	out.Write(meta.Header("\""))
+	out.WriteString("\"\n")
 	c.vars = make(map[string]bool)
 	c.indent = 0
 	c.needBreak = false
@@ -260,23 +261,37 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.buf.WriteString("(" + cond + ") ifTrue: [\n")
+	c.writeln("(" + cond + ") ifTrue: [")
+	c.indent++
 	for _, st := range i.Then {
 		if err := c.compileStmt(st); err != nil {
 			return err
 		}
 	}
-	c.buf.WriteString("]")
-	if len(i.Else) > 0 {
-		c.buf.WriteString(" ifFalse: [\n")
-		for _, st := range i.Else {
-			if err := c.compileStmt(st); err != nil {
-				return err
-			}
+	c.indent--
+	if i.ElseIf != nil {
+		c.writeln("] ifFalse: [")
+		c.indent++
+		if err := c.compileIf(i.ElseIf); err != nil {
+			return err
 		}
-		c.buf.WriteString("]")
+		c.indent--
+		c.writeln("].")
+		return nil
 	}
-	c.writeln("")
+	if len(i.Else) == 0 {
+		c.writeln("] .")
+		return nil
+	}
+	c.writeln("] ifFalse: [")
+	c.indent++
+	for _, st := range i.Else {
+		if err := c.compileStmt(st); err != nil {
+			return err
+		}
+	}
+	c.indent--
+	c.writeln("].")
 	return nil
 }
 
@@ -653,25 +668,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		return "[" + strings.Join(params, " ") + " | " + body + " ]", nil
 	case p.If != nil:
-		cond, err := c.compileExpr(p.If.Cond)
-		if err != nil {
-			return "", err
-		}
-		th, err := c.compileExpr(p.If.Then)
-		if err != nil {
-			return "", err
-		}
-		el := ""
-		if p.If.Else != nil {
-			el, err = c.compileExpr(p.If.Else)
-			if err != nil {
-				return "", err
-			}
-		}
-		if el == "" {
-			return fmt.Sprintf("(%s) ifTrue: [%s]", cond, th), nil
-		}
-		return fmt.Sprintf("(%s) ifTrue: [%s] ifFalse: [%s]", cond, th, el), nil
+		return c.ifExprString(p.If)
 	case p.Call != nil:
 		args := make([]string, len(p.Call.Args))
 		for i, a := range p.Call.Args {
@@ -999,6 +996,35 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString("  tmp\n")
 	b.WriteString("] value")
 	return b.String(), nil
+}
+
+func (c *Compiler) ifExprString(i *parser.IfExpr) (string, error) {
+	cond, err := c.compileExpr(i.Cond)
+	if err != nil {
+		return "", err
+	}
+	th, err := c.compileExpr(i.Then)
+	if err != nil {
+		return "", err
+	}
+	if i.ElseIf != nil {
+		el, err := c.ifExprString(i.ElseIf)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("(%s) ifTrue: [%s] ifFalse: [%s]", cond, th, el), nil
+	}
+	el := ""
+	if i.Else != nil {
+		el, err = c.compileExpr(i.Else)
+		if err != nil {
+			return "", err
+		}
+	}
+	if el == "" {
+		return fmt.Sprintf("(%s) ifTrue: [%s]", cond, th), nil
+	}
+	return fmt.Sprintf("(%s) ifTrue: [%s] ifFalse: [%s]", cond, th, el), nil
 }
 
 func (c *Compiler) compileLeftJoinSimple(q *parser.QueryExpr) (string, error) {

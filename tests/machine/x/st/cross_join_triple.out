@@ -1,12 +1,12 @@
-Object: OrderedCollection new: 16 "<0x7f668082dd70>" error: did not understand #add:newFrom:
+Object: OrderedCollection new: 16 "<0x7f668082dd70>" error: did not understand #add:from:
 MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-OrderedCollection(Object)>>doesNotUnderstand: #add:newFrom: (SysExcept.st:1448)
+OrderedCollection(Object)>>doesNotUnderstand: #add:from: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:12)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:11)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
 optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:10)
 Array(SequenceableCollection)>>do: (SeqCollect.st:827)
 optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:9)
-Array(SequenceableCollection)>>do: (SeqCollect.st:827)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:8)
-Array(SequenceableCollection)>>do: (SeqCollect.st:827)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:7)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:5)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join_triple.st:7)
 --- Cross Join of three lists ---

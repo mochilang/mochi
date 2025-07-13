@@ -1,10 +1,13 @@
-Object: Dictionary error: did not understand #newFrom:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:2)
-Object: nil error: did not understand #do:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:5)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:3)
+Object: Association new "<0x7f668082c600>" error: Invalid value 'name'->Dictionary (
+	'name'->'Alice'
+	'age'->30
+): object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+Association(Object)>>checkIndexableBounds: (Object.st:792)
+Association(Object)>>at: (Object.st:858)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:9)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:7)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/dataset_where_filter.st:5)
 --- Adults ---

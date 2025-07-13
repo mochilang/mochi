@@ -107,5 +107,6 @@ This directory contains Smalltalk source code generated from the Mochi programs 
 ## TODO
 - [x] full outer join semantics
 - [x] right join semantics
+- [ ] TPC-H q1 compilation matches human output
 
 All programs executed successfully with GNU Smalltalk.

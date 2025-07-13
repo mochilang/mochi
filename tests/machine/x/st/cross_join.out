@@ -1,14 +1,16 @@
-Object: Dictionary error: did not understand #newFrom:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:2)
-Object: Dictionary error: did not understand #newFrom:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:3)
-Object: nil error: did not understand #do:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:6)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:4)
+Object: Association new "<0x7f668082e300>" error: Invalid value 'orderId'->Dictionary (
+	'total'->250
+	'id'->100
+	'customerId'->1
+): object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+Association(Object)>>checkIndexableBounds: (Object.st:792)
+Association(Object)>>at: (Object.st:858)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:10)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:9)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:8)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/cross_join.st:6)
 --- Cross Join: All order-customer pairs ---
