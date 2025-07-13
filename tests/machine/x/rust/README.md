@@ -121,4 +121,6 @@ Compiled programs: 100/100
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
 
-- [ ] Compile `tpc-h/q1.mochi` with Rust compiler (derive `PartialOrd` for key structs and cast int literals to `f64` when mixing with floats)
+- [ ] Compile `tpc-h/q1.mochi` with Rust compiler
+  - [ ] Derive `PartialOrd` for key structs
+  - [ ] Cast int literals to `f64` when mixing with floats
