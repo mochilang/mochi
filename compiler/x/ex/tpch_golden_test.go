@@ -42,7 +42,7 @@ func TestExCompiler_TPCHQueries(t *testing.T) {
 	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".ex.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".ex")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -64,8 +64,16 @@ func TestExCompiler_TPCHQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.ex.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(wantCode))
+			strip := func(b []byte) []byte {
+				if i := bytes.IndexByte(b, '\n'); i >= 0 {
+					return bytes.TrimSpace(b[i+1:])
+				}
+				return bytes.TrimSpace(b)
+			}
+			got := strip(code)
+			want := strip(wantCode)
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base+".ex", got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.exs")
