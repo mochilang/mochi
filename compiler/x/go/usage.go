@@ -96,6 +96,9 @@ func (c *Compiler) compileTestBlocks(prog *parser.Program) error {
 	return nil
 }
 
+// compileMainFunc emits the main function for the generated program.
+// It initializes global variables, executes top-level statements and
+// runs test blocks in order.
 func (c *Compiler) compileMainFunc(prog *parser.Program) error {
 	hasTests := hasTest(prog)
 	// Emit declarations for variables referenced by later test blocks and

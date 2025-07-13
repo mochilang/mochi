@@ -28,6 +28,7 @@ TPC-H progress:
   logic
 - 2025-07-13 09:17 - Avoided emitting new struct types when an identical
   definition already exists
+- 2025-07-13 09:40 - Documented `compileMainFunc` behaviour
 
 ## Remaining Work
 * [ ] Validate TPCH q1 runtime results

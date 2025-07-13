@@ -109,9 +109,9 @@ Checklist:
 
 ## Remaining Tasks
 
-* [x] Simplify slice conversions and printing logic
-* [ ] Expand coverage to more examples in `tests/vm/valid`
-* [ ] Verify TPC-H `q1.mochi` output matches the VM
+- [ ] Simplify slice conversions and printing logic
+- [ ] Expand coverage to more examples in `tests/vm/valid`
+- [ ] Verify TPC-H `q1.mochi` output matches the VM
 
 ### TPCH Progress
 
@@ -124,3 +124,4 @@ Checklist:
 * [x] Generate TPCH q1 with struct support
 * [x] Avoided duplicate struct definitions when casting
 * [x] Normalized `_convSlice` detection to prevent redundant conversions
+* [x] Improved checklist formatting and TPCH tracking
