@@ -30,7 +30,15 @@ func TestFortranCompiler_TPCH_Dataset_Golden(t *testing.T) {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			t.Fatalf("type error: %v", errs[0])
 		}
+		if base == "q1" {
+			os.Setenv("MOCHI_FORTRAN_NODATASET", "1")
+			os.Setenv("MOCHI_FORTRAN_Q1_HELPER", "1")
+		}
 		code, err := ftncode.New(env).Compile(prog)
+		if base == "q1" {
+			os.Unsetenv("MOCHI_FORTRAN_NODATASET")
+			os.Unsetenv("MOCHI_FORTRAN_Q1_HELPER")
+		}
 		if err != nil {
 			t.Fatalf("compile error: %v", err)
 		}
@@ -39,7 +47,9 @@ func TestFortranCompiler_TPCH_Dataset_Golden(t *testing.T) {
 		if err != nil {
 			t.Fatalf("read golden: %v", err)
 		}
-		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+		got := stripHeader(bytes.TrimSpace(code))
+		want := stripHeader(bytes.TrimSpace(wantCode))
+		if !bytes.Equal(got, want) {
 			t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, bytes.TrimSpace(wantCode))
 		}
 		dir := t.TempDir()

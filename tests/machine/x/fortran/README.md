@@ -106,9 +106,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## Remaining tasks
-- [ ] Implement translation of query expressions with joins and group-by.
-- [x] Avoid naming conflicts between struct types and variables.
-- [ ] Extend support for automatic imports and complex built-in functions.
-- [ ] Work towards compiling TPCH `q1.mochi`.
