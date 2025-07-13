@@ -121,7 +121,7 @@ func TestBuildXCS(t *testing.T) {
 }
 
 func TestBuildXErlang(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".erl.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".erl", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "erlang", src)
 	})
 }
