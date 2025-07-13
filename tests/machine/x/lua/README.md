@@ -111,5 +111,9 @@ Checklist:
 All programs executed successfully.
 
 ## Remaining tasks
-- [ ] Compile tpc-h/q1.mochi
+- [x] Compile tpc-h/q1.mochi
 - [ ] Generate simpler print statements using string concatenation
+- [ ] Compile additional TPCH queries
+
+## TPCH Progress
+- [x] q1.mochi

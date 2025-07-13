@@ -431,7 +431,14 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			parts := []string{}
 			for i, a := range args {
 				if v, ok := literalValue(call.Args[i]); ok {
-					if s, ok := v.(string); ok && s == "" {
+					if str, ok := v.(string); ok {
+						if i < len(args)-1 && !strings.HasSuffix(str, " ") {
+							str += " "
+						}
+						parts = append(parts, strconv.Quote(str))
+						continue
+					}
+					if fmt.Sprint(v) == "" {
 						continue
 					}
 				}
@@ -440,7 +447,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if len(parts) == 0 {
 				return "print()", nil
 			}
-			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
+			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. ")), nil
 		}
 		for i := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
