@@ -2901,7 +2901,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("Enumerable.Sum(%s)", args[0]), nil
 		}
 		c.use("_sum")
-		return fmt.Sprintf("_sum(%s)", args[0]), nil
+		expr := fmt.Sprintf("_sum(%s)", args[0])
+		if lt, ok := t.(types.ListType); ok {
+			if isInt(lt.Elem) {
+				expr = fmt.Sprintf("(int)%s", expr)
+			} else if isInt64(lt.Elem) {
+				expr = fmt.Sprintf("(long)%s", expr)
+			}
+		} else if gt, ok := t.(types.GroupType); ok {
+			if isInt(gt.Elem) {
+				expr = fmt.Sprintf("(int)%s", expr)
+			} else if isInt64(gt.Elem) {
+				expr = fmt.Sprintf("(long)%s", expr)
+			}
+		}
+		return expr, nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min() expects 1 arg")
