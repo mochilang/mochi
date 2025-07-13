@@ -32,7 +32,7 @@ func TestPascalCompiler_JOB_Golden(t *testing.T) {
 		if err != nil {
 			t.Fatalf("compile error: %v", err)
 		}
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "pas", q+".pas.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "pas", q+".pas")
 		wantCode, err := os.ReadFile(codeWant)
 		if err != nil {
 			t.Fatalf("read golden: %v", err)
@@ -46,7 +46,7 @@ func TestPascalCompiler_JOB_Golden(t *testing.T) {
 		got := strip(code)
 		want := strip(wantCode)
 		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".pas.out", got, want)
+			t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".pas", got, want)
 		}
 		dir := t.TempDir()
 		srcFile := filepath.Join(dir, "main.pas")
@@ -71,7 +71,7 @@ func TestPascalCompiler_JOB_Golden(t *testing.T) {
 			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
 		}
 	}
-	for _, q := range []string{"q1", "q2", "q3", "q4", "q5"} {
+	for _, q := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
 		t.Run(q, func(t *testing.T) { runQuery(q) })
 	}
 }
