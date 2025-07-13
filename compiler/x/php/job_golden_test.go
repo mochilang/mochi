@@ -20,10 +20,10 @@ func TestPHPCompiler_JOB_Golden(t *testing.T) {
 		t.Skip("php not installed")
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
-               codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "php", base+".php")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "php", base+".php")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "php", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -53,9 +53,9 @@ func TestPHPCompiler_JOB_Golden(t *testing.T) {
 			}
 			got := strip(code)
 			want := strip(wantCode)
-                       if !bytes.Equal(got, want) {
-                               t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base+".php", got, want)
-                       }
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base+".php", got, want)
+			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.php")
 			if err := os.WriteFile(file, code, 0644); err != nil {
