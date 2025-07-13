@@ -103,9 +103,9 @@ The files in this directory were produced by the Zig compiler tests. Each Mochi 
 - [x] user_type_literal.mochi
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
-- [ ] q1.mochi
+- [x] q1.mochi
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-* Fix compilation errors for `q1.mochi` (TPCH query). Current output still
-  fails due to incorrect struct field types and slice handling.
+* Improve handling of group slices to avoid extra `.Items.items` chains.
+* Implement missing struct field type inference for TPCH datasets.
