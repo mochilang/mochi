@@ -109,13 +109,15 @@ Compiled programs: 100/100
 
 ## TPCH Queries
 
+- [ ] q1
 - [x] q4
 - [ ] q5
 - [x] q6
 
 Recent improvements:
 - String literal concatenation simplified when both operands are constants.
+- Constant numeric expressions are folded during compilation.
 
 ## Remaining Tasks
 - [ ] Review generated C++ code for closer match to human style
-- [ ] Implement compilation for TPCH q5
+- [ ] Implement compilation for TPCH q1 and q5

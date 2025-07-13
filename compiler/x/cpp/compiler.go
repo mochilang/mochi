@@ -102,6 +102,16 @@ func (c *Compiler) newTmp() string {
 	return fmt.Sprintf("__tmp%d", c.tmp)
 }
 
+func parseNumber(s string) (float64, bool, bool) {
+	if v, err := strconv.ParseInt(s, 10, 64); err == nil {
+		return float64(v), true, true
+	}
+	if v, err := strconv.ParseFloat(s, 64); err == nil {
+		return v, false, true
+	}
+	return 0, false, false
+}
+
 func (c *Compiler) writeln(s string) {
 	for i := 0; i < c.indent; i++ {
 		c.buf.WriteString("    ")
@@ -1316,7 +1326,33 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						left := strings.TrimSuffix(strings.TrimPrefix(l, "std::string("), ")")
 						right := strings.TrimSuffix(strings.TrimPrefix(r, "std::string("), ")")
 						combined = fmt.Sprintf("std::string(%s %s)", left, right)
-					} else {
+					} else if ops[i] == "+" || ops[i] == "-" || ops[i] == "*" || ops[i] == "/" {
+						if lv, li, lok := parseNumber(l); lok {
+							if rv, ri, rok := parseNumber(r); rok {
+								var val float64
+								switch ops[i] {
+								case "+":
+									val = lv + rv
+								case "-":
+									val = lv - rv
+								case "*":
+									val = lv * rv
+								case "/":
+									if rv != 0 {
+										val = lv / rv
+									} else {
+										val = 0
+									}
+								}
+								if li && ri && ops[i] != "/" {
+									combined = fmt.Sprintf("%d", int64(val))
+								} else {
+									combined = fmt.Sprint(val)
+								}
+							}
+						}
+					}
+					if combined == "" {
 						combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
 					}
 				}
