@@ -52,7 +52,7 @@ func TestBuildGo(t *testing.T) {
 }
 
 func TestBuildTS(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".ts", func(src string) ([]byte, error) {
 		return runMochix(t, "build", "--target", "ts", src)
 	})
 }

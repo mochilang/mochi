@@ -1709,7 +1709,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		expr := sanitizeName(p.Selector.Root)
 		if c.groupKeys != nil && len(p.Selector.Tail) == 0 {
-			if v, ok := c.groupKeys[expr]; ok {
+			if c.env != nil {
+				if _, err := c.env.GetVar(p.Selector.Root); err == nil {
+					// a local variable shadows the group key
+				} else if v, ok := c.groupKeys[expr]; ok {
+					return v, nil
+				}
+			} else if v, ok := c.groupKeys[expr]; ok {
 				return v, nil
 			}
 		}

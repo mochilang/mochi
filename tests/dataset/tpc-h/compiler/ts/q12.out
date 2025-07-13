@@ -1,1 +1,7 @@
-[{"high_line_count":1,"l_shipmode":"MAIL","low_line_count":0}]
+[
+  {
+    "high_line_count": 1,
+    "l_shipmode": "MAIL",
+    "low_line_count": 0
+  }
+]

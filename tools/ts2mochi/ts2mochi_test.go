@@ -44,7 +44,7 @@ func findRepoRoot(t *testing.T) string {
 
 func TestConvert_Golden(t *testing.T) {
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests/compiler/ts", "*.ts.out")
+	pattern := filepath.Join(root, "tests/compiler/ts", "*.ts")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
@@ -53,7 +53,7 @@ func TestConvert_Golden(t *testing.T) {
 		t.Fatalf("no files: %s", pattern)
 	}
 	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".ts.out")
+		name := strings.TrimSuffix(filepath.Base(src), ".ts")
 		t.Run(name, func(t *testing.T) {
 			out, err := ts2mochi.ConvertFile(src)
 			if err != nil {
@@ -87,13 +87,13 @@ func TestConvert_Golden(t *testing.T) {
 
 func TestConvert_Execution(t *testing.T) {
 	root := findRepoRoot(t)
-	pattern := filepath.Join(root, "tests/compiler/ts", "*.ts.out")
+	pattern := filepath.Join(root, "tests/compiler/ts", "*.ts")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".ts.out")
+		name := strings.TrimSuffix(filepath.Base(src), ".ts")
 		t.Run(name, func(t *testing.T) {
 			code, err := ts2mochi.ConvertFile(src)
 			if err != nil {
