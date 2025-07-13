@@ -41,7 +41,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRootTPCH(t)
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 10; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", query+".mochi")
@@ -54,15 +54,18 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 				t.Fatalf("type error: %v", errs[0])
 			}
 			os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
-                       code := ccode.TPCHQ1Code()
-                       wantCodePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "c", query+".c")
+			code, err := ccode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCodePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "c", query+".c")
 			wantCode, err := os.ReadFile(wantCodePath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			gotCode := bytes.TrimSpace(code)
-                       if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-                               t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c", gotCode, bytes.TrimSpace(wantCode))
+			if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c", gotCode, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			cfile := filepath.Join(dir, "prog.c")
@@ -96,7 +99,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 					}
 				}
 			}
-                       wantOutPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "c", query+".out")
+			wantOutPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "c", query+".out")
 			wantOut, err := os.ReadFile(wantOutPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
