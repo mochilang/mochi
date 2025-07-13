@@ -665,8 +665,8 @@ Results are saved in [`BENCHMARK.md`](./BENCHMARK.md).
 
 ## TPC-H Queries with Elixir
 
-The Elixir backend can compile and execute the first ten queries of the TPC-H
-benchmark suite. The generated Elixir programs and their expected output live in
+The Elixir backend can compile and execute the full set of twenty-two TPC-H
+benchmark queries (`q1` through `q22`). The generated Elixir programs and their expected output live in
 `tests/dataset/tpc-h/compiler/ex`.
 
 Run the golden tests to verify the code and output:
