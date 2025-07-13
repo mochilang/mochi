@@ -2452,22 +2452,48 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 	}
 	resTyp := swiftTypeOf(selType)
 	if selType == "map" && fields != nil {
-		keys := make([]string, 0, len(fields))
-		for k := range fields {
-			keys = append(keys, k)
+		optFields := make(map[string]string)
+		for k, t := range fields {
+			if side != "" {
+				optFields[k] = t + "?"
+			} else {
+				optFields[k] = t
+			}
 		}
-		sort.Strings(keys)
-		parts := make([]string, len(keys))
-		for i, k := range keys {
-			parts[i] = fmt.Sprintf("%s: %s", k, fields[k])
+		if st, ok := c.autoStructFromFields(optFields, q.Var+"_join"); ok {
+			resTyp = st
+			if m := mapLit(q.Select); m != nil {
+				sel, err = c.mapToStruct(m, st)
+				if err != nil {
+					return "", err
+				}
+			}
+		} else {
+			keys := make([]string, 0, len(optFields))
+			for k := range optFields {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			parts := make([]string, len(keys))
+			for i, k := range keys {
+				parts[i] = fmt.Sprintf("%s: %s", k, optFields[k])
+			}
+			resTyp = "(" + strings.Join(parts, ", ") + ")"
 		}
-		resTyp = "(" + strings.Join(parts, ", ") + ")"
 	}
 	if resTyp == "" {
 		resTyp = "Any"
 	}
 	qv := q.Var
 	jv := j.Var
+	qvType := swiftTypeOf(c.elementType(q.Source))
+	if qvType == "" {
+		qvType = "Any"
+	}
+	jvType := swiftTypeOf(c.elementType(j.Src))
+	if jvType == "" {
+		jvType = "Any"
+	}
 	var b strings.Builder
 	b.WriteString("({\n")
 	b.WriteString(fmt.Sprintf("\tvar _res: [%s] = []\n", resTyp))
@@ -2485,8 +2511,8 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t\tif !_m {\n")
-		b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", qv))
-		selNil := replaceVarField(sel, qv)
+		b.WriteString(fmt.Sprintf("\t\t\tlet %s: %s? = nil\n", qv, qvType))
+		selNil := replaceIdent(sel, qv, "nil")
 		b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", selNil))
 		b.WriteString("\t\t}\n")
 		b.WriteString("\t}\n")
@@ -2511,20 +2537,20 @@ func (c *compiler) joinSingleSide(q *parser.QueryExpr, src, joinSrc, onExpr, sid
 		b.WriteString("\t\t}\n")
 		if side == "outer" {
 			b.WriteString("\t\tif !_m {\n")
-			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", jv))
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: %s? = nil\n", jv, jvType))
 			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
 			b.WriteString("\t\t}\n")
 			b.WriteString("\t}\n")
 			b.WriteString(fmt.Sprintf("\tfor (ri, %s) in _join.enumerated() {\n", jv))
 			b.WriteString("\t\tif !_matched[ri] {\n")
-			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", qv))
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: %s? = nil\n", qv, qvType))
 			b.WriteString(fmt.Sprintf("\t\t\tlet %s = %s\n", jv, jv))
 			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
 			b.WriteString("\t\t}\n")
 			b.WriteString("\t}\n")
 		} else if side == "left" {
 			b.WriteString("\t\tif !_m {\n")
-			b.WriteString(fmt.Sprintf("\t\t\tlet %s: Any? = nil\n", jv))
+			b.WriteString(fmt.Sprintf("\t\t\tlet %s: %s? = nil\n", jv, jvType))
 			b.WriteString(fmt.Sprintf("\t\t\t_res.append(%s)\n", sel))
 			b.WriteString("\t\t}\n")
 			b.WriteString("\t}\n")
