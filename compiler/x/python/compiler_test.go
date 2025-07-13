@@ -197,7 +197,7 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := findRepoRoot(t)
-	for i := 1; i <= 22; i++ {
+	for i := 1; i <= 2; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")

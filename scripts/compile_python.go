@@ -21,8 +21,8 @@ func main() {
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	outDir := filepath.Join("tests", "dataset", "tpc-h", "compiler", "py")
 	_ = os.MkdirAll(outDir, 0o755)
-	// Only compile the first TPCH query for golden tests.
-	for i := 1; i <= 1; i++ {
+	// Only compile TPCH queries q1 and q2 for golden tests.
+	for i := 1; i <= 2; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join("tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
