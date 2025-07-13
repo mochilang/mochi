@@ -607,6 +607,19 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		}
 	}
 	ret := cTypeFromType(retType)
+	if isListIntType(retType) {
+		c.need(needListInt)
+	}
+	if isListFloatType(retType) {
+		c.need(needListFloat)
+	}
+	if isListStringType(retType) {
+		c.need(needListString)
+	}
+	if isListListIntType(retType) {
+		c.need(needListListInt)
+		c.need(needListInt)
+	}
 	var retSuffix string
 	if strings.Contains(ret, "(*") {
 		idx := strings.Index(ret, "(*")
@@ -638,6 +651,9 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 			}
 			if isListFloatType(t) {
 				c.need(needListFloat)
+			}
+			if isListIntType(t) {
+				c.need(needListInt)
 			}
 			if isListListIntType(t) {
 				c.need(needListListInt)
@@ -710,6 +726,19 @@ func (c *Compiler) compileTypeMethod(structName string, fun *parser.FunStmt) err
 		}
 	}
 	ret := cTypeFromType(retType)
+	if isListIntType(retType) {
+		c.need(needListInt)
+	}
+	if isListFloatType(retType) {
+		c.need(needListFloat)
+	}
+	if isListStringType(retType) {
+		c.need(needListString)
+	}
+	if isListListIntType(retType) {
+		c.need(needListListInt)
+		c.need(needListInt)
+	}
 	c.buf.WriteString(ret + " ")
 	c.buf.WriteString(sanitizeName(structName) + "_" + sanitizeName(fun.Name))
 	c.buf.WriteByte('(')
