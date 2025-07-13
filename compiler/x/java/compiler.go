@@ -838,6 +838,20 @@ func isPrimitive(expr string, c *Compiler) bool {
 			return true
 		}
 	}
+	if strings.Contains(expr, ".") {
+		parts := strings.Split(expr, ".")
+		t := c.vars[parts[0]]
+		for _, p := range parts[1:] {
+			if strings.HasPrefix(t, "Map<") {
+				t = mapValueType(t)
+			} else {
+				t = c.fieldType(t, p)
+			}
+		}
+		if t == "int" || t == "double" || t == "boolean" {
+			return true
+		}
+	}
 	return false
 }
 
