@@ -34,13 +34,13 @@ func TestRustCompiler_JOB(t *testing.T) {
 		if err != nil {
 			t.Fatalf("compile error: %v", err)
 		}
-		wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", q+".rs.out")
+		wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", q+".rust")
 		wantCode, err := os.ReadFile(wantCodePath)
 		if err != nil {
 			t.Fatalf("read golden: %v", err)
 		}
 		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-			t.Errorf("generated code mismatch for %s.rs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+			t.Errorf("generated code mismatch for %s.rust\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 		}
 
 		// Execute the generated Rust code and compare with expected output
