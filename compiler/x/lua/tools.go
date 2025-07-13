@@ -169,6 +169,9 @@ func EnsureStylua() error {
 // no formatter is found or formatting fails.
 func FormatLua(src []byte) []byte {
 	header := meta.Header("--")
+	if os.Getenv("MOCHI_NO_HEADER") != "" {
+		header = nil
+	}
 	if path, err := exec.LookPath("stylua"); err == nil {
 		cmd := exec.Command(path, "-")
 		cmd.Stdin = bytes.NewReader(src)

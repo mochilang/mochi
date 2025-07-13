@@ -153,7 +153,7 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 	}
 
 	root := findRepoRoot(t)
-       for i := 1; i <= 3; i++ {
+	for i := 1; i <= 5; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
@@ -165,16 +165,18 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
+			os.Setenv("MOCHI_NO_HEADER", "1")
 			code, err := luacode.New(env).Compile(prog)
+			os.Unsetenv("MOCHI_NO_HEADER")
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", q+".lua.out"))
+			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", q+".lua"))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.lua.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
