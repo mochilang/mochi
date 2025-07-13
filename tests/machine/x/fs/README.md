@@ -115,9 +115,14 @@ go test ./compiler/x/fs -tags slow
 All 100 example programs compile successfully and produce output matching the
 hand-written versions under `tests/human/x/fs`.
 
+## TPC-H Progress
+
+- [ ] `q1.mochi` – compiler now emits typed records but build still fails due to
+  missing `System.Text.Json` and other runtime references.
+
 ## Remaining Tasks
 
 - Ensure new features continue to compile correctly.
 - Keep generated code in sync with `tests/human/x/fs` when changes occur.
-- Investigate compilation of `tests/dataset/tpc-h/q1.mochi` which currently
-  fails due to missing .NET references and type inference issues.
+- Finish wiring .NET runtime references so `q1.mochi` builds.
+- Expand unit tests for the improved type inference logic.
