@@ -170,10 +170,10 @@ func TestTSCompiler_GoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(stripHeader(code)), nil
 	}
 
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".ts", func(src string) ([]byte, error) {
 		return compileRun(t, src)
 	})
-	golden.Run(t, "tests/compiler/ts", ".mochi", ".ts.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/ts", ".mochi", ".ts", func(src string) ([]byte, error) {
 		return compileRun(t, src)
 	})
 }
@@ -238,7 +238,7 @@ func TestTSCompiler_TPCHQueries(t *testing.T) {
 	for i := 1; i <= 22; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
-		codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".ts.out")
+		codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".ts")
 		outWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ts", base+".out")
 		if _, err := os.Stat(codeWantPath); err != nil {
 			continue
@@ -362,7 +362,7 @@ func TestTSCompiler_TPCDSQueries(t *testing.T) {
 	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "ts", base+".ts.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "ts", base+".ts")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "ts", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -391,7 +391,7 @@ func TestTSCompiler_TPCDSQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.ts.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
+				t.Errorf("generated code mismatch for %s.ts\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.ts")
@@ -424,7 +424,7 @@ func TestTSCompiler_SLTQueries(t *testing.T) {
 	cases := []string{"case1", "case2", "case3", "case4", "case5"}
 	for _, base := range cases {
 		src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "ts", base+".ts.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "ts", base+".ts")
 		outWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "ts", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -453,7 +453,7 @@ func TestTSCompiler_SLTQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.ts.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
+				t.Errorf("generated code mismatch for %s.ts\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.ts")
