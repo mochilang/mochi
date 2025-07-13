@@ -133,11 +133,16 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		return body, nil
 	}
 	second := bytes.IndexByte(body[first+1:], '\n')
-	if second >= 0 {
-		second += first + 1
-		out.Write(body[:second+1])
+	if second < 0 {
+		return body, nil
+	}
+	second += first + 1
+	third := bytes.IndexByte(body[second+1:], '\n')
+	if third >= 0 {
+		third += second + 1
+		out.Write(body[:third+1])
 		out.Write(c.decl.Bytes())
-		out.Write(body[second+1:])
+		out.Write(body[third+1:])
 	} else {
 		out.Write(body)
 	}
