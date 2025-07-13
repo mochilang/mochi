@@ -1243,7 +1243,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
 				}
-				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.need(needListInt)
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+				for i, v := range parts {
+					c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				}
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
 				return nil
@@ -1452,7 +1456,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
 				}
-				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.need(needListInt)
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+				for i, v := range parts {
+					c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				}
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
 				return nil
@@ -4070,11 +4078,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isFloatList = false
 					isStringList = false
 				} else {
-					if isListIntPrimary(p.Target, c.env) {
-						expr = fmt.Sprintf("%s[%s]", expr, idx)
-					} else {
-						expr = fmt.Sprintf("%s.data[%s]", expr, idx)
-					}
+					expr = fmt.Sprintf("%s.data[%s]", expr, idx)
 					if isStringList {
 						isStr = true
 					} else {
@@ -4352,18 +4356,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			data := name + "_data"
-			c.writeln(fmt.Sprintf("char* %s[] = {%s};", data, strings.Join(vals, ", ")))
-			c.writeln(fmt.Sprintf("list_string %s = {%d, %s};", name, len(vals), data))
+			c.need(needListString)
+			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		} else if len(p.List.Elems) > 0 && isFloatExpr(p.List.Elems[0], c.env) {
 			c.need(needListFloat)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			data := name + "_data"
-			c.writeln(fmt.Sprintf("double %s[] = {%s};", data, strings.Join(vals, ", ")))
-			c.writeln(fmt.Sprintf("list_float %s = {%d, %s};", name, len(vals), data))
+			c.need(needListFloat)
+			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
@@ -4398,10 +4406,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(vals, ", ")))
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 			c.listLens[name] = len(p.List.Elems)
 		} else {
-			c.writeln(fmt.Sprintf("int %s[1];", name))
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", name))
 			c.listLens[name] = 0
 		}
 		return name
@@ -6493,7 +6506,11 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 	for i, v := range vals {
 		parts[i] = strconv.Itoa(v)
 	}
-	c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+	c.need(needListInt)
+	c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+	for i, v := range parts {
+		c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+	}
 	c.listLens[name] = len(vals)
 	c.listVals[name] = vals
 	return name
@@ -6507,8 +6524,5 @@ func (c *Compiler) listLenExpr(name string) string {
 }
 
 func (c *Compiler) listItemExpr(name, idx string) string {
-	if _, ok := c.listLens[name]; ok {
-		return fmt.Sprintf("%s[%s]", name, idx)
-	}
 	return fmt.Sprintf("%s.data[%s]", name, idx)
 }
