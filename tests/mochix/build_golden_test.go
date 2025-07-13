@@ -153,9 +153,9 @@ func TestBuildXKotlin(t *testing.T) {
 }
 
 func TestBuildXLua(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".lua.out", func(src string) ([]byte, error) {
-		return runMochix(t, "buildx", "--target", "lua", src)
-	})
+       golden.Run(t, "tests/mochix", ".mochi", ".lua", func(src string) ([]byte, error) {
+               return runMochix(t, "buildx", "--target", "lua", src)
+       })
 }
 
 func TestBuildXOcaml(t *testing.T) {
