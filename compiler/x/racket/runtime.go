@@ -1,6 +1,6 @@
-#lang racket
-(require json)
-(define (_date_number s)
+package racket
+
+const runtimeHelpers = `(define (_date_number s)
   (let ([parts (string-split s "-")])
     (if (= (length parts) 3)
         (+ (* (string->number (list-ref parts 0)) 10000)
@@ -53,13 +53,4 @@
       (for ([n (cdr lst)])
         (when (_gt n m) (set! m n))))
     m))
-
-(define company_name (list (hash 'id 1 'country_code "[de]") (hash 'id 2 'country_code "[us]")))
-(define keyword (list (hash 'id 1 'keyword "character-name-in-title") (hash 'id 2 'keyword "other")))
-(define movie_companies (list (hash 'movie_id 100 'company_id 1) (hash 'movie_id 200 'company_id 2)))
-(define movie_keyword (list (hash 'movie_id 100 'keyword_id 1) (hash 'movie_id 200 'keyword_id 2)))
-(define title (list (hash 'id 100 'title "Der Film") (hash 'id 200 'title "Other Movie")))
-(define titles (for*/list ([cn company_name] [mc movie_companies] [t title] [mk movie_keyword] [k keyword] #:when (and (equal? (hash-ref mc 'company_id) (hash-ref cn 'id)) (equal? (hash-ref mc 'movie_id) (hash-ref t 'id)) (equal? (hash-ref mk 'movie_id) (hash-ref t 'id)) (equal? (hash-ref mk 'keyword_id) (hash-ref k 'id)) (and (and (string=? (hash-ref cn 'country_code) "[de]") (string=? (hash-ref k 'keyword) "character-name-in-title")) (equal? (hash-ref mc 'movie_id) (hash-ref mk 'movie_id))))) (hash-ref t 'title)))
-(define result (_min titles))
-(displayln (jsexpr->string result))
-(when (string=? result "Der Film") (displayln "ok"))
+`

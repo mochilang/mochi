@@ -17,6 +17,7 @@ type Compiler struct {
 	needYAMLLib      bool
 	needPathLib      bool
 	needFuncLib      bool
+	needRuntime      bool
 	structs          map[string][]string
 	structFieldTypes map[string]map[string]string
 	varTypes         map[string]string
@@ -38,6 +39,7 @@ func New() *Compiler {
 		groupFields:      nil,
 		listElemTypes:    make(map[string]string),
 		needPathLib:      false,
+		needRuntime:      false,
 	}
 }
 
@@ -65,6 +67,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.needFuncLib {
 		out.WriteString("(require racket/function)\n")
+	}
+	if c.needRuntime {
+		out.WriteString(runtimeHelpers)
+		out.WriteByte('\n')
 	}
 	out.Write(c.buf.Bytes())
 	if out.Len() == 0 || out.Bytes()[out.Len()-1] != '\n' {
@@ -538,12 +544,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
 			}
-			return fmt.Sprintf("(apply min %s)", args[0]), nil
+			c.needRuntime = true
+			return fmt.Sprintf("(_min %s)", args[0]), nil
 		case "max":
 			if len(args) != 1 {
 				return "", fmt.Errorf("max expects 1 arg")
 			}
-			return fmt.Sprintf("(apply max %s)", args[0]), nil
+			c.needRuntime = true
+			return fmt.Sprintf("(_max %s)", args[0]), nil
 		case "values":
 			if len(args) != 1 {
 				return "", fmt.Errorf("values expects 1 arg")
