@@ -1117,9 +1117,15 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			return "{" + strings.Join(items, ", ") + "}", nil
 		}
 	}
-	if st, ok := hint.(types.StructType); ok {
-		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
-			if len(ml.Items) == len(st.Fields) {
+       if st, ok := hint.(types.StructType); ok {
+               if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+                       if len(ml.Items) == len(st.Fields) {
+                               if st.Name == "" {
+                                       // Anonymous struct literals are rendered as
+                                       // plain dictionaries to match other backends.
+                                       return c.compileMapLiteral(ml)
+                               }
+                               st = c.ensureStructName(st)
 				fields := make([]string, len(ml.Items))
 				for i, it := range ml.Items {
 					name, ok := identName(it.Key)
@@ -1973,8 +1979,12 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
-	case l.Float != nil:
-		return strconv.FormatFloat(*l.Float, 'f', -1, 64), nil
+       case l.Float != nil:
+               s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+               if !strings.Contains(s, ".") {
+                       s += ".0"
+               }
+               return s, nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:
