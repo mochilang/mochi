@@ -28,7 +28,7 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 	}
 	root := findRepoRoot(t)
 	queries := []int{}
-	for i := 1; i <= 20; i++ {
+	for i := 1; i <= 33; i++ {
 		queries = append(queries, i)
 	}
 	for _, i := range queries {
