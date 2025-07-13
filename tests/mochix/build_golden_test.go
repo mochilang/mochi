@@ -37,6 +37,7 @@ func runMochix(t *testing.T, args ...string) ([]byte, error) {
 	root := repoRoot(t)
 	cmd := exec.Command("go", append([]string{"run", "-tags", "slow", "./cmd/mochix"}, args...)...)
 	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "SOURCE_DATE_EPOCH=0")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, err
@@ -69,7 +70,7 @@ func TestBuildXClj(t *testing.T) {
 }
 
 func TestBuildXDart(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".dart.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".dart", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "dart", src)
 	})
 }

@@ -1620,7 +1620,16 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		}
 	}
 	if err != nil {
-		// fall through
+		// maybe a group key reference like `supp_nation`
+		if len(c.groupKeys) == 1 {
+			for _, k := range c.groupKeys {
+				s := fmt.Sprintf("%s['%s']", k, root)
+				if len(tail) > 0 {
+					s += fmt.Sprintf("['%s']", strings.Join(tail, "']['"))
+				}
+				return s
+			}
+		}
 	}
 	if _, ok := typ.(types.MapType); ok {
 		s := root
@@ -1730,9 +1739,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("%s.toString()", args[0]), nil
 	case "substring":
 		if len(args) == 2 {
-			return fmt.Sprintf("%s.substring(%s)", args[0], args[1]), nil
+			return fmt.Sprintf("%s.toString().substring(%s)", args[0], args[1]), nil
 		} else if len(args) == 3 {
-			return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+			return fmt.Sprintf("%s.toString().substring(%s, %s)", args[0], args[1], args[2]), nil
 		}
 		return "", fmt.Errorf("substring expects 2 or 3 args")
 	case "values":
