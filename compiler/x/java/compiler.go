@@ -805,6 +805,10 @@ func (c *Compiler) maybeNumber(expr string) string {
 }
 
 func maybeBool(c *Compiler, expr string) string {
+	if strings.Contains(expr, "(") && strings.Contains(expr, ")") &&
+		!strings.ContainsAny(expr, "<>=!") {
+		return expr
+	}
 	if strings.Contains(expr, "Objects.equals") {
 		return expr
 	}
@@ -972,6 +976,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				elem := listElemType(c.inferType(p.Call.Args[0]))
 				if elem == "double" || elem == "Double" {
 					return "double"
+				}
+				if elem == "String" {
+					return "String"
 				}
 			}
 			return "int"
@@ -2274,7 +2281,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args = append(args, arg)
 			}
-			if typ == "IntUnaryOperator" {
+			if strings.HasSuffix(val, ".starts_with") && len(args) == 1 {
+				val = fmt.Sprintf("%s.startsWith(%s)", strings.TrimSuffix(val, ".starts_with"), args[0])
+			} else if strings.HasSuffix(val, ".contains") && len(args) == 1 {
+				val = fmt.Sprintf("%s.contains(%s)", strings.TrimSuffix(val, ".contains"), args[0])
+			} else if typ == "IntUnaryOperator" {
 				val = fmt.Sprintf("%s.applyAsInt(%s)", val, strings.Join(args, ", "))
 			} else {
 				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
@@ -2637,6 +2648,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).min().orElse(Double.MAX_VALUE)", a1), nil
 			}
+			if typ == "String" {
+				return fmt.Sprintf("%s.stream().map(Object::toString).min(String::compareTo).orElse(\"\")", a1), nil
+			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).min().orElse(Integer.MAX_VALUE)", a1), nil
 		case "max":
 			if len(p.Call.Args) != 1 {
@@ -2649,6 +2663,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			typ := listElemType(c.inferType(p.Call.Args[0]))
 			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).max().orElse(-Double.MAX_VALUE)", a1), nil
+			}
+			if typ == "String" {
+				return fmt.Sprintf("%s.stream().map(Object::toString).max(String::compareTo).orElse(\"\")", a1), nil
 			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).max().orElse(Integer.MIN_VALUE)", a1), nil
 		case "values":
