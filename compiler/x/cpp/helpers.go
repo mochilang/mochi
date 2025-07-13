@@ -210,3 +210,12 @@ func simpleExistsQuery(e *parser.Expr) (*parser.QueryExpr, bool) {
 	}
 	return q, true
 }
+
+// removeRedundantInit trims the declared type from an initializer if the
+// expression begins with the same type followed by an initializer list.
+func removeRedundantInit(expr, typ string) string {
+	if strings.HasPrefix(expr, typ+"{") {
+		return expr[len(typ):]
+	}
+	return expr
+}

@@ -525,6 +525,7 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
 	if st.Value != nil {
+		exprStr = removeRedundantInit(exprStr, typ)
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
@@ -607,6 +608,7 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	c.buf.WriteByte(' ')
 	c.buf.WriteString(st.Name)
 	if st.Value != nil {
+		exprStr = removeRedundantInit(exprStr, typ)
 		c.buf.WriteString(" = ")
 		c.buf.WriteString(exprStr)
 	} else if st.Type != nil {
