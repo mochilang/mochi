@@ -194,6 +194,8 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 	if _, err := exec.LookPath("python3"); err != nil {
 		t.Skip("python3 not installed")
 	}
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := findRepoRoot(t)
 	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
