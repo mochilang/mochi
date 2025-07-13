@@ -14,8 +14,8 @@ determine why `q7` is skipped during compilation.
 
 TPC-H progress:
 
-- `q1` and `q2` compile and pass runtime checks using the Go backend.
-  Golden code has been regenerated.
+- `q1` through `q22` compile and pass runtime checks using the Go backend.
+  Golden code has been regenerated for all queries.
 
 ## Recent Updates
 
@@ -30,6 +30,7 @@ TPC-H progress:
   definition already exists
 - 2025-07-13 09:40 - Documented `compileMainFunc` behaviour
 - 2025-07-13 10:46 - Simplified `formatDuration` for concise test output
+- 2025-07-13 18:08 - Generated Go outputs for TPCH queries q1 through q22
 
 ## Remaining Work
 * [ ] Validate TPCH q1 runtime results
