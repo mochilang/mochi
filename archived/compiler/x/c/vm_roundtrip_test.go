@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package ccode_test
 
@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	ccode "mochi/archived/x/c"
-	"mochi/parser"
 	any2mochi "mochi/archived/tools/any2mochi"
 	cconv "mochi/archived/tools/any2mochi/x/c"
+	ccode "mochi/archived/x/c"
+	"mochi/parser"
 	"mochi/types"
 )
 

@@ -1,4 +1,4 @@
-//go:build zig_vm
+//go:build archive && zig_vm
 
 package zig
 

@@ -1,4 +1,4 @@
-//go:build archived && stroundtrip
+//go:build archive && stroundtrip
 
 package stcode_test
 
@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
+	stconv "mochi/archived/tools/any2mochi/x/st"
 	stcode "mochi/archived/x/st"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	stconv "mochi/archived/tools/any2mochi/x/st"
 	"mochi/types"
 )
 

@@ -1,4 +1,4 @@
-//go:build cs_vm
+//go:build archive && cs_vm
 
 package cs
 

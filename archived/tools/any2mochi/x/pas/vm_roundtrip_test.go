@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package pas
 
@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	pascode "mochi/archived/x/pas"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package scheme
 
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	schemecode "mochi/archived/x/scheme"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

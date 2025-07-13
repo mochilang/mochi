@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package php
 
@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	phpcode "mochi/archived/x/php"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

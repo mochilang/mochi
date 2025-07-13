@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package ex
 
@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	excode "mochi/archived/x/ex"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package kt
 
@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	ktcode "mochi/archived/x/kt"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

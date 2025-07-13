@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"strings"
 
+	cppconv "mochi/archived/tools/any2mochi/x/cpp"
 	cppcode "mochi/archived/x/cpp"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	cppconv "mochi/archived/tools/any2mochi/x/cpp"
 	"mochi/types"
 )
 

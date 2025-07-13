@@ -1,4 +1,4 @@
-//go:build archived && roundtrip
+//go:build archive && roundtrip
 
 package cljcode_test
 
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	cljconv "mochi/archived/tools/any2mochi/x/clj"
 	cljcode "mochi/archived/x/clj"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	cljconv "mochi/archived/tools/any2mochi/x/clj"
 	"mochi/types"
 )
 

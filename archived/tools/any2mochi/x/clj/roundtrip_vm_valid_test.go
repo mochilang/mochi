@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package clj
 
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	cljcode "mochi/archived/x/clj"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

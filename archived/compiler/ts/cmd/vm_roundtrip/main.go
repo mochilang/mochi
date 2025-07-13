@@ -1,4 +1,4 @@
-//go:build archived
+//go:build archive
 
 package main
 
@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"strings"
 
+	tsconvert "mochi/archived/tools/any2mochi/ts"
 	tscode "mochi/archived/ts"
 	"mochi/parser"
 	"mochi/runtime/mod"
 	"mochi/runtime/vm"
-	tsconvert "mochi/archived/tools/any2mochi/ts"
 	"mochi/types"
 )
 

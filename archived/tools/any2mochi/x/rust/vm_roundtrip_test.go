@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package rust
 
@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	rscode "mochi/archived/x/rust"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

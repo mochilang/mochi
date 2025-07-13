@@ -1,4 +1,4 @@
-//go:build lua_vm && slow
+//go:build archive && lua_vm && slow
 
 package any2mochi_test
 
@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	luacode "mochi/archived/x/lua"
 	"mochi/parser"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

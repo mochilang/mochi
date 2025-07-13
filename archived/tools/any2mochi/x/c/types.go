@@ -1,3 +1,5 @@
+//go:build archive
+
 package c
 
 // function describes a parsed C function.

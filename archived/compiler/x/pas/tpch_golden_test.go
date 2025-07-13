@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build archive && slow
 
 package pascode_test
 

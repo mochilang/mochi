@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archive && slow
 
 package scala
 
@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	any2mochi "mochi/archived/tools/any2mochi"
 	scalacode "mochi/archived/x/scala"
 	"mochi/parser"
 	vm "mochi/runtime/vm"
-	any2mochi "mochi/archived/tools/any2mochi"
 	"mochi/types"
 )
 

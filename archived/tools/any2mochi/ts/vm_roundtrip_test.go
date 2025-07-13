@@ -1,4 +1,4 @@
-//go:build ts_vm
+//go:build archive && ts_vm
 
 package ts
 
