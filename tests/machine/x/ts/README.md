@@ -6,6 +6,13 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 Compiled: 100/100 programs
 
+Additional dataset programs compiled:
+- [x] q1.mochi
+
+## Remaining Tasks
+- [ ] Compile remaining TPC-H queries (q2–q22)
+- [ ] Improve generated code readability to align with human references
+
 ## Checklist
 
 - [x] append_builtin.mochi

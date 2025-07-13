@@ -88,7 +88,7 @@ const (
 		"    }\n" +
 		"    return x;\n" +
 		"  }\n" +
-		"  return JSON.stringify(_sort(v));\n" +
+		"  return JSON.stringify(_sort(v), null, 2);\n" +
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
