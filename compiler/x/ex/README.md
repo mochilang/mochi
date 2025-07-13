@@ -13,7 +13,7 @@ The Elixir backend compiles Mochi programs to Elixir source code. It is used whe
 ## TPC-H Progress
 
 Queries `q1` through `q10` from the TPC-H suite compile and execute successfully.
-The generated Elixir code lives under `tests/dataset/tpc-h/compiler/ex`.
+The generated Elixir code lives under `tests/dataset/tpc-h/compiler/ex` with a `.ex` extension.
 
 You can re-generate the golden files and verify execution with:
 
