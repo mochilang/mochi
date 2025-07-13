@@ -9,6 +9,18 @@
       0
       (reduce (fn [a b] (if (neg? (compare a b)) a b)) lst))))
 
+(defn _equal [a b]
+  (cond
+    (and (sequential? a) (sequential? b))
+      (and (= (count a) (count b)) (every? true? (map _equal a b)))
+    (and (map? a) (map? b))
+      (and (= (count a) (count b))
+           (every? (fn [k] (_equal (get a k) (get b k))) (keys a)))
+    (and (number? a) (number? b))
+      (= (double a) (double b))
+    :else
+      (= a b)))
+
 (defn _escape_json [s]
   (-> s
       (clojure.string/replace "\\" "\\\\")
@@ -22,32 +34,28 @@
     (boolean? v) (str v)
     (sequential? v) (str "[" (clojure.string/join "," (map _to_json v)) "]")
     (map? v) (str "{" (clojure.string/join "," (map (fn [[k val]]
-                                                      (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
+                                        (str "\"" (_escape_json (name k)) "\":" (_to_json val))) v)) "}")
     :else (str "\"" (_escape_json (str v)) "\"")))
 
 (defn _json [v]
   (println (_to_json v)))
 
-(defn _in [item col]
-  (cond
-    (and (string? col) (string? item)) (clojure.string/includes? col item)
-    (map? col) (contains? col item)
-    (sequential? col) (some #(= item %) col)
-    :else false))
 (declare keyword movie_info movie_keyword title allowed_infos candidate_titles result)
 
 (defn test_Q3_returns_lexicographically_smallest_sequel_title []
-  (assert (= result [{:movie_title "Alpha"}]) "expect failed"))
+  (assert (_equal result [{:movie_title "Alpha"}]) "expect failed")
+)
 
 (defn -main []
-  (def keyword [{:id 1 :keyword "amazing sequel"} {:id 2 :keyword "prequel"}])
-  (def movie_info [{:movie_id 10 :info "Germany"} {:movie_id 30 :info "Sweden"} {:movie_id 20 :info "France"}])
-  (def movie_keyword [{:movie_id 10 :keyword_id 1} {:movie_id 30 :keyword_id 1} {:movie_id 20 :keyword_id 1} {:movie_id 10 :keyword_id 2}])
-  (def title [{:id 10 :title "Alpha" :production_year 2006} {:id 30 :title "Beta" :production_year 2008} {:id 20 :title "Gamma" :production_year 2009}])
-  (def allowed_infos ["Sweden" "Norway" "Germany" "Denmark" "Swedish" "Denish" "Norwegian" "German"])
-  (def candidate_titles (vec (->> (for [k keyword mk movie_keyword :when (= (:keyword_id mk) (:id k)) mi movie_info :when (= (:movie_id mi) (:movie_id mk)) t title :when (= (:id t) (:movie_id mi)) :when (and (and (and (clojure.string/includes? (:keyword k) "sequel") (_in (:info mi) allowed_infos)) (> (:production_year t) 2005)) (= (:movie_id mk) (:movie_id mi)))] (:title t)))))
-  (def result [{:movie_title (_min candidate_titles)}])
+  (def keyword [{:id 1 :keyword "amazing sequel"} {:id 2 :keyword "prequel"}]) ;; list of
+  (def movie_info [{:movie_id 10 :info "Germany"} {:movie_id 30 :info "Sweden"} {:movie_id 20 :info "France"}]) ;; list of
+  (def movie_keyword [{:movie_id 10 :keyword_id 1} {:movie_id 30 :keyword_id 1} {:movie_id 20 :keyword_id 1} {:movie_id 10 :keyword_id 2}]) ;; list of
+  (def title [{:id 10 :title "Alpha" :production_year 2006} {:id 30 :title "Beta" :production_year 2008} {:id 20 :title "Gamma" :production_year 2009}]) ;; list of
+  (def allowed_infos ["Sweden" "Norway" "Germany" "Denmark" "Swedish" "Denish" "Norwegian" "German"]) ;; list of string
+  (def candidate_titles (vec (->> (for [k keyword mk movie_keyword :when (_equal (:keyword_id mk) (:id k)) mi movie_info :when (_equal (:movie_id mi) (:movie_id mk)) t title :when (_equal (:id t) (:movie_id mi)) :when (and (and (and (clojure.string/includes? (:keyword k) "sequel") (some #(= (:info mi) %) allowed_infos)) (> (:production_year t) 2005)) (_equal (:movie_id mk) (:movie_id mi)))] (:title t))))) ;; list of string
+  (def result [{:movie_title (_min candidate_titles)}]) ;; list of
   (_json result)
-  (test_Q3_returns_lexicographically_smallest_sequel_title))
+  (test_Q3_returns_lexicographically_smallest_sequel_title)
+)
 
 (-main)
