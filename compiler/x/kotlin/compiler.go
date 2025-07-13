@@ -1010,19 +1010,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if i < len(p.Ops)-1 {
-					prefix := &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:i]}
-					ct := c.inferPostfixType(prefix)
-					if mt, ok := ct.(types.MapType); ok {
-						val = fmt.Sprintf("(%s[%s] as %s)", val, idx, kotlinTypeOf(mt.Value))
-					} else if types.IsMapType(ct) {
-						val = fmt.Sprintf("(%s[%s] as MutableMap<*, *>)", val, idx)
-					} else if lt, ok := ct.(types.ListType); ok {
-						val = fmt.Sprintf("(%s[%s] as %s)", val, idx, kotlinTypeOf(lt.Elem))
-					} else if types.IsListType(ct) {
-						val = fmt.Sprintf("(%s[%s] as MutableList<Any?>)", val, idx)
-					} else {
-						val = fmt.Sprintf("%s[%s]!!", val, idx)
-					}
+					val = fmt.Sprintf("(%s[%s] as MutableMap<String, Any?>)", val, idx)
 				} else {
 					val = fmt.Sprintf("%s[%s]", val, idx)
 				}
@@ -1107,8 +1095,11 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 				} else {
 					name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
 				}
-				for _, part := range p.Selector.Tail {
+				for i, part := range p.Selector.Tail {
 					name += fmt.Sprintf("[%q]", part)
+					if i < len(p.Selector.Tail)-1 {
+						name = fmt.Sprintf("(%s as MutableMap<String, Any?>)", name)
+					}
 				}
 			}
 		}
@@ -1287,18 +1278,8 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "sum":
 		if len(args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			if lt, ok := t.(types.ListType); ok {
-				switch lt.Elem.(type) {
-				case types.FloatType:
-					c.use("toDouble")
-					return fmt.Sprintf("%s.sumOf { toDouble(it) }", args[0]), true
-				case types.IntType, types.Int64Type:
-					c.use("toInt")
-					return fmt.Sprintf("%s.sumOf { toInt(it) }", args[0]), true
-				}
-			}
 			c.use("sum")
+			c.use("toDouble")
 			c.use("toInt")
 			return fmt.Sprintf("sum(%s)", args[0]), true
 		}
