@@ -1160,7 +1160,12 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			return nil
 		} else if id, ok := identName(args[0]); ok {
 			c.writeIndent()
-			c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; std::cout<<" + id + "[i]; }\n")
+			if et := c.elemType[id]; et != "" && c.isStructName(et) {
+				c.usesJSON = true
+				c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; __json(" + id + "[i]); }\n")
+			} else {
+				c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; std::cout<<" + id + "[i]; }\n")
+			}
 			return nil
 		}
 	}
