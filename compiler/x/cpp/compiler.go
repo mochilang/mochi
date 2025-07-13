@@ -2342,6 +2342,29 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		return res, nil
 	}
 
+	if call, ok := callPattern(q.Select); ok && call.Func == "sum" && len(call.Args) == 1 &&
+		len(q.Froms) == 0 && len(q.Joins) == 0 && key == "" && skip == "" && take == "" {
+		argExpr, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", err
+		}
+		var buf strings.Builder
+		buf.WriteString("(" + cap + "() {\n")
+		buf.WriteString("    double __sum = 0;\n")
+		buf.WriteString("    for (auto " + q.Var + " : " + src + ") {\n")
+		if q.Where != nil {
+			cond := c.ensureBool(where)
+			buf.WriteString("        if (!(" + cond + ")) continue;\n")
+		}
+		buf.WriteString("        __sum += " + argExpr + ";\n")
+		buf.WriteString("    }\n")
+		buf.WriteString("    return __sum;\n")
+		buf.WriteString("})()")
+		res := buf.String()
+		c.vars[res] = "double"
+		return res, nil
+	}
+
 	var buf strings.Builder
 	buf.WriteString("(" + cap + "() {\n")
 	indent := func(n int) {
