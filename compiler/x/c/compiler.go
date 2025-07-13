@@ -4501,7 +4501,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if p.Call.Func == "print" {
 			simple := true
 			for _, a := range p.Call.Args {
-				if isListListExpr(a, c.env) || isListIntExpr(a, c.env) || isListFloatExpr(a, c.env) || isListStringExpr(a, c.env) || isListStructExpr(a, c.env) {
+				if isListListExpr(a, c.env) || isListIntExpr(a, c.env) || isListFloatExpr(a, c.env) || isListStringExpr(a, c.env) || isListStructExpr(a, c.env) || isStructExpr(a, c.env) {
 					simple = false
 					break
 				}
@@ -4627,6 +4627,35 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						}
 						c.writeln(fmt.Sprintf("printf(\"%s:\");", field))
 						fe := fmt.Sprintf("it.%s", sanitizeName(field))
+						switch st.Fields[field].(type) {
+						case types.StringType:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
+						case types.FloatType:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%.17g", fe))
+						default:
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", fe))
+						}
+					}
+					c.writeln("printf(\"]\");")
+					c.indent--
+					c.writeln("}")
+					if i == len(p.Call.Args)-1 {
+						c.writeln("printf(\"\\n\");")
+					} else {
+						c.writeln("printf(\" \");")
+					}
+				} else if isStructExpr(a, c.env) {
+					st, _ := c.exprType(a).(types.StructType)
+					zero := fmt.Sprintf("(%s){0}", sanitizeTypeName(st.Name))
+					c.writeln(fmt.Sprintf("if(memcmp(&%s, &%s, sizeof(%s))==0){ printf(\"<nil>\"); } else {", argExpr, zero, sanitizeTypeName(st.Name)))
+					c.indent++
+					c.writeln("printf(\"map[\");")
+					for i2, field := range st.Order {
+						if i2 > 0 {
+							c.writeln("printf(\" \");")
+						}
+						c.writeln(fmt.Sprintf("printf(\"%s:\");", field))
+						fe := fmt.Sprintf("%s.%s", argExpr, sanitizeName(field))
 						switch st.Fields[field].(type) {
 						case types.StringType:
 							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
@@ -6033,6 +6062,14 @@ func isListStructExpr(e *parser.Expr, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func isStructExpr(e *parser.Expr, env *types.Env) bool {
+	if env == nil || e == nil {
+		return false
+	}
+	_, ok := types.ExprType(e, env).(types.StructType)
+	return ok
 }
 
 func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
