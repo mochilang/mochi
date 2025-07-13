@@ -320,7 +320,7 @@ const (
           (let [idx (group-by (:rightKey j) (:items j))
                 seen (atom #{})]
             (doseq [left @items]
-              (let [k ((:leftKey j) left)
+              (let [k (apply (:leftKey j) left)
                     rs (get idx k)]
                 (if rs
                   (do
@@ -331,7 +331,7 @@ const (
                     (swap! joined conj (conj left nil)))))
             (when (:right j)
               (doseq [right (:items j)]
-                (when-not (contains? @seen ((:rightKey j) right))
+                (when-not (contains? @seen (apply (:rightKey j) [right]))
                   (swap! joined conj (vec (concat (repeat (count (first (or @items []))) nil) [right]))))))
             (reset! items @joined))
           (cond
