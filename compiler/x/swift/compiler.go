@@ -980,11 +980,12 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 argument at line %d", call.Pos.Line)
 		}
+		c.helpers["_avg"] = true
+		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
-			return fmt.Sprintf("%s.items.reduce(0, +) / %s.items.count", name, name), nil
+			return fmt.Sprintf("_avg(%s.items)", name), nil
 		}
-		a := args[0]
-		return fmt.Sprintf("(%s.reduce(0, +) / %s.count)", a, a), nil
+		return fmt.Sprintf("_avg(%s)", args[0]), nil
 	case "count", "len":
 		if len(args) != 1 {
 			return "", fmt.Errorf("%s expects 1 argument at line %d", call.Func, call.Pos.Line)
@@ -1017,10 +1018,12 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
 		}
+		c.helpers["_sum"] = true
+		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
-			return fmt.Sprintf("%s.items.reduce(0, +)", name), nil
+			return fmt.Sprintf("_sum(%s.items)", name), nil
 		}
-		return fmt.Sprintf("%s.reduce(0, +)", args[0]), nil
+		return fmt.Sprintf("_sum(%s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
 			return "", fmt.Errorf("exists expects 1 argument at line %d", call.Pos.Line)
@@ -3546,6 +3549,24 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_avg"] {
+		for _, line := range strings.Split(helperAvg, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_sum"] {
+		for _, line := range strings.Split(helperSum, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_min"] {
 		for _, line := range strings.Split(helperMin, "\n") {
 			if line == "" {
@@ -3636,6 +3657,30 @@ func _keyStr(_ v: Any) -> String {
         return s
     }
     return String(describing: v)
+}`
+
+const helperAvg = `func _avg<T: BinaryInteger>(_ arr: [T]) -> Double {
+    if arr.isEmpty { return 0 }
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}
+func _avg<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    if arr.isEmpty { return 0 }
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum / Double(arr.count)
+}`
+
+const helperSum = `func _sum<T: BinaryInteger>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
+}
+func _sum<T: BinaryFloatingPoint>(_ arr: [T]) -> Double {
+    var sum = 0.0
+    for v in arr { sum += Double(v) }
+    return sum
 }`
 
 const helperMin = `func _min(_ v: Any) -> Any {
