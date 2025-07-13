@@ -10,7 +10,7 @@ Compiled programs: 61/100
 - [x] basic_compare.mochi
 - [x] binary_precedence.mochi
 - [x] bool_chain.mochi
-- [ ] break_continue.mochi
+- [x] break_continue.mochi
 - [x] cast_string_to_int.mochi
 - [x] cast_struct.mochi
 - [ ] closure.mochi
@@ -108,3 +108,7 @@ Compiled programs: 61/100
 
 ## TPCH Progress
 - [ ] q1.mochi
+
+### Remaining Tasks
+- [ ] Expand dataset query support (joins, grouping).
+- [ ] Add automated testing of generated COBOL using GnuCOBOL.

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	meta "mochi/compiler/meta"
+	"mochi/interpreter"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -19,6 +20,7 @@ type Compiler struct {
 	vars       []varDecl
 	init       []string
 	env        *types.Env
+	interp     *interpreter.Interpreter
 	funs       []funDecl
 	curFun     *funDecl
 	tmpVar     string
@@ -97,7 +99,8 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string), constMaps: make(map[string][]mapEntry), initExprs: nil}
+	ip := interpreter.New(&parser.Program{}, env.Copy(), ".")
+	return &Compiler{env: env, interp: ip, seqList: make(map[string]int), constLists: make(map[string][]string), constMaps: make(map[string][]mapEntry), initExprs: nil}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -113,6 +116,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.seqList = make(map[string]int)
 	c.constLists = make(map[string][]string)
 	c.constMaps = make(map[string][]mapEntry)
+	c.interp = interpreter.New(&parser.Program{}, c.env.Copy(), ".")
 
 	name := strings.TrimSuffix(filepath.Base(prog.Pos.Filename), filepath.Ext(prog.Pos.Filename))
 	// Use dashes in program names to better match common COBOL style
@@ -124,11 +128,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	for _, st := range prog.Statements {
 		switch {
 		case st.Var != nil:
-			if err := c.addVar(st.Var.Name, st.Var.Type, st.Var.Value, st.Var.Pos.Line); err != nil {
+			if err := c.addVar(st.Var.Name, st.Var.Type, st.Var.Value, st.Var.Pos.Line, true); err != nil {
 				return nil, err
 			}
 		case st.Let != nil:
-			if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line); err != nil {
+			if err := c.addVar(st.Let.Name, st.Let.Type, st.Let.Value, st.Let.Pos.Line, false); err != nil {
 				return nil, err
 			}
 		case st.Fun != nil:
@@ -220,8 +224,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	return c.buf.Bytes(), nil
 }
 
-func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, line int) error {
+func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, line int, mutable bool) error {
 	if value != nil {
+		if val, err := c.interp.EvalExpr(value); err == nil {
+			if decl, ok := c.valueToDecl(name, val); ok {
+				c.vars = append(c.vars, decl)
+				c.interp.Env().SetValue(name, val, mutable)
+				return nil
+			}
+		}
 		// map literal cast to struct
 		if value.Binary != nil && len(value.Binary.Right) == 0 {
 			u := value.Binary.Left
@@ -1707,6 +1718,117 @@ func cobolPic(t types.Type, val string) string {
 		}
 		return "PIC X"
 	case types.BoolType:
+		return "PIC X(5)"
+	default:
+		return "PIC 9"
+	}
+}
+
+func (c *Compiler) valueToDecl(name string, v any) (varDecl, bool) {
+	switch val := v.(type) {
+	case int:
+		return varDecl{name: name, pic: "PIC 9", val: fmt.Sprintf("%d", val)}, true
+	case float64:
+		return varDecl{name: name, pic: "PIC 9", val: fmt.Sprintf("%g", val)}, true
+	case string:
+		pic := fmt.Sprintf("PIC X(%d)", len(val))
+		return varDecl{name: name, pic: pic, val: fmt.Sprintf("\"%s\"", val)}, true
+	case bool:
+		sval := "FALSE"
+		if val {
+			sval = "TRUE"
+		}
+		return varDecl{name: name, pic: "PIC X(5)", val: sval}, true
+	case []any:
+		fields, err := c.buildFieldsFromAnyList("", val)
+		if err != nil {
+			return varDecl{}, false
+		}
+		return varDecl{name: name, fields: fields}, true
+	case map[string]any:
+		fields, err := c.buildFieldsFromAnyMap("", val)
+		if err != nil {
+			return varDecl{}, false
+		}
+		return varDecl{name: name, fields: fields}, true
+	default:
+		return varDecl{}, false
+	}
+}
+
+func (c *Compiler) buildFieldsFromAnyList(prefix string, lst []any) ([]varField, error) {
+	fields := make([]varField, 0, len(lst))
+	for i, e := range lst {
+		switch v := e.(type) {
+		case []any:
+			sub, err := c.buildFieldsFromAnyList(prefix+fmt.Sprintf("E%d-", i+1), v)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, sub...)
+		case map[string]any:
+			sub, err := c.buildFieldsFromAnyMap(prefix+fmt.Sprintf("E%d-", i+1), v)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, sub...)
+		default:
+			valStr := c.anyLiteral(v)
+			pic := c.picForAny(v, valStr)
+			fields = append(fields, varField{name: prefix + fmt.Sprintf("E%d", i+1), pic: pic, val: valStr})
+		}
+	}
+	return fields, nil
+}
+
+func (c *Compiler) buildFieldsFromAnyMap(prefix string, mp map[string]any) ([]varField, error) {
+	fields := make([]varField, 0, len(mp))
+	for k, v := range mp {
+		switch val := v.(type) {
+		case []any:
+			sub, err := c.buildFieldsFromAnyList(prefix+cobolName(k)+"-", val)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, sub...)
+		case map[string]any:
+			sub, err := c.buildFieldsFromAnyMap(prefix+cobolName(k)+"-", val)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, sub...)
+		default:
+			valStr := c.anyLiteral(val)
+			pic := c.picForAny(val, valStr)
+			fields = append(fields, varField{name: prefix + cobolName(k), pic: pic, val: valStr})
+		}
+	}
+	return fields, nil
+}
+
+func (c *Compiler) anyLiteral(v any) string {
+	switch t := v.(type) {
+	case int:
+		return fmt.Sprintf("%d", t)
+	case float64:
+		return fmt.Sprintf("%g", t)
+	case string:
+		return fmt.Sprintf("\"%s\"", t)
+	case bool:
+		if t {
+			return "TRUE"
+		}
+		return "FALSE"
+	default:
+		return "0"
+	}
+}
+
+func (c *Compiler) picForAny(v any, val string) string {
+	switch v.(type) {
+	case string:
+		return fmt.Sprintf("PIC X(%d)", len(strings.Trim(val, "\"")))
+	case bool:
 		return "PIC X(5)"
 	default:
 		return "PIC 9"
