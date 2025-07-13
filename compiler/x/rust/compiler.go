@@ -3500,6 +3500,17 @@ func tryMapLiteral(e *parser.Expr) *parser.MapLiteral {
 }
 
 func (c *Compiler) compileSortKey(e *parser.Expr) (string, error) {
+	if list := tryListLiteral(e); list != nil {
+		parts := make([]string, len(list.Elems))
+		for i, it := range list.Elems {
+			v, err := c.compileExpr(it)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return "(" + strings.Join(parts, ", ") + ")", nil
+	}
 	if ml := tryMapLiteral(e); ml != nil {
 		parts := make([]string, len(ml.Items))
 		for i, it := range ml.Items {
