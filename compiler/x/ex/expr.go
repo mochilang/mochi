@@ -377,6 +377,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.ensureStruct(st)
 					c.use("_structify")
 					res = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), res)
+				} else if _, ok := t.(types.IntType); ok {
+					res = fmt.Sprintf("String.to_integer(%s)", res)
+				} else if _, ok := t.(types.FloatType); ok {
+					res = fmt.Sprintf("String.to_float(%s)", res)
 				}
 				typ = t
 			}
@@ -477,6 +481,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				c.ensureStruct(st)
 				return fmt.Sprintf("%%%s{}", sanitizeName(st.Name)), nil
 			}
+			if _, err := c.env.GetVar(p.Selector.Root); err == nil {
+				return name, nil
+			}
+		}
+		if c.currentGroup != "" && c.groupFields[name] {
+			return fmt.Sprintf("%s.key.%s", c.currentGroup, name), nil
 		}
 		return name, nil
 	case p.Group != nil:
