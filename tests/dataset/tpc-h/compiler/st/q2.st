@@ -1,0 +1,70 @@
+| region nation supplier part partsupp europe_nations europe_suppliers target_parts target_partsupp costs min_cost result |
+region := {Dictionary from:{'r_regionkey'->1. 'r_name'->'EUROPE'}. Dictionary from:{'r_regionkey'->2. 'r_name'->'ASIA'}}.
+nation := {Dictionary from:{'n_nationkey'->10. 'n_regionkey'->1. 'n_name'->'FRANCE'}. Dictionary from:{'n_nationkey'->20. 'n_regionkey'->2. 'n_name'->'CHINA'}}.
+supplier := {Dictionary from:{'s_suppkey'->100. 's_name'->'BestSupplier'. 's_address'->'123 Rue'. 's_nationkey'->10. 's_phone'->'123'. 's_acctbal'->1000. 's_comment'->'Fast and reliable'}. Dictionary from:{'s_suppkey'->200. 's_name'->'AltSupplier'. 's_address'->'456 Way'. 's_nationkey'->20. 's_phone'->'456'. 's_acctbal'->500. 's_comment'->'Slow'}}.
+part := {Dictionary from:{'p_partkey'->1000. 'p_type'->'LARGE BRASS'. 'p_size'->15. 'p_mfgr'->'M1'}. Dictionary from:{'p_partkey'->2000. 'p_type'->'SMALL COPPER'. 'p_size'->15. 'p_mfgr'->'M2'}}.
+partsupp := {Dictionary from:{'ps_partkey'->1000. 'ps_suppkey'->100. 'ps_supplycost'->10}. Dictionary from:{'ps_partkey'->1000. 'ps_suppkey'->200. 'ps_supplycost'->15}}.
+europe_nations := [ | tmp |
+  tmp := OrderedCollection new.
+  region do: [:r |
+    nation do: [:n |
+      ((((r at: 'r_name') = 'EUROPE') and: [(n.n_regionkey = r.r_regionkey)])) ifTrue: [
+        tmp add: n.
+      ].
+    ].
+  ].
+  tmp
+] value.
+europe_suppliers := [ | tmp |
+  tmp := OrderedCollection new.
+  supplier do: [:s |
+    europe_nations do: [:n |
+      ((s.s_nationkey = n.n_nationkey)) ifTrue: [
+        tmp add: Dictionary from:{s->s. n->n}.
+      ].
+    ].
+  ].
+  tmp
+] value.
+target_parts := [ | tmp |
+  tmp := OrderedCollection new.
+  part do: [:p |
+    (((((p at: 'p_size') = 15)) and: [(((p at: 'p_type') = ('LARGE BRASS')))])) ifTrue: [
+      tmp add: p.
+    ].
+  ].
+  tmp
+] value.
+target_partsupp := [ | tmp |
+  tmp := OrderedCollection new.
+  partsupp do: [:ps |
+    target_parts do: [:p |
+      europe_suppliers do: [:s |
+        (((ps.ps_partkey = p.p_partkey) and: [(ps.ps_suppkey = s.s.s_suppkey)])) ifTrue: [
+          tmp add: Dictionary from:{'s_acctbal'->s at: 's' at: 's_acctbal'. 's_name'->s at: 's' at: 's_name'. 'n_name'->s at: 'n' at: 'n_name'. 'p_partkey'->p at: 'p_partkey'. 'p_mfgr'->p at: 'p_mfgr'. 's_address'->s at: 's' at: 's_address'. 's_phone'->s at: 's' at: 's_phone'. 's_comment'->s at: 's' at: 's_comment'. 'ps_supplycost'->ps at: 'ps_supplycost'}.
+        ].
+      ].
+    ].
+  ].
+  tmp
+] value.
+costs := [ | tmp |
+  tmp := OrderedCollection new.
+  target_partsupp do: [:x |
+    tmp add: x at: 'ps_supplycost'.
+  ].
+  tmp
+] value.
+min_cost := (costs min).
+result := [ | tmp |
+  tmp := OrderedCollection new.
+  target_partsupp do: [:x |
+    (((x at: 'ps_supplycost') = min_cost)) ifTrue: [
+      tmp add: x.
+    ].
+  ].
+  tmp := tmp asSortedCollection: [:a :b | -a at: 's_acctbal' < -b at: 's_acctbal'].
+  tmp
+] value.
+json value: result.
+((result = ({Dictionary from:{'s_acctbal'->1000. 's_name'->'BestSupplier'. 'n_name'->'FRANCE'. 'p_partkey'->1000. 'p_mfgr'->'M1'. 's_address'->'123 Rue'. 's_phone'->'123'. 's_comment'->'Fast and reliable'. 'ps_supplycost'->10}}))) ifTrue: [Transcript show:'ok'; cr] ifFalse: [Transcript show:'fail'; cr].

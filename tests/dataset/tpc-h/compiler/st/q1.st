@@ -1,0 +1,63 @@
+| lineitem result |
+lineitem := {Dictionary from:{'l_quantity'->17. 'l_extendedprice'->1000. 'l_discount'->0.05. 'l_tax'->0.07. 'l_returnflag'->'N'. 'l_linestatus'->'O'. 'l_shipdate'->'1998-08-01'}. Dictionary from:{'l_quantity'->36. 'l_extendedprice'->2000. 'l_discount'->0.1. 'l_tax'->0.05. 'l_returnflag'->'N'. 'l_linestatus'->'O'. 'l_shipdate'->'1998-09-01'}. Dictionary from:{'l_quantity'->25. 'l_extendedprice'->1500. 'l_discount'->0. 'l_tax'->0.08. 'l_returnflag'->'R'. 'l_linestatus'->'F'. 'l_shipdate'->'1998-09-03'}}.
+result := [ | groups tmp |
+  groups := Dictionary new.
+  tmp := OrderedCollection new.
+  lineitem do: [:row |
+    (((row at: 'l_shipdate') <= '1998-09-02')) ifTrue: [
+      | g |
+      g := groups at: Dictionary from:{'returnflag'->row at: 'l_returnflag'. 'linestatus'->row at: 'l_linestatus'} ifAbsentPut:[OrderedCollection new].
+      g add: Dictionary from:{#row->row}.
+    ].
+  ].
+  groups keysAndValuesDo: [:k :grp |
+    | g |
+    g := Dictionary from:{'key'->k. 'items'->grp}.
+    tmp add: Dictionary from:{'returnflag'->g.key.returnflag. 'linestatus'->g.key.linestatus. 'sum_qty'->([ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: x at: 'l_quantity'.
+  ].
+  tmp
+] value inject: 0 into: [:s :x | s + x]). 'sum_base_price'->([ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: x at: 'l_extendedprice'.
+  ].
+  tmp
+] value inject: 0 into: [:s :x | s + x]). 'sum_disc_price'->([ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: ((x at: 'l_extendedprice') * ((1 - (x at: 'l_discount')))).
+  ].
+  tmp
+] value inject: 0 into: [:s :x | s + x]). 'sum_charge'->([ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: ((((x at: 'l_extendedprice') * ((1 - (x at: 'l_discount'))))) * ((1 + (x at: 'l_tax')))).
+  ].
+  tmp
+] value inject: 0 into: [:s :x | s + x]). 'avg_qty'->avg value: [ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: x at: 'l_quantity'.
+  ].
+  tmp
+] value. 'avg_price'->avg value: [ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: x at: 'l_extendedprice'.
+  ].
+  tmp
+] value. 'avg_disc'->avg value: [ | tmp |
+  tmp := OrderedCollection new.
+  g do: [:x |
+    tmp add: x at: 'l_discount'.
+  ].
+  tmp
+] value. 'count_order'->(g size)}.
+  ].
+  tmp
+] value.
+json value: result.
+((result = ({Dictionary from:{'returnflag'->'N'. 'linestatus'->'O'. 'sum_qty'->53. 'sum_base_price'->3000. 'sum_disc_price'->(950 + 1800). 'sum_charge'->(((950 * 1.07)) + ((1800 * 1.05))). 'avg_qty'->26.5. 'avg_price'->1500. 'avg_disc'->0.07500000000000001. 'count_order'->2}}))) ifTrue: [Transcript show:'ok'; cr] ifFalse: [Transcript show:'fail'; cr].
