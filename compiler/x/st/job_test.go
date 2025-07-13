@@ -4,6 +4,7 @@ package st_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -37,7 +38,7 @@ func runJOBQuery(t *testing.T, base, gstPath string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "st", base+".st.out")
+	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "st", base+".st")
 	wantCode, err := os.ReadFile(codeWant)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
@@ -45,7 +46,7 @@ func runJOBQuery(t *testing.T, base, gstPath string) {
 	got := stripHeaderJob(bytes.TrimSpace(code))
 	want := stripHeaderJob(bytes.TrimSpace(wantCode))
 	if !bytes.Equal(got, want) {
-		t.Errorf("generated code mismatch for %s.st.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+		t.Errorf("generated code mismatch for %s.st\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
 	}
 	if gstPath == "" {
 		t.Skip("gst not installed")
@@ -73,5 +74,8 @@ func runJOBQuery(t *testing.T, base, gstPath string) {
 
 func TestSTCompiler_JOBQueries(t *testing.T) {
 	gstPath := ensureGST()
-	t.Run("q1", func(t *testing.T) { runJOBQuery(t, "q1", gstPath) })
+	for i := 1; i <= 10; i++ {
+		q := fmt.Sprintf("q%d", i)
+		t.Run(q, func(t *testing.T) { runJOBQuery(t, q, gstPath) })
+	}
 }
