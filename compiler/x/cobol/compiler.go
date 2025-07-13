@@ -25,6 +25,7 @@ type Compiler struct {
 	seqList    map[string]int
 	constLists map[string][]string
 	constMaps  map[string][]mapEntry
+	initExprs  []initExpr
 }
 
 type varField struct {
@@ -38,6 +39,11 @@ type varDecl struct {
 	pic    string
 	val    string
 	fields []varField
+}
+
+type initExpr struct {
+	name string
+	expr *parser.Expr
 }
 
 type mapEntry struct {
@@ -91,7 +97,7 @@ func (c *Compiler) collectForVars(st []*parser.Statement) {
 }
 
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string), constMaps: make(map[string][]mapEntry)}
+	return &Compiler{env: env, seqList: make(map[string]int), constLists: make(map[string][]string), constMaps: make(map[string][]mapEntry), initExprs: nil}
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
@@ -103,6 +109,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.funs = nil
 	c.curFun = nil
 	c.tmpVar = ""
+	c.initExprs = nil
 	c.seqList = make(map[string]int)
 	c.constLists = make(map[string][]string)
 	c.constMaps = make(map[string][]mapEntry)
@@ -169,6 +176,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("PROCEDURE DIVISION.")
 	for _, line := range c.init {
 		c.writeln(line)
+	}
+	for _, ie := range c.initExprs {
+		val, err := c.compileExpr(ie.expr)
+		if err != nil {
+			return nil, err
+		}
+		c.writeln(fmt.Sprintf("COMPUTE %s = %s", cobolName(ie.name), val))
 	}
 	for _, st := range prog.Statements {
 		if st.Var != nil || st.Let != nil || st.Fun != nil {
@@ -346,11 +360,7 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 			val = "0"
 		}
 	} else if value != nil {
-		expr, err := c.compileExpr(value)
-		if err != nil {
-			return err
-		}
-		c.init = append(c.init, fmt.Sprintf("COMPUTE %s = %s", cobolName(name), expr))
+		c.initExprs = append(c.initExprs, initExpr{name: name, expr: value})
 	}
 	if strings.HasPrefix(val, "\"") && strings.HasSuffix(val, "\"") {
 		pic = fmt.Sprintf("PIC X(%d)", len(strings.Trim(val, "\"")))
@@ -1408,6 +1418,14 @@ func needsTmpVar(st []*parser.Statement) bool {
 				if !isComparisonExpr(arg) && !isSimpleExpr(arg) {
 					return true
 				}
+			}
+		case s.Let != nil:
+			if s.Let.Value != nil && !isLiteralExpr(s.Let.Value) && !isSimpleExpr(s.Let.Value) {
+				return true
+			}
+		case s.Var != nil:
+			if s.Var.Value != nil && !isLiteralExpr(s.Var.Value) && !isSimpleExpr(s.Var.Value) {
+				return true
 			}
 		case s.If != nil:
 			if needsTmpVar(s.If.Then) || (s.If.ElseIf != nil && needsTmpVar([]*parser.Statement{{If: s.If.ElseIf}})) || needsTmpVar(s.If.Else) {
