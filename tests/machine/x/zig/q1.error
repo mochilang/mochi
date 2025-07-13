@@ -1,4 +1,0 @@
-q1.zig:171:26: error: type 'q1.ResultStruct30' is not indexable and not a range
-q1.zig:171:26: note: for loop operand must be a range, array, slice, tuple, or vector
-q1.zig:46:54: error: no field named 'Slice' in enum '@typeInfo(builtin.Type).Union.tag_type.?'
-zig-linux-x86_64-0.12.0/lib/std/builtin.zig:256:18: note: enum declared here

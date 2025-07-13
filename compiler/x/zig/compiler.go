@@ -1375,22 +1375,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			elemType = gt.Elem
 			src += ".Items.items"
 		}
-		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
-			elemType = gt.Elem
-			src += ".Items.items"
-		}
-		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
-			elemType = gt.Elem
-			src += ".Items.items"
-		}
-		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
-			elemType = gt.Elem
-			src += ".Items.items"
-		}
-		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
-			elemType = gt.Elem
-			src += ".Items.items"
-		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
 
@@ -2715,8 +2699,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 			if _, err := c.env.GetVar(p.Selector.Root); err != nil {
 				return fmt.Sprintf("\"%s\"", p.Selector.Root), nil
 			}
-			if asReturn {
-				if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+				if asReturn {
 					if m, _ := c.env.IsMutable(p.Selector.Root); m {
 						if _, ok := t.(types.ListType); ok {
 							name += ".items"
