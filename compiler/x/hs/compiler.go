@@ -240,6 +240,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesLoop || c.usesList || c.usesTime || c.usesJSON || c.usesLoad || c.usesSave || c.usesSlice || c.usesSliceStr || c.usesExpect || c.usesFetch {
 		header.WriteString(runtime)
 	}
+	if c.usesTime {
+		header.WriteString(timeRuntime)
+	}
 	if c.usesJSON {
 		header.WriteString(jsonHelper)
 	}

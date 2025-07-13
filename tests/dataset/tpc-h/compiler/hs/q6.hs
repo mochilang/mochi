@@ -6,8 +6,6 @@ module Main where
 
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Lazy.Char8 as BSL
-import Data.List (intercalate, isInfixOf, isPrefixOf)
-import qualified Data.List as List
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 
@@ -109,25 +107,15 @@ expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
 
-orders = [Map.fromList [("o_orderkey", (1 :: Int)), ("o_orderdate", "1993-07-01"), ("o_orderpriority", "1-URGENT")], Map.fromList [("o_orderkey", (2 :: Int)), ("o_orderdate", "1993-07-15"), ("o_orderpriority", "2-HIGH")], Map.fromList [("o_orderkey", (3 :: Int)), ("o_orderdate", "1993-08-01"), ("o_orderpriority", "3-NORMAL")]]
+lineitem = [Map.fromList [("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.06 :: Double)), ("l_shipdate", "1994-02-15"), ("l_quantity", (10 :: Int))], Map.fromList [("l_extendedprice", (500.0 :: Double)), ("l_discount", (0.07 :: Double)), ("l_shipdate", "1994-03-10"), ("l_quantity", (23 :: Int))], Map.fromList [("l_extendedprice", (400.0 :: Double)), ("l_discount", (0.04 :: Double)), ("l_shipdate", "1994-04-10"), ("l_quantity", (15 :: Int))], Map.fromList [("l_extendedprice", (200.0 :: Double)), ("l_discount", (0.06 :: Double)), ("l_shipdate", "1995-01-01"), ("l_quantity", (5 :: Int))]]
 
-lineitem = [Map.fromList [("l_orderkey", (1 :: Int)), ("l_commitdate", "1993-07-10"), ("l_receiptdate", "1993-07-12")], Map.fromList [("l_orderkey", (1 :: Int)), ("l_commitdate", "1993-07-12"), ("l_receiptdate", "1993-07-10")], Map.fromList [("l_orderkey", (2 :: Int)), ("l_commitdate", "1993-07-20"), ("l_receiptdate", "1993-07-25")], Map.fromList [("l_orderkey", (3 :: Int)), ("l_commitdate", "1993-08-02"), ("l_receiptdate", "1993-08-01")], Map.fromList [("l_orderkey", (3 :: Int)), ("l_commitdate", "1993-08-05"), ("l_receiptdate", "1993-08-10")]]
+result = [sum (fromMaybe (error "missing") (Map.lookup "l_extendedprice" l) * fromMaybe (error "missing") (Map.lookup "l_discount" l)) | l <- filter (\l -> ((((((fromMaybe (error "missing") (Map.lookup "l_shipdate" l) >= "1994-01-01")) && ((fromMaybe (error "missing") (Map.lookup "l_shipdate" l) < "1995-01-01"))) && ((_asDouble (fromMaybe (error "missing") (Map.lookup "l_discount" l)) >= 0.05))) && ((_asDouble (fromMaybe (error "missing") (Map.lookup "l_discount" l)) <= 0.07))) && ((_asInt (fromMaybe (error "missing") (Map.lookup "l_quantity" l)) < 24)))) lineitem]
 
-start_date = "1993-07-01"
-
-end_date = "1993-08-01"
-
-date_filtered_orders = [o | o <- filter (\o -> (((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date)) orders]
-
-late_orders = [o | o <- filter (\o -> not (null [l | l <- filter (\l -> (((fromMaybe (error "missing") (Map.lookup "l_orderkey" l) == fromMaybe (error "missing") (Map.lookup "o_orderkey" o)) && fromMaybe (error "missing") (Map.lookup "l_commitdate" l)) < fromMaybe (error "missing") (Map.lookup "l_receiptdate" l))) lineitem])) date_filtered_orders]
-
-result = map snd (List.sortOn fst [(key (g), Map.fromList [("o_orderpriority", key (g)), ("order_count", (length (items g) :: Int))]) | g <- _group_by [(o) | o <- late_orders] (\(o) -> fromMaybe (error "missing") (Map.lookup "o_orderpriority" o))])
-
-test_Q4_returns_count_of_orders_with_late_lineitems_in_range :: IO ()
-test_Q4_returns_count_of_orders_with_late_lineitems_in_range = do
-  expect ((result == [Map.fromList [("o_orderpriority", "1-URGENT"), ("order_count", (1 :: Int))], Map.fromList [("o_orderpriority", "2-HIGH"), ("order_count", (1 :: Int))]]))
+test_Q6_calculates_revenue_from_qualified_lineitems :: IO ()
+test_Q6_calculates_revenue_from_qualified_lineitems = do
+  expect ((result == ((((1000.0 * 0.06)) + ((500.0 * 0.07))))))
 
 main :: IO ()
 main = do
   _json result
-  test_Q4_returns_count_of_orders_with_late_lineitems_in_range
+  test_Q6_calculates_revenue_from_qualified_lineitems

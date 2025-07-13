@@ -15,14 +15,14 @@ import (
 	"mochi/types"
 )
 
-// TestHSCompiler_TPCH_Dataset_Golden compiles the TPCH q1-q5 examples and
+// TestHSCompiler_TPCH_Dataset_Golden compiles the TPCH q1-q10 examples and
 // verifies the generated Haskell code and program output.
 func TestHSCompiler_TPCH_Dataset_Golden(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
 		t.Skipf("haskell not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for _, base := range []string{"q1", "q2", "q3", "q4", "q5"} {
+	for _, base := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		prog, err := parser.Parse(src)
 		if err != nil {

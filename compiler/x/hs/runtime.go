@@ -50,11 +50,6 @@ _append xs x = xs ++ [x]
 
 _input :: IO String
 _input = getLine
-
-_now :: IO Int
-_now = fmap round getPOSIXTime
-
-
 _readInput :: Maybe String -> IO String
 _readInput Nothing = getContents
 _readInput (Just p)
@@ -101,6 +96,11 @@ const expectHelper = `
 expect :: Bool -> IO ()
 expect True = pure ()
 expect False = error "expect failed"
+`
+
+const timeRuntime = `
+_now :: IO Int
+_now = fmap round getPOSIXTime
 `
 
 const sliceHelpers = `
