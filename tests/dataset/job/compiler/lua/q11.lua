@@ -271,44 +271,50 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production()
-    if not (__eq(result, {["production_note"]="ACME (co-production)", ["movie_title"]="Good Movie", ["movie_year"]=1995})) then error('expect failed') end
+function test_Q11_returns_min_company__link_type_and_title()
+    if not (__eq(result, {{["from_company"]="Best Film Co", ["movie_link_type"]="follow-up", ["non_polish_sequel_movie"]="Alpha"}})) then error('expect failed') end
 end
 
+company_name = {{["id"]=1, ["name"]="Best Film Co", ["country_code"]="[us]"}, {["id"]=2, ["name"]="Warner Studios", ["country_code"]="[de]"}, {["id"]=3, ["name"]="Polish Films", ["country_code"]="[pl]"}}
 company_type = {{["id"]=1, ["kind"]="production companies"}, {["id"]=2, ["kind"]="distributors"}}
-info_type = {{["id"]=10, ["info"]="top 250 rank"}, {["id"]=20, ["info"]="bottom 10 rank"}}
-title = {{["id"]=100, ["title"]="Good Movie", ["production_year"]=1995}, {["id"]=200, ["title"]="Bad Movie", ["production_year"]=2000}}
-movie_companies = {{["movie_id"]=100, ["company_type_id"]=1, ["note"]="ACME (co-production)"}, {["movie_id"]=200, ["company_type_id"]=1, ["note"]="MGM (as Metro-Goldwyn-Mayer Pictures)"}}
-movie_info_idx = {{["movie_id"]=100, ["info_type_id"]=10}, {["movie_id"]=200, ["info_type_id"]=20}}
-filtered = (function()
-    local _src = company_type
+keyword = {{["id"]=1, ["keyword"]="sequel"}, {["id"]=2, ["keyword"]="thriller"}}
+link_type = {{["id"]=1, ["link"]="follow-up"}, {["id"]=2, ["link"]="follows from"}, {["id"]=3, ["link"]="remake"}}
+movie_companies = {{["movie_id"]=10, ["company_id"]=1, ["company_type_id"]=1, ["note"]=nil}, {["movie_id"]=20, ["company_id"]=2, ["company_type_id"]=1, ["note"]=nil}, {["movie_id"]=30, ["company_id"]=3, ["company_type_id"]=1, ["note"]=nil}}
+movie_keyword = {{["movie_id"]=10, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=2}, {["movie_id"]=30, ["keyword_id"]=1}}
+movie_link = {{["movie_id"]=10, ["link_type_id"]=1}, {["movie_id"]=20, ["link_type_id"]=2}, {["movie_id"]=30, ["link_type_id"]=3}}
+title = {{["id"]=10, ["production_year"]=1960, ["title"]="Alpha"}, {["id"]=20, ["production_year"]=1970, ["title"]="Beta"}, {["id"]=30, ["production_year"]=1985, ["title"]="Polish Movie"}}
+matches = (function()
+    local _src = company_name
     return __query(_src, {
-        { items = movie_companies, on = function(ct, mc) return __eq(ct.id, mc.company_type_id) end },
-        { items = title, on = function(ct, mc, t) return __eq(t.id, mc.movie_id) end },
-        { items = movie_info_idx, on = function(ct, mc, t, mi) return __eq(mi.movie_id, t.id) end },
-        { items = info_type, on = function(ct, mc, t, mi, it) return __eq(it.id, mi.info_type_id) end }
-    }, { selectFn = function(ct, mc, t, mi, it) return {["note"]=mc.note, ["title"]=t.title, ["year"]=t.production_year} end, where = function(ct, mc, t, mi, it) return ((((__eq(ct.kind, "production companies") and __eq(it.info, "top 250 rank")) and (not __contains(mc.note, "(as Metro-Goldwyn-Mayer Pictures)"))) and ((__contains(mc.note, "(co-production)") or __contains(mc.note, "(presents)"))))) end })
+        { items = movie_companies, on = function(cn, mc) return __eq(mc.company_id, cn.id) end },
+        { items = company_type, on = function(cn, mc, ct) return __eq(ct.id, mc.company_type_id) end },
+        { items = title, on = function(cn, mc, ct, t) return __eq(t.id, mc.movie_id) end },
+        { items = movie_keyword, on = function(cn, mc, ct, t, mk) return __eq(mk.movie_id, t.id) end },
+        { items = keyword, on = function(cn, mc, ct, t, mk, k) return __eq(k.id, mk.keyword_id) end },
+        { items = movie_link, on = function(cn, mc, ct, t, mk, k, ml) return __eq(ml.movie_id, t.id) end },
+        { items = link_type, on = function(cn, mc, ct, t, mk, k, ml, lt) return __eq(lt.id, ml.link_type_id) end }
+    }, { selectFn = function(cn, mc, ct, t, mk, k, ml, lt) return {["company"]=cn.name, ["link"]=lt.link, ["title"]=t.title} end, where = function(cn, mc, ct, t, mk, k, ml, lt) return (((((((((((not __eq(cn.country_code, "[pl]") and ((__contains(cn.name, "Film") or __contains(cn.name, "Warner")))) and __eq(ct.kind, "production companies")) and __eq(k.keyword, "sequel")) and __contains(lt.link, "follow")) and __eq(mc.note, nil)) and (t.production_year >= 1950)) and (t.production_year <= 2000)) and __eq(ml.movie_id, mk.movie_id)) and __eq(ml.movie_id, mc.movie_id)) and __eq(mk.movie_id, mc.movie_id))) end })
 end)()
-result = {["production_note"]=__min((function()
+result = {{["from_company"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.note
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.company
     end
     return _res
-end)()), ["movie_title"]=__min((function()
+end)()), ["movie_link_type"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.title
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.link
     end
     return _res
-end)()), ["movie_year"]=__min((function()
+end)()), ["non_polish_sequel_movie"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.year
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.title
     end
     return _res
-end)())}
-__json({result})
+end)())}}
+__json(result)
 local __tests = {
-    {name="Q1 returns min note, title and year for top ranked co-production", fn=test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production},
+    {name="Q11 returns min company, link type and title", fn=test_Q11_returns_min_company__link_type_and_title},
 }

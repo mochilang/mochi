@@ -271,44 +271,47 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production()
-    if not (__eq(result, {["production_note"]="ACME (co-production)", ["movie_title"]="Good Movie", ["movie_year"]=1995})) then error('expect failed') end
+function test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions()
+    if not (__eq(result, {["movie_budget"]=90, ["movie_votes"]=400, ["movie_title"]="Alpha"})) then error('expect failed') end
 end
 
-company_type = {{["id"]=1, ["kind"]="production companies"}, {["id"]=2, ["kind"]="distributors"}}
-info_type = {{["id"]=10, ["info"]="top 250 rank"}, {["id"]=20, ["info"]="bottom 10 rank"}}
-title = {{["id"]=100, ["title"]="Good Movie", ["production_year"]=1995}, {["id"]=200, ["title"]="Bad Movie", ["production_year"]=2000}}
-movie_companies = {{["movie_id"]=100, ["company_type_id"]=1, ["note"]="ACME (co-production)"}, {["movie_id"]=200, ["company_type_id"]=1, ["note"]="MGM (as Metro-Goldwyn-Mayer Pictures)"}}
-movie_info_idx = {{["movie_id"]=100, ["info_type_id"]=10}, {["movie_id"]=200, ["info_type_id"]=20}}
-filtered = (function()
-    local _src = company_type
+info_type = {{["id"]=1, ["info"]="budget"}, {["id"]=2, ["info"]="votes"}, {["id"]=3, ["info"]="rating"}}
+name = {{["id"]=1, ["name"]="Big Tim", ["gender"]="m"}, {["id"]=2, ["name"]="Slim Tim", ["gender"]="m"}, {["id"]=3, ["name"]="Alice", ["gender"]="f"}}
+title = {{["id"]=10, ["title"]="Alpha"}, {["id"]=20, ["title"]="Beta"}, {["id"]=30, ["title"]="Gamma"}}
+cast_info = {{["movie_id"]=10, ["person_id"]=1, ["note"]="(producer)"}, {["movie_id"]=20, ["person_id"]=2, ["note"]="(executive producer)"}, {["movie_id"]=30, ["person_id"]=3, ["note"]="(producer)"}}
+movie_info = {{["movie_id"]=10, ["info_type_id"]=1, ["info"]=90}, {["movie_id"]=20, ["info_type_id"]=1, ["info"]=120}, {["movie_id"]=30, ["info_type_id"]=1, ["info"]=110}}
+movie_info_idx = {{["movie_id"]=10, ["info_type_id"]=2, ["info"]=500}, {["movie_id"]=20, ["info_type_id"]=2, ["info"]=400}, {["movie_id"]=30, ["info_type_id"]=2, ["info"]=800}}
+rows = (function()
+    local _src = cast_info
     return __query(_src, {
-        { items = movie_companies, on = function(ct, mc) return __eq(ct.id, mc.company_type_id) end },
-        { items = title, on = function(ct, mc, t) return __eq(t.id, mc.movie_id) end },
-        { items = movie_info_idx, on = function(ct, mc, t, mi) return __eq(mi.movie_id, t.id) end },
-        { items = info_type, on = function(ct, mc, t, mi, it) return __eq(it.id, mi.info_type_id) end }
-    }, { selectFn = function(ct, mc, t, mi, it) return {["note"]=mc.note, ["title"]=t.title, ["year"]=t.production_year} end, where = function(ct, mc, t, mi, it) return ((((__eq(ct.kind, "production companies") and __eq(it.info, "top 250 rank")) and (not __contains(mc.note, "(as Metro-Goldwyn-Mayer Pictures)"))) and ((__contains(mc.note, "(co-production)") or __contains(mc.note, "(presents)"))))) end })
+        { items = name, on = function(ci, n) return __eq(n.id, ci.person_id) end },
+        { items = title, on = function(ci, n, t) return __eq(t.id, ci.movie_id) end },
+        { items = movie_info, on = function(ci, n, t, mi) return __eq(mi.movie_id, t.id) end },
+        { items = movie_info_idx, on = function(ci, n, t, mi, mi_idx) return __eq(mi_idx.movie_id, t.id) end },
+        { items = info_type, on = function(ci, n, t, mi, mi_idx, it1) return __eq(it1.id, mi.info_type_id) end },
+        { items = info_type, on = function(ci, n, t, mi, mi_idx, it1, it2) return __eq(it2.id, mi_idx.info_type_id) end }
+    }, { selectFn = function(ci, n, t, mi, mi_idx, it1, it2) return {["budget"]=mi.info, ["votes"]=mi_idx.info, ["title"]=t.title} end, where = function(ci, n, t, mi, mi_idx, it1, it2) return ((((((((((__contains({"(producer)", "(executive producer)"}, ci.note) and __eq(it1.info, "budget")) and __eq(it2.info, "votes")) and __eq(n.gender, "m")) and __contains(n.name, "Tim")) and __eq(t.id, ci.movie_id)) and __eq(ci.movie_id, mi.movie_id)) and __eq(ci.movie_id, mi_idx.movie_id)) and __eq(mi.movie_id, mi_idx.movie_id)))) end })
 end)()
-result = {["production_note"]=__min((function()
+result = {["movie_budget"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.note
+    for _, r in ipairs(rows) do
+        _res[#_res+1] = r.budget
+    end
+    return _res
+end)()), ["movie_votes"]=__min((function()
+    local _res = {}
+    for _, r in ipairs(rows) do
+        _res[#_res+1] = r.votes
     end
     return _res
 end)()), ["movie_title"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
+    for _, r in ipairs(rows) do
         _res[#_res+1] = r.title
     end
     return _res
-end)()), ["movie_year"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.year
-    end
-    return _res
 end)())}
-__json({result})
+__json(result)
 local __tests = {
-    {name="Q1 returns min note, title and year for top ranked co-production", fn=test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production},
+    {name="Q18 finds minimal budget, votes and title for Tim productions", fn=test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions},
 }

@@ -271,44 +271,35 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production()
-    if not (__eq(result, {["production_note"]="ACME (co-production)", ["movie_title"]="Good Movie", ["movie_year"]=1995})) then error('expect failed') end
+function test_Q20_finds_complete_cast_Iron_Man_movie()
+    if not (__eq(result, {{["complete_downey_ironman_movie"]="Iron Man"}})) then error('expect failed') end
 end
 
-company_type = {{["id"]=1, ["kind"]="production companies"}, {["id"]=2, ["kind"]="distributors"}}
-info_type = {{["id"]=10, ["info"]="top 250 rank"}, {["id"]=20, ["info"]="bottom 10 rank"}}
-title = {{["id"]=100, ["title"]="Good Movie", ["production_year"]=1995}, {["id"]=200, ["title"]="Bad Movie", ["production_year"]=2000}}
-movie_companies = {{["movie_id"]=100, ["company_type_id"]=1, ["note"]="ACME (co-production)"}, {["movie_id"]=200, ["company_type_id"]=1, ["note"]="MGM (as Metro-Goldwyn-Mayer Pictures)"}}
-movie_info_idx = {{["movie_id"]=100, ["info_type_id"]=10}, {["movie_id"]=200, ["info_type_id"]=20}}
-filtered = (function()
-    local _src = company_type
+comp_cast_type = {{["id"]=1, ["kind"]="cast"}, {["id"]=2, ["kind"]="complete cast"}}
+char_name = {{["id"]=1, ["name"]="Tony Stark"}, {["id"]=2, ["name"]="Sherlock Holmes"}}
+complete_cast = {{["movie_id"]=1, ["subject_id"]=1, ["status_id"]=2}, {["movie_id"]=2, ["subject_id"]=1, ["status_id"]=2}}
+name = {{["id"]=1, ["name"]="Robert Downey Jr."}, {["id"]=2, ["name"]="Another Actor"}}
+cast_info = {{["movie_id"]=1, ["person_role_id"]=1, ["person_id"]=1}, {["movie_id"]=2, ["person_role_id"]=2, ["person_id"]=2}}
+keyword = {{["id"]=10, ["keyword"]="superhero"}, {["id"]=20, ["keyword"]="romance"}}
+movie_keyword = {{["movie_id"]=1, ["keyword_id"]=10}, {["movie_id"]=2, ["keyword_id"]=20}}
+kind_type = {{["id"]=1, ["kind"]="movie"}}
+title = {{["id"]=1, ["kind_id"]=1, ["production_year"]=2008, ["title"]="Iron Man"}, {["id"]=2, ["kind_id"]=1, ["production_year"]=1940, ["title"]="Old Hero"}}
+matches = (function()
+    local _src = complete_cast
     return __query(_src, {
-        { items = movie_companies, on = function(ct, mc) return __eq(ct.id, mc.company_type_id) end },
-        { items = title, on = function(ct, mc, t) return __eq(t.id, mc.movie_id) end },
-        { items = movie_info_idx, on = function(ct, mc, t, mi) return __eq(mi.movie_id, t.id) end },
-        { items = info_type, on = function(ct, mc, t, mi, it) return __eq(it.id, mi.info_type_id) end }
-    }, { selectFn = function(ct, mc, t, mi, it) return {["note"]=mc.note, ["title"]=t.title, ["year"]=t.production_year} end, where = function(ct, mc, t, mi, it) return ((((__eq(ct.kind, "production companies") and __eq(it.info, "top 250 rank")) and (not __contains(mc.note, "(as Metro-Goldwyn-Mayer Pictures)"))) and ((__contains(mc.note, "(co-production)") or __contains(mc.note, "(presents)"))))) end })
+        { items = comp_cast_type, on = function(cc, cct1) return __eq(cct1.id, cc.subject_id) end },
+        { items = comp_cast_type, on = function(cc, cct1, cct2) return __eq(cct2.id, cc.status_id) end },
+        { items = cast_info, on = function(cc, cct1, cct2, ci) return (ci.movie_id == cc.movie_id) end },
+        { items = char_name, on = function(cc, cct1, cct2, ci, chn) return __eq(chn.id, ci.person_role_id) end },
+        { items = name, on = function(cc, cct1, cct2, ci, chn, n) return __eq(n.id, ci.person_id) end },
+        { items = movie_keyword, on = function(cc, cct1, cct2, ci, chn, n, mk) return (mk.movie_id == cc.movie_id) end },
+        { items = keyword, on = function(cc, cct1, cct2, ci, chn, n, mk, k) return __eq(k.id, mk.keyword_id) end },
+        { items = title, on = function(cc, cct1, cct2, ci, chn, n, mk, k, t) return __eq(t.id, cc.movie_id) end },
+        { items = kind_type, on = function(cc, cct1, cct2, ci, chn, n, mk, k, t, kt) return __eq(kt.id, t.kind_id) end }
+    }, { selectFn = function(cc, cct1, cct2, ci, chn, n, mk, k, t, kt) return t.title end, where = function(cc, cct1, cct2, ci, chn, n, mk, k, t, kt) return (((((((__eq(cct1.kind, "cast") and __contains(cct2.kind, "complete")) and (not __contains(chn.name, "Sherlock"))) and ((__contains(chn.name, "Tony Stark") or __contains(chn.name, "Iron Man")))) and __contains({"superhero", "sequel", "second-part", "marvel-comics", "based-on-comic", "tv-special", "fight", "violence"}, k.keyword)) and __eq(kt.kind, "movie")) and (t.production_year > 1950))) end })
 end)()
-result = {["production_note"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.note
-    end
-    return _res
-end)()), ["movie_title"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.title
-    end
-    return _res
-end)()), ["movie_year"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.year
-    end
-    return _res
-end)())}
-__json({result})
+result = {{["complete_downey_ironman_movie"]=__min(matches)}}
+__json(result)
 local __tests = {
-    {name="Q1 returns min note, title and year for top ranked co-production", fn=test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production},
+    {name="Q20 finds complete cast Iron Man movie", fn=test_Q20_finds_complete_cast_Iron_Man_movie},
 }

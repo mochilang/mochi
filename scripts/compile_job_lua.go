@@ -19,7 +19,7 @@ func main() {
 	outDir := filepath.Join("tests", "dataset", "job", "compiler", "lua")
 	_ = os.RemoveAll(outDir)
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 20; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join("tests", "dataset", "job", q+".mochi")
 		prog, err := parser.Parse(src)

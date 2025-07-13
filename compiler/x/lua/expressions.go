@@ -255,6 +255,10 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				c.helpers["contains"] = true
 				base := strings.TrimSuffix(expr, ".contains")
 				expr = fmt.Sprintf("__contains(%s, %s)", base, args[0])
+			} else if strings.HasSuffix(expr, ".starts_with") && len(args) == 1 {
+				c.helpers["starts_with"] = true
+				base := strings.TrimSuffix(expr, ".starts_with")
+				expr = fmt.Sprintf("__starts_with(%s, %s)", base, args[0])
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 			}
@@ -451,6 +455,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("contains expects 2 args")
 		}
 		return fmt.Sprintf("__contains(%s, %s)", args[0], args[1]), nil
+	case "starts_with":
+		c.helpers["starts_with"] = true
+		if len(args) != 2 {
+			return "", fmt.Errorf("starts_with expects 2 args")
+		}
+		return fmt.Sprintf("__starts_with(%s, %s)", args[0], args[1]), nil
 	case "exists":
 		c.helpers["exists"] = true
 		return fmt.Sprintf("__exists(%s)", argStr), nil
