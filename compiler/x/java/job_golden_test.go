@@ -20,7 +20,7 @@ func TestJavaCompiler_JOBQueries(t *testing.T) {
 		t.Skipf("javac not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "java", base+".java")
@@ -44,7 +44,7 @@ func TestJavaCompiler_JOBQueries(t *testing.T) {
 			wantCode, err := os.ReadFile(codeWant)
 			if err == nil {
 				if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-					t.Skipf("generated code mismatch for %s.java", base)
+					t.Logf("generated code mismatch for %s.java", base)
 				}
 			}
 			dir := t.TempDir()
