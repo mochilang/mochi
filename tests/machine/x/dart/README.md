@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 100/100
+Compiled programs: 93/100
 
 Checklist:
 
@@ -30,14 +30,14 @@ Checklist:
 - [x] fun_three_args
 - [x] go_auto
 - [x] group_by
-- [x] group_by_conditional_sum
+- [ ] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
 - [x] group_by_left_join
 - [x] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
-- [x] group_items_iteration
+- [ ] group_items_iteration
 - [x] if_else
 - [x] if_then_else
 - [x] if_then_else_nested
@@ -56,7 +56,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [x] load_yaml
+- [ ] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -65,8 +65,8 @@ Checklist:
 - [x] map_membership
 - [x] map_nested_assign
 - [x] match_expr
-- [x] match_full
-- [x] math_ops
+- [ ] match_full
+- [ ] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
@@ -96,8 +96,8 @@ Checklist:
 - [x] sum_builtin
 - [x] tail_recursion
 - [x] test_block
-- [x] tree_sum
-- [x] two-sum
+- [ ] tree_sum
+- [ ] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg
@@ -106,3 +106,11 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## TPCH Progress
+- [x] q1.mochi generates valid Dart and matches `tests/dataset/tpc-h/compiler/dart/q1.out`
+- [ ] q2.mochi through q22.mochi
+
+## Remaining Tasks
+- [ ] Improve formatting to resemble `tests/human/x/dart`
+- [ ] Continue compiling additional TPCH queries
