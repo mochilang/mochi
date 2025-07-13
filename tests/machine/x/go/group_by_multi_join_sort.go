@@ -7,7 +7,6 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -123,7 +122,7 @@ func main() {
 			pairs[idx] = pair{item: it, key: -_sum(func() []any {
 				results := []any{}
 				for _, x := range g.Items {
-					results = append(results, ((_toAnyMap(_toAnyMap(x)["l"])["l_extendedprice"]).(float64) * (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)).(float64)))
+					results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
 				}
 				return results
 			}())}
@@ -157,20 +156,20 @@ func main() {
 		results := []Result{}
 		for _, g := range items {
 			results = append(results, Result{
-				_toAnyMap(g.Key)["c_custkey"],
-				_toAnyMap(g.Key)["c_name"],
+				(g.Key).(map[string]any)["c_custkey"],
+				(g.Key).(map[string]any)["c_name"],
 				_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
-						results = append(results, ((_toAnyMap(_toAnyMap(x)["l"])["l_extendedprice"]).(float64) * (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)).(float64)))
+						results = append(results, ((((x).(map[string]any)["l"]).(map[string]any)["l_extendedprice"]).(float64) * (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)).(float64)))
 					}
 					return results
 				}()),
-				_toAnyMap(g.Key)["c_acctbal"],
-				_toAnyMap(g.Key)["n_name"],
-				_toAnyMap(g.Key)["c_address"],
-				_toAnyMap(g.Key)["c_phone"],
-				_toAnyMap(g.Key)["c_comment"],
+				(g.Key).(map[string]any)["c_acctbal"],
+				(g.Key).(map[string]any)["n_name"],
+				(g.Key).(map[string]any)["c_address"],
+				(g.Key).(map[string]any)["c_phone"],
+				(g.Key).(map[string]any)["c_comment"],
 			})
 		}
 		return results
@@ -257,38 +256,4 @@ func _sum(v any) float64 {
 		}
 	}
 	return sum
-}
-
-func _toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
-		}
-		return out
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Struct {
-			out := make(map[string]any, rv.NumField())
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				name := rt.Field(i).Name
-				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
-					comma := strings.Index(tag, ",")
-					if comma >= 0 {
-						tag = tag[:comma]
-					}
-					if tag != "-" {
-						name = tag
-					}
-				}
-				out[name] = rv.Field(i).Interface()
-			}
-			return out
-		}
-		return nil
-	}
 }

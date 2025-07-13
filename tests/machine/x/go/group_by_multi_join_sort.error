@@ -1,15 +1,13 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_multi_join_sort.go:14:14: undefined: NationItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:19:16: undefined: CustomerItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:28:14: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:32:5: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:38:16: undefined: LineitemItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:43:5: undefined: LineitemItem
-../../../tests/machine/x/go/group_by_multi_join_sort.go:52:21: undefined: Result
-../../../tests/machine/x/go/group_by_multi_join_sort.go:69:15: undefined: v
-../../../tests/machine/x/go/group_by_multi_join_sort.go:126:95: invalid operation: (float64(1) - (_toAnyMap(_toAnyMap(x)["l"])["l_discount"]).(float64)) (value of type float64) is not an interface
-../../../tests/machine/x/go/group_by_multi_join_sort.go:157:16: undefined: Result
-../../../tests/machine/x/go/group_by_multi_join_sort.go:157:16: too many errors
-
-1: //go:build ignore
+tests/machine/x/go/group_by_multi_join_sort.go:13:14: undefined: NationItem
+tests/machine/x/go/group_by_multi_join_sort.go:18:16: undefined: CustomerItem
+tests/machine/x/go/group_by_multi_join_sort.go:27:14: undefined: OrdersItem
+tests/machine/x/go/group_by_multi_join_sort.go:31:5: undefined: OrdersItem
+tests/machine/x/go/group_by_multi_join_sort.go:37:16: undefined: LineitemItem
+tests/machine/x/go/group_by_multi_join_sort.go:42:5: undefined: LineitemItem
+tests/machine/x/go/group_by_multi_join_sort.go:51:21: undefined: Result
+tests/machine/x/go/group_by_multi_join_sort.go:68:15: undefined: v
+tests/machine/x/go/group_by_multi_join_sort.go:125:111: invalid operation: (float64(1) - (((x).(map[string]any)["l"]).(map[string]any)["l_discount"]).(float64)) (value of type float64) is not an interface
+tests/machine/x/go/group_by_multi_join_sort.go:156:16: undefined: Result
+tests/machine/x/go/group_by_multi_join_sort.go:156:16: too many errors

@@ -1,15 +1,13 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by.go:13:14: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:14:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:19:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:24:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:29:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:34:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:39:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by.go:45:20: undefined: Stats
-../../../tests/machine/x/go/group_by.go:59:16: undefined: Stats
-../../../tests/machine/x/go/group_by.go:62:30: undefined: Stats
-../../../tests/machine/x/go/group_by.go:62:30: too many errors
-
-1: //go:build ignore
+tests/machine/x/go/group_by.go:11:14: undefined: PeopleItem
+tests/machine/x/go/group_by.go:12:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:17:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:22:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:27:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:32:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:37:3: undefined: PeopleItem
+tests/machine/x/go/group_by.go:43:20: undefined: Stats
+tests/machine/x/go/group_by.go:57:16: undefined: Stats
+tests/machine/x/go/group_by.go:60:30: undefined: Stats
+tests/machine/x/go/group_by.go:60:30: too many errors

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"mochi/runtime/data"
 	"reflect"
-	"strings"
 )
 
 func main() {
@@ -89,8 +88,8 @@ func main() {
 				len(func() []any {
 					results := []any{}
 					for _, r := range g.Items {
-						if _exists(_toAnyMap(r)["o"]) {
-							if _exists(_toAnyMap(r)["o"]) {
+						if _exists((r).(map[string]any)["o"]) {
+							if _exists((r).(map[string]any)["o"]) {
 								results = append(results, r)
 							}
 						}
@@ -143,38 +142,4 @@ func _exists(v any) bool {
 		return !rv.IsZero()
 	}
 	return false
-}
-
-func _toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
-		}
-		return out
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Struct {
-			out := make(map[string]any, rv.NumField())
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				name := rt.Field(i).Name
-				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
-					comma := strings.Index(tag, ",")
-					if comma >= 0 {
-						tag = tag[:comma]
-					}
-					if tag != "-" {
-						name = tag
-					}
-				}
-				out[name] = rv.Field(i).Interface()
-			}
-			return out
-		}
-		return nil
-	}
 }

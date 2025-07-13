@@ -1,12 +1,10 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_sort.go:14:13: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_sort.go:15:3: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_sort.go:19:3: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_sort.go:23:3: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_sort.go:27:3: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_sort.go:32:22: undefined: Grouped
-../../../tests/machine/x/go/group_by_sort.go:95:16: undefined: Grouped
-../../../tests/machine/x/go/group_by_sort.go:97:30: undefined: Grouped
-
-1: //go:build ignore
+tests/machine/x/go/group_by_sort.go:13:13: undefined: ItemsItem
+tests/machine/x/go/group_by_sort.go:14:3: undefined: ItemsItem
+tests/machine/x/go/group_by_sort.go:18:3: undefined: ItemsItem
+tests/machine/x/go/group_by_sort.go:22:3: undefined: ItemsItem
+tests/machine/x/go/group_by_sort.go:26:3: undefined: ItemsItem
+tests/machine/x/go/group_by_sort.go:31:22: undefined: Grouped
+tests/machine/x/go/group_by_sort.go:94:16: undefined: Grouped
+tests/machine/x/go/group_by_sort.go:96:30: undefined: Grouped

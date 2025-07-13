@@ -366,8 +366,10 @@ const (
 		"    if opts != nil {\n" +
 		"        if q, ok := opts[\"query\"]; ok {\n" +
 		"            vals := u.Query()\n" +
-		"            for k, v := range _toAnyMap(q) {\n" +
-		"                vals.Set(k, fmt.Sprint(v))\n" +
+		"            if m, ok := q.(map[string]any); ok {\n" +
+		"                for k, v := range m { vals.Set(k, fmt.Sprint(v)) }\n" +
+		"            } else if m, ok := q.(map[string]string); ok {\n" +
+		"                for k, v := range m { vals.Set(k, v) }\n" +
 		"            }\n" +
 		"            u.RawQuery = vals.Encode()\n" +
 		"        }\n" +
@@ -376,10 +378,10 @@ const (
 		"    if err != nil { panic(err) }\n" +
 		"    if opts != nil {\n" +
 		"        if hs, ok := opts[\"headers\"]; ok {\n" +
-		"            for k, v := range _toAnyMap(hs) {\n" +
-		"                if s, ok := v.(string); ok {\n" +
-		"                    req.Header.Set(k, s)\n" +
-		"                }\n" +
+		"            if m, ok := hs.(map[string]string); ok {\n" +
+		"                for k, v := range m { req.Header.Set(k, v) }\n" +
+		"            } else if m, ok := hs.(map[string]any); ok {\n" +
+		"                for k, v := range m { if s, ok := v.(string); ok { req.Header.Set(k, s) } }\n" +
 		"            }\n" +
 		"        }\n" +
 		"    }\n" +
@@ -406,36 +408,6 @@ const (
 		"    var out any\n" +
 		"    if err := json.Unmarshal(data, &out); err != nil { panic(err) }\n" +
 		"    return out\n" +
-		"}\n"
-
-	helperToAnyMap = "func _toAnyMap(m any) map[string]any {\n" +
-		"    switch v := m.(type) {\n" +
-		"    case map[string]any:\n" +
-		"        return v\n" +
-		"    case map[string]string:\n" +
-		"        out := make(map[string]any, len(v))\n" +
-		"        for k, vv := range v {\n" +
-		"            out[k] = vv\n" +
-		"        }\n" +
-		"        return out\n" +
-		"    default:\n" +
-		"        rv := reflect.ValueOf(v)\n" +
-		"        if rv.Kind() == reflect.Struct {\n" +
-		"            out := make(map[string]any, rv.NumField())\n" +
-		"            rt := rv.Type()\n" +
-		"            for i := 0; i < rv.NumField(); i++ {\n" +
-		"                name := rt.Field(i).Name\n" +
-		"                if tag := rt.Field(i).Tag.Get(\"json\"); tag != \"\" {\n" +
-		"                    comma := strings.Index(tag, \",\")\n" +
-		"                    if comma >= 0 { tag = tag[:comma] }\n" +
-		"                    if tag != \"-\" { name = tag }\n" +
-		"                }\n" +
-		"                out[name] = rv.Field(i).Interface()\n" +
-		"            }\n" +
-		"            return out\n" +
-		"        }\n" +
-		"        return nil\n" +
-		"    }\n" +
 		"}\n"
 
 	helperToAnySlice = "func _toAnySlice[T any](s []T) []any {\n" +
@@ -930,7 +902,6 @@ var helperMap = map[string]string{
 	"_genEmbed":      helperGenEmbed,
 	"_genStruct":     helperGenStruct,
 	"_fetch":         helperFetch,
-	"_toAnyMap":      helperToAnyMap,
 	"_toAnySlice":    helperToAnySlice,
 	"_convSlice":     helperConvSlice,
 	"_contains":      helperContains,
@@ -968,10 +939,6 @@ func (c *Compiler) use(name string) {
 	if name == "_toMapSlice" {
 		c.imports["encoding/json"] = true
 		c.imports["reflect"] = true
-	}
-	if name == "_toAnyMap" {
-		c.imports["reflect"] = true
-		c.imports["strings"] = true
 	}
 	if name == "_lower" || name == "_upper" {
 		c.imports["fmt"] = true

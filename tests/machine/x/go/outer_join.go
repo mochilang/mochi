@@ -7,7 +7,6 @@ import (
 	"mochi/runtime/data"
 	"reflect"
 	"sort"
-	"strings"
 )
 
 func main() {
@@ -106,12 +105,12 @@ func main() {
 	for _, row := range result {
 		if _exists(row.Order) {
 			if _exists(row.Customer) {
-				fmt.Println("Order", _toAnyMap(row.Order)["id"], "by", _toAnyMap(row.Customer)["name"], "- $", _toAnyMap(row.Order)["total"])
+				fmt.Println("Order", (row.Order).(map[string]any)["id"], "by", (row.Customer).(map[string]any)["name"], "- $", (row.Order).(map[string]any)["total"])
 			} else {
-				fmt.Println("Order", _toAnyMap(row.Order)["id"], "by", "Unknown", "- $", _toAnyMap(row.Order)["total"])
+				fmt.Println("Order", (row.Order).(map[string]any)["id"], "by", "Unknown", "- $", (row.Order).(map[string]any)["total"])
 			}
 		} else {
-			fmt.Println("Customer", _toAnyMap(row.Customer)["name"], "has no orders")
+			fmt.Println("Customer", (row.Customer).(map[string]any)["name"], "has no orders")
 		}
 	}
 }
@@ -386,40 +385,6 @@ func _query(src []any, joins []_joinSpec, opts _queryOpts) []any {
 		res[i] = opts.selectFn(r...)
 	}
 	return res
-}
-
-func _toAnyMap(m any) map[string]any {
-	switch v := m.(type) {
-	case map[string]any:
-		return v
-	case map[string]string:
-		out := make(map[string]any, len(v))
-		for k, vv := range v {
-			out[k] = vv
-		}
-		return out
-	default:
-		rv := reflect.ValueOf(v)
-		if rv.Kind() == reflect.Struct {
-			out := make(map[string]any, rv.NumField())
-			rt := rv.Type()
-			for i := 0; i < rv.NumField(); i++ {
-				name := rt.Field(i).Name
-				if tag := rt.Field(i).Tag.Get("json"); tag != "" {
-					comma := strings.Index(tag, ",")
-					if comma >= 0 {
-						tag = tag[:comma]
-					}
-					if tag != "-" {
-						name = tag
-					}
-				}
-				out[name] = rv.Field(i).Interface()
-			}
-			return out
-		}
-		return nil
-	}
 }
 
 func _toAnySlice[T any](s []T) []any {

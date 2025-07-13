@@ -1,10 +1,8 @@
-Error on line 0: run error: exit status 1
+run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_conditional_sum.go:14:13: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_conditional_sum.go:18:5: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_conditional_sum.go:22:5: undefined: ItemsItem
-../../../tests/machine/x/go/group_by_conditional_sum.go:27:21: undefined: Result
-../../../tests/machine/x/go/group_by_conditional_sum.go:85:16: undefined: Result
-../../../tests/machine/x/go/group_by_conditional_sum.go:87:30: undefined: Result
-
-1: //go:build ignore
+tests/machine/x/go/group_by_conditional_sum.go:13:13: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:17:5: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:21:5: undefined: ItemsItem
+tests/machine/x/go/group_by_conditional_sum.go:26:21: undefined: Result
+tests/machine/x/go/group_by_conditional_sum.go:84:16: undefined: Result
+tests/machine/x/go/group_by_conditional_sum.go:86:30: undefined: Result

@@ -2196,9 +2196,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						base = fmt.Sprintf("%s[%q]", base, field)
 						typ = types.AnyType{}
 					} else {
-						// treat as dynamic map using helper
-						c.use("_toAnyMap")
-						base = fmt.Sprintf("_toAnyMap(%s)[%q]", base, field)
+						// assume dynamic map[string]any
+						base = fmt.Sprintf("(%s).(map[string]any)[%q]", base, field)
 						typ = types.AnyType{}
 					}
 				}
@@ -2411,18 +2410,10 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(f.With)) {
-			withStr = w
-		} else {
-			c.use("_toAnyMap")
-			withStr = fmt.Sprintf("_toAnyMap(%s)", w)
-		}
+		withStr = w
 	} else {
 		withStr = "nil"
 	}
-	// _fetch uses _toAnyMap internally for headers and query handling, so
-	// ensure it is always included to avoid undefined symbol errors.
-	c.use("_toAnyMap")
 
 	c.imports["net/http"] = true
 	c.imports["io"] = true
@@ -2509,12 +2500,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(l.With)) {
-			opts = v
-		} else {
-			c.use("_toAnyMap")
-			opts = fmt.Sprintf("_toAnyMap(%s)", v)
-		}
+		opts = v
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -2561,12 +2547,7 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if isStringAnyMapLike(c.inferExprType(s.With)) {
-			opts = v
-		} else {
-			c.use("_toAnyMap")
-			opts = fmt.Sprintf("_toAnyMap(%s)", v)
-		}
+		opts = v
 	}
 	c.imports["mochi/runtime/data"] = true
 	c.imports["os"] = true
@@ -2977,8 +2958,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		} else if st, ok := elemType.(types.StructType); ok {
 			c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
 		} else {
-			c.use("_toAnyMap")
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 		}
 		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 		for i, f := range q.Froms {
@@ -2987,8 +2967,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			} else if st, ok := fromElemType[i].(types.StructType); ok {
 				c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
 			} else {
-				c.use("_toAnyMap")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 		}
@@ -2998,8 +2977,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			} else if st, ok := joinElemType[i].(types.StructType); ok {
 				c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
 			} else {
-				c.use("_toAnyMap")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 		}
@@ -3033,8 +3011,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			} else if st, ok := elemType.(types.StructType); ok {
 				c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
 			} else {
-				c.use("_toAnyMap")
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
 			}
 			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
 			for i, f := range q.Froms {
@@ -3043,8 +3020,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				} else if st, ok := fromElemType[i].(types.StructType); ok {
 					c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
 				} else {
-					c.use("_toAnyMap")
-					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
 				}
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 			}
@@ -3054,8 +3030,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				} else if st, ok := joinElemType[i].(types.StructType); ok {
 					c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
 				} else {
-					c.use("_toAnyMap")
-					buf.WriteString(fmt.Sprintf(indent+"for k, v := range _toAnyMap(%s) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s.(map[string]any) { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
 				}
 				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
 			}
