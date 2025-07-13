@@ -1103,6 +1103,10 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 			msg = strings.ReplaceAll(msg, " ,", ",")
 			msg = strings.ReplaceAll(msg, " ;", ";")
 			msg = strings.ReplaceAll(msg, " .", ".")
+			msg = strings.ReplaceAll(msg, " ?", "?")
+			msg = strings.ReplaceAll(msg, " !", "!")
+			msg = strings.ReplaceAll(msg, " )", ")")
+			msg = strings.ReplaceAll(msg, "( ", "(")
 			c.writeln(fmt.Sprintf("println(s\"%s\")", msg))
 		}
 		return nil

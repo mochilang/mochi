@@ -119,3 +119,21 @@ Recent improvements:
 - [x] Investigate TPCH `q1.mochi` compilation failures and update helper
       functions as needed
 - [ ] Compile additional TPCH queries
+
+## Running the TPCH Q1 example
+
+To generate and run the Scala code for `q1.mochi`:
+
+1. Use `mochix` to compile the Mochi source:
+   ```bash
+   go run ./cmd/mochix buildx -t scala tests/dataset/tpc-h/q1.mochi > Main.scala
+   ```
+2. Compile the resulting Scala file:
+   ```bash
+   scalac Main.scala
+   ```
+3. Execute the program using `scala` (or `scala-cli`):
+   ```bash
+   scala Main
+   ```
+   The program prints the aggregated JSON result.
