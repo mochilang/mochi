@@ -111,6 +111,7 @@ Compiled programs: 100/100
 - [x] q1 (generated `q1.rs` and ran successfully)
 - [x] q2 (generated `q2.rs` and ran successfully)
 - [x] q3 (generated `q3.rs` and ran successfully)
+- [x] q4 (generated `q4.rs` and ran successfully)
 
 ## Remaining Tasks
 
@@ -129,3 +130,4 @@ Compiled programs: 100/100
 - [ ] Validate generated output for `tpc-h/q1.mochi` against reference
 - [ ] Validate generated output for `tpc-h/q2.mochi` against reference
 - [ ] Compile and validate `tpc-h/q3.mochi`
+- [ ] Compile and validate `tpc-h/q4.mochi`
