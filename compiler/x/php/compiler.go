@@ -1157,7 +1157,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		buf.WriteString("    foreach ($groups as $_k => $__g) {\n")
 		gname := sanitizeName(q.Group.Name)
 		c.groupVars[gname] = true
-		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>json_decode($_k, true),'items'=> $__g];\n", gname))
+		buf.WriteString("        $_key = json_decode($_k, true);\n")
+		buf.WriteString(fmt.Sprintf("        $%s = ['key'=>$_key,'items'=> $__g];\n", gname))
 
 		genv := types.NewEnv(child)
 		keyType := types.TypeOfExprBasic(q.Group.Exprs[0], child)

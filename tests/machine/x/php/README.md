@@ -108,4 +108,7 @@ This directory stores PHP code produced by the compiler tests. Each Mochi progra
 - [x] while_loop.mochi
 
 ## Dataset Tasks
-- [ ] tpch/q1.mochi
+- [x] tpch/q1.mochi
+
+## Remaining Work
+- Improve runtime helpers for grouping and aggregation
