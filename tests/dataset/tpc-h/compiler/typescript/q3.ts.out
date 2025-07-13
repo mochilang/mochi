@@ -113,4 +113,3 @@ if (!(JSON.stringify(order_line_join) === JSON.stringify([
   o_shippriority: 1
 }
 ]))) { throw new Error("Q3 returns revenue per order with correct priority failed"); }
-

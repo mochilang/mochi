@@ -860,6 +860,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
+		if q.Group != nil && q.Group.Name != "" {
+			if fields := selectMapFields(q.Group.Exprs[0]); fields != nil {
+				for name := range fields {
+					re := regexp.MustCompile(`(^|[^\\.\\w])` + regexp.QuoteMeta(name) + `\b`)
+					sortStr = re.ReplaceAllString(sortStr, fmt.Sprintf(`${1}%s.key.%s`, q.Group.Name, name))
+				}
+			}
+		}
 	}
 	if q.Skip != nil {
 		skipStr, err = c.expr(q.Skip)
@@ -929,10 +937,14 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			writeln("if (!(" + whereStr + ")) continue;")
 		}
 		writeln(fmt.Sprintf("const _k = JSON.stringify(%s);", keyStr))
-		writeln("let g = groups[_k];")
-		writeln(fmt.Sprintf("if (!g) { g = []; g.key = %s; g.items = g; groups[_k] = g; }", keyStr))
+		groupVar := q.Group.Name
+		if groupVar == "" {
+			groupVar = "g"
+		}
+		writeln(fmt.Sprintf("let %s = groups[_k];", groupVar))
+		writeln(fmt.Sprintf("if (!%s) { %s = []; %s.key = %s; %s.items = %s; groups[_k] = %s; }", groupVar, groupVar, groupVar, keyStr, groupVar, groupVar, groupVar))
 		if len(q.Froms)+len(q.Joins) < 1 {
-			writeln(fmt.Sprintf("g.push(%s);", q.Var))
+			writeln(fmt.Sprintf("%s.push(%s);", groupVar, q.Var))
 		} else {
 			parts := []string{fmt.Sprintf("%s: %s", q.Var, q.Var)}
 			for _, f := range q.Froms {
@@ -941,7 +953,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			for _, j := range q.Joins {
 				parts = append(parts, fmt.Sprintf("%s: %s", j.Var, j.Var))
 			}
-			writeln(fmt.Sprintf("g.push({%s});", strings.Join(parts, ", ")))
+			writeln(fmt.Sprintf("%s.push({%s});", groupVar, strings.Join(parts, ", ")))
 		}
 		for range q.Joins {
 			indent--
@@ -956,7 +968,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		// result array declared above
 		writeln("for (const _k in groups) {")
 		indent++
-		writeln("const g = groups[_k];")
+		writeln(fmt.Sprintf("const %s = groups[_k];", groupVar))
 		if havingStr != "" {
 			writeln("if (!(" + havingStr + ")) continue;")
 		}
@@ -1275,43 +1287,116 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	result := left
-	leftAst := b.Left
-	for _, op := range b.Right {
+	values := []string{left}
+	comps := []bool{isLiteralComplexUnary(b.Left)}
+	ops := make([]string, len(b.Right))
+	for i, op := range b.Right {
 		r, err := c.postfix(op.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "union":
-			if op.All {
-				result = fmt.Sprintf("%s.concat(%s)", result, r)
-			} else {
-				result = fmt.Sprintf("Array.from(new Set([...%s, ...%s]))", result, r)
+		values = append(values, r)
+		comps = append(comps, isLiteralComplexPostfix(op.Right))
+		ops[i] = op.Op
+	}
+
+	prec := func(op string) int {
+		switch op {
+		case "||":
+			return 1
+		case "&&":
+			return 2
+		case "==", "!=", "<", "<=", ">", ">=", "in":
+			return 3
+		case "+", "-":
+			return 4
+		case "*", "/", "%":
+			return 5
+		default:
+			return 0
+		}
+	}
+
+	// Shunting-yard style
+	var stackVals []string
+	var stackComp []bool
+	var stackOps []string
+	push := func(op string) {
+		for len(stackOps) > 0 && prec(stackOps[len(stackOps)-1]) >= prec(op) {
+			right := stackVals[len(stackVals)-1]
+			rc := stackComp[len(stackComp)-1]
+			stackVals = stackVals[:len(stackVals)-1]
+			stackComp = stackComp[:len(stackComp)-1]
+			left := stackVals[len(stackVals)-1]
+			lc := stackComp[len(stackComp)-1]
+			stackVals = stackVals[:len(stackVals)-1]
+			stackComp = stackComp[:len(stackComp)-1]
+			o := stackOps[len(stackOps)-1]
+			stackOps = stackOps[:len(stackOps)-1]
+			switch o {
+			case "in":
+				c.needContainsHelper = true
+				stackVals = append(stackVals, fmt.Sprintf("contains(%s, %s)", right, left))
+				stackComp = append(stackComp, false)
+			case "==", "!=":
+				if lc || rc {
+					cmp := fmt.Sprintf("JSON.stringify(%s) === JSON.stringify(%s)", left, right)
+					if o == "!=" {
+						cmp = "!(" + cmp + ")"
+					}
+					stackVals = append(stackVals, cmp)
+				} else {
+					stackVals = append(stackVals, fmt.Sprintf("(%s %s %s)", left, o, right))
+				}
+				stackComp = append(stackComp, false)
+			default:
+				stackVals = append(stackVals, fmt.Sprintf("(%s %s %s)", left, o, right))
+				stackComp = append(stackComp, false)
 			}
-		case "except":
-			result = fmt.Sprintf("%s.filter(x => !%s.includes(x))", result, r)
-		case "intersect":
-			result = fmt.Sprintf("%s.filter(x => %s.includes(x))", result, r)
+		}
+		stackOps = append(stackOps, op)
+	}
+
+	stackVals = append(stackVals, values[0])
+	stackComp = append(stackComp, comps[0])
+	for i, op := range ops {
+		push(op)
+		stackVals = append(stackVals, values[i+1])
+		stackComp = append(stackComp, comps[i+1])
+	}
+	for len(stackOps) > 0 {
+		right := stackVals[len(stackVals)-1]
+		rc := stackComp[len(stackComp)-1]
+		stackVals = stackVals[:len(stackVals)-1]
+		stackComp = stackComp[:len(stackComp)-1]
+		left := stackVals[len(stackVals)-1]
+		lc := stackComp[len(stackComp)-1]
+		stackVals = stackVals[:len(stackVals)-1]
+		stackComp = stackComp[:len(stackComp)-1]
+		o := stackOps[len(stackOps)-1]
+		stackOps = stackOps[:len(stackOps)-1]
+		switch o {
 		case "in":
 			c.needContainsHelper = true
-			result = fmt.Sprintf("contains(%s, %s)", r, result)
+			stackVals = append(stackVals, fmt.Sprintf("contains(%s, %s)", right, left))
+			stackComp = append(stackComp, false)
 		case "==", "!=":
-			if isLiteralComplexUnary(leftAst) || isLiteralComplexPostfix(op.Right) {
-				cmp := fmt.Sprintf("JSON.stringify(%s) === JSON.stringify(%s)", result, r)
-				if op.Op == "!=" {
+			if lc || rc {
+				cmp := fmt.Sprintf("JSON.stringify(%s) === JSON.stringify(%s)", left, right)
+				if o == "!=" {
 					cmp = "!(" + cmp + ")"
 				}
-				result = cmp
+				stackVals = append(stackVals, cmp)
 			} else {
-				result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
+				stackVals = append(stackVals, fmt.Sprintf("(%s %s %s)", left, o, right))
 			}
+			stackComp = append(stackComp, false)
 		default:
-			result = fmt.Sprintf("(%s %s %s)", result, op.Op, r)
+			stackVals = append(stackVals, fmt.Sprintf("(%s %s %s)", left, o, right))
+			stackComp = append(stackComp, false)
 		}
-		leftAst = nil
 	}
-	return result, nil
+	return stackVals[0], nil
 }
 
 func (c *Compiler) unary(u *parser.Unary) (string, error) {

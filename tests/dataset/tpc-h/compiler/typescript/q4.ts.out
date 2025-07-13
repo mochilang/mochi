@@ -57,8 +57,8 @@ const lineitem = [
 ];
 const start_date = "1993-07-01";
 const end_date = "1993-08-01";
-const date_filtered_orders = orders.filter((o) => (((o.o_orderdate >= start_date) && o.o_orderdate) < end_date));
-const late_orders = date_filtered_orders.filter((o) => lineitem.some((l) => (((l.l_orderkey == o.o_orderkey) && l.l_commitdate) < l.l_receiptdate)));
+const date_filtered_orders = orders.filter((o) => ((o.o_orderdate >= start_date) && (o.o_orderdate < end_date)));
+const late_orders = date_filtered_orders.filter((o) => lineitem.some((l) => ((l.l_orderkey == o.o_orderkey) && (l.l_commitdate < l.l_receiptdate))));
 const result = (() => {
   let _tmp1: Array<{ o_orderpriority: any; order_count: number }> = [];
   const groups = {};
