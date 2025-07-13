@@ -231,7 +231,7 @@ const groupHelpers = `(define (_count v)
     (when (not (null? lst))
       (set! m (car lst))
       (for-each (lambda (n)
-                  (when (> n m) (set! m n)))
+                  (when (_gt n m) (set! m n)))
                 (cdr lst)))
     m))
 
@@ -244,7 +244,7 @@ const groupHelpers = `(define (_count v)
     (when (not (null? lst))
       (set! m (car lst))
       (for-each (lambda (n)
-                  (when (< n m) (set! m n)))
+                  (when (_lt n m) (set! m n)))
                 (cdr lst)))
     m))
 (define (_group_by src keyfn)
@@ -264,7 +264,7 @@ const groupHelpers = `(define (_count v)
     (map (lambda (k) (cdr (assoc k groups))) order))))`
 
 const jsonHelper = `(define (_json v)
-  (write v)
+  (display (json->string v))
   (newline))`
 
 const testHelpers = `(define failures 0)
