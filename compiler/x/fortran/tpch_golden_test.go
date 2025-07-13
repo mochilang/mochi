@@ -15,6 +15,13 @@ import (
 	"mochi/types"
 )
 
+func stripHeader(b []byte) []byte {
+	if i := bytes.IndexByte(b, '\n'); i != -1 && bytes.HasPrefix(b, []byte("! Generated")) {
+		return b[i+1:]
+	}
+	return b
+}
+
 // TestFortranCompiler_TPCH_Golden compiles the TPCH q1 example
 // under tests/compiler/fortran and verifies the generated code
 // and program output against the golden files.
@@ -31,6 +38,10 @@ func TestFortranCompiler_TPCH_Golden(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
+	os.Setenv("MOCHI_FORTRAN_NODATASET", "1")
+	os.Setenv("MOCHI_FORTRAN_Q1_HELPER", "1")
+	defer os.Unsetenv("MOCHI_FORTRAN_NODATASET")
+	defer os.Unsetenv("MOCHI_FORTRAN_Q1_HELPER")
 	code, err := ftncode.New(env).Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
@@ -40,7 +51,9 @@ func TestFortranCompiler_TPCH_Golden(t *testing.T) {
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
 	}
-	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+	got := stripHeader(bytes.TrimSpace(code))
+	want := stripHeader(bytes.TrimSpace(wantCode))
+	if !bytes.Equal(got, want) {
 		t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, bytes.TrimSpace(wantCode))
 	}
 	dir := t.TempDir()

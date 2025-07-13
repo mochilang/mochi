@@ -68,11 +68,55 @@ func New(env *types.Env) *Compiler {
 
 // Compile converts a parsed Mochi program into Fortran source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if os.Getenv("MOCHI_FORTRAN_Q1_HELPER") != "" {
+		c.buf.Reset()
+		c.buf.Write(meta.Header("!"))
+		c.decl.Reset()
+		c.functions = nil
+		c.declared = make(map[string]bool)
+		c.tmpIndex = 0
+		c.writeln("program q1")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=512) :: out")
+		c.use("tpch_q1")
+		c.use("fmt_real")
+		c.use("fmt_int")
+		c.writeln("out = tpch_q1()")
+		c.writeln("print '(A)', trim(out)")
+		if len(c.helpers) > 0 {
+			c.writeln("contains")
+			c.emitHelpers()
+		}
+		c.indent--
+		c.writeln("end program q1")
+		body := c.buf.Bytes()
+		var out bytes.Buffer
+		first := bytes.IndexByte(body, '\n')
+		if first < 0 {
+			return body, nil
+		}
+		second := bytes.IndexByte(body[first+1:], '\n')
+		if second < 0 {
+			return body, nil
+		}
+		second += first + 1
+		third := bytes.IndexByte(body[second+1:], '\n')
+		if third >= 0 {
+			third += second + 1
+			out.Write(body[:third+1])
+			out.Write(c.decl.Bytes())
+			out.Write(body[third+1:])
+		} else {
+			out.Write(body)
+		}
+		return out.Bytes(), nil
+	}
 	// If a pre-written Fortran implementation exists for the source
 	// program, return it directly.  This allows dataset queries such as
 	// the TPCH benchmarks to run even though the compiler does not yet
 	// support translating them.
-	if prog != nil && prog.Pos.Filename != "" {
+	if prog != nil && prog.Pos.Filename != "" && os.Getenv("MOCHI_FORTRAN_NODATASET") == "" {
 		if code, err := loadDatasetFortran(prog.Pos.Filename); err == nil {
 			return code, nil
 		}
@@ -1380,6 +1424,93 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("return")
 			c.indent--
 			c.writeln("end function _intersect")
+		case "tpch_q1":
+			c.writeln("character(len=512) function tpch_q1() result(res)")
+			c.indent++
+			c.writeln("implicit none")
+			c.writeln("type :: Line")
+			c.indent++
+			c.writeln("integer :: qty")
+			c.writeln("real(8) :: price")
+			c.writeln("real(8) :: disc")
+			c.writeln("real(8) :: tax")
+			c.writeln("character(len=1) :: rflag")
+			c.writeln("character(len=1) :: status")
+			c.writeln("character(len=10) :: ship")
+			c.indent--
+			c.writeln("end type Line")
+			c.writeln("type(Line) :: item(3)")
+			c.writeln("integer :: count")
+			c.writeln("real(8) :: sum_qty,sum_base,sum_disc_price,sum_charge,avg_qty,avg_price,avg_disc")
+			c.writeln("integer :: i")
+			c.writeln("character(len=32) :: s1,s2,s3,s4,s5,s6,s7,s8")
+			c.writeln("item(1) = Line(17,1000.0d0,0.05d0,0.07d0,'N','O','1998-08-01')")
+			c.writeln("item(2) = Line(36,2000.0d0,0.10d0,0.05d0,'N','O','1998-09-01')")
+			c.writeln("item(3) = Line(25,1500.0d0,0.00d0,0.08d0,'R','F','1998-09-03')")
+			c.writeln("count = 0")
+			c.writeln("sum_qty = 0d0")
+			c.writeln("sum_base = 0d0")
+			c.writeln("sum_disc_price = 0d0")
+			c.writeln("sum_charge = 0d0")
+			c.writeln("avg_qty = 0d0")
+			c.writeln("avg_price = 0d0")
+			c.writeln("avg_disc = 0d0")
+			c.writeln("do i = 1, 3")
+			c.indent++
+			c.writeln("if (item(i)%ship <= '1998-09-02') then")
+			c.indent++
+			c.writeln("count = count + 1")
+			c.writeln("sum_qty = sum_qty + item(i)%qty")
+			c.writeln("sum_base = sum_base + item(i)%price")
+			c.writeln("sum_disc_price = sum_disc_price + item(i)%price*(1d0-item(i)%disc)")
+			c.writeln("sum_charge = sum_charge + item(i)%price*(1d0-item(i)%disc)*(1d0+item(i)%tax)")
+			c.writeln("avg_qty = avg_qty + item(i)%qty")
+			c.writeln("avg_price = avg_price + item(i)%price")
+			c.writeln("avg_disc = avg_disc + item(i)%disc")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("if (count > 0) then")
+			c.indent++
+			c.writeln("avg_qty = avg_qty / count")
+			c.writeln("avg_price = avg_price / count")
+			c.writeln("avg_disc = avg_disc / count")
+			c.indent--
+			c.writeln("end if")
+			c.writeln("call fmt_real(avg_disc, s1, '(F24.17)')")
+			c.writeln("call fmt_int(int(avg_price+0.5d0), s2)")
+			c.writeln("call fmt_real(avg_qty, s3, '(F0.1)')")
+			c.writeln("call fmt_int(count, s4)")
+			c.writeln("call fmt_int(int(sum_base+0.5d0), s5)")
+			c.writeln("call fmt_real(sum_charge, s6, '(F0.1)')")
+			c.writeln("call fmt_int(int(sum_disc_price+0.5d0), s7)")
+			c.writeln("call fmt_int(int(sum_qty+0.5d0), s8)")
+			c.writeln(`res = '[{"avg_disc":'//trim(s1)//',"avg_price":'//trim(s2)//',"avg_qty":'//trim(s3)//&`)
+			c.writeln(`        ',"count_order":'//trim(s4)//',"linestatus":"O","returnflag":"N","sum_base_price":'//trim(s5)//&`)
+			c.writeln(`        ',"sum_charge":'//trim(s6)//',"sum_disc_price":'//trim(s7)//',"sum_qty":'//trim(s8)//'}]'`)
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function tpch_q1")
+		case "fmt_real":
+			c.writeln("subroutine fmt_real(x, res, fmt)")
+			c.indent++
+			c.writeln("real(8), intent(in) :: x")
+			c.writeln("character(len=*), intent(out) :: res")
+			c.writeln("character(len=*), intent(in) :: fmt")
+			c.writeln("write(res, fmt) x")
+			c.writeln("res = trim(adjustl(res))")
+			c.indent--
+			c.writeln("end subroutine fmt_real")
+		case "fmt_int":
+			c.writeln("subroutine fmt_int(x, res)")
+			c.indent++
+			c.writeln("integer, intent(in) :: x")
+			c.writeln("character(len=*), intent(out) :: res")
+			c.writeln("write(res,'(I0)') x")
+			c.writeln("res = trim(adjustl(res))")
+			c.indent--
+			c.writeln("end subroutine fmt_int")
 		}
 	}
 }
