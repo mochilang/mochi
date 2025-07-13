@@ -599,6 +599,84 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 }
 
 func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
+	mutated := map[string]bool{}
+	for _, st := range fr.Body {
+		if st.Assign != nil {
+			mutated[st.Assign.Name] = true
+		}
+	}
+
+	hasBC := hasBreakOrContinue(fr.Body)
+
+	// If no variables are mutated in the loop body, emit a simple foreach
+	if len(mutated) == 0 {
+		bodyParts := make([]string, len(fr.Body))
+		for i, s := range fr.Body {
+			l, err := c.compileStmtLine(s)
+			if err != nil {
+				return "", err
+			}
+			bodyParts[i] = l
+		}
+		body := strings.Join(bodyParts, ", ")
+		if body == "" {
+			body = "ok"
+		}
+		iterBody := body
+		if hasBC {
+			iterBody = fmt.Sprintf("try %s catch throw:continue -> ok end", body)
+		}
+
+		if fr.RangeEnd != nil {
+			start, err := c.compileExpr(fr.Source)
+			if err != nil {
+				return "", err
+			}
+			end, err := c.compileExpr(fr.RangeEnd)
+			if err != nil {
+				return "", err
+			}
+			loop := fmt.Sprintf("lists:foreach(fun(%s) -> %s end, lists:seq(%s, (%s)-1))", capitalize(fr.Name), iterBody, start, end)
+			if hasBC {
+				loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
+			}
+			return loop, nil
+		}
+
+		src, err := c.compileExpr(fr.Source)
+		if err != nil {
+			return "", err
+		}
+		typ := c.inferExprType(fr.Source)
+		if typ == "" && fr.Source.Binary != nil {
+			u := fr.Source.Binary.Left
+			if u.Value != nil && u.Value.Target.Selector != nil {
+				typ = c.types[u.Value.Target.Selector.Root]
+			}
+		}
+
+		var loop string
+		if typ == "map" {
+			loop = fmt.Sprintf("lists:foreach(fun({%s,_}) -> %s end, maps:to_list(%s))", capitalize(fr.Name), iterBody, src)
+		} else {
+			loop = fmt.Sprintf("lists:foreach(fun(%s) -> %s end, %s)", capitalize(fr.Name), iterBody, src)
+		}
+		if hasBC {
+			loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
+		}
+		return loop, nil
+	}
+
+	// When variables are mutated, use foldl to thread accumulator values
+	params := []string{capitalize(fr.Name)}
+	initArgs := make([]string, 0, len(mutated))
+	for v := range mutated {
+		params = append(params, capitalize(v))
+		initArgs = append(initArgs, c.refVar(v))
+		c.aliases[v] = capitalize(v)
+		c.lets[v] = true
+	}
+
 	bodyParts := make([]string, len(fr.Body))
 	for i, s := range fr.Body {
 		l, err := c.compileStmtLine(s)
@@ -611,11 +689,23 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	if body == "" {
 		body = "ok"
 	}
-	hasBC := hasBreakOrContinue(fr.Body)
+
+	for v := range mutated {
+		delete(c.aliases, v)
+		delete(c.lets, v)
+	}
+
+	nextArgs := make([]string, 0, len(mutated))
+	for v := range mutated {
+		nextArgs = append(nextArgs, c.refVar(v))
+	}
+
 	iterBody := body
 	if hasBC {
-		iterBody = fmt.Sprintf("try %s catch throw:continue -> ok end", body)
+		iterBody = fmt.Sprintf("try %s catch throw:continue -> {%s} end", body, strings.Join(nextArgs, ", "))
 	}
+
+	var seq string
 	if fr.RangeEnd != nil {
 		start, err := c.compileExpr(fr.Source)
 		if err != nil {
@@ -625,33 +715,32 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		loop := fmt.Sprintf("lists:foreach(fun(%s) -> %s end, lists:seq(%s, (%s)-1))", capitalize(fr.Name), iterBody, start, end)
-		if hasBC {
-			loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
-		}
-		return loop, nil
-	}
-	src, err := c.compileExpr(fr.Source)
-	if err != nil {
-		return "", err
-	}
-	typ := c.inferExprType(fr.Source)
-	if typ == "" && fr.Source.Binary != nil {
-		u := fr.Source.Binary.Left
-		if u.Value != nil && u.Value.Target.Selector != nil {
-			typ = c.types[u.Value.Target.Selector.Root]
-		}
-	}
-	var loop string
-	if typ == "map" {
-		loop = fmt.Sprintf("lists:foreach(fun({%s,_}) -> %s end, maps:to_list(%s))", capitalize(fr.Name), iterBody, src)
+		seq = fmt.Sprintf("lists:seq(%s, (%s)-1)", start, end)
 	} else {
-		loop = fmt.Sprintf("lists:foreach(fun(%s) -> %s end, %s)", capitalize(fr.Name), iterBody, src)
+		src, err := c.compileExpr(fr.Source)
+		if err != nil {
+			return "", err
+		}
+		typ := c.inferExprType(fr.Source)
+		if typ == "" && fr.Source.Binary != nil {
+			u := fr.Source.Binary.Left
+			if u.Value != nil && u.Value.Target.Selector != nil {
+				typ = c.types[u.Value.Target.Selector.Root]
+			}
+		}
+		if typ == "map" {
+			seq = fmt.Sprintf("maps:to_list(%s)", src)
+		} else {
+			seq = src
+		}
 	}
+
+	foldFun := fmt.Sprintf("fun(%s, {%s}) -> %s, {%s} end", capitalize(fr.Name), strings.Join(params[1:], ", "), iterBody, strings.Join(nextArgs, ", "))
+	call := fmt.Sprintf("{%s} = lists:foldl(%s, {%s}, %s)", strings.Join(nextArgs, ", "), foldFun, strings.Join(initArgs, ", "), seq)
 	if hasBC {
-		loop = fmt.Sprintf("try %s catch throw:break -> ok end", loop)
+		call = fmt.Sprintf("try %s catch throw:break -> ok end", call)
 	}
-	return loop, nil
+	return call, nil
 }
 
 func (c *Compiler) compileNestedFun(fn *parser.FunStmt) (string, error) {
@@ -1462,7 +1551,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		return fmt.Sprintf("length(%s)", a0), nil
+		return fmt.Sprintf("(case %s of #{items := It} -> length(It); _ -> length(%s) end)", a0, a0), nil
 	case "sum":
 		if len(call.Args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
