@@ -3526,17 +3526,17 @@ func (c *Compiler) structLiteralType(expr string) string {
 
 func (c *Compiler) structFromVars(names []string) string {
 	sig := "vars:" + strings.Join(names, ",")
-	if info, ok := c.structMap[sig]; ok {
-		return info.Name
+	info, ok := c.structMap[sig]
+	if !ok {
+		c.structCount++
+		name := fmt.Sprintf("__struct%d", c.structCount)
+		if c.nextStructName != "" {
+			name = toPascalCase(c.nextStructName)
+		}
+		info = &structInfo{Name: name, Fields: append([]string(nil), names...), Types: make([]string, len(names))}
+		c.structMap[sig] = info
+		c.structByName[info.Name] = info
 	}
-	c.structCount++
-	name := fmt.Sprintf("__struct%d", c.structCount)
-	if c.nextStructName != "" {
-		name = toPascalCase(c.nextStructName)
-	}
-	info := &structInfo{Name: name, Fields: append([]string(nil), names...), Types: make([]string, len(names))}
-	c.structMap[sig] = info
-	c.structByName[info.Name] = info
 	for i, n := range names {
 		fieldType := "decltype(" + sanitizeName(n) + ")"
 		if t := c.varStruct[n]; t != "" {
@@ -3554,7 +3554,9 @@ func (c *Compiler) structFromVars(names []string) string {
 		} else if t := c.elemType[n]; t != "" {
 			fieldType = t
 		}
-		info.Types[i] = fieldType
+		if info.Types[i] == "" || strings.Contains(info.Types[i], n) {
+			info.Types[i] = fieldType
+		}
 	}
 	c.defineStruct(info)
 	c.nextStructName = ""
