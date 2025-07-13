@@ -558,6 +558,17 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 			p := u.Value
 			if p.Target != nil && p.Target.Query != nil {
 				c.useLinq = true
+				q := p.Target.Query
+				if q.Group != nil {
+					for _, ge := range q.Group.Exprs {
+						if isAnonStructExpr(ge) {
+							c.DictMode = true
+						}
+					}
+				}
+				if isAnonStructExpr(q.Select) {
+					c.DictMode = true
+				}
 				return
 			}
 			if p.Target != nil && p.Target.Call != nil && p.Target.Call.Func == "eval" {
@@ -568,6 +579,17 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 			if r.Right != nil {
 				if r.Right.Target != nil && r.Right.Target.Query != nil {
 					c.useLinq = true
+					q := r.Right.Target.Query
+					if q.Group != nil {
+						for _, ge := range q.Group.Exprs {
+							if isAnonStructExpr(ge) {
+								c.DictMode = true
+							}
+						}
+					}
+					if isAnonStructExpr(q.Select) {
+						c.DictMode = true
+					}
 					return
 				}
 				if r.Right.Target != nil && r.Right.Target.Call != nil && r.Right.Target.Call.Func == "eval" {
@@ -3382,6 +3404,27 @@ func isMapType(t types.Type) bool {
 func isStringType(t types.Type) bool {
 	_, ok := t.(types.StringType)
 	return ok
+}
+
+func isAnonStructExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 || p.Target == nil {
+		return false
+	}
+	if p.Target.Struct != nil {
+		return p.Target.Struct.Name == ""
+	}
+	if p.Target.Map != nil {
+		return true
+	}
+	return false
 }
 
 func isStructType(t types.Type) bool { _, ok := t.(types.StructType); return ok }
