@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -296,6 +297,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	body := c.buf.Bytes()
 	rt := buildRuntime(c.used)
 	var out bytes.Buffer
+	out.Write(meta.Header("//"))
 	if rt != "" {
 		out.WriteString(rt)
 		out.WriteByte('\n')
@@ -2067,30 +2069,7 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 			c.env.SetVar(name, stype, mutable)
 			c.mapNodes[mp] = structName
 		} else if q != nil {
-			if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
-				keys := []string{}
-				for _, it := range ml.Items {
-					if k, ok := identName(it.Key); ok {
-						keys = append(keys, k)
-					} else {
-						keys = nil
-						break
-					}
-				}
-				if keys == nil || len(keys) == 0 {
-					continue
-				}
-				fields := map[string]types.Type{}
-				for i, it := range ml.Items {
-					fields[keys[i]] = c.inferExprType(it.Value)
-				}
-				structName := structNameFromVar(name)
-				stype := types.StructType{Name: structName, Fields: fields, Order: keys}
-				c.inferred[structName] = stype
-				c.env.SetStruct(structName, stype)
-				c.env.SetVar(name, types.ListType{Elem: stype}, mutable)
-				c.mapNodes[ml] = structName
-			} else if id, ok := identName(q.Select); ok && id == q.Var {
+			if id, ok := identName(q.Select); ok && id == q.Var {
 				if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 					c.env.SetVar(name, types.ListType{Elem: lt.Elem}, mutable)
 				}
