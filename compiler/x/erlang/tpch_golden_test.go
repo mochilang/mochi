@@ -30,7 +30,7 @@ func TestErlangCompiler_TPCHQueries(t *testing.T) {
 	os.Setenv("SOURCE_DATE_EPOCH", "1577977445")
 	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 	root := repoRoot(t)
-	for _, i := range []int{22} {
+	for i := 1; i <= 22; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "erlang", base+".erl")
