@@ -57,29 +57,30 @@ type captureInfo struct {
 }
 
 type Compiler struct {
-	structLits     map[*parser.MapLiteral]types.StructType
-	buf            bytes.Buffer
-	indent         int
-	tmp            int
-	env            *types.Env
-	lambdas        []string
-	needs          map[string]bool
-	externs        []string
-	externObjects  []string
-	structs        map[string]bool
-	listStructs    map[string]bool
-	fetchStructs   map[string]bool
-	currentStruct  string
-	autoType       bool
-	captures       map[string]captureInfo
-	capturesByFun  map[string][]string
-	uninitVars     map[string]bool
-	pointerVars    map[string]bool
-	groupKeys      map[string]types.Type
-	builtinAliases map[string]string
-	needMath       bool
-	listLens       map[string]int
-	listVals       map[string][]int
+	structLits      map[*parser.MapLiteral]types.StructType
+	buf             bytes.Buffer
+	indent          int
+	tmp             int
+	env             *types.Env
+	lambdas         []string
+	needs           map[string]bool
+	externs         []string
+	externObjects   []string
+	structs         map[string]bool
+	listStructs     map[string]bool
+	fetchStructs    map[string]bool
+	currentStruct   string
+	autoType        bool
+	captures        map[string]captureInfo
+	capturesByFun   map[string][]string
+	uninitVars      map[string]bool
+	pointerVars     map[string]bool
+	groupKeys       map[string]types.Type
+	groupKeyAliases map[string]map[string]string
+	builtinAliases  map[string]string
+	needMath        bool
+	listLens        map[string]int
+	listVals        map[string][]int
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -94,22 +95,23 @@ func (c *Compiler) popPointerVars(old map[string]bool) {
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:            env,
-		structLits:     map[*parser.MapLiteral]types.StructType{},
-		lambdas:        []string{},
-		needs:          map[string]bool{},
-		structs:        map[string]bool{},
-		listStructs:    map[string]bool{},
-		fetchStructs:   map[string]bool{},
-		externObjects:  []string{},
-		captures:       map[string]captureInfo{},
-		capturesByFun:  map[string][]string{},
-		uninitVars:     map[string]bool{},
-		pointerVars:    map[string]bool{},
-		groupKeys:      map[string]types.Type{},
-		builtinAliases: map[string]string{},
-		listLens:       map[string]int{},
-		listVals:       map[string][]int{},
+		env:             env,
+		structLits:      map[*parser.MapLiteral]types.StructType{},
+		lambdas:         []string{},
+		needs:           map[string]bool{},
+		structs:         map[string]bool{},
+		listStructs:     map[string]bool{},
+		fetchStructs:    map[string]bool{},
+		externObjects:   []string{},
+		captures:        map[string]captureInfo{},
+		capturesByFun:   map[string][]string{},
+		uninitVars:      map[string]bool{},
+		pointerVars:     map[string]bool{},
+		groupKeys:       map[string]types.Type{},
+		groupKeyAliases: map[string]map[string]string{},
+		builtinAliases:  map[string]string{},
+		listLens:        map[string]int{},
+		listVals:        map[string][]int{},
 	}
 }
 
@@ -4985,6 +4987,8 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	expr := sanitizeName(s.Root)
 	ptr := c.pointerVars[s.Root]
 	var typ types.Type
+	aliasMap := c.groupKeyAliases[s.Root]
+	keyActive := false
 	if c.currentStruct != "" && c.env != nil {
 		if st, ok := c.env.GetStruct(c.currentStruct); ok {
 			if ft, ok2 := st.Fields[s.Root]; ok2 {
@@ -5013,11 +5017,13 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			if f == "key" {
 				expr += ".key"
 				typ = gt.Elem
+				keyActive = true
 				continue
 			}
 			if f == "items" {
 				expr += ".items"
 				typ = types.ListType{Elem: gt.Elem}
+				keyActive = false
 				continue
 			}
 		}
@@ -5038,6 +5044,11 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), sanitizeName(f))
 				typ = ft
 				continue
+			}
+		}
+		if keyActive {
+			if alias, ok := aliasMap[f]; ok {
+				f = alias
 			}
 		}
 		if ptr && i == 0 {
