@@ -4369,11 +4369,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(vals, ", ")))
-			c.listLens[name] = len(p.List.Elems)
+			data := name + "_data"
+			c.writeln(fmt.Sprintf("int %s[] = {%s};", data, strings.Join(vals, ", ")))
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = {%d, %s};", name, len(vals), data))
 		} else {
-			c.writeln(fmt.Sprintf("int %s[1];", name))
-			c.listLens[name] = 0
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", name))
 		}
 		return name
 	case p.Map != nil:
