@@ -165,6 +165,11 @@ func isMapType(t types.Type) bool {
 	return ok
 }
 
+func isAnyType(t types.Type) bool {
+	_, ok := t.(types.AnyType)
+	return ok
+}
+
 func resolveTypeRef(t *parser.TypeRef, env *types.Env) types.Type {
 	if t == nil {
 		return types.AnyType{}
