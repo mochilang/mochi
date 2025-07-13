@@ -14,4 +14,6 @@ determine why `q7` is skipped during compilation.
 
 TPC-H progress:
 
-- `q1` and `q2` now compile and execute successfully with the Go backend.
+- `q1` and `q2` compile with the Go backend, but the generated programs lack
+  several struct type definitions. This prevents the golden tests from running
+  the code with `go run`.
