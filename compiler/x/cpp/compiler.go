@@ -1696,6 +1696,24 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				} else if t := inferExprType(vals[i]); t != "" {
 					ftype = t
 				}
+				// If the resulting type still references a query
+				// variable like "mc.note" and we know the struct
+				// for that variable, rewrite it to avoid using
+				// an undeclared identifier in the struct
+				// definition.
+				if strings.HasPrefix(ftype, "decltype(") {
+					inner := strings.TrimSuffix(strings.TrimPrefix(ftype, "decltype("), ")")
+					if dot := strings.Index(inner, "."); dot != -1 {
+						name := inner[:dot]
+						if t := c.varStruct[name]; t != "" {
+							if idx := strings.Index(t, "{"); idx != -1 {
+								t = t[:idx]
+							}
+							fld := inner[dot+1:]
+							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+						}
+					}
+				}
 				fieldTypes[i] = ftype
 			}
 
