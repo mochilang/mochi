@@ -428,6 +428,22 @@ func isIntLiteral(e *parser.Expr) bool {
 	return true
 }
 
+// isIntLiteralUnary checks if a unary expression represents an int literal.
+func isIntLiteralUnary(u *parser.Unary) bool {
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	return isIntLiteralPostfix(u.Value)
+}
+
+// isIntLiteralPostfix checks if a postfix expression is an int literal.
+func isIntLiteralPostfix(p *parser.PostfixExpr) bool {
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	return p.Target != nil && p.Target.Lit != nil && p.Target.Lit.Int != nil
+}
+
 func titleCase(s string) string {
 	if s == "" {
 		return s
@@ -1480,6 +1496,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			if c.unaryIsString(leftAST) || c.postfixIsString(op.Right) {
 				res = fmt.Sprintf("format!(\"{}{}\", %s, %s)", res, r)
 			} else {
+				if isIntLiteralUnary(leftAST) && c.postfixHasFloat(op.Right) {
+					res = fmt.Sprintf("(%s as f64)", res)
+				}
+				if isIntLiteralPostfix(op.Right) && c.unaryHasFloat(leftAST) {
+					r = fmt.Sprintf("%s as f64", r)
+				}
 				if c.env != nil {
 					lt := types.TypeOfUnary(leftAST, c.env)
 					rt := types.TypeOfPostfix(op.Right, c.env)
@@ -1518,6 +1540,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			c.helpers["_intersect"] = true
 			res = fmt.Sprintf("_intersect(%s, %s)", res, r)
 		default:
+			if op.Op == "*" || op.Op == "/" || op.Op == "-" {
+				if isIntLiteralUnary(leftAST) && c.postfixHasFloat(op.Right) {
+					res = fmt.Sprintf("(%s as f64)", res)
+				}
+				if isIntLiteralPostfix(op.Right) && c.unaryHasFloat(leftAST) {
+					r = fmt.Sprintf("%s as f64", r)
+				}
+			}
 			if c.env != nil {
 				lt := types.TypeOfUnary(leftAST, c.env)
 				rt := types.TypeOfPostfix(op.Right, c.env)
