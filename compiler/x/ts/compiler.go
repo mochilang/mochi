@@ -303,6 +303,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.collectAsyncFuncs(prog.Statements)
 
 	c.writeln(strings.TrimSuffix(string(meta.Header("//")), "\n"))
+	if prog.Pos.Filename != "" {
+		c.writeln("// Source: " + prog.Pos.Filename)
+	}
 	c.writeln("")
 
 	// Collect TypeScript imports and emit them.
