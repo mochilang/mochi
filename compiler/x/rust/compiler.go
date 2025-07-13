@@ -3511,6 +3511,17 @@ func (c *Compiler) compileSortKey(e *parser.Expr) (string, error) {
 		}
 		return "(" + strings.Join(parts, ", ") + ")", nil
 	}
+	if list := tryListLiteral(e); list != nil {
+		parts := make([]string, len(list.Elems))
+		for i, elem := range list.Elems {
+			v, err := c.compileExpr(elem)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = v
+		}
+		return "(" + strings.Join(parts, ", ") + ")", nil
+	}
 	return c.compileExpr(e)
 }
 
