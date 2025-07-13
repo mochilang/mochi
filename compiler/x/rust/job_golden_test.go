@@ -20,14 +20,17 @@ func TestRustCompiler_JOBQueries(t *testing.T) {
 		t.Skip("rustc not installed")
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 11; i <= 20; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", base+".rust")
-		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
-			continue
+			codeWant = filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", base+".rs.out")
+			if _, err := os.Stat(codeWant); err != nil {
+				continue
+			}
 		}
+		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", base+".out")
 		t.Run(base, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
