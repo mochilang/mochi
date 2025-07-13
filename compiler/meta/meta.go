@@ -26,13 +26,7 @@ func Version() string {
 // (e.g. "//" or "#").
 func Header(prefix string) []byte {
 	t := time.Now().UTC()
-	if v := os.Getenv("MOCHI_HEADER_TIME"); v != "" {
-		if ts, err := time.Parse(time.RFC3339, v); err == nil {
-			t = ts
-		} else if secs, err := strconv.ParseInt(v, 10, 64); err == nil {
-			t = time.Unix(secs, 0).UTC()
-		}
-	} else if v := os.Getenv("SOURCE_DATE_EPOCH"); v != "" {
+	if v := os.Getenv("SOURCE_DATE_EPOCH"); v != "" {
 		if secs, err := strconv.ParseInt(v, 10, 64); err == nil {
 			t = time.Unix(secs, 0).UTC()
 		}
