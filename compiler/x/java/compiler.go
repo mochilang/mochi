@@ -463,7 +463,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("}")
 	}
-	if c.helpers["save_jsonl"] {
+	if c.helpers["save_jsonl"] || c.helpers["json"] {
 		c.writeln("static Map<String,Object> asMap(Object o) {")
 		c.indent++
 		c.writeln("if (o instanceof Map<?,?> mm) {")
@@ -510,8 +510,18 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent++
 		c.writeln("return \"\\\"\" + s + \"\\\"\";")
 		c.indent--
-		c.writeln("}")
+		c.writeln("} else if (o instanceof Number || o instanceof Boolean || o instanceof Character) {")
+		c.indent++
 		c.writeln("return String.valueOf(o);")
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln(`Map<String,Object> m = asMap(o);`)
+		c.writeln(`StringJoiner j = new StringJoiner(",", "{", "}");`)
+		c.writeln(`for (Map.Entry<String,Object> e : m.entrySet()) j.add("\"" + e.getKey() + "\":" + toJson(e.getValue()));`)
+		c.writeln("return j.toString();")
+		c.indent--
+		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.writeln("static void json(Object o) { System.out.println(toJson(o)); }")
@@ -618,25 +628,25 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 		}
 		return "Object"
 	}
-       if t.Generic != nil {
-               switch t.Generic.Name {
-               case "list":
-                       if len(t.Generic.Args) > 0 {
-                               et := wrapperType(c.typeName(t.Generic.Args[0]))
-                               return fmt.Sprintf("List<%s>", et)
-                       }
-                       return "List<?>"
-               case "map":
-                       if len(t.Generic.Args) >= 2 {
-                               kt := wrapperType(c.typeName(t.Generic.Args[0]))
-                               vt := wrapperType(c.typeName(t.Generic.Args[1]))
-                               return fmt.Sprintf("Map<%s,%s>", kt, vt)
-                       }
-                       return "Map<?,?>"
-               default:
-                       return "Object"
-               }
-       }
+	if t.Generic != nil {
+		switch t.Generic.Name {
+		case "list":
+			if len(t.Generic.Args) > 0 {
+				et := wrapperType(c.typeName(t.Generic.Args[0]))
+				return fmt.Sprintf("List<%s>", et)
+			}
+			return "List<?>"
+		case "map":
+			if len(t.Generic.Args) >= 2 {
+				kt := wrapperType(c.typeName(t.Generic.Args[0]))
+				vt := wrapperType(c.typeName(t.Generic.Args[1]))
+				return fmt.Sprintf("Map<%s,%s>", kt, vt)
+			}
+			return "Map<?,?>"
+		default:
+			return "Object"
+		}
+	}
 	if t.Simple == nil {
 		return "Object"
 	}
@@ -670,18 +680,18 @@ func (c *Compiler) defaultValue(typ string) string {
 }
 
 func wrapperType(t string) string {
-        switch t {
-        case "int":
-                return "Integer"
-        case "double":
-                return "Double"
-        case "boolean":
-                return "Boolean"
-        case "?":
-                return "?"
-        default:
-                return t
-        }
+	switch t {
+	case "int":
+		return "Integer"
+	case "double":
+		return "Double"
+	case "boolean":
+		return "Boolean"
+	case "?":
+		return "?"
+	default:
+		return t
+	}
 }
 
 func classNameFromVar(s string) string {
@@ -701,10 +711,10 @@ func classNameFromVar(s string) string {
 }
 
 func mapValueType(t string) string {
-        t = strings.TrimSpace(t)
-        if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
-               return "?"
-        }
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
+		return "?"
+	}
 	inner := t[4 : len(t)-1]
 	depth := 0
 	for i := 0; i < len(inner); i++ {
@@ -719,14 +729,14 @@ func mapValueType(t string) string {
 			}
 		}
 	}
-       return "?"
+	return "?"
 }
 
 func mapKeyType(t string) string {
-        t = strings.TrimSpace(t)
-        if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
-               return "?"
-        }
+	t = strings.TrimSpace(t)
+	if !strings.HasPrefix(t, "Map<") || !strings.HasSuffix(t, ">") {
+		return "?"
+	}
 	inner := t[4 : len(t)-1]
 	depth := 0
 	for i := 0; i < len(inner); i++ {
@@ -741,28 +751,28 @@ func mapKeyType(t string) string {
 			}
 		}
 	}
-       return "?"
+	return "?"
 }
 
 func castMapType(t string) string {
-        t = strings.TrimSpace(t)
-        if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
-                kt := wrapperType(mapKeyType(t))
-                vt := wrapperType(mapValueType(t))
-               if kt == "?" && vt == "?" {
-                        return "Map<?,?>"
-                }
-                return fmt.Sprintf("Map<%s,%s>", kt, vt)
-        }
-        return "Map<?,?>"
+	t = strings.TrimSpace(t)
+	if strings.HasPrefix(t, "Map<") && strings.HasSuffix(t, ">") {
+		kt := wrapperType(mapKeyType(t))
+		vt := wrapperType(mapValueType(t))
+		if kt == "?" && vt == "?" {
+			return "Map<?,?>"
+		}
+		return fmt.Sprintf("Map<%s,%s>", kt, vt)
+	}
+	return "Map<?,?>"
 }
 
 func listElemType(t string) string {
-        t = strings.TrimSpace(t)
-        if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
-                return strings.TrimSpace(t[5 : len(t)-1])
-        }
-        if strings.HasPrefix(t, "Group<") && strings.HasSuffix(t, ">") {
+	t = strings.TrimSpace(t)
+	if strings.HasPrefix(t, "List<") && strings.HasSuffix(t, ">") {
+		return strings.TrimSpace(t[5 : len(t)-1])
+	}
+	if strings.HasPrefix(t, "Group<") && strings.HasSuffix(t, ">") {
 		inner := t[6 : len(t)-1]
 		depth := 0
 		for i := 0; i < len(inner); i++ {
@@ -778,7 +788,7 @@ func listElemType(t string) string {
 			}
 		}
 	}
-       return "?"
+	return "?"
 }
 
 func (c *Compiler) maybeNumber(expr string) string {
@@ -971,9 +981,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "double"
 		case "str":
 			return "String"
-                case "values":
-                       return "List<?>"
-                }
+		case "values":
+			return "List<?>"
+		}
 	}
 	if p != nil && p.Struct != nil {
 		if parent, ok := c.variantOf[p.Struct.Name]; ok {
@@ -1589,7 +1599,7 @@ func (c *Compiler) compileMapAsMap(m *parser.MapLiteral) (string, error) {
 }
 
 func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {
-       kt, vt := "?", "?"
+	kt, vt := "?", "?"
 	for i, it := range m.Items {
 		ktyp := c.inferType(it.Key)
 		if ktyp == "var" {
@@ -1608,15 +1618,15 @@ func (c *Compiler) mapLiteralTypes(m *parser.MapLiteral) (string, string) {
 		if i == 0 {
 			kt, vt = ktyp, vtyp
 		} else {
-                       if kt != ktyp {
-                               kt = "?"
-                       }
-                       if vt != vtyp {
-                               vt = "?"
-                       }
-               }
-       }
-       return kt, vt
+			if kt != ktyp {
+				kt = "?"
+			}
+			if vt != vtyp {
+				vt = "?"
+			}
+		}
+	}
+	return kt, vt
 }
 
 func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
