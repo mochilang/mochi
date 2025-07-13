@@ -37,7 +37,7 @@ func runMochix(t *testing.T, args ...string) ([]byte, error) {
 	root := repoRoot(t)
 	cmd := exec.Command("go", append([]string{"run", "-tags", "slow", "./cmd/mochix"}, args...)...)
 	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "SOURCE_DATE_EPOCH=0")
+	cmd.Env = append(os.Environ(), "SOURCE_DATE_EPOCH=0", "MOCHI_HEADER_TIME=2006-01-02T15:04:05Z")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, err
@@ -84,5 +84,23 @@ func TestBuildXC(t *testing.T) {
 func TestBuildXJava(t *testing.T) {
 	golden.Run(t, "tests/mochix", ".mochi", ".java.out", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "java", src)
+	})
+}
+
+func TestBuildXCpp(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".cpp.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "cpp", src)
+	})
+}
+
+func TestBuildXRust(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".rs.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "rust", src)
+	})
+}
+
+func TestBuildXSwift(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".swift.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "swift", src)
 	})
 }
