@@ -411,12 +411,20 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			break
 		}
 	}
+	hasFunAfter := make([]bool, len(prog.Statements))
+	seenFun := false
+	for i := len(prog.Statements) - 1; i >= 0; i-- {
+		hasFunAfter[i] = seenFun
+		if prog.Statements[i].Fun != nil {
+			seenFun = true
+		}
+	}
 
 	processed := make(map[int]bool)
 	foundNonLet := false
 	for i := 0; i < firstFun; i++ {
 		s := prog.Statements[i]
-		if s.Let != nil && !foundNonLet {
+		if s.Let != nil && !foundNonLet && hasFunAfter[i] {
 			if err := c.compileLet(s.Let); err != nil {
 				return nil, err
 			}

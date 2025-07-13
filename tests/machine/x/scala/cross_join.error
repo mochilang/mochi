@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: invalid string interpolation: `$$', `$'ident or `$'BlockExpr expected
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $ ${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                                                                            ^
+/workspace/mochi/tests/machine/x/scala/cross_join.scala:13: error: unclosed string literal
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $ ${entry.orderTotal}) paired with ${entry.pairedCustomerName}")
+                                                                                                                                                   ^
+two errors found
