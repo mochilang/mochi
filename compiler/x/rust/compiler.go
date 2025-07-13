@@ -3060,7 +3060,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			acc := c.newTmp()
 			var b strings.Builder
-			fmt.Fprintf(&b, "{ let mut %s = 0;", acc)
+			init := "0"
+			if t := c.fieldType(arg); t != nil {
+				if _, ok := t.(types.FloatType); ok || c.exprHasFloat(arg) {
+					init = "0.0"
+				}
+			} else if c.exprHasFloat(arg) {
+				init = "0.0"
+			}
+			fmt.Fprintf(&b, "{ let mut %s = %s;", acc, init)
 			b.WriteString(loopHead(q.Var, src, child))
 			for i, fs := range fromSrcs {
 				b.WriteString(" ")
