@@ -160,7 +160,7 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 	}
 
 	root := findRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
@@ -176,14 +176,14 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-                       wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", q+".lua"))
+			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", q+".lua"))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-                               t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
