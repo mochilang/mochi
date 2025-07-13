@@ -2560,22 +2560,7 @@ func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	switch {
 	case p.Struct != nil:
-		parts := make([]string, len(p.Struct.Fields))
-		for i, f := range p.Struct.Fields {
-			v, err := c.compileExpr(f.Value)
-			if err != nil {
-				return "", err
-			}
-			if c.DictMode || c.structAsDict {
-				parts[i] = fmt.Sprintf("{ \"%s\", %s }", f.Name, v)
-			} else {
-				parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
-			}
-		}
-		if c.DictMode || c.structAsDict {
-			return fmt.Sprintf("new Dictionary<string, dynamic> { %s }", strings.Join(parts, ", ")), nil
-		}
-		return fmt.Sprintf("new %s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+		return c.compileStructLiteral(p.Struct)
 	case p.Lit != nil:
 		return c.compileLiteral(p.Lit)
 	case p.List != nil:
@@ -2597,7 +2582,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				}
 				lt.Elem = st
 			}
-			elemType = csTypeOf(lt.Elem)
+			if c.DictMode {
+				elemType = "Dictionary<string, dynamic>"
+			} else {
+				elemType = csTypeOf(lt.Elem)
+			}
 		}
 		if len(p.List.Elems) == 0 {
 			return fmt.Sprintf("new List<%s>()", elemType), nil
@@ -2805,6 +2794,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	default:
 		return "", fmt.Errorf("unsupported primary expression")
 	}
+}
+
+// compileStructLiteral emits code for a struct literal. When DictMode or
+// structAsDict is enabled the struct is represented as a Dictionary to simplify
+// interoperability with dynamic code.
+func (c *Compiler) compileStructLiteral(lit *parser.StructLiteral) (string, error) {
+	parts := make([]string, len(lit.Fields))
+	for i, f := range lit.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		if c.DictMode || c.structAsDict {
+			parts[i] = fmt.Sprintf("{ \"%s\", %s }", f.Name, v)
+		} else {
+			parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+		}
+	}
+	if c.DictMode || c.structAsDict {
+		return fmt.Sprintf("new Dictionary<string, dynamic> { %s }", strings.Join(parts, ", ")), nil
+	}
+	return fmt.Sprintf("new %s { %s }", sanitizeName(lit.Name), strings.Join(parts, ", ")), nil
 }
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
