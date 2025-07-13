@@ -106,3 +106,7 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+## Remaining Tasks
+
+- [ ] Compile dataset program tpch_q2.mochi and verify output.

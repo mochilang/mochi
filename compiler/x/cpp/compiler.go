@@ -1158,6 +1158,10 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			}
 			c.buf.WriteByte('\n')
 			return nil
+		} else if id, ok := identName(args[0]); ok {
+			c.writeIndent()
+			c.buf.WriteString("for(size_t i=0;i<" + id + ".size();++i){ if(i) std::cout<<' '; std::cout<<" + id + "[i]; }\n")
+			return nil
 		}
 	}
 
