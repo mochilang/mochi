@@ -54,7 +54,7 @@ Checklist:
 - [x] let_and_print
 - [x] list_assign
 - [x] list_index
-- [ ] list_nested_assign
+- [x] list_nested_assign
 - [x] list_set_ops
 - [ ] load_yaml
 - [x] map_assign
@@ -109,9 +109,8 @@ Checklist:
 
 ## Remaining work
 
-The C backend still fails to compile or run several Mochi programs that rely on
-complex dataset operations or advanced built-ins.
-Outstanding items include:
+Several Mochi programs still fail to compile or run using the C backend. Key
+items include advanced joins, dataset grouping and miscellaneous built-ins.
 
 - group_by_join
 - group_by_left_join
@@ -120,7 +119,6 @@ Outstanding items include:
 - group_items_iteration
 - left_join
 - left_join_multi
-- list_nested_assign
 - load_yaml
 - match_full
 - order_by_map

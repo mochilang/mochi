@@ -1009,7 +1009,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			}
 			ix := c.compileExpr(idx.Start)
-			if isListIntType(curT) || isListBoolType(curT) {
+			if _, ok := c.listLens[target]; ok {
 				target = fmt.Sprintf("%s[%s]", target, ix)
 			} else {
 				target = fmt.Sprintf("%s.data[%s]", target, ix)
