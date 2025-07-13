@@ -422,6 +422,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			name := "test_" + sanitizeName(s.Test.Name)
+			if caps, ok := c.capturesByFun[name]; ok && len(caps) > 0 {
+				for _, v := range caps {
+					c.writeln(fmt.Sprintf("%s_%s = %s;", name, sanitizeName(v), sanitizeName(v)))
+				}
+			}
 			c.writeln(name + "();")
 		}
 	}
@@ -1742,7 +1747,6 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			child := types.NewEnv(c.env)
 			for _, f := range st.Order {
 				ft := st.Fields[f]
-				c.writeln(fmt.Sprintf("%s %s = %s.%s;", cTypeFromType(ft), sanitizeName(f), item, sanitizeName(f)))
 				child.SetVar(f, ft, true)
 			}
 			c.env = child
@@ -3565,15 +3569,33 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	name := "test_" + sanitizeName(t.Name)
+	captured := freeVarsTestBlock(t)
+	capMap := map[string]captureInfo{}
+	for _, v := range captured {
+		if c.env != nil {
+			if typ, err := c.env.GetVar(v); err == nil {
+				g := fmt.Sprintf("%s_%s", name, sanitizeName(v))
+				capMap[v] = captureInfo{global: g, typ: typ}
+				c.writeln(fmt.Sprintf("static %s %s;", cTypeFromType(typ), g))
+			}
+		}
+	}
+	oldCaps := c.captures
+	c.captures = capMap
 	c.writeln("static void " + name + "() {")
 	c.indent++
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
+			c.captures = oldCaps
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	c.captures = oldCaps
+	if len(captured) > 0 {
+		c.capturesByFun[name] = captured
+	}
 	return nil
 }
 
@@ -3965,6 +3987,50 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			leftListFloat = false
 			leftString = false
 			continue
+		}
+		if op.Op == "==" || op.Op == "!=" {
+			lt, okLeft := leftType.(types.ListType)
+			_, okRight := rightType.(types.ListType)
+			if okLeft && okRight {
+				tmp := c.newTemp()
+				idx := c.newLoopVar()
+				c.writeln(fmt.Sprintf("int %s = 1;", tmp))
+				c.writeln(fmt.Sprintf("if (%s.len != %s.len) { %s = 0; } else {", left, right, tmp))
+				c.indent++
+				c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idx, idx, left, idx))
+				c.indent++
+				if st, ok := lt.Elem.(types.StructType); ok {
+					parts := make([]string, 0, len(st.Order))
+					for _, f := range st.Order {
+						ft := st.Fields[f]
+						if _, ok := ft.(types.StringType); ok {
+							c.need(needStringHeader)
+							parts = append(parts, fmt.Sprintf("strcmp(%s.data[%s].%s, %s.data[%s].%s) != 0", left, idx, sanitizeName(f), right, idx, sanitizeName(f)))
+						} else {
+							parts = append(parts, fmt.Sprintf("%s.data[%s].%s != %s.data[%s].%s", left, idx, sanitizeName(f), right, idx, sanitizeName(f)))
+						}
+					}
+					cond := strings.Join(parts, " || ")
+					c.writeln(fmt.Sprintf("if (%s) { %s = 0; break; }", cond, tmp))
+				} else {
+					c.writeln(fmt.Sprintf("if (%s.data[%s] != %s.data[%s]) { %s = 0; break; }", left, idx, right, idx, tmp))
+				}
+				c.indent--
+				c.writeln("}")
+				c.indent--
+				c.writeln("}")
+				if op.Op == "==" {
+					left = tmp
+				} else {
+					left = fmt.Sprintf("(!%s)", tmp)
+				}
+				leftList = false
+				leftListInt = false
+				leftListString = false
+				leftListFloat = false
+				leftString = false
+				continue
+			}
 		}
 		if (op.Op == "==" || op.Op == "!=" || op.Op == "<" || op.Op == ">" || op.Op == "<=" || op.Op == ">=") && leftString && isStringPostfixOrIndex(op.Right, c.env) {
 			c.need(needStringHeader)
