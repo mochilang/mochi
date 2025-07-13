@@ -107,9 +107,12 @@ Compiled programs: 100/100
 - [x] var_assignment
 - [x] while_loop
 
+## TPCH Queries
+
+- [x] q4
+
 Recent improvements:
-- Print statements no longer use std::boolalpha for non-bool values.
+- String literal concatenation simplified when both operands are constants.
 
 ## Remaining Tasks
 - [ ] Review generated C++ code for closer match to human style
-- [ ] Compile and verify dataset query tpc-h q4.mochi
