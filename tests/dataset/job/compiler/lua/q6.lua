@@ -77,32 +77,6 @@ function __json(v)
     end
     print(enc(sort(v)))
 end
-function __min(v)
-    local items
-    if type(v) == 'table' and v.items ~= nil then
-        items = v.items
-    elseif type(v) == 'table' then
-        items = v
-    else
-        error('min() expects list or group')
-    end
-    if #items == 0 then return 0 end
-    local m = items[1]
-    if type(m) == 'string' then
-        for i=2,#items do
-            local it = items[i]
-            if type(it) == 'string' and it < m then m = it end
-        end
-        return m
-    else
-        m = tonumber(m)
-        for i=2,#items do
-            local n = tonumber(items[i])
-            if n < m then m = n end
-        end
-        return m
-    end
-end
 function __query(src, joins, opts)
     local whereFn = opts.where
     local items = {}
@@ -271,25 +245,25 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q3_returns_lexicographically_smallest_sequel_title()
-    if not (__eq(result, {{["movie_title"]="Alpha"}})) then error('expect failed') end
+function test_Q6_finds_marvel_movie_with_Robert_Downey()
+    if not (__eq(result, {{["movie_keyword"]="marvel-cinematic-universe", ["actor_name"]="Downey Robert Jr.", ["marvel_movie"]="Iron Man 3"}})) then error('expect failed') end
 end
 
-keyword = {{["id"]=1, ["keyword"]="amazing sequel"}, {["id"]=2, ["keyword"]="prequel"}}
-movie_info = {{["movie_id"]=10, ["info"]="Germany"}, {["movie_id"]=30, ["info"]="Sweden"}, {["movie_id"]=20, ["info"]="France"}}
-movie_keyword = {{["movie_id"]=10, ["keyword_id"]=1}, {["movie_id"]=30, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=1}, {["movie_id"]=10, ["keyword_id"]=2}}
-title = {{["id"]=10, ["title"]="Alpha", ["production_year"]=2006}, {["id"]=30, ["title"]="Beta", ["production_year"]=2008}, {["id"]=20, ["title"]="Gamma", ["production_year"]=2009}}
-allowed_infos = {"Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"}
-candidate_titles = (function()
-    local _src = keyword
+cast_info = {{["movie_id"]=1, ["person_id"]=101}, {["movie_id"]=2, ["person_id"]=102}}
+keyword = {{["id"]=100, ["keyword"]="marvel-cinematic-universe"}, {["id"]=200, ["keyword"]="other"}}
+movie_keyword = {{["movie_id"]=1, ["keyword_id"]=100}, {["movie_id"]=2, ["keyword_id"]=200}}
+name = {{["id"]=101, ["name"]="Downey Robert Jr."}, {["id"]=102, ["name"]="Chris Evans"}}
+title = {{["id"]=1, ["title"]="Iron Man 3", ["production_year"]=2013}, {["id"]=2, ["title"]="Old Movie", ["production_year"]=2000}}
+result = (function()
+    local _src = cast_info
     return __query(_src, {
-        { items = movie_keyword, on = function(k, mk) return __eq(mk.keyword_id, k.id) end },
-        { items = movie_info, on = function(k, mk, mi) return __eq(mi.movie_id, mk.movie_id) end },
-        { items = title, on = function(k, mk, mi, t) return __eq(t.id, mi.movie_id) end }
-    }, { selectFn = function(k, mk, mi, t) return t.title end, where = function(k, mk, mi, t) return ((((__contains(k.keyword, "sequel") and __contains(allowed_infos, mi.info)) and (t.production_year > 2005)) and __eq(mk.movie_id, mi.movie_id))) end })
+        { items = movie_keyword, on = function(ci, mk) return (ci.movie_id == mk.movie_id) end },
+        { items = keyword, on = function(ci, mk, k) return __eq(mk.keyword_id, k.id) end },
+        { items = name, on = function(ci, mk, k, n) return __eq(ci.person_id, n.id) end },
+        { items = title, on = function(ci, mk, k, n, t) return __eq(ci.movie_id, t.id) end }
+    }, { selectFn = function(ci, mk, k, n, t) return {["movie_keyword"]=k.keyword, ["actor_name"]=n.name, ["marvel_movie"]=t.title} end, where = function(ci, mk, k, n, t) return ((((__eq(k.keyword, "marvel-cinematic-universe") and __contains(n.name, "Downey")) and __contains(n.name, "Robert")) and (t.production_year > 2010))) end })
 end)()
-result = {{["movie_title"]=__min(candidate_titles)}}
 __json(result)
 local __tests = {
-    {name="Q3 returns lexicographically smallest sequel title", fn=test_Q3_returns_lexicographically_smallest_sequel_title},
+    {name="Q6 finds marvel movie with Robert Downey", fn=test_Q6_finds_marvel_movie_with_Robert_Downey},
 }

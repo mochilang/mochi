@@ -271,25 +271,42 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q3_returns_lexicographically_smallest_sequel_title()
-    if not (__eq(result, {{["movie_title"]="Alpha"}})) then error('expect failed') end
+function test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing()
+    if not (__eq(result, {{["actress_pseudonym"]="Y. S.", ["japanese_movie_dubbed"]="Dubbed Film"}})) then error('expect failed') end
 end
 
-keyword = {{["id"]=1, ["keyword"]="amazing sequel"}, {["id"]=2, ["keyword"]="prequel"}}
-movie_info = {{["movie_id"]=10, ["info"]="Germany"}, {["movie_id"]=30, ["info"]="Sweden"}, {["movie_id"]=20, ["info"]="France"}}
-movie_keyword = {{["movie_id"]=10, ["keyword_id"]=1}, {["movie_id"]=30, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=1}, {["movie_id"]=10, ["keyword_id"]=2}}
-title = {{["id"]=10, ["title"]="Alpha", ["production_year"]=2006}, {["id"]=30, ["title"]="Beta", ["production_year"]=2008}, {["id"]=20, ["title"]="Gamma", ["production_year"]=2009}}
-allowed_infos = {"Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"}
-candidate_titles = (function()
-    local _src = keyword
+aka_name = {{["person_id"]=1, ["name"]="Y. S."}}
+cast_info = {{["person_id"]=1, ["movie_id"]=10, ["note"]="(voice: English version)", ["role_id"]=1000}}
+company_name = {{["id"]=50, ["country_code"]="[jp]"}}
+movie_companies = {{["movie_id"]=10, ["company_id"]=50, ["note"]="Studio (Japan)"}}
+name = {{["id"]=1, ["name"]="Yoko Ono"}, {["id"]=2, ["name"]="Yuichi"}}
+role_type = {{["id"]=1000, ["role"]="actress"}}
+title = {{["id"]=10, ["title"]="Dubbed Film"}}
+eligible = (function()
+    local _src = aka_name
     return __query(_src, {
-        { items = movie_keyword, on = function(k, mk) return __eq(mk.keyword_id, k.id) end },
-        { items = movie_info, on = function(k, mk, mi) return __eq(mi.movie_id, mk.movie_id) end },
-        { items = title, on = function(k, mk, mi, t) return __eq(t.id, mi.movie_id) end }
-    }, { selectFn = function(k, mk, mi, t) return t.title end, where = function(k, mk, mi, t) return ((((__contains(k.keyword, "sequel") and __contains(allowed_infos, mi.info)) and (t.production_year > 2005)) and __eq(mk.movie_id, mi.movie_id))) end })
+        { items = name, on = function(an1, n1) return __eq(n1.id, an1.person_id) end },
+        { items = cast_info, on = function(an1, n1, ci) return __eq(ci.person_id, an1.person_id) end },
+        { items = title, on = function(an1, n1, ci, t) return __eq(t.id, ci.movie_id) end },
+        { items = movie_companies, on = function(an1, n1, ci, t, mc) return __eq(mc.movie_id, ci.movie_id) end },
+        { items = company_name, on = function(an1, n1, ci, t, mc, cn) return __eq(cn.id, mc.company_id) end },
+        { items = role_type, on = function(an1, n1, ci, t, mc, cn, rt) return __eq(rt.id, ci.role_id) end }
+    }, { selectFn = function(an1, n1, ci, t, mc, cn, rt) return {["pseudonym"]=an1.name, ["movie_title"]=t.title} end, where = function(an1, n1, ci, t, mc, cn, rt) return (((((((__eq(ci.note, "(voice: English version)") and __eq(cn.country_code, "[jp]")) and __contains(mc.note, "(Japan)")) and (not __contains(mc.note, "(USA)"))) and __contains(n1.name, "Yo")) and (not __contains(n1.name, "Yu"))) and __eq(rt.role, "actress"))) end })
 end)()
-result = {{["movie_title"]=__min(candidate_titles)}}
+result = {{["actress_pseudonym"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(eligible) do
+        _res[#_res+1] = x.pseudonym
+    end
+    return _res
+end)()), ["japanese_movie_dubbed"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(eligible) do
+        _res[#_res+1] = x.movie_title
+    end
+    return _res
+end)())}}
 __json(result)
 local __tests = {
-    {name="Q3 returns lexicographically smallest sequel title", fn=test_Q3_returns_lexicographically_smallest_sequel_title},
+    {name="Q8 returns the pseudonym and movie title for Japanese dubbing", fn=test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing},
 }

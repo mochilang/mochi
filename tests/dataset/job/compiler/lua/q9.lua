@@ -271,25 +271,50 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q3_returns_lexicographically_smallest_sequel_title()
-    if not (__eq(result, {{["movie_title"]="Alpha"}})) then error('expect failed') end
+function test_Q9_selects_minimal_alternative_name__character_and_movie()
+    if not (__eq(result, {{["alternative_name"]="A. N. G.", ["character_name"]="Angel", ["movie"]="Famous Film"}})) then error('expect failed') end
 end
 
-keyword = {{["id"]=1, ["keyword"]="amazing sequel"}, {["id"]=2, ["keyword"]="prequel"}}
-movie_info = {{["movie_id"]=10, ["info"]="Germany"}, {["movie_id"]=30, ["info"]="Sweden"}, {["movie_id"]=20, ["info"]="France"}}
-movie_keyword = {{["movie_id"]=10, ["keyword_id"]=1}, {["movie_id"]=30, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=1}, {["movie_id"]=10, ["keyword_id"]=2}}
-title = {{["id"]=10, ["title"]="Alpha", ["production_year"]=2006}, {["id"]=30, ["title"]="Beta", ["production_year"]=2008}, {["id"]=20, ["title"]="Gamma", ["production_year"]=2009}}
-allowed_infos = {"Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"}
-candidate_titles = (function()
-    local _src = keyword
+aka_name = {{["person_id"]=1, ["name"]="A. N. G."}, {["person_id"]=2, ["name"]="J. D."}}
+char_name = {{["id"]=10, ["name"]="Angel"}, {["id"]=20, ["name"]="Devil"}}
+cast_info = {{["person_id"]=1, ["person_role_id"]=10, ["movie_id"]=100, ["role_id"]=1000, ["note"]="(voice)"}, {["person_id"]=2, ["person_role_id"]=20, ["movie_id"]=200, ["role_id"]=1000, ["note"]="(voice)"}}
+company_name = {{["id"]=100, ["country_code"]="[us]"}, {["id"]=200, ["country_code"]="[gb]"}}
+movie_companies = {{["movie_id"]=100, ["company_id"]=100, ["note"]="ACME Studios (USA)"}, {["movie_id"]=200, ["company_id"]=200, ["note"]="Maple Films"}}
+name = {{["id"]=1, ["name"]="Angela Smith", ["gender"]="f"}, {["id"]=2, ["name"]="John Doe", ["gender"]="m"}}
+role_type = {{["id"]=1000, ["role"]="actress"}, {["id"]=2000, ["role"]="actor"}}
+title = {{["id"]=100, ["title"]="Famous Film", ["production_year"]=2010}, {["id"]=200, ["title"]="Old Movie", ["production_year"]=1999}}
+matches = (function()
+    local _src = aka_name
     return __query(_src, {
-        { items = movie_keyword, on = function(k, mk) return __eq(mk.keyword_id, k.id) end },
-        { items = movie_info, on = function(k, mk, mi) return __eq(mi.movie_id, mk.movie_id) end },
-        { items = title, on = function(k, mk, mi, t) return __eq(t.id, mi.movie_id) end }
-    }, { selectFn = function(k, mk, mi, t) return t.title end, where = function(k, mk, mi, t) return ((((__contains(k.keyword, "sequel") and __contains(allowed_infos, mi.info)) and (t.production_year > 2005)) and __eq(mk.movie_id, mi.movie_id))) end })
+        { items = name, on = function(an, n) return __eq(an.person_id, n.id) end },
+        { items = cast_info, on = function(an, n, ci) return __eq(ci.person_id, n.id) end },
+        { items = char_name, on = function(an, n, ci, chn) return __eq(chn.id, ci.person_role_id) end },
+        { items = title, on = function(an, n, ci, chn, t) return __eq(t.id, ci.movie_id) end },
+        { items = movie_companies, on = function(an, n, ci, chn, t, mc) return __eq(mc.movie_id, t.id) end },
+        { items = company_name, on = function(an, n, ci, chn, t, mc, cn) return __eq(cn.id, mc.company_id) end },
+        { items = role_type, on = function(an, n, ci, chn, t, mc, cn, rt) return __eq(rt.id, ci.role_id) end }
+    }, { selectFn = function(an, n, ci, chn, t, mc, cn, rt) return {["alt"]=an.name, ["character"]=chn.name, ["movie"]=t.title} end, where = function(an, n, ci, chn, t, mc, cn, rt) return (((((((((__contains({"(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"}, ci.note)) and __eq(cn.country_code, "[us]")) and ((__contains(mc.note, "(USA)") or __contains(mc.note, "(worldwide)")))) and __eq(n.gender, "f")) and __contains(n.name, "Ang")) and __eq(rt.role, "actress")) and (t.production_year >= 2005)) and (t.production_year <= 2015))) end })
 end)()
-result = {{["movie_title"]=__min(candidate_titles)}}
+result = {{["alternative_name"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.alt
+    end
+    return _res
+end)()), ["character_name"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.character
+    end
+    return _res
+end)()), ["movie"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.movie
+    end
+    return _res
+end)())}}
 __json(result)
 local __tests = {
-    {name="Q3 returns lexicographically smallest sequel title", fn=test_Q3_returns_lexicographically_smallest_sequel_title},
+    {name="Q9 selects minimal alternative name, character and movie", fn=test_Q9_selects_minimal_alternative_name__character_and_movie},
 }
