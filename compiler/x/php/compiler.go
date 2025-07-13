@@ -479,6 +479,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				res = fmt.Sprintf("strpos(%s, %s) !== false", r, left)
 			case isMapType(rightType):
 				res = fmt.Sprintf("array_key_exists(%s, %s)", left, r)
+			case isAnyType(rightType):
+				res = fmt.Sprintf("(is_array(%s) ? in_array(%s, %s, true) : (is_string(%s) ? strpos(%s, strval(%s)) !== false : false))", r, left, r, r, r, left)
 			default:
 				res = fmt.Sprintf("in_array(%s, %s)", left, r)
 			}
