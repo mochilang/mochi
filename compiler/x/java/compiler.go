@@ -1068,9 +1068,6 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		}
 	}
 	if p != nil && p.Query != nil {
-		if call := rootPrimary(p.Query.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 && p.Query.Group == nil {
-			return "int"
-		}
 		old := c.vars
 		c.vars = copyMap(c.vars)
 		srcType := c.inferType(p.Query.Source)
@@ -1082,6 +1079,16 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 		for _, j := range p.Query.Joins {
 			jt := c.inferType(j.Src)
 			c.vars[j.Var] = listElemType(jt)
+		}
+		var aggType string
+		if call := rootPrimary(p.Query.Select); call != nil && call.Call != nil && call.Call.Func == "sum" && len(call.Call.Args) == 1 && p.Query.Group == nil {
+			aggType = c.inferType(call.Call.Args[0])
+			if aggType == "double" {
+				c.vars = old
+				return "double"
+			}
+			c.vars = old
+			return "int"
 		}
 		et := c.inferType(p.Query.Select)
 		if p.Query.Group != nil {
@@ -3082,11 +3089,20 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			argType := c.inferType(call.Call.Args[0])
+			if argType == "var" {
+				argType = c.exprType(arg)
+			}
 			tmp := fmt.Sprintf("_sum%d", c.tmpCount)
 			c.tmpCount++
 			var b strings.Builder
-			b.WriteString("(new java.util.function.Supplier<Integer>(){public Integer get(){\n")
-			b.WriteString(fmt.Sprintf("\tint %s = 0;\n", tmp))
+			if argType == "double" {
+				b.WriteString("(new java.util.function.Supplier<Double>(){public Double get(){\n")
+				b.WriteString(fmt.Sprintf("\tdouble %s = 0.0;\n", tmp))
+			} else {
+				b.WriteString("(new java.util.function.Supplier<Integer>(){public Integer get(){\n")
+				b.WriteString(fmt.Sprintf("\tint %s = 0;\n", tmp))
+			}
 			b.WriteString(fmt.Sprintf("\tfor (var %s : %s) {\n", q.Var, src))
 			cond := "true"
 			if q.Where != nil {

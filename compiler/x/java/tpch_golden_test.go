@@ -39,12 +39,12 @@ func TestJavaCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("javac not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 6; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java", base+".java")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java", base+".out")
-		if _, err := os.Stat(codeWant); err != nil {
+		if _, err := os.Stat(outWant); err != nil {
 			continue
 		}
 		t.Run(base, func(t *testing.T) {
