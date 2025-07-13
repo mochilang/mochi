@@ -20,7 +20,7 @@ import (
 func TestFortranCompiler_JOB_Dataset_Golden(t *testing.T) {
 	gfortran := ensureFortran(t)
 	root := testutil.FindRepoRoot(t)
-	for _, base := range []string{"q1", "q2", "q3", "q4", "q5"} {
+	for _, base := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		prog, err := parser.Parse(src)
 		if err != nil {
