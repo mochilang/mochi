@@ -60,7 +60,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "%s: compile error: %v\n", src, err)
 			continue
 		}
-		codePath := filepath.Join(outDir, q+".dart.out")
+		codePath := filepath.Join(outDir, q+".dart")
 		if err := os.WriteFile(codePath, code, 0644); err != nil {
 			fmt.Fprintf(os.Stderr, "%s: write code: %v\n", q, err)
 		}
