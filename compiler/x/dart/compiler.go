@@ -710,82 +710,131 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+	type binOp struct {
+		op  string
+		all bool
+	}
+
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	res := left
-	leftType := types.TypeOfUnary(b.Left, c.env)
-	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+	operands := []string{left}
+	typesList := []types.Type{types.TypeOfUnary(b.Left, c.env)}
+	ops := []binOp{}
+
+	for _, part := range b.Right {
+		r, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rightType := types.TypeOfPostfix(op.Right, c.env)
-		cur := res
-		switch op.Op {
-		case "in":
-			c.useIn = true
-			res = fmt.Sprintf("_in(%s, %s)", res, r)
-		case "union":
-			if op.All {
-				res = fmt.Sprintf("(List.from(%s)..addAll(%s))", res, r)
-			} else {
-				res = fmt.Sprintf("{...%s, ...%s}.toList()", res, r)
+		operands = append(operands, r)
+		typesList = append(typesList, types.TypeOfPostfix(part.Right, c.env))
+		ops = append(ops, binOp{op: part.Op, all: part.All})
+	}
+
+	prec := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "except", "intersect"},
+	}
+
+	contains := func(list []string, s string) bool {
+		for _, x := range list {
+			if x == s {
+				return true
 			}
-		case "except":
-			res = fmt.Sprintf("(List.from(%s)..removeWhere((x) => %s.contains(x)))", res, r)
-		case "intersect":
-			res = fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", res, r)
-		default:
-			// string comparison
-			if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
-				(leftType == (types.StringType{}) || rightType == (types.StringType{}) ||
-					(strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'"))) {
-				leftCmp := cur
-				rightCmp := r
-				if leftType != (types.StringType{}) {
-					leftCmp = fmt.Sprintf("%s.toString()", cur)
+		}
+		return false
+	}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i].op) {
+				expr, typ, err := c.compileBinaryOp(operands[i], typesList[i], ops[i].op, ops[i].all, operands[i+1], typesList[i+1])
+				if err != nil {
+					return "", err
 				}
-				if rightType != (types.StringType{}) {
-					rightCmp = fmt.Sprintf("%s.toString()", r)
-				}
-				cmp := fmt.Sprintf("%s.compareTo(%s)", leftCmp, rightCmp)
-				switch op.Op {
-				case "<":
-					res = fmt.Sprintf("%s < 0", cmp)
-				case "<=":
-					res = fmt.Sprintf("%s <= 0", cmp)
-				case ">":
-					res = fmt.Sprintf("%s > 0", cmp)
-				case ">=":
-					res = fmt.Sprintf("%s >= 0", cmp)
-				}
-			} else if op.Op == "+" && (leftType == (types.StringType{}) || rightType == (types.StringType{})) {
-				res = fmt.Sprintf("%s + %s", cur, r)
+				operands[i] = expr
+				typesList[i] = typ
+				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
 			} else {
-				l := res
-				rr := r
-				if isNumericOp(op.Op) {
-					if !isNumericType(leftType) {
-						l = fmt.Sprintf("(%s as num)", l)
-					}
-					if !isNumericType(rightType) {
-						rr = fmt.Sprintf("(%s as num)", rr)
-					}
-				}
-				res = fmt.Sprintf("%s %s %s", l, op.Op, rr)
-				newType := types.ResultType(op.Op, leftType, rightType)
-				if _, ok := newType.(types.IntType); ok {
-					if !isIntType(leftType) || !isIntType(rightType) {
-						res = fmt.Sprintf("(%s as int)", res)
-					}
-				}
-				leftType = newType
+				i++
 			}
 		}
 	}
-	return res, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
+}
+
+func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, all bool, right string, rightType types.Type) (string, types.Type, error) {
+	switch op {
+	case "in":
+		c.useIn = true
+		return fmt.Sprintf("_in(%s, %s)", left, right), types.BoolType{}, nil
+	case "union":
+		if all {
+			return fmt.Sprintf("(List.from(%s)..addAll(%s))", left, right), leftType, nil
+		}
+		return fmt.Sprintf("{...%s, ...%s}.toList()", left, right), leftType, nil
+	case "except":
+		return fmt.Sprintf("(List.from(%s)..removeWhere((x) => %s.contains(x)))", left, right), leftType, nil
+	case "intersect":
+		return fmt.Sprintf("%s.where((x) => %s.contains(x)).toList()", left, right), leftType, nil
+	default:
+		if (op == "<" || op == "<=" || op == ">" || op == ">=") &&
+			(!isNumericType(leftType) || !isNumericType(rightType)) {
+			leftCmp := left
+			rightCmp := right
+			if !isStringType(leftType) {
+				leftCmp = fmt.Sprintf("%s.toString()", left)
+			}
+			if !isStringType(rightType) {
+				rightCmp = fmt.Sprintf("%s.toString()", right)
+			}
+			cmp := fmt.Sprintf("%s.compareTo(%s)", leftCmp, rightCmp)
+			switch op {
+			case "<":
+				return fmt.Sprintf("%s < 0", cmp), types.BoolType{}, nil
+			case "<=":
+				return fmt.Sprintf("%s <= 0", cmp), types.BoolType{}, nil
+			case ">":
+				return fmt.Sprintf("%s > 0", cmp), types.BoolType{}, nil
+			case ">=":
+				return fmt.Sprintf("%s >= 0", cmp), types.BoolType{}, nil
+			}
+		} else if op == "+" && (isStringType(leftType) || isStringType(rightType)) {
+			return fmt.Sprintf("%s + %s", left, right), types.StringType{}, nil
+		}
+
+		l := left
+		r := right
+		if isNumericOp(op) {
+			if !isNumericType(leftType) {
+				l = fmt.Sprintf("(%s as num)", l)
+			}
+			if !isNumericType(rightType) {
+				r = fmt.Sprintf("(%s as num)", r)
+			}
+		}
+		expr := fmt.Sprintf("%s %s %s", l, op, r)
+		newType := types.ResultType(op, leftType, rightType)
+		if _, ok := newType.(types.IntType); ok {
+			if !isIntType(leftType) || !isIntType(rightType) {
+				expr = fmt.Sprintf("(%s as int)", expr)
+			}
+		}
+		return expr, newType, nil
+	}
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
@@ -2003,6 +2052,11 @@ func isNumericType(t types.Type) bool {
 	default:
 		return false
 	}
+}
+
+func isStringType(t types.Type) bool {
+	_, ok := t.(types.StringType)
+	return ok
 }
 
 func isIntType(t types.Type) bool {
