@@ -422,9 +422,25 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				allSimple = false
 				break
 			}
+			if !simpleExpr(call.Args[i]) {
+				allSimple = false
+				break
+			}
 		}
 		if allSimple {
-			return fmt.Sprintf("print(%s)", strings.Join(args, ", ")), nil
+			parts := []string{}
+			for i, a := range args {
+				if v, ok := literalValue(call.Args[i]); ok {
+					if s, ok := v.(string); ok && s == "" {
+						continue
+					}
+				}
+				parts = append(parts, fmt.Sprintf("tostring(%s)", a))
+			}
+			if len(parts) == 0 {
+				return "print()", nil
+			}
+			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
 		}
 		for i := range args {
 			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {

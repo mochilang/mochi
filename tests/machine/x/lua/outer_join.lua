@@ -167,11 +167,11 @@ print("--- Outer Join using syntax ---")
 for _, row in ipairs(result) do
     if row.order then
         if row.customer then
-            print("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
+            ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", row.order.id, "by", row.customer.name, "- $", row.order.total)
         else
-            print("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
+            ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", row.order.id, "by", "Unknown", "- $", row.order.total)
         end
     else
-        print("Customer", row.customer.name, "has no orders")
+        ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Customer", row.customer.name, "has no orders")
     end
 end

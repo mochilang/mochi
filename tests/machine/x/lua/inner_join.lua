@@ -165,5 +165,5 @@ result = (function()
 end)()
 print("--- Orders with customer info ---")
 for _, entry in ipairs(result) do
-    print("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
+    ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", entry.orderId, "by", entry.customerName, "- $", entry.total)
 end

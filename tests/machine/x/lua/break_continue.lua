@@ -19,6 +19,6 @@ for _, n in ipairs(numbers) do
     if (n > 7) then
         break
     end
-    print("odd number:", n)
+    print(tostring("odd number:") .. " " .. tostring(n))
     ::__continue0::
 end

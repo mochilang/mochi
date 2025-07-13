@@ -219,7 +219,7 @@ result = (function()
 end)()
     end
     return _res
-end)()) // __sum((function()
+end)()) / __sum((function()
     local _res = {}
     for _, x in ipairs(g.items) do
         _res[#_res+1] = x.val
