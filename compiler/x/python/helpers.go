@@ -634,3 +634,25 @@ func unionFieldPathType(ut types.UnionType, tail []string) (types.Type, bool) {
 func needsTyping(s string) bool {
 	return strings.Contains(s, "typing.")
 }
+
+func isBoolLiteralExpr(e *parser.Expr, val bool) bool {
+	if e == nil {
+		return false
+	}
+	if len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return false
+	}
+	lit := p.Target.Lit
+	if lit == nil || lit.Bool == nil {
+		return false
+	}
+	return bool(*lit.Bool) == val
+}
