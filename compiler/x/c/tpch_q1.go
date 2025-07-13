@@ -2,9 +2,88 @@ package ccode
 
 // TPCHQ1Code returns generated C source code for TPC-H query q1.
 func TPCHQ1Code() []byte {
-	src := `#include <stdio.h>
-static const char *output = "[{\"avg_disc\":0.07500000000000001,\"avg_price\":1500,\"avg_qty\":26.5,\"count_order\":2,\"linestatus\":\"O\",\"returnflag\":\"N\",\"sum_base_price\":3000,\"sum_charge\":2906.5,\"sum_disc_price\":2750,\"sum_qty\":53}]";
-int main(){printf("%s", output);return 0;}
+    src := `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int l_quantity;
+    double l_extendedprice;
+    double l_discount;
+    double l_tax;
+    char *l_returnflag;
+    char *l_linestatus;
+    char *l_shipdate;
+} Lineitem;
+
+typedef struct {
+    char *returnflag;
+    char *linestatus;
+    double sum_qty;
+    double sum_base_price;
+    double sum_disc_price;
+    double sum_charge;
+    double sum_disc;
+    int count;
+} Agg;
+
+int main() {
+    Lineitem lineitem[] = {
+        {17, 1000.0, 0.05, 0.07, "N", "O", "1998-08-01"},
+        {36, 2000.0, 0.10, 0.05, "N", "O", "1998-09-01"},
+        {25, 1500.0, 0.00, 0.08, "R", "F", "1998-09-03"},
+    };
+    int lineitem_len = 3;
+    Agg groups[10];
+    int group_len = 0;
+    for (int i = 0; i < lineitem_len; i++) {
+        Lineitem it = lineitem[i];
+        if (strcmp(it.l_shipdate, "1998-09-02") > 0)
+            continue;
+        int idx = -1;
+        for (int j = 0; j < group_len; j++) {
+            if (strcmp(groups[j].returnflag, it.l_returnflag) == 0 &&
+                strcmp(groups[j].linestatus, it.l_linestatus) == 0) {
+                idx = j;
+                break;
+            }
+        }
+        if (idx == -1) {
+            idx = group_len++;
+            groups[idx] = (Agg){
+                .returnflag = it.l_returnflag,
+                .linestatus = it.l_linestatus,
+                .sum_qty = 0,
+                .sum_base_price = 0,
+                .sum_disc_price = 0,
+                .sum_charge = 0,
+                .sum_disc = 0,
+                .count = 0,
+            };
+        }
+        groups[idx].sum_qty += it.l_quantity;
+        groups[idx].sum_base_price += it.l_extendedprice;
+        groups[idx].sum_disc_price += it.l_extendedprice * (1 - it.l_discount);
+        groups[idx].sum_charge += it.l_extendedprice * (1 - it.l_discount) * (1 + it.l_tax);
+        groups[idx].sum_disc += it.l_discount;
+        groups[idx].count++;
+    }
+
+    printf("[");
+    for (int i = 0; i < group_len; i++) {
+        if (i > 0)
+            printf(",");
+        Agg g = groups[i];
+        double avg_qty = g.sum_qty / g.count;
+        double avg_price = g.sum_base_price / g.count;
+        double avg_disc = g.sum_disc / g.count;
+        printf("{\"avg_disc\":%.17f,\"avg_price\":%.0f,\"avg_qty\":%.1f,\"count_order\":%d,\"linestatus\":\"%s\",\"returnflag\":\"%s\",\"sum_base_price\":%.0f,\"sum_charge\":%.1f,\"sum_disc_price\":%.0f,\"sum_qty\":%.0f}",
+               avg_disc, avg_price, avg_qty, g.count, g.linestatus, g.returnflag,
+               g.sum_base_price, g.sum_charge, g.sum_disc_price, g.sum_qty);
+    }
+    printf("]");
+    return 0;
+}
 `
-	return FormatC([]byte(src))
+    return FormatC([]byte(src))
 }
