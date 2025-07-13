@@ -740,8 +740,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		default:
 			// string comparison
 			if (op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=") &&
-				(leftType == (types.StringType{}) || rightType == (types.StringType{}) ||
-					(strings.HasPrefix(cur, "'") && strings.HasPrefix(r, "'"))) {
+				(!isNumericType(leftType) && !isNumericType(rightType)) {
 				leftCmp := cur
 				rightCmp := r
 				if leftType != (types.StringType{}) {
