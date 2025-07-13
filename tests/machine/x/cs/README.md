@@ -109,6 +109,5 @@ Checklist:
 
 ## Remaining Tasks
 
-- [ ] Fix numeric casting so `tpc-h/q1.mochi` compiles cleanly
-- [ ] Verify generated C# runs via `dotnet run`
-- [ ] Compare output against `tests/dataset/tpc-h/compiler/cs/q1.out`
+- [ ] Complete dictionary generation for `tpc-h/q1.mochi`
+- [ ] Verify output order matches reference

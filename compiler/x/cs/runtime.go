@@ -204,8 +204,8 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("v = m;")
 				c.indent--
 				c.writeln("}")
-				c.writeln("var json = JsonSerializer.Serialize(v);")
-				c.writeln("return JsonSerializer.Deserialize<T>(json);")
+				c.writeln("var json = JsonSerializer.Serialize(v, new JsonSerializerOptions { IncludeFields = true });")
+				c.writeln("return JsonSerializer.Deserialize<T>(json, new JsonSerializerOptions { IncludeFields = true });")
 				c.indent--
 				c.writeln("}")
 			case "_indexString":
@@ -388,7 +388,7 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("}")
 				c.writeln("if (opts != null && opts.ContainsKey(\"body\")) {")
 				c.indent++
-				c.writeln("var data = JsonSerializer.Serialize(opts[\"body\"]);")
+				c.writeln("var data = JsonSerializer.Serialize(opts[\"body\"], new JsonSerializerOptions { IncludeFields = true });")
 				c.writeln("req.Content = new StringContent(data, System.Text.Encoding.UTF8, \"application/json\");")
 				c.indent--
 				c.writeln("}")
@@ -424,12 +424,12 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("case \"jsonl\":")
 				c.indent++
 				c.writeln("var list = new List<dynamic>();")
-				c.writeln("foreach (var line in text.Split(new[] { '\\n', '\\r' }, StringSplitOptions.RemoveEmptyEntries)) list.Add(JsonSerializer.Deserialize<dynamic>(line));")
+				c.writeln("foreach (var line in text.Split(new[] { '\\n', '\\r' }, StringSplitOptions.RemoveEmptyEntries)) list.Add(JsonSerializer.Deserialize<dynamic>(line, new JsonSerializerOptions { IncludeFields = true }));")
 				c.writeln("return list;")
 				c.indent--
 				c.writeln("case \"json\":")
 				c.indent++
-				c.writeln("return JsonSerializer.Deserialize<List<dynamic>>(text);")
+				c.writeln("return JsonSerializer.Deserialize<List<dynamic>>(text, new JsonSerializerOptions { IncludeFields = true });")
 				c.indent--
 				c.writeln("case \"yaml\":")
 				c.indent++
@@ -483,13 +483,13 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("switch (format) {")
 				c.writeln("case \"jsonl\":")
 				c.indent++
-				c.writeln("var lines = rows.Select(r => JsonSerializer.Serialize(r));")
+				c.writeln("var lines = rows.Select(r => JsonSerializer.Serialize(r, new JsonSerializerOptions { IncludeFields = true }));")
 				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.WriteLine(string.Join(\"\\n\", lines)); else File.WriteAllLines(path, lines);")
 				c.writeln("break;")
 				c.indent--
 				c.writeln("case \"json\":")
 				c.indent++
-				c.writeln("var data = JsonSerializer.Serialize(rows);")
+				c.writeln("var data = JsonSerializer.Serialize(rows, new JsonSerializerOptions { IncludeFields = true });")
 				c.writeln("if (string.IsNullOrEmpty(path) || path == \"-\") Console.Write(data); else File.WriteAllText(path, data);")
 				c.writeln("break;")
 				c.indent--

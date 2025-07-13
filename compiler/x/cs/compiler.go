@@ -618,8 +618,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
-				inferredT = c.assignTypeNames(inferredT, singular(name))
-				c.registerStructs(inferredT)
+				if !isGroupQuery(s.Let.Value) {
+					inferredT = c.assignTypeNames(inferredT, singular(name))
+					c.registerStructs(inferredT)
+				}
 				typ = csTypeOf(inferredT)
 				static = inferredT
 				c.structHint = singular(name)
@@ -686,8 +688,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				}
 			} else {
 				inferredT := c.inferExprType(s.Var.Value)
-				inferredT = c.assignTypeNames(inferredT, singular(name))
-				c.registerStructs(inferredT)
+				if !isGroupQuery(s.Var.Value) {
+					inferredT = c.assignTypeNames(inferredT, singular(name))
+					c.registerStructs(inferredT)
+				}
 				typ = csTypeOf(inferredT)
 				static = inferredT
 				c.structHint = singular(name)
@@ -3256,6 +3260,24 @@ func selectorName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+func isGroupQuery(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil {
+		return false
+	}
+	p := u.Value
+	if p == nil {
+		return false
+	}
+	if p.Target != nil && p.Target.Query != nil && p.Target.Query.Group != nil {
+		return true
+	}
+	return false
 }
 
 // listElemType attempts to infer the element type of a list literal.
