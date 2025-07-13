@@ -8,6 +8,7 @@
 - 2025-07-13 08:15 – added support for detecting map fields in group keys and removed
   invalid `@dynamicMemberLookup` extension so query code now compiles.
 - 2025-07-13 09:02 – numeric equality handles Int vs Double so TPC-H `q1` runs correctly.
+- 2025-07-13 17:32 – generated code and output for TPC-H `q4`; test now covers queries up to `q6` though later ones still fail.
 
 ## Remaining Work
 - [ ] Generate safer optional handling in join queries
