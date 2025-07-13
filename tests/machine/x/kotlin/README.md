@@ -115,3 +115,5 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - Provide better support for the Python `math` helpers and other foreign imports.
 - Finish compiling the remaining unchecked programs above.
 - Get TPC-H `q2.mochi` compiling and running successfully.
+- Improve numeric division so queries like `q1.mochi` compute floating point
+  results correctly.
