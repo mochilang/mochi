@@ -779,10 +779,8 @@ func (c *Compiler) maybeNumber(expr string) string {
 	if numberLit.MatchString(expr) {
 		return expr
 	}
-	if t, ok := c.vars[expr]; ok {
-		if t == "int" || t == "double" {
-			return expr
-		}
+	if t := c.exprType(expr); t == "int" || t == "double" {
+		return expr
 	}
 	if strings.Contains(expr, ".get(") {
 		return fmt.Sprintf("((Number)%s).doubleValue()", expr)
@@ -833,10 +831,15 @@ func isPrimitive(expr string, c *Compiler) bool {
 	if numberLit.MatchString(expr) {
 		return true
 	}
+	if t := c.exprType(expr); t == "int" || t == "double" || t == "boolean" {
+		return true
+	}
+	return false
+}
+
+func (c *Compiler) exprType(expr string) string {
 	if t, ok := c.vars[expr]; ok {
-		if t == "int" || t == "double" || t == "boolean" {
-			return true
-		}
+		return t
 	}
 	if strings.Contains(expr, ".") {
 		parts := strings.Split(expr, ".")
@@ -848,11 +851,9 @@ func isPrimitive(expr string, c *Compiler) bool {
 				t = c.fieldType(t, p)
 			}
 		}
-		if t == "int" || t == "double" || t == "boolean" {
-			return true
-		}
+		return t
 	}
-	return false
+	return ""
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
