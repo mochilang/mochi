@@ -751,6 +751,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if c.env != nil {
 			if vt, err := c.env.GetVar(p.Selector.Root); err == nil {
 				t = vt
+			} else if len(c.groupVars) == 1 {
+				for gv := range c.groupVars {
+					name = fmt.Sprintf("$%s['key']['%s']", gv, sanitizeName(p.Selector.Root))
+					t = types.AnyType{}
+				}
 			}
 		}
 		for _, fld := range p.Selector.Tail {
