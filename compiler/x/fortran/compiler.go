@@ -30,9 +30,36 @@ type Compiler struct {
 	tmpIndex    int
 	helpers     map[string]bool
 	autoImports map[string]string
+	structNames map[string]string
 }
 
-func structName(name string) string { return "t_" + strings.ToLower(name) }
+func (c *Compiler) structName(name string) string {
+	if c.structNames == nil {
+		c.structNames = make(map[string]string)
+	}
+	if v, ok := c.structNames[name]; ok {
+		return v
+	}
+	base := "t_" + strings.ToLower(name)
+	unique := base
+	i := 2
+	for {
+		conflict := false
+		for _, s := range c.structNames {
+			if s == unique {
+				conflict = true
+				break
+			}
+		}
+		if !conflict {
+			break
+		}
+		unique = fmt.Sprintf("%s_%d", base, i)
+		i++
+	}
+	c.structNames[name] = unique
+	return unique
+}
 
 // New creates a new compiler instance.
 func New(env *types.Env) *Compiler {
@@ -210,10 +237,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if !c.declared[l.Name] {
-		typ := typeName(l.Type)
+		typ := c.typeName(l.Type)
 		if l.Type == nil {
 			if t, err := c.env.GetVar(l.Name); err == nil {
-				typ = typeNameFromTypes(t)
+				typ = c.typeNameFromTypes(t)
 			}
 		}
 		if lst := listLiteral(l.Value); lst != nil {
@@ -277,10 +304,10 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 	if c.declared[l.Name] {
 		return nil
 	}
-	typ := typeName(l.Type)
+	typ := c.typeName(l.Type)
 	if l.Type == nil {
 		if t, err := c.env.GetVar(l.Name); err == nil {
-			typ = typeNameFromTypes(t)
+			typ = c.typeNameFromTypes(t)
 		}
 	}
 	if lst := listLiteral(l.Value); lst != nil {
@@ -306,11 +333,11 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	if !ok {
 		return fmt.Errorf("unknown struct %s", t.Name)
 	}
-	fname := structName(t.Name)
+	fname := c.structName(t.Name)
 	c.writelnDecl(fmt.Sprintf("type :: %s", fname))
 	c.indent++
 	for _, f := range st.Order {
-		c.writelnDecl(fmt.Sprintf("%s :: %s", typeNameFromTypes(st.Fields[f]), f))
+		c.writelnDecl(fmt.Sprintf("%s :: %s", c.typeNameFromTypes(st.Fields[f]), f))
 	}
 	c.indent--
 	c.writelnDecl(fmt.Sprintf("end type %s", fname))
@@ -529,18 +556,18 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	for i, p := range fn.Params {
 		params[i] = p.Name
 	}
-	retType := typeName(fn.Return)
+	retType := c.typeName(fn.Return)
 	if fn.Return == nil {
 		if t, err := c.env.GetVar(fn.Name); err == nil {
 			if ft, ok := t.(types.FuncType); ok {
-				retType = typeNameFromTypes(ft.Return)
+				retType = c.typeNameFromTypes(ft.Return)
 			}
 		}
 	}
 	c.writeln(fmt.Sprintf("recursive %s function %s(%s) result(res)", retType, fn.Name, strings.Join(params, ",")))
 	c.indent++
 	for _, p := range fn.Params {
-		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", typeName(p.Type), p.Name))
+		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", c.typeName(p.Type), p.Name))
 		c.declared[p.Name] = true
 	}
 	prev := c.currentFunc
@@ -687,7 +714,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					fields[i] = v
 				}
-				res = fmt.Sprintf("%s(%s)", structName(st.Name), strings.Join(fields, ","))
+				res = fmt.Sprintf("%s(%s)", c.structName(st.Name), strings.Join(fields, ","))
 				startOp = 1
 			}
 		}
@@ -825,7 +852,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								}
 								fields[i] = v
 							}
-							res = fmt.Sprintf("%s(%s)", structName(st.Name), strings.Join(fields, ","))
+							res = fmt.Sprintf("%s(%s)", c.structName(st.Name), strings.Join(fields, ","))
 							continue
 						}
 					}
@@ -1207,7 +1234,7 @@ func keyName(e *parser.Expr) string {
 	return ""
 }
 
-func typeName(t *parser.TypeRef) string {
+func (c *Compiler) typeName(t *parser.TypeRef) string {
 	if t == nil {
 		return "integer"
 	}
@@ -1222,13 +1249,13 @@ func typeName(t *parser.TypeRef) string {
 		case "float":
 			return "real"
 		default:
-			return fmt.Sprintf("type(%s)", structName(*t.Simple))
+			return fmt.Sprintf("type(%s)", c.structName(*t.Simple))
 		}
 	}
 	return "integer"
 }
 
-func typeNameFromTypes(t types.Type) string {
+func (c *Compiler) typeNameFromTypes(t types.Type) string {
 	switch t.(type) {
 	case types.IntType, types.Int64Type:
 		return "integer"
@@ -1240,7 +1267,7 @@ func typeNameFromTypes(t types.Type) string {
 		return "real"
 	case types.StructType:
 		st := t.(types.StructType)
-		return fmt.Sprintf("type(%s)", structName(st.Name))
+		return fmt.Sprintf("type(%s)", c.structName(st.Name))
 	default:
 		return "integer"
 	}
