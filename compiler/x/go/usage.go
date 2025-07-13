@@ -206,6 +206,14 @@ func (c *Compiler) compileGlobalVarDecl(s *parser.Statement) error {
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
 					}
+				} else if qe := s.Let.Value.Binary.Left.Value.Target.Query; qe != nil {
+					if ml := mapLiteral(qe.Select); ml != nil {
+						if st, ok := c.inferStructFromMap(ml, s.Let.Name); ok {
+							t = types.ListType{Elem: st}
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
+					}
 				}
 			} else if old, err := c.env.GetVar(s.Let.Name); err == nil {
 				t = old
@@ -229,6 +237,14 @@ func (c *Compiler) compileGlobalVarDecl(s *parser.Statement) error {
 						t = types.ListType{Elem: st}
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
+					}
+				} else if qe := s.Var.Value.Binary.Left.Value.Target.Query; qe != nil {
+					if ml := mapLiteral(qe.Select); ml != nil {
+						if st, ok := c.inferStructFromMap(ml, s.Var.Name); ok {
+							t = types.ListType{Elem: st}
+							c.env.SetStruct(st.Name, st)
+							c.compileStructType(st)
+						}
 					}
 				}
 			} else if old, err := c.env.GetVar(s.Var.Name); err == nil {

@@ -117,5 +117,5 @@ Checklist:
 
 ### Recent Improvements
 
-- [ ] Emit struct type declarations for inferred dataset rows
+- [x] Emit struct type declarations for inferred dataset rows
 - [ ] Generate TPCH q1 with struct support
