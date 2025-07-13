@@ -1,2 +1,1 @@
-[{"movie_title":"Good Movie","movie_year":1995,"production_note":"ACME (co-production)"}]
-   test Q1 returns min note, title and year for top ranked co-production ... ok (4.0µs)
+[{"movie_year":1995,"movie_title":"Good Movie","production_note":"ACME (co-production)"}]

@@ -160,8 +160,8 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 	}
 
 	root := findRepoRoot(t)
-       for i := 1; i <= 22; i++ {
-               q := fmt.Sprintf("q%d", i)
+	for i := 1; i <= 22; i++ {
+		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
 			prog, err := parser.Parse(src)
@@ -200,6 +200,71 @@ func TestLuaCompiler_TPCH(t *testing.T) {
 			}
 			gotJSON := gotLines[0]
 			wantOut, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "lua", q+".out"))
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			wantLines := bytes.Split(bytes.TrimSpace(wantOut), []byte("\n"))
+			wantJSON := wantLines[0]
+			var gotVal, wantVal any
+			if err := json.Unmarshal(gotJSON, &gotVal); err != nil {
+				t.Fatalf("parse got json: %v", err)
+			}
+			if err := json.Unmarshal(wantJSON, &wantVal); err != nil {
+				t.Fatalf("parse want json: %v", err)
+			}
+			if !reflect.DeepEqual(gotVal, wantVal) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotJSON, wantJSON)
+			}
+		})
+	}
+}
+
+func TestLuaCompiler_JOB(t *testing.T) {
+	if err := luacode.EnsureLua(); err != nil {
+		t.Skipf("lua not installed: %v", err)
+	}
+
+	root := findRepoRoot(t)
+	for i := 1; i <= 5; i++ {
+		q := fmt.Sprintf("q%d", i)
+		t.Run(q, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := luacode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "job", "compiler", "lua", q+".lua"))
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			got := stripHeader(bytes.TrimSpace(code))
+			want := stripHeader(bytes.TrimSpace(wantCode))
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.lua")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			out, err := exec.Command("lua", file).CombinedOutput()
+			if err != nil {
+				t.Fatalf("lua error: %v\n%s", err, out)
+			}
+			gotLines := bytes.Split(bytes.TrimSpace(out), []byte("\n"))
+			if len(gotLines) == 0 {
+				t.Fatalf("no output")
+			}
+			gotJSON := gotLines[0]
+			wantOut, err := os.ReadFile(filepath.Join(root, "tests", "dataset", "job", "compiler", "lua", q+".out"))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
