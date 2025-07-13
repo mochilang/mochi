@@ -18,7 +18,9 @@ import (
 func main() {
 	outDir := filepath.Join("tests", "dataset", "tpc-h", "compiler", "lua")
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 11; i <= 22; i++ {
+	// Compile queries q1 through q22. Earlier versions of this script only
+	// handled q11 and above.
+	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join("tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
