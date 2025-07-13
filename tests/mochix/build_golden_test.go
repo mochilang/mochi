@@ -76,8 +76,12 @@ func TestBuildXDart(t *testing.T) {
 }
 
 func TestBuildXC(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".c.out", func(src string) ([]byte, error) {
-		return runMochix(t, "buildx", "--target", "c", src)
+	golden.Run(t, "tests/mochix", ".mochi", ".c", func(src string) ([]byte, error) {
+		out, err := runMochix(t, "buildx", "--target", "c", src)
+		if err != nil {
+			return nil, err
+		}
+		return append([]byte("//go:build ignore\n"), out...), nil
 	})
 }
 
