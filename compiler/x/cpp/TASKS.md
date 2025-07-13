@@ -5,6 +5,8 @@
   available only via a vector element type.
 - Added constant numeric folding in binary expressions.
 - Added unary constant folding for numeric and boolean values.
+- Added propagation of struct types for variables initialized with struct
+  literals (2025-07-13 09:21 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.

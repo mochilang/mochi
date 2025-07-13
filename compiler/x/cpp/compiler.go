@@ -554,6 +554,8 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 		c.varStruct[st.Name] = s
 	} else if t := c.varStruct[exprStr]; t != "" {
 		c.varStruct[st.Name] = t
+	} else if t := c.structLiteralType(exprStr); t != "" {
+		c.varStruct[st.Name] = t
 	}
 	if et := c.extractVectorElemType(exprStr); et != "" {
 		c.elemType[st.Name] = et
@@ -638,6 +640,8 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	if s := c.extractVectorStruct(exprStr); s != "" {
 		c.varStruct[st.Name] = s
 	} else if t := c.varStruct[exprStr]; t != "" {
+		c.varStruct[st.Name] = t
+	} else if t := c.structLiteralType(exprStr); t != "" {
 		c.varStruct[st.Name] = t
 	}
 	if et := c.extractVectorElemType(exprStr); et != "" {
@@ -2866,6 +2870,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	itemStruct := ""
 	if len(itemVars) == 1 {
 		if t := c.varStruct[itemVars[0]]; t != "" {
+			itemStruct = t
+		} else if t := c.elemType[itemVars[0]]; t != "" && c.isStructName(t) {
 			itemStruct = t
 		}
 	}
