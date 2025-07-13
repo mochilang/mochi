@@ -68,10 +68,10 @@ func runTPCHQuery(t *testing.T, base string) {
 		return
 	}
 
-	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".go.out")
+	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".go")
 	if want, err := os.ReadFile(codeWant); err == nil {
 		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(want)) {
-			t.Errorf("generated code mismatch for %s.go.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(want))
+			t.Errorf("generated code mismatch for %s.go\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(want))
 		}
 	}
 
