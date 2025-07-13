@@ -1464,7 +1464,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	var keyType types.Type
 	selEnv := child
 	if q.Group != nil {
-		keyType = c.inferExprType(q.Group.Exprs[0])
+		// infer group key type using the child environment so join and
+		// from variables are visible
+		keyType = types.ExprType(q.Group.Exprs[0], child)
 		if st, ok := keyType.(types.StructType); ok && st.Name == "" {
 			keyType = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 		}
