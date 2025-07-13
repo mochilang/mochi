@@ -157,6 +157,15 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("if (v is string) return (T)(object)long.Parse((string)v);")
 				c.indent--
 				c.writeln("}")
+				c.writeln("if (typeof(T) == typeof(int)) {")
+				c.indent++
+				c.writeln("if (v is int) return (T)v;")
+				c.writeln("if (v is long) return (T)(object)(int)(long)v;")
+				c.writeln("if (v is double) return (T)(object)(int)(double)v;")
+				c.writeln("if (v is float) return (T)(object)(int)(float)v;")
+				c.writeln("if (v is string) return (T)(object)int.Parse((string)v);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("if (typeof(T) == typeof(double)) {")
 				c.indent++
 				c.writeln("if (v is int) return (T)(object)(double)(int)v;")

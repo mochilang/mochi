@@ -1101,7 +1101,7 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			case "+":
 				if leftList && rightList {
 					c.useLinq = true
-					expr = fmt.Sprintf("%s.Concat(%s).ToArray()", left, right)
+					expr = fmt.Sprintf("%s.Concat(%s).ToList()", left, right)
 					leftList = true
 					leftStr = false
 				} else if strs[i] && strs[i+1] {
@@ -1164,22 +1164,22 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 			case "union_all":
 				leftStr = false
 				c.useLinq = true
-				expr = fmt.Sprintf("Enumerable.Concat(%s, %s).ToArray()", left, right)
+				expr = fmt.Sprintf("Enumerable.Concat(%s, %s).ToList()", left, right)
 				leftList = true
 			case "union":
 				leftStr = false
 				c.useLinq = true
-				expr = fmt.Sprintf("Enumerable.Union(%s, %s).ToArray()", left, right)
+				expr = fmt.Sprintf("Enumerable.Union(%s, %s).ToList()", left, right)
 				leftList = true
 			case "except":
 				leftStr = false
 				c.useLinq = true
-				expr = fmt.Sprintf("Enumerable.Except(%s, %s).ToArray()", left, right)
+				expr = fmt.Sprintf("Enumerable.Except(%s, %s).ToList()", left, right)
 				leftList = true
 			case "intersect":
 				leftStr = false
 				c.useLinq = true
-				expr = fmt.Sprintf("Enumerable.Intersect(%s, %s).ToArray()", left, right)
+				expr = fmt.Sprintf("Enumerable.Intersect(%s, %s).ToList()", left, right)
 				leftList = true
 			default:
 				leftStr = false
@@ -1966,7 +1966,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
 	expr := strings.Join(parts, ".")
 	if _, ok := c.inferExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Query: q}}}}}).(types.ListType); ok {
-		expr += ".ToArray()"
+		expr += ".ToList()"
 	}
 	return expr, nil
 }
