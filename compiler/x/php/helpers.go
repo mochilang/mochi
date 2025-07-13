@@ -480,6 +480,9 @@ func queryFreeVars(q *parser.QueryExpr, env *types.Env) []string {
 	}
 	if q.Group != nil {
 		scanExpr(q.Group.Exprs[0], vars)
+		if q.Group.Having != nil {
+			scanExpr(q.Group.Having, vars)
+		}
 	}
 	scanExpr(q.Select, vars)
 	scanExpr(q.Where, vars)
