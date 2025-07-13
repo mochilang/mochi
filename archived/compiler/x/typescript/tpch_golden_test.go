@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archived && slow
 
 package typescriptcode_test
 
@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	typescriptcode "mochi/compiler/x/typescript"
+	typescriptcode "mochi/archived/x/typescript"
 	"mochi/parser"
 	"mochi/types"
 )

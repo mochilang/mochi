@@ -1,4 +1,4 @@
-//go:build slow
+//go:build archived && slow
 
 package tscode_test
 
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	tscode "mochi/compiler/x/ts"
+	tscode "mochi/archived/x/ts_backup"
 	"mochi/parser"
 )
 

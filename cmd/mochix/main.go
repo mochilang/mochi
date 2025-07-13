@@ -28,7 +28,6 @@ import (
 	_ "mochi/runtime/llm/provider/cohere"
 	_ "mochi/runtime/llm/provider/echo"
 
-	denoffi "mochi/runtime/ffi/deno"
 	goffi "mochi/runtime/ffi/go"
 	ffiinfo "mochi/runtime/ffi/infer"
 	python "mochi/runtime/ffi/python"
@@ -62,7 +61,6 @@ import (
 	stcode "mochi/compiler/x/st"
 	swiftcode "mochi/compiler/x/swift"
 	tscode "mochi/compiler/x/ts"
-	typescriptcode "mochi/compiler/x/typescript"
 	zigcode "mochi/compiler/x/zig"
 
 	"mochi/ast"
@@ -142,7 +140,7 @@ type LLMCmd struct {
 	File   string `arg:"-f" help:"Read prompt from file ('-' for stdin)"`
 }
 type InferCmd struct {
-	Language string `arg:"positional,required" help:"Language (python|typescript|go)"`
+	Language string `arg:"positional,required" help:"Language (python|go)"`
 	Package  string `arg:"positional,required" help:"Package or module path"`
 	Format   string `arg:"-f,--format" default:"mochi" help:"Output format (json|mochi)"`
 }
@@ -447,8 +445,6 @@ func runInfer(cmd *InferCmd) error {
 	switch lang {
 	case "python", "py":
 		info, err = python.Infer(cmd.Package)
-	case "typescript", "ts":
-		info, err = denoffi.Infer(cmd.Package)
 	case "go":
 		info, err = goffi.Infer(cmd.Package)
 	default:
@@ -706,8 +702,6 @@ func compileProgram(lang string, env *types.Env, prog *parser.Program, root, src
 		return gocode.New(env).Compile(prog)
 	case "ts":
 		return tscode.New(env, root).Compile(prog)
-	case "typescript":
-		return typescriptcode.New().Compile(prog)
 	case "py", "python":
 		return pycode.New(env).Compile(prog)
 	case "clj":
