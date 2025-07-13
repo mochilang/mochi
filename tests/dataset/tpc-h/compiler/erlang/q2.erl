@@ -10,7 +10,7 @@ main(_) ->
     Partsupp = [#{ps_partkey => 1000, ps_suppkey => 100, ps_supplycost => 10}, #{ps_partkey => 1000, ps_suppkey => 200, ps_supplycost => 15}],
     Europe_nations = [N || R <- Region, N <- Nation, (maps:get(n_regionkey, N) == maps:get(r_regionkey, R)), (maps:get(r_name, R) == "EUROPE")],
     Europe_suppliers = [#{s => S, n => N} || S <- Supplier, N <- Europe_nations, (maps:get(s_nationkey, S) == maps:get(n_nationkey, N))],
-    Target_parts = [P || P <- Part, (((maps:get(p_size, P) == 15) andalso maps:get(p_type, P)) == "LARGE BRASS")],
+    Target_parts = [P || P <- Part, ((maps:get(p_size, P) == 15) andalso (maps:get(p_type, P) == "LARGE BRASS"))],
     Target_partsupp = [#{s_acctbal => maps:get(s_acctbal, maps:get(s, S)), s_name => maps:get(s_name, maps:get(s, S)), n_name => maps:get(n_name, maps:get(n, S)), p_partkey => maps:get(p_partkey, P), p_mfgr => maps:get(p_mfgr, P), s_address => maps:get(s_address, maps:get(s, S)), s_phone => maps:get(s_phone, maps:get(s, S)), s_comment => maps:get(s_comment, maps:get(s, S)), ps_supplycost => maps:get(ps_supplycost, Ps)} || Ps <- Partsupp, P <- Target_parts, S <- Europe_suppliers, (maps:get(ps_partkey, Ps) == maps:get(p_partkey, P)), (maps:get(ps_suppkey, Ps) == maps:get(s_suppkey, maps:get(s, S)))],
     Costs = [maps:get(ps_supplycost, X) || X <- Target_partsupp],
     Min_cost = lists:min(Costs),
