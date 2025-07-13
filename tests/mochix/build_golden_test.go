@@ -111,7 +111,7 @@ func TestBuildXCobol(t *testing.T) {
 }
 
 func TestBuildXCS(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".cs.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".cs", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "cs", src)
 	})
 }

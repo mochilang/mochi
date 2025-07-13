@@ -20,7 +20,7 @@ func TestCSCompiler_TPCH_Q1(t *testing.T) {
 	}
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
-	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cs", "q1.cs.out")
+	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cs", "q1.cs")
 	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cs", "q1.out")
 	prog, err := parser.Parse(src)
 	if err != nil {
