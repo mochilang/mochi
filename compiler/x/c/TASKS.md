@@ -7,6 +7,7 @@ Initial work added support for generating C structs and list helpers when a prog
 
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
 - 2025-08-23 10:20 – Fixed relative path resolution in `compileLoadExpr` so `load_yaml.mochi` compiles.
+- 2025-07-13 10:45 – Added struct typing for group iteration so `group_items_iteration.mochi` compiles to C (still fails at runtime).
 - 2025-07-13 09:37 – Added experimental map-literal grouping for two string keys to begin TPC-H q1 support.
 
 - 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.

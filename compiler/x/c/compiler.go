@@ -1150,6 +1150,21 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				t = ut
 			}
 		}
+		if lt, ok := t.(types.ListType); ok {
+			if gt, ok2 := lt.Elem.(types.GroupType); ok2 {
+				elem := gt.Elem
+				listElem := types.ListType{Elem: elem}
+				structName := "Group" + sanitizeTypeName(cTypeFromType(elem))
+				st := types.StructType{
+					Name:   structName,
+					Fields: map[string]types.Type{"key": gt.Key, "items": listElem},
+					Order:  []string{"key", "items"},
+				}
+				c.compileStructType(st)
+				c.compileStructListType(st)
+				t = types.ListType{Elem: st}
+			}
+		}
 		if st, ok := castMapToStruct(stmt.Value, c.env); ok {
 			t = st
 		} else if ll := stmt.Value.Binary.Left.Value.Target.List; ll != nil {
@@ -2375,6 +2390,20 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							}
 						}
 					}
+					var groupStructName string
+					if gt, ok := retT.(types.GroupType); ok {
+						elem := gt.Elem
+						listElem := types.ListType{Elem: elem}
+						groupStructName = "Group" + sanitizeTypeName(cTypeFromType(elem))
+						st := types.StructType{
+							Name:   groupStructName,
+							Fields: map[string]types.Type{"key": gt.Key, "items": listElem},
+							Order:  []string{"key", "items"},
+						}
+						c.compileStructType(st)
+						c.compileStructListType(st)
+						retT = st
+					}
 					retList := types.ListType{Elem: retT}
 					listRes := cTypeFromType(retList)
 					if listRes == "list_string" {
@@ -2416,7 +2445,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					c.indent--
 					c.writeln("}")
 					c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
-					c.writeln(fmt.Sprintf("struct {char* key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+					if groupStructName != "" {
+						c.writeln(fmt.Sprintf("%s %s = { _gp.key, %s };", sanitizeTypeName(groupStructName), sanitizeName(q.Group.Name), items))
+					} else {
+						c.writeln(fmt.Sprintf("struct {char* key; %s items; } %s = { _gp.key, %s };", listC, sanitizeName(q.Group.Name), items))
+					}
 					if q.Group.Having != nil {
 						cond := c.compileExpr(q.Group.Having)
 						c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
@@ -4602,6 +4635,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		return name
 	case p.Map != nil:
 		if st, ok := c.structLits[p.Map]; ok {
+			parts := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				key, _ := types.SimpleStringKey(it.Key)
+				v := c.compileExpr(it.Value)
+				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
+			}
+			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
+		}
+		if st, ok := c.inferStructFromMap(p.Map, "tmp"); ok {
+			c.structLits[p.Map] = st
+			if c.env != nil {
+				c.env.SetStruct(st.Name, st)
+			}
+			c.compileStructType(st)
+			c.compileStructListType(st)
 			parts := make([]string, len(p.Map.Items))
 			for i, it := range p.Map.Items {
 				key, _ := types.SimpleStringKey(it.Key)

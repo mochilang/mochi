@@ -109,6 +109,15 @@ func cTypeFromType(t types.Type) string {
 		if _, ok := tt.Elem.(types.IntType); ok {
 			return "_GroupInt"
 		}
+		key := cTypeFromType(tt.Key)
+		if key == "" {
+			key = "int"
+		}
+		items := cTypeFromType(types.ListType{Elem: tt.Elem})
+		if items == "" {
+			items = "list_int"
+		}
+		return fmt.Sprintf("struct {%s key; %s items;}", key, items)
 	case types.FuncType:
 		ret := cTypeFromType(tt.Return)
 		params := make([]string, len(tt.Params))
