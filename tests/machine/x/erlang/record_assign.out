@@ -1,5 +1,5 @@
-/workspace/mochi/tests/machine/x/erlang/record_assign.erl:5:5: Warning: variable 'C0' is unused
-%    5|     C0 = C#{n => (maps:get(n, C) + 1)}.
+/workspace/mochi/tests/machine/x/erlang/record_assign.erl:6:5: Warning: variable 'C0' is unused
+%    6|     C0 = C#{n => (maps:get(n, C) + 1)}.
 %     |     ^
 
 0

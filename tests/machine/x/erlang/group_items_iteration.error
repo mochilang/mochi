@@ -1,24 +1,24 @@
 exit status 127
-/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:180: variable 'Total1' is unbound
-%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:9:180: variable 'Total1' is unbound
+%    9|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
 %     |                                                                                                                                                                                    ^
 
-/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:9:78: variable 'Tmp1' is unbound
-%    9|     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:10:78: variable 'Tmp1' is unbound
+%   10|     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
 %     |                                                                              ^
 
-/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:65: Warning: variable 'Total1' is unused
-%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:9:65: Warning: variable 'Total1' is unused
+%    9|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
 %     |                                                                 ^
 
-/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:8:128: Warning: variable 'Tmp1' is unused
-%    8|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+/workspace/mochi/tests/machine/x/erlang/group_items_iteration.erl:9:128: Warning: variable 'Tmp1' is unused
+%    9|     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
 %     |                                                                                                                                ^
 
 escript: There were compilation errors.
 
-   6:     Groups = [#{key => Key0, items => Val0} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(tag, D), D} || D <- Data]))],
-   7:     Tmp0 = [],
-   8:     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
-   9:     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
-  10:     io:format("~p~n", [Result]).
+   7:     Groups = [#{key => Key0, items => Val0} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(tag, D), D} || D <- Data]))],
+   8:     Tmp0 = [],
+   9:     lists:foreach(fun(G) -> Total0 = 0, lists:foreach(fun(X) -> Total1 = (Total0 + maps:get(val, X)) end, maps:get(items, G)), Tmp1 = Tmp0 ++ [#{tag => maps:get(key, G), total => Total1}] end, Groups),
+  10:     Result = [V || {_, V} <- lists:keysort(1, [{maps:get(tag, R), R} || R <- Tmp1])],
+  11:     io:format("~p~n", [Result]).

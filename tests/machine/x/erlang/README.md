@@ -109,3 +109,6 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 - Investigate failing programs marked as error above.
 - Implement remaining features to match manual translations in `tests/human/x/erlang`.
 
+### TPCH Queries
+- [ ] q1.mochi
+
