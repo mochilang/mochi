@@ -283,6 +283,9 @@ func (c *Compiler) findStructByFields(st types.StructType) (string, bool) {
 // compiled code can avoid "dynamic" fields. The returned type mirrors t but
 // with any unnamed structs replaced by named versions.
 func (c *Compiler) assignTypeNames(t types.Type, hint string) types.Type {
+	if c.DictMode {
+		return t
+	}
 	switch tt := t.(type) {
 	case types.StructType:
 		if tt.Name == "" {
@@ -312,6 +315,9 @@ func (c *Compiler) assignTypeNames(t types.Type, hint string) types.Type {
 // registerStructs adds all named struct types within t to the compiler
 // environment so later expressions can reference them by name.
 func (c *Compiler) registerStructs(t types.Type) {
+	if c.DictMode {
+		return
+	}
 	switch tt := t.(type) {
 	case types.StructType:
 		if tt.Name != "" && c.env != nil {

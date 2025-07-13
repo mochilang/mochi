@@ -30,7 +30,9 @@ func TestCSCompiler_TPCH_Q1(t *testing.T) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
-	code, err := cscode.New(env).Compile(prog)
+	comp := cscode.New(env)
+	comp.DictMode = true
+	code, err := comp.Compile(prog)
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}

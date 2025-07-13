@@ -1,9 +1,9 @@
 # C# Compiler TODO
 
-## Recent Updates (2025-07-13 05:20)
-- Added JSON serialization options to include struct fields.
+## Recent Updates (2025-07-13 07:22)
+- Added `DictMode` option to emit dictionaries for anonymous structs.
 - Began work on tpc-h q1 support and group query detection.
 
 ## Remaining Work
-- Complete dictionary generation for grouped query results.
-- Verify property ordering matches golden outputs.
+- [ ] Verify dictionary generation for grouped query results across queries.
+- [ ] Ensure property ordering matches golden outputs.
