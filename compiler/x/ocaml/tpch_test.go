@@ -3,6 +3,7 @@
 package ocaml_test
 
 import (
+	"fmt"
 	"os/exec"
 	"testing"
 
@@ -16,7 +17,10 @@ func TestOCamlCompiler_TPCH(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skipf("ocamlc not installed: %v", err)
 	}
-	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return ocaml.New(env).Compile(prog, "")
-	})
+	for i := 1; i <= 5; i++ {
+		q := fmt.Sprintf("q%d", i)
+		testutil.CompileTPCH(t, q, func(env *types.Env, prog *parser.Program) ([]byte, error) {
+			return ocaml.New(env).Compile(prog, "")
+		})
+	}
 }
