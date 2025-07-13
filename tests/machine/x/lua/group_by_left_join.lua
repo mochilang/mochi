@@ -236,5 +236,5 @@ end)())}
 end)()
 print("--- Group Left Join ---")
 for _, s in ipairs(stats) do
-    print(s.name, "orders:", s.count)
+    ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(s.name, "orders:", s.count)
 end

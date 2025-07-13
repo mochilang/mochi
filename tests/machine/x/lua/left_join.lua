@@ -165,5 +165,5 @@ result = (function()
 end)()
 print("--- Left Join ---")
 for _, entry in ipairs(result) do
-    print("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
+    ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Order", entry.orderId, "customer", entry.customer, "total", entry.total)
 end

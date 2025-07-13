@@ -24,5 +24,5 @@ expensive = (function()
 end)()
 print("--- Top products (excluding most expensive) ---")
 for _, item in ipairs(expensive) do
-    print(item.name, "costs $", item.price)
+    ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(item.name, "costs $", item.price)
 end

@@ -121,6 +121,34 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 	return false
 }
 
+func simpleExpr(e *parser.Expr) bool {
+	if _, ok := identName(e); ok {
+		return true
+	}
+	if _, ok := literalValue(e); ok {
+		return true
+	}
+	if isSelectorExpr(e) {
+		return true
+	}
+	return false
+}
+
+func isSelectorExpr(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return false
+	}
+	return true
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true

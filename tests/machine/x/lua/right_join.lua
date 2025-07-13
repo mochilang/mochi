@@ -166,8 +166,8 @@ end)()
 print("--- Right Join using syntax ---")
 for _, entry in ipairs(result) do
     if entry.order then
-        print("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
+        ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total)
     else
-        print("Customer", entry.customerName, "has no orders")
+        ;(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)("Customer", entry.customerName, "has no orders")
     end
 end
