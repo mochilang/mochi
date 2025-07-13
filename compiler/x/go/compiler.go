@@ -115,6 +115,14 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	// If declarations buffer is empty, try emitting struct types again to
+	// ensure generated code is human-readable.
+	if c.decls.Len() == 0 && c.env != nil {
+		for _, st := range c.env.Structs() {
+			c.compileStructType(st)
+		}
+	}
+
 	c.writeln("")
 	c.emitRuntime()
 
