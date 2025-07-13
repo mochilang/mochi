@@ -271,25 +271,42 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q3_returns_lexicographically_smallest_sequel_title()
-    if not (__eq(result, {{["movie_title"]="Alpha"}})) then error('expect failed') end
+function test_Q10_finds_uncredited_voice_actor_in_Russian_movie()
+    if not (__eq(result, {{["uncredited_voiced_character"]="Ivan", ["russian_movie"]="Vodka Dreams"}})) then error('expect failed') end
 end
 
-keyword = {{["id"]=1, ["keyword"]="amazing sequel"}, {["id"]=2, ["keyword"]="prequel"}}
-movie_info = {{["movie_id"]=10, ["info"]="Germany"}, {["movie_id"]=30, ["info"]="Sweden"}, {["movie_id"]=20, ["info"]="France"}}
-movie_keyword = {{["movie_id"]=10, ["keyword_id"]=1}, {["movie_id"]=30, ["keyword_id"]=1}, {["movie_id"]=20, ["keyword_id"]=1}, {["movie_id"]=10, ["keyword_id"]=2}}
-title = {{["id"]=10, ["title"]="Alpha", ["production_year"]=2006}, {["id"]=30, ["title"]="Beta", ["production_year"]=2008}, {["id"]=20, ["title"]="Gamma", ["production_year"]=2009}}
-allowed_infos = {"Sweden", "Norway", "Germany", "Denmark", "Swedish", "Denish", "Norwegian", "German"}
-candidate_titles = (function()
-    local _src = keyword
+char_name = {{["id"]=1, ["name"]="Ivan"}, {["id"]=2, ["name"]="Alex"}}
+cast_info = {{["movie_id"]=10, ["person_role_id"]=1, ["role_id"]=1, ["note"]="Soldier (voice) (uncredited)"}, {["movie_id"]=11, ["person_role_id"]=2, ["role_id"]=1, ["note"]="(voice)"}}
+company_name = {{["id"]=1, ["country_code"]="[ru]"}, {["id"]=2, ["country_code"]="[us]"}}
+company_type = {{["id"]=1}, {["id"]=2}}
+movie_companies = {{["movie_id"]=10, ["company_id"]=1, ["company_type_id"]=1}, {["movie_id"]=11, ["company_id"]=2, ["company_type_id"]=1}}
+role_type = {{["id"]=1, ["role"]="actor"}, {["id"]=2, ["role"]="director"}}
+title = {{["id"]=10, ["title"]="Vodka Dreams", ["production_year"]=2006}, {["id"]=11, ["title"]="Other Film", ["production_year"]=2004}}
+matches = (function()
+    local _src = char_name
     return __query(_src, {
-        { items = movie_keyword, on = function(k, mk) return __eq(mk.keyword_id, k.id) end },
-        { items = movie_info, on = function(k, mk, mi) return __eq(mi.movie_id, mk.movie_id) end },
-        { items = title, on = function(k, mk, mi, t) return __eq(t.id, mi.movie_id) end }
-    }, { selectFn = function(k, mk, mi, t) return t.title end, where = function(k, mk, mi, t) return ((((__contains(k.keyword, "sequel") and __contains(allowed_infos, mi.info)) and (t.production_year > 2005)) and __eq(mk.movie_id, mi.movie_id))) end })
+        { items = cast_info, on = function(chn, ci) return __eq(chn.id, ci.person_role_id) end },
+        { items = role_type, on = function(chn, ci, rt) return __eq(rt.id, ci.role_id) end },
+        { items = title, on = function(chn, ci, rt, t) return __eq(t.id, ci.movie_id) end },
+        { items = movie_companies, on = function(chn, ci, rt, t, mc) return __eq(mc.movie_id, t.id) end },
+        { items = company_name, on = function(chn, ci, rt, t, mc, cn) return __eq(cn.id, mc.company_id) end },
+        { items = company_type, on = function(chn, ci, rt, t, mc, cn, ct) return (ct.id == mc.company_type_id) end }
+    }, { selectFn = function(chn, ci, rt, t, mc, cn, ct) return {["character"]=chn.name, ["movie"]=t.title} end, where = function(chn, ci, rt, t, mc, cn, ct) return (((((__contains(ci.note, "(voice)") and __contains(ci.note, "(uncredited)")) and __eq(cn.country_code, "[ru]")) and __eq(rt.role, "actor")) and (t.production_year > 2005))) end })
 end)()
-result = {{["movie_title"]=__min(candidate_titles)}}
+result = {{["uncredited_voiced_character"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.character
+    end
+    return _res
+end)()), ["russian_movie"]=__min((function()
+    local _res = {}
+    for _, x in ipairs(matches) do
+        _res[#_res+1] = x.movie
+    end
+    return _res
+end)())}}
 __json(result)
 local __tests = {
-    {name="Q3 returns lexicographically smallest sequel title", fn=test_Q3_returns_lexicographically_smallest_sequel_title},
+    {name="Q10 finds uncredited voice actor in Russian movie", fn=test_Q10_finds_uncredited_voice_actor_in_Russian_movie},
 }
