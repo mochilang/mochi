@@ -4490,15 +4490,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						} else if name, okn := identName(a); okn && c.env != nil {
 							if vt, err := c.env.GetVar(name); err == nil {
 								if _, okf := vt.(types.FloatType); okf {
-									fmtStr = "%.17g"
+									fmtStr = "%.16g"
 								}
 							}
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						}
 						if isStringArg(a, c.env) {
 							c.need(needStringHeader)
@@ -4600,7 +4600,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						case types.StringType:
 							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
 						case types.FloatType:
-							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%.17g", fe))
+							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%.16g", fe))
 						default:
 							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", fe))
 						}
@@ -4625,15 +4625,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						if isStringArg(a, c.env) {
 							fmtStr = "%s"
 						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						} else if name, okn := identName(a); okn && c.env != nil {
 							if vt, err := c.env.GetVar(name); err == nil {
 								if _, okf := vt.(types.FloatType); okf {
-									fmtStr = "%.17g"
+									fmtStr = "%.16g"
 								}
 							}
 						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.17g"
+							fmtStr = "%.16g"
 						}
 						end := " "
 						if i == len(p.Call.Args)-1 {
