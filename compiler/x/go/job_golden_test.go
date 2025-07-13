@@ -4,6 +4,7 @@ package gocode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -79,7 +80,7 @@ func runJOBQuery(t *testing.T, base string) {
 		return
 	}
 
-	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "go", base+".go.out")
+	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "go", base+".go")
 	if want, err := os.ReadFile(codeWant); err == nil {
 		got := stripHeader(bytes.TrimSpace(code))
 		want = stripHeader(bytes.TrimSpace(want))
@@ -144,7 +145,8 @@ func TestGoCompiler_JOB(t *testing.T) {
 	if _, err := exec.LookPath("go"); err != nil {
 		t.Skip("go toolchain not installed")
 	}
-	for _, base := range []string{"q1"} {
+	for i := 1; i <= 10; i++ {
+		base := fmt.Sprintf("q%d", i)
 		if _, err := os.Stat(filepath.Join(repoRootJob(t), "tests", "dataset", "job", base+".mochi")); err != nil {
 			continue
 		}

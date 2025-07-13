@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -40,147 +42,138 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_Q5_finds_the_lexicographically_first_qualifying_title() {
-	expect(_equal(result, []map[string]string{map[string]string{"typical_european_movie": "A Film"}}))
+func test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing() {
+	expect(_equal(result, []map[string]string{map[string]string{"actress_pseudonym": "Y. S.", "japanese_movie_dubbed": "Dubbed Film"}}))
 }
 
-type Company_typeItem struct {
-	Ct_id int    `json:"ct_id"`
-	Kind  string `json:"kind"`
+type Aka_nameItem struct {
+	Person_id int    `json:"person_id"`
+	Name      string `json:"name"`
 }
 
-var company_type []Company_typeItem
+var aka_name []Aka_nameItem
 
-type Info_typeItem struct {
-	It_id int    `json:"it_id"`
-	Info  string `json:"info"`
+type Cast_infoItem struct {
+	Person_id int    `json:"person_id"`
+	Movie_id  int    `json:"movie_id"`
+	Note      string `json:"note"`
+	Role_id   int    `json:"role_id"`
 }
 
-var info_type []Info_typeItem
+var cast_info []Cast_infoItem
 
-type TitleItem struct {
-	T_id            int    `json:"t_id"`
-	Title           string `json:"title"`
-	Production_year int    `json:"production_year"`
+type Company_nameItem struct {
+	Id           int    `json:"id"`
+	Country_code string `json:"country_code"`
 }
 
-var title []TitleItem
+var company_name []Company_nameItem
 
 type Movie_companiesItem struct {
-	Movie_id        int    `json:"movie_id"`
-	Company_type_id int    `json:"company_type_id"`
-	Note            string `json:"note"`
+	Movie_id   int    `json:"movie_id"`
+	Company_id int    `json:"company_id"`
+	Note       string `json:"note"`
 }
 
 var movie_companies []Movie_companiesItem
 
-type Movie_infoItem struct {
-	Movie_id     int    `json:"movie_id"`
-	Info         string `json:"info"`
-	Info_type_id int    `json:"info_type_id"`
+type NameItem struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
-var movie_info []Movie_infoItem
-var candidate_titles []string
+var name []NameItem
+
+type Role_typeItem struct {
+	Id   int    `json:"id"`
+	Role string `json:"role"`
+}
+
+var role_type []Role_typeItem
+
+type TitleItem struct {
+	Id    int    `json:"id"`
+	Title string `json:"title"`
+}
+
+var title []TitleItem
+var eligible []map[string]string
 
 type ResultItem struct {
-	Typical_european_movie any `json:"typical_european_movie"`
+	Actress_pseudonym     any `json:"actress_pseudonym"`
+	Japanese_movie_dubbed any `json:"japanese_movie_dubbed"`
 }
 
 var result []ResultItem
 
 func main() {
 	failures := 0
-	company_type = _cast[[]Company_typeItem]([]Company_typeItem{Company_typeItem{
-		Ct_id: 1,
-		Kind:  "production companies",
-	}, Company_typeItem{
-		Ct_id: 2,
-		Kind:  "other",
+	aka_name = _cast[[]Aka_nameItem]([]Aka_nameItem{Aka_nameItem{
+		Person_id: 1,
+		Name:      "Y. S.",
 	}})
-	info_type = _cast[[]Info_typeItem]([]Info_typeItem{Info_typeItem{
-		It_id: 10,
-		Info:  "languages",
+	cast_info = _cast[[]Cast_infoItem]([]Cast_infoItem{Cast_infoItem{
+		Person_id: 1,
+		Movie_id:  10,
+		Note:      "(voice: English version)",
+		Role_id:   1000,
 	}})
-	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
-		T_id:            100,
-		Title:           "B Movie",
-		Production_year: 2010,
-	}, TitleItem{
-		T_id:            200,
-		Title:           "A Film",
-		Production_year: 2012,
-	}, TitleItem{
-		T_id:            300,
-		Title:           "Old Movie",
-		Production_year: 2000,
+	company_name = _cast[[]Company_nameItem]([]Company_nameItem{Company_nameItem{
+		Id:           50,
+		Country_code: "[jp]",
 	}})
 	movie_companies = _cast[[]Movie_companiesItem]([]Movie_companiesItem{Movie_companiesItem{
-		Movie_id:        100,
-		Company_type_id: 1,
-		Note:            "ACME (France) (theatrical)",
-	}, Movie_companiesItem{
-		Movie_id:        200,
-		Company_type_id: 1,
-		Note:            "ACME (France) (theatrical)",
-	}, Movie_companiesItem{
-		Movie_id:        300,
-		Company_type_id: 1,
-		Note:            "ACME (France) (theatrical)",
+		Movie_id:   10,
+		Company_id: 50,
+		Note:       "Studio (Japan)",
 	}})
-	movie_info = _cast[[]Movie_infoItem]([]Movie_infoItem{Movie_infoItem{
-		Movie_id:     100,
-		Info:         "German",
-		Info_type_id: 10,
-	}, Movie_infoItem{
-		Movie_id:     200,
-		Info:         "Swedish",
-		Info_type_id: 10,
-	}, Movie_infoItem{
-		Movie_id:     300,
-		Info:         "German",
-		Info_type_id: 10,
+	name = _cast[[]NameItem]([]NameItem{NameItem{
+		Id:   1,
+		Name: "Yoko Ono",
+	}, NameItem{
+		Id:   2,
+		Name: "Yuichi",
 	}})
-	candidate_titles = func() []string {
-		_res := []string{}
-		for _, ct := range company_type {
-			for _, mc := range movie_companies {
-				if !(mc.Company_type_id == ct.Ct_id) {
+	role_type = _cast[[]Role_typeItem]([]Role_typeItem{Role_typeItem{
+		Id:   1000,
+		Role: "actress",
+	}})
+	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
+		Id:    10,
+		Title: "Dubbed Film",
+	}})
+	eligible = func() []map[string]string {
+		_res := []map[string]string{}
+		for _, an1 := range aka_name {
+			for _, n1 := range name {
+				if !(n1.Id == an1.Person_id) {
 					continue
 				}
-				for _, mi := range movie_info {
-					if !(mi.Movie_id == mc.Movie_id) {
+				for _, ci := range cast_info {
+					if !(ci.Person_id == an1.Person_id) {
 						continue
 					}
-					for _, it := range info_type {
-						if !(it.It_id == mi.Info_type_id) {
+					for _, t := range title {
+						if !(t.Id == ci.Movie_id) {
 							continue
 						}
-						for _, t := range title {
-							if !(t.T_id == mc.Movie_id) {
+						for _, mc := range movie_companies {
+							if !(mc.Movie_id == ci.Movie_id) {
 								continue
 							}
-							if ((((ct.Kind == "production companies") && strings.Contains(mc.Note, "(theatrical)")) && strings.Contains(mc.Note, "(France)")) && (t.Production_year > 2005)) && (_contains[string]([]string{
-								"Sweden",
-								"Norway",
-								"Germany",
-								"Denmark",
-								"Swedish",
-								"Denish",
-								"Norwegian",
-								"German",
-							}, mi.Info)) {
-								if ((((ct.Kind == "production companies") && strings.Contains(mc.Note, "(theatrical)")) && strings.Contains(mc.Note, "(France)")) && (t.Production_year > 2005)) && (_contains[string]([]string{
-									"Sweden",
-									"Norway",
-									"Germany",
-									"Denmark",
-									"Swedish",
-									"Denish",
-									"Norwegian",
-									"German",
-								}, mi.Info)) {
-									_res = append(_res, t.Title)
+							for _, cn := range company_name {
+								if !(cn.Id == mc.Company_id) {
+									continue
+								}
+								for _, rt := range role_type {
+									if !(rt.Id == ci.Role_id) {
+										continue
+									}
+									if ((((((ci.Note == "(voice: English version)") && (cn.Country_code == "[jp]")) && strings.Contains(mc.Note, "(Japan)")) && (!strings.Contains(mc.Note, "(USA)"))) && strings.Contains(n1.Name, "Yo")) && (!strings.Contains(n1.Name, "Yu"))) && (rt.Role == "actress") {
+										if ((((((ci.Note == "(voice: English version)") && (cn.Country_code == "[jp]")) && strings.Contains(mc.Note, "(Japan)")) && (!strings.Contains(mc.Note, "(USA)"))) && strings.Contains(n1.Name, "Yo")) && (!strings.Contains(n1.Name, "Yu"))) && (rt.Role == "actress") {
+											_res = append(_res, map[string]string{"pseudonym": an1.Name, "movie_title": t.Title})
+										}
+									}
 								}
 							}
 						}
@@ -190,10 +183,25 @@ func main() {
 		}
 		return _res
 	}()
-	result = _cast[[]ResultItem]([]ResultItem{ResultItem{Typical_european_movie: _min(candidate_titles)}})
+	result = _cast[[]ResultItem]([]ResultItem{ResultItem{
+		Actress_pseudonym: _min(func() []string {
+			_res := []string{}
+			for _, x := range eligible {
+				_res = append(_res, x["pseudonym"])
+			}
+			return _res
+		}()),
+		Japanese_movie_dubbed: _min(func() []string {
+			_res := []string{}
+			for _, x := range eligible {
+				_res = append(_res, x["movie_title"])
+			}
+			return _res
+		}()),
+	}})
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("Q5 finds the lexicographically first qualifying title")
+		printTestStart("Q8 returns the pseudonym and movie title for Japanese dubbing")
 		start := time.Now()
 		var failed error
 		func() {
@@ -202,7 +210,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_Q5_finds_the_lexicographically_first_qualifying_title()
+			test_Q8_returns_the_pseudonym_and_movie_title_for_Japanese_dubbing()
 		}()
 		if failed != nil {
 			failures++
@@ -261,15 +269,6 @@ func _cast[T any](v any) T {
 		panic(err)
 	}
 	return out
-}
-
-func _contains[T comparable](s []T, v T) bool {
-	for _, x := range s {
-		if x == v {
-			return true
-		}
-	}
-	return false
 }
 
 func _convertMapAny(m map[any]any) map[string]any {

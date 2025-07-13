@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -40,16 +42,9 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_Q4_returns_minimum_rating_and_title_for_sequels() {
-	expect(_equal(result, []map[string]string{map[string]string{"rating": "6.2", "movie_title": "Alpha Movie"}}))
+func test_Q3_returns_lexicographically_smallest_sequel_title() {
+	expect(_equal(result, []map[string]string{map[string]string{"movie_title": "Alpha"}}))
 }
-
-type Info_typeItem struct {
-	Id   int    `json:"id"`
-	Info string `json:"info"`
-}
-
-var info_type []Info_typeItem
 
 type KeywordItem struct {
 	Id      int    `json:"id"`
@@ -58,13 +53,12 @@ type KeywordItem struct {
 
 var keyword []KeywordItem
 
-type TitleItem struct {
-	Id              int    `json:"id"`
-	Title           string `json:"title"`
-	Production_year int    `json:"production_year"`
+type Movie_infoItem struct {
+	Movie_id int    `json:"movie_id"`
+	Info     string `json:"info"`
 }
 
-var title []TitleItem
+var movie_info []Movie_infoItem
 
 type Movie_keywordItem struct {
 	Movie_id   int `json:"movie_id"`
@@ -73,17 +67,17 @@ type Movie_keywordItem struct {
 
 var movie_keyword []Movie_keywordItem
 
-type Movie_info_idxItem struct {
-	Movie_id     int    `json:"movie_id"`
-	Info_type_id int    `json:"info_type_id"`
-	Info         string `json:"info"`
+type TitleItem struct {
+	Id              int    `json:"id"`
+	Title           string `json:"title"`
+	Production_year int    `json:"production_year"`
 }
 
-var movie_info_idx []Movie_info_idxItem
-var rows []map[string]string
+var title []TitleItem
+var allowed_infos []string
+var candidate_titles []string
 
 type ResultItem struct {
-	Rating      any `json:"rating"`
 	Movie_title any `json:"movie_title"`
 }
 
@@ -91,79 +85,82 @@ var result []ResultItem
 
 func main() {
 	failures := 0
-	info_type = _cast[[]Info_typeItem]([]Info_typeItem{Info_typeItem{
-		Id:   1,
-		Info: "rating",
-	}, Info_typeItem{
-		Id:   2,
-		Info: "other",
-	}})
 	keyword = _cast[[]KeywordItem]([]KeywordItem{KeywordItem{
 		Id:      1,
-		Keyword: "great sequel",
+		Keyword: "amazing sequel",
 	}, KeywordItem{
 		Id:      2,
 		Keyword: "prequel",
 	}})
+	movie_info = _cast[[]Movie_infoItem]([]Movie_infoItem{Movie_infoItem{
+		Movie_id: 10,
+		Info:     "Germany",
+	}, Movie_infoItem{
+		Movie_id: 30,
+		Info:     "Sweden",
+	}, Movie_infoItem{
+		Movie_id: 20,
+		Info:     "France",
+	}})
+	movie_keyword = _cast[[]Movie_keywordItem]([]Movie_keywordItem{
+		Movie_keywordItem{
+			Movie_id:   10,
+			Keyword_id: 1,
+		},
+		Movie_keywordItem{
+			Movie_id:   30,
+			Keyword_id: 1,
+		},
+		Movie_keywordItem{
+			Movie_id:   20,
+			Keyword_id: 1,
+		},
+		Movie_keywordItem{
+			Movie_id:   10,
+			Keyword_id: 2,
+		},
+	})
 	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
 		Id:              10,
-		Title:           "Alpha Movie",
+		Title:           "Alpha",
 		Production_year: 2006,
 	}, TitleItem{
-		Id:              20,
-		Title:           "Beta Film",
-		Production_year: 2007,
-	}, TitleItem{
 		Id:              30,
-		Title:           "Old Film",
-		Production_year: 2004,
+		Title:           "Beta",
+		Production_year: 2008,
+	}, TitleItem{
+		Id:              20,
+		Title:           "Gamma",
+		Production_year: 2009,
 	}})
-	movie_keyword = _cast[[]Movie_keywordItem]([]Movie_keywordItem{Movie_keywordItem{
-		Movie_id:   10,
-		Keyword_id: 1,
-	}, Movie_keywordItem{
-		Movie_id:   20,
-		Keyword_id: 1,
-	}, Movie_keywordItem{
-		Movie_id:   30,
-		Keyword_id: 1,
-	}})
-	movie_info_idx = _cast[[]Movie_info_idxItem]([]Movie_info_idxItem{Movie_info_idxItem{
-		Movie_id:     10,
-		Info_type_id: 1,
-		Info:         "6.2",
-	}, Movie_info_idxItem{
-		Movie_id:     20,
-		Info_type_id: 1,
-		Info:         "7.8",
-	}, Movie_info_idxItem{
-		Movie_id:     30,
-		Info_type_id: 1,
-		Info:         "4.5",
-	}})
-	rows = func() []map[string]string {
-		_res := []map[string]string{}
-		for _, it := range info_type {
-			for _, mi := range movie_info_idx {
-				if !(it.Id == mi.Info_type_id) {
+	allowed_infos = []string{
+		"Sweden",
+		"Norway",
+		"Germany",
+		"Denmark",
+		"Swedish",
+		"Denish",
+		"Norwegian",
+		"German",
+	}
+	candidate_titles = func() []string {
+		_res := []string{}
+		for _, k := range keyword {
+			for _, mk := range movie_keyword {
+				if !(mk.Keyword_id == k.Id) {
 					continue
 				}
-				for _, t := range title {
-					if !(t.Id == mi.Movie_id) {
+				for _, mi := range movie_info {
+					if !(mi.Movie_id == mk.Movie_id) {
 						continue
 					}
-					for _, mk := range movie_keyword {
-						if !(mk.Movie_id == t.Id) {
+					for _, t := range title {
+						if !(t.Id == mi.Movie_id) {
 							continue
 						}
-						for _, k := range keyword {
-							if !(k.Id == mk.Keyword_id) {
-								continue
-							}
-							if ((((it.Info == "rating") && strings.Contains(k.Keyword, "sequel")) && (mi.Info > "5.0")) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
-								if ((((it.Info == "rating") && strings.Contains(k.Keyword, "sequel")) && (mi.Info > "5.0")) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
-									_res = append(_res, map[string]string{"rating": mi.Info, "title": t.Title})
-								}
+						if ((strings.Contains(k.Keyword, "sequel") && _contains[string](allowed_infos, mi.Info)) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
+							if ((strings.Contains(k.Keyword, "sequel") && _contains[string](allowed_infos, mi.Info)) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
+								_res = append(_res, t.Title)
 							}
 						}
 					}
@@ -172,25 +169,10 @@ func main() {
 		}
 		return _res
 	}()
-	result = _cast[[]ResultItem]([]ResultItem{ResultItem{
-		Rating: _min(func() []string {
-			_res := []string{}
-			for _, r := range rows {
-				_res = append(_res, r["rating"])
-			}
-			return _res
-		}()),
-		Movie_title: _min(func() []string {
-			_res := []string{}
-			for _, r := range rows {
-				_res = append(_res, r["title"])
-			}
-			return _res
-		}()),
-	}})
+	result = _cast[[]ResultItem]([]ResultItem{ResultItem{Movie_title: _min(candidate_titles)}})
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("Q4 returns minimum rating and title for sequels")
+		printTestStart("Q3 returns lexicographically smallest sequel title")
 		start := time.Now()
 		var failed error
 		func() {
@@ -199,7 +181,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_Q4_returns_minimum_rating_and_title_for_sequels()
+			test_Q3_returns_lexicographically_smallest_sequel_title()
 		}()
 		if failed != nil {
 			failures++
@@ -258,6 +240,15 @@ func _cast[T any](v any) T {
 		panic(err)
 	}
 	return out
+}
+
+func _contains[T comparable](s []T, v T) bool {
+	for _, x := range s {
+		if x == v {
+			return true
+		}
+	}
+	return false
 }
 
 func _convertMapAny(m map[any]any) map[string]any {
