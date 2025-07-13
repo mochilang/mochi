@@ -1608,6 +1608,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if strings.HasSuffix(expr, ".contains") && len(args) == 1 {
 				expr = strings.TrimSuffix(expr, ".contains")
 				expr = fmt.Sprintf("(%s.include?(%s))", expr, args[0])
+			} else if strings.HasSuffix(expr, ".starts_with") && len(args) == 1 {
+				expr = strings.TrimSuffix(expr, ".starts_with")
+				expr = fmt.Sprintf("(%s.start_with?(%s))", expr, args[0])
 			} else if strings.HasSuffix(expr, ".key?") && len(args) == 1 {
 				expr = strings.TrimSuffix(expr, ".key?")
 				expr = fmt.Sprintf("(%s.to_h.key?(%s))", expr, args[0])
