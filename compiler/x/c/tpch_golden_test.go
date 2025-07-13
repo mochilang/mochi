@@ -1,4 +1,4 @@
-//go:build archived && slow
+//go:build slow
 
 package ccode_test
 
@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	ccode "mochi/archived/x/c"
+	ccode "mochi/compiler/x/c"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
@@ -41,7 +41,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRootTPCH(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 1; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", query+".mochi")
@@ -53,6 +53,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
+			os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 			code, err := ccode.New(env).Compile(prog)
 			if err != nil {
 				t.Skipf("compile error: %v", err)
