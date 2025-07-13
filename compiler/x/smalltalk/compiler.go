@@ -47,8 +47,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 
-	var out bytes.Buffer
-	out.Write(meta.Header("\""))
+       var out bytes.Buffer
+       out.Write(meta.Header("\""))
+       out.WriteString("\"\n")
 	vars := collectVars(p.Statements)
 	if len(vars) > 0 {
 		c.writeln("| " + strings.Join(vars, " ") + " |")
@@ -135,17 +136,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
-	case s.Return != nil:
-		expr, err := c.compileExpr(s.Return.Value)
-		if err != nil {
-			return err
-		}
-		c.writeln(expr)
-		return nil
-	case s.Type != nil:
-		// Struct and enum definitions have no runtime effect in the
-		// generated Smalltalk code, so they are ignored.
-		return nil
+       case s.Return != nil:
+               expr, err := c.compileExpr(s.Return.Value)
+               if err != nil {
+                       return err
+               }
+               c.writeln(expr)
+               return nil
+       case s.Test != nil:
+               // Test blocks do not produce output in the generated Smalltalk
+               // program. They are ignored so TPCH queries compile successfully.
+               return nil
+       case s.Expect != nil:
+               // Expect statements are part of test blocks. Ignore them.
+               return nil
+       case s.Type != nil:
+               // Struct and enum definitions have no runtime effect in the
+               // generated Smalltalk code, so they are ignored.
+               return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
