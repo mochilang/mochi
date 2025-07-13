@@ -113,15 +113,6 @@ Checklist:
 - [ ] Expand coverage to more examples in `tests/vm/valid`
 - [ ] Verify TPC-H `q1.mochi` output matches the VM
 
-### TPCH Progress
-
-* [x] `q1.mochi` compiles with struct inference
-* [ ] Confirm runtime output for `q1.mochi`
-
 ### Recent Improvements
 
-* [x] Emit struct type declarations for inferred dataset rows
-* [x] Generate TPCH q1 with struct support
-* [x] Avoided duplicate struct definitions when casting
-* [x] Normalized `_convSlice` detection to prevent redundant conversions
-* [x] Improved checklist formatting and TPCH tracking
+* Added concise `formatDuration` helper for test output
