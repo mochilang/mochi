@@ -167,7 +167,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	final.Write(header.Bytes())
 	final.Write(c.prelude.Bytes())
 	final.Write(c.buf.Bytes())
-	return final.Bytes(), nil
+	out := final.Bytes()
+	return FormatFS(out), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {
