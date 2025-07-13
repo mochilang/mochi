@@ -111,6 +111,7 @@ Compiled programs: 100/100
 
 - [x] q4
 - [ ] q5
+- [x] q6
 
 Recent improvements:
 - String literal concatenation simplified when both operands are constants.
