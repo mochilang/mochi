@@ -115,6 +115,10 @@ Recent improvements:
    matches the human reference implementations.
 - Top-level `let` bindings are now placed inside `main` when no
   functions follow, matching the style of the hand-written examples.
+- Literal `$` before interpolated values is now escaped properly.
+- `json` output works for lists and structs.
+- GROUP BY keys become case classes when appropriate.
+- Empty mutable lists default to `ArrayBuffer[Any]`.
 
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style

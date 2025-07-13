@@ -1,8 +1,0 @@
-exit status 1
-/workspace/mochi/tests/machine/x/scala/inner_join.scala:13: error: invalid string interpolation: `$$', `$'ident or `$'BlockExpr expected
-      println(s"Order ${entry.orderId} by ${entry.customerName} - $ ${entry.total}")
-                                                               ^
-/workspace/mochi/tests/machine/x/scala/inner_join.scala:13: error: unclosed string literal
-      println(s"Order ${entry.orderId} by ${entry.customerName} - $ ${entry.total}")
-                                                                                  ^
-two errors found
