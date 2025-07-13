@@ -5,6 +5,7 @@
   `MOCHI_HEADER_VERSION`. The compiler now always uses the repository
   version and the current UTC time.
 - [2025-07-13 05:22] Regenerated Erlang machine outputs with dynamic headers.
+- [2025-07-13 05:23] Added golden outputs for TPCH queries q16 through q21.
 - [2025-07-13 05:02] Added support for `MOCHI_HEADER_TIME` and `MOCHI_HEADER_VERSION` environment variables in `meta.Header`.
 - [2025-07-13 05:02] Inline constants when calling `contains` to avoid unbound variable errors.
 
@@ -12,4 +13,5 @@
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
 - [ ] Fix nested accumulation bug in `group_items_iteration`.
 - [ ] Support extern values for `python_math`.
-- [ ] Compile TPC-H query `q1.mochi` successfully.
+- [x] Compile TPC-H query `q1.mochi` successfully.
+- [ ] Compile TPC-H query `q22.mochi` successfully.
