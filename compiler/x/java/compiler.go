@@ -2845,16 +2845,38 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 
 	resVar := c.tmpName("res")
-	resultElem := c.inferType(q.Select)
+
+	rowVars := []string{q.Var}
+	for _, fr := range q.Froms {
+		rowVars = append(rowVars, fr.Var)
+	}
+	for _, j := range q.Joins {
+		rowVars = append(rowVars, j.Var)
+	}
+	rowType := elemType
+	if q.Group != nil && len(rowVars) > 1 {
+		rowType = c.rowDataClassFor(rowVars)
+		elemType = rowType
+	}
+
+	resultElem := "Object"
 	if q.Group != nil {
+		origVars := c.vars
+		c.vars = copyMap(c.vars)
+		keyType := c.inferType(q.Group.Exprs[0])
+		if keyType == "var" {
+			keyType = "Object"
+		}
+		c.vars[q.Group.Name] = fmt.Sprintf("Group<%s,%s>", wrapperType(keyType), rowType)
+		c.vars[q.Group.Name+"_key"] = keyType
+		resultElem = c.inferType(q.Select)
 		if id, ok := identName(q.Select); ok && id == q.Group.Name {
-			keyType := c.inferType(q.Group.Exprs[0])
-			if keyType == "var" {
-				keyType = "Object"
-			}
 			resultElem = fmt.Sprintf("Group<%s,%s>", wrapperType(keyType), elemType)
 			c.helpers["group"] = true
 		}
+		c.vars = origVars
+	} else {
+		resultElem = c.inferType(q.Select)
 	}
 	if resultElem == "var" {
 		resultElem = "Object"
@@ -2868,19 +2890,6 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			return "", fmt.Errorf("unsupported multi-key group")
 		}
 		groupsVar = c.tmpName("groups")
-	}
-
-	rowVars := []string{q.Var}
-	for _, fr := range q.Froms {
-		rowVars = append(rowVars, fr.Var)
-	}
-	for _, j := range q.Joins {
-		rowVars = append(rowVars, j.Var)
-	}
-	rowType := elemType
-	if q.Group != nil && len(rowVars) > 1 {
-		rowType = c.rowDataClassFor(rowVars)
-		elemType = rowType
 	}
 
 	// simple right or outer join without additional clauses

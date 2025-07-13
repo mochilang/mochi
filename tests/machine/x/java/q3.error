@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/Q3.java:199: error: incompatible types: possible lossy conversion from double to int
-}}).get().stream().mapToDouble(n -> ((Number)n).doubleValue()).sum(), g.key.o_orderdate, g.key.o_shippriority));
-                                                                  ^
-/tmp/Q3.java:204: error: incompatible types: possible lossy conversion from double to int
-    if (!(Objects.equals(order_line_join, Arrays.asList(new LOrderkeyRevenueOOrderdateOShippriority(100, 1000.000000 * 0.950000 + 500.000000, "1995-03-14", 1))))) throw new AssertionError("expect failed");
-                                                                                                                                ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors
