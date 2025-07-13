@@ -300,6 +300,24 @@ func isStruct(t types.Type) bool {
 	return ok
 }
 
+// structMatches reports whether the provided field maps and order
+// slices describe the same struct layout. It is used when inferring
+// struct types from literals to avoid emitting duplicate definitions.
+func structMatches(existing types.StructType, fields map[string]types.Type, order []string) bool {
+	if len(existing.Fields) != len(fields) || len(existing.Order) != len(order) {
+		return false
+	}
+	for i, name := range existing.Order {
+		if order[i] != name {
+			return false
+		}
+		if !equalTypes(existing.Fields[name], fields[name]) {
+			return false
+		}
+	}
+	return true
+}
+
 func isUnion(t types.Type) bool {
 	_, ok := t.(types.UnionType)
 	return ok
@@ -340,19 +358,19 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 	}
 
 	// Handle list conversions specially to avoid unnecessary helper calls.
-       if fl, ok := from.(types.ListType); ok {
-               if tl, ok := to.(types.ListType); ok {
-                       if equalTypes(fl.Elem, tl.Elem) {
-                               return fmt.Sprintf("%s(%s)", toGo, expr)
-                       }
-                       convPrefix := fmt.Sprintf("_convSlice[%s,%s](", goType(fl.Elem), goType(tl.Elem))
-                       if strings.HasPrefix(strings.TrimSpace(expr), convPrefix) {
-                               return expr
-                       }
-                       c.use("_convSlice")
-                       return fmt.Sprintf("_convSlice[%s,%s](%s)", goType(fl.Elem), goType(tl.Elem), expr)
-               }
-       }
+	if fl, ok := from.(types.ListType); ok {
+		if tl, ok := to.(types.ListType); ok {
+			if equalTypes(fl.Elem, tl.Elem) {
+				return fmt.Sprintf("%s(%s)", toGo, expr)
+			}
+			convPrefix := fmt.Sprintf("_convSlice[%s,%s](", goType(fl.Elem), goType(tl.Elem))
+			if strings.HasPrefix(strings.TrimSpace(expr), convPrefix) {
+				return expr
+			}
+			c.use("_convSlice")
+			return fmt.Sprintf("_convSlice[%s,%s](%s)", goType(fl.Elem), goType(tl.Elem), expr)
+		}
+	}
 
 	if isString(from) {
 		c.imports["strconv"] = true

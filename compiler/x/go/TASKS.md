@@ -24,9 +24,10 @@ TPC-H progress:
 - 2025-07-13 07:30 - Began verifying TPCH q1 runtime output
 - 2025-07-13 08:04 - Skipped duplicate `_convSlice` calls and tidied printing
   logic
+- 2025-07-13 09:17 - Avoided emitting new struct types when an identical
+  definition already exists
 
 ## Remaining Work
-
-- [ ] Validate TPCH q1 runtime results
-- [ ] Fix failing JOB query expectations
-- [ ] Investigate missing output for JOB q7
+* [ ] Validate TPCH q1 runtime results
+* [ ] Fix failing JOB query expectations
+* [ ] Investigate missing output for JOB q7

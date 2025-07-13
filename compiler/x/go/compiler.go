@@ -1009,6 +1009,11 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 		}
 	}
 	stName := exportName(sanitizeName(name)) + "Item"
+	if existing, ok := c.env.GetStruct(stName); ok {
+		if structMatches(existing, fields, order) {
+			return existing, true
+		}
+	}
 	idx := 1
 	base := stName
 	for {
@@ -1040,6 +1045,11 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 	stName := exportName(sanitizeName(name))
 	if stName == "" {
 		stName = "AnonStruct"
+	}
+	if existing, ok := c.env.GetStruct(stName); ok {
+		if structMatches(existing, fields, order) {
+			return existing, true
+		}
 	}
 	idx := 1
 	base := stName
