@@ -1,0 +1,66 @@
+let customer = [
+  { c_custkey: 1, c_mktsegment: "BUILDING" },
+  { c_custkey: 2, c_mktsegment: "AUTOMOBILE" }
+]
+
+let orders = [
+  { o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-03-14", o_shippriority: 1 },
+  { o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-03-10", o_shippriority: 2 }
+]
+
+let lineitem = [
+  { l_orderkey: 100, l_extendedprice: 1000.0, l_discount: 0.05, l_shipdate: "1995-03-16" },
+  { l_orderkey: 100, l_extendedprice: 500.0, l_discount: 0.00, l_shipdate: "1995-03-20" },
+  { l_orderkey: 200, l_extendedprice: 1000.0, l_discount: 0.10, l_shipdate: "1995-03-14" } // too early
+]
+
+let cutoff = "1995-03-15"
+let segment = "BUILDING"
+
+let building_customers =
+  from c in customer
+  where c.c_mktsegment == segment
+  select c
+
+let valid_orders =
+  from o in orders
+  join c in building_customers on o.o_custkey == c.c_custkey
+  where o.o_orderdate < cutoff
+  select o
+
+let valid_lineitems =
+  from l in lineitem
+  where l.l_shipdate > cutoff
+  select l
+
+let order_line_join =
+  from o in valid_orders
+  join l in valid_lineitems on l.l_orderkey == o.o_orderkey
+  group by {
+    o_orderkey: o.o_orderkey,
+    o_orderdate: o.o_orderdate,
+    o_shippriority: o.o_shippriority
+  } into g
+  sort by [
+    -sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
+    g.key.o_orderdate
+  ]
+  select {
+    l_orderkey: g.key.o_orderkey,
+    revenue: sum(from r in g select r.l.l_extendedprice * (1 - r.l.l_discount)),
+    o_orderdate: g.key.o_orderdate,
+    o_shippriority: g.key.o_shippriority
+  }
+
+json(order_line_join)
+
+test "Q3 returns revenue per order with correct priority" {
+  expect order_line_join == [
+    {
+      l_orderkey: 100,
+      revenue: 1000.0 * 0.95 + 500.0,
+      o_orderdate: "1995-03-14",
+      o_shippriority: 1
+    }
+  ]
+}

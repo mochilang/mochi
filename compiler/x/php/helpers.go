@@ -387,6 +387,9 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 	if p.Selector != nil {
 		vars[p.Selector.Root] = struct{}{}
 	}
+	if p.Query != nil {
+		scanQuery(p.Query, vars)
+	}
 	if p.Group != nil {
 		scanExpr(p.Group, vars)
 	}
@@ -413,6 +416,43 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 		for _, a := range p.Call.Args {
 			scanExpr(a, vars)
 		}
+	}
+}
+
+func scanQuery(q *parser.QueryExpr, vars map[string]struct{}) {
+	if q == nil {
+		return
+	}
+	scanExpr(q.Source, vars)
+	for _, f := range q.Froms {
+		scanExpr(f.Src, vars)
+	}
+	for _, j := range q.Joins {
+		scanExpr(j.Src, vars)
+		scanExpr(j.On, vars)
+	}
+	if q.Group != nil {
+		if len(q.Group.Exprs) > 0 {
+			scanExpr(q.Group.Exprs[0], vars)
+		}
+		if q.Group.Having != nil {
+			scanExpr(q.Group.Having, vars)
+		}
+	}
+	scanExpr(q.Select, vars)
+	scanExpr(q.Where, vars)
+	scanExpr(q.Sort, vars)
+	scanExpr(q.Skip, vars)
+	scanExpr(q.Take, vars)
+	delete(vars, q.Var)
+	for _, f := range q.Froms {
+		delete(vars, f.Var)
+	}
+	for _, j := range q.Joins {
+		delete(vars, j.Var)
+	}
+	if q.Group != nil {
+		delete(vars, q.Group.Name)
 	}
 }
 

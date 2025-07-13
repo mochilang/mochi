@@ -1,0 +1,68 @@
+let region = [
+  { r_regionkey: 0, r_name: "ASIA" },
+  { r_regionkey: 1, r_name: "EUROPE" }
+]
+
+let nation = [
+  { n_nationkey: 10, n_regionkey: 0, n_name: "JAPAN" },
+  { n_nationkey: 20, n_regionkey: 0, n_name: "INDIA" },
+  { n_nationkey: 30, n_regionkey: 1, n_name: "FRANCE" }
+]
+
+let customer = [
+  { c_custkey: 1, c_nationkey: 10 },
+  { c_custkey: 2, c_nationkey: 20 }
+]
+
+let supplier = [
+  { s_suppkey: 100, s_nationkey: 10 },
+  { s_suppkey: 200, s_nationkey: 20 }
+]
+
+let orders = [
+  { o_orderkey: 1000, o_custkey: 1, o_orderdate: "1994-03-15" },
+  { o_orderkey: 2000, o_custkey: 2, o_orderdate: "1994-06-10" },
+  { o_orderkey: 3000, o_custkey: 2, o_orderdate: "1995-01-01" } // outside range
+]
+
+let lineitem = [
+  { l_orderkey: 1000, l_suppkey: 100, l_extendedprice: 1000.0, l_discount: 0.05 },
+  { l_orderkey: 2000, l_suppkey: 200, l_extendedprice: 800.0, l_discount: 0.10 },
+  { l_orderkey: 3000, l_suppkey: 200, l_extendedprice: 900.0, l_discount: 0.05 } // ignored
+]
+
+let asia_nations =
+  from r in region
+  join n in nation on n.n_regionkey == r.r_regionkey
+  where r.r_name == "ASIA"
+  select n
+
+let local_customer_supplier_orders =
+  from c in customer
+  join n in asia_nations on c.c_nationkey == n.n_nationkey
+  join o in orders on o.o_custkey == c.c_custkey
+  join l in lineitem on l.l_orderkey == o.o_orderkey
+  join s in supplier on s.s_suppkey == l.l_suppkey
+  where o.o_orderdate >= "1994-01-01" && o.o_orderdate < "1995-01-01" && s.s_nationkey == c.c_nationkey
+  select {
+    nation: n.n_name,
+    revenue: l.l_extendedprice * (1 - l.l_discount)
+  }
+
+let result =
+  from r in local_customer_supplier_orders
+  group by r.nation into g
+  sort by -sum(from x in g select x.revenue)
+  select {
+    n_name: g.key,
+    revenue: sum(from x in g select x.revenue)
+  }
+
+json(result)
+
+test "Q5 returns revenue per nation in ASIA with local suppliers" {
+  expect result == [
+    { n_name: "JAPAN", revenue: 950 },
+    { n_name: "INDIA", revenue: 720 }
+  ]
+}
