@@ -35,7 +35,7 @@ func TestErlangCompiler_JOBQueries(t *testing.T) {
 	os.Setenv("MOCHI_HEADER_TIME", "2020-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := repoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "erlang", base+".erl")
