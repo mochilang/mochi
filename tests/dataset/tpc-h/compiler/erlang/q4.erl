@@ -5,8 +5,8 @@
 main(_) ->
     Orders = [#{o_orderkey => 1, o_orderdate => "1993-07-01", o_orderpriority => "1-URGENT"}, #{o_orderkey => 2, o_orderdate => "1993-07-15", o_orderpriority => "2-HIGH"}, #{o_orderkey => 3, o_orderdate => "1993-08-01", o_orderpriority => "3-NORMAL"}],
     Lineitem = [#{l_orderkey => 1, l_commitdate => "1993-07-10", l_receiptdate => "1993-07-12"}, #{l_orderkey => 1, l_commitdate => "1993-07-12", l_receiptdate => "1993-07-10"}, #{l_orderkey => 2, l_commitdate => "1993-07-20", l_receiptdate => "1993-07-25"}, #{l_orderkey => 3, l_commitdate => "1993-08-02", l_receiptdate => "1993-08-01"}, #{l_orderkey => 3, l_commitdate => "1993-08-05", l_receiptdate => "1993-08-10"}],
-    Date_filtered_orders = [O || O <- Orders, (((maps:get(o_orderdate, O) >= "1993-07-01") andalso maps:get(o_orderdate, O)) < "1993-08-01")],
-    Late_orders = [O || O <- Date_filtered_orders, (case lists:any(fun(L) -> (((maps:get(l_orderkey, L) == maps:get(o_orderkey, O)) andalso maps:get(l_commitdate, L)) < maps:get(l_receiptdate, L)) end, Lineitem) of undefined -> false; false -> false; _ -> true end)],
+    Date_filtered_orders = [O || O <- Orders, ((maps:get(o_orderdate, O) >= "1993-07-01") andalso (maps:get(o_orderdate, O) < "1993-08-01"))],
+    Late_orders = [O || O <- Date_filtered_orders, (case lists:any(fun(L) -> ((maps:get(l_orderkey, L) == maps:get(o_orderkey, O)) andalso (maps:get(l_commitdate, L) < maps:get(l_receiptdate, L))) end, Lineitem) of undefined -> false; false -> false; _ -> true end)],
     Result = [V || {_, V} <- lists:keysort(1, [{Key0, #{o_orderpriority => Key0, order_count => length(Val0)}} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{maps:get(o_orderpriority, O), O} || O <- Late_orders]))])],
     mochi_json(Result),
     (case (Result == [#{o_orderpriority => "1-URGENT", order_count => 1}, #{o_orderpriority => "2-HIGH", order_count => 1}]) of true -> ok; _ -> erlang:error(test_failed) end).
