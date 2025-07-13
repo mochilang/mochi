@@ -96,6 +96,15 @@ func TestZigCompiler_TPCH_Golden(t *testing.T) {
 			if !bytes.Equal(compiled, vmOut) {
 				t.Errorf("output mismatch for %s\n\n-- zig --\n%s\n\n-- vm --\n%s\n", q, compiled, vmOut)
 			}
+
+			wantOutPath := filepath.Join(root, "tests", "dataset", "tpc-h", "out", q+".out")
+			wantOut, err := os.ReadFile(wantOutPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(compiled, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".out", compiled, bytes.TrimSpace(wantOut))
+			}
 		})
 	}
 }
