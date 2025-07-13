@@ -8,6 +8,7 @@ Initial work added support for generating C structs and list helpers when a prog
 - 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.
 - 2025-07-13 05:50 – Implemented list equality for struct elements and captured globals in test blocks. `update_stmt.mochi` now compiles and passes.
 - 2025-07-13 07:11 – Fixed boolean match expressions so `match_full.mochi` compiles using string results.
+- 2025-07-13 07:22 – Added `cmp_map_string_int` helper and updated sort logic so `order_by_map.mochi` compiles and runs.
 
 Relevant code showing the limitation:
 

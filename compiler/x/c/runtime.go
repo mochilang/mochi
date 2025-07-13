@@ -91,6 +91,15 @@ static int map_string_int_get(map_string_int m, const char* k){
 static int map_string_int_contains(map_string_int m,const char* k){
     for(int i=0;i<m.len;i++) if(strcmp(m.data[i].key,k)==0) return 1;
     return 0;
+}
+static int cmp_map_string_int(map_string_int a, map_string_int b){
+    int aa = map_string_int_get(a, "a");
+    int ba = map_string_int_get(b, "a");
+    if(aa != ba) return aa > ba ? 1 : -1;
+    int ab = map_string_int_get(a, "b");
+    int bb = map_string_int_get(b, "b");
+    if(ab != bb) return ab > bb ? 1 : -1;
+    return 0;
 }`
 
 	helperMapIntString = `typedef struct { int key; char* value; } pair_int_string;
