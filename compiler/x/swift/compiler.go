@@ -3090,6 +3090,9 @@ func (c *compiler) elementFieldTypes(e *parser.Expr) map[string]string {
 			}
 		}
 	}
+	if p.Target.Map != nil {
+		return c.mapFieldsFromLiteral(p.Target.Map)
+	}
 	if p.Target.List != nil && len(p.Target.List.Elems) > 0 {
 		if m := mapLit(p.Target.List.Elems[0]); m != nil {
 			return c.mapFieldsFromLiteral(m)
@@ -3711,12 +3714,6 @@ const helperGroup = `class _Group {
     init(_ k: Any) { self.key = k }
 }
 
-@dynamicMemberLookup
-extension Dictionary where Key == String {
-    subscript(dynamicMember member: String) -> Any {
-        return self[member]!
-    }
-}
 
 func _keyStr(_ v: Any) -> String {
     if let data = try? JSONSerialization.data(withJSONObject: v, options: [.sortedKeys]),
