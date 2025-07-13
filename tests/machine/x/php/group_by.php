@@ -39,7 +39,8 @@ $stats = (function() use ($people) {
     }
     $result = [];
     foreach ($groups as $_k => $__g) {
-        $g = ['key'=>json_decode($_k, true),'items'=> $__g];
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
         $result[] = [
     "city" => $g['key'],
     "count" => count($g['items']),
