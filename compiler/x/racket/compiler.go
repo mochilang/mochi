@@ -408,9 +408,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = v
 			}
-			// special case for "contains" method on strings
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 &&
-				p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" && len(args) == 1 {
+			// special cases for string helper methods
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && len(args) == 1 {
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
 				recvSel := &parser.Primary{Selector: &parser.SelectorExpr{
 					Root: p.Target.Selector.Root,
 					Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1],
@@ -419,8 +419,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				val = fmt.Sprintf("(regexp-match? (regexp %s) %s)", args[0], recv)
-				continue
+				switch method {
+				case "contains":
+					val = fmt.Sprintf("(regexp-match? (regexp (regexp-quote %s)) %s)", args[0], recv)
+					continue
+				case "starts_with":
+					val = fmt.Sprintf("(regexp-match? (regexp (string-append \"^\" (regexp-quote %s))) %s)", args[0], recv)
+					continue
+				}
 			}
 			if len(args) == 0 {
 				val = fmt.Sprintf("(%s)", val)
