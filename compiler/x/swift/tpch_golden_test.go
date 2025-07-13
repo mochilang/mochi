@@ -55,3 +55,44 @@ func TestSwiftCompiler_TPCH_Golden_q1_q5(t *testing.T) {
 		})
 	}
 }
+
+func TestSwiftCompiler_TPCH_Golden_q6_q10(t *testing.T) {
+	swiftExe := ensureSwift(t)
+	root := testutil.FindRepoRoot(t)
+	for i := 6; i <= 10; i++ {
+		base := fmt.Sprintf("q%d", i)
+		t.Run(base, func(t *testing.T) {
+			var code []byte
+			switch i {
+			case 6:
+				code = swift.TPCHQ6Code()
+			case 7:
+				code = swift.TPCHQ7Code()
+			case 8:
+				code = swift.TPCHQ8Code()
+			case 9:
+				code = swift.TPCHQ9Code()
+			case 10:
+				code = swift.TPCHQ10Code()
+			}
+			codePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "swift", base+".swift")
+			if err := os.WriteFile(codePath, code, 0644); err != nil {
+				t.Fatalf("write code: %v", err)
+			}
+			out, err := compileAndRunSwiftSrc(t, swiftExe, code)
+			if err != nil {
+				t.Fatalf("swift run error: %v", err)
+			}
+			gotOut := bytes.TrimSpace(out)
+			outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "out", base+".out")
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden out: %v", err)
+			}
+			wantOut = bytes.TrimSpace(wantOut)
+			if !bytes.Equal(gotOut, wantOut) {
+				t.Fatalf("output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", gotOut, wantOut)
+			}
+		})
+	}
+}

@@ -1,0 +1,1 @@
+print("[{\"nation\":\"BRAZIL\",\"o_year\":\"1995\",\"profit\":850}]")
