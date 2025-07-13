@@ -20,10 +20,10 @@ func TestExCompiler_JOBQueries(t *testing.T) {
 		t.Skipf("elixir not installed: %v", err)
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ex", q+".ex.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ex", q+".ex")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ex", q+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -54,7 +54,7 @@ func TestExCompiler_JOBQueries(t *testing.T) {
 			got := strip(code)
 			want := strip(wantCode)
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q+".ex.out", got, want)
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", q+".ex", got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.exs")
