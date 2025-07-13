@@ -554,11 +554,33 @@ func (c *compiler) testBlock(t *parser.TestBlock) error {
 }
 
 func (c *compiler) expectStmt(e *parser.ExpectStmt) error {
+	if b := e.Value.Binary; b != nil && len(b.Right) == 1 {
+		op := b.Right[0]
+		if op.Op == "==" || op.Op == "!=" {
+			left, err := c.unary(b.Left)
+			if err != nil {
+				return err
+			}
+			right, err := c.postfix(op.Right)
+			if err != nil {
+				return err
+			}
+			c.helpers["_equal"] = true
+			c.helpers["_expect"] = true
+			if op.Op == "==" {
+				c.writeln(fmt.Sprintf("expect(_equal(%s, %s))", left, right))
+			} else {
+				c.writeln(fmt.Sprintf("expect(!_equal(%s, %s))", left, right))
+			}
+			return nil
+		}
+	}
 	val, err := c.expr(e.Value)
 	if err != nil {
 		return err
 	}
-	c.writeln("assert(" + val + ")")
+	c.helpers["_expect"] = true
+	c.writeln("expect(" + val + ")")
 	return nil
 }
 
@@ -975,18 +997,22 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 argument at line %d", call.Pos.Line)
 		}
+		c.helpers["_min"] = true
+		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
-			return fmt.Sprintf("%s.items.min()!", name), nil
+			return fmt.Sprintf("_min(%s.items)", name), nil
 		}
-		return fmt.Sprintf("%s.min()!", args[0]), nil
+		return fmt.Sprintf("_min(%s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 argument at line %d", call.Pos.Line)
 		}
+		c.helpers["_max"] = true
+		c.helpers["_group"] = true
 		if name, ok := c.isGroupVar(call.Args[0]); ok {
-			return fmt.Sprintf("%s.items.max()!", name), nil
+			return fmt.Sprintf("_max(%s.items)", name), nil
 		}
-		return fmt.Sprintf("%s.max()!", args[0]), nil
+		return fmt.Sprintf("_max(%s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 argument at line %d", call.Pos.Line)
@@ -3493,8 +3519,44 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_expect"] {
+		for _, line := range strings.Split(helperExpect, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_equal"] {
+		for _, line := range strings.Split(helperEqual, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_group"] {
 		for _, line := range strings.Split(helperGroup, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_min"] {
+		for _, line := range strings.Split(helperMin, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_max"] {
+		for _, line := range strings.Split(helperMax, "\n") {
 			if line == "" {
 				c.buf.WriteByte('\n')
 			} else {
@@ -3576,6 +3638,100 @@ func _keyStr(_ v: Any) -> String {
     return String(describing: v)
 }`
 
+const helperMin = `func _min(_ v: Any) -> Any {
+    var list: [Any]? = nil
+    if let g = v as? _Group { list = g.Items }
+    else if let arr = v as? [Any] { list = arr }
+    else if let arr = v as? [Int] { return arr.min() ?? 0 }
+    else if let arr = v as? [Double] { return arr.min() ?? 0.0 }
+    else if let arr = v as? [String] { return arr.min() ?? "" }
+    guard let items = list else { fatalError("min() expects list or group") }
+    if items.isEmpty { return 0 }
+    if let s = items[0] as? String {
+        var m = s
+        for it in items.dropFirst() {
+            if let v = it as? String, v < m { m = v }
+        }
+        return m
+    }
+    func toDouble(_ v: Any) -> Double {
+        if let i = v as? Int { return Double(i) }
+        if let d = v as? Double { return d }
+        if let f = v as? Float { return Double(f) }
+        if let i = v as? Int64 { return Double(i) }
+        return 0
+    }
+    var m = toDouble(items[0])
+    var isFloat = items[0] is Double || items[0] is Float
+    for it in items.dropFirst() {
+        if it is Double || it is Float { isFloat = true }
+        let d = toDouble(it)
+        if d < m { m = d }
+    }
+    return isFloat ? m : Int(m)
+}`
+
+const helperMax = `func _max(_ v: Any) -> Any {
+    var list: [Any]? = nil
+    if let g = v as? _Group { list = g.Items }
+    else if let arr = v as? [Any] { list = arr }
+    else if let arr = v as? [Int] { return arr.max() ?? 0 }
+    else if let arr = v as? [Double] { return arr.max() ?? 0.0 }
+    else if let arr = v as? [String] { return arr.max() ?? "" }
+    guard let items = list else { fatalError("max() expects list or group") }
+    if items.isEmpty { return 0 }
+    if let s = items[0] as? String {
+        var m = s
+        for it in items.dropFirst() {
+            if let v = it as? String, v > m { m = v }
+        }
+        return m
+    }
+    func toDouble(_ v: Any) -> Double {
+        if let i = v as? Int { return Double(i) }
+        if let d = v as? Double { return d }
+        if let f = v as? Float { return Double(f) }
+        if let i = v as? Int64 { return Double(i) }
+        return 0
+    }
+    var m = toDouble(items[0])
+    var isFloat = items[0] is Double || items[0] is Float
+    for it in items.dropFirst() {
+        if it is Double || it is Float { isFloat = true }
+        let d = toDouble(it)
+        if d > m { m = d }
+    }
+    return isFloat ? m : Int(m)
+}`
+
+const helperEqual = `func _equal(_ a: Any, _ b: Any) -> Bool {
+    switch (a, b) {
+    case let (x as [Any], y as [Any]):
+        if x.count != y.count { return false }
+        for i in 0..<x.count {
+            if !_equal(x[i], y[i]) { return false }
+        }
+        return true
+    case let (x as [String: Any], y as [String: Any]):
+        if x.count != y.count { return false }
+        for (k, av) in x {
+            guard let bv = y[k] else { return false }
+            if !_equal(av, bv) { return false }
+        }
+        return true
+    case let (ai as Double, bi as Double):
+        return ai == bi
+    case let (ai as Int, bi as Int):
+        return ai == bi
+    case let (sa as String, sb as String):
+        return sa == sb
+    case let (ab as Bool, bb as Bool):
+        return ab == bb
+    default:
+        return false
+    }
+}`
+
 const helperJSON = `func _json(_ v: Any) {
     func _sort(_ x: Any) -> Any {
         if let a = x as? [Any] { return a.map { _sort($0) } }
@@ -3587,8 +3743,12 @@ const helperJSON = `func _json(_ v: Any) {
         return x
     }
     if let obj = _sort(v) as? Any,
-       let data = try? JSONSerialization.data(withJSONObject: obj),
+       let data = try? JSONSerialization.data(withJSONObject: obj, options: [.sortedKeys]),
        let s = String(data: data, encoding: .utf8) {
         print(s)
     }
+}`
+
+const helperExpect = `func expect(_ cond: Bool) {
+    if !cond { fatalError("expect failed") }
 }`
