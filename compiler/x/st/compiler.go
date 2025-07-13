@@ -507,7 +507,11 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		switch u.Ops[i] {
 		case "-":
-			val = "-" + val
+			if strings.ContainsAny(val, " :") {
+				val = "-(" + val + ")"
+			} else {
+				val = "-" + val
+			}
 		case "!":
 			val = val + " not"
 		}
@@ -633,6 +637,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
 				return "", err
+			}
+			if strings.ContainsAny(v, " :") {
+				v = "(" + v + ")"
 			}
 			pairs[i] = fmt.Sprintf("%s->%s", k, v)
 		}
@@ -934,7 +941,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			if q.Group != nil {
 				b.WriteString(next + "| g |\n")
-				b.WriteString(next + "g := groups at: " + key + " ifAbsentPut:[OrderedCollection new].\n")
+				if strings.ContainsAny(key, " :") {
+					b.WriteString(next + "g := groups at: (" + key + ") ifAbsentPut:[OrderedCollection new].\n")
+				} else {
+					b.WriteString(next + "g := groups at: " + key + " ifAbsentPut:[OrderedCollection new].\n")
+				}
 				b.WriteString(next + "g add: " + row + ".\n")
 			} else {
 				b.WriteString(next + "tmp add: " + sel + ".\n")
