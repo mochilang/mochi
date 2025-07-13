@@ -1429,6 +1429,6 @@ func loadDatasetFortran(src string) ([]byte, error) {
 		dir = parent
 	}
 	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
-	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90.out")
+	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
 	return os.ReadFile(path)
 }
