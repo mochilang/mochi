@@ -417,6 +417,13 @@ func scanPrimary(p *parser.Primary, vars map[string]struct{}) {
 			scanExpr(it.Value, vars)
 		}
 	}
+	if p.Match != nil {
+		scanExpr(p.Match.Target, vars)
+		for _, cs := range p.Match.Cases {
+			scanExpr(cs.Pattern, vars)
+			scanExpr(cs.Result, vars)
+		}
+	}
 	if p.Call != nil {
 		for _, a := range p.Call.Args {
 			scanExpr(a, vars)
