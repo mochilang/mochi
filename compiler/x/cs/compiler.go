@@ -644,6 +644,26 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 					c.use("_cast")
 					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
 				}
+			} else if t, err := c.env.GetVar(s.Let.Name); err == nil {
+				static = t
+				typ = csTypeOf(t)
+				c.structHint = singular(name)
+				expr, err = c.compileExpr(s.Let.Value)
+				c.structHint = ""
+				if err != nil {
+					return err
+				}
+				if isEmptyListLiteral(s.Let.Value) && (strings.HasSuffix(typ, "[]") || strings.HasPrefix(typ, "List<")) {
+					if strings.HasPrefix(typ, "List<") {
+						expr = fmt.Sprintf("new %s()", typ)
+					} else {
+						expr = fmt.Sprintf("new %s { }", typ)
+					}
+				}
+				if isFetchExpr(s.Let.Value) && typ != "" {
+					c.use("_cast")
+					expr = fmt.Sprintf("_cast<%s>(%s)", typ, expr)
+				}
 			} else {
 				inferredT := c.inferExprType(s.Let.Value)
 				if !isGroupQuery(s.Let.Value) {
@@ -2041,6 +2061,22 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if takeExpr != "" {
 		parts = append(parts, fmt.Sprintf("Take(%s)", takeExpr))
+	}
+	if q.Group == nil && len(q.Froms) == 0 && len(q.Joins) == 0 && len(q.Select.Binary.Right) == 0 {
+		u := q.Select.Binary.Left
+		if len(u.Ops) == 0 && u.Value.Target != nil && u.Value.Target.Call != nil {
+			call := u.Value.Target.Call
+			if call.Func == "sum" && len(call.Args) == 1 {
+				arg, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+				expr := strings.Join(parts, ".")
+				expr = fmt.Sprintf("%s.Sum(%s => %s)", expr, v, arg)
+				return expr, nil
+			}
+		}
 	}
 	parts = append(parts, fmt.Sprintf("Select(%s => %s)", v, sel))
 	expr := strings.Join(parts, ".")
