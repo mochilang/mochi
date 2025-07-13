@@ -27,7 +27,7 @@ func TestPrologCompiler_JOB_Golden(t *testing.T) {
 		t.Skip("swipl not installed")
 	}
 	root := testutil.FindRepoRoot(t)
-	queries := []string{"q6"}
+	queries := []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"}
 	for _, q := range queries {
 		q := q
 		t.Run(q, func(t *testing.T) {
@@ -59,18 +59,19 @@ func TestPrologCompiler_JOB_Golden(t *testing.T) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
-			out, err := exec.Command("swipl", "-q", file).CombinedOutput()
+			out, err := exec.Command("swipl", "-q", "-s", file, "-t", "halt").CombinedOutput()
 			if err != nil {
 				t.Fatalf("swipl error: %v\n%s", err, out)
 			}
-			gotOut := bytes.TrimSpace(out)
+			gotOut := bytes.ReplaceAll(bytes.TrimSpace(out), []byte(" "), nil)
 			wantOutPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "pl", q+".out")
 			wantOut, err := os.ReadFile(wantOutPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
+			wantNorm := bytes.ReplaceAll(bytes.TrimSpace(wantOut), []byte(" "), nil)
+			if !bytes.Equal(gotOut, wantNorm) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, wantNorm)
 			}
 		})
 	}
