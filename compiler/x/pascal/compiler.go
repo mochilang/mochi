@@ -1807,6 +1807,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			default:
 				return "0", nil
 			}
+		case "min":
+			if len(args) != 1 {
+				return "", fmt.Errorf("min expects 1 argument")
+			}
+			t := types.TypeOfExpr(p.Call.Args[0], c.env)
+			switch tt := t.(type) {
+			case types.GroupType:
+				elem := typeString(tt.Elem)
+				c.use("_variantLess")
+				c.use("_minList")
+				return fmt.Sprintf("specialize _minList<%s>(%s.Items)", elem, args[0]), nil
+			case types.ListType:
+				elem := typeString(tt.Elem)
+				c.use("_variantLess")
+				c.use("_minList")
+				return fmt.Sprintf("specialize _minList<%s>(%s)", elem, args[0]), nil
+			default:
+				c.use("_variantLess")
+				c.use("_minList")
+				return fmt.Sprintf("specialize _minList<Variant>(%s)", args[0]), nil
+			}
 		case "append":
 			if len(args) != 2 {
 				return "", fmt.Errorf("append expects 2 arguments")
@@ -3338,6 +3359,29 @@ func (c *Compiler) emitHelpers() {
 			c.indent++
 			c.writeln("if Length(arr) = 0 then exit(0);")
 			c.writeln("Result := specialize _sumList<T>(arr) / Length(arr);")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_variantLess":
+			c.writeln("function _variantLess(a, b: Variant): Boolean;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("Result := VarCompareValue(a, b) = crLessThan;")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_minList":
+			c.writeln("generic function _minList<T>(arr: specialize TArray<T>): T;")
+			c.writeln("var i: integer; m: T;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("if Length(arr) = 0 then exit(Default(T));")
+			c.writeln("m := arr[0];")
+			c.writeln("for i := 1 to High(arr) do")
+			c.indent++
+			c.writeln("if _variantLess(arr[i], m) then m := arr[i];")
+			c.indent--
+			c.writeln("Result := m;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
