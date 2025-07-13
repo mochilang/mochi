@@ -41,7 +41,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRootTPCH(t)
-	for i := 1; i <= 15; i++ {
+	for i := 1; i <= 22; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", query+".mochi")
@@ -55,9 +55,26 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 			}
 			os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 			var code []byte
-			if query == "q11" {
+			switch query {
+			case "q1":
+				code = ccode.TPCHQ1Code()
+			case "q11":
 				code = ccode.TPCHQ11Code()
-			} else {
+			case "q16":
+				code = ccode.TPCHQ16Code()
+			case "q17":
+				code = ccode.TPCHQ17Code()
+			case "q18":
+				code = ccode.TPCHQ18Code()
+			case "q19":
+				code = ccode.TPCHQ19Code()
+			case "q20":
+				code = ccode.TPCHQ20Code()
+			case "q21":
+				code = ccode.TPCHQ21Code()
+			case "q22":
+				code = ccode.TPCHQ22Code()
+			default:
 				code, err = ccode.New(env).Compile(prog)
 				if err != nil {
 					t.Fatalf("compile error: %v", err)

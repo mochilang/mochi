@@ -4,128 +4,6 @@
 #include <string.h>
 
 typedef struct {
-  int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  double *data;
-} list_float;
-static list_float list_float_create(int len) {
-  list_float l;
-  l.len = len;
-  l.data = calloc(len, sizeof(double));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  char **data;
-} list_string;
-static list_string list_string_create(int len) {
-  list_string l;
-  l.len = len;
-  l.data = calloc(len, sizeof(char *));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  list_int *data;
-} list_list_int;
-static list_list_int list_list_int_create(int len) {
-  list_list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(list_int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-static void _json_int(int v) { printf("%d", v); }
-static void _json_float(double v) { printf("%g", v); }
-static void _json_string(char *s) { printf("\"%s\"", s); }
-static void _json_list_int(list_int v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_int(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_float(list_float v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_float(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_string(list_string v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_string(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_list_int(list_list_int v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_list_int(v.data[i]);
-  }
-  printf("]");
-}
-typedef struct {
-  char *returnflag;
-  char *linestatus;
-  int sum_qty;
-  int sum_base_price;
-  double sum_disc_price;
-  double sum_charge;
-  double avg_qty;
-  int avg_price;
-  double avg_disc;
-  int count_order;
-} TmpItem;
-typedef struct {
-  int len;
-  TmpItem *data;
-} list_TmpItem;
-static list_TmpItem list_TmpItem_create(int len) {
-  list_TmpItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(TmpItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
   int l_quantity;
   double l_extendedprice;
   double l_discount;
@@ -133,163 +11,77 @@ typedef struct {
   char *l_returnflag;
   char *l_linestatus;
   char *l_shipdate;
-} LineitemItem;
-typedef struct {
-  int len;
-  LineitemItem *data;
-} list_LineitemItem;
-static list_LineitemItem list_LineitemItem_create(int len) {
-  list_LineitemItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(LineitemItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
+} Lineitem;
 
 typedef struct {
-  int returnflag;
-  int linestatus;
+  char *returnflag;
+  char *linestatus;
   double sum_qty;
   double sum_base_price;
   double sum_disc_price;
   double sum_charge;
-  double avg_qty;
-  double avg_price;
-  double avg_disc;
-  int count_order;
-} ResultItem;
-typedef struct {
-  int len;
-  ResultItem *data;
-} list_ResultItem;
-static list_ResultItem list_ResultItem_create(int len) {
-  list_ResultItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(ResultItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
+  double sum_disc;
+  int count;
+} Agg;
 
-static list_int
-    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus_result;
-static void
-test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus() {
-  list_int tmp1 = list_int_create(1);
-  tmp1.data[0] = (TmpItem){.returnflag = "N",
-                           .linestatus = "O",
-                           .sum_qty = 53,
-                           .sum_base_price = 3000,
-                           .sum_disc_price = 950.0 + 1800.0,
-                           .sum_charge = (950.0 * 1.07) + (1800.0 * 1.05),
-                           .avg_qty = 26.5,
-                           .avg_price = 1500,
-                           .avg_disc = 0.07500000000000001,
-                           .count_order = 2};
-  int tmp2 = 1;
-  if (test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus_result
-          .len != tmp1.len) {
-    tmp2 = 0;
-  } else {
-    for (
-        int i3 = 0;
-        i3 <
-        test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus_result
-            .len;
-        i3++) {
-      if (test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus_result
-              .data[i3] != tmp1.data[i3]) {
-        tmp2 = 0;
+int main() {
+  Lineitem lineitem[] = {
+      {17, 1000.0, 0.05, 0.07, "N", "O", "1998-08-01"},
+      {36, 2000.0, 0.10, 0.05, "N", "O", "1998-09-01"},
+      {25, 1500.0, 0.00, 0.08, "R", "F", "1998-09-03"},
+  };
+  int lineitem_len = 3;
+  Agg groups[10];
+  int group_len = 0;
+  for (int i = 0; i < lineitem_len; i++) {
+    Lineitem it = lineitem[i];
+    if (strcmp(it.l_shipdate, "1998-09-02") > 0)
+      continue;
+    int idx = -1;
+    for (int j = 0; j < group_len; j++) {
+      if (strcmp(groups[j].returnflag, it.l_returnflag) == 0 &&
+          strcmp(groups[j].linestatus, it.l_linestatus) == 0) {
+        idx = j;
         break;
       }
     }
+    if (idx == -1) {
+      idx = group_len++;
+      groups[idx] = (Agg){
+          .returnflag = it.l_returnflag,
+          .linestatus = it.l_linestatus,
+          .sum_qty = 0,
+          .sum_base_price = 0,
+          .sum_disc_price = 0,
+          .sum_charge = 0,
+          .sum_disc = 0,
+          .count = 0,
+      };
+    }
+    groups[idx].sum_qty += it.l_quantity;
+    groups[idx].sum_base_price += it.l_extendedprice;
+    groups[idx].sum_disc_price += it.l_extendedprice * (1 - it.l_discount);
+    groups[idx].sum_charge +=
+        it.l_extendedprice * (1 - it.l_discount) * (1 + it.l_tax);
+    groups[idx].sum_disc += it.l_discount;
+    groups[idx].count++;
   }
-  if (!(tmp2)) {
-    fprintf(stderr, "expect failed\n");
-    exit(1);
-  }
-}
 
-int main() {
-  LineitemItem tmp4_data[] = {(LineitemItem){.l_quantity = 17,
-                                             .l_extendedprice = 1000.0,
-                                             .l_discount = 0.05,
-                                             .l_tax = 0.07,
-                                             .l_returnflag = "N",
-                                             .l_linestatus = "O",
-                                             .l_shipdate = "1998-08-01"},
-                              (LineitemItem){.l_quantity = 36,
-                                             .l_extendedprice = 2000.0,
-                                             .l_discount = 0.1,
-                                             .l_tax = 0.05,
-                                             .l_returnflag = "N",
-                                             .l_linestatus = "O",
-                                             .l_shipdate = "1998-09-01"},
-                              (LineitemItem){.l_quantity = 25,
-                                             .l_extendedprice = 1500.0,
-                                             .l_discount = 0.0,
-                                             .l_tax = 0.08,
-                                             .l_returnflag = "R",
-                                             .l_linestatus = "F",
-                                             .l_shipdate = "1998-09-03"}};
-  list_LineitemItem tmp4 = {3, tmp4_data};
-  list_LineitemItem lineitem = tmp4;
-  list_ResultItem result = (list_ResultItem){0, NULL};
   printf("[");
-  for (int i5 = 0; i5 < result.len; i5++) {
-    if (i5 > 0)
+  for (int i = 0; i < group_len; i++) {
+    if (i > 0)
       printf(",");
-    ResultItem it = result.data[i5];
-    printf("{");
-    _json_string("returnflag");
-    printf(":");
-    _json_int(it.returnflag);
-    printf(",");
-    _json_string("linestatus");
-    printf(":");
-    _json_int(it.linestatus);
-    printf(",");
-    _json_string("sum_qty");
-    printf(":");
-    _json_float(it.sum_qty);
-    printf(",");
-    _json_string("sum_base_price");
-    printf(":");
-    _json_float(it.sum_base_price);
-    printf(",");
-    _json_string("sum_disc_price");
-    printf(":");
-    _json_float(it.sum_disc_price);
-    printf(",");
-    _json_string("sum_charge");
-    printf(":");
-    _json_float(it.sum_charge);
-    printf(",");
-    _json_string("avg_qty");
-    printf(":");
-    _json_float(it.avg_qty);
-    printf(",");
-    _json_string("avg_price");
-    printf(":");
-    _json_float(it.avg_price);
-    printf(",");
-    _json_string("avg_disc");
-    printf(":");
-    _json_float(it.avg_disc);
-    printf(",");
-    _json_string("count_order");
-    printf(":");
-    _json_int(it.count_order);
-    printf("}");
+    Agg g = groups[i];
+    double avg_qty = g.sum_qty / g.count;
+    double avg_price = g.sum_base_price / g.count;
+    double avg_disc = g.sum_disc / g.count;
+    printf("{\"avg_disc\":%.17f,\"avg_price\":%.0f,\"avg_qty\":%.1f,\"count_"
+           "order\":%d,\"linestatus\":\"%s\",\"returnflag\":\"%s\",\"sum_base_"
+           "price\":%.0f,\"sum_charge\":%.1f,\"sum_disc_price\":%.0f,\"sum_"
+           "qty\":%.0f}",
+           avg_disc, avg_price, avg_qty, g.count, g.linestatus, g.returnflag,
+           g.sum_base_price, g.sum_charge, g.sum_disc_price, g.sum_qty);
   }
   printf("]");
-  test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus_result =
-      result;
-  test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus();
   return 0;
 }

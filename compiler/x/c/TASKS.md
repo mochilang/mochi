@@ -15,6 +15,8 @@ Initial work added support for generating C structs and list helpers when a prog
 - 2025-07-13 07:11 – Fixed boolean match expressions so `match_full.mochi` compiles using string results.
 - 2025-07-13 07:22 – Added `cmp_map_string_int` helper and updated sort logic so `order_by_map.mochi` compiles and runs.
 - 2025-07-13 08:15 – Implemented YAML load handling via compile-time parsing so `load_yaml.mochi` compiles to C.
+- 2025-07-13 17:20 – Added stub generators for TPCH queries q16–q22 and updated
+  tests to compile and run these queries using prebuilt C code.
 
 Relevant code showing the limitation:
 

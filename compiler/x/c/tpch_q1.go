@@ -4,7 +4,7 @@ package ccode
 
 // TPCHQ1Code returns generated C source code for TPC-H query q1.
 func TPCHQ1Code() []byte {
-    src := `#include <stdio.h>
+	src := `#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -87,5 +87,5 @@ int main() {
     return 0;
 }
 `
-    return FormatC([]byte(src))
+	return FormatC([]byte(src))
 }
