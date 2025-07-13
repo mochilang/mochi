@@ -39,7 +39,7 @@ Compiled: 100/100 programs
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
-- [ ] group_items_iteration.mochi
+- [x] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -112,7 +112,6 @@ Compiled: 100/100 programs
 ## Remaining Tasks
 
 - Fix generation for `group_by_multi_join.mochi` and `group_by_multi_join_sort.mochi`.
-- Resolve runtime issues in `group_items_iteration.mochi`.
+- Verify `group_items_iteration.mochi` matches the reference output.
 - Implement outer and right join support.
 - Begin compiling the TPCH `q1.mochi` benchmark.
-

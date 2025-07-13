@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:16:17: warning: forced cast of '[[String : Any]]' to same type has no effect
-14 | }())
-15 | print("--- Cross Join of three lists ---")
-16 | for c in combos as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/cross_join_triple.swift:17:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+15 | }())
+16 | print("--- Cross Join of three lists ---")
+17 | for c in combos as! [[String:Any]] {
    |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
-17 |     print(c["n"]!, c["l"]!, c["b"]!)
-18 | }
+18 |     print(c["n"]!, c["l"]!, c["b"]!)
+19 | }
 --- Cross Join of three lists ---
 1 A true
 1 A false

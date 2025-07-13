@@ -1335,25 +1335,44 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 			}
 		}
 	}
+	expr := s.Root
 	typ := c.varTypes[s.Root]
-	if strings.HasPrefix(typ, "map") || (typ == "" && c.mapFields[s.Root] != nil) {
-		parts := []string{s.Root}
-		for _, f := range s.Tail {
-			typ := "Any"
-			if m, ok := c.mapFields[s.Root]; ok {
-				if t, ok2 := m[f]; ok2 && t != "" {
-					typ = t
+	fields := c.mapFields[s.Root]
+	for _, f := range s.Tail {
+		if strings.HasPrefix(typ, "map") || fields != nil {
+			t := "Any"
+			if fields != nil {
+				if tt, ok := fields[f]; ok && tt != "" {
+					t = tt
 				}
 			}
-			if typ == "Any" {
-				parts = append(parts, fmt.Sprintf("[%q]!", f))
+			if t == "Any" {
+				expr = fmt.Sprintf("%s[%q]!", expr, f)
 			} else {
-				parts = append(parts, fmt.Sprintf("[%q] as! %s", f, typ))
+				expr = fmt.Sprintf("(%s[%q] as! %s)", expr, f, t)
 			}
+			typ = t
+			if sf, ok := c.structTypes[t]; ok {
+				fields = sf
+			} else {
+				fields = nil
+			}
+			continue
 		}
-		return strings.Join(parts, "")
+		expr += "." + f
+		if st, ok := c.structTypes[typ]; ok {
+			typ = st[f]
+			if sf, ok2 := c.structTypes[typ]; ok2 {
+				fields = sf
+			} else {
+				fields = nil
+			}
+		} else {
+			typ = ""
+			fields = nil
+		}
 	}
-	return s.Root + "." + strings.Join(s.Tail, ".")
+	return expr
 }
 
 func literal(l *parser.Literal) string {
@@ -1882,6 +1901,8 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	} else {
 		if kt == "AnyHashable" {
 			b.WriteString(fmt.Sprintf("        _groups[_k as! AnyHashable, default: []].append(%s)\n", q.Var))
+		} else if c.isBuiltinType(kt) {
+			b.WriteString(fmt.Sprintf("        _groups[_k, default: []].append(%s)\n", q.Var))
 		} else {
 			b.WriteString(fmt.Sprintf("        _groups[_k as! %s, default: []].append(%s)\n", kt, q.Var))
 		}
@@ -2160,6 +2181,8 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		} else {
 			if kt == "AnyHashable" {
 				b.WriteString(fmt.Sprintf("%s_groups[_k as! AnyHashable, default: []].append(%s)\n", indent, itemExpr))
+			} else if c.isBuiltinType(kt) {
+				b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
 			} else {
 				b.WriteString(fmt.Sprintf("%s_groups[_k as! %s, default: []].append(%s)\n", indent, kt, itemExpr))
 			}
@@ -2176,6 +2199,8 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 		} else {
 			if kt == "AnyHashable" {
 				b.WriteString(fmt.Sprintf("%s_groups[_k as! AnyHashable, default: []].append(%s)\n", indent, itemExpr))
+			} else if c.isBuiltinType(kt) {
+				b.WriteString(fmt.Sprintf("%s_groups[_k, default: []].append(%s)\n", indent, itemExpr))
 			} else {
 				b.WriteString(fmt.Sprintf("%s_groups[_k as! %s, default: []].append(%s)\n", indent, kt, itemExpr))
 			}

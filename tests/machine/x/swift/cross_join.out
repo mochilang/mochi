@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join.swift:24:21: warning: forced cast of '[[String : Any]]' to same type has no effect
-22 | }())
-23 | print("--- Cross Join: All order-customer pairs ---")
-24 | for entry in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/cross_join.swift:25:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+23 | }())
+24 | print("--- Cross Join: All order-customer pairs ---")
+25 | for entry in result as! [[String:Any]] {
    |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
-25 |     print("Order", entry["orderId"]!, "(customerId:", entry["orderCustomerId"]!, ", total: $", entry["orderTotal"]!, ") paired with", entry["pairedCustomerName"]!)
-26 | }
+26 |     print("Order", entry["orderId"]!, "(customerId:", entry["orderCustomerId"]!, ", total: $", entry["orderTotal"]!, ") paired with", entry["pairedCustomerName"]!)
+27 | }
 --- Cross Join: All order-customer pairs ---
 Order 100 (customerId: 1 , total: $ 250 ) paired with Alice
 Order 100 (customerId: 1 , total: $ 250 ) paired with Bob

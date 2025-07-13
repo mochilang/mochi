@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/dataset_where_filter.swift:9:22: warning: forced cast of '[[String : Any]]' to same type has no effect
- 7 | var adults = people.compactMap { person in person.age >= 18 ? (["name": person.name, "age": person.age, "is_senior": person.age >= 60]) : nil }
- 8 | print("--- Adults ---")
- 9 | for person in adults as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/dataset_where_filter.swift:10:22: warning: forced cast of '[[String : Any]]' to same type has no effect
+ 8 | var adults = people.compactMap { person in person.age >= 18 ? (["name": person.name, "age": person.age, "is_senior": person.age >= 60]) : nil }
+ 9 | print("--- Adults ---")
+10 | for person in adults as! [[String:Any]] {
    |                      `- warning: forced cast of '[[String : Any]]' to same type has no effect
-10 |     print(person["name"]!, "is", person["age"]!, person["is_senior"] as! Bool ? " (senior)" : "")
-11 | }
+11 |     print(person["name"]!, "is", person["age"]!, (person["is_senior"] as! Bool) ? " (senior)" : "")
+12 | }
 --- Adults ---
 Alice is 30 
 Charlie is 65  (senior)

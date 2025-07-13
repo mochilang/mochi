@@ -1,1 +1,1 @@
-[["cat": "a", "share": 0], ["cat": "b", "share": 1]]
+[["share": 0, "cat": "a"], ["cat": "b", "share": 1]]

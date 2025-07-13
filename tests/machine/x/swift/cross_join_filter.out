@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:14:16: warning: forced cast of '[[String : Any]]' to same type has no effect
-12 | }())
-13 | print("--- Even pairs ---")
-14 | for p in pairs as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/cross_join_filter.swift:15:16: warning: forced cast of '[[String : Any]]' to same type has no effect
+13 | }())
+14 | print("--- Even pairs ---")
+15 | for p in pairs as! [[String:Any]] {
    |                `- warning: forced cast of '[[String : Any]]' to same type has no effect
-15 |     print(p["n"]!, p["l"]!)
-16 | }
+16 |     print(p["n"]!, p["l"]!)
+17 | }
 --- Even pairs ---
 2 A
 2 B
