@@ -23,7 +23,7 @@ func TestCLJCompiler_TPCHQueries(t *testing.T) {
 	for i := 1; i <= 2; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "clj", base+".clj.out")
+               codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "clj", base+".clj")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "clj", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -45,9 +45,9 @@ func TestCLJCompiler_TPCHQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.clj.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(wantCode))
-			}
+                       if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
+                               t.Errorf("generated code mismatch for %s.clj\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(wantCode))
+                       }
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.clj")
 			if err := os.WriteFile(file, code, 0644); err != nil {
