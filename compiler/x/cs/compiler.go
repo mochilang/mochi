@@ -1425,6 +1425,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	elemType := csTypeOf(elemT)
 	child.SetVar(q.Var, elemT, true)
+	// pre-register variables from additional FROM clauses and joins so
+	// selector expressions can infer their field types during select
+	fromSrcs := make([]string, len(q.Froms))
+	for i, f := range q.Froms {
+		fs, err := c.compileExpr(f.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		fromSrcs[i] = fs
+		var ft types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+			ft = lt.Elem
+		}
+		child.SetVar(f.Var, ft, true)
+	}
+	joinSrcs := make([]string, len(q.Joins))
+	joinSides := make([]string, len(q.Joins))
+	joinTypes := make([]string, len(q.Joins))
+	for i, j := range q.Joins {
+		js, err := c.compileExpr(j.Src)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		joinSrcs[i] = js
+		if j.Side != nil {
+			joinSides[i] = *j.Side
+		}
+		var jt types.Type = types.AnyType{}
+		if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+			jt = lt.Elem
+		}
+		joinTypes[i] = csTypeOf(jt)
+		child.SetVar(j.Var, jt, true)
+	}
 	c.env = child
 	sel, err := c.compileExpr(q.Select)
 	if err != nil {
@@ -1565,40 +1601,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	// handle cross/join using nested loops when q.Froms or q.Joins are present
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
-		fromSrcs := make([]string, len(q.Froms))
-		for i, f := range q.Froms {
-			fs, err := c.compileExpr(f.Src)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			fromSrcs[i] = fs
-			var ft types.Type = types.AnyType{}
-			if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
-				ft = lt.Elem
-			}
-			child.SetVar(f.Var, ft, true)
-		}
-		joinSrcs := make([]string, len(q.Joins))
 		joinOns := make([]string, len(q.Joins))
-		joinSides := make([]string, len(q.Joins))
-		joinTypes := make([]string, len(q.Joins))
 		for i, j := range q.Joins {
-			js, err := c.compileExpr(j.Src)
-			if err != nil {
-				c.env = orig
-				return "", err
-			}
-			joinSrcs[i] = js
-			if j.Side != nil {
-				joinSides[i] = *j.Side
-			}
-			var jt types.Type = types.AnyType{}
-			if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
-				jt = lt.Elem
-			}
-			joinTypes[i] = csTypeOf(jt)
-			child.SetVar(j.Var, jt, true)
 			c.env = child
 			onExpr, err := c.compileExpr(j.On)
 			if err != nil {

@@ -79,7 +79,6 @@ Checklist:
 - [x] python_auto
 - [x] python_math
 - [x] query_sum_select
-- [x] q1
 - [x] record_assign
 - [x] right_join
 - [x] save_jsonl_stdout
@@ -107,6 +106,7 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
 
 ## Remaining tasks
 
