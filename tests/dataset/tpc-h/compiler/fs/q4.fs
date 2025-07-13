@@ -47,6 +47,6 @@ let end_date: string = "1993-08-01"
 let date_filtered_orders: obj list = [ for o in orders do if o.o_orderdate >= start_date && o.o_orderdate < end_date then yield o ]
 let late_orders: obj list = [ for o in date_filtered_orders do if not (List.isEmpty [ for l in lineitem do if l.l_orderkey = o.o_orderkey && l.l_commitdate < l.l_receiptdate then yield l ]) then yield o ]
 let result: obj list = [ for g in _group_by [ for o in late_orders do yield o ] (fun o -> o.o_orderpriority) |> List.sortBy (fun gTmp -> let g = gTmp in g.key) do
-    yield { o_orderpriority = g.key; order_count = List.length g.items } ]
+    yield { o_orderpriority = g.key; order_count = List.length g.Items } ]
 printfn "%A" (JsonSerializer.Serialize(result))
 assert (result = [{ o_orderpriority = "1-URGENT"; order_count = 1 }; { o_orderpriority = "2-HIGH"; order_count = 1 }])
