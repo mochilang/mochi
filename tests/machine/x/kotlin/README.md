@@ -111,19 +111,26 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 
 ## Running TPC-H q1
 
-1. Ensure `kotlinc` and `java` are installed and on your `PATH`.
-2. Run `go test ./compiler/x/kotlin -tags slow -run TestKotlinCompiler_TPCH -count=1`.
-3. Generated code is written to `tests/machine/x/kotlin/q1.kt` with output in `q1.out`.
-4. Compare the output with the expected results.
+Follow the steps below to compile and run the first TPC‑H query:
+
+1. **Install tools** &mdash; ensure `kotlinc` and `java` are available on your `PATH`.
+2. **Generate the program** by running:
+
+   ```bash
+   go test ./compiler/x/kotlin -tags slow -run TestKotlinCompiler_TPCH -count=1
+   ```
+
+   This writes `q1.kt` and its output `q1.out` to this directory.
+3. **Review** the generated Kotlin source and compare `q1.out` to the expected
+   results in `tests/dataset/tpc-h/compiler/kt/q1.out`.
 
 ## TODO
 
-- Implement dataset join and group-by operations in the Kotlin backend.
-- Provide better support for the Python `math` helpers and other foreign imports.
-- Finish compiling the remaining unchecked programs above.
-- Get TPC-H `q2.mochi` compiling and running successfully.
-- Improve numeric division so queries like `q1.mochi` compute floating point
-  results correctly.
+- [ ] Implement dataset join and group-by operations in the Kotlin backend.
+- [ ] Provide better support for the Python `math` helpers and other foreign imports.
+- [ ] Finish compiling the remaining unchecked programs above.
+- [ ] Get TPC-H `q2.mochi` compiling and running successfully.
+- [ ] Improve numeric division so queries like `q1.mochi` compute floating point results correctly.
 
 ## Recent improvements
 
