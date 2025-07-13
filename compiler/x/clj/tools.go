@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureClojure verifies that the clojure command line tool is installed.
@@ -108,6 +110,7 @@ func EnsureCljfmt() (string, error) {
 // Format runs cljfmt on the provided Clojure source. If cljfmt isn't available
 // the input is returned unchanged.
 func Format(src []byte) ([]byte, error) {
+	header := meta.Header(";")
 	cljfmt, err := exec.LookPath("cljfmt")
 	if err == nil {
 		f, ferr := os.CreateTemp("", "mochi-*.clj")
@@ -136,5 +139,5 @@ func Format(src []byte) ([]byte, error) {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src, nil
+	return append(header, src...), nil
 }

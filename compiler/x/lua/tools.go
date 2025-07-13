@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureLua verifies that the Lua interpreter is installed. If missing,
@@ -166,6 +168,7 @@ func EnsureStylua() error {
 // Tabs are expanded to four spaces and a trailing newline ensured when
 // no formatter is found or formatting fails.
 func FormatLua(src []byte) []byte {
+	header := meta.Header("--")
 	if path, err := exec.LookPath("stylua"); err == nil {
 		cmd := exec.Command(path, "-")
 		cmd.Stdin = bytes.NewReader(src)
@@ -176,7 +179,7 @@ func FormatLua(src []byte) []byte {
 			if len(res) == 0 || res[len(res)-1] != '\n' {
 				res = append(res, '\n')
 			}
-			return res
+			return append(header, res...)
 		}
 	}
 	if path, err := exec.LookPath("luafmt"); err == nil {
@@ -189,12 +192,12 @@ func FormatLua(src []byte) []byte {
 			if len(res) == 0 || res[len(res)-1] != '\n' {
 				res = append(res, '\n')
 			}
-			return res
+			return append(header, res...)
 		}
 	}
 	src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }

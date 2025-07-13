@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureRacket checks that the racket interpreter is available.
@@ -18,6 +20,7 @@ func EnsureRacket() error {
 
 // Format returns the source formatted using raco fmt if available.
 func Format(src []byte) []byte {
+	header := meta.Header(";")
 	if _, err := exec.LookPath("raco"); err == nil {
 		cmd := exec.Command("raco", "fmt", "--stdin")
 		cmd.Stdin = bytes.NewReader(src)
@@ -29,11 +32,11 @@ func Format(src []byte) []byte {
 			if len(outBytes) > 0 && outBytes[len(outBytes)-1] != '\n' {
 				outBytes = append(outBytes, '\n')
 			}
-			return outBytes
+			return append(header, outBytes...)
 		}
 	}
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }

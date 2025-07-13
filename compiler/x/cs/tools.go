@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureDotnet verifies that the dotnet CLI is installed and attempts to
@@ -122,12 +124,13 @@ func ensureFormatter() error {
 // command if available. If the formatter is unavailable or fails, the input is
 // returned with tabs expanded to four spaces.
 func FormatCS(src []byte) []byte {
+	header := meta.Header("//")
 	if os.Getenv("MOCHI_SKIP_FORMATCS") != "" {
 		src = bytes.ReplaceAll(src, []byte("\t"), []byte("    "))
 		if len(src) > 0 && src[len(src)-1] != '\n' {
 			src = append(src, '\n')
 		}
-		return src
+		return append(header, src...)
 	}
 	_ = ensureFormatter()
 	if dotnet, err := exec.LookPath("dotnet"); err == nil {
@@ -160,5 +163,5 @@ func FormatCS(src []byte) []byte {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }

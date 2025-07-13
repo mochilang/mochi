@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureElixir verifies that the Elixir binary is installed and attempts to
@@ -86,6 +88,7 @@ func Ensure() error { return EnsureElixir() }
 // `elixir` binary is not available, the code is returned unchanged. Formatting
 // errors are returned.
 func Format(code []byte) ([]byte, error) {
+	header := meta.Header("#")
 	if path, err := exec.LookPath("mix"); err == nil {
 		cmd := exec.Command(path, "format", "-")
 		cmd.Stdin = bytes.NewReader(code)
@@ -119,5 +122,5 @@ func Format(code []byte) ([]byte, error) {
 	if len(code) > 0 && code[len(code)-1] != '\n' {
 		code = append(code, '\n')
 	}
-	return code, nil
+	return append(header, code...), nil
 }

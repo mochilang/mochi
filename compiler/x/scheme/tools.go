@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureScheme verifies that chibi-scheme is installed. On Linux it attempts a
@@ -71,6 +73,7 @@ func EnsureFormatter() error {
 // FormatScheme replaces tabs with two spaces and ensures a trailing newline.
 // It attempts to pretty print the code using chibi-scheme when available.
 func FormatScheme(src []byte) []byte {
+	header := meta.Header(";")
 	if err := EnsureFormatter(); err == nil {
 		if path, err := exec.LookPath("chibi-scheme"); err == nil {
 			cmd := exec.Command(path, "-q", "-e",
@@ -91,5 +94,5 @@ func FormatScheme(src []byte) []byte {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }

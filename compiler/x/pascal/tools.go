@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureFPC checks for the Free Pascal compiler and attempts to
@@ -88,6 +90,7 @@ func EnsurePtop() error {
 // FormatPas runs ptop to pretty-print Pascal code if available.
 // Keywords keep their original casing and indentation is set to two spaces.
 func FormatPas(src []byte) []byte {
+	header := meta.Header("//")
 	// ptop formatting sometimes mangles generic declarations, so we
 	// perform a minimal formatting pass ourselves instead of invoking
 	// the external tool.
@@ -100,5 +103,5 @@ func FormatPas(src []byte) []byte {
 	if len(src) > 0 && src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }
