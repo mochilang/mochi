@@ -97,8 +97,10 @@ func runJOBQuery(t *testing.T, base string) {
 	}
 }
 
+// TestScalaCompilerJOB compiles and executes JOB dataset queries q1 through q10
+// and compares the results against golden .scala and .out files.
 func TestScalaCompilerJOB(t *testing.T) {
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		t.Run(base, func(t *testing.T) { runJOBQuery(t, base) })
 	}
