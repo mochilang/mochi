@@ -416,38 +416,21 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("print(%s)", args[0]), nil
 			}
 		}
-		allSimple := true
-		for i := range args {
-			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
-				allSimple = false
-				break
-			}
-			if !simpleExpr(call.Args[i]) {
-				allSimple = false
-				break
-			}
-		}
-		if allSimple {
-			parts := []string{}
+		if len(args) > 1 {
+			parts := make([]string, len(args))
 			for i, a := range args {
-				if v, ok := literalValue(call.Args[i]); ok {
-					if s, ok := v.(string); ok && s == "" {
-						continue
-					}
+				if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
+					parts[i] = "\"<nil>\""
+				} else {
+					parts[i] = fmt.Sprintf("tostring(%s)", a)
 				}
-				parts = append(parts, fmt.Sprintf("tostring(%s)", a))
-			}
-			if len(parts) == 0 {
-				return "print()", nil
 			}
 			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
 		}
-		for i := range args {
-			if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
-				args[i] = "\"<nil>\""
-			}
+		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
+			return fmt.Sprintf("print(%s)", args[0]), nil
 		}
-		return fmt.Sprintf(";(function(...) local parts={} for i=1,select('#', ...) do local a=select(i, ...) if a~=nil and a~='' then parts[#parts+1]=tostring(a) end end print(table.concat(parts, ' ')) end)(%s)", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("print(tostring(%s))", args[0]), nil
 	case "str":
 		if len(args) == 1 {
 			if v, ok := literalValue(call.Args[0]); ok {

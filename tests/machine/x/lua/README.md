@@ -110,6 +110,9 @@ Checklist:
 ## Status
 All programs executed successfully.
 
+### TPCH Progress
+- [x] q1.mochi
+
 ## Remaining tasks
-- [ ] Compile tpc-h/q1.mochi
+- [ ] Review q1 output matches golden example
 - [ ] Generate simpler print statements using string concatenation
