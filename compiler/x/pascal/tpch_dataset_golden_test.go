@@ -27,7 +27,7 @@ func ensureFPCQuick(t *testing.T) string {
 func TestPascalCompiler_TPCH_Dataset_Golden(t *testing.T) {
 	fpc := ensureFPCQuick(t)
 	root := testutil.FindRepoRoot(t)
-	for _, base := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
+	for _, base := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14", "q15", "q16", "q17", "q18", "q19", "q20", "q21", "q22"} {
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		prog, err := parser.Parse(src)
 		if err != nil {
