@@ -39,10 +39,10 @@ func TestJavaCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("javac not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 5; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java", base+".java.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java", base+".java")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -63,7 +63,7 @@ func TestJavaCompiler_TPCHQueries(t *testing.T) {
 			wantCode, err := os.ReadFile(codeWant)
 			if err == nil {
 				if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-					t.Skipf("generated code mismatch for %s.java.out", base)
+					t.Skipf("generated code mismatch for %s.java", base)
 				}
 			}
 			dir := t.TempDir()
