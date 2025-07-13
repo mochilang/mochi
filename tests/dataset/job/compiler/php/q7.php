@@ -80,7 +80,7 @@ $rows = (function() use ($aka_name, $cast_info, $info_type, $link_type, $movie_l
                                                     if ($ml['linked_movie_id'] == $t['id']) {
                                                         foreach ($link_type as $lt) {
                                                             if ($lt['id'] == $ml['link_type_id']) {
-                                                                if ((strpos($an['name'], "a") !== false && $it['info'] == "mini biography" && $lt['link'] == "features" && $n['name_pcode_cf'] >= "A" && $n['name_pcode_cf'] <= "F" && ($n['gender'] == "m" || ($n['gender'] == "f" && $n['name']['starts_with']("B"))) && $pi['note'] == "Volker Boehm" && $t['production_year'] >= 1980 && $t['production_year'] <= 1995 && $pi['person_id'] == $an['person_id'] && $pi['person_id'] == $ci['person_id'] && $an['person_id'] == $ci['person_id'] && $ci['movie_id'] == $ml['linked_movie_id'])) {
+                                                                if ((strpos($an['name'], "a") !== false && $it['info'] == "mini biography" && $lt['link'] == "features" && $n['name_pcode_cf'] >= "A" && $n['name_pcode_cf'] <= "F" && ($n['gender'] == "m" || ($n['gender'] == "f" && str_starts_with($n['name'], "B"))) && $pi['note'] == "Volker Boehm" && $t['production_year'] >= 1980 && $t['production_year'] <= 1995 && $pi['person_id'] == $an['person_id'] && $pi['person_id'] == $ci['person_id'] && $an['person_id'] == $ci['person_id'] && $ci['movie_id'] == $ml['linked_movie_id'])) {
                                                                     $result[] = [
     "person_name" => $n['name'],
     "movie_title" => $t['title']
