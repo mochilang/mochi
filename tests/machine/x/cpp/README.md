@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 100/101
+Compiled programs: 100/100
 
 ## Checklist
 
@@ -109,16 +109,11 @@ Compiled programs: 100/101
 
 ## TPCH Queries
 
-- [ ] q1 – compilation fails
+- [ ] q1 – still failing
 - [x] q4
-- [ ] q5
+- [ ] q5 – compilation fails
 - [x] q6
 
-Recent improvements:
-- String literal concatenation simplified when both operands are constants.
-- Constant numeric expressions are folded during compilation.
-- Unary constants are simplified when possible.
-
 ## Remaining Tasks
-- [ ] Review generated C++ code for closer match to human style
+- [ ] Review generated C++ code for closer match to human examples
 - [ ] Implement compilation for TPCH q1 and q5
