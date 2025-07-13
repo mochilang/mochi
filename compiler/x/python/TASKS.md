@@ -6,5 +6,5 @@
 - Verified `tpc-h/q1.mochi` compiles and runs correctly.
 
 ## Remaining Work
-- [ ] Extend dataset query support for `tpc-h` queries beyond `q1`.
+- [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
