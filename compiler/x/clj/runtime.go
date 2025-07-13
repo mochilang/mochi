@@ -317,7 +317,7 @@ const (
     (doseq [j joins]
       (let [joined (atom [])]
         (if (and (:leftKey j) (:rightKey j))
-          (let [idx (group-by (:rightKey j) (:items j))
+          (let [idx (group-by (fn [it] (apply (:rightKey j) [it])) (:items j))
                 seen (atom #{})]
             (doseq [left @items]
               (let [k (apply (:leftKey j) left)
