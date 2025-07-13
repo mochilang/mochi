@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/dataset_sort_take_limit.scala:10: error: invalid string interpolation: `$$', `$'ident or `$'BlockExpr expected
+      println(s"${item.name} costs $ ${item.price}")
+                            ^
+/workspace/mochi/tests/machine/x/scala/dataset_sort_take_limit.scala:10: error: unclosed string literal
+      println(s"${item.name} costs $ ${item.price}")
+                                                  ^
+two errors found

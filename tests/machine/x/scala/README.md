@@ -113,6 +113,8 @@ Recent improvements:
   interpolation for clearer output.
  - Spacing around punctuation in interpolated print statements now
    matches the human reference implementations.
+- Top-level `let` bindings are now placed inside `main` when no
+  functions follow, matching the style of the hand-written examples.
 
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style
@@ -124,16 +126,16 @@ Recent improvements:
 
 To generate and run the Scala code for `q1.mochi`:
 
-1. Use `mochix` to compile the Mochi source:
-   ```bash
-   go run ./cmd/mochix buildx -t scala tests/dataset/tpc-h/q1.mochi > Main.scala
-   ```
-2. Compile the resulting Scala file:
-   ```bash
-   scalac Main.scala
-   ```
-3. Execute the program using `scala` (or `scala-cli`):
-   ```bash
-   scala Main
-   ```
-   The program prints the aggregated JSON result.
+- [x] **Build** the source
+  ```bash
+  go run ./cmd/mochix buildx -t scala tests/dataset/tpc-h/q1.mochi > Main.scala
+  ```
+- [x] **Compile** the file
+  ```bash
+  scalac Main.scala
+  ```
+- [x] **Run** the program
+  ```bash
+  scala Main
+  ```
+  The program prints the aggregated JSON result.
