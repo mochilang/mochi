@@ -1544,6 +1544,28 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				if isIntLiteralPostfix(op.Right) && hasFloatLeft {
 					r = fmt.Sprintf("%s as f64", r)
 				}
+				if c.env != nil {
+					lt := types.TypeOfUnary(leftAST, c.env)
+					rt := types.TypeOfPostfix(op.Right, c.env)
+					isInt := func(t types.Type) bool {
+						switch t.(type) {
+						case types.IntType, types.Int64Type:
+							return true
+						}
+						return false
+					}
+					if isIntLiteralUnary(leftAST) && (hasFloatRight || (!isInt(rt))) {
+						res = fmt.Sprintf("(%s as f64)", res)
+					}
+					if isIntLiteralPostfix(op.Right) && (hasFloatLeft || (!isInt(lt))) {
+						r = fmt.Sprintf("%s as f64", r)
+					}
+					if _, ok := rt.(types.FloatType); ok && isInt(lt) {
+						res = fmt.Sprintf("(%s as f64)", res)
+					} else if _, ok := lt.(types.FloatType); ok && isInt(rt) {
+						r = fmt.Sprintf("%s as f64", r)
+					}
+				}
 				res = fmt.Sprintf("%s + %s", res, r)
 			}
 		case "union":
@@ -3302,6 +3324,11 @@ func (c *Compiler) compileStructLiteralFromMap(name string, m *parser.MapLiteral
 		if err != nil {
 			return "", err
 		}
+		if ft, ok := st.Fields[f]; ok {
+			if _, ok2 := ft.(types.FloatType); ok2 && isIntLiteral(expr) {
+				v += ".0"
+			}
+		}
 		fields[i] = fmt.Sprintf("%s: %s", f, v)
 	}
 	return fmt.Sprintf("%s { %s }", name, strings.Join(fields, ", ")), nil
@@ -3319,8 +3346,12 @@ func (c *Compiler) compileMapLiteralAsStruct(name string, m *parser.MapLiteral) 
 		if err != nil {
 			return "", err
 		}
+		ft := c.fieldType(it.Value)
+		if _, ok := ft.(types.FloatType); ok && isIntLiteral(it.Value) {
+			v += ".0"
+		}
 		fields[i] = fmt.Sprintf("%s: %s", str, v)
-		st.Fields[str] = c.fieldType(it.Value)
+		st.Fields[str] = ft
 		st.Order = append(st.Order, str)
 	}
 	c.structs[name] = st
