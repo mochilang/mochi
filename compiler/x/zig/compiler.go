@@ -434,6 +434,20 @@ func (c *Compiler) compileGlobalDecls(prog *parser.Program) error {
 					typ = c.resolveTypeRef(s.Let.Type)
 				} else if s.Let.Value != nil {
 					typ = c.inferExprType(s.Let.Value)
+					if qe := extractQueryExpr(s.Let.Value); qe != nil {
+						if qtyp, ok := c.structTypeFromQuery(qe, pascalCase(name)+"Item"); ok {
+							if lt, ok2 := qtyp.(types.ListType); ok2 {
+								if st, ok3 := lt.Elem.(types.StructType); ok3 {
+									if st.Name == "" {
+										st.Name = pascalCase(name) + "Item"
+									}
+									c.env.SetStruct(st.Name, st)
+									lt.Elem = st
+									typ = lt
+								}
+							}
+						}
+					}
 					if st, ok := c.structTypeFromExpr(s.Let.Value); ok {
 						st = c.nameNestedStructs(pascalCase(name), st)
 						switch tt := st.(type) {
@@ -1452,6 +1466,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
 		if ml := extractMapLiteral(q.Select); ml != nil {
 			structName := c.newStructName()
+			if name, ok := c.matchStructFromMapLiteral(ml); ok {
+				structName = sanitizeName(name)
+			}
+			if name, ok := c.matchStructFromMapLiteral(ml); ok {
+				structName = sanitizeName(name)
+			}
 			decl, _, ok, err := c.mapLiteralStruct(ml, structName)
 			if ok && err == nil {
 				if !c.structs[structName] {
@@ -1867,10 +1887,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 		orig := c.env
 		c.env = child
-		sel, err := c.compileExpr(q.Select, false)
-		if err != nil {
-			c.env = orig
-			return "", err
+		var sel string
+		var elem string
+		if ml := extractMapLiteral(q.Select); ml != nil {
+			structName := c.newStructName()
+			decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			if ok {
+				if !c.structs[structName] {
+					c.writeln(decl)
+					c.structs[structName] = true
+				}
+				if st, ok2 := c.structTypeFromMapLiteral(ml, structName); ok2 {
+					if orig != nil {
+						orig.SetStruct(structName, st)
+					}
+					child.SetStruct(structName, st)
+				}
+				sel = init
+				elem = structName
+			}
+		}
+		if sel == "" {
+			var err error
+			sel, err = c.compileExpr(q.Select, false)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			elem = strings.TrimPrefix(zigTypeOf(c.inferExprType(q.Select)), "[]const ")
 		}
 		var cond string
 		if q.Where != nil {
@@ -1880,12 +1928,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				return "", err
 			}
 		}
-		resType := zigTypeOf(c.inferExprType(q.Select))
 		c.env = orig
 
 		tmp := c.newTmp()
 		var b strings.Builder
-		elem := strings.TrimPrefix(resType, "[]const ")
 		lbl := c.newLabel()
 		b.WriteString(lbl + ": { var " + tmp + " = std.ArrayList(" + elem + ").init(std.heap.page_allocator); ")
 		b.WriteString("for (" + src + ") |" + sanitizeName(q.Var) + "| {")
@@ -1930,11 +1976,38 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	child.SetVar(q.Var, elemType, true)
 	orig := c.env
 	c.env = child
-
-	sel, err := c.compileExpr(q.Select, false)
-	if err != nil {
-		c.env = orig
-		return "", err
+	var sel string
+	var elem string
+	if ml := extractMapLiteral(q.Select); ml != nil {
+		structName := c.newStructName()
+		decl, init, ok, err := c.mapLiteralStruct(ml, structName)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		if ok {
+			if !c.structs[structName] {
+				c.writeln(decl)
+				c.structs[structName] = true
+			}
+			if st, ok2 := c.structTypeFromMapLiteral(ml, structName); ok2 {
+				if orig != nil {
+					orig.SetStruct(structName, st)
+				}
+				child.SetStruct(structName, st)
+			}
+			sel = init
+			elem = structName
+		}
+	}
+	if sel == "" {
+		var err error
+		sel, err = c.compileExpr(q.Select, false)
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
+		elem = strings.TrimPrefix(zigTypeOf(c.inferExprType(q.Select)), "[]const ")
 	}
 	var cond string
 	if q.Where != nil {
@@ -1967,12 +2040,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 	}
-	resType := zigTypeOf(c.inferExprType(q.Select))
 	c.env = orig
 
 	tmp := c.newTmp()
 	var b strings.Builder
-	elem := strings.TrimPrefix(resType, "[]const ")
 	lbl := c.newLabel()
 	if sortExpr != "" {
 		keyType := zigTypeOf(c.inferExprType(q.Sort))

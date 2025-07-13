@@ -289,6 +289,22 @@ func extractMapLiteral(e *parser.Expr) *parser.MapLiteral {
 	return u.Value.Target.Map
 }
 
+// extractQueryExpr returns the query expression contained in e if it is a
+// simple literal expression. Returns nil otherwise.
+func extractQueryExpr(e *parser.Expr) *parser.QueryExpr {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	if u.Value == nil || u.Value.Target == nil || len(u.Value.Ops) != 0 {
+		return nil
+	}
+	return u.Value.Target.Query
+}
+
 // extractListLiteral returns the list literal contained in the expression if
 // it is a simple literal expression. Returns nil otherwise.
 func extractListLiteral(e *parser.Expr) *parser.ListLiteral {
@@ -586,6 +602,22 @@ func (c *Compiler) structTypeFromExpr(e *parser.Expr) (types.Type, bool) {
 			st.Name = name
 		}
 		return types.ListType{Elem: st}, true
+	}
+	return nil, false
+}
+
+// structTypeFromQuery derives a struct type from the SELECT clause of a query
+// expression when it is a map literal with simple keys. The returned type will
+// be a ListType whose element is the inferred struct.
+func (c *Compiler) structTypeFromQuery(q *parser.QueryExpr, name string) (types.Type, bool) {
+	if q == nil || q.Select == nil {
+		return nil, false
+	}
+	if ml := extractMapLiteral(q.Select); ml != nil {
+		st, ok := c.structTypeFromMapLiteral(ml, name)
+		if ok {
+			return types.ListType{Elem: st}, true
+		}
 	}
 	return nil, false
 }
