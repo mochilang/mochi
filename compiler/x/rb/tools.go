@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureRuby verifies that the ruby binary is installed. If missing, it
@@ -123,9 +125,10 @@ func EnsureFormatter() error {
 // if available. When RuboCop is unavailable or formatting fails, the input is
 // returned unchanged with a trailing newline ensured.
 func FormatRB(src []byte) []byte {
+	header := meta.Header("#")
 	// Ensure trailing newline for consistency.
 	if len(src) == 0 || src[len(src)-1] != '\n' {
 		src = append(src, '\n')
 	}
-	return src
+	return append(header, src...)
 }

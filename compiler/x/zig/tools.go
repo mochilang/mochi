@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	meta "mochi/compiler/meta"
 )
 
 // EnsureZig verifies that the Zig compiler is installed.
@@ -99,6 +101,7 @@ func EnsureFormatter() error {
 // Format runs `zig fmt` on the provided source code. If the Zig compiler
 // isn't available, the input is returned unchanged.
 func Format(src []byte) []byte {
+	header := meta.Header("//")
 	if err := EnsureFormatter(); err == nil {
 		path := os.Getenv("ZIG")
 		if path == "" {
@@ -113,7 +116,7 @@ func Format(src []byte) []byte {
 			if len(res) == 0 || res[len(res)-1] != '\n' {
 				res = append(res, '\n')
 			}
-			return res
+			return append(header, res...)
 		}
 	}
 	// fallback: convert tabs to spaces and trim trailing whitespace
@@ -129,5 +132,5 @@ func Format(src []byte) []byte {
 	if len(res) == 0 || res[len(res)-1] != '\n' {
 		res = append(res, '\n')
 	}
-	return res
+	return append(header, res...)
 }
