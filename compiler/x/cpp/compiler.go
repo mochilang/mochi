@@ -1319,7 +1319,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						combined = fmt.Sprintf("([&](auto a, auto b){ std::vector<std::decay_t<decltype(a[0])>> r_; for(auto &x:a) if(std::find(b.begin(), b.end(), x)!=b.end()) r_.push_back(x); return r_; })(%s, %s)", l, r)
 					}
 				} else {
-					combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
+					if ops[i] == "+" && strings.HasPrefix(l, "std::string(") && strings.HasSuffix(l, ")") && strings.HasPrefix(r, "std::string(") && strings.HasSuffix(r, ")") {
+						left := strings.TrimSuffix(strings.TrimPrefix(l, "std::string("), ")")
+						right := strings.TrimSuffix(strings.TrimPrefix(r, "std::string("), ")")
+						combined = fmt.Sprintf("std::string(%s %s)", left, right)
+					} else {
+						combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
+					}
 				}
 				operands[i] = combined
 				operands = append(operands[:i+1], operands[i+2:]...)
