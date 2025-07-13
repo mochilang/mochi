@@ -37,6 +37,7 @@ type Compiler struct {
 	needMapGet      bool
 	needListOps     bool
 	needSum         bool
+	needSumFloat    bool
 	needGroup       bool
 	needLoop        bool
 	needLoadYaml    bool
@@ -2017,8 +2018,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			elem = tt.Elem
 		}
 		if _, ok := elem.(types.FloatType); ok {
-			return fmt.Sprintf("(List.fold_left (+.) 0.0 %s)", args[0]), nil
+			c.needSumFloat = true
+			return fmt.Sprintf("(sum_float %s)", args[0]), nil
 		}
+		c.needSum = true
 		return fmt.Sprintf("(sum %s)", args[0]), nil
 	case "values":
 		if len(args) != 1 {
@@ -2808,6 +2811,10 @@ func (c *Compiler) emitRuntime() {
 		c.writeln("let sum lst = List.fold_left (+) 0 lst")
 	}
 
+	if c.needSumFloat {
+		c.writeln("let sum_float lst = List.fold_left (+.) 0.0 lst")
+	}
+
 	if c.needGroup {
 		c.writeln("type ('k,'v) group = { key : 'k; items : 'v list }")
 	}
@@ -2870,7 +2877,7 @@ func (c *Compiler) emitRuntime() {
 		c.buf.WriteByte('\n')
 	}
 
-	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL {
+	if c.needShow || c.needContains || c.needSlice || c.needStringSlice || c.needListSet || c.needMapSet || c.needMapGet || c.needListOps || c.needSum || c.needSumFloat || c.needGroup || c.needLoop || c.needLoadYaml || c.needSaveJSONL {
 		c.buf.WriteByte('\n')
 	}
 }
@@ -3035,6 +3042,7 @@ func (c *Compiler) scanPrimary(p *parser.Primary) {
 			c.needShow = true
 		case "sum":
 			c.needSum = true
+			c.needSumFloat = true
 		}
 	case p.List != nil:
 		for _, e := range p.List.Elems {
