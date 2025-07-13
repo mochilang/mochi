@@ -1194,7 +1194,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				val = fmt.Sprintf("string:str(%s, %s) > 0", val, arg)
+				val = fmt.Sprintf("(string:str(%s, %s) > 0)", val, arg)
 				typ = "bool"
 			} else {
 				val = fmt.Sprintf("maps:get(%s, %s)", name, val)
@@ -1208,12 +1208,15 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[j] = s
 			}
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" {
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
 				base := c.refVar(p.Target.Selector.Root)
 				if v, ok := c.globals[p.Target.Selector.Root]; ok {
 					base = v
 				}
-				val = fmt.Sprintf("string:str(%s, %s) > 0", base, args[0])
+				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
+					base = fmt.Sprintf("maps:get(%s, %s)", f, base)
+				}
+				val = fmt.Sprintf("(string:str(%s, %s) > 0)", base, args[0])
 				typ = "bool"
 			} else {
 				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
