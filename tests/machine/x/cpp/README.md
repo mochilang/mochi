@@ -116,4 +116,5 @@ Compiled programs: 100/100
 
 ## Remaining Tasks
 - [ ] Review generated C++ code for closer match to human examples
-- [ ] Implement compilation for TPCH q1 and q5
+- [ ] Continue improving struct type inference for TPCH q1
+- [ ] Implement compilation for TPCH q5
