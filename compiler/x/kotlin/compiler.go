@@ -55,6 +55,25 @@ var runtimePieces = map[string]string{
     for (n in list) s += toInt(n)
     return s
 }`,
+	"_sum": `fun _sum(v: Any?): Double {
+    var list: List<Any?>? = null
+    when (v) {
+        is List<*> -> list = v as List<Any?>
+        is Map<*, *> -> {
+            val items = when {
+                v["items"] is List<*> -> v["items"] as List<*>
+                v["Items"] is List<*> -> v["Items"] as List<*>
+                else -> null
+            }
+            if (items != null) list = items as List<Any?>
+        }
+        is Group<*, *> -> list = v.items
+    }
+    if (list == null || list.isEmpty()) return 0.0
+    var sum = 0.0
+    for (n in list!!) sum += toDouble(n)
+    return sum
+}`,
 	"str":       `fun str(v: Any?): String = v.toString()`,
 	"substring": `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
 	"toInt": `fun toInt(v: Any?): Int = when (v) {
@@ -169,7 +188,7 @@ var runtimePieces = map[string]string{
 	"Group": `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
 }
 
-var runtimeOrder = []string{"append", "avg", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
+var runtimeOrder = []string{"append", "avg", "count", "exists", "values", "len", "max", "min", "sum", "_sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -1200,9 +1219,17 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "sum":
 		if len(args) == 1 {
-			c.use("sum")
-			c.use("toInt")
-			return fmt.Sprintf("sum(%s)", args[0]), true
+			t := types.TypeOfExprBasic(call.Args[0], c.env)
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.IntType); ok {
+					return fmt.Sprintf("%s.sum()", args[0]), true
+				}
+				if _, ok := lt.Elem.(types.FloatType); ok {
+					return fmt.Sprintf("%s.sum()", args[0]), true
+				}
+			}
+			c.use("_sum")
+			return fmt.Sprintf("_sum(%s)", args[0]), true
 		}
 	case "max":
 		if len(args) == 1 {

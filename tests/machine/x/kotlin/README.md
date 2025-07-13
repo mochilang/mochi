@@ -112,3 +112,4 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - Implement dataset join and group-by operations in the Kotlin backend.
 - Provide better support for the Python `math` helpers and other foreign imports.
 - Finish compiling the remaining unchecked programs above.
+- Extend numeric helpers so TPCH query `q1.mochi` compiles and runs.
