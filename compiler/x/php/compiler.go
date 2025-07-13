@@ -653,6 +653,16 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				t = types.BoolType{}
 				continue
 			}
+			if len(op.Call.Args) == 1 && (strings.HasSuffix(val, "->starts_with") || strings.HasSuffix(val, "['starts_with']")) {
+				base := strings.TrimSuffix(strings.TrimSuffix(val, "->starts_with"), "['starts_with']")
+				arg, err := c.compileExpr(op.Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("str_starts_with(%s, %s)", base, arg)
+				t = types.BoolType{}
+				continue
+			}
 			args := make([]string, len(op.Call.Args))
 			for j, a := range op.Call.Args {
 				s, err := c.compileExpr(a)
