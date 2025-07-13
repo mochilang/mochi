@@ -1,6 +1,6 @@
 # TPC-H Pascal Outputs
 
-This directory contains Pascal translations of the first five TPCH benchmark queries.
+This directory contains Pascal translations of the first ten TPCH benchmark queries.
 
 ## Checklist
 
@@ -9,3 +9,8 @@ This directory contains Pascal translations of the first five TPCH benchmark que
 - [x] q3
 - [x] q4
 - [x] q5
+- [x] q6
+- [x] q7
+- [x] q8
+- [x] q9
+- [x] q10
