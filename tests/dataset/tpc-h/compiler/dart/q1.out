@@ -1,1 +1,1 @@
-[{"returnflag":"N","linestatus":"O","sum_qty":17,"sum_base_price":1000,"sum_disc_price":950.0,"sum_charge":1016.5000000000001,"avg_qty":17.0,"avg_price":1000.0,"avg_disc":0.05,"count_order":1},{"returnflag":"N","linestatus":"O","sum_qty":36,"sum_base_price":2000,"sum_disc_price":1800.0,"sum_charge":1890.0,"avg_qty":36.0,"avg_price":2000.0,"avg_disc":0.1,"count_order":1}]
+[{"returnflag":"N","linestatus":"O","sum_qty":53,"sum_base_price":3000,"sum_disc_price":2750.0,"sum_charge":2906.5,"avg_qty":26.5,"avg_price":1500.0,"avg_disc":0.07500000000000001,"count_order":2}]

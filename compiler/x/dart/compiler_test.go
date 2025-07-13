@@ -70,7 +70,7 @@ func TestDartCompiler_TPCHQueries(t *testing.T) {
 	root := findRepoRoot(t)
 	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "dart", q+".dart.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "dart", q+".dart")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "dart", q+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -93,8 +93,16 @@ func TestDartCompiler_TPCHQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
-			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".dart.out", got, bytes.TrimSpace(wantCode))
+			strip := func(b []byte) []byte {
+				if i := bytes.IndexByte(b, '\n'); i >= 0 {
+					return bytes.TrimSpace(b[i+1:])
+				}
+				return bytes.TrimSpace(b)
+			}
+			got := strip(code)
+			want := strip(wantCode)
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".dart", got, want)
 			}
 			tmp := t.TempDir()
 			file := filepath.Join(tmp, "prog.dart")
