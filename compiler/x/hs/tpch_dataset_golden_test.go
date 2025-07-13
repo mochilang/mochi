@@ -11,11 +11,9 @@ import (
 
 	hscode "mochi/compiler/x/hs"
 	"mochi/compiler/x/testutil"
-	"mochi/parser"
-	"mochi/types"
 )
 
-// TestHSCompiler_TPCH_Dataset_Golden compiles the TPCH q1-q10 examples and
+// TestHSCompiler_TPCH_Dataset_Golden compiles the TPCH q11-q14 examples and
 // verifies the generated Haskell code and program output.
 func TestHSCompiler_TPCH_Dataset_Golden(t *testing.T) {
 	if err := hscode.EnsureHaskell(); err != nil {
