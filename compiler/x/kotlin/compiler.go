@@ -1415,6 +1415,11 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		if st, ok := keyType.(types.StructType); ok && st.Name == "" {
 			keyType = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 		}
+		if keyType == (types.AnyType{}) {
+			if _, ok := mapLiteral(q.Group.Exprs[0]); ok {
+				keyType = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			}
+		}
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elem}, true)
 		selEnv = genv
