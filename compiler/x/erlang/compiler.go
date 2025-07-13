@@ -1199,6 +1199,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 1 && p.Target.Selector.Tail[0] == "contains" {
 				base := c.refVar(p.Target.Selector.Root)
+				if v, ok := c.globals[p.Target.Selector.Root]; ok {
+					base = v
+				}
 				val = fmt.Sprintf("string:str(%s, %s) > 0", base, args[0])
 				typ = "bool"
 			} else {

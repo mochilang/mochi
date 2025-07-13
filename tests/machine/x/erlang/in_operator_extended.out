@@ -1,10 +1,6 @@
-/workspace/mochi/tests/machine/x/erlang/in_operator_extended.erl:12:5: Warning: variable 'S' is unused
-%   12|     S = "hello",
-%     |     ^
-
 true
 false
 false
 false
-true
+false
 false
