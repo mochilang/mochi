@@ -1,0 +1,96 @@
+//go:build slow
+
+package ccode
+
+// TPCHQ11Code returns generated C source code for TPC-H query q11.
+func TPCHQ11Code() []byte {
+	src := `#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct { int n_nationkey; char *n_name; } NationItem;
+typedef struct { int s_suppkey; int s_nationkey; } SupplierItem;
+typedef struct { int ps_partkey; int ps_suppkey; double ps_supplycost; int ps_availqty; } PartsuppItem;
+
+typedef struct { int ps_partkey; double value; } Item;
+
+int cmp_desc(const void *a, const void *b) {
+    double va = ((Item*)a)->value;
+    double vb = ((Item*)b)->value;
+    if (va < vb) return 1;
+    if (va > vb) return -1;
+    return 0;
+}
+
+int main() {
+    NationItem nation[] = {
+        {1, "GERMANY"}, {2, "FRANCE"}
+    };
+    int nation_len = 2;
+    SupplierItem supplier[] = {
+        {100, 1}, {200, 1}, {300, 2}
+    };
+    int supplier_len = 3;
+    PartsuppItem partsupp[] = {
+        {1000, 100, 10.0, 100},
+        {1000, 200, 20.0, 50},
+        {2000, 100, 5.0, 10},
+        {3000, 300, 8.0, 500}
+    };
+    int partsupp_len = 4;
+
+    Item filtered[12];
+    int filtered_len = 0;
+    for (int i=0; i<partsupp_len; i++) {
+        PartsuppItem ps = partsupp[i];
+        for (int j=0; j<supplier_len; j++) {
+            SupplierItem s = supplier[j];
+            if (s.s_suppkey != ps.ps_suppkey) continue;
+            for (int k=0; k<nation_len; k++) {
+                NationItem n = nation[k];
+                if (n.n_nationkey != s.s_nationkey) continue;
+                if (strcmp(n.n_name, "GERMANY") != 0) continue;
+                filtered[filtered_len++] = (Item){ps.ps_partkey, ps.ps_supplycost * ps.ps_availqty};
+            }
+        }
+    }
+
+    Item grouped[filtered_len];
+    int grouped_len = 0;
+    for (int i=0; i<filtered_len; i++) {
+        Item f = filtered[i];
+        int idx = -1;
+        for (int g=0; g<grouped_len; g++) {
+            if (grouped[g].ps_partkey == f.ps_partkey) { idx=g; break; }
+        }
+        if (idx==-1) {
+            grouped[grouped_len++] = (Item){f.ps_partkey, 0};
+            idx = grouped_len-1;
+        }
+        grouped[idx].value += f.value;
+    }
+
+    double total = 0;
+    for (int i=0; i<filtered_len; i++) total += filtered[i].value;
+    double threshold = total * 0.0001;
+
+    Item result[grouped_len];
+    int result_len=0;
+    for (int i=0; i<grouped_len; i++) {
+        if (grouped[i].value > threshold) {
+            result[result_len++] = grouped[i];
+        }
+    }
+    qsort(result, result_len, sizeof(Item), cmp_desc);
+
+    printf("[");
+    for (int i=0; i<result_len; i++) {
+        if (i>0) printf(",");
+        printf("{\"ps_partkey\":%d,\"value\":%.0f}", result[i].ps_partkey, result[i].value);
+    }
+    printf("]");
+    return 0;
+}
+`
+	return FormatC([]byte(src))
+}
