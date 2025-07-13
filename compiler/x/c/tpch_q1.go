@@ -1,3 +1,5 @@
+//go:build slow
+
 package ccode
 
 // TPCHQ1Code returns generated C source code for TPC-H query q1.
