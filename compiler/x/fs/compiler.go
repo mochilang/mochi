@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	meta "mochi/compiler/meta"
@@ -147,7 +148,11 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.prelude.WriteString("type _Group<'K,'T>(key: 'K) =\n")
 		c.prelude.WriteString("    member val key = key with get, set\n")
 		c.prelude.WriteString("    member val Items = System.Collections.Generic.List<'T>() with get\n")
-		c.prelude.WriteString("    member this.size = this.Items.Count\n\n")
+		c.prelude.WriteString("    member this.size = this.Items.Count\n")
+		c.prelude.WriteString("    interface System.Collections.Generic.IEnumerable<'T> with\n")
+		c.prelude.WriteString("        member this.GetEnumerator() = (this.Items :> seq<'T>).GetEnumerator()\n")
+		c.prelude.WriteString("    interface System.Collections.IEnumerable with\n")
+		c.prelude.WriteString("        member this.GetEnumerator() = (this.Items :> System.Collections.IEnumerable).GetEnumerator()\n\n")
 		c.prelude.WriteString("let _group_by (src: 'T list) (keyfn: 'T -> 'K) : _Group<'K,'T> list =\n")
 		c.prelude.WriteString("    let groups = System.Collections.Generic.Dictionary<string,_Group<'K,'T>>()\n")
 		c.prelude.WriteString("    let order = System.Collections.Generic.List<string>()\n")
@@ -1013,7 +1018,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 	case "avg":
 		if len(args) == 1 {
-			return fmt.Sprintf("(List.sum %s / List.length %s)", args[0], args[0]), nil
+			return fmt.Sprintf("(float (List.sum %s) / float (List.length %s))", args[0], args[0]), nil
 		}
 	case "count":
 		if len(args) == 1 {
@@ -1638,7 +1643,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		f := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.ContainsAny(f, ".eE") {
+			f += ".0"
+		}
+		return f
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return "true"
@@ -1837,6 +1846,12 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				typeMap[n] = t
 			}
 			return c.ensureAnonStruct(names, types, typeMap)
+		}
+
+		if p.Map != nil {
+			if t := c.mapLiteralType(p.Map); t != "" {
+				return t
+			}
 		}
 
 		if p.Selector != nil {
