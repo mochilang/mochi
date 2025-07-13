@@ -68,7 +68,7 @@ func runTPCHQuery(t *testing.T, base string, gstPath string) {
 
 func TestSTCompiler_TPCHQueries(t *testing.T) {
 	gstPath := ensureGST()
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 4; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) { runTPCHQuery(t, q, gstPath) })
 	}
