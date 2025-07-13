@@ -80,6 +80,7 @@ type Compiler struct {
 	needMath       bool
 	listLens       map[string]int
 	listVals       map[string][]int
+	stackArrays    map[string]bool
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -110,6 +111,7 @@ func New(env *types.Env) *Compiler {
 		builtinAliases: map[string]string{},
 		listLens:       map[string]int{},
 		listVals:       map[string][]int{},
+		stackArrays:    map[string]bool{},
 	}
 }
 
@@ -153,6 +155,9 @@ func (c *Compiler) stackListInt(name, lenExpr, initLen string) {
 	data := name + "_data"
 	c.writeln(fmt.Sprintf("int %s[%s];", data, lenExpr))
 	c.writeln(fmt.Sprintf("list_int %s = {%s, %s};", name, initLen, data))
+	if c.stackArrays != nil {
+		c.stackArrays[data] = true
+	}
 }
 
 func (c *Compiler) need(key string) {
@@ -1243,7 +1248,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
 				}
-				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.need(needListInt)
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+				for i, v := range parts {
+					c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				}
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
 				return nil
@@ -1452,7 +1461,11 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				for i, v := range vals {
 					parts[i] = strconv.Itoa(v)
 				}
-				c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+				c.need(needListInt)
+				c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+				for i, v := range parts {
+					c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+				}
 				c.listLens[name] = len(vals)
 				c.listVals[name] = vals
 				return nil
@@ -4070,7 +4083,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isFloatList = false
 					isStringList = false
 				} else {
-					if isListIntPrimary(p.Target, c.env) {
+					if c.isStackArrayExpr(expr) {
 						expr = fmt.Sprintf("%s[%s]", expr, idx)
 					} else {
 						expr = fmt.Sprintf("%s.data[%s]", expr, idx)
@@ -4346,24 +4359,31 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			data := name + "_data"
 			c.writeln(fmt.Sprintf("list_int %s[] = {%s};", data, strings.Join(vals, ", ")))
 			c.writeln(fmt.Sprintf("list_list_int %s = {%d, %s};", name, len(vals), data))
+			if c.stackArrays != nil {
+				c.stackArrays[data] = true
+			}
 		} else if len(p.List.Elems) > 0 && isStringExpr(p.List.Elems[0], c.env) {
 			c.need(needListString)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			data := name + "_data"
-			c.writeln(fmt.Sprintf("char* %s[] = {%s};", data, strings.Join(vals, ", ")))
-			c.writeln(fmt.Sprintf("list_string %s = {%d, %s};", name, len(vals), data))
+			c.need(needListString)
+			c.writeln(fmt.Sprintf("list_string %s = list_string_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		} else if len(p.List.Elems) > 0 && isFloatExpr(p.List.Elems[0], c.env) {
 			c.need(needListFloat)
 			vals := make([]string, len(p.List.Elems))
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			data := name + "_data"
-			c.writeln(fmt.Sprintf("double %s[] = {%s};", data, strings.Join(vals, ", ")))
-			c.writeln(fmt.Sprintf("list_float %s = {%d, %s};", name, len(vals), data))
+			c.need(needListFloat)
+			c.writeln(fmt.Sprintf("list_float %s = list_float_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
@@ -4376,6 +4396,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					data := name + "_data"
 					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
+					if c.stackArrays != nil {
+						c.stackArrays[data] = true
+					}
 					return name
 				}
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
@@ -4391,6 +4414,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					data := name + "_data"
 					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
 					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
+					if c.stackArrays != nil {
+						c.stackArrays[data] = true
+					}
 					return name
 				}
 			}
@@ -4398,10 +4424,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, el := range p.List.Elems {
 				vals[i] = c.compileExpr(el)
 			}
-			c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(vals, ", ")))
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(p.List.Elems)))
+			for i, v := range vals {
+				c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+			}
 			c.listLens[name] = len(p.List.Elems)
 		} else {
-			c.writeln(fmt.Sprintf("int %s[1];", name))
+			c.need(needListInt)
+			c.writeln(fmt.Sprintf("list_int %s = list_int_create(0);", name))
 			c.listLens[name] = 0
 		}
 		return name
@@ -6493,7 +6524,11 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 	for i, v := range vals {
 		parts[i] = strconv.Itoa(v)
 	}
-	c.writeln(fmt.Sprintf("int %s[] = {%s};", name, strings.Join(parts, ", ")))
+	c.need(needListInt)
+	c.writeln(fmt.Sprintf("list_int %s = list_int_create(%d);", name, len(vals)))
+	for i, v := range parts {
+		c.writeln(fmt.Sprintf("%s.data[%d] = %s;", name, i, v))
+	}
 	c.listLens[name] = len(vals)
 	c.listVals[name] = vals
 	return name
@@ -6507,8 +6542,20 @@ func (c *Compiler) listLenExpr(name string) string {
 }
 
 func (c *Compiler) listItemExpr(name, idx string) string {
-	if _, ok := c.listLens[name]; ok {
+	if c.isStackArrayExpr(name) {
 		return fmt.Sprintf("%s[%s]", name, idx)
 	}
 	return fmt.Sprintf("%s.data[%s]", name, idx)
+}
+
+func (c *Compiler) isStackArrayExpr(expr string) bool {
+	if expr == "" {
+		return false
+	}
+	root := expr
+	if i := strings.IndexAny(expr, "[."); i >= 0 {
+		root = expr[:i]
+	}
+	_, ok := c.stackArrays[root]
+	return ok
 }
