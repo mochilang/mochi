@@ -100,7 +100,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			case "==", "!=":
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, op, r.expr)
 			case "in":
-				if r.isString {
+				if r.isString || (l.isString && !r.isList) {
 					expr = fmt.Sprintf("String.contains?(%s, %s)", r.expr, l.expr)
 				} else {
 					expr = fmt.Sprintf("(if is_map(%s), do: Map.has_key?(%s, %s), else: Enum.member?(%s, %s))", r.expr, r.expr, l.expr, r.expr, l.expr)
@@ -172,9 +172,24 @@ func isStringPostfix(p *parser.PostfixExpr, env *types.Env) bool {
 		if p.Target.Lit != nil && p.Target.Lit.Str != nil {
 			return true
 		}
-		if p.Target.Selector != nil && len(p.Target.Selector.Tail) == 0 && env != nil {
-			if t, err := env.GetVar(p.Target.Selector.Root); err == nil {
-				if _, ok := t.(types.StringType); ok {
+		if p.Target.Selector != nil && env != nil {
+			sel := p.Target.Selector
+			typ, err := env.GetVar(sel.Root)
+			if err != nil {
+				return false
+			}
+			for _, f := range sel.Tail {
+				st, ok := typ.(types.StructType)
+				if !ok {
+					return false
+				}
+				typ = st.Fields[f]
+			}
+			if _, ok := typ.(types.StringType); ok {
+				return true
+			}
+			if len(sel.Tail) == 0 {
+				if _, ok := typ.(types.StringType); ok {
 					return true
 				}
 			}
