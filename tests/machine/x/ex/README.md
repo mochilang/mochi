@@ -4,6 +4,9 @@ This directory contains Elixir source code generated from Mochi programs and the
 
 Compiled programs: 99/100
 
+TPC-H progress:
+- [x] q1
+
 Checklist:
 
 - [x] append_builtin
