@@ -122,3 +122,4 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 
 - Added support for pattern matching on union variants.
 - Grouped query results can now be sorted by group keys.
+- Fixed row type inference so grouped join results use proper map types.

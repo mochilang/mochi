@@ -1622,14 +1622,15 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 			rowParts = append(rowParts, fmt.Sprintf("\"%s\" to %s", j.Var, j.Var))
 		}
 		var row string
+		rowType := kotlinTypeOf(elem)
 		if len(rowParts) == 1 {
 			if t, err := c.env.GetVar(q.Var); err == nil && isStructType(t) {
 				row = q.Var
 			} else {
-				row = "mutableMapOf(" + rowParts[0] + ") as MutableMap<Any?, Any?>"
+				row = fmt.Sprintf("mutableMapOf(%s) as %s", rowParts[0], rowType)
 			}
 		} else {
-			row = "mutableMapOf(" + strings.Join(rowParts, ", ") + ") as MutableMap<Any?, Any?>"
+			row = fmt.Sprintf("mutableMapOf(%s) as %s", strings.Join(rowParts, ", "), rowType)
 		}
 		b.WriteString(fmt.Sprintf("__g.add(%s)\n", row))
 	} else {
