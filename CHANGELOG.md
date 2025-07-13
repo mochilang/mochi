@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.25] – 2025-07-13T09:42:07+07:00
+
+### Added
+
+* TPCH queries 1–22 compiled across languages with golden outputs
+* Deterministic version headers for reproducible builds
+* New scripts and artifacts for dataset compilation
+
+### Changed
+
+* Zig infers structs for query results with improved group slices
+* C#, Java and Kotlin refine equality, comparisons and numeric handling
+* C and C++ simplify initialization with better match defaults
+* Rust and Python improve float casting and typed dataclasses
+
+### Fixed
+
+* C backend list helpers with dynamic loops
+* Build headers consistent across machines
+* Updated machine checklists for Go, Rust and others
+
+
 ## [0.10.24] – 2025-07-12T16:18:37+07:00
 
 ### Added
@@ -1512,5 +1534,6 @@ composability, and testability — ideal for intelligent tools, AI agents, and e
 - Testable components with minimal external dependencies
 - Self-contained golden test framework
 - Support for `Mochi` as a compiler backend or teaching tool
+
 
 
