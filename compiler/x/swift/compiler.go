@@ -3854,6 +3854,10 @@ const helperEqual = `func _equal(_ a: Any, _ b: Any) -> Bool {
             if !_equal(av, bv) { return false }
         }
         return true
+    case let (ai as Double, bi as Int):
+        return ai == Double(bi)
+    case let (ai as Int, bi as Double):
+        return Double(ai) == bi
     case let (ai as Double, bi as Double):
         return ai == bi
     case let (ai as Int, bi as Int):
