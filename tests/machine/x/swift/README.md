@@ -108,3 +108,11 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+
+- Fix generation for `group_by_multi_join.mochi` and `group_by_multi_join_sort.mochi`.
+- Resolve runtime issues in `group_items_iteration.mochi`.
+- Implement outer and right join support.
+- Begin compiling the TPCH `q1.mochi` benchmark.
+

@@ -1604,6 +1604,13 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				return "list"
 			}
 		}
+		if p.Target.Call != nil && p.Target.Call.Func == "append" && len(p.Target.Call.Args) == 2 {
+			et := c.exprType(p.Target.Call.Args[1])
+			if et != "" {
+				return "list_" + et
+			}
+			return "list"
+		}
 	}
 	return ""
 }
