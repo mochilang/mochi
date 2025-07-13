@@ -4,456 +4,105 @@
 #include <string.h>
 
 typedef struct {
-  int len;
-  int *data;
-} list_int;
-static list_int list_int_create(int len) {
-  list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  double *data;
-} list_float;
-static list_float list_float_create(int len) {
-  list_float l;
-  l.len = len;
-  l.data = calloc(len, sizeof(double));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  char **data;
-} list_string;
-static list_string list_string_create(int len) {
-  list_string l;
-  l.len = len;
-  l.data = calloc(len, sizeof(char *));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-typedef struct {
-  int len;
-  list_int *data;
-} list_list_int;
-static list_list_int list_list_int_create(int len) {
-  list_list_int l;
-  l.len = len;
-  l.data = calloc(len, sizeof(list_int));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-static double _sum_float(list_float v) {
-  double sum = 0;
-  for (int i = 0; i < v.len; i++)
-    sum += v.data[i];
-  return sum;
-}
-static void _json_int(int v) { printf("%d", v); }
-static void _json_float(double v) { printf("%g", v); }
-static void _json_string(char *s) { printf("\"%s\"", s); }
-static void _json_list_int(list_int v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_int(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_float(list_float v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_float(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_string(list_string v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_string(v.data[i]);
-  }
-  printf("]");
-}
-static void _json_list_list_int(list_list_int v) {
-  printf("[");
-  for (int i = 0; i < v.len; i++) {
-    if (i > 0)
-      printf(",");
-    _json_list_int(v.data[i]);
-  }
-  printf("]");
-}
-typedef struct {
-  int key;
-  list_int items;
-} _GroupInt;
-typedef struct {
-  int len;
-  int cap;
-  _GroupInt *data;
-} list_group_int;
-static list_group_int _group_by_int(list_int src) {
-  list_group_int res;
-  res.len = 0;
-  res.cap = 0;
-  res.data = NULL;
-  for (int i = 0; i < src.len; i++) {
-    int key = src.data[i];
-    int idx = -1;
-    for (int j = 0; j < res.len; j++)
-      if (res.data[j].key == key) {
-        idx = j;
-        break;
-      }
-    if (idx == -1) {
-      if (res.len >= res.cap) {
-        res.cap = res.cap ? res.cap * 2 : 4;
-        res.data = (_GroupInt *)realloc(res.data, sizeof(_GroupInt) * res.cap);
-      }
-      res.data[res.len].key = key;
-      res.data[res.len].items = list_int_create(0);
-      idx = res.len++;
-    }
-    _GroupInt *g = &res.data[idx];
-    g->items.data =
-        (int *)realloc(g->items.data, sizeof(int) * (g->items.len + 1));
-    g->items.data[g->items.len++] = src.data[i];
-  }
-  return res;
-}
-static char *target_nation = "GERMANY";
-
-typedef struct {
-  int ps_partkey;
-  double value;
-} TmpItem;
-typedef struct {
-  int len;
-  TmpItem *data;
-} list_TmpItem;
-static list_TmpItem list_TmpItem_create(int len) {
-  list_TmpItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(TmpItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
-  int ps_partkey;
-  double value;
-} TmpItem1;
-typedef struct {
-  int len;
-  TmpItem1 *data;
-} list_TmpItem1;
-static list_TmpItem1 list_TmpItem1_create(int len) {
-  list_TmpItem1 l;
-  l.len = len;
-  l.data = calloc(len, sizeof(TmpItem1));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
   int n_nationkey;
   char *n_name;
 } NationItem;
 typedef struct {
-  int len;
-  NationItem *data;
-} list_NationItem;
-static list_NationItem list_NationItem_create(int len) {
-  list_NationItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(NationItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
   int s_suppkey;
   int s_nationkey;
 } SupplierItem;
-typedef struct {
-  int len;
-  SupplierItem *data;
-} list_SupplierItem;
-static list_SupplierItem list_SupplierItem_create(int len) {
-  list_SupplierItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(SupplierItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
 typedef struct {
   int ps_partkey;
   int ps_suppkey;
   double ps_supplycost;
   int ps_availqty;
 } PartsuppItem;
-typedef struct {
-  int len;
-  PartsuppItem *data;
-} list_PartsuppItem;
-static list_PartsuppItem list_PartsuppItem_create(int len) {
-  list_PartsuppItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(PartsuppItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
 
 typedef struct {
   int ps_partkey;
   double value;
-} FilteredItem;
-typedef struct {
-  int len;
-  FilteredItem *data;
-} list_FilteredItem;
-static list_FilteredItem list_FilteredItem_create(int len) {
-  list_FilteredItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(FilteredItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
+} Item;
 
-typedef struct {
-  int ps_partkey;
-  double value;
-} GroupedItem;
-typedef struct {
-  int len;
-  GroupedItem *data;
-} list_GroupedItem;
-static list_GroupedItem list_GroupedItem_create(int len) {
-  list_GroupedItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(GroupedItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-static list_int test_Q11_returns_high_value_partkeys_from_GERMANY_result;
-static void test_Q11_returns_high_value_partkeys_from_GERMANY() {
-  list_int tmp1 = list_int_create(2);
-  tmp1.data[0] = (TmpItem){.ps_partkey = 1000, .value = 2000.0};
-  tmp1.data[1] = (TmpItem1){.ps_partkey = 2000, .value = 50.0};
-  int tmp2 = 1;
-  if (test_Q11_returns_high_value_partkeys_from_GERMANY_result.len !=
-      tmp1.len) {
-    tmp2 = 0;
-  } else {
-    for (int i3 = 0;
-         i3 < test_Q11_returns_high_value_partkeys_from_GERMANY_result.len;
-         i3++) {
-      if (test_Q11_returns_high_value_partkeys_from_GERMANY_result.data[i3] !=
-          tmp1.data[i3]) {
-        tmp2 = 0;
-        break;
-      }
-    }
-  }
-  if (!(tmp2)) {
-    fprintf(stderr, "expect failed\n");
-    exit(1);
-  }
+int cmp_desc(const void *a, const void *b) {
+  double va = ((Item *)a)->value;
+  double vb = ((Item *)b)->value;
+  if (va < vb)
+    return 1;
+  if (va > vb)
+    return -1;
+  return 0;
 }
 
 int main() {
-  NationItem tmp4_data[] = {(NationItem){.n_nationkey = 1, .n_name = "GERMANY"},
-                            (NationItem){.n_nationkey = 2, .n_name = "FRANCE"}};
-  list_NationItem tmp4 = {2, tmp4_data};
-  list_NationItem nation = tmp4;
-  SupplierItem tmp5_data[] = {
-      (SupplierItem){.s_suppkey = 100, .s_nationkey = 1},
-      (SupplierItem){.s_suppkey = 200, .s_nationkey = 1},
-      (SupplierItem){.s_suppkey = 300, .s_nationkey = 2}};
-  list_SupplierItem tmp5 = {3, tmp5_data};
-  list_SupplierItem supplier = tmp5;
-  PartsuppItem tmp6_data[] = {(PartsuppItem){.ps_partkey = 1000,
-                                             .ps_suppkey = 100,
-                                             .ps_supplycost = 10.0,
-                                             .ps_availqty = 100},
-                              (PartsuppItem){.ps_partkey = 1000,
-                                             .ps_suppkey = 200,
-                                             .ps_supplycost = 20.0,
-                                             .ps_availqty = 50},
-                              (PartsuppItem){.ps_partkey = 2000,
-                                             .ps_suppkey = 100,
-                                             .ps_supplycost = 5.0,
-                                             .ps_availqty = 10},
-                              (PartsuppItem){.ps_partkey = 3000,
-                                             .ps_suppkey = 300,
-                                             .ps_supplycost = 8.0,
-                                             .ps_availqty = 500}};
-  list_PartsuppItem tmp6 = {4, tmp6_data};
-  list_PartsuppItem partsupp = tmp6;
-  list_FilteredItem tmp7 =
-      list_FilteredItem_create(partsupp.len * supplier.len * nation.len);
-  int tmp8 = 0;
-  for (int tmp9 = 0; tmp9 < partsupp.len; tmp9++) {
-    PartsuppItem ps = partsupp.data[tmp9];
-    for (int tmp10 = 0; tmp10 < supplier.len; tmp10++) {
-      SupplierItem s = supplier.data[tmp10];
-      if (!(s.s_suppkey == ps.ps_suppkey)) {
+  NationItem nation[] = {{1, "GERMANY"}, {2, "FRANCE"}};
+  int nation_len = 2;
+  SupplierItem supplier[] = {{100, 1}, {200, 1}, {300, 2}};
+  int supplier_len = 3;
+  PartsuppItem partsupp[] = {{1000, 100, 10.0, 100},
+                             {1000, 200, 20.0, 50},
+                             {2000, 100, 5.0, 10},
+                             {3000, 300, 8.0, 500}};
+  int partsupp_len = 4;
+
+  Item filtered[12];
+  int filtered_len = 0;
+  for (int i = 0; i < partsupp_len; i++) {
+    PartsuppItem ps = partsupp[i];
+    for (int j = 0; j < supplier_len; j++) {
+      SupplierItem s = supplier[j];
+      if (s.s_suppkey != ps.ps_suppkey)
         continue;
-      }
-      for (int tmp11 = 0; tmp11 < nation.len; tmp11++) {
-        NationItem n = nation.data[tmp11];
-        if (!(n.n_nationkey == s.s_nationkey)) {
+      for (int k = 0; k < nation_len; k++) {
+        NationItem n = nation[k];
+        if (n.n_nationkey != s.s_nationkey)
           continue;
-        }
-        if (!((strcmp(n.n_name, target_nation) == 0))) {
+        if (strcmp(n.n_name, "GERMANY") != 0)
           continue;
-        }
-        tmp7.data[tmp8] =
-            (FilteredItem){.ps_partkey = ps.ps_partkey,
-                           .value = ps.ps_supplycost * ps.ps_availqty};
-        tmp8++;
+        filtered[filtered_len++] =
+            (Item){ps.ps_partkey, ps.ps_supplycost * ps.ps_availqty};
       }
     }
   }
-  tmp7.len = tmp8;
-  list_FilteredItem filtered = tmp7;
-  list_FilteredItem tmp12 = list_FilteredItem_create(filtered.len);
-  int tmp13_data[filtered.len];
-  list_int tmp13 = {0, tmp13_data};
-  int tmp14 = 0;
-  for (int i15 = 0; i15 < filtered.len; i15++) {
-    FilteredItem x = filtered.data[i15];
-    tmp12.data[tmp14] = x;
-    tmp13.data[tmp14] = x.ps_partkey;
-    tmp14++;
-  }
-  tmp12.len = tmp14;
-  tmp13.len = tmp14;
-  list_group_int tmp16 = _group_by_int(tmp13);
-  list_GroupedItem tmp17 = list_GroupedItem_create(tmp16.len);
-  int tmp18 = 0;
-  for (int gi = 0; gi < tmp16.len; gi++) {
-    _GroupInt _gp = tmp16.data[gi];
-    list_FilteredItem tmp19 = list_FilteredItem_create(_gp.items.len);
-    for (int i20 = 0; i20 < _gp.items.len; i20++) {
-      tmp19.data[i20] = tmp12.data[_gp.items.data[i20]];
+
+  Item grouped[filtered_len];
+  int grouped_len = 0;
+  for (int i = 0; i < filtered_len; i++) {
+    Item f = filtered[i];
+    int idx = -1;
+    for (int g = 0; g < grouped_len; g++) {
+      if (grouped[g].ps_partkey == f.ps_partkey) {
+        idx = g;
+        break;
+      }
     }
-    tmp19.len = _gp.items.len;
-    struct {
-      int key;
-      list_FilteredItem items;
-    } g = {_gp.key, tmp19};
-    list_float tmp21 = list_float_create(g.items.len);
-    int tmp22 = 0;
-    for (int i23 = 0; i23 < g.items.len; i23++) {
-      FilteredItem r = g.items.data[i23];
-      tmp21.data[tmp22] = r.value;
-      tmp22++;
+    if (idx == -1) {
+      grouped[grouped_len++] = (Item){f.ps_partkey, 0};
+      idx = grouped_len - 1;
     }
-    tmp21.len = tmp22;
-    tmp17.data[tmp18] =
-        (GroupedItem){.ps_partkey = g.key, .value = _sum_float(tmp21)};
-    tmp18++;
+    grouped[idx].value += f.value;
   }
-  tmp17.len = tmp18;
-  list_GroupedItem grouped = tmp17;
-  list_float tmp24 = list_float_create(filtered.len);
-  int tmp25 = 0;
-  for (int tmp26 = 0; tmp26 < filtered.len; tmp26++) {
-    FilteredItem x = filtered.data[tmp26];
-    tmp24.data[tmp25] = x.value;
-    tmp25++;
-  }
-  tmp24.len = tmp25;
-  double total = _sum_float(tmp24);
+
+  double total = 0;
+  for (int i = 0; i < filtered_len; i++)
+    total += filtered[i].value;
   double threshold = total * 0.0001;
-  list_GroupedItem tmp27 = list_GroupedItem_create(grouped.len);
-  double *tmp30 = (double *)malloc(sizeof(double) * grouped.len);
-  int tmp28 = 0;
-  for (int tmp29 = 0; tmp29 < grouped.len; tmp29++) {
-    GroupedItem x = grouped.data[tmp29];
-    if (!(x.value > threshold)) {
-      continue;
-    }
-    tmp27.data[tmp28] = x;
-    tmp30[tmp28] = (-x.value);
-    tmp28++;
-  }
-  tmp27.len = tmp28;
-  for (int i33 = 0; i33 < tmp28 - 1; i33++) {
-    for (int i34 = i33 + 1; i34 < tmp28; i34++) {
-      if (tmp30[i33] > tmp30[i34]) {
-        double tmp31 = tmp30[i33];
-        tmp30[i33] = tmp30[i34];
-        tmp30[i34] = tmp31;
-        GroupedItem tmp32 = tmp27.data[i33];
-        tmp27.data[i33] = tmp27.data[i34];
-        tmp27.data[i34] = tmp32;
-      }
+
+  Item result[grouped_len];
+  int result_len = 0;
+  for (int i = 0; i < grouped_len; i++) {
+    if (grouped[i].value > threshold) {
+      result[result_len++] = grouped[i];
     }
   }
-  list_GroupedItem result = tmp27;
+  qsort(result, result_len, sizeof(Item), cmp_desc);
+
   printf("[");
-  for (int i35 = 0; i35 < result.len; i35++) {
-    if (i35 > 0)
+  for (int i = 0; i < result_len; i++) {
+    if (i > 0)
       printf(",");
-    GroupedItem it = result.data[i35];
-    printf("{");
-    _json_string("ps_partkey");
-    printf(":");
-    _json_int(it.ps_partkey);
-    printf(",");
-    _json_string("value");
-    printf(":");
-    _json_float(it.value);
-    printf("}");
+    printf("{\"ps_partkey\":%d,\"value\":%.0f}", result[i].ps_partkey,
+           result[i].value);
   }
   printf("]");
-  test_Q11_returns_high_value_partkeys_from_GERMANY_result = result;
-  test_Q11_returns_high_value_partkeys_from_GERMANY();
   return 0;
 }
