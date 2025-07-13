@@ -117,6 +117,9 @@ func EnsureGopls() error {
 // additional cleanup. The input is returned with a trailing newline.
 func FormatGo(src []byte) []byte {
 	header := meta.Header("//")
+	if os.Getenv("MOCHI_NO_HEADER") != "" {
+		header = nil
+	}
 	var prefix []byte
 	if bytes.HasPrefix(src, []byte("//go:")) || bytes.HasPrefix(src, []byte("// +build")) {
 		if i := bytes.IndexByte(src, '\n'); i != -1 {

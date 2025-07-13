@@ -107,6 +107,7 @@ Checklist:
 - [x] var_assignment
 - [x] while_loop
 - [ ] q1.mochi
+- [ ] q2.mochi
 
 ## Remaining Tasks
 
