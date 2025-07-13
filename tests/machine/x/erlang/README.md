@@ -1,6 +1,10 @@
 # Erlang Compiler Machine Results
 
-This directory contains Erlang source code generated from Mochi programs in `tests/vm/valid`. The programs were compiled with `compiler/x/erlang` and executed with `escript`.
+This directory contains Erlang source code automatically generated from Mochi
+programs in `tests/vm/valid`. The files were produced with
+`compiler/x/erlang` and executed using `escript`.
+
+_Last updated: 2025-07-13_
 
 ## Compilation status
 
@@ -107,7 +111,10 @@ This directory contains Erlang source code generated from Mochi programs in `tes
 
 ### TODO
 - Investigate failing programs marked as error above.
-- Implement remaining features to match manual translations in `tests/human/x/erlang`.
+- Implement remaining features to match manual translations in
+  `tests/human/x/erlang`.
+- Improve FFI support for `go_auto` and `python_auto`.
+- Handle extern values required by `python_math`.
 
 ### TPCH Queries
 - [ ] q1.mochi
