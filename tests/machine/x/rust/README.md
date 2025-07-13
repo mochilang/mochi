@@ -109,6 +109,7 @@ Compiled programs: 100/100
 ### TPCH Queries
 
 - [x] q1 (generated `q1.rs` and ran successfully)
+- [x] q2 (generated `q2.rs` and ran successfully)
 
 ## Remaining Tasks
 
@@ -125,3 +126,4 @@ Compiled programs: 100/100
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
 - [ ] Validate generated output for `tpc-h/q1.mochi` against reference
+- [ ] Validate generated output for `tpc-h/q2.mochi` against reference
