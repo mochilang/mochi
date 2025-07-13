@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -67,8 +68,9 @@ var runtimePieces = map[string]string{
     }
     return if (allInt) s.toInt() else s
 }`,
-	"str":       `fun str(v: Any?): String = v.toString()`,
-	"substring": `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
+	"str":         `fun str(v: Any?): String = v.toString()`,
+	"substring":   `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
+	"starts_with": `fun String.starts_with(prefix: String): Boolean = this.startsWith(prefix)`,
 	"toInt": `fun toInt(v: Any?): Int = when (v) {
     is Int -> v
     is Double -> v.toInt()
@@ -181,7 +183,7 @@ var runtimePieces = map[string]string{
 	"Group": `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
 }
 
-var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
+var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -225,6 +227,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.used = make(map[string]bool)
+	// Always include starts_with helper for now
+	c.use("starts_with")
 	c.inferred = make(map[string]types.StructType)
 	c.mapNodes = make(map[*parser.MapLiteral]string)
 
@@ -254,7 +258,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			c.writeln("")
 		}
 	}
-	for _, st := range c.inferred {
+	names := make([]string, 0, len(c.inferred))
+	for name := range c.inferred {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		st := c.inferred[name]
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
 			fields[i] = fmt.Sprintf("var %s: %s", escapeIdent(f), kotlinTypeOf(st.Fields[f]))
@@ -940,6 +950,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	lastField := ""
 	for i, op := range p.Ops {
 		switch {
 		case op.Call != nil:
@@ -951,7 +962,11 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = s
 			}
+			if lastField == "starts_with" {
+				c.use("starts_with")
+			}
 			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			lastField = ""
 		case op.Index != nil:
 			if op.Index.Colon != nil {
 				start := "0"
@@ -1009,6 +1024,7 @@ func (c *Compiler) postfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Field != nil:
 			val = fmt.Sprintf("%s.%s", val, escapeIdent(op.Field.Name))
+			lastField = op.Field.Name
 		case op.Cast != nil:
 			// special case: casting a map literal to a struct type
 			if op.Cast.Type.Simple != nil {
@@ -1302,6 +1318,11 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 	case "substring":
 		if len(args) == 3 {
 			return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), true
+		}
+	case "starts_with":
+		if len(args) == 2 {
+			c.use("starts_with")
+			return fmt.Sprintf("starts_with(%s, %s)", args[0], args[1]), true
 		}
 	case "append":
 		if len(args) == 2 {
