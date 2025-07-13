@@ -1086,7 +1086,15 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 		if len(args) == 1 {
 			c.writeln(fmt.Sprintf("println(%s)", args[0]))
 		} else {
-			c.writeln(fmt.Sprintf("println(%s)", strings.Join(args, " + \" \" + ")))
+			parts := make([]string, len(args))
+			for i, a := range args {
+				if strings.HasPrefix(a, "\"") && strings.HasSuffix(a, "\"") {
+					parts[i] = strings.Trim(a, "\"")
+				} else {
+					parts[i] = fmt.Sprintf("${%s}", a)
+				}
+			}
+			c.writeln(fmt.Sprintf("println(s\"%s\")", strings.Join(parts, " ")))
 		}
 		return nil
 	}

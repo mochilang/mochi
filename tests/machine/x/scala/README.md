@@ -109,6 +109,8 @@ Recent improvements:
 - Map literal values no longer include extraneous parentheses.
 - Conditional expressions used in print statements are now wrapped in
   parentheses for valid Scala syntax.
+- Print statements with multiple arguments now use Scala string
+  interpolation for clearer output.
 
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style
