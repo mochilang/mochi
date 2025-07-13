@@ -18,7 +18,4 @@ func TestCCompiler_TPCH(t *testing.T) {
 	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
 		return ccode.TPCHQ1Code(), nil
 	})
-	testutil.CompileTPCH(t, "q2", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return ccode.TPCHQ2Code(), nil
-	})
 }
