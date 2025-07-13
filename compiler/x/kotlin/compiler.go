@@ -26,6 +26,11 @@ var runtimePieces = map[string]string{
     for (n in list) s += toDouble(n)
     return s / list.size
 }`,
+	"div": `fun div(a: Any?, b: Any?): Double {
+    val x = toDouble(a)
+    val y = toDouble(b)
+    return if (y == 0.0) 0.0 else x / y
+}`,
 	"count":  `fun count(list: Collection<Any?>): Int = list.size`,
 	"exists": `fun exists(list: Collection<Any?>): Boolean = list.isNotEmpty()`,
 	"values": `fun <T> values(m: Map<*, T>): MutableList<T> = m.values.toMutableList()`,
@@ -170,7 +175,7 @@ var runtimePieces = map[string]string{
 	"Group": `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
 }
 
-var runtimeOrder = []string{"append", "avg", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
+var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -902,7 +907,12 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 		}
-		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		if op.Op == "/" && (isAnyType(lType) || isAnyType(rType)) {
+			c.use("div")
+			res = fmt.Sprintf("div(%s, %s)", res, r)
+		} else {
+			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+		}
 		lType = rType
 	}
 	return res, nil
