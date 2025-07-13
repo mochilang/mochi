@@ -5201,8 +5201,8 @@ func isFloatArg(e *parser.Expr, env *types.Env) bool {
 	if e == nil {
 		return false
 	}
-	c := New(env)
-	_, ok := c.exprType(e).(types.FloatType)
+	t := types.ExprType(e, env)
+	_, ok := t.(types.FloatType)
 	return ok
 }
 
