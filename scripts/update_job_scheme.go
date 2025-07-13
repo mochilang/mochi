@@ -20,7 +20,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "chibi-scheme missing: %v\n", err)
 		os.Exit(1)
 	}
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 20; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
 		codePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", q+".scm")

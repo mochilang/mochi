@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"complete_downey_ironman_movie":"Iron Man"}]
+   test Q20 finds complete cast Iron Man movie ... ok
