@@ -341,6 +341,37 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => Items.GetEnumerator();")
 				c.indent--
 				c.writeln("}")
+			case "_group_any":
+				c.writeln("public class _Group {")
+				c.indent++
+				c.writeln("public dynamic key;")
+				c.writeln("public List<dynamic> Items = new List<dynamic>();")
+				c.writeln("public _Group(dynamic k) { key = k; }")
+				c.indent--
+				c.writeln("}")
+				c.writeln("static List<_Group> _group_by(IEnumerable<dynamic> src, Func<dynamic, dynamic> keyfn) {")
+				c.indent++
+				c.writeln("var groups = new Dictionary<string, _Group>();")
+				c.writeln("var order = new List<string>();")
+				c.writeln("foreach (var it in src) {")
+				c.indent++
+				c.writeln("var key = keyfn(it);")
+				c.writeln("var ks = Convert.ToString(key);")
+				c.writeln("if (!groups.TryGetValue(ks, out var g)) {")
+				c.indent++
+				c.writeln("g = new _Group(key);")
+				c.writeln("groups[ks] = g;")
+				c.writeln("order.Add(ks);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("g.Items.Add(it);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("var res = new List<_Group>();")
+				c.writeln("foreach (var k in order) res.Add(groups[k]);")
+				c.writeln("return res;")
+				c.indent--
+				c.writeln("}")
 			case "_group_by":
 				c.writeln("static List<_Group<TKey, TItem>> _group_by<TItem, TKey>(IEnumerable<TItem> src, Func<TItem, TKey> keyfn) {")
 				c.indent++

@@ -78,6 +78,7 @@ Checklist:
 - [x] pure_global_fold
 - [x] python_auto
 - [x] python_math
+- [x] q1
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join

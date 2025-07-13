@@ -2579,6 +2579,21 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		t := c.inferPrimaryType(p)
 		if st, ok := t.(types.StructType); ok {
+			if st.Name == "" && c.structHint == "" {
+				items := make([]string, len(p.Map.Items))
+				for i, it := range p.Map.Items {
+					k := fmt.Sprintf("\"%s\"", sanitizeName(fmt.Sprintf("f%d", i)))
+					if n, ok := selectorName(it.Key); ok {
+						k = fmt.Sprintf("\"%s\"", n)
+					}
+					v, err := c.compileExpr(it.Value)
+					if err != nil {
+						return "", err
+					}
+					items[i] = fmt.Sprintf("{ %s, %s }", k, v)
+				}
+				return fmt.Sprintf("new Dictionary<string, dynamic> { %s }", strings.Join(items, ", ")), nil
+			}
 			name := st.Name
 			if name == "" {
 				base := c.structHint
