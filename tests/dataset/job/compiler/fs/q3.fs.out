@@ -1,78 +1,38 @@
 open System
+open System.Text.Json
 
-let id = "id"
-let keyword = "keyword"
-let movie_id = "movie_id"
-let info = "info"
-let keyword_id = "keyword_id"
-let title = "title"
-let production_year = "production_year"
-let movie_title = "movie_title"
-let rec _to_json (v: obj) : string =
-  match v with
-  | null -> "null"
-  | :? string as s ->
-      "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-  | :? bool
-  | :? int | :? int64
-  | :? double -> string v
-  | :? System.Collections.Generic.IDictionary<string,obj> as m ->
-      m
-      |> Seq.map (fun (KeyValue(k,v)) ->
-          "\"" + k.Replace("\"", "\\\"") + "\":" + _to_json v)
-      |> String.concat ","
-      |> fun s -> "{" + s + "}"
-  | :? System.Collections.IEnumerable as e ->
-      e
-      |> Seq.cast<obj>
-      |> Seq.map _to_json
-      |> String.concat ","
-      |> fun s -> "[" + s + "]"
-  | _ -> "\"" + v.ToString().Replace("\\", "\\\\").Replace("\"", "\\\"") + "\""
-let _json (v: obj) : unit =
-  printfn "%s" (_to_json v)
-let _run_test (name: string) (f: unit -> unit) : bool =
-  printf "%s ... " name
-  try
-    f()
-    printfn "PASS"
-    true
-  with e ->
-    printfn "FAIL (%s)" e.Message
-    false
-let inline sum (xs: seq< ^T >) : ^T =
-  Seq.sum xs
-let inline avg (xs: seq< ^T >) : ^T =
-  Seq.average xs
-let inline _min (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.min xs
-let inline _max (xs: seq< ^T >) : ^T when ^T : comparison =
-  Seq.max xs
-let count (xs: seq<'T>) : int =
-  Seq.length xs
-
-let keyword = [|Map.ofList [(id, 1); (keyword, "amazing sequel")]; Map.ofList [(id, 2); (keyword, "prequel")]|]
-let movie_info = [|Map.ofList [(movie_id, 10); (info, "Germany")]; Map.ofList [(movie_id, 30); (info, "Sweden")]; Map.ofList [(movie_id, 20); (info, "France")]|]
-let movie_keyword = [|Map.ofList [(movie_id, 10); (keyword_id, 1)]; Map.ofList [(movie_id, 30); (keyword_id, 1)]; Map.ofList [(movie_id, 20); (keyword_id, 1)]; Map.ofList [(movie_id, 10); (keyword_id, 2)]|]
-let title = [|Map.ofList [(id, 10); (title, "Alpha"); (production_year, 2006)]; Map.ofList [(id, 30); (title, "Beta"); (production_year, 2008)]; Map.ofList [(id, 20); (title, "Gamma"); (production_year, 2009)]|]
-let allowed_infos = [|"Sweden"; "Norway"; "Germany"; "Denmark"; "Swedish"; "Denish"; "Norwegian"; "German"|]
-let candidate_titles = [|
-    for k in keyword do
-        for mk in movie_keyword do
-            if (mk.keyword_id = k.id) then
-                for mi in movie_info do
-                    if (mi.movie_id = mk.movie_id) then
-                        for t in title do
-                            if (t.id = mi.movie_id) then
-                                if (((k.keyword.contains "sequel" && Array.contains mi.info allowed_infos) && (t.production_year > 2005)) && (mk.movie_id = mi.movie_id)) then
-                                    yield t.title
-|]
-let result = [|Map.ofList [(movie_title, _min candidate_titles)]|]
-ignore (_json result)
-let test_Q3_returns_lexicographically_smallest_sequel_title() =
-    if not ((result = [|Map.ofList [(movie_title, "Alpha")]|])) then failwith "expect failed"
-
-let mutable failures = 0
-if not (_run_test "Q3 returns lexicographically smallest sequel title" test_Q3_returns_lexicographically_smallest_sequel_title) then failures <- failures + 1
-if failures > 0 then
-    printfn "\n[FAIL] %d test(s) failed." failures
+type Anon1 = {
+    id: int
+    keyword: string
+}
+type Anon2 = {
+    movie_id: int
+    info: string
+}
+type Anon3 = {
+    movie_id: int
+    keyword_id: int
+}
+type Anon4 = {
+    id: int
+    title: string
+    production_year: int
+}
+type Anon5 = {
+    movie_title: obj
+}
+type Anon6 = {
+    movie_title: string
+}
+let keyword: obj list = [{ id = 1; keyword = "amazing sequel" }; { id = 2; keyword = "prequel" }]
+let movie_info: obj list = [{ movie_id = 10; info = "Germany" }; { movie_id = 30; info = "Sweden" }; { movie_id = 20; info = "France" }]
+let movie_keyword: obj list = [{ movie_id = 10; keyword_id = 1 }; { movie_id = 30; keyword_id = 1 }; { movie_id = 20; keyword_id = 1 }; { movie_id = 10; keyword_id = 2 }]
+let title: obj list = [{ id = 10; title = "Alpha"; production_year = 2006 }; { id = 30; title = "Beta"; production_year = 2008 }; { id = 20; title = "Gamma"; production_year = 2009 }]
+let allowed_infos: string list = ["Sweden"; "Norway"; "Germany"; "Denmark"; "Swedish"; "Denish"; "Norwegian"; "German"]
+let candidate_titles: obj list = [ for k in keyword do 
+  for mk in movie_keyword do 
+  for mi in movie_info do 
+  for t in title do if mk.keyword_id = k.id && mi.movie_id = mk.movie_id && t.id = mi.movie_id && List.contains k.keyword.contains("sequel") && mi.info allowed_infos && t.production_year > 2005 && mk.movie_id = mi.movie_id then yield t.title ]
+let result: obj list = [{ movie_title = List.min candidate_titles }]
+printfn "%A" (JsonSerializer.Serialize(result))
+assert (result = [{ movie_title = "Alpha" }])
