@@ -1,21 +1,21 @@
-/workspace/mochi/tests/machine/x/swift/left_join.swift:27:46: warning: expression implicitly coerced from 'Any?' to 'Any'
-25 | 		if !_m {
-26 | 			let c: Any? = nil
-27 | 			_res.append(["orderId": o.id, "customer": c, "total": o.total])
+/workspace/mochi/tests/machine/x/swift/left_join.swift:28:46: warning: expression implicitly coerced from 'Any?' to 'Any'
+26 | 		if !_m {
+27 | 			let c: Any? = nil
+28 | 			_res.append(["orderId": o.id, "customer": c, "total": o.total])
    |                                              |- warning: expression implicitly coerced from 'Any?' to 'Any'
    |                                              |- note: provide a default value to avoid this warning
    |                                              |- note: force-unwrap the value to avoid this warning
    |                                              `- note: explicitly cast to 'Any' with 'as Any' to silence this warning
-28 | 		}
-29 | 	}
+29 | 		}
+30 | 	}
 
-/workspace/mochi/tests/machine/x/swift/left_join.swift:33:21: warning: forced cast of '[[String : Any]]' to same type has no effect
-31 | }())
-32 | print("--- Left Join ---")
-33 | for entry in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/left_join.swift:34:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+32 | }())
+33 | print("--- Left Join ---")
+34 | for entry in result as! [[String:Any]] {
    |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
-34 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
-35 | }
+35 |     print("Order", entry["orderId"]!, "customer", entry["customer"]!, "total", entry["total"]!)
+36 | }
 --- Left Join ---
 Order 100 customer Auto1(id: 1, name: "Alice") total 250
 Order 101 customer nil total 80

@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/inner_join.swift:25:21: warning: forced cast of '[[String : Any]]' to same type has no effect
-23 | }())
-24 | print("--- Orders with customer info ---")
-25 | for entry in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/inner_join.swift:26:21: warning: forced cast of '[[String : Any]]' to same type has no effect
+24 | }())
+25 | print("--- Orders with customer info ---")
+26 | for entry in result as! [[String:Any]] {
    |                     `- warning: forced cast of '[[String : Any]]' to same type has no effect
-26 |     print("Order", entry["orderId"]!, "by", entry["customerName"]!, "- $", entry["total"]!)
-27 | }
+27 |     print("Order", entry["orderId"]!, "by", entry["customerName"]!, "- $", entry["total"]!)
+28 | }
 --- Orders with customer info ---
 Order 100 by Alice - $ 250
 Order 101 by Bob - $ 125

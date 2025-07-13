@@ -1,8 +1,8 @@
-/workspace/mochi/tests/machine/x/swift/group_by_having.swift:13:27: warning: conditional cast from 'Any' to 'Any' always succeeds
-11 |         return x
-12 |     }
-13 |     if let obj = _sort(v) as? Any,
+/workspace/mochi/tests/machine/x/swift/group_by_having.swift:14:27: warning: conditional cast from 'Any' to 'Any' always succeeds
+12 |         return x
+13 |     }
+14 |     if let obj = _sort(v) as? Any,
    |                           `- warning: conditional cast from 'Any' to 'Any' always succeeds
-14 |        let data = try? JSONSerialization.data(withJSONObject: obj),
-15 |        let s = String(data: data, encoding: .utf8) {
-[{"num":4,"city":"Paris"}]
+15 |        let data = try? JSONSerialization.data(withJSONObject: obj),
+16 |        let s = String(data: data, encoding: .utf8) {
+[{"city":"Paris","num":4}]

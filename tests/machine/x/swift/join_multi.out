@@ -1,10 +1,10 @@
-/workspace/mochi/tests/machine/x/swift/join_multi.swift:33:17: warning: forced cast of '[[String : Any]]' to same type has no effect
-31 | }())
-32 | print("--- Multi Join ---")
-33 | for r in result as! [[String:Any]] {
+/workspace/mochi/tests/machine/x/swift/join_multi.swift:34:17: warning: forced cast of '[[String : Any]]' to same type has no effect
+32 | }())
+33 | print("--- Multi Join ---")
+34 | for r in result as! [[String:Any]] {
    |                 `- warning: forced cast of '[[String : Any]]' to same type has no effect
-34 |     print(r["name"]!, "bought item", r["sku"]!)
-35 | }
+35 |     print(r["name"]!, "bought item", r["sku"]!)
+36 | }
 --- Multi Join ---
 Alice bought item a
 Bob bought item b
