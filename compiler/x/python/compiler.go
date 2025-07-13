@@ -1119,7 +1119,7 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 	}
 	if st, ok := hint.(types.StructType); ok {
 		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
-			if len(ml.Items) == len(st.Fields) {
+			if len(ml.Items) == len(st.Fields) && st.Name != "" && st.Name != "_" {
 				fields := make([]string, len(ml.Items))
 				for i, it := range ml.Items {
 					name, ok := identName(it.Key)
@@ -1190,9 +1190,10 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	if st, ok := c.inferExprType(expr).(types.StructType); ok {
 		// Only emit a dataclass instance for named structs. Anonymous
-		// struct literals are rendered as plain Python dictionaries to
-		// better match the hand-written examples.
-		if st.Name != "" {
+		// struct literals or those with placeholder names like "_"
+		// are rendered as plain Python dictionaries to better match
+		// the hand-written examples.
+		if st.Name != "" && st.Name != "_" {
 			st = c.ensureStructName(st)
 			fields := make([]string, len(m.Items))
 			for i, it := range m.Items {

@@ -105,9 +105,11 @@ Compiled programs: 100/100 successful.
 - [x] while_loop.mochi
 
 ## TPCH Progress
-- [x] q1.mochi generates valid Python and output matches `tests/dataset/tpc-h/compiler/py/q1.out`
-- [ ] q2.mochi through q22.mochi
+- [x] q1.mochi
+- [x] q2.mochi
+- [ ] q3.mochi through q22.mochi
 
 ## Remaining Tasks
 - [ ] Review generated code style for closer match to `tests/human/x/python`
 - [ ] Compile and verify additional TPCH queries
+
