@@ -216,6 +216,7 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 			}
 			c := pycode.New(env)
 			c.SetTypeHints(false)
+			c.SetAutoStructs(false)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
@@ -275,11 +276,15 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			}
 			c := pycode.New(env)
 			c.SetTypeHints(false)
+			c.SetAutoStructs(false)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".py.out")
+			codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".py")
+			if _, err := os.Stat(codeWantPath); err != nil {
+				codeWantPath = codeWantPath + ".out"
+			}
 			wantCode, err := os.ReadFile(codeWantPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
@@ -287,7 +292,7 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
@@ -346,7 +351,7 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
@@ -453,7 +458,7 @@ func TestPyCompiler_SLTQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
+				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
