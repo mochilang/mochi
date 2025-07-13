@@ -7,6 +7,7 @@
 - 2025-07-13 17:32 - Generated Rust code for TPC-H queries q10, q12, q13, q14, q15, q16 and q18 and extended golden tests.
 - 2025-07-13 17:46 - Attempted to generate Rust code for q8, q9 and q11 but compilation failed due to numeric type mismatches.
 - 2025-07-13 17:56 - Generated Rust code for TPC-H query q8 and added golden outputs.
+- 2025-07-13 18:18 - Generated Rust code for TPC-H query q17 and added golden outputs.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time
