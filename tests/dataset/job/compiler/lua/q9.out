@@ -1,2 +1,0 @@
-[{"movie":"Famous Film","alternative_name":"A. N. G.","character_name":"Angel"}]
-   test Q9 selects minimal alternative name, character and movie ... ok (4.0µs)
