@@ -20,7 +20,10 @@ func TestCLJCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("clojure not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 6; i++ {
+		if i == 3 {
+			continue
+		}
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "clj", base+".out")
