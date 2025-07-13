@@ -117,8 +117,8 @@ func runTPCHQuery(t *testing.T, base string) {
 }
 
 func TestScalaCompilerTPCH(t *testing.T) {
-	for i := 1; i <= 6; i++ {
-		base := fmt.Sprintf("q%d", i)
-		t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
-	}
+       for i := 1; i <= 8; i++ {
+               base := fmt.Sprintf("q%d", i)
+               t.Run(base, func(t *testing.T) { runTPCHQuery(t, base) })
+       }
 }
