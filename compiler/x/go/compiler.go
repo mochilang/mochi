@@ -189,7 +189,25 @@ func (c *Compiler) writeTestHelpers(prog *parser.Program) {
 	c.imports["time"] = true
 	c.writeln("func formatDuration(d time.Duration) string {")
 	c.indent++
-	c.writeln("return d.String()")
+	c.writeln("switch {")
+	c.indent++
+	c.writeln("case d < time.Microsecond:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%dns\", d.Nanoseconds())")
+	c.indent--
+	c.writeln("case d < time.Millisecond:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.1fµs\", float64(d.Microseconds()))")
+	c.indent--
+	c.writeln("case d < time.Second:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.1fms\", float64(d.Milliseconds()))")
+	c.indent--
+	c.writeln("default:")
+	c.indent++
+	c.writeln("return fmt.Sprintf(\"%.2fs\", d.Seconds())")
+	c.indent--
+	c.writeln("}")
 	c.indent--
 	c.writeln("}")
 	c.writeln("")

@@ -29,6 +29,7 @@ TPC-H progress:
 - 2025-07-13 09:17 - Avoided emitting new struct types when an identical
   definition already exists
 - 2025-07-13 09:40 - Documented `compileMainFunc` behaviour
+- 2025-07-13 10:46 - Simplified `formatDuration` for concise test output
 
 ## Remaining Work
 * [ ] Validate TPCH q1 runtime results
