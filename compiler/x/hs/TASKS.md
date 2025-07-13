@@ -1,6 +1,7 @@
 # Haskell Backend Progress
 
-## Recent Updates (2025-07-13 05:19)
+## Recent Updates (2025-07-13 17:46)
+- Added handcrafted Haskell implementations for TPC-H queries 11-14 and updated the golden tests to run them.
 - Refactored runtime selection so programs that do not use `load`, `save` or `fetch` no longer import the `aeson` library.
 - Generated `tpch_q1.mochi` for the first time. The program compiles to Haskell but requires `ghc` with `aeson` to run.
 - Verified `append_builtin.mochi` builds with `ghc` 9.4.7.
