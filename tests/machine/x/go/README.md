@@ -109,6 +109,7 @@ Checklist:
 - [x] tpch/q1
 
 ## Remaining Tasks
+- [ ] Recompile dataset examples with struct definitions
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`

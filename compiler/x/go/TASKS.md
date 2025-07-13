@@ -18,6 +18,7 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-13 19:01 - Added explicit struct types for cross join outputs and dataset examples
 
 - 2025-07-13 09:30 - Normalized `_convSlice` detection to avoid nested conversions
 
@@ -35,6 +36,7 @@ TPC-H progress:
 - 2025-07-13 18:41 - Generated `tpch/q1.go`; planning to drop helper functions
 
 ## Remaining Work
+* [ ] Recompile group_by variants with struct support
 * [ ] Validate TPCH q1 runtime results
 * [ ] Fix failing JOB query expectations
 * [ ] Investigate missing output for JOB q7

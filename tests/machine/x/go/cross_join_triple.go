@@ -2,33 +2,31 @@
 
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
+
+type Combo struct {
+    N int
+    L string
+    B bool
+}
 
 func main() {
-	nums := []int{1, 2}
-	letters := []string{"A", "B"}
-	_ = letters
-	bools := []bool{true, false}
-	_ = bools
-	combos := func() []Combos {
-		results := []Combos{}
-		for _, n := range nums {
-			for _, l := range letters {
-				for _, b := range bools {
-					results = append(results, Combos{
-						n,
-						l,
-						b,
-					})
-				}
-			}
-		}
-		return results
-	}()
-	fmt.Println("--- Cross Join of three lists ---")
-	for _, c := range combos {
-		fmt.Println(c.N, c.L, c.B)
-	}
+    nums := []int{1, 2}
+    letters := []string{"A", "B"}
+    bools := []bool{true, false}
+    combos := func() []Combo {
+        results := []Combo{}
+        for _, n := range nums {
+            for _, l := range letters {
+                for _, b := range bools {
+                    results = append(results, Combo{n, l, b})
+                }
+            }
+        }
+        return results
+    }()
+    fmt.Println("--- Cross Join of three lists ---")
+    for _, c := range combos {
+        fmt.Println(c.N, c.L, c.B)
+    }
 }
