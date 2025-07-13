@@ -133,7 +133,7 @@ func TestDartCompiler_JOBQueries(t *testing.T) {
 	root := findRepoRoot(t)
 	for i := 1; i <= 10; i++ {
 		q := fmt.Sprintf("q%d", i)
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "dart", q+".dart.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "dart", q+".dart")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "dart", q+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
