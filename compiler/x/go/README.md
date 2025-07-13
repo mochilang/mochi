@@ -24,7 +24,7 @@ cover functionality such as:
 - LLM integration with `_genText`, `_genEmbed` and `_genStruct`
 - HTTP requests using `_fetch`
 - Data loading/saving with `_load` and `_save`
-- Generic casting and conversion utilities (`_cast`, `_toAnyMap`, `_toAnySlice`)
+- Generic casting and conversion utilities (`_cast`, `_toAnySlice`)
 - List reduction with `_reduce`
 - Dataset querying through `_query`
 - Membership checks on typed lists use `slices.Contains` when possible
@@ -46,7 +46,6 @@ var helperMap = map[string]string{
     "_genEmbed":      helperGenEmbed,
     "_genStruct":     helperGenStruct,
     "_fetch":         helperFetch,
-    "_toAnyMap":      helperToAnyMap,
     "_toAnySlice":    helperToAnySlice,
     "_convSlice":     helperConvSlice,
     "_contains":      helperContains,
