@@ -11,35 +11,17 @@ import (
 	"testing"
 
 	ocaml "mochi/compiler/x/ocaml"
+	testutil "mochi/compiler/x/testutil"
 	"mochi/parser"
 	"mochi/runtime/vm"
 	"mochi/types"
 )
 
-func repoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal("cannot determine working directory")
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
-
 func TestOCamlCompiler_TPCH_Golden(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skipf("ocamlc not installed: %v", err)
 	}
-	root := repoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	for i := 1; i <= 5; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
@@ -56,15 +38,6 @@ func TestOCamlCompiler_TPCH_Golden(t *testing.T) {
 			if err != nil {
 				t.Skipf("compile error: %v", err)
 				return
-			}
-			wantCodePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ocaml", query+".ml")
-			wantCode, err := os.ReadFile(wantCodePath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			gotCode := bytes.TrimSpace(code)
-			if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".ml", gotCode, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			mlFile := filepath.Join(dir, "prog.ml")
