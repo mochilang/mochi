@@ -111,6 +111,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			c.varTypes[name] = t
 		} else if t := getStructLiteralType(s.Let.Value); t != "" {
 			c.varTypes[name] = t
+		} else if isStringLiteralExpr(s.Let.Value) {
+			c.varTypes[name] = "string"
 		}
 		if lt := getListElemType(s.Let.Type); lt != "" {
 			c.listElemTypes[name] = lt
@@ -166,6 +168,8 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 			c.varTypes[name] = t
 		} else if t := getStructLiteralType(s.Var.Value); t != "" {
 			c.varTypes[name] = t
+		} else if isStringLiteralExpr(s.Var.Value) {
+			c.varTypes[name] = "string"
 		}
 		if lt := getListElemType(s.Var.Type); lt != "" {
 			c.listElemTypes[name] = lt
@@ -244,7 +248,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		return "", err
 	}
 	operands = append(operands, first)
-	strFlags = append(strFlags, isStringUnary(e.Binary.Left))
+	strFlags = append(strFlags, c.isStringUnary(e.Binary.Left))
 
 	ops := []opPart{}
 	for _, part := range e.Binary.Right {
@@ -253,7 +257,7 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			return "", err
 		}
 		operands = append(operands, r)
-		strFlags = append(strFlags, isStringPostfix(part.Right))
+		strFlags = append(strFlags, c.isStringPostfix(part.Right))
 		ops = append(ops, opPart{op: part.Op, all: part.All})
 	}
 
@@ -504,12 +508,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("avg expects 1 arg")
 			}
 			tmp := args[0]
-			return fmt.Sprintf("(let ([xs %s] [n (length %s)]) (if (= n 0) 0 (/ (apply + xs) n)))", tmp, tmp), nil
+			return fmt.Sprintf("(let ([xs %s] [n (length %s)]) (if (= n 0) 0 (/ (for/fold ([s 0.0]) ([v xs]) (+ s (real->double-flonum v))) n)))", tmp, tmp), nil
 		case "sum":
 			if len(args) != 1 {
 				return "", fmt.Errorf("sum expects 1 arg")
 			}
-			return fmt.Sprintf("(apply + %s)", args[0]), nil
+			return fmt.Sprintf("(for/fold ([s 0.0]) ([v %s]) (+ s (real->double-flonum v)))", args[0]), nil
 		case "count":
 			if len(args) != 1 {
 				return "", fmt.Errorf("count expects 1 arg")
@@ -518,15 +522,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("(length (hash-ref %s 'items))", args[0]), nil
 			}
 			return fmt.Sprintf("(length %s)", args[0]), nil
-               case "len":
-                       if len(args) != 1 {
-                               return "", fmt.Errorf("len expects 1 arg")
-                       }
-                       x := args[0]
-                       if isStringExpr(p.Call.Args[0]) {
-                               return fmt.Sprintf("(string-length %s)", x), nil
-                       }
-                       return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
+		case "len":
+			if len(args) != 1 {
+				return "", fmt.Errorf("len expects 1 arg")
+			}
+			x := args[0]
+			if c.isStringExpr(p.Call.Args[0]) {
+				return fmt.Sprintf("(string-length %s)", x), nil
+			}
+			return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
 		case "min":
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
@@ -1306,23 +1310,48 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 	return nil
 }
 
-func isStringPrimary(p *parser.Primary) bool {
-	return p != nil && p.Lit != nil && p.Lit.Str != nil
+func isStringLiteralExpr(e *parser.Expr) bool {
+	return e != nil && e.Binary != nil && len(e.Binary.Right) == 0 && e.Binary.Left != nil && e.Binary.Left.Value != nil && e.Binary.Left.Value.Target != nil && e.Binary.Left.Value.Target.Lit != nil && e.Binary.Left.Value.Target.Lit.Str != nil
 }
 
-func isStringPostfix(p *parser.PostfixExpr) bool {
-	return isStringPrimary(p.Target)
+func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	if p.Lit != nil && p.Lit.Str != nil {
+		return true
+	}
+	if p.Selector != nil {
+		t := c.varTypes[p.Selector.Root]
+		if len(p.Selector.Tail) == 0 {
+			return t == "string"
+		}
+		for _, f := range p.Selector.Tail {
+			if ft, ok := c.structFieldTypes[t][f]; ok {
+				t = ft
+			} else {
+				t = ""
+				break
+			}
+		}
+		return t == "string"
+	}
+	return false
 }
 
-func isStringUnary(u *parser.Unary) bool {
-	return isStringPostfix(u.Value)
+func (c *Compiler) isStringPostfix(p *parser.PostfixExpr) bool {
+	return c.isStringPrimary(p.Target)
 }
 
-func isStringExpr(e *parser.Expr) bool {
+func (c *Compiler) isStringUnary(u *parser.Unary) bool {
+	return c.isStringPostfix(u.Value)
+}
+
+func (c *Compiler) isStringExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil {
 		return false
 	}
-	return isStringUnary(e.Binary.Left)
+	return c.isStringUnary(e.Binary.Left)
 }
 
 func isIdentExpr(e *parser.Expr) bool {
