@@ -109,6 +109,28 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// stringLit returns the raw string value if e is a simple string literal.
+func stringLit(e *parser.Expr) (string, bool) {
+	if e == nil {
+		return "", false
+	}
+	if len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return "", false
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
+		return *p.Target.Lit.Str, true
+	}
+	return "", false
+}
+
 // simpleFunExpr returns the FunExpr if e is just a standalone function
 // expression with no surrounding operations.
 func simpleFunExpr(e *parser.Expr) *parser.FunExpr {

@@ -676,7 +676,7 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 			}
 		}
 	}
-	if needTyping && c.typeHints {
+	if needTyping {
 		c.imports["typing"] = "typing"
 	}
 	return nil
@@ -701,14 +701,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			} else {
 				for _, f := range v.Fields {
 					typStr := pyType(c.namedType(c.resolveTypeRef(f.Type)))
-					if c.typeHints {
-						if needsTyping(typStr) {
-							needTyping = true
-						}
-						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
-					} else {
-						c.writeln(fmt.Sprintf("%s: object", sanitizeName(f.Name)))
+					if needsTyping(typStr) {
+						needTyping = true
 					}
+					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f.Name), typStr))
 				}
 			}
 			c.indent--
@@ -737,14 +733,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			for _, m := range t.Members {
 				if m.Field != nil {
 					typStr := pyType(c.namedType(c.resolveTypeRef(m.Field.Type)))
-					if c.typeHints {
-						if needsTyping(typStr) {
-							needTyping = true
-						}
-						c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
-					} else {
-						c.writeln(fmt.Sprintf("%s: object", sanitizeName(m.Field.Name)))
+					if needsTyping(typStr) {
+						needTyping = true
 					}
+					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(m.Field.Name), typStr))
 				}
 			}
 			for _, m := range t.Members {
@@ -758,7 +750,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		}
 		c.indent--
 	}
-	if needTyping && c.typeHints {
+	if needTyping {
 		c.imports["typing"] = "typing"
 	}
 	return nil

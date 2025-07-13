@@ -195,20 +195,11 @@ func (c *Compiler) emitAutoStructs() {
 		} else {
 			for _, f := range st.Order {
 				typStr := pyType(c.namedType(st.Fields[f]))
-				if c.typeHints {
-					if needsTyping(typStr) {
-						c.imports["typing"] = "typing"
-					}
-					c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
-				} else {
-					c.writeln(fmt.Sprintf("%s: object", sanitizeName(f)))
+				if needsTyping(typStr) {
+					c.imports["typing"] = "typing"
 				}
+				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
 			}
-			c.writeln("")
-			c.writeln("def __getitem__(self, key):")
-			c.indent++
-			c.writeln("return getattr(self, key)")
-			c.indent--
 		}
 		c.indent--
 		c.writeln("")
@@ -868,7 +859,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(call.Args) == 1 {
 			argStr = args[0]
 		} else {
-			argStr = strings.Join(args, ", ")
+			argStr = buildFString(args, call.Args)
 		}
 		return fmt.Sprintf("print(%s)", argStr), nil
 	case "len":
@@ -1089,6 +1080,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	default:
 		return fmt.Sprintf("%s(%s)", sanitizeName(call.Func), argStr), nil
 	}
+}
+
+func buildFString(args []string, exprs []*parser.Expr) string {
+	parts := make([]string, len(args))
+	for i, a := range args {
+		if s, ok := stringLit(exprs[i]); ok {
+			// escape internal quotes
+			parts[i] = strings.ReplaceAll(s, "\"", "\\\"")
+		} else {
+			parts[i] = fmt.Sprintf("{%s}", a)
+		}
+	}
+	return "f\"" + strings.Join(parts, " ") + "\""
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with
