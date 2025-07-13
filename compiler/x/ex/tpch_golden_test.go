@@ -38,7 +38,6 @@ func TestExCompiler_TPCHQueries(t *testing.T) {
 	if err := excode.EnsureElixir(); err != nil {
 		t.Skipf("elixir not installed: %v", err)
 	}
-	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	root := repoRoot(t)
 	for i := 1; i <= 4; i++ {
 		base := fmt.Sprintf("q%d", i)
