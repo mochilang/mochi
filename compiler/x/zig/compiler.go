@@ -1373,15 +1373,23 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			src += ".Items"
+			src += ".Items.items"
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			src += ".Items"
+			src += ".Items.items"
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			src += ".Items"
+			src += ".Items.items"
+		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items.items"
+		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items.items"
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
@@ -1423,7 +1431,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		orig := c.env
 		c.env = child
 		var keyExpr string
-		keyType := zigTypeOf(c.inferExprType(q.Group.Exprs[0]))
+		keyT := c.inferExprType(q.Group.Exprs[0])
+		keyType := zigTypeOf(keyT)
 		if ml := extractMapLiteral(q.Group.Exprs[0]); ml != nil {
 			structName := c.newStructName()
 			decl, init, ok, err := c.mapLiteralStruct(ml, structName)
@@ -1441,6 +1450,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 						orig.SetStruct(structName, st)
 					}
 					child.SetStruct(structName, st)
+					keyT = st
 				}
 				keyExpr = init
 				keyType = structName
@@ -1455,7 +1465,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elemType}, true)
 		if ml := extractMapLiteral(q.Select); ml != nil {
 			structName := c.newStructName()
 			decl, _, ok, err := c.mapLiteralStruct(ml, structName)
@@ -1469,6 +1479,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 						orig.SetStruct(structName, st)
 					}
 					genv.SetStruct(structName, st)
+					keyT = st
 				}
 			}
 		}
@@ -1831,6 +1842,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 			elemType = lt.Elem
 		}
+		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+			elemType = gt.Elem
+			src += ".Items.items"
+		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
 		fromSrcs := make([]string, len(q.Froms))
@@ -1922,6 +1937,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var elemType types.Type = types.AnyType{}
 	if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
 		elemType = lt.Elem
+	}
+	if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
+		elemType = gt.Elem
+		src += ".Items.items"
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
@@ -2872,7 +2891,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s.count()", arg), nil
 		}
 		if c.isGroupExpr(call.Args[0]) {
-			return fmt.Sprintf("(%s.Items.len)", arg), nil
+			return fmt.Sprintf("(%s.Items.items.len)", arg), nil
 		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
@@ -2885,7 +2904,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s.count()", arg), nil
 		}
 		if c.isGroupExpr(call.Args[0]) {
-			return fmt.Sprintf("(%s.Items.len)", arg), nil
+			return fmt.Sprintf("(%s.Items.items.len)", arg), nil
 		}
 		return fmt.Sprintf("(%s).len", arg), nil
 	}
@@ -2924,6 +2943,12 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		arg, err := c.compileExpr(call.Args[0], false)
 		if err != nil {
 			return "", err
+		}
+		if at, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			if _, ok := at.Elem.(types.FloatType); ok {
+				c.needsAvgFloat = true
+				return fmt.Sprintf("_avg_float(%s)", arg), nil
+			}
 		}
 		if c.isFloatListExpr(call.Args[0]) {
 			c.needsAvgFloat = true
