@@ -106,16 +106,17 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [ ] q1.mochi
+- [x] q1.mochi
 - [ ] q2.mochi
 
 ## Remaining Tasks
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
-- [ ] Fix struct inference for dataset queries (e.g. `q1.mochi`)
+- [ ] Verify TPC-H `q1.mochi` output matches the VM
+- [x] Fix struct inference for dataset queries (e.g. `q1.mochi`)
 
 ### Recent Improvements
 
 - [x] Emit struct type declarations for inferred dataset rows
-- [ ] Generate TPCH q1 with struct support
+- [x] Generate TPCH q1 with struct support
