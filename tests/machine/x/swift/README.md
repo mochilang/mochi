@@ -111,7 +111,7 @@ Compiled: 100/100 programs
 
 ## Remaining Tasks
 
-- Fix generation for `group_by_multi_join.mochi` and `group_by_multi_join_sort.mochi`.
-- Verify `group_items_iteration.mochi` matches the reference output.
-- Implement outer and right join support.
-- Begin compiling the TPCH `q1.mochi` benchmark.
+- [ ] Fix generation for `group_by_multi_join.mochi` and `group_by_multi_join_sort.mochi`.
+- [ ] Investigate runtime failures for `outer_join.mochi` and `right_join.mochi`.
+- [ ] Verify `group_items_iteration.mochi` matches the reference output.
+- [ ] Start compiling the TPC-H `q1.mochi` benchmark.
