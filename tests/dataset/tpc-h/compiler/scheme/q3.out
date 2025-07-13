@@ -5,8 +5,8 @@ ERROR: exception handler returned
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
   called from error on line 100 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 238 of file /tmp/q1.scm
+  called from <anonymous> on line 238 of file /tmp/q3.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
 {}
-   test Q1 aggregates revenue and quantity by returnflag + linestatus ... fail #<Exception 140391424201536>
+   test Q3 returns revenue per order with correct priority ... fail #<Exception 140241410430880>
