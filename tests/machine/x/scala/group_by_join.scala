@@ -2,7 +2,8 @@ object group_by_join {
   case class Customer(id: Int, name: String)
   case class Order(id: Int, customerId: Int)
   case class Stat(o: Order, c: Customer)
-  case class Stat1(name: String, count: Int)
+  case class Stat1(name: Any, count: Int)
+  case class Stat2(name: String, count: Int)
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
@@ -12,7 +13,7 @@ object group_by_join {
   def main(args: Array[String]): Unit = {
     println("--- Orders per customer ---")
     for(s <- stats) {
-      println(s.name + " " + "orders:" + " " + s.count)
+      println(s"${s.name} orders: ${s.count}")
     }
   }
 }

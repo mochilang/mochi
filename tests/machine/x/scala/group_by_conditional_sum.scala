@@ -1,6 +1,7 @@
 object group_by_conditional_sum {
   case class Item(cat: String, `val`: Int, flag: Boolean)
-  case class Result(cat: String, share: Double)
+  case class Result(cat: Any, share: Double)
+  case class Result1(cat: String, share: Double)
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 

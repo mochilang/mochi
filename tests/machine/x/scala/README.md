@@ -111,6 +111,8 @@ Recent improvements:
   parentheses for valid Scala syntax.
 - Print statements with multiple arguments now use Scala string
   interpolation for clearer output.
+ - Spacing around punctuation in interpolated print statements now
+   matches the human reference implementations.
 
 ## Remaining Tasks
 - [ ] Review generated Scala code for idiomatic style

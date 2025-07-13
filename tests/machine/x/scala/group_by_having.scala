@@ -1,5 +1,6 @@
 object group_by_having {
-  case class Big(city: String, num: Int)
+  case class Big(city: Any, num: Int)
+  case class Big1(city: String, num: Int)
   case class People(name: String, city: String)
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }

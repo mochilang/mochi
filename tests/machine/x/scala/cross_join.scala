@@ -9,7 +9,7 @@ object cross_join {
   def main(args: Array[String]): Unit = {
     println("--- Cross Join: All order-customer pairs ---")
     for(entry <- result) {
-      println("Order" + " " + entry.orderId + " " + "(customerId:" + " " + entry.orderCustomerId + " " + ", total: $" + " " + entry.orderTotal + " " + ") paired with" + " " + entry.pairedCustomerName)
+      println(s"Order ${entry.orderId} (customerId: ${entry.orderCustomerId}, total: $ ${entry.orderTotal} ) paired with ${entry.pairedCustomerName}")
     }
   }
 }

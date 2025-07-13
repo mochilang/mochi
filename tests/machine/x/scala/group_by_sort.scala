@@ -1,5 +1,6 @@
 object group_by_sort {
-  case class Grouped(cat: String, total: Int)
+  case class Grouped(cat: Any, total: Double)
+  case class Grouped1(cat: String, total: Double)
   case class Item(cat: String, `val`: Int)
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }

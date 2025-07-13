@@ -8,7 +8,7 @@ object cross_join_triple {
   def main(args: Array[String]): Unit = {
     println("--- Cross Join of three lists ---")
     for(c <- combos) {
-      println(c.n + " " + c.l + " " + c.b)
+      println(s"${c.n} ${c.l} ${c.b}")
     }
   }
 }

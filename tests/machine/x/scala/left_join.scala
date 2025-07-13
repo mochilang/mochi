@@ -10,7 +10,7 @@ object left_join {
   def main(args: Array[String]): Unit = {
     println("--- Left Join ---")
     for(entry <- result) {
-      println("Order" + " " + entry.orderId + " " + "customer" + " " + entry.customer + " " + "total" + " " + entry.total)
+      println(s"Order ${entry.orderId} customer ${entry.customer} total ${entry.total}")
     }
   }
 }

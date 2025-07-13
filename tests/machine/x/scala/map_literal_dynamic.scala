@@ -3,6 +3,6 @@ object map_literal_dynamic {
     var x = 3
     var y = 4
     var m = scala.collection.mutable.Map("a" -> x, "b" -> y)
-    println(m("a") + " " + m("b"))
+    println(s"${m("a")} ${m("b")}")
   }
 }
