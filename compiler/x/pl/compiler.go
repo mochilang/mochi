@@ -694,30 +694,11 @@ func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
 }
 
 func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
-	name := sanitizeAtom("test_" + t.Name)
-	oldOut := c.out
-	oldVars := c.vars
-	oldTmp := c.tmp
-	c.out = &c.funcBuf
-	c.vars = make(map[string]string)
-	c.tmp = 0
-	c.writeln(fmt.Sprintf("%s :-", name))
-	c.indent++
 	for _, st := range t.Body {
 		if err := c.compileStmt(st); err != nil {
-			c.out = oldOut
-			c.vars = oldVars
-			c.tmp = oldTmp
 			return err
 		}
 	}
-	c.writeln("true.")
-	c.indent--
-	c.writeln("")
-	c.out = oldOut
-	c.vars = oldVars
-	c.tmp = oldTmp
-	c.writeln(fmt.Sprintf("%s,", name))
 	return nil
 }
 
@@ -885,87 +866,150 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, bool, error) {
 	if e == nil {
 		return "0", true, nil
 	}
-	res, arith, err := c.compileUnary(e.Binary.Left)
+
+	left, lArith, err := c.compileUnary(e.Binary.Left)
 	if err != nil {
 		return "", false, err
 	}
-	for _, op := range e.Binary.Right {
-		rhs, ar, err := c.compilePostfix(op.Right)
+
+	operands := []string{left}
+	ariths := []bool{lArith}
+	ops := []string{}
+	allFlags := []bool{}
+	for _, part := range e.Binary.Right {
+		rhs, rArith, err := c.compilePostfix(part.Right)
 		if err != nil {
 			return "", false, err
 		}
-		arith = true
-		concat := false
-		if op.Op == "+" && (strings.HasPrefix(res, "\"") || strings.HasPrefix(rhs, "\"")) {
-			tmp := c.newTmp()
-			c.writeln(fmt.Sprintf("string_concat(%s, %s, %s),", res, rhs, tmp))
-			res = tmp
-			arith = false
-			concat = true
-		} else if op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" {
-			res = fmt.Sprintf("(%s %s %s)", res, op.Op, rhs)
-		} else if op.Op == "%" {
-			res = fmt.Sprintf("(%s mod %s)", res, rhs)
-		} else if op.Op == "==" {
-			if arith && ar {
-				res = fmt.Sprintf("(%s =:= %s)", res, rhs)
-			} else {
-				res = fmt.Sprintf("(%s == %s)", res, rhs)
-			}
-			arith = false
-		} else if op.Op == "!=" {
-			if arith && ar {
-				res = fmt.Sprintf("(%s \\= %s)", res, rhs)
-			} else {
-				res = fmt.Sprintf("(%s \\== %s)", res, rhs)
-			}
-			arith = false
-		} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" {
-			cmp := map[string]string{"<": "@<", "<=": "@=<", ">": "@>", ">=": "@>="}[op.Op]
-			res = fmt.Sprintf("(%s %s %s)", res, cmp, rhs)
-			arith = false
-		} else if op.Op == "&&" {
-			res = fmt.Sprintf("(%s, %s)", res, rhs)
-			arith = false
-		} else if op.Op == "||" {
-			res = fmt.Sprintf("(%s ; %s)", res, rhs)
-			arith = false
-		} else if op.Op == "in" {
-			tmp := c.newTmp()
-			c.needsContains = true
-			c.writeln(fmt.Sprintf("contains(%s, %s, %s),", rhs, res, tmp))
-			res = tmp
-			arith = false
-		} else if op.Op == "union" {
-			tmp := c.newTmp()
-			if op.All {
-				c.writeln(fmt.Sprintf("append(%s, %s, %s),", res, rhs, tmp))
-			} else {
-				c.needsSetOps = true
-				c.writeln(fmt.Sprintf("union(%s, %s, %s),", res, rhs, tmp))
-			}
-			res = tmp
-			arith = false
-		} else if op.Op == "except" {
-			tmp := c.newTmp()
-			c.needsSetOps = true
-			c.writeln(fmt.Sprintf("except(%s, %s, %s),", res, rhs, tmp))
-			res = tmp
-			arith = false
-		} else if op.Op == "intersect" {
-			tmp := c.newTmp()
-			c.needsSetOps = true
-			c.writeln(fmt.Sprintf("intersect(%s, %s, %s),", res, rhs, tmp))
-			res = tmp
-			arith = false
-		} else {
-			return "", false, fmt.Errorf("unsupported op")
+		op := part.Op
+		if op == "union" && part.All {
+			op = "union_all"
 		}
-		if !concat && ar == false && (op.Op == "+" || op.Op == "-" || op.Op == "*" || op.Op == "/" || op.Op == "%") {
-			arith = true
+		operands = append(operands, rhs)
+		ariths = append(ariths, rArith)
+		ops = append(ops, op)
+		allFlags = append(allFlags, part.All)
+	}
+
+	precLevels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, level := range precLevels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				expr, ar, err := c.buildBinary(operands[i], ariths[i], ops[i], operands[i+1], ariths[i+1], allFlags[i])
+				if err != nil {
+					return "", false, err
+				}
+				operands[i] = expr
+				ariths[i] = ar
+				operands = append(operands[:i+1], operands[i+2:]...)
+				ariths = append(ariths[:i+1], ariths[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+				allFlags = append(allFlags[:i], allFlags[i+1:]...)
+			} else {
+				i++
+			}
 		}
 	}
-	return res, arith, nil
+
+	if len(operands) != 1 {
+		return "", false, fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], ariths[0], nil
+}
+
+func (c *Compiler) buildBinary(left string, leftArith bool, op string, right string, rightArith bool, all bool) (string, bool, error) {
+	arith := true
+	concat := false
+	switch op {
+	case "+", "-", "*", "/":
+		if op == "+" && (strings.HasPrefix(left, "\"") || strings.HasPrefix(right, "\"")) {
+			tmp := c.newTmp()
+			c.writeln(fmt.Sprintf("string_concat(%s, %s, %s),", left, right, tmp))
+			left = tmp
+			arith = false
+			concat = true
+		} else {
+			left = fmt.Sprintf("(%s %s %s)", left, op, right)
+		}
+	case "%":
+		left = fmt.Sprintf("(%s mod %s)", left, right)
+	case "==":
+		if leftArith && rightArith {
+			left = fmt.Sprintf("(%s =:= %s)", left, right)
+		} else {
+			left = fmt.Sprintf("(%s == %s)", left, right)
+		}
+		arith = false
+	case "!=":
+		if leftArith && rightArith {
+			left = fmt.Sprintf("(%s \\= %s)", left, right)
+		} else {
+			left = fmt.Sprintf("(%s \\== %s)", left, right)
+		}
+		arith = false
+	case "<", "<=", ">", ">=":
+		cmp := map[string]string{"<": "<", "<=": "=<", ">": ">", ">=": ">="}[op]
+		left = fmt.Sprintf("(%s %s %s)", left, cmp, right)
+		arith = false
+	case "&&":
+		left = fmt.Sprintf("(%s, %s)", left, right)
+		arith = false
+	case "||":
+		left = fmt.Sprintf("(%s ; %s)", left, right)
+		arith = false
+	case "in":
+		tmp := c.newTmp()
+		c.needsContains = true
+		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", right, left, tmp))
+		left = tmp
+		arith = false
+	case "union", "union_all":
+		tmp := c.newTmp()
+		if op == "union_all" {
+			c.writeln(fmt.Sprintf("append(%s, %s, %s),", left, right, tmp))
+		} else {
+			c.needsSetOps = true
+			c.writeln(fmt.Sprintf("union(%s, %s, %s),", left, right, tmp))
+		}
+		left = tmp
+		arith = false
+	case "except":
+		tmp := c.newTmp()
+		c.needsSetOps = true
+		c.writeln(fmt.Sprintf("except(%s, %s, %s),", left, right, tmp))
+		left = tmp
+		arith = false
+	case "intersect":
+		tmp := c.newTmp()
+		c.needsSetOps = true
+		c.writeln(fmt.Sprintf("intersect(%s, %s, %s),", left, right, tmp))
+		left = tmp
+		arith = false
+	default:
+		return "", false, fmt.Errorf("unsupported op")
+	}
+	if !concat && !rightArith && (op == "+" || op == "-" || op == "*" || op == "/" || op == "%") {
+		arith = true
+	}
+	return left, arith, nil
+}
+
+func contains(ops []string, op string) bool {
+	for _, o := range ops {
+		if o == op {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
