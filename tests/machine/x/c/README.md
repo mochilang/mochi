@@ -118,3 +118,4 @@ Checklist:
 - [ ] python_math
 - [ ] save_jsonl_stdout
 - [ ] tpc-h q1 grouping
+- [ ] TPC-H q1 grouping (wip)

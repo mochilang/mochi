@@ -1920,8 +1920,8 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 	if ml := asMapLiteral(l.With); ml != nil {
 		for _, it := range ml.Items {
 			if k, ok := identName(it.Key); ok && k == "format" {
-				if it.Value != nil && it.Value.Literal != nil && it.Value.Literal.String != nil {
-					format = strings.Trim(*it.Value.Literal.String, "\"")
+				if typ, val, ok := constLiteralTypeVal(it.Value); ok && typ == "char*" {
+					format = strings.Trim(val, "\"")
 				}
 			}
 		}
