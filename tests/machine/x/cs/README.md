@@ -109,5 +109,6 @@ Checklist:
 
 ## Remaining Tasks
 
-- [ ] Support dataset tpc-h/q1.mochi via dotnet
-
+- [ ] Fix numeric casting so `tpc-h/q1.mochi` compiles cleanly
+- [ ] Verify generated C# runs via `dotnet run`
+- [ ] Compare output against `tests/dataset/tpc-h/compiler/cs/q1.out`

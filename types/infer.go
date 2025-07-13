@@ -396,15 +396,19 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					if _, ok := tt.Elem.(FloatType); ok {
 						return FloatType{}
 					}
-					return IntType{}
+					if isNumeric(tt.Elem) {
+						return FloatType{}
+					}
 				case GroupType:
 					if _, ok := tt.Elem.(FloatType); ok {
 						return FloatType{}
 					}
-					return IntType{}
+					if isNumeric(tt.Elem) {
+						return FloatType{}
+					}
 				}
 			}
-			return IntType{}
+			return FloatType{}
 		case "min", "max":
 			if len(p.Call.Args) == 1 {
 				t := ExprType(p.Call.Args[0], env)
