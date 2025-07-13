@@ -1587,7 +1587,8 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	res := left
-	for _, op := range b.Right {
+	for i := 0; i < len(b.Right); i++ {
+		op := b.Right[i]
 		r, err := c.compilePostfix(op.Right)
 		if err != nil {
 			return "", err
@@ -1635,6 +1636,27 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				}
 			}
 		}
+		// combine trailing comparison after logical operator
+		if (op.Op == "&&" || op.Op == "||") && i+1 < len(b.Right) {
+			next := b.Right[i+1]
+			switch next.Op {
+			case "==", "!=", "<", "<=", ">", ">=":
+				nr, err := c.compilePostfix(next.Right)
+				if err != nil {
+					return "", err
+				}
+				nextOp := next.Op
+				if nextOp == "==" {
+					nextOp = "="
+				} else if nextOp == "!=" {
+					nextOp = "<>"
+				}
+				cmp := fmt.Sprintf("(%s %s %s)", r, nextOp, nr)
+				res = fmt.Sprintf("(%s %s %s)", res, opStr, cmp)
+				i++
+				continue
+			}
+		}
 		if opStr == "+" && isStringUnary(b.Left) && isStringExprExpr(op.Right) {
 			res = fmt.Sprintf("(%s ^ %s)", res, r)
 		} else {
@@ -1654,7 +1676,7 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 		case "-":
 			val = "-" + val
 		case "!":
-			val = "not " + val
+			val = "not (" + val + ")"
 		}
 	}
 	return val, nil
