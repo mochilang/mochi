@@ -22,6 +22,8 @@ type Compiler struct {
 	varTypes         map[string]string
 	funArity         map[string]int
 	groups           map[string]bool
+	currentGroup     string
+	groupFields      map[string]bool
 	listElemTypes    map[string]string
 	tmpCount         int
 }
@@ -33,6 +35,7 @@ func New() *Compiler {
 		varTypes:         make(map[string]string),
 		funArity:         make(map[string]int),
 		groups:           make(map[string]bool),
+		groupFields:      nil,
 		listElemTypes:    make(map[string]string),
 		needPathLib:      false,
 	}
@@ -579,6 +582,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if fields, ok := c.structs[p.Selector.Root]; ok && len(fields) == 0 {
 				return fmt.Sprintf("(%s)", p.Selector.Root), nil
 			}
+			if _, ok := c.varTypes[p.Selector.Root]; !ok && c.currentGroup != "" && c.groupFields[p.Selector.Root] {
+				return fmt.Sprintf("(hash-ref (hash-ref %s 'key) '%s)", c.currentGroup, p.Selector.Root), nil
+			}
 		}
 		val := p.Selector.Root
 		t, _ := c.varTypes[val]
@@ -617,12 +623,23 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 	case p.Map != nil:
 		parts := make([]string, len(p.Map.Items)*2)
 		for i, it := range p.Map.Items {
-			k, err := c.compileExpr(it.Key)
-			if err != nil {
-				return "", err
-			}
+			var k string
 			if isIdentExpr(it.Key) {
-				k = fmt.Sprintf("'%s", k)
+				if name, ok := identName(it.Key); ok {
+					k = fmt.Sprintf("'%s", name)
+				} else {
+					kk, err := c.compileExpr(it.Key)
+					if err != nil {
+						return "", err
+					}
+					k = fmt.Sprintf("'%s", kk)
+				}
+			} else {
+				kk, err := c.compileExpr(it.Key)
+				if err != nil {
+					return "", err
+				}
+				k = kk
 			}
 			v, err := c.compileExpr(it.Value)
 			if err != nil {
@@ -1025,15 +1042,30 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 		var sel, have, sortExpr string
 		c.groups[q.Group.Name] = true
+		keyNames := groupKeyNames(q.Group.Exprs[0])
+		prevGroup := c.currentGroup
+		prevFields := c.groupFields
+		if len(keyNames) > 0 {
+			c.currentGroup = q.Group.Name
+			f := make(map[string]bool, len(keyNames))
+			for _, n := range keyNames {
+				f[n] = true
+			}
+			c.groupFields = f
+		}
 		sel, err = c.compileExpr(q.Select)
 		if err != nil {
 			delete(c.groups, q.Group.Name)
+			c.currentGroup = prevGroup
+			c.groupFields = prevFields
 			return "", err
 		}
 		if q.Group.Having != nil {
 			have, err = c.compileExpr(q.Group.Having)
 			if err != nil {
 				delete(c.groups, q.Group.Name)
+				c.currentGroup = prevGroup
+				c.groupFields = prevFields
 				return "", err
 			}
 		}
@@ -1041,10 +1073,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			sortExpr, err = c.compileExpr(q.Sort)
 			if err != nil {
 				delete(c.groups, q.Group.Name)
+				c.currentGroup = prevGroup
+				c.groupFields = prevFields
 				return "", err
 			}
 		}
 		delete(c.groups, q.Group.Name)
+		c.currentGroup = prevGroup
+		c.groupFields = prevFields
 
 		var buf bytes.Buffer
 		buf.WriteString("(let ([groups (make-hash)])\n")
