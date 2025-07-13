@@ -307,6 +307,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				res = fmt.Sprintf("String.contains?(%s, %s)", target, argStr)
 				continue
 			}
+			if strings.HasSuffix(res, ".starts_with") && len(args) == 1 {
+				target := strings.TrimSuffix(res, ".starts_with")
+				res = fmt.Sprintf("String.starts_with?(%s, %s)", target, argStr)
+				continue
+			}
 			if strings.HasSuffix(res, ".keys") && len(args) == 0 {
 				target := strings.TrimSuffix(res, ".keys")
 				res = fmt.Sprintf("Map.keys(%s)", target)
@@ -522,6 +527,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if strings.HasSuffix(p.Call.Func, ".contains") && len(args) == 1 {
 			base := strings.TrimSuffix(p.Call.Func, ".contains")
 			return fmt.Sprintf("String.contains?(%s, %s)", base, argStr), nil
+		}
+		if strings.HasSuffix(p.Call.Func, ".starts_with") && len(args) == 1 {
+			base := strings.TrimSuffix(p.Call.Func, ".starts_with")
+			return fmt.Sprintf("String.starts_with?(%s, %s)", base, argStr), nil
 		}
 		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Call.Func); ok {

@@ -20,7 +20,7 @@ func TestExCompiler_JOBQueries(t *testing.T) {
 		t.Skipf("elixir not installed: %v", err)
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ex", q+".ex.out")
