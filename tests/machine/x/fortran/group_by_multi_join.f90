@@ -1,34 +1,34 @@
 program group_by_multi_join
   implicit none
-  type :: Nation
+  type :: t_nation
     integer :: id
     character(len=1) :: name
-  end type Nation
-  type :: Supplier
+  end type t_nation
+  type :: t_supplier
     integer :: id
     integer :: nation
-  end type Supplier
-  type :: PartSupp
+  end type t_supplier
+  type :: t_partsupp
     integer :: part
     integer :: supplier
     real :: cost
     integer :: qty
-  end type PartSupp
-  type(Nation) :: nations(2)
-  type(Supplier) :: suppliers(2)
-  type(PartSupp) :: partsupp(3)
+  end type t_partsupp
+  type(t_nation) :: nations(2)
+  type(t_supplier) :: suppliers(2)
+  type(t_partsupp) :: partsupp(3)
   real :: total100, total200
   integer :: i,j,k
 
-  nations(1) = Nation(1,'A')
-  nations(2) = Nation(2,'B')
+  nations(1) = t_nation(1,'A')
+  nations(2) = t_nation(2,'B')
 
-  suppliers(1) = Supplier(1,1)
-  suppliers(2) = Supplier(2,2)
+  suppliers(1) = t_supplier(1,1)
+  suppliers(2) = t_supplier(2,2)
 
-  partsupp(1) = PartSupp(100,1,10.0,2)
-  partsupp(2) = PartSupp(100,2,20.0,1)
-  partsupp(3) = PartSupp(200,1,5.0,3)
+  partsupp(1) = t_partsupp(100,1,10.0,2)
+  partsupp(2) = t_partsupp(100,2,20.0,1)
+  partsupp(3) = t_partsupp(200,1,5.0,3)
 
   total100 = 0
   total200 = 0
