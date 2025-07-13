@@ -35,6 +35,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	outPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.go.out")
+	outPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.go")
 	os.WriteFile(outPath, code, 0644)
 }
