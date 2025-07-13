@@ -106,7 +106,10 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+- [x] q2.mochi
+
+All programs above compiled and ran successfully.
 
 ## Remaining Tasks
 
-- [ ] Compile dataset program tpch_q2.mochi and verify output.
+- None
