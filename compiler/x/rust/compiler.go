@@ -1634,6 +1634,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 							res = fmt.Sprintf("(%s as f64)", res)
 						}
 					}
+				} else if op.Op == "<" || op.Op == "<=" || op.Op == ">" || op.Op == ">=" || op.Op == "==" || op.Op == "!=" {
+					if _, ok := lt.(types.FloatType); ok && isInt(rt) {
+						r = fmt.Sprintf("%s as f64", r)
+					} else if _, ok := rt.(types.FloatType); ok && isInt(lt) {
+						res = fmt.Sprintf("(%s as f64)", res)
+					}
 				}
 			}
 			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
@@ -1672,6 +1678,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 			switch rustTy {
 			case "i32":
+				if strings.HasPrefix(val, "&") {
+					val = val[1:]
+				}
 				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
 			default:
 				return "", fmt.Errorf("unsupported cast to %s", rustTy)
@@ -4020,7 +4029,7 @@ func isBuiltinCall(e *parser.Expr, name string) (*parser.CallExpr, bool) {
 		return nil, false
 	}
 	u := e.Binary.Left
-	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil || len(u.Value.Ops) > 0 {
 		return nil, false
 	}
 	call := u.Value.Target.Call
