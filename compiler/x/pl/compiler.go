@@ -990,16 +990,31 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, bool, error) {
 }
 
 func (c *Compiler) compilePostfix(pf *parser.PostfixExpr) (string, bool, error) {
-	if pf.Target.Selector != nil && len(pf.Target.Selector.Tail) == 1 && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
-		container := c.lookupVar(pf.Target.Selector.Root)
-		val, arith, err := c.compileMethodCall(container, pf.Target.Selector.Tail[0], pf.Ops[0].Call)
-		if err != nil {
-			return "", false, err
+	if pf.Target.Selector != nil && len(pf.Ops) > 0 && pf.Ops[0].Call != nil {
+		tail := pf.Target.Selector.Tail
+		if len(tail) >= 1 {
+			// Treat the last selector element as a method name and the
+			// preceding elements as the container expression. This
+			// handles expressions like `obj.field.method(args)` which
+			// the parser represents as a selector with two tail
+			// entries and a call operation.
+			container := c.lookupVar(pf.Target.Selector.Root)
+			for _, f := range tail[:len(tail)-1] {
+				tmp := c.newTmp()
+				c.needsGetItem = true
+				c.writeln(fmt.Sprintf("get_item(%s, '%s', %s),", container, strings.ToLower(f), tmp))
+				container = tmp
+			}
+			method := tail[len(tail)-1]
+			val, arith, err := c.compileMethodCall(container, method, pf.Ops[0].Call)
+			if err != nil {
+				return "", false, err
+			}
+			if len(pf.Ops) > 1 {
+				return "", false, fmt.Errorf("postfix not supported")
+			}
+			return val, arith, nil
 		}
-		if len(pf.Ops) > 1 {
-			return "", false, fmt.Errorf("postfix not supported")
-		}
-		return val, arith, nil
 	}
 	val, arith, err := c.compilePrimary(pf.Target)
 	if err != nil {
@@ -1451,6 +1466,12 @@ func makeParamNames(n int) []string {
 func sanitizeVar(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
 	s = strings.ReplaceAll(s, " ", "_")
+	s = strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			return r
+		}
+		return -1
+	}, s)
 	if s == "" {
 		return "_"
 	}
@@ -1463,6 +1484,12 @@ func sanitizeVar(s string) string {
 func sanitizeAtom(s string) string {
 	s = strings.ReplaceAll(s, "-", "_")
 	s = strings.ReplaceAll(s, " ", "_")
+	s = strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			return unicode.ToLower(r)
+		}
+		return -1
+	}, s)
 	if s == "" {
 		return ""
 	}
