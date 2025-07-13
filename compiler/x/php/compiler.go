@@ -516,6 +516,15 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		default:
 			leftType = types.AnyType{}
 		}
+		if (opStr == "==" || opStr == "!=") && (r == "true" || r == "false") {
+			if (opStr == "==" && r == "true") || (opStr == "!=" && r == "false") {
+				// no-op
+			} else {
+				res = "!(" + res + ")"
+			}
+			leftType = types.BoolType{}
+			continue
+		}
 		res = fmt.Sprintf("%s %s %s", res, opStr, r)
 		left = res
 	}
