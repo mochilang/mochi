@@ -917,7 +917,21 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Field != nil:
-			val += fmt.Sprintf("['%s']", op.Field.Name)
+			switch tt := t.(type) {
+			case types.MapType:
+				val += fmt.Sprintf("['%s']", op.Field.Name)
+				t = tt.Value
+			case types.StructType:
+				val += "." + op.Field.Name
+				if ft, ok := tt.Fields[op.Field.Name]; ok {
+					t = ft
+				} else {
+					t = types.AnyType{}
+				}
+			default:
+				val += "." + op.Field.Name
+				t = types.AnyType{}
+			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
@@ -1661,8 +1675,27 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	}
 	if _, ok := typ.(types.MapType); ok {
 		s := root
-		for _, part := range tail {
-			s += fmt.Sprintf("['%s']", part)
+		tcur := typ
+		for i, part := range tail {
+			switch tt := tcur.(type) {
+			case types.MapType:
+				s += fmt.Sprintf("['%s']", part)
+				tcur = tt.Value
+			case types.StructType:
+				s += "." + part
+				if ft, ok := tt.Fields[part]; ok {
+					tcur = ft
+				} else {
+					tcur = types.AnyType{}
+				}
+			default:
+				if i == 0 {
+					s += fmt.Sprintf("['%s']", part)
+				} else {
+					s = fmt.Sprintf("(%s as dynamic).%s", s, part)
+				}
+				tcur = types.AnyType{}
+			}
 		}
 		return s
 	}
@@ -1674,8 +1707,8 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 		return s
 	}
 	s := root
-	if len(tail) > 0 {
-		s += "." + strings.Join(tail, ".")
+	for _, part := range tail {
+		s += "." + part
 	}
 	return s
 }
