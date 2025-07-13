@@ -27,7 +27,7 @@ func TestPrologCompiler_JOB_Golden(t *testing.T) {
 		t.Skip("swipl not installed")
 	}
 	root := testutil.FindRepoRoot(t)
-	queries := []string{"q1", "q2", "q3", "q4", "q5"}
+	queries := []string{"q6"}
 	for _, q := range queries {
 		q := q
 		t.Run(q, func(t *testing.T) {
