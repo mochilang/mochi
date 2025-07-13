@@ -1375,6 +1375,48 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	if len(u.Ops) > 0 {
+		// constant folding for simple numeric and boolean expressions
+		if v, isInt, ok := parseNumber(x); ok {
+			sign := 1.0
+			foldable := true
+			for _, op := range u.Ops {
+				switch op {
+				case "-":
+					sign = -sign
+				case "+":
+					// no-op
+				default:
+					foldable = false
+				}
+			}
+			if foldable {
+				val := sign * v
+				if isInt {
+					return fmt.Sprintf("%d", int64(val)), nil
+				}
+				return fmt.Sprint(val), nil
+			}
+		} else if x == "true" || x == "false" {
+			flip := 0
+			for _, op := range u.Ops {
+				if op != "!" {
+					flip = -1
+					break
+				}
+				flip ^= 1
+			}
+			if flip >= 0 {
+				if flip%2 == 1 {
+					if x == "true" {
+						return "false", nil
+					}
+					return "true", nil
+				}
+				return x, nil
+			}
+		}
+	}
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		x = fmt.Sprintf("(%s%s)", u.Ops[i], x)
 	}
