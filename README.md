@@ -663,6 +663,18 @@ make bench
 
 Results are saved in [`BENCHMARK.md`](./BENCHMARK.md).
 
+## TPC-H Queries with Elixir
+
+The Elixir backend can compile and execute the first ten queries of the TPC-H
+benchmark suite. The generated Elixir programs and their expected output live in
+`tests/dataset/tpc-h/compiler/ex`.
+
+Run the golden tests to verify the code and output:
+
+```bash
+go test ./compiler/x/ex -run TestExCompiler_TPCHQueries -tags=slow -v
+```
+
 ## Contributing
 
 Mochi is open source and happy to have your contributions.
