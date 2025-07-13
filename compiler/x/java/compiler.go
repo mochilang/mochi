@@ -497,7 +497,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("if (o instanceof Map<?,?> m) {")
 		c.indent++
 		c.writeln("StringJoiner j = new StringJoiner(\",\", \"{\", \"}\");")
-		c.writeln("for (Map.Entry<?,?> e : m.entrySet()) j.add(\"\\\"\" + e.getKey() + \"\\\":\" + e.getValue());")
+		c.writeln("for (Map.Entry<?,?> e : m.entrySet()) j.add(\"\\\"\" + e.getKey() + \"\\\":\" + toJson(e.getValue()));")
 		c.writeln("return j.toString();")
 		c.indent--
 		c.writeln("} else if (o instanceof Collection<?> c) {")
