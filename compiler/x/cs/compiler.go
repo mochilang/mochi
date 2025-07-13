@@ -1593,6 +1593,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		keyTypeStr := csTypeOf(keyT)
 		elemTypeStr := csTypeOf(elemT)
+		if strings.HasPrefix(elemTypeStr, "Dictionary<") {
+			elemTypeStr = "dynamic"
+		}
+		if strings.HasPrefix(keyTypeStr, "Dictionary<") {
+			keyTypeStr = "dynamic"
+		}
 		c.env = orig
 
 		srcParts := []string{src}
