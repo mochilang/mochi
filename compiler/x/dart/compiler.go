@@ -14,6 +14,60 @@ import (
 	"mochi/types"
 )
 
+const dartHelpers = `
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}
+`
+
 // Compiler is a very small proof-of-concept translator that converts a limited
 // subset of Mochi programs into Dart code.  For many of the test programs this
 // translation is incomplete, but it is sufficient for simple examples such as
@@ -55,6 +109,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.mapVars = make(map[string]bool)
 	c.groupKeys = make(map[string]string)
 	c.imports = make(map[string]string)
+
+	for _, st := range prog.Statements {
+		if st.Test != nil {
+			c.useIO = true
+		}
+	}
 
 	// handle simple builtin imports
 	for _, st := range prog.Statements {
@@ -230,6 +290,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	out.Write(fnBuf.Bytes())
 	out.Write(mainBytes)
+	out.WriteString(dartHelpers)
 	return formatDart(out.Bytes()), nil
 }
 
@@ -941,7 +1002,18 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[i] = s
 			}
-			val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			if strings.HasSuffix(val, ".contains") && len(args) == 1 {
+				base := strings.TrimSuffix(val, ".contains")
+				val = fmt.Sprintf("%s.contains(%s)", base, args[0])
+			} else if strings.HasSuffix(val, ".starts_with") && len(args) == 1 {
+				base := strings.TrimSuffix(val, ".starts_with")
+				val = fmt.Sprintf("%s.toString().startsWith(%s.toString())", base, args[0])
+			} else if strings.HasSuffix(val, ".ends_with") && len(args) == 1 {
+				base := strings.TrimSuffix(val, ".ends_with")
+				val = fmt.Sprintf("%s.toString().endsWith(%s.toString())", base, args[0])
+			} else {
+				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
+			}
 		case op.Cast != nil:
 			typ := dartType(op.Cast.Type)
 			switch typ {
@@ -1594,7 +1666,7 @@ func (c *Compiler) aggregateExpr(name, list string) string {
 	case "avg":
 		return fmt.Sprintf("(%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length)", list, list, list)
 	case "min":
-		return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", list)
+		return fmt.Sprintf("_min(%s)", list)
 	case "max":
 		return fmt.Sprintf("%s.reduce((a, b) => a > b ? a : b)", list)
 	}
@@ -1782,11 +1854,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		a := args[0]
 		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
-			return fmt.Sprintf("%s.reduce((a, b) => a < b ? a : b)", a), nil
+			return fmt.Sprintf("_min(%s)", a), nil
 		}
 		tmp := fmt.Sprintf("_t%d", c.tmp)
 		c.tmp++
-		return fmt.Sprintf("(() { var %s = %s; return %s.reduce((a, b) => a < b ? a : b); })()", tmp, a, tmp), nil
+		return fmt.Sprintf("(() { var %s = %s; return _min(%s); })()", tmp, a, tmp), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
@@ -1810,6 +1882,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("%s.toString().substring(%s, %s)", args[0], args[1], args[2]), nil
 		}
 		return "", fmt.Errorf("substring expects 2 or 3 args")
+	case "starts_with":
+		if len(args) != 2 {
+			return "", fmt.Errorf("starts_with expects 2 args")
+		}
+		return fmt.Sprintf("%s.toString().startsWith(%s.toString())", args[0], args[1]), nil
+	case "ends_with":
+		if len(args) != 2 {
+			return "", fmt.Errorf("ends_with expects 2 args")
+		}
+		return fmt.Sprintf("%s.toString().endsWith(%s.toString())", args[0], args[1]), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
