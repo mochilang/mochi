@@ -6,9 +6,12 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
 	"mochi/types"
@@ -1913,6 +1916,60 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 	if l.Path != nil {
 		path = fmt.Sprintf("%q", *l.Path)
 	}
+	format := "json"
+	if ml := asMapLiteral(l.With); ml != nil {
+		for _, it := range ml.Items {
+			if k, ok := identName(it.Key); ok && k == "format" {
+				if it.Value != nil && it.Value.Literal != nil && it.Value.Literal.String != nil {
+					format = strings.Trim(*it.Value.Literal.String, "\"")
+				}
+			}
+		}
+	}
+
+	if format == "yaml" && l.Path != nil && l.Type != nil && l.Type.Simple != nil && c.env != nil {
+		if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
+			data, err := os.ReadFile(*l.Path)
+			if err == nil {
+				var rows []map[string]any
+				if yaml.Unmarshal(data, &rows) == nil {
+					listName := "list_" + sanitizeTypeName(st.Name)
+					c.compileStructType(st)
+					c.compileStructListType(st)
+					arr := c.newTempPrefix("arr")
+					c.writeln(fmt.Sprintf("%s %s[] = {", sanitizeTypeName(st.Name), arr))
+					c.indent++
+					for i, r := range rows {
+						parts := make([]string, 0, len(st.Order))
+						for _, f := range st.Order {
+							v := r[f]
+							switch st.Fields[f].(type) {
+							case types.StringType:
+								parts = append(parts, fmt.Sprintf(".%s = %q", sanitizeName(f), v))
+							case types.FloatType:
+								fv, _ := strconv.ParseFloat(fmt.Sprint(v), 64)
+								parts = append(parts, fmt.Sprintf(".%s = %.17g", sanitizeName(f), fv))
+							default:
+								iv, _ := strconv.Atoi(fmt.Sprint(v))
+								parts = append(parts, fmt.Sprintf(".%s = %d", sanitizeName(f), iv))
+							}
+						}
+						line := fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
+						if i < len(rows)-1 {
+							line += ","
+						}
+						c.writeln(line)
+					}
+					c.indent--
+					c.writeln("};")
+					name := c.newTemp()
+					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(rows), arr))
+					return name
+				}
+			}
+		}
+	}
+
 	c.need(needLoadJSON)
 	c.need(needMapStringInt)
 	c.need(needStringHeader)
@@ -2184,13 +2241,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.indent++
 						c.writeln(fmt.Sprintf("for (int %s = %s+1; %s < %s; %s++) {", inner, outer, inner, idx, inner))
 						c.indent++
-                                                if keyType == "char*" {
-                                                        c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else if keyType == "map_string_int" {
-                                                        c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else {
-                                                        c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
-                                                }
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else if keyType == "map_string_int" {
+							c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
+						}
 						c.indent++
 						c.writeln(fmt.Sprintf("%s %s = %s[%s];", keyType, tmpK, keyArr, outer))
 						c.writeln(fmt.Sprintf("%s[%s] = %s[%s];", keyArr, outer, keyArr, inner))
@@ -2371,13 +2428,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.indent++
 						c.writeln(fmt.Sprintf("for (int %s = %s+1; %s < %s; %s++) {", inner, outer, inner, idxRes, inner))
 						c.indent++
-                                                if keyType == "char*" {
-                                                        c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else if keyType == "map_string_int" {
-                                                        c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else {
-                                                        c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
-                                                }
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else if keyType == "map_string_int" {
+							c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
+						}
 						c.indent++
 						c.writeln(fmt.Sprintf("%s %s = %s[%s];", keyType, tmpK, keyArr, outer))
 						c.writeln(fmt.Sprintf("%s[%s] = %s[%s];", keyArr, outer, keyArr, inner))
@@ -2545,13 +2602,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.indent++
 						c.writeln(fmt.Sprintf("for (int %s = %s+1; %s < %s; %s++) {", inner, outer, inner, idxRes, inner))
 						c.indent++
-                                                if keyType == "char*" {
-                                                        c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else if keyType == "map_string_int" {
-                                                        c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                } else {
-                                                        c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
-                                                }
+						if keyType == "char*" {
+							c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else if keyType == "map_string_int" {
+							c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+						} else {
+							c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
+						}
 						c.indent++
 						c.writeln(fmt.Sprintf("%s %s = %s[%s];", keyType, tmpK, keyArr, outer))
 						c.writeln(fmt.Sprintf("%s[%s] = %s[%s];", keyArr, outer, keyArr, inner))
@@ -2734,13 +2791,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.indent++
 							c.writeln(fmt.Sprintf("for (int %s = %s+1; %s < %s; %s++) {", inner, outer, inner, idxRes, inner))
 							c.indent++
-                                                        if keyType == "char*" {
-                                                                c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                        } else if keyType == "map_string_int" {
-                                                                c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                                                        } else {
-                                                                c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
-                                                        }
+							if keyType == "char*" {
+								c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+							} else if keyType == "map_string_int" {
+								c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+							} else {
+								c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
+							}
 							c.indent++
 							c.writeln(fmt.Sprintf("%s %s = %s[%s];", keyType, tmpK, keyArr, outer))
 							c.writeln(fmt.Sprintf("%s[%s] = %s[%s];", keyArr, outer, keyArr, inner))
@@ -3561,13 +3618,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		c.indent++
 		c.writeln(fmt.Sprintf("for (int %s = %s+1; %s < %s; %s++) {", inner, outer, inner, idx, inner))
 		c.indent++
-                if keyType == "char*" {
-                        c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                } else if keyType == "map_string_int" {
-                        c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
-                } else {
-                        c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
-                }
+		if keyType == "char*" {
+			c.writeln(fmt.Sprintf("if (strcmp(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+		} else if keyType == "map_string_int" {
+			c.writeln(fmt.Sprintf("if (cmp_map_string_int(%s[%s], %s[%s]) > 0) {", keyArr, outer, keyArr, inner))
+		} else {
+			c.writeln(fmt.Sprintf("if (%s[%s] > %s[%s]) {", keyArr, outer, keyArr, inner))
+		}
 		c.indent++
 		c.writeln(fmt.Sprintf("%s %s = %s[%s];", keyType, tmpK, keyArr, outer))
 		c.writeln(fmt.Sprintf("%s[%s] = %s[%s];", keyArr, outer, keyArr, inner))
