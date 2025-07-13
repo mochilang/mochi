@@ -1,10 +1,8 @@
-Object: Dictionary error: did not understand #newFrom:
+Object: OrderedCollection new: 16 "<0x7f668081d4a0>" error: did not understand #add:at:
 MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:2)
-Object: nil error: did not understand #do:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:5)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:3)
+OrderedCollection(Object)>>doesNotUnderstand: #add:at: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:8)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:7)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/sort_stable.st:5)
 nil

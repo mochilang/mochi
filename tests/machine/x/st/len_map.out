@@ -1,4 +1,5 @@
-Object: Dictionary error: did not understand #newFrom:
+Object: 2 error: did not understand #do:
 MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/len_map.st:1)
+SmallInteger(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
+Dictionary class>>from: (Dictionary.st:57)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/len_map.st:3)

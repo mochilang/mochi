@@ -1,9 +1,7 @@
-Object: Dictionary error: did not understand #newFrom:
+Object: Dictionary new: 32 "<0x7f6680821260>" error: did not understand #at:at:ifAbsentPut:
 MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:2)
-Object: nil error: did not understand #do:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:6)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:3)
+Dictionary(Object)>>doesNotUnderstand: #at:at:ifAbsentPut: (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:10)
+Array(SequenceableCollection)>>do: (SeqCollect.st:827)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:8)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/group_items_iteration.st:5)

@@ -1,10 +1,16 @@
-Object: Dictionary error: did not understand #newFrom:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-Dictionary class(Object)>>doesNotUnderstand: #newFrom: (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:2)
-Object: nil error: did not understand #do:
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-UndefinedObject(Object)>>doesNotUnderstand: #do: (SysExcept.st:1448)
-optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:5)
-UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:3)
+Object: Association new "<0x7f668081e9c0>" error: Invalid value 'a'->Dictionary (
+	'a'->1
+	'b'->2
+): object not indexable
+SystemExceptions.NotIndexable(Exception)>>signal (ExcHandling.st:254)
+SystemExceptions.NotIndexable class(SystemExceptions.InvalidValue class)>>signalOn: (SysExcept.st:411)
+Association(Object)>>checkIndexableBounds: (Object.st:792)
+Association(Object)>>at: (Object.st:858)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:10)
+SortedCollection>>basicSwap:ifAfter: (SortCollect.st:496)
+SortedCollection>>sortFrom:to: (SortCollect.st:578)
+SortedCollection>>sortBlock: (SortCollect.st:172)
+OrderedCollection(Collection)>>asSortedCollection: (Collection.st:502)
+optimized [] in UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:10)
+UndefinedObject>>executeStatements (../../../tests/machine/x/st/order_by_map.st:5)
 nil
