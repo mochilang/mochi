@@ -1525,6 +1525,25 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						}
 					}
 				}
+				// extra casting when integer literals mix with floats
+				hasFloatLeft := c.unaryHasFloat(leftAST)
+				if !hasFloatLeft && c.env != nil {
+					if _, ok := types.TypeOfUnary(leftAST, c.env).(types.FloatType); ok {
+						hasFloatLeft = true
+					}
+				}
+				hasFloatRight := c.postfixHasFloat(op.Right)
+				if !hasFloatRight && c.env != nil {
+					if _, ok := types.TypeOfPostfix(op.Right, c.env).(types.FloatType); ok {
+						hasFloatRight = true
+					}
+				}
+				if isIntLiteralUnary(leftAST) && hasFloatRight {
+					res = fmt.Sprintf("(%s as f64)", res)
+				}
+				if isIntLiteralPostfix(op.Right) && hasFloatLeft {
+					r = fmt.Sprintf("%s as f64", r)
+				}
 				res = fmt.Sprintf("%s + %s", res, r)
 			}
 		case "union":

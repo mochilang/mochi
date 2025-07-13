@@ -120,7 +120,7 @@ Compiled programs: 100/100
 - [ ] Enhance type inference for nested structs
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
-
 - [ ] Compile `tpc-h/q1.mochi` with Rust compiler
-  - [ ] Derive `PartialOrd` for key structs
-  - [ ] Cast int literals to `f64` when mixing with floats
+  - [x] Derive `PartialOrd` for key structs
+  - [x] Cast int literals to `f64` when mixing with floats
+  - [ ] Validate generated output against `tests/dataset/tpc-h/compiler/rust/q1.rs.out`
