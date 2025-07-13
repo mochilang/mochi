@@ -26,7 +26,7 @@ func main() {
 	}
 	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ocaml")
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)

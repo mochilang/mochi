@@ -5,6 +5,7 @@
 - [2025-07-13 05:31] Added `sum_float` helper and logic to pick it when summing float lists.
 - [2025-07-13 15:40] Generated code for TPCH queries q6–q10 and extended tests to run them.
 - [2025-07-13 16:29] Generated code for TPCH queries q11–q15 and updated tests.
+- [2025-07-13 17:00] Generated code for TPCH queries q16–q22 and expanded tests.
 
 ## Remaining Enhancements
 - [ ] Verify floating point aggregates for full TPC-H q1

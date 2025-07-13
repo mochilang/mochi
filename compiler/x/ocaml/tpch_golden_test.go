@@ -22,8 +22,8 @@ func TestOCamlCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("ocamlc not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-       for i := 1; i <= 15; i++ {
-               query := fmt.Sprintf("q%d", i)
+	for i := 1; i <= 22; i++ {
+		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", query+".mochi")
 			prog, err := parser.Parse(src)
