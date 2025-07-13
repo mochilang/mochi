@@ -6,6 +6,7 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
 - 2025-07-13 05:05 – Added machine generated output for `tpc-h/q1.mochi` and updated checklist.
 - 2025-07-13 17:36 – Added golden test for `tpc-h/q2.mochi` which now compiles and runs successfully.
 - 2025-07-13 17:53 – Implemented aggregate query handling and added golden files for `tpc-h/q6.mochi`.
+- 2025-07-13 17:59 – Expanded TPCH golden test to cover `q1` through `q22`.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks

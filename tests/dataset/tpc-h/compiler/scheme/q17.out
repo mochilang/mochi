@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+14.28571429
+   test Q17 returns average yearly revenue for small-quantity orders ... ok
