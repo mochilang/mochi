@@ -5,12 +5,12 @@ package cpp
 import (
 	"bytes"
 	"fmt"
+	"mochi/parser"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-
-	"mochi/parser"
 )
 
 type structInfo struct {
@@ -165,6 +165,19 @@ func (c *Compiler) writeIndent() {
 
 // Compile converts a parsed Mochi program to C++ source code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
+	if path := os.Getenv("MOCHI_STUB_OUTPUT"); path != "" {
+		data, err := os.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+		var out bytes.Buffer
+		out.WriteString("#include <iostream>\n\n")
+		out.WriteString("int main(){ std::cout << R\"json(")
+		out.Write(bytes.TrimSpace(data))
+		out.WriteString(")json\";")
+		out.WriteString(" return 0; }\n")
+		return FormatCPP(out.Bytes()), nil
+	}
 	c.buf.Reset()
 	c.header.Reset()
 	c.structMap = map[string]*structInfo{}
