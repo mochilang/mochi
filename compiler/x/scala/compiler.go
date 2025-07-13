@@ -57,6 +57,15 @@ func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.Struct
 
 const indentStep = 2
 
+func isInt(t types.Type) bool { _, ok := t.(types.IntType); return ok }
+func isFloat(t types.Type) bool {
+	switch t.(type) {
+	case types.FloatType, types.BigRatType:
+		return true
+	}
+	return false
+}
+
 func New(env *types.Env) *Compiler {
 	return &Compiler{
 		env:         env,
@@ -1123,7 +1132,13 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
 				leftType = types.BoolType{}
 			default:
-				leftType = types.AnyType{}
+				if isFloat(leftType) || isFloat(rightType) {
+					leftType = types.FloatType{}
+				} else if isInt(leftType) && isInt(rightType) {
+					leftType = types.IntType{}
+				} else {
+					leftType = types.AnyType{}
+				}
 			}
 		case "in":
 			ct := types.TypeOfPostfix(op.Right, c.env)
