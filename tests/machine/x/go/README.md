@@ -114,3 +114,8 @@ Checklist:
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
 - [ ] Fix struct inference for dataset queries (e.g. `q1.mochi`)
+
+### Recent Improvements
+
+- [ ] Emit struct type declarations for inferred dataset rows
+- [ ] Generate TPCH q1 with struct support
