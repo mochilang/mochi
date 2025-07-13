@@ -108,6 +108,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// ensure inferred struct types are emitted
 	if c.env != nil {
+		// reset set to avoid skipping structs inferred during global decls
+		c.structs = make(map[string]bool)
 		for _, st := range c.env.Structs() {
 			c.compileStructType(st)
 		}
