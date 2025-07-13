@@ -113,3 +113,4 @@ Checklist:
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
+- [ ] Fix struct inference for dataset queries (e.g. `q1.mochi`)
