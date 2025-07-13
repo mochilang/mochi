@@ -86,7 +86,7 @@ func main() {
 		for _, g := range items {
 			results = append(results, Result{
 				g.Key,
-				(float64(_sum(func() []any {
+				(_sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, func() any {
@@ -98,13 +98,13 @@ func main() {
 						}())
 					}
 					return results
-				}())) / float64(_sum(func() []any {
+				}()) / _sum(func() []any {
 					results := []any{}
 					for _, x := range g.Items {
 						results = append(results, _toAnyMap(x)["val"])
 					}
 					return results
-				}()))),
+				}())),
 			})
 		}
 		return results
@@ -157,8 +157,12 @@ func _print(args ...any) {
 			fmt.Print(" ")
 		}
 		first = false
+		if a == nil {
+			fmt.Print("<nil>")
+			continue
+		}
 		rv := reflect.ValueOf(a)
-		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+		if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
 			fmt.Print("<nil>")
 			continue
 		}

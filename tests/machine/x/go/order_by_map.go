@@ -57,8 +57,12 @@ func _print(args ...any) {
 			fmt.Print(" ")
 		}
 		first = false
+		if a == nil {
+			fmt.Print("<nil>")
+			continue
+		}
 		rv := reflect.ValueOf(a)
-		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+		if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
 			fmt.Print("<nil>")
 			continue
 		}
@@ -322,9 +326,9 @@ func _sprint(v any) string {
 }
 
 func _toAnySlice[T any](s []T) []any {
-	out := []any{}
-	for _, v := range s {
-		out = append(out, v)
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
 	}
 	return out
 }

@@ -22,3 +22,11 @@ TPC-H progress:
 - 2025-07-13 07:13 - Ensured struct declarations are always written to the
   generated source.
 - 2025-07-13 07:30 - Began verifying TPCH q1 runtime output
+- 2025-07-13 08:04 - Skipped duplicate `_convSlice` calls and tidied printing
+  logic
+
+## Remaining Work
+
+- [ ] Validate TPCH q1 runtime results
+- [ ] Fix failing JOB query expectations
+- [ ] Investigate missing output for JOB q7

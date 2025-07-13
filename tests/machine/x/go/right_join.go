@@ -410,9 +410,9 @@ func _toAnyMap(m any) map[string]any {
 }
 
 func _toAnySlice[T any](s []T) []any {
-	out := []any{}
-	for _, v := range s {
-		out = append(out, v)
+	out := make([]any, len(s))
+	for i, v := range s {
+		out[i] = v
 	}
 	return out
 }
