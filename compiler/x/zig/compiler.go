@@ -1387,7 +1387,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			src += ".Items.items"
+			if !strings.HasSuffix(src, ".Items") {
+				src += ".Items.items"
+			}
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
@@ -1848,7 +1850,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			src += ".Items.items"
+			if !strings.HasSuffix(src, ".Items") {
+				src += ".Items.items"
+			}
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
@@ -1970,7 +1974,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 		elemType = gt.Elem
-		src += ".Items.items"
+		if !strings.HasSuffix(src, ".Items") {
+			src += ".Items.items"
+		}
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
