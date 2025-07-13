@@ -337,7 +337,9 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 				expr = fmt.Sprintf("(%s %s %s)", strOp, l, r)
 				outStr = false
 			} else {
-				expr = fmt.Sprintf("(%s %s %s)", op.op, l, r)
+				c.needRuntime = true
+				rtOp := map[string]string{"<": "_lt", "<=": "_le", ">": "_gt", ">=": "_ge"}[op.op]
+				expr = fmt.Sprintf("(%s %s %s)", rtOp, l, r)
 			}
 		case "&&":
 			expr = fmt.Sprintf("(and %s %s)", l, r)
@@ -528,7 +530,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 1 {
 				return "", fmt.Errorf("sum expects 1 arg")
 			}
-			return fmt.Sprintf("(for/fold ([s 0.0]) ([v %s]) (+ s (real->double-flonum v)))", args[0]), nil
+			c.needListLib = true
+			return fmt.Sprintf("(apply + (for*/list ([v %s]) v))", args[0]), nil
 		case "count":
 			if len(args) != 1 {
 				return "", fmt.Errorf("count expects 1 arg")
@@ -1135,7 +1138,15 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 
 	// handle sort/skip/take for non-group queries
 	if q.Sort != nil || q.Skip != nil || q.Take != nil {
-		items := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, q.Var)
+		parts := []string{fmt.Sprintf("'%s %s", q.Var, q.Var)}
+		for _, f := range q.Froms {
+			parts = append(parts, fmt.Sprintf("'%s %s", f.Var, f.Var))
+		}
+		for _, j := range q.Joins {
+			parts = append(parts, fmt.Sprintf("'%s %s", j.Var, j.Var))
+		}
+		itemExpr := fmt.Sprintf("(hash %s)", strings.Join(parts, " "))
+		items := fmt.Sprintf("(for*/list (%s%s) %s)", strings.Join(loops, " "), cond, itemExpr)
 		tmp := fmt.Sprintf("_items%d", c.tmpCount)
 		c.tmpCount++
 		var buf bytes.Buffer
@@ -1161,10 +1172,22 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 				strOrd = "string>?"
 				numOrd = ">"
 			}
-			cmp := fmt.Sprintf("(cond [(string? (let ([%s a]) %s)) (%s (let ([%s a]) %s) (let ([%s b]) %s))] [(string? (let ([%s b]) %s)) (%s (let ([%s a]) %s) (let ([%s b]) %s))] [else (%s (let ([%s a]) %s) (let ([%s b]) %s))])",
-				q.Var, k, strOrd, q.Var, k, q.Var, k,
-				q.Var, k, strOrd, q.Var, k, q.Var, k,
-				numOrd, q.Var, k, q.Var, k)
+			aBinds := []string{fmt.Sprintf("(%s (hash-ref a '%s))", q.Var, q.Var)}
+			bBinds := []string{fmt.Sprintf("(%s (hash-ref b '%s))", q.Var, q.Var)}
+			for _, f := range q.Froms {
+				aBinds = append(aBinds, fmt.Sprintf("(%s (hash-ref a '%s))", f.Var, f.Var))
+				bBinds = append(bBinds, fmt.Sprintf("(%s (hash-ref b '%s))", f.Var, f.Var))
+			}
+			for _, j := range q.Joins {
+				aBinds = append(aBinds, fmt.Sprintf("(%s (hash-ref a '%s))", j.Var, j.Var))
+				bBinds = append(bBinds, fmt.Sprintf("(%s (hash-ref b '%s))", j.Var, j.Var))
+			}
+			aExpr := fmt.Sprintf("(let (%s) %s)", strings.Join(aBinds, " "), k)
+			bExpr := fmt.Sprintf("(let (%s) %s)", strings.Join(bBinds, " "), k)
+			cmp := fmt.Sprintf("(cond [(string? %s) (%s %s %s)] [(string? %s) (%s %s %s)] [else (%s %s %s)])",
+				aExpr, strOrd, aExpr, bExpr,
+				bExpr, strOrd, aExpr, bExpr,
+				numOrd, aExpr, bExpr)
 			buf.WriteString(fmt.Sprintf("  (set! %s (sort %s (lambda (a b) %s)))\n", tmp, tmp, cmp))
 		}
 		if q.Skip != nil {
@@ -1183,7 +1206,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			c.needListLib = true
 			buf.WriteString(fmt.Sprintf("  (set! %s (take %s (max %s 0)))\n", tmp, tmp, tk))
 		}
-		buf.WriteString(fmt.Sprintf("  (for/list ([%s %s]) %s))", q.Var, tmp, body))
+		binds := []string{fmt.Sprintf("(%s (hash-ref item '%s))", q.Var, q.Var)}
+		for _, f := range q.Froms {
+			binds = append(binds, fmt.Sprintf("(%s (hash-ref item '%s))", f.Var, f.Var))
+		}
+		for _, j := range q.Joins {
+			binds = append(binds, fmt.Sprintf("(%s (hash-ref item '%s))", j.Var, j.Var))
+		}
+		buf.WriteString(fmt.Sprintf("  (for/list ([item %s]) (let (%s) %s)))", tmp, strings.Join(binds, " "), body))
 		return buf.String(), nil
 	}
 

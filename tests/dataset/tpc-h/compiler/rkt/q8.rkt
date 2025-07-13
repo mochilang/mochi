@@ -1,4 +1,5 @@
 #lang racket
+(require racket/list)
 (require json)
 (define region (list (hash 'r_regionkey 0 'r_name "AMERICA")))
 (define nation (list (hash 'n_nationkey 10 'n_regionkey 0 'n_name "BRAZIL") (hash 'n_nationkey 20 'n_regionkey 0 'n_name "CANADA")))
@@ -15,7 +16,7 @@
   (for* ([l lineitem] [p part] [s supplier] [o orders] [c customer] [n nation] [r region] #:when (and (equal? (hash-ref p 'p_partkey) (hash-ref l 'l_partkey)) (equal? (hash-ref s 's_suppkey) (hash-ref l 'l_suppkey)) (equal? (hash-ref o 'o_orderkey) (hash-ref l 'l_orderkey)) (equal? (hash-ref c 'c_custkey) (hash-ref o 'o_custkey)) (equal? (hash-ref n 'n_nationkey) (hash-ref c 'c_nationkey)) (equal? (hash-ref r 'r_regionkey) (hash-ref n 'n_regionkey)) (and (and (and (string=? (hash-ref p 'p_type) target_type) (string>=? (hash-ref o 'o_orderdate) start_date)) (string<=? (hash-ref o 'o_orderdate) end_date)) (string=? (hash-ref r 'r_name) "AMERICA")))) (let* ([key (substring (hash-ref o 'o_orderdate) 0 4)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons (hash 'l l 'p p 's s 'o o 'c c 'n n 'r r) bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
   (set! _groups (sort _groups (lambda (a b) (cond [(string? (let ([year a]) (hash-ref year 'key))) (string>? (let ([year a]) (hash-ref year 'key)) (let ([year b]) (hash-ref year 'key)))] [(string? (let ([year b]) (hash-ref year 'key))) (string>? (let ([year a]) (hash-ref year 'key)) (let ([year b]) (hash-ref year 'key)))] [else (> (let ([year a]) (hash-ref year 'key)) (let ([year b]) (hash-ref year 'key)))]))))
-  (for/list ([year _groups]) (hash 'o_year (hash-ref year 'key) 'mkt_share (/ (for/fold ([s 0.0]) ([v (for*/list ([x (hash-ref year 'items)]) (match (string=? (hash-ref (hash-ref x 'n) 'n_name) target_nation) [#t (* (hash-ref (hash-ref x 'l) 'l_extendedprice) (- 1 (hash-ref (hash-ref x 'l) 'l_discount)))] [_ 0]))]) (+ s (real->double-flonum v))) (for/fold ([s 0.0]) ([v (for*/list ([x (hash-ref year 'items)]) (* (hash-ref (hash-ref x 'l) 'l_extendedprice) (- 1 (hash-ref (hash-ref x 'l) 'l_discount))))]) (+ s (real->double-flonum v))))))))
+  (for/list ([year _groups]) (hash 'o_year (hash-ref year 'key) 'mkt_share (/ (apply + (for*/list ([v (for*/list ([x (hash-ref year 'items)]) (match (string=? (hash-ref (hash-ref x 'n) 'n_name) target_nation) [#t (* (hash-ref (hash-ref x 'l) 'l_extendedprice) (- 1 (hash-ref (hash-ref x 'l) 'l_discount)))] [_ 0]))]) v)) (apply + (for*/list ([v (for*/list ([x (hash-ref year 'items)]) (* (hash-ref (hash-ref x 'l) 'l_extendedprice) (- 1 (hash-ref (hash-ref x 'l) 'l_discount))))]) v)))))))
 (displayln (jsexpr->string result))
 (define numerator (* 1000 0.9))
 (define denominator (+ numerator (* 500 0.95)))

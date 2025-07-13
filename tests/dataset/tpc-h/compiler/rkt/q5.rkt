@@ -1,4 +1,5 @@
 #lang racket
+(require racket/list)
 (require json)
 (define region (list (hash 'r_regionkey 0 'r_name "ASIA") (hash 'r_regionkey 1 'r_name "EUROPE")))
 (define nation (list (hash 'n_nationkey 10 'n_regionkey 0 'n_name "JAPAN") (hash 'n_nationkey 20 'n_regionkey 0 'n_name "INDIA") (hash 'n_nationkey 30 'n_regionkey 1 'n_name "FRANCE")))
@@ -11,7 +12,7 @@
 (define result (let ([groups (make-hash)])
   (for* ([r local_customer_supplier_orders]) (let* ([key (hash-ref r 'nation)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons r bucket))))
   (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
-  (set! _groups (sort _groups (lambda (a b) (cond [(string? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue)))))) (string>? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))))] [(string? (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue)))))) (string>? (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))))] [else (> (let ([g a]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))) (let ([g b]) (- (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))))))]))))
-  (for/list ([g _groups]) (hash 'n_name (hash-ref g 'key) 'revenue (apply + (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue)))))))
+  (set! _groups (sort _groups (lambda (a b) (cond [(string? (let ([g a]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v))))) (string>? (let ([g a]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))) (let ([g b]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))))] [(string? (let ([g b]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v))))) (string>? (let ([g a]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))) (let ([g b]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))))] [else (> (let ([g a]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))) (let ([g b]) (- (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v)))))]))))
+  (for/list ([g _groups]) (hash 'n_name (hash-ref g 'key) 'revenue (apply + (for*/list ([v (for*/list ([x (hash-ref g 'items)]) (hash-ref x 'revenue))]) v))))))
 (displayln (jsexpr->string result))
 (when (equal? result (list (hash 'n_name "JAPAN" 'revenue 950) (hash 'n_name "INDIA" 'revenue 720))) (displayln "ok"))
