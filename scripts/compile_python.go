@@ -16,9 +16,6 @@ import (
 )
 
 func main() {
-	// Ensure deterministic timestamps in generated headers.
-	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
-	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	outDir := filepath.Join("tests", "dataset", "tpc-h", "compiler", "py")
 	_ = os.MkdirAll(outDir, 0o755)
 	// Compile TPCH queries q1 to q10 for golden tests.
