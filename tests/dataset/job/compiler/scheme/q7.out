@@ -1,1 +1,5 @@
-ERROR on line 59 of file /tmp/job_scheme/q7.scm: invalid type, expected Number: "A"
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"of_person":"Alan Brown","biography_movie":"Feature Film"}]
+   test Q7 finds movie features biography for person ... ok

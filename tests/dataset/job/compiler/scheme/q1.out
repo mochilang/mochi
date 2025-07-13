@@ -1,2 +1,5 @@
-(((production_note . "ACME (co-production)") (movie_title . "Good Movie") (movie_year . 1995)))
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"production_note":"ACME (co-production)","movie_title":"Good Movie","movie_year":1995}]
    test Q1 returns min note, title and year for top ranked co-production ... ok

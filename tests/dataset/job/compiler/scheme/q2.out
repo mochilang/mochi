@@ -1,2 +1,5 @@
-("Der Film")
-   test Q2 finds earliest title for German companies with character keyword ... fail #<Exception>
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+"Der Film"
+   test Q2 finds earliest title for German companies with character keyword ... ok
