@@ -29,9 +29,9 @@ func TestCPPCompiler_TPCHQueries(t *testing.T) {
 		t.Skip("g++ not installed")
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 6; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".cpp.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".cpp")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cpp", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -59,7 +59,7 @@ func TestCPPCompiler_TPCHQueries(t *testing.T) {
 					t.Fatalf("read golden: %v", err)
 				}
 				if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-					t.Errorf("generated code mismatch for %s.cpp.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotCode, bytes.TrimSpace(wantCode))
+					t.Errorf("generated code mismatch for %s.cpp\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotCode, bytes.TrimSpace(wantCode))
 				}
 			}
 			dir := t.TempDir()
