@@ -1406,11 +1406,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	v := sanitizeName(q.Var)
 
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 {
-		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
-		if err != nil {
-			c.env = orig
-			return "", err
-		}
 		genv := types.NewEnv(child)
 		var elemT types.Type = types.AnyType{}
 		if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
@@ -1422,6 +1417,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.registerStructs(elemT)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemT}, true)
 		c.env = genv
+		origHint := c.structHint
+		c.structHint = "Key"
+		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
+		c.structHint = origHint
+		if err != nil {
+			c.env = orig
+			return "", err
+		}
 		valExpr, err := c.compileExpr(q.Select)
 		if err != nil {
 			c.env = orig
