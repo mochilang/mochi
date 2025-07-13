@@ -4,6 +4,7 @@
 
 - 2025-07-13 04:59 UTC: Added README checklist for TPC-H q1 and improved formatting.
 - 2025-07-13 05:26 UTC: Added `div` helper for safe numeric division.
+- 2025-07-13 15:41 UTC: Enabled compilation of TPC-H `q11` and updated tests.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.

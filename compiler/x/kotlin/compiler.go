@@ -881,6 +881,14 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 			continue
 		}
 		if isNumericOp(op.Op) {
+			if _, ok := lType.(types.FloatType); ok {
+				c.use("toDouble")
+				res = fmt.Sprintf("toDouble(%s)", res)
+			}
+			if _, ok := rType.(types.FloatType); ok {
+				c.use("toDouble")
+				r = fmt.Sprintf("toDouble(%s)", r)
+			}
 			if _, lok := lType.(types.AnyType); lok {
 				if _, rok := rType.(types.AnyType); rok {
 					c.use("toDouble")
@@ -1678,11 +1686,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		var row string
 		rowType := kotlinTypeOf(elem)
 		if len(rowParts) == 1 {
-			if t, err := c.env.GetVar(q.Var); err == nil && isStructType(t) {
-				row = q.Var
-			} else {
-				row = fmt.Sprintf("mutableMapOf(%s) as %s", rowParts[0], rowType)
-			}
+			row = q.Var
 		} else {
 			row = fmt.Sprintf("mutableMapOf(%s) as %s", strings.Join(rowParts, ", "), rowType)
 		}
