@@ -1855,6 +1855,22 @@ func (c *Compiler) compileMatchExpr(me *parser.MatchExpr) (string, error) {
 	b.WriteString("match ")
 	b.WriteString(target)
 	b.WriteString(" {")
+	var caseTypes []types.Type
+	if c.env != nil {
+		for _, cs := range me.Cases {
+			caseTypes = append(caseTypes, types.TypeOfExpr(cs.Result, c.env))
+		}
+	}
+	hasFloat := false
+	hasInt := false
+	for _, t := range caseTypes {
+		switch t.(type) {
+		case types.FloatType:
+			hasFloat = true
+		case types.IntType, types.Int64Type:
+			hasInt = true
+		}
+	}
 	for i, cs := range me.Cases {
 		pat, err := c.compileMatchPattern(cs.Pattern)
 		if err != nil {
@@ -1863,6 +1879,17 @@ func (c *Compiler) compileMatchExpr(me *parser.MatchExpr) (string, error) {
 		res, err := c.compileExpr(cs.Result)
 		if err != nil {
 			return "", err
+		}
+		if hasFloat && hasInt {
+			if isIntLiteral(cs.Result) {
+				res = fmt.Sprintf("(%s as f64)", res)
+			} else if c.env != nil {
+				t := types.TypeOfExpr(cs.Result, c.env)
+				switch t.(type) {
+				case types.IntType, types.Int64Type:
+					res = fmt.Sprintf("%s as f64", res)
+				}
+			}
 		}
 		if i > 0 {
 			b.WriteString(" ")
