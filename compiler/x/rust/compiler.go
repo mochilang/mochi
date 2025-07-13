@@ -640,7 +640,38 @@ func (c *Compiler) inferAggElemType(e *parser.Expr) types.Type {
 			}
 		}
 	}
-	return nil
+	// fall back to general query inference
+	child := types.NewEnv(c.env)
+	srcT := types.TypeOfExpr(q.Source, c.env)
+	switch tt := srcT.(type) {
+	case types.ListType:
+		child.SetVar(q.Var, tt.Elem, true)
+	case types.GroupType:
+		child.SetVar(q.Var, tt.Elem, true)
+	default:
+		child.SetVar(q.Var, types.AnyType{}, true)
+	}
+	for _, f := range q.Froms {
+		ft := types.TypeOfExpr(f.Src, child)
+		if lt, ok := ft.(types.ListType); ok {
+			child.SetVar(f.Var, lt.Elem, true)
+		} else if gt, ok := ft.(types.GroupType); ok {
+			child.SetVar(f.Var, gt.Elem, true)
+		} else {
+			child.SetVar(f.Var, types.AnyType{}, true)
+		}
+	}
+	for _, j := range q.Joins {
+		jt := types.TypeOfExpr(j.Src, child)
+		if lt, ok := jt.(types.ListType); ok {
+			child.SetVar(j.Var, lt.Elem, true)
+		} else if gt, ok := jt.(types.GroupType); ok {
+			child.SetVar(j.Var, gt.Elem, true)
+		} else {
+			child.SetVar(j.Var, types.AnyType{}, true)
+		}
+	}
+	return types.TypeOfExpr(q.Select, child)
 }
 
 func isEqHashable(t types.Type) bool {
