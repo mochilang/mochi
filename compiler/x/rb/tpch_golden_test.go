@@ -27,10 +27,13 @@ func TestRBCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("ruby not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rb", base+".rb")
+		if _, err := os.Stat(codeWant); os.IsNotExist(err) {
+			codeWant = codeWant + ".out"
+		}
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rb", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue

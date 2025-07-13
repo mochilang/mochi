@@ -26,6 +26,7 @@ type Compiler struct {
 	queryRows     map[string][]string
 	inKeyContext  bool
 	locals        []map[string]bool
+	groupVar      string
 }
 
 // New creates a new Ruby compiler instance.
@@ -742,7 +743,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				genv := types.NewEnv(c.env)
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
 				c.env = genv
+				c.groupVar = q.Group.Name
 				sortExpr, err = c.compileExprKey(q.Sort)
+				c.groupVar = ""
 				c.env = origEnv
 				if err != nil {
 					delete(c.queryRows, q.Group.Name)
@@ -753,7 +756,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				genv := types.NewEnv(c.env)
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
 				c.env = genv
+				c.groupVar = q.Group.Name
 				skipExpr, err = c.compileExpr(q.Skip)
+				c.groupVar = ""
 				c.env = origEnv
 				if err != nil {
 					delete(c.queryRows, q.Group.Name)
@@ -764,7 +769,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				genv := types.NewEnv(c.env)
 				genv.SetVar(q.Group.Name, types.AnyType{}, true)
 				c.env = genv
+				c.groupVar = q.Group.Name
 				takeExpr, err = c.compileExpr(q.Take)
+				c.groupVar = ""
 				c.env = origEnv
 				if err != nil {
 					delete(c.queryRows, q.Group.Name)
@@ -1149,6 +1156,79 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 
 	// handle simple case without cross joins
 	if len(q.Froms) == 0 {
+		if call, ok := callPattern(q.Select); ok && len(call.Args) == 1 {
+			fn := call.Func
+			if fn == "sum" || fn == "count" || fn == "avg" || fn == "min" || fn == "max" || fn == "first" {
+				inner, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				expr := fmt.Sprintf("(%s)", src)
+				if q.Where != nil {
+					cond, err := c.compileExpr(q.Where)
+					if err != nil {
+						if rowMapping != nil {
+							delete(c.queryRows, q.Var)
+						}
+						return "", err
+					}
+					expr = fmt.Sprintf("(%s).select { |%s| %s }", expr, iter, cond)
+				}
+				if q.Sort != nil {
+					val, err := c.compileExprKey(q.Sort)
+					if err != nil {
+						if rowMapping != nil {
+							delete(c.queryRows, q.Var)
+						}
+						return "", err
+					}
+					expr = fmt.Sprintf("(%s).sort_by { |%s| %s }", expr, iter, val)
+				}
+				if q.Skip != nil {
+					val, err := c.compileExpr(q.Skip)
+					if err != nil {
+						if rowMapping != nil {
+							delete(c.queryRows, q.Var)
+						}
+						return "", err
+					}
+					expr = fmt.Sprintf("(%s).drop(%s)", expr, val)
+				}
+				if q.Take != nil {
+					val, err := c.compileExpr(q.Take)
+					if err != nil {
+						if rowMapping != nil {
+							delete(c.queryRows, q.Var)
+						}
+						return "", err
+					}
+					expr = fmt.Sprintf("(%s).take(%s)", expr, val)
+				}
+				expr = fmt.Sprintf("(%s).map { |%s| %s }", expr, iter, inner)
+				if rowMapping != nil {
+					delete(c.queryRows, q.Var)
+				}
+				switch fn {
+				case "sum":
+					c.use("_sum")
+					return fmt.Sprintf("_sum(%s)", expr), nil
+				case "count":
+					return fmt.Sprintf("(%s).length", expr), nil
+				case "avg":
+					c.use("_avg")
+					return fmt.Sprintf("_avg(%s)", expr), nil
+				case "min":
+					c.use("_min")
+					return fmt.Sprintf("_min(%s)", expr), nil
+				case "max":
+					c.use("_max")
+					return fmt.Sprintf("_max(%s)", expr), nil
+				case "first":
+					c.use("_first")
+					return fmt.Sprintf("_first(%s)", expr), nil
+				}
+			}
+		}
 		expr := fmt.Sprintf("(%s)", src)
 		if q.Where != nil {
 			cond, err := c.compileExpr(q.Where)
@@ -1633,6 +1713,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		name := sanitizeName(p.Selector.Root)
 		if !c.isLocal(p.Selector.Root) && c.globals[name] {
 			name = "$" + name
+		}
+		if c.inKeyContext && c.groupVar != "" && !c.isLocal(p.Selector.Root) && len(p.Selector.Tail) == 0 && p.Selector.Root != c.groupVar {
+			return fmt.Sprintf("%s.key.%s", sanitizeName(c.groupVar), name), nil
 		}
 		if vars, ok := c.queryRows[p.Selector.Root]; ok && len(p.Selector.Tail) > 0 {
 			idx := -1
