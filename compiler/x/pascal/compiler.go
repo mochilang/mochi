@@ -2770,15 +2770,23 @@ func (c *Compiler) emitHelpers() {
 	sort.Strings(names)
 	// ensure helper dependencies appear before their dependents
 	var iAvg, iSum = -1, -1
+	var iVarLess, iMin = -1, -1
 	for i, n := range names {
 		if n == "_avgList" {
 			iAvg = i
 		} else if n == "_sumList" {
 			iSum = i
+		} else if n == "_variantLess" {
+			iVarLess = i
+		} else if n == "_minList" {
+			iMin = i
 		}
 	}
 	if iAvg >= 0 && iSum >= 0 && iSum > iAvg {
 		names[iAvg], names[iSum] = names[iSum], names[iAvg]
+	}
+	if iVarLess >= 0 && iMin >= 0 && iVarLess > iMin {
+		names[iVarLess], names[iMin] = names[iMin], names[iVarLess]
 	}
 	for _, n := range names {
 		switch n {
@@ -3366,7 +3374,7 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("function _variantLess(a, b: Variant): Boolean;")
 			c.writeln("begin")
 			c.indent++
-			c.writeln("Result := VarCompareValue(a, b) = crLessThan;")
+			c.writeln("Result := VarCompareValue(a, b) = vrLessThan;")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")
