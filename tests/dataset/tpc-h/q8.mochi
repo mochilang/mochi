@@ -53,7 +53,7 @@ let result =
     mkt_share:
       sum(from x in year select match x.n.n_name == target_nation {
         true => x.l.l_extendedprice * (1 - x.l.l_discount)
-        _ => 0
+        _ => 0.0
       }) /
       sum(from x in year select x.l.l_extendedprice * (1 - x.l.l_discount))
   }
