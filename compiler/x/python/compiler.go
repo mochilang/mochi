@@ -575,6 +575,26 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				continue
 			}
 
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 &&
+				p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with" &&
+				len(op.Call.Args) == 1 {
+				recvSel := &parser.Primary{Selector: &parser.SelectorExpr{
+					Root: p.Target.Selector.Root,
+					Tail: p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1],
+				}}
+				recvExpr, err := c.compilePrimary(recvSel)
+				if err != nil {
+					return "", err
+				}
+				argExpr, err := c.compileExpr(op.Call.Args[0])
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("str(%s).startswith(%s)", recvExpr, argExpr)
+				typ = types.BoolType{}
+				continue
+			}
+
 			args := make([]string, len(op.Call.Args))
 			for i, a := range op.Call.Args {
 				v, err := c.compileExpr(a)
