@@ -4,6 +4,7 @@ package kotlin_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -68,5 +69,8 @@ func TestKotlinCompiler_JOB(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	runJOBQuery(t, "q1")
+	for i := 1; i <= 10; i++ {
+		base := fmt.Sprintf("q%d", i)
+		t.Run(base, func(t *testing.T) { runJOBQuery(t, base) })
+	}
 }
