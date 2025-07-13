@@ -2136,7 +2136,9 @@ func (c *Compiler) compileBinaryOp(left string, op *parser.BinaryOp, right strin
 	case "intersect":
 		return fmt.Sprintf("%s.stream().filter(%s::contains).distinct().collect(java.util.stream.Collectors.toList())", left, right), nil
 	case "<", "<=", ">", ">=":
-		if isStringVal(left, c) || isStringVal(right, c) {
+		lt := c.exprType(left)
+		rt := c.exprType(right)
+		if lt == "String" || rt == "String" || isString(left) || isString(right) || (!isPrimitive(left, c) && !isPrimitive(right, c)) {
 			return fmt.Sprintf("String.valueOf(%s).compareTo(String.valueOf(%s)) %s 0", left, right, op.Op), nil
 		}
 		return fmt.Sprintf("%s %s %s", c.maybeNumber(left), op.Op, c.maybeNumber(right)), nil
@@ -2165,7 +2167,7 @@ func isStringVal(s string, c *Compiler) bool {
 	if isString(s) {
 		return true
 	}
-	if t, ok := c.vars[s]; ok && t == "String" {
+	if t := c.exprType(s); t == "String" {
 		return true
 	}
 	return false
