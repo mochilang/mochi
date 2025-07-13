@@ -11,6 +11,8 @@
   (2025-07-13 09:51 UTC).
 - Updated map literal struct caching to allow later type refinement
   (2025-07-13 10:12 UTC).
+- Updated `structFromVars` to refresh cached field types when more
+  information becomes available (2025-07-13 10:44 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
