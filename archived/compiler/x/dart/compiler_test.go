@@ -71,7 +71,7 @@ func TestDartCompiler_GoldenOutput(t *testing.T) {
 	if err := dartcode.EnsureDart(); err != nil {
 		t.Skipf("dart not installed: %v", err)
 	}
-	golden.Run(t, "tests/compiler/dart", ".mochi", ".dart.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/compiler/dart", ".mochi", ".dart", func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -144,7 +144,7 @@ func TestDartCompiler_ValidGoldenOutput(t *testing.T) {
 		return bytes.TrimSpace(code), nil
 	}
 
-	golden.Run(t, "tests/compiler/valid", ".mochi", ".dart.out", runCompile)
+	golden.Run(t, "tests/compiler/valid", ".mochi", ".dart", runCompile)
 }
 
 // runLeetExample compiles the Mochi LeetCode solution for the given ID and runs

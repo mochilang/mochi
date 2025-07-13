@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	any2dart "mochi/archived/tools/any2mochi/x/dart"
 	dartcode "mochi/archived/x/dart"
 	"mochi/parser"
 	"mochi/runtime/vm"
-	any2dart "mochi/archived/tools/any2mochi/x/dart"
 	"mochi/types"
 )
 
@@ -46,7 +46,7 @@ func main() {
 
 func process(src string) error {
 	base := strings.TrimSuffix(src, ".mochi")
-	dartPath := base + ".dart.out"
+	dartPath := base + ".dart"
 	mochiPath := base + ".mochi.out"
 
 	prog, err := parser.Parse(src)
