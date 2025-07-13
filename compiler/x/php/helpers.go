@@ -152,6 +152,13 @@ func (c *Compiler) isGroupVarExpr(e *parser.Expr) (string, bool) {
 	if c.groupVars != nil && c.groupVars[name] {
 		return name, true
 	}
+	if c != nil && c.env != nil {
+		if t, err := c.env.GetVar(p.Target.Selector.Root); err == nil {
+			if _, ok := t.(types.GroupType); ok {
+				return name, true
+			}
+		}
+	}
 	return "", false
 }
 

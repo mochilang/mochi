@@ -9,6 +9,8 @@
   tests.
 - 2025-07-14 00:00 - Generated PHP code for TPC-H queries 13-22 and extended
   tests to cover all queries.
+- 2025-07-13 17:42 - Fixed group variable detection so TPCH Q22 compiles with
+  correct counts and regenerated golden outputs.
 
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation

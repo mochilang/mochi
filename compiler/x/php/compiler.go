@@ -302,19 +302,49 @@ func (c *Compiler) compileWhile(ws *parser.WhileStmt) error {
 
 func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	name := "$" + sanitizeName(fs.Name)
+	var origEnv *types.Env
+	if c.env != nil {
+		child := types.NewEnv(c.env)
+		var elem types.Type = types.AnyType{}
+		if fs.RangeEnd != nil {
+			elem = types.IntType{}
+		} else {
+			t := types.TypeOfExprBasic(fs.Source, c.env)
+			switch tt := t.(type) {
+			case types.ListType:
+				elem = tt.Elem
+			case types.GroupType:
+				elem = tt.Elem
+			case types.MapType:
+				elem = tt.Value
+			}
+		}
+		child.SetVar(fs.Name, elem, true)
+		origEnv = c.env
+		c.env = child
+	}
 	if fs.RangeEnd != nil {
 		start, err := c.compileExpr(fs.Source)
 		if err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 		end, err := c.compileExpr(fs.RangeEnd)
 		if err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 		c.writeln(fmt.Sprintf("for (%s = %s; %s <= %s; %s++) {", name, start, name, end, name))
 	} else {
 		src, err := c.compileExpr(fs.Source)
 		if err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 		if _, ok := c.isGroupVarExpr(fs.Source); ok {
@@ -329,11 +359,17 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 	c.indent++
 	for _, st := range fs.Body {
 		if err := c.compileStmt(st); err != nil {
+			if origEnv != nil {
+				c.env = origEnv
+			}
 			return err
 		}
 	}
 	c.indent--
 	c.writeln("}")
+	if origEnv != nil {
+		c.env = origEnv
+	}
 	return nil
 }
 
