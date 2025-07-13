@@ -1,0 +1,12 @@
+#lang racket
+(require json)
+(define company_name (list (hash 'id 1 'name "Best Pictures" 'country_code "[us]") (hash 'id 2 'name "Foreign Films" 'country_code "[uk]")))
+(define company_type (list (hash 'id 10 'kind "production companies") (hash 'id 20 'kind "distributors")))
+(define info_type (list (hash 'id 100 'info "genres") (hash 'id 200 'info "rating")))
+(define movie_companies (list (hash 'movie_id 1000 'company_id 1 'company_type_id 10) (hash 'movie_id 2000 'company_id 2 'company_type_id 10)))
+(define movie_info (list (hash 'movie_id 1000 'info_type_id 100 'info "Drama") (hash 'movie_id 2000 'info_type_id 100 'info "Horror")))
+(define movie_info_idx (list (hash 'movie_id 1000 'info_type_id 200 'info 8.3) (hash 'movie_id 2000 'info_type_id 200 'info 7.5)))
+(define title (list (hash 'id 1000 'production_year 2006 'title "Great Drama") (hash 'id 2000 'production_year 2007 'title "Low Rated")))
+(define result (for*/list ([cn company_name] [mc movie_companies] [ct company_type] [t title] [mi movie_info] [it1 info_type] [mi_idx movie_info_idx] [it2 info_type] #:when (and (equal? (hash-ref mc 'company_id) (hash-ref cn 'id)) (equal? (hash-ref ct 'id) (hash-ref mc 'company_type_id)) (equal? (hash-ref t 'id) (hash-ref mc 'movie_id)) (equal? (hash-ref mi 'movie_id) (hash-ref t 'id)) (equal? (hash-ref it1 'id) (hash-ref mi 'info_type_id)) (equal? (hash-ref mi_idx 'movie_id) (hash-ref t 'id)) (equal? (hash-ref it2 'id) (hash-ref mi_idx 'info_type_id)) (and (and (and (and (and (and (and (string=? (hash-ref cn 'country_code) "[us]") (string=? (hash-ref ct 'kind) "production companies")) (string=? (hash-ref it1 'info) "genres")) (string=? (hash-ref it2 'info) "rating")) (or (string=? (hash-ref mi 'info) "Drama") (string=? (hash-ref mi 'info) "Horror"))) (> (hash-ref mi_idx 'info) 8)) (>= (hash-ref t 'production_year) 2005)) (<= (hash-ref t 'production_year) 2008)))) (hash 'movie_company (hash-ref cn 'name) 'rating (hash-ref mi_idx 'info) 'drama_horror_movie (hash-ref t 'title))))
+(displayln (jsexpr->string result))
+(when (equal? result (list (hash 'movie_company "Best Pictures" 'rating 8.3 'drama_horror_movie "Great Drama"))) (displayln "ok"))
