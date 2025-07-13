@@ -232,7 +232,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					c.use("_index_string")
 					res = fmt.Sprintf("_index_string(%s, %s)", res, idx)
 				default:
-					res = fmt.Sprintf("Enum.at(%s, %s)", res, idx)
+					res = fmt.Sprintf("Enum.at((%s), %s)", res, idx)
 					if lt, ok := tt.(types.ListType); ok {
 						typ = lt.Elem
 					}
@@ -260,7 +260,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					res = fmt.Sprintf("_slice_string(%s, %s, %s)", res, start, end)
 				default:
 					length := fmt.Sprintf("(%s) - %s", end, start)
-					res = fmt.Sprintf("Enum.slice(%s, %s, %s)", res, start, length)
+					res = fmt.Sprintf("Enum.slice((%s), %s, %s)", res, start, length)
 				}
 			}
 		} else if op.Call != nil {
@@ -305,6 +305,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if strings.HasSuffix(res, ".contains") && len(args) == 1 {
 				target := strings.TrimSuffix(res, ".contains")
 				res = fmt.Sprintf("String.contains?(%s, %s)", target, argStr)
+				continue
+			}
+			if strings.HasSuffix(res, ".starts_with") && len(args) == 1 {
+				target := strings.TrimSuffix(res, ".starts_with")
+				res = fmt.Sprintf("String.starts_with?(%s, %s)", target, argStr)
 				continue
 			}
 			if strings.HasSuffix(res, ".keys") && len(args) == 0 {
@@ -598,6 +603,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("append expects 2 args")
 			}
 			return fmt.Sprintf("%s ++ [%s]", args[0], args[1]), nil
+		case "starts_with":
+			if len(args) != 2 {
+				return "", fmt.Errorf("starts_with expects 2 args")
+			}
+			return fmt.Sprintf("String.starts_with?(%s, %s)", args[0], args[1]), nil
 		case "substr", "substring":
 			if len(args) != 3 {
 				return "", fmt.Errorf("substr expects 3 args")
