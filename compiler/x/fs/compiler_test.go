@@ -71,7 +71,8 @@ func TestFSCompiler(t *testing.T) {
 
 		exePath := filepath.Join(outDir, name+".exe")
 		jsonRef := "/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Text.Json.dll"
-		cmd := exec.Command("fsharpc", "--target:exe", fmt.Sprintf("--out:%s", exePath), "-r:"+jsonRef, fsPath)
+		runtimeRef := "/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Runtime.dll"
+		cmd := exec.Command("fsharpc", "--target:exe", fmt.Sprintf("--out:%s", exePath), "-r:"+jsonRef, "-r:"+runtimeRef, fsPath)
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			errPath := filepath.Join(outDir, name+".error")

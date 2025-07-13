@@ -1018,7 +1018,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			if name, ok := c.simpleIdentifier(argAST); ok {
 				if c.groups[name] {
-					return fmt.Sprintf("List.length %s.items", args[0]), nil
+					return fmt.Sprintf("List.length %s.Items", args[0]), nil
 				}
 			}
 			return fmt.Sprintf("List.length %s", args[0]), nil
