@@ -409,11 +409,31 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 }
 
 func (c *Compiler) compileExpect(e *parser.ExpectStmt) error {
+	c.helpers["_expect"] = true
+	if e.Value != nil && e.Value.Binary != nil && len(e.Value.Binary.Right) == 1 {
+		op := e.Value.Binary.Right[0].Op
+		if op == "==" || op == "!=" {
+			left, err := c.compileUnary(e.Value.Binary.Left)
+			if err != nil {
+				return err
+			}
+			right, err := c.compilePostfix(e.Value.Binary.Right[0].Right)
+			if err != nil {
+				return err
+			}
+			c.use("_equal")
+			if op == "==" {
+				c.writeln(fmt.Sprintf("expect(_equal(%s, %s));", left, right))
+			} else {
+				c.writeln(fmt.Sprintf("expect(!_equal(%s, %s));", left, right))
+			}
+			return nil
+		}
+	}
 	expr, err := c.compileExpr(e.Value)
 	if err != nil {
 		return err
 	}
-	c.helpers["_expect"] = true
 	c.writeln(fmt.Sprintf("expect(%s);", expr))
 	return nil
 }
@@ -1117,7 +1137,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				strs[i] = leftStr
 			case "==", "!=":
 				leftStr = false
-				if leftList && rightList {
+				complex := leftList && rightList || isMapType(typs[i]) || isStructType(typs[i]) || isUnionType(typs[i]) || isGroupType(typs[i]) || isMapType(typs[i+1]) || isStructType(typs[i+1]) || isUnionType(typs[i+1]) || isGroupType(typs[i+1])
+				if complex {
 					c.use("_equal")
 					if op == "==" {
 						expr = fmt.Sprintf("_equal(%s, %s)", left, right)
