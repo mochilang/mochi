@@ -3,8 +3,9 @@
 ## Recent Enhancements
 - 2025-07-13 05:13 - Top-level `let` bindings move inside `main` when no functions follow
 - 2025-07-13 07:24 - Fixed `$` interpolation, improved `json` handling, GROUP BY keys use case classes, empty mutable lists default to `ArrayBuffer[Any]`
+- 2025-07-13 16:29 - Added generated code and tests for TPCH queries q3 and q4
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements
-- [ ] Compile additional TPCH queries
+- [ ] Compile additional TPCH queries (q1–q4 done)
 - [ ] Refine type inference for empty collections
