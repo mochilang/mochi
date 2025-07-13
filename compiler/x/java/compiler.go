@@ -988,6 +988,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "double"
 		case "str":
 			return "String"
+		case "substring":
+			return "String"
 		case "values":
 			return "List<?>"
 		}
@@ -1377,6 +1379,11 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		if t == "" || t == "Object" {
 			if tt := c.selectorType(it.Value); tt != "" {
 				t = tt
+			}
+		}
+		if t == "" || t == "Object" {
+			if p := rootPrimary(it.Value); p != nil && p.Call != nil && p.Call.Func == "substring" {
+				t = "String"
 			}
 		}
 		if t == "var" {
