@@ -3543,6 +3543,8 @@ func (c *Compiler) structFromVars(names []string) string {
 			case "int", "double", "bool":
 				fieldType = typ
 			}
+		} else if t := c.elemType[n]; t != "" {
+			fieldType = t
 		}
 		info.Types[i] = fieldType
 	}

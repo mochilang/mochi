@@ -109,7 +109,7 @@ Compiled programs: 100/100
 
 ## TPCH Queries
 
-- [ ] q1 – still failing
+- [ ] q1 – compilation still fails due to struct type inference
 - [x] q4
 - [ ] q5 – compilation fails
 - [x] q6
