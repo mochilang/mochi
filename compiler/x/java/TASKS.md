@@ -7,6 +7,7 @@
 - 2025-07-13 15:40 - added substring type inference for grouping fields.
 - 2025-07-13 16:29 - generated Java code for TPCH query 10.
 - 2025-07-13 16:50 - generated Java code for TPCH queries 11-13.
+- 2025-07-13 17:27 - generated Java code for TPCH queries 14-15 and extended tests.
 
 ## Remaining work
 - [ ] Improve query loop readability
