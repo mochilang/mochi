@@ -1,8 +1,8 @@
 # C# Compiler TODO
 
-## Recent Updates (2025-07-13 08:10)
-- Auto-enable `DictMode` for group queries with anonymous structs or maps.
-- Regenerated TPC-H `q1` using the new logic.
+## Recent Updates (2025-07-13 09:27)
+- Auto-enable `DictMode` only when grouped queries use anonymous structs or maps.
+- Regenerated `cross_join` without dictionary indexing.
 
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.
