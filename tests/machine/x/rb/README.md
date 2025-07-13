@@ -109,9 +109,10 @@ All standard test programs compile and run successfully except for a few that de
 
 ## Dataset queries
 
-- [x] tpc-h/q1.mochi
-- [ ] tpc-h/q2.mochi
+ - [x] tpc-h/q1.mochi
+ - [x] tpc-h/q2.mochi
+ - [x] tpc-h/q3.mochi
 
 ## Remaining tasks
 
-- [ ] Run `tpc-h/q2.mochi` once join helpers support multi-table queries.
+- [ ] Compile additional TPCH queries beyond q3
