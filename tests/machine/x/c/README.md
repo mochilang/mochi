@@ -106,3 +106,16 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+### Remaining tasks
+
+- [ ] group_by_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
+- [ ] group_by_multi_join_sort
+- [ ] group_items_iteration
+- [ ] load_yaml
+- [ ] order_by_map
+- [ ] python_math
+- [ ] save_jsonl_stdout
+- [ ] tpc-h q1 grouping

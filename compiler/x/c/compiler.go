@@ -298,7 +298,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					case "char*":
 						vt = types.StringType{}
 					default:
-						vt = types.IntType{}
+						if isBoolLiteral(s.Var.Value) {
+							vt = types.BoolType{}
+						} else {
+							vt = types.IntType{}
+						}
 					}
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Var.Name), val))
@@ -322,7 +326,11 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 					case "char*":
 						vt = types.StringType{}
 					default:
-						vt = types.IntType{}
+						if isBoolLiteral(s.Let.Value) {
+							vt = types.BoolType{}
+						} else {
+							vt = types.IntType{}
+						}
 					}
 				}
 				globals = append(globals, fmt.Sprintf("static %s %s = %s;", t, sanitizeName(s.Let.Name), val))
@@ -5520,6 +5528,18 @@ func isEmptyListLiteral(e *parser.Expr) bool {
 func isEmptyMapLiteral(e *parser.Expr) bool {
 	ml := asMapLiteral(e)
 	return ml != nil && len(ml.Items) == 0
+}
+
+func isBoolLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil || len(u.Ops) > 0 || len(u.Value.Ops) > 0 {
+		return false
+	}
+	lit := u.Value.Target.Lit
+	return lit != nil && lit.Bool != nil
 }
 
 func isMapStringIntLiteral(ml *parser.MapLiteral, env *types.Env) bool {
