@@ -106,6 +106,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		return nil, err
 	}
 
+	// ensure inferred struct types are emitted
+	if c.env != nil {
+		for _, st := range c.env.Structs() {
+			c.compileStructType(st)
+		}
+	}
+
 	c.writeln("")
 	c.emitRuntime()
 
