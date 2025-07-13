@@ -380,7 +380,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 				}
 			} else if qe := s.Value.Binary.Left.Value.Target.Query; qe != nil {
 				if ml := mapLiteral(qe.Select); ml != nil {
-					if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+					qenv := c.queryEnv(qe)
+					if st, ok := c.inferStructFromMapEnv(ml, s.Name, qenv); ok {
 						t = types.ListType{Elem: st}
 						c.env.SetStruct(st.Name, st)
 						c.compileStructType(st)
@@ -482,6 +483,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 					typ = st
 					c.env.SetStruct(st.Name, st)
 					c.compileStructType(st)
+				}
+			} else if qe := s.Value.Binary.Left.Value.Target.Query; qe != nil {
+				if ml := mapLiteral(qe.Select); ml != nil {
+					qenv := c.queryEnv(qe)
+					if st, ok := c.inferStructFromMapEnv(ml, s.Name, qenv); ok {
+						typ = types.ListType{Elem: st}
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					}
 				}
 			}
 		} else if envTyp != nil {
@@ -1028,7 +1038,7 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 	return st, true
 }
 
-func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
+func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env *types.Env) (types.StructType, bool) {
 	if ml == nil || len(ml.Items) == 0 {
 		return types.StructType{}, false
 	}
@@ -1040,13 +1050,13 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 			return types.StructType{}, false
 		}
 		order[i] = key
-		fields[key] = types.ExprType(it.Value, c.env)
+		fields[key] = types.ExprType(it.Value, env)
 	}
 	stName := exportName(sanitizeName(name))
 	if stName == "" {
 		stName = "AnonStruct"
 	}
-	if existing, ok := c.env.GetStruct(stName); ok {
+	if existing, ok := env.GetStruct(stName); ok {
 		if structMatches(existing, fields, order) {
 			return existing, true
 		}
@@ -1054,7 +1064,7 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 	idx := 1
 	base := stName
 	for {
-		if _, ok := c.env.GetStruct(stName); ok || c.structs[stName] {
+		if _, ok := env.GetStruct(stName); ok || c.structs[stName] {
 			stName = fmt.Sprintf("%s%d", base, idx)
 			idx++
 		} else {
@@ -1063,6 +1073,43 @@ func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types
 	}
 	st := types.StructType{Name: stName, Fields: fields, Order: order}
 	return st, true
+}
+
+func (c *Compiler) inferStructFromMap(ml *parser.MapLiteral, name string) (types.StructType, bool) {
+	return c.inferStructFromMapEnv(ml, name, c.env)
+}
+
+func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
+	if q == nil {
+		return c.env
+	}
+	srcType := c.inferExprType(q.Source)
+	var elemType types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemType = lt.Elem
+	}
+	child := types.NewEnv(c.env)
+	child.SetVar(q.Var, elemType, true)
+	for _, f := range q.Froms {
+		ft := c.inferExprType(f.Src)
+		var fe types.Type = types.AnyType{}
+		if lt, ok := ft.(types.ListType); ok {
+			fe = lt.Elem
+		}
+		child.SetVar(f.Var, fe, true)
+	}
+	for _, j := range q.Joins {
+		jt := c.inferExprType(j.Src)
+		var je types.Type = types.AnyType{}
+		if lt, ok := jt.(types.ListType); ok {
+			je = lt.Elem
+		}
+		child.SetVar(j.Var, je, true)
+	}
+	if q.Group != nil {
+		child.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+	}
+	return child
 }
 
 func unexportName(name string) string {
