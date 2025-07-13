@@ -31,8 +31,10 @@ TPC-H progress:
 - 2025-07-13 09:40 - Documented `compileMainFunc` behaviour
 - 2025-07-13 10:46 - Simplified `formatDuration` for concise test output
 - 2025-07-13 18:08 - Generated Go outputs for TPCH queries q1 through q22
+- 2025-07-13 18:28 - Removed `_toAnyMap` helper; added `_copyToMap` and `_getField`
 
 ## Remaining Work
 * [ ] Validate TPCH q1 runtime results
 * [ ] Fix failing JOB query expectations
 * [ ] Investigate missing output for JOB q7
+* [ ] Audit generated code after `_toAnyMap` removal

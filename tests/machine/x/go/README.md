@@ -111,3 +111,4 @@ Checklist:
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
+- [ ] Verify map conversion after `_toAnyMap` removal
