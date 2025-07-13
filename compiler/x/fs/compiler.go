@@ -5,9 +5,11 @@ package fscode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 
 	meta "mochi/compiler/meta"
@@ -1638,7 +1640,13 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		f := *l.Float
+		// Ensure integral floats keep a decimal point so F# infers the
+		// correct type.
+		if math.Trunc(f) == f {
+			return fmt.Sprintf("%.1f", f)
+		}
+		return strconv.FormatFloat(f, 'f', -1, 64)
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return "true"
