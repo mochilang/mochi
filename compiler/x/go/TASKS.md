@@ -14,8 +14,8 @@ determine why `q7` is skipped during compilation.
 
 TPC-H progress:
 
-- `q1` and `q2` compile with the Go backend. Struct definitions are now
-  emitted so the code builds, but runtime output still needs validation.
+- `q1` and `q2` compile and pass runtime checks using the Go backend.
+  Golden code has been regenerated.
 
 ## Recent Updates
 
