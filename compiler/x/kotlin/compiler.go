@@ -1024,7 +1024,29 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
 		if len(p.Selector.Tail) > 0 {
-			if isStructType(t) || isStringType(t) {
+			if gt, ok := t.(types.GroupType); ok && p.Selector.Tail[0] == "key" {
+				name += ".key"
+				t = gt.Key
+				tail := p.Selector.Tail[1:]
+				if len(tail) > 0 {
+					if isStructType(t) || isStringType(t) {
+						parts := make([]string, len(tail))
+						for i, part := range tail {
+							parts[i] = escapeIdent(part)
+						}
+						name += "." + strings.Join(parts, ".")
+					} else {
+						if mt, ok := t.(types.MapType); ok {
+							name = fmt.Sprintf("(%s as MutableMap<%s, %s>)", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
+						} else {
+							name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+						}
+						for _, part := range tail {
+							name += fmt.Sprintf("[%q]", part)
+						}
+					}
+				}
+			} else if isStructType(t) || isStringType(t) {
 				parts := make([]string, len(p.Selector.Tail))
 				for i, part := range p.Selector.Tail {
 					parts[i] = escapeIdent(part)
@@ -1204,6 +1226,13 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "sum":
 		if len(args) == 1 {
+			t := c.inferExprType(call.Args[0])
+			if lt, ok := t.(types.ListType); ok {
+				if _, ok := lt.Elem.(types.FloatType); ok {
+					c.use("toDouble")
+					return fmt.Sprintf("%s.sumOf { toDouble(it) }", args[0]), true
+				}
+			}
 			c.use("sum")
 			c.use("toInt")
 			return fmt.Sprintf("sum(%s)", args[0]), true
@@ -1379,28 +1408,28 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	if len(q.Froms) > 0 || len(q.Joins) > 0 {
 		elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
 	}
+	var keyType types.Type
 	selEnv := child
 	if q.Group != nil {
+		keyType = c.inferExprType(q.Group.Exprs[0])
+		if st, ok := keyType.(types.StructType); ok && st.Name == "" {
+			keyType = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+		}
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elem}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elem}, true)
 		selEnv = genv
 	}
-	selType := types.TypeOfExprBasic(q.Select, selEnv)
+	selType := types.ExprType(q.Select, selEnv)
 	if t := selectorType(q.Select, selEnv); t != nil {
 		selType = t
 	}
 
-	if ml, ok := mapLiteral(q.Select); ok {
+	if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
 		if name, ok := c.mapNodes[ml]; ok {
 			if st, ok := c.env.GetStruct(name); ok {
 				selType = st
 			}
 		}
-	}
-
-	var keyType types.Type
-	if q.Group != nil {
-		keyType = c.inferExprType(q.Group.Exprs[0])
 	}
 
 	oldEnv := c.env
@@ -1506,6 +1535,9 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 		keyExpr, err := c.expr(q.Group.Exprs[0])
 		if err != nil {
 			return "", err
+		}
+		if mt, ok := keyType.(types.MapType); ok {
+			keyExpr = fmt.Sprintf("(%s as MutableMap<%s, %s>)", keyExpr, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
 		}
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("val __k = %s\n", keyExpr))
@@ -2030,7 +2062,7 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 			c.env.SetVar(name, stype, mutable)
 			c.mapNodes[mp] = structName
 		} else if q != nil {
-			if ml, ok := mapLiteral(q.Select); ok {
+			if ml, ok := mapLiteral(q.Select); ok && q.Group == nil {
 				keys := []string{}
 				for _, it := range ml.Items {
 					if k, ok := identName(it.Key); ok {
