@@ -1,1 +1,2 @@
-ERROR on line 49 of file /tmp/job_scheme/q5.scm: invalid type, expected Number: #f
+[{"typical_european_movie":0}]
+   test Q5 finds the lexicographically first qualifying title ... fail #<Exception 139834495926336>

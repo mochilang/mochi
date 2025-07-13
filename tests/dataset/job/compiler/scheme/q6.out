@@ -1,1 +1,2 @@
-ERROR on line 50 of file /tmp/job_scheme/q6.scm: invalid type, expected Number: #f
+[{"movie_keyword":"marvel-cinematic-universe","actor_name":"Downey Robert Jr.","marvel_movie":"Iron Man 3"}]
+   test Q6 finds marvel movie with Robert Downey ... ok

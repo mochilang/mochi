@@ -22,7 +22,7 @@ func TestSchemeCompiler_JOB(t *testing.T) {
 		t.Skipf("scheme not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 10; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
@@ -38,13 +38,13 @@ func TestSchemeCompiler_JOB(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", q+".scm.out")
+			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "scheme", q+".scm")
 			wantCode, err := os.ReadFile(wantCodePath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.scm.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+				t.Errorf("generated code mismatch for %s.scm\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.scm")

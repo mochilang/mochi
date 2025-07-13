@@ -1,1 +1,2 @@
-ERROR on line 59 of file /tmp/job_scheme/q9.scm: invalid type, expected Number: #f
+[{"alternative_name":"A. N. G.","character_name":"Angel","movie":"Famous Film"}]
+   test Q9 selects minimal alternative name, character and movie ... ok

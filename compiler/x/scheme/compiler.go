@@ -265,8 +265,19 @@ const groupHelpers = `(import (scheme base))
               src)
     (map (lambda (k) (cdr (assoc k groups))) order))))`
 
-const jsonHelper = `(define (_json v)
-  (display (json->string v))
+const jsonHelper = `(define (_symize v)
+  (cond
+    ((and (list? v) (pair? v) (pair? (car v)) (not (pair? (car (car v)))))
+     (map (lambda (p)
+            (cons (if (string? (car p)) (string->symbol (car p)) (car p))
+                  (_symize (cdr p))))
+          v))
+    ((list? v)
+     (list->vector (map _symize v)))
+    (else v)))
+
+(define (_json v)
+  (display (json->string (_symize v)))
   (newline))`
 
 const testHelpers = `(define failures 0)
