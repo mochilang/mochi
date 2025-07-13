@@ -1416,7 +1416,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			if anyVal {
 				vt := c.inferExprType(it.Value)
-				if !isAny(vt) {
+				if isAny(vt) {
 					c.usesAnyValue = true
 					v = wrapAnyValue(vt, v)
 				}

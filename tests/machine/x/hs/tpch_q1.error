@@ -1,0 +1,532 @@
+
+tests/machine/x/hs/tpch_q1.hs:66:19: error:
+    Variable not in scope: getPOSIXTime :: IO a0
+   |
+66 | _now = fmap round getPOSIXTime
+   |                   ^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:77: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 1000.0 :: Double
+      In the expression: ("l_extendedprice", (1000.0 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                             ^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:113: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.05 :: Double
+      In the expression: ("l_discount", (0.05 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                 ^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:142: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.07 :: Double
+      In the expression: ("l_tax", (0.07 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                              ^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:177: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "N"
+      In the expression: ("l_returnflag", "N")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                 ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:200: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "O"
+      In the expression: ("l_linestatus", "O")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                        ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:221: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "1998-08-01"
+      In the expression: ("l_shipdate", "1998-08-01")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (17 :: Int)),
+          ("l_extendedprice", (1000.0 :: Double)),
+          ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                             ^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:301: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 2000.0 :: Double
+      In the expression: ("l_extendedprice", (2000.0 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:337: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.1 :: Double
+      In the expression: ("l_discount", (0.1 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:365: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.05 :: Double
+      In the expression: ("l_tax", (0.05 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:400: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "N"
+      In the expression: ("l_returnflag", "N")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:423: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "O"
+      In the expression: ("l_linestatus", "O")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:444: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "1998-09-01"
+      In the expression: ("l_shipdate", "1998-09-01")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (36 :: Int)),
+          ("l_extendedprice", (2000.0 :: Double)),
+          ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:524: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 1500.0 :: Double
+      In the expression: ("l_extendedprice", (1500.0 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:560: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.0 :: Double
+      In the expression: ("l_discount", (0.0 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:588: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘Double’
+    • In the expression: 0.08 :: Double
+      In the expression: ("l_tax", (0.08 :: Double))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:623: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "R"
+      In the expression: ("l_returnflag", "R")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:646: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "F"
+      In the expression: ("l_linestatus", "F")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^
+
+tests/machine/x/hs/tpch_q1.hs:115:667: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the expression: "1998-09-03"
+      In the expression: ("l_shipdate", "1998-09-03")
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("l_quantity", (25 :: Int)),
+          ("l_extendedprice", (1500.0 :: Double)),
+          ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)),
+          ....]’
+    |
+115 | lineitem = [Map.fromList [("l_quantity", (17 :: Int)), ("l_extendedprice", (1000.0 :: Double)), ("l_discount", (0.05 :: Double)), ("l_tax", (0.07 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-08-01")], Map.fromList [("l_quantity", (36 :: Int)), ("l_extendedprice", (2000.0 :: Double)), ("l_discount", (0.1 :: Double)), ("l_tax", (0.05 :: Double)), ("l_returnflag", "N"), ("l_linestatus", "O"), ("l_shipdate", "1998-09-01")], Map.fromList [("l_quantity", (25 :: Int)), ("l_extendedprice", (1500.0 :: Double)), ("l_discount", (0.0 :: Double)), ("l_tax", (0.08 :: Double)), ("l_returnflag", "R"), ("l_linestatus", "F"), ("l_shipdate", "1998-09-03")]]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:494: error:
+    • Found hole: _asInt :: Double -> Double
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the second argument of ‘(-)’, namely
+        ‘_asInt
+           (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))’
+      In the second argument of ‘(*)’, namely
+        ‘((1 - _asInt
+                 (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))’
+      In the expression:
+        (fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x))
+           * ((1 - _asInt
+                     (fromMaybe (error "missing") (Map.lookup "l_discount" (x))))))
+    • Relevant bindings include
+        x :: Map.Map String Double
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:566)
+        g :: forall {t}. t
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        result :: [Map.Map String Double]
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1)
+      Valid hole fits include
+        g :: forall {t}. t
+          with g
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        negate :: forall a. Num a => a -> a
+          with negate @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:681: error:
+    • Found hole: _asInt :: Double -> Double
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the second argument of ‘(-)’, namely
+        ‘_asInt
+           (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))’
+      In the second argument of ‘(*)’, namely
+        ‘((1 - _asInt
+                 (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))’
+      In the first argument of ‘(*)’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x))
+            * ((1 - _asInt
+                      (fromMaybe (error "missing") (Map.lookup "l_discount" (x))))))’
+    • Relevant bindings include
+        x :: Map.Map String Double
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:826)
+        g :: forall {t}. t
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        result :: [Map.Map String Double]
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1)
+      Valid hole fits include
+        g :: forall {t}. t
+          with g
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        negate :: forall a. Num a => a -> a
+          with negate @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:759: error:
+    • Found hole: _asInt :: Double -> Double
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the second argument of ‘(+)’, namely
+        ‘_asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))’
+      In the second argument of ‘(*)’, namely
+        ‘((1 + _asInt
+                 (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))’
+      In the expression:
+        ((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x))
+            * ((1 - _asInt
+                      (fromMaybe (error "missing") (Map.lookup "l_discount" (x))))))
+           * ((1 + _asInt
+                     (fromMaybe (error "missing") (Map.lookup "l_tax" (x))))))
+    • Relevant bindings include
+        x :: Map.Map String Double
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:826)
+        g :: forall {t}. t
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        result :: [Map.Map String Double]
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1)
+      Valid hole fits include
+        g :: forall {t}. t
+          with g
+          (bound at tests/machine/x/hs/tpch_q1.hs:117:1758)
+        negate :: forall a. Num a => a -> a
+          with negate @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        id :: forall a. a -> a
+          with id @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Base’))
+        pred :: forall a. Enum a => a -> a
+          with pred @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        succ :: forall a. Enum a => a -> a
+          with succ @Double
+          (imported from ‘Prelude’ at tests/machine/x/hs/tpch_q1.hs:5:8-11
+           (and originally defined in ‘GHC.Enum’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:940: error:
+    • Couldn't match expected type ‘Double’ with actual type ‘Int’
+    • In the second argument of ‘div’, namely
+        ‘length
+           [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+              x <- g]’
+      In the expression:
+          (sum
+             [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+                    x <- g]) ::
+            Double
+      In the expression:
+        ("avg_qty", 
+         ((sum
+             [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+                    x <- g]) ::
+            Double))
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:1130: error:
+    • Couldn't match expected type ‘Double’ with actual type ‘Int’
+    • In the second argument of ‘div’, namely
+        ‘length
+           [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+              x <- g]’
+      In the expression:
+          (sum
+             [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+                    x <- g]) ::
+            Double
+      In the expression:
+        ("avg_price", 
+         ((sum
+             [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+                    x <- g]) ::
+            Double))
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:1319: error:
+    • Couldn't match expected type ‘Double’ with actual type ‘Int’
+    • In the second argument of ‘div’, namely
+        ‘length
+           [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) |
+              x <- g]’
+      In the expression:
+          (sum
+             [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) |
+                    x <- g]) ::
+            Double
+      In the expression:
+        ("avg_disc", 
+         ((sum
+             [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) |
+                x <- g]
+             `div`
+               length
+                 [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) |
+                    x <- g]) ::
+            Double))
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:1426: error:
+    • Couldn't match expected type ‘Double’ with actual type ‘Int’
+    • In the expression: length (items g) :: Int
+      In the expression: ("count_order", (length (items g) :: Int))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("returnflag", 
+           fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))),
+          ("linestatus", 
+           fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))),
+          ("sum_qty", 
+           (sum
+              [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) |
+                 x <- g] ::
+              Double)),
+          ("sum_base_price", 
+           (sum
+              [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) |
+                 x <- g] ::
+              Double)),
+          ....]’
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/machine/x/hs/tpch_q1.hs:117:1558: error:
+    • Couldn't match type ‘[Char]’ with ‘Int’
+      Expected: Int
+        Actual: String
+    • In the second argument of ‘(<=)’, namely ‘"1998-09-02"’
+      In the expression:
+        fromMaybe (error "missing") (Map.lookup "l_shipdate" row)
+          <= "1998-09-02"
+      In a stmt of a list comprehension:
+        (fromMaybe (error "missing") (Map.lookup "l_shipdate" row)
+           <= "1998-09-02")
+    |
+117 | result = [Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "returnflag" (key (g)))), ("linestatus", fromMaybe (error "missing") (Map.lookup "linestatus" (key (g)))), ("sum_qty", (sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] :: Double)), ("sum_base_price", (sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] :: Double)), ("sum_disc_price", (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) | x <- g] :: Double)), ("sum_charge", (sum [((fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (x)))))) * ((1 + _asInt (fromMaybe (error "missing") (Map.lookup "l_tax" (x)))))) | x <- g] :: Double)), ("avg_qty", ((sum [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_quantity" (x)) | x <- g]) :: Double)), ("avg_price", ((sum [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_extendedprice" (x)) | x <- g]) :: Double)), ("avg_disc", ((sum [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g] `div` length [fromMaybe (error "missing") (Map.lookup "l_discount" (x)) | x <- g]) :: Double)), ("count_order", (length (items g) :: Int))] | g <- _group_by [(row) | row <- lineitem, (fromMaybe (error "missing") (Map.lookup "l_shipdate" row) <= "1998-09-02")] (\(row) -> Map.fromList [("returnflag", fromMaybe (error "missing") (Map.lookup "l_returnflag" row)), ("linestatus", fromMaybe (error "missing") (Map.lookup "l_linestatus" row))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^^^^^^^^^

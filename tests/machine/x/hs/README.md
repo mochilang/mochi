@@ -111,4 +111,5 @@ The following programs compile and run successfully:
 - [x] `python_auto.mochi`
 - [x] `python_math.mochi`
 
-- [ ] `tpch_q1.mochi`
+### TPCH Progress
+- [ ] `tpch_q1.mochi` – fails to compile due to numeric type issues
