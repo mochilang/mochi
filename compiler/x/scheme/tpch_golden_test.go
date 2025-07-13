@@ -21,7 +21,7 @@ func TestSchemeCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("scheme not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	queries := []string{"q2"}
+	queries := []string{"q2", "q6"}
 	for _, base := range queries {
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "scheme", base+".scm")

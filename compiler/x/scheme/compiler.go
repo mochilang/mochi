@@ -201,6 +201,7 @@ const groupHelpers = `(import (scheme base))
 
 (define (_sum v)
   (let* ((lst (cond
+               ((number? v) (list v))
                ((and (pair? v) (assq 'Items v)) (cdr (assq 'Items v)))
                ((list? v) v)
                (else '())))
@@ -2160,7 +2161,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(fmt.Sprintf("  (set! _res (_slice _res 0 %s))\n", takeExpr))
 	}
 	b.WriteString("  _res)")
-	return b.String(), nil
+	expr := b.String()
+	if agg := aggregateCallName(q.Select); agg != "" {
+		fn := map[string]string{"sum": "_sum", "avg": "_avg", "min": "_min", "max": "_max", "count": "_count"}[agg]
+		expr = fmt.Sprintf("(%s %s)", fn, expr)
+	}
+	return expr, nil
 }
 
 func isUnderscoreExpr(e *parser.Expr) bool {
@@ -2206,6 +2212,29 @@ func isUnionVariantPattern(e *parser.Expr) (string, []string, bool) {
 		names[i] = sanitizeName(sel.Selector.Root)
 	}
 	return call.Func, names, true
+}
+
+func aggregateCallName(e *parser.Expr) string {
+	if e == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Call == nil {
+		return ""
+	}
+	call := p.Target.Call
+	if len(call.Args) != 1 {
+		return ""
+	}
+	switch call.Func {
+	case "sum", "avg", "min", "max", "count":
+		return call.Func
+	}
+	return ""
 }
 
 func sanitizeName(name string) string {
