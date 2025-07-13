@@ -1,2 +1,2 @@
-("Der Film")
-   test Q2 finds earliest title for German companies with character keyword ... fail #<Exception>
+"Der Film"
+   test Q2 finds earliest title for German companies with character keyword ... ok

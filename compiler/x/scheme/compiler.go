@@ -264,7 +264,9 @@ const groupHelpers = `(define (_count v)
     (map (lambda (k) (cdr (assoc k groups))) order))))`
 
 const jsonHelper = `(define (_json v)
-  (display (json->string v))
+  (define obj?
+    (and (pair? v) (pair? (car v)) (symbol? (car (car v)))))
+  (display (json->string (if (and (list? v) (not obj?)) (list->vector v) v)))
   (newline))`
 
 const testHelpers = `(define failures 0)
@@ -474,6 +476,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			pre.WriteByte('\n')
 		}
 		if c.needJSON {
+			pre.WriteString("(import (chibi json))\n")
 			pre.WriteString(jsonHelper)
 			pre.WriteByte('\n')
 		}
@@ -973,7 +976,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					expr = fmt.Sprintf("(not (equal? %s %s))", l, r)
 				case "in":
 					root := rootNamePostfix(rights[i])
-					if c.varType(root) == "string" || c.isStringPostfix(rights[i]) {
+					if strFlags[i] || strFlags[i+1] || c.varType(root) == "string" || c.isStringPostfix(rights[i]) {
 						c.needStringLib = true
 						expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", r, l)
 					} else if c.varType(root) == "map" || c.isMapPostfix(rights[i]) {
@@ -1715,6 +1718,8 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	// dataset queries rely on helper functions and JSON support
+	c.needDataset = true
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil && q.Skip == nil && q.Take == nil {
 		src, err := c.compileExpr(q.Source)
 		if err != nil {

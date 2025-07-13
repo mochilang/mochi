@@ -96,6 +96,8 @@ func TestVMValidPrograms(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
+	// Ensure deterministic timestamps in generated headers
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	code := m.Run()
 	updateReadme()
 	os.Exit(code)

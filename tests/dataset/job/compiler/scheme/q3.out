@@ -1,1 +1,2 @@
-ERROR on line 48 of file /tmp/job_scheme/q3.scm: invalid type, expected Number: #f
+[{"movie_title":"Alpha"}]
+   test Q3 returns lexicographically smallest sequel title ... ok
