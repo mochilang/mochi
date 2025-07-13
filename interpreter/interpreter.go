@@ -130,16 +130,7 @@ func printTestFail(err error, duration time.Duration) {
 }
 
 func formatDuration(d time.Duration) string {
-	switch {
-	case d < time.Microsecond:
-		return fmt.Sprintf("%dns", d.Nanoseconds())
-	case d < time.Millisecond:
-		return fmt.Sprintf("%.1fµs", float64(d.Microseconds()))
-	case d < time.Second:
-		return fmt.Sprintf("%.1fms", float64(d.Milliseconds()))
-	default:
-		return fmt.Sprintf("%.2fs", d.Seconds())
-	}
+	return d.String()
 }
 
 func (i *Interpreter) Run() error {
