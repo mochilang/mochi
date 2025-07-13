@@ -1829,7 +1829,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 		c.writeln("default:")
 		c.indent++
 		if defaultVal == "" {
-			defaultVal = "0"
+			defaultVal = defaultCValue(retT)
 		}
 		c.writeln(fmt.Sprintf("%s = %s;", resVar, defaultVal))
 		c.writeln("break;")
@@ -1840,7 +1840,8 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 	}
 
 	target := c.compileExpr(m.Target)
-	expr := "0"
+	resT := c.exprType(m.Cases[0].Result)
+	expr := defaultCValue(resT)
 	for i := len(m.Cases) - 1; i >= 0; i-- {
 		pat := c.compileExpr(m.Cases[i].Pattern)
 		res := c.compileExpr(m.Cases[i].Result)
