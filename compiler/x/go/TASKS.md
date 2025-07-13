@@ -19,6 +19,8 @@ TPC-H progress:
 
 ## Recent Updates
 
+- 2025-07-13 09:30 - Normalized `_convSlice` detection to avoid nested conversions
+
 - 2025-07-13 07:13 - Ensured struct declarations are always written to the
   generated source.
 - 2025-07-13 07:30 - Began verifying TPCH q1 runtime output
