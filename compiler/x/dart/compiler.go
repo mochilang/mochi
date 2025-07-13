@@ -1262,7 +1262,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		groups = fmt.Sprintf("_g%d", c.tmp)
 		c.tmp++
-		w(fmt.Sprintf("  var %s = <dynamic, List<dynamic>>{};\n", groups))
+		w(fmt.Sprintf("  var %s = <String, List<dynamic>>{};\n", groups))
 	}
 
 	type loopInfo struct {
@@ -1362,6 +1362,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 
 		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = %s;\n", keyVar, keyExpr))
+		keyStr := fmt.Sprintf("%s_s", keyVar)
+		c.useJSON = true
+		w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("var %s = jsonEncode(%s);\n", keyStr, keyVar))
 
 		keyT = types.TypeOfExpr(q.Group.Exprs[0], c.env)
 		if len(vars) == 1 {
@@ -1372,7 +1375,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			}
 			child.SetVar(grpVar, types.GroupType{Key: keyT, Elem: elemT}, true)
 			item := vars[0]
-			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
 		} else {
 			c.mapVars[grpVar] = true
 			elemT = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
@@ -1385,7 +1388,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				parts = append(parts, "'"+j.Var+"': "+j.Var)
 			}
 			item := "{" + strings.Join(parts, ", ") + "}"
-			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("%s.putIfAbsent(%s_s, () => <dynamic>[]).add(%s);\n", groups, keyVar, item))
 		}
 	} else {
 		if q.Sort != nil {
@@ -1403,7 +1406,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if q.Group != nil {
 		w(fmt.Sprintf("  for (var entry in %s.entries) {\n", groups))
 		w(fmt.Sprintf("    var %s = entry.value;\n", grpVar))
-		w(fmt.Sprintf("    var %s = entry.key;\n", keyVar))
+		c.useJSON = true
+		w(fmt.Sprintf("    var %s = jsonDecode(entry.key);\n", keyVar))
 
 		// update environment so `g` refers to the list of items and
 		// the key variable has the proper type while compiling the select
