@@ -39,7 +39,7 @@ func TestExCompiler_TPCHQueries(t *testing.T) {
 		t.Skipf("elixir not installed: %v", err)
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 22; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ex", base+".ex")
