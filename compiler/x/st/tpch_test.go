@@ -4,6 +4,7 @@ package st_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -30,7 +31,10 @@ func runTPCHQuery(t *testing.T, base string, gstPath string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "st", base+".st.out")
+	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "st", base+".st")
+	if _, err := os.Stat(codeWant); err != nil {
+		codeWant = codeWant + ".out"
+	}
 	wantCode, err := os.ReadFile(codeWant)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
@@ -64,7 +68,8 @@ func runTPCHQuery(t *testing.T, base string, gstPath string) {
 
 func TestSTCompiler_TPCHQueries(t *testing.T) {
 	gstPath := ensureGST()
-	for _, q := range []string{"q1", "q2"} {
+	for i := 1; i <= 5; i++ {
+		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) { runTPCHQuery(t, q, gstPath) })
 	}
 }
