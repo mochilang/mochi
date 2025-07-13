@@ -364,7 +364,11 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 				return fmt.Sprintf("%s(%s)", toGo, expr)
 			}
 			convPrefix := fmt.Sprintf("_convSlice[%s,%s](", goType(fl.Elem), goType(tl.Elem))
-			if strings.HasPrefix(strings.TrimSpace(expr), convPrefix) {
+			// Allow optional spaces inside the generic parameters to avoid
+			// accidentally wrapping the same conversion multiple times.
+			normExpr := strings.ReplaceAll(strings.TrimSpace(expr), " ", "")
+			normPrefix := strings.ReplaceAll(convPrefix, " ", "")
+			if strings.HasPrefix(normExpr, normPrefix) {
 				return expr
 			}
 			c.use("_convSlice")

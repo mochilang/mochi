@@ -13,6 +13,29 @@ import (
 	"time"
 )
 
+type LineitemItem struct {
+	L_quantity      int     `json:"l_quantity"`
+	L_extendedprice float64 `json:"l_extendedprice"`
+	L_discount      float64 `json:"l_discount"`
+	L_tax           float64 `json:"l_tax"`
+	L_returnflag    string  `json:"l_returnflag"`
+	L_linestatus    string  `json:"l_linestatus"`
+	L_shipdate      string  `json:"l_shipdate"`
+}
+
+type v struct {
+	Returnflag     string  `json:"returnflag"`
+	Linestatus     string  `json:"linestatus"`
+	Sum_qty        float64 `json:"sum_qty"`
+	Sum_base_price float64 `json:"sum_base_price"`
+	Sum_disc_price float64 `json:"sum_disc_price"`
+	Sum_charge     float64 `json:"sum_charge"`
+	Avg_qty        float64 `json:"avg_qty"`
+	Avg_price      float64 `json:"avg_price"`
+	Avg_disc       float64 `json:"avg_disc"`
+	Count_order    int     `json:"count_order"`
+}
+
 func expect(cond bool) {
 	if !cond {
 		panic("expect failed")
@@ -63,31 +86,11 @@ var lineitem []LineitemItem
 var result []v
 
 func main() {
-	lineitem = _convSlice[v, LineitemItem](_convSlice[v, LineitemItem](_convSlice[v, LineitemItem]([]LineitemItem{LineitemItem{
-		17,
-		1000.0,
-		0.05,
-		0.07,
-		"N",
-		"O",
-		"1998-08-01",
-	}, LineitemItem{
-		36,
-		2000.0,
-		0.1,
-		0.05,
-		"N",
-		"O",
-		"1998-09-01",
-	}, LineitemItem{
-		25,
-		1500.0,
-		0.0,
-		0.08,
-		"R",
-		"F",
-		"1998-09-03",
-	}})))
+	lineitem = []LineitemItem{
+		{17, 1000.0, 0.05, 0.07, "N", "O", "1998-08-01"},
+		{36, 2000.0, 0.1, 0.05, "N", "O", "1998-09-01"},
+		{25, 1500.0, 0.0, 0.08, "R", "F", "1998-09-03"},
+	}
 	result = func() []v {
 		groups := map[string]*data.Group{}
 		order := []string{}
