@@ -215,13 +215,16 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "py", q+".py.out")
+			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "py", q+".py")
+			if _, err := os.Stat(codeWantPath); err != nil {
+				codeWantPath = codeWantPath + ".out"
+			}
 			wantCode, err := os.ReadFile(codeWantPath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
