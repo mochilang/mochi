@@ -16,20 +16,21 @@ import (
 )
 
 type Compiler struct {
-	buf         bytes.Buffer
-	indent      int
-	env         *types.Env
-	tmp         int
-	helpers     map[string]bool
-	inSort      bool
-	updates     map[string]bool
-	autoStructs map[string]types.StructType
-	structKeys  map[string]string
-	autoCount   int
-	structHint  string
-	mapVars     map[string]bool
-	pyModules   map[string]string
-	forceMap    bool
+	buf           bytes.Buffer
+	indent        int
+	env           *types.Env
+	tmp           int
+	helpers       map[string]bool
+	inSort        bool
+	updates       map[string]bool
+	autoStructs   map[string]types.StructType
+	structKeys    map[string]string
+	autoCount     int
+	structHint    string
+	mapVars       map[string]bool
+	pyModules     map[string]string
+	forceMap      bool
+	preferMutable bool
 }
 
 func (c *Compiler) detectStructMap(e *parser.Expr, env *types.Env) (types.StructType, bool) {
@@ -68,15 +69,21 @@ func isFloat(t types.Type) bool {
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:         env,
-		helpers:     make(map[string]bool),
-		updates:     make(map[string]bool),
-		autoStructs: make(map[string]types.StructType),
-		structKeys:  make(map[string]string),
-		structHint:  "",
-		mapVars:     make(map[string]bool),
-		pyModules:   make(map[string]string),
+		env:           env,
+		helpers:       make(map[string]bool),
+		updates:       make(map[string]bool),
+		autoStructs:   make(map[string]types.StructType),
+		structKeys:    make(map[string]string),
+		structHint:    "",
+		mapVars:       make(map[string]bool),
+		pyModules:     make(map[string]string),
+		preferMutable: false,
 	}
+}
+
+// SetPreferMutable enables the use of mutable collections for list literals.
+func (c *Compiler) SetPreferMutable(v bool) {
+	c.preferMutable = v
 }
 
 func (c *Compiler) newVar(prefix string) string {
@@ -1551,7 +1558,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 
 func (c *Compiler) compileList(l *parser.ListLiteral, mutable bool) (string, error) {
 	prefix := "List"
-	if mutable {
+	if mutable || c.preferMutable {
 		prefix = "scala.collection.mutable.ArrayBuffer"
 	}
 
