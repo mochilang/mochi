@@ -4,6 +4,7 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
 
 ### Recent Enhancements
 - 2025-07-13 05:05 – Added machine generated output for `tpc-h/q1.mochi` and updated checklist.
+- 2025-07-13 17:36 – Added golden test for `tpc-h/q2.mochi` which now compiles and runs successfully.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
