@@ -1,9 +1,12 @@
 # Erlang Compiler Tasks
 
 ## Recent updates
+- [2025-07-13 05:22] Removed support for `MOCHI_HEADER_TIME` and
+  `MOCHI_HEADER_VERSION`. The compiler now always uses the repository
+  version and the current UTC time.
+- [2025-07-13 05:22] Regenerated Erlang machine outputs with dynamic headers.
 - [2025-07-13 05:02] Added support for `MOCHI_HEADER_TIME` and `MOCHI_HEADER_VERSION` environment variables in `meta.Header`.
 - [2025-07-13 05:02] Inline constants when calling `contains` to avoid unbound variable errors.
-- [2025-07-13 05:02] Regenerated machine outputs with consistent headers.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
