@@ -1151,10 +1151,10 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 					c.usesJSON = true
 					c.buf.WriteString("__json(" + s + "); std::cout << std::endl;")
 				} else {
-					c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
+					c.buf.WriteString("std::cout << " + s + " << std::endl;")
 				}
 			default:
-				c.buf.WriteString("std::cout << std::boolalpha << " + s + " << std::endl;")
+				c.buf.WriteString("std::cout << " + s + " << std::endl;")
 			}
 			c.buf.WriteByte('\n')
 			return nil
@@ -1224,7 +1224,7 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 			if et := c.elemType[s]; et != "" && c.isStructName(et) {
 				c.buf.WriteString("std::cout<<\"<struct>\";")
 			} else {
-				c.buf.WriteString("std::cout<<std::boolalpha<<_x;")
+				c.buf.WriteString("std::cout<<_x;")
 			}
 			c.buf.WriteString(" } ")
 		case "bool":
@@ -1238,10 +1238,10 @@ func (c *Compiler) compilePrint(args []*parser.Expr) error {
 				c.usesJSON = true
 				c.buf.WriteString("__json(" + s + "); ")
 			} else {
-				c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+				c.buf.WriteString("std::cout << " + s + "; ")
 			}
 		default:
-			c.buf.WriteString("std::cout << std::boolalpha << " + s + "; ")
+			c.buf.WriteString("std::cout << " + s + "; ")
 		}
 	}
 	c.buf.WriteString("std::cout << std::endl; }")

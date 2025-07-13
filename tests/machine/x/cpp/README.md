@@ -106,3 +106,10 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
+
+Recent improvements:
+- Print statements no longer use std::boolalpha for non-bool values.
+
+## Remaining Tasks
+- [ ] Review generated C++ code for closer match to human style
+- [ ] Compile and verify dataset query tpc-h q4.mochi
