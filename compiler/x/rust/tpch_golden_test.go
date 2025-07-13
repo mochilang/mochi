@@ -22,7 +22,7 @@ func TestRustCompiler_TPCHQueries(t *testing.T) {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := findRepoRoot(t)
-	for i := 1; i <= 4; i++ {
+	for i := 1; i <= 5; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rust", base+".rs")

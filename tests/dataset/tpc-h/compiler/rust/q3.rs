@@ -52,6 +52,10 @@ fn sum<T>(v: &[T]) -> T where T: std::iter::Sum<T> + Copy {
     v.iter().copied().sum()
 }
 
+fn _json<T: std::fmt::Debug>(value: &T) {
+    println!("{:?}", value);
+}
+
 fn main() {
     let customer = vec![Customer { c_custkey: 1, c_mktsegment: "BUILDING" }, Customer { c_custkey: 2, c_mktsegment: "AUTOMOBILE" }];
     let orders = vec![Order { o_orderkey: 100, o_custkey: 1, o_orderdate: "1995-03-14", o_shippriority: 1 }, Order { o_orderkey: 200, o_custkey: 2, o_orderdate: "1995-03-10", o_shippriority: 2 }];
@@ -62,6 +66,6 @@ fn main() {
     let valid_orders = { let mut tmp2 = Vec::new();for o in &orders { for c in &building_customers { if !(o.o_custkey == c.c_custkey) { continue; } if !(o.o_orderdate < cutoff) { continue; } tmp2.push(o.clone()); } } tmp2 };
     let valid_lineitems = { let mut tmp3 = Vec::new();for l in &lineitem { if !(l.l_shipdate > cutoff) { continue; } tmp3.push(l.clone()); } tmp3 };
     let order_line_join = { let mut tmp4 = std::collections::HashMap::new();for o in &valid_orders { for l in &valid_lineitems { if !(l.l_orderkey == o.o_orderkey) { continue; } let key = Key { o_orderkey: o.o_orderkey, o_orderdate: o.o_orderdate, o_shippriority: o.o_shippriority }; tmp4.entry(key).or_insert_with(Vec::new).push(Item {o: o.clone(), l: l.clone() }); } } let mut tmp5 = Vec::<Group>::new(); for (k,v) in tmp4 { tmp5.push(Group { key: k, items: v }); } tmp5.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp5.sort_by(|a,b| ((-sum(&{ let mut tmp6 = Vec::new();for r in &a.clone().items { tmp6.push(r.l.l_extendedprice * ((1 as f64) - r.l.l_discount as f64)); } tmp6 }), a.key.o_orderdate)).partial_cmp(&((-sum(&{ let mut tmp6 = Vec::new();for r in &b.clone().items { tmp6.push(r.l.l_extendedprice * ((1 as f64) - r.l.l_discount as f64)); } tmp6 }), b.key.o_orderdate))).unwrap()); let mut result = Vec::new(); for g in tmp5 { result.push(Result { l_orderkey: g.key.o_orderkey, revenue: sum(&{ let mut tmp7 = Vec::new();for r in &g.clone().items { tmp7.push(r.l.l_extendedprice * ((1 as f64) - r.l.l_discount as f64)); } tmp7 }), o_orderdate: g.key.o_orderdate, o_shippriority: g.key.o_shippriority }); } result };
-    println!("{:?}", order_line_join);
+    _json(&order_line_join);
     assert!(order_line_join == vec![Result { l_orderkey: 100, revenue: 1000.0 * 0.95 + 500.0, o_orderdate: "1995-03-14", o_shippriority: 1 }]);
 }
