@@ -145,7 +145,7 @@ func TestBuildXFS(t *testing.T) {
 }
 
 func TestBuildXHS(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".hs.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".hs", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "hs", src)
 	})
 }
