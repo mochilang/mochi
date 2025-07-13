@@ -58,14 +58,14 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 				t.Skipf("compile error: %v", err)
 				return
 			}
-			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "c", query+".c.out")
+			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "c", query+".c")
 			wantCode, err := os.ReadFile(wantCodePath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 			gotCode := bytes.TrimSpace(code)
 			if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c.out", gotCode, bytes.TrimSpace(wantCode))
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c", gotCode, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			cfile := filepath.Join(dir, "prog.c")

@@ -211,23 +211,26 @@ func (c *Compiler) cType(t *parser.TypeRef) string {
 		}
 	}
 	if t.Generic != nil {
-		if t.Generic.Name == "list" {
-			if len(t.Generic.Args) == 1 {
-				elem := c.cType(t.Generic.Args[0])
-				if elem == "int" {
-					return "list_int"
-				}
-				if elem == "double" {
-					return "list_float"
-				}
-				if elem == "char*" {
-					return "list_string"
-				}
-				if elem == "list_int" {
-					return "list_list_int"
-				}
-			}
-		}
+                if t.Generic.Name == "list" {
+                        if len(t.Generic.Args) == 1 {
+                                elem := c.cType(t.Generic.Args[0])
+                                if elem == "int" {
+                                        return "list_int"
+                                }
+                                if elem == "double" {
+                                        return "list_float"
+                                }
+                                if elem == "char*" {
+                                        return "list_string"
+                                }
+                                if elem == "list_int" {
+                                        return "list_list_int"
+                                }
+                                if elem != "" && elem != "int" && elem != "double" && elem != "char*" && elem != "list_int" {
+                                        return "list_" + sanitizeTypeName(elem)
+                                }
+                        }
+                }
 		if t.Generic.Name == "map" && len(t.Generic.Args) == 2 {
 			key := c.cType(t.Generic.Args[0])
 			val := c.cType(t.Generic.Args[1])
