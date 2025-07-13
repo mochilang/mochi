@@ -107,14 +107,14 @@ Compiled programs: 100/100
 - [x] var_assignment
 - [x] while_loop
 
-## TPCH Queries
+### TPCH Progress
 
-- [ ] q1 – compilation still fails due to struct type inference
-- [x] q4
-- [ ] q5 – compilation fails
-- [x] q6
+* [ ] `q1.mochi` – compilation fails due to struct inference
+* [x] `q4.mochi`
+* [ ] `q5.mochi` – compilation fails
+* [x] `q6.mochi`
 
-## Remaining Tasks
-- [ ] Review generated C++ code for closer match to human examples
-- [ ] Continue improving struct type inference for TPCH q1
-- [ ] Implement compilation for TPCH q5
+### Remaining Tasks
+
+- [ ] Review generated C++ code for closer match to manual examples
+- [ ] Continue improving struct inference for TPCH queries

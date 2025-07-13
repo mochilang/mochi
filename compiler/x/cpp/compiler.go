@@ -2231,6 +2231,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if t := c.varStruct[src]; t != "" {
 		backup[q.Var] = c.varStruct[q.Var]
 		c.varStruct[q.Var] = t
+	} else if et := c.elemType[src]; c.isStructName(et) {
+		backup[q.Var] = c.varStruct[q.Var]
+		c.varStruct[q.Var] = et
 	}
 	if et := c.elemType[src]; et != "" {
 		switch {
@@ -2622,6 +2625,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 			}
 			if t := c.varStruct[src]; t != "" {
 				c.varStruct[q.Var] = t
+			} else if et := c.elemType[src]; c.isStructName(et) {
+				c.varStruct[q.Var] = et
 			}
 			if et := c.elemType[src]; et != "" {
 				switch {
@@ -2867,6 +2872,8 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	if len(itemVars) == 1 {
 		if t := c.varStruct[itemVars[0]]; t != "" {
 			itemStruct = t
+		} else if t := c.elemType[itemVars[0]]; t != "" {
+			itemStruct = t
 		}
 	}
 	if itemStruct == "" {
@@ -2874,6 +2881,15 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 	}
 	if strings.Contains(keyType, q.Var+".") && itemStruct != "" {
 		keyType = strings.ReplaceAll(keyType, q.Var+".", fmt.Sprintf("std::declval<%s>().", strings.TrimSuffix(itemStruct, "{}")))
+	}
+	if info, ok := c.structByName[keyType]; ok && itemStruct != "" {
+		repl := fmt.Sprintf("std::declval<%s>().", strings.TrimSuffix(itemStruct, "{}"))
+		for i, ft := range info.Types {
+			if strings.Contains(ft, q.Var+".") {
+				info.Types[i] = strings.ReplaceAll(ft, q.Var+".", repl)
+			}
+		}
+		c.defineStruct(info)
 	}
 	groupStruct := fmt.Sprintf("__struct%d", c.structCount+1)
 	c.structCount++

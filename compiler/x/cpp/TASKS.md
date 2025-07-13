@@ -9,6 +9,8 @@
   `structFromVars`.
 - Added fallback to element type when inferring field types in map literals
   (2025-07-13 09:51 UTC).
+- Fixed grouped query struct generation to replace query variable field
+  references with the associated element struct type (2025-07-13 10:10 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
