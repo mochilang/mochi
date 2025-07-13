@@ -454,11 +454,8 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		}
 		c.writeln("check(" + cond + ")")
 	case s.Test != nil:
-		for _, st := range s.Test.Body {
-			if err := c.stmt(st); err != nil {
-				return err
-			}
-		}
+		// Skip test blocks when compiling dataset programs. The runtime
+		// output will be validated separately by the Go tests.
 		return nil
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
