@@ -29,7 +29,7 @@ func TestSwiftCompiler_JOB_Q1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "swift", "q1.swift.out")
+	wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "swift", "q1.swift")
 	wantCode, err := os.ReadFile(wantCodePath)
 	if err != nil {
 		t.Fatalf("read golden: %v", err)
