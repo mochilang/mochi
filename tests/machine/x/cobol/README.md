@@ -2,7 +2,7 @@
 
 This directory contains COBOL code generated from the programs in `tests/vm/valid`.
 
-Compiled programs: 40/100
+Compiled programs: 61/100
 
 ## Checklist
 - [x] append_builtin.mochi
@@ -38,8 +38,8 @@ Compiled programs: 40/100
 - [ ] group_by_sort.mochi
 - [ ] group_items_iteration.mochi
 - [x] if_else.mochi
-- [ ] if_then_else.mochi
-- [ ] if_then_else_nested.mochi
+- [x] if_then_else.mochi
+- [x] if_then_else_nested.mochi
 - [ ] in_operator.mochi
 - [ ] in_operator_extended.mochi
 - [ ] inner_join.mochi
@@ -105,3 +105,6 @@ Compiled programs: 40/100
 - [ ] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## TPCH Progress
+- [ ] q1.mochi
