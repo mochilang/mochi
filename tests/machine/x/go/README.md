@@ -109,6 +109,10 @@ Checklist:
 - [x] q1.mochi
 - [ ] q2.mochi
 
+### TPCH Progress
+
+- [ ] Confirm runtime output for `q1.mochi`
+
 ## Remaining Tasks
 
 - [ ] Simplify slice conversions and printing logic
