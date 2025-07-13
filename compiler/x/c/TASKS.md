@@ -6,6 +6,7 @@ Initial work added support for generating C structs and list helpers when a prog
 ## Progress log
 
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
+- 2025-07-13 09:37 – Added experimental map-literal grouping for two string keys to begin TPC-H q1 support.
 
 - 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.
 - 2025-07-13 05:50 – Implemented list equality for struct elements and captured globals in test blocks. `update_stmt.mochi` now compiles and passes.
