@@ -4,9 +4,12 @@
 
 - 2025-07-13 05:03 - Added simple type inference for identifiers and selectors so
   generated record fields use concrete types.
+- 2025-07-13 05:19 - Fixed binary expression inference crash by wrapping
+  the left-hand side in an `Expr` node.
 
 ## Remaining Work
 
 - [ ] Ensure `tpch/q1.mochi` builds by providing the required .NET assemblies.
+- [ ] Generate F# code for `tpch/q1.mochi` during tests.
 - [ ] Add coverage tests exercising dataset queries.
 - [ ] Continue refining inference to reduce `obj` usage.

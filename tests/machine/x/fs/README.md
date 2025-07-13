@@ -117,12 +117,13 @@ hand-written versions under `tests/human/x/fs`.
 
 ## TPC-H Progress
 
-- [ ] `q1.mochi` – compiler now emits typed records but build still fails due to
-  missing `System.Text.Json` and other runtime references.
+- [x] Generated F# code for `q1.mochi`.
+- [ ] Provide `System.Text.Json` and other runtime references so it builds.
+- [ ] Run the compiled program and compare output.
 
 ## Remaining Tasks
 
-- Ensure new features continue to compile correctly.
-- Keep generated code in sync with `tests/human/x/fs` when changes occur.
-- Finish wiring .NET runtime references so `q1.mochi` builds.
-- Expand unit tests for the improved type inference logic.
+- [ ] Ensure new features continue to compile correctly.
+- [ ] Keep generated code in sync with `tests/human/x/fs` when changes occur.
+- [ ] Finish wiring .NET runtime references so `q1.mochi` builds.
+- [ ] Expand unit tests for the improved type inference logic.
