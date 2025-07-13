@@ -2765,6 +2765,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.need(needListFloat)
 		} else if listC == "list_list_int" {
 			c.need(needListListInt)
+		} else if listC == "list_int" {
+			c.need(needListInt)
 		}
 
 		res := c.newTemp()
@@ -2861,6 +2863,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				c.need(needListFloat)
 			} else if listC == "list_list_int" {
 				c.need(needListListInt)
+			} else if listC == "list_int" {
+				c.need(needListInt)
 			}
 
 			res := c.newTemp()
@@ -2962,6 +2966,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				c.need(needListFloat)
 			} else if listC == "list_list_int" {
 				c.need(needListListInt)
+			} else if listC == "list_int" {
+				c.need(needListInt)
 			}
 
 			res := c.newTemp()
@@ -3116,6 +3122,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.need(needListFloat)
 		} else if listC == "list_list_int" {
 			c.need(needListListInt)
+		} else if listC == "list_int" {
+			c.need(needListInt)
 		}
 
 		res := c.newTemp()
@@ -3250,6 +3258,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 				c.need(needListFloat)
 			} else if listC == "list_list_int" {
 				c.need(needListListInt)
+			} else if listC == "list_int" {
+				c.need(needListInt)
 			}
 			res := c.newTemp()
 			idx := c.newTemp()
@@ -3373,6 +3383,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.need(needListFloat)
 		} else if listC == "list_list_int" {
 			c.need(needListListInt)
+		} else if listC == "list_int" {
+			c.need(needListInt)
 		}
 
 		tmp := c.newTemp()
@@ -3417,6 +3429,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		c.need(needListFloat)
 	} else if listC == "list_list_int" {
 		c.need(needListListInt)
+	} else if listC == "list_int" {
+		c.need(needListInt)
 	}
 
 	res := c.newTemp()
