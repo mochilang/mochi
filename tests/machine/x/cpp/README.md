@@ -109,10 +109,25 @@ Compiled programs: 100/100
 
 ## TPCH Queries
 
-- [ ] q1 – compilation still fails due to struct type inference
+- [ ] q1 – compilation now reaches C++ generation but fails to build
 - [x] q4
 - [ ] q5 – compilation fails
 - [x] q6
+
+### Running TPCH Q1
+
+1. **Build the source**
+   ```bash
+   go run -tags slow ./cmd/mochix buildx -t cpp tests/dataset/tpc-h/q1.mochi > q1.cpp
+   ```
+2. **Compile** the program
+   ```bash
+   g++ q1.cpp -std=c++17 -o q1
+   ```
+3. **Run** the executable
+   ```bash
+   ./q1
+   ```
 
 ## Remaining Tasks
 - [ ] Review generated C++ code for closer match to human examples

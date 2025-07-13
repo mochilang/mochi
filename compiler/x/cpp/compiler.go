@@ -1638,66 +1638,74 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if simple && len(p.Map.Items) > 1 {
 			sig := strings.Join(names, ",")
 			info, ok := c.structMap[sig]
-			if !ok {
-				for i := range names {
-					expr := vals[i]
-					for v, t := range c.varStruct {
-						if t == "" {
-							continue
-						}
-						if strings.Contains(expr, v+".") {
-							expr = replaceVarRef(expr, v, t)
-						}
+			fieldTypes = make([]string, len(names))
+			for i := range names {
+				expr := vals[i]
+				for v, t := range c.varStruct {
+					if t == "" {
+						continue
 					}
-					ftype := fmt.Sprintf("decltype(%s)", expr)
-					if strings.Contains(vals[i], "((int)") {
+					if strings.Contains(expr, v+".") {
+						expr = replaceVarRef(expr, v, t)
+					}
+				}
+				ftype := fmt.Sprintf("decltype(%s)", expr)
+				if strings.Contains(vals[i], "((int)") {
+					ftype = "int"
+				}
+				if t, ok := c.vars[vals[i]]; ok {
+					switch t {
+					case "string":
+						ftype = "std::string"
+					case "int":
 						ftype = "int"
+					case "bool":
+						ftype = "bool"
 					}
-					if t, ok := c.vars[vals[i]]; ok {
-						switch t {
-						case "string":
-							ftype = "std::string"
-						case "int":
-							ftype = "int"
-						case "bool":
-							ftype = "bool"
+				} else if t := c.varStruct[vals[i]]; t != "" {
+					if idx := strings.Index(t, "{"); idx != -1 {
+						t = t[:idx]
+					}
+					ftype = t
+				}
+				if dot := strings.Index(vals[i], "."); dot != -1 {
+					v := vals[i][:dot]
+					fld := vals[i][dot+1:]
+					simple := true
+					for _, ch := range fld {
+						if !(ch == '_' || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')) {
+							simple = false
+							break
+						}
+					}
+					if simple {
+						if t := c.varStruct[v]; t != "" {
+							if idx := strings.Index(t, "{"); idx != -1 {
+								t = t[:idx]
+							}
+							ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
 						}
 					} else if t := c.varStruct[vals[i]]; t != "" {
 						if idx := strings.Index(t, "{"); idx != -1 {
 							t = t[:idx]
 						}
 						ftype = t
-					}
-					if dot := strings.Index(vals[i], "."); dot != -1 {
-						v := vals[i][:dot]
-						fld := vals[i][dot+1:]
-						simple := true
-						for _, ch := range fld {
-							if !(ch == '_' || ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= '9')) {
-								simple = false
-								break
-							}
-						}
-						if simple {
-							if t := c.varStruct[v]; t != "" {
-								if idx := strings.Index(t, "{"); idx != -1 {
-									t = t[:idx]
-								}
-								ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
-							}
-						} else if t := c.varStruct[vals[i]]; t != "" {
-							if idx := strings.Index(t, "{"); idx != -1 {
-								t = t[:idx]
-							}
-							ftype = t
-						} else if t := inferExprType(vals[i]); t != "" {
-							ftype = t
-						}
 					} else if t := inferExprType(vals[i]); t != "" {
 						ftype = t
 					}
-					fieldTypes = append(fieldTypes, ftype)
+				} else if t := inferExprType(vals[i]); t != "" {
+					ftype = t
 				}
+				fieldTypes[i] = ftype
+			}
+
+			if ok {
+				for i, ft := range fieldTypes {
+					if info.Types[i] == "" || strings.Contains(info.Types[i], names[i]) {
+						info.Types[i] = ft
+					}
+				}
+			} else {
 				c.structCount++
 				name := fmt.Sprintf("__struct%d", c.structCount)
 				if c.nextStructName != "" {
