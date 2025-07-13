@@ -104,3 +104,122 @@ func TestBuildXSwift(t *testing.T) {
 		return runMochix(t, "buildx", "--target", "swift", src)
 	})
 }
+func TestBuildXCobol(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".cob.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "cobol", src)
+	})
+}
+
+func TestBuildXCS(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".cs.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "cs", src)
+	})
+}
+
+func TestBuildXErlang(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".erl.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "erlang", src)
+	})
+}
+
+func TestBuildXEx(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".ex.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "ex", src)
+	})
+}
+
+func TestBuildXFortran(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".f90.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "fortran", src)
+	})
+}
+
+func TestBuildXFS(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".fs.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "fs", src)
+	})
+}
+
+func TestBuildXHS(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".hs.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "hs", src)
+	})
+}
+
+func TestBuildXKotlin(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".kt.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "kotlin", src)
+	})
+}
+
+func TestBuildXLua(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".lua.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "lua", src)
+	})
+}
+
+func TestBuildXOcaml(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".ml.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "ocaml", src)
+	})
+}
+
+func TestBuildXPascal(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".pas.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "pascal", src)
+	})
+}
+
+func TestBuildXPHP(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".php.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "php", src)
+	})
+}
+
+func TestBuildXPL(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".pl.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "pl", src)
+	})
+}
+
+func TestBuildXRacket(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".rkt.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "racket", src)
+	})
+}
+
+func TestBuildXRuby(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".rb.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "rb", src)
+	})
+}
+
+func TestBuildXScala(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".scala.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "scala", src)
+	})
+}
+
+func TestBuildXScheme(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".scm.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "scheme", src)
+	})
+}
+
+func TestBuildXSmalltalk(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".smalltalk.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "smalltalk", src)
+	})
+}
+
+func TestBuildXST(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".st.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "st", src)
+	})
+}
+
+func TestBuildXZig(t *testing.T) {
+	golden.Run(t, "tests/mochix", ".mochi", ".zig.out", func(src string) ([]byte, error) {
+		return runMochix(t, "buildx", "--target", "zig", src)
+	})
+}
