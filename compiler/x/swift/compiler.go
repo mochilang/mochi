@@ -3787,10 +3787,13 @@ const helperJSON = `func _json(_ v: Any) {
         }
         return x
     }
-    if let obj = _sort(v) as? Any,
+    let obj = _sort(v)
+    if JSONSerialization.isValidJSONObject(obj),
        let data = try? JSONSerialization.data(withJSONObject: obj, options: [.sortedKeys]),
        let s = String(data: data, encoding: .utf8) {
         print(s)
+    } else {
+        print(obj)
     }
 }`
 
