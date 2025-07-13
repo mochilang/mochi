@@ -21,7 +21,7 @@ func TestRacketCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("racket not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 15; i++ {
+	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
