@@ -15,10 +15,10 @@ import (
 	"mochi/types"
 )
 
-func TestSwiftCompiler_TPCH_Golden_q1_q5(t *testing.T) {
+func TestSwiftCompiler_TPCH_Golden_q1_q6(t *testing.T) {
 	swiftExe := ensureSwift(t)
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 5; i++ {
+	for i := 1; i <= 6; i++ {
 		base := fmt.Sprintf("q%d", i)
 		t.Run(base, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
