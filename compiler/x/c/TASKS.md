@@ -5,6 +5,8 @@ Initial work added support for generating C structs and list helpers when a prog
 
 ## Progress log
 
+- 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
+
 - 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.
 - 2025-07-13 05:50 – Implemented list equality for struct elements and captured globals in test blocks. `update_stmt.mochi` now compiles and passes.
 - 2025-07-13 07:11 – Fixed boolean match expressions so `match_full.mochi` compiles using string results.
@@ -73,3 +75,5 @@ should compile and run successfully.
 - [ ] Add join support for JOB dataset programs
 - [ ] Emit aggregation helpers (`sum`, `avg`, `count`) for floats and ints
 - [ ] Serialize lists of structs to JSON for query results
+- [ ] Support loading YAML files at compile time
+- [ ] Implement JSONL output helper for `save` statements
