@@ -109,6 +109,26 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 	return "", false
 }
 
+// simpleFunExpr returns the FunExpr if e is just a standalone function
+// expression with no surrounding operations.
+func simpleFunExpr(e *parser.Expr) *parser.FunExpr {
+	if e == nil {
+		return nil
+	}
+	if len(e.Binary.Right) != 0 {
+		return nil
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return nil
+	}
+	p := u.Value
+	if len(p.Ops) != 0 {
+		return nil
+	}
+	return p.Target.FunExpr
+}
+
 // groupKeyNames returns field names used in a GROUP BY map expression.
 func groupKeyNames(e *parser.Expr) []string {
 	if e == nil {

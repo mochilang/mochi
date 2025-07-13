@@ -127,6 +127,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.writeln(expr)
 		return nil
 	case s.Return != nil:
+		if fn := simpleFunExpr(s.Return.Value); fn != nil && fn.ExprBody != nil {
+			name, err := c.compileFunExprDef(fn)
+			if err != nil {
+				return err
+			}
+			c.writeln("return " + name)
+			return nil
+		}
 		expr, err := c.compileExpr(s.Return.Value)
 		if err != nil {
 			return err

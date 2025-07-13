@@ -1,6 +1,7 @@
 # Python Compiler Tasks
 
-## Recent Enhancements (2025-07-13 04:59)
+## Recent Enhancements (2025-07-13 05:14)
+- Added nested function generation for returned arrow functions.
 - Added versioned header comments to generated Python files.
 - Verified `tpc-h/q1.mochi` compiles and runs correctly.
 
