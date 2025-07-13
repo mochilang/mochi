@@ -833,24 +833,26 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	// Special case simple aggregate selects like sum(n) -> lists:sum([...])
 	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && !q.Distinct {
 		if call := callExprFromExpr(q.Select); call != nil && len(call.Args) == 1 {
-			if selectIsVar(call.Args[0], q.Var) {
-				list := fmt.Sprintf("[%s || %s <- %s", capitalize(q.Var), capitalize(q.Var), src)
-				if cond != "" {
-					list += ", " + cond
-				}
-				list += "]"
-				switch call.Func {
-				case "sum":
-					return fmt.Sprintf("lists:sum(%s)", list), nil
-				case "count":
-					return fmt.Sprintf("length(%s)", list), nil
-				case "min":
-					return fmt.Sprintf("lists:min(%s)", list), nil
-				case "max":
-					return fmt.Sprintf("lists:max(%s)", list), nil
-				case "avg":
-					return fmt.Sprintf("(lists:sum(%s) / length(%s))", list, list), nil
-				}
+			arg, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			list := fmt.Sprintf("[%s || %s <- %s", arg, capitalize(q.Var), src)
+			if cond != "" {
+				list += ", " + cond
+			}
+			list += "]"
+			switch call.Func {
+			case "sum":
+				return fmt.Sprintf("lists:sum(%s)", list), nil
+			case "count":
+				return fmt.Sprintf("length(%s)", list), nil
+			case "min":
+				return fmt.Sprintf("lists:min(%s)", list), nil
+			case "max":
+				return fmt.Sprintf("lists:max(%s)", list), nil
+			case "avg":
+				return fmt.Sprintf("(lists:sum(%s) / length(%s))", list, list), nil
 			}
 		}
 	}
@@ -903,13 +905,22 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		fold := fmt.Sprintf("lists:foldl(fun({%s, %s}, %s) -> L = maps:get(%s, %s, []), maps:put(%s, [%s | L], %s) end, #{}, %s)", kvar, vvar, acc, kvar, acc, kvar, vvar, acc, pairList)
 		groupsList := fmt.Sprintf("maps:to_list(%s)", fold)
 
-		c.aliases[q.Group.Name] = vvar
+		prevKeys := c.groupKeys
+		c.groupKeys = make(map[string]string)
+		if len(q.Group.Exprs) > 0 {
+			fields := groupKeyFields(q.Group.Exprs[0])
+			for _, f := range fields {
+				c.groupKeys[f] = fmt.Sprintf("maps:get(%s, %s)", f, kvar)
+			}
+		}
 		c.groupKeys[q.Group.Name] = kvar
+
+		c.aliases[q.Group.Name] = vvar
 		c.lets[q.Group.Name] = true
 		defer func(n string) {
 			delete(c.aliases, n)
-			delete(c.groupKeys, n)
 			delete(c.lets, n)
+			c.groupKeys = prevKeys
 		}(q.Group.Name)
 
 		having := ""
@@ -1242,6 +1253,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if k, ok := c.groupKeys[root]; ok {
 			expr := k
 			tail := p.Selector.Tail
+			if len(tail) == 0 && strings.HasPrefix(expr, "maps:get(") {
+				return expr, nil
+			}
 			if len(tail) > 0 && tail[0] == "key" {
 				tail = tail[1:]
 			} else {
@@ -1803,6 +1817,11 @@ func (c *Compiler) typeOfPrimary(p *parser.Primary) string {
 		return "list"
 	case p.Lit != nil && p.Lit.Str != nil:
 		return "string"
+	case p.Call != nil:
+		if p.Call.Func == "substring" {
+			return "string"
+		}
+		return ""
 	case p.Selector != nil:
 		return c.types[p.Selector.Root]
 	default:
