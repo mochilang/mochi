@@ -517,6 +517,8 @@ func (c *Compiler) compileLet(st *parser.LetStmt) error {
 	if st.Type == nil {
 		if et := c.extractVectorElemType(exprStr); et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
+		} else if et := c.elemType[exprStr]; et != "" {
+			typ = fmt.Sprintf("std::vector<%s>", et)
 		}
 	}
 
@@ -583,6 +585,8 @@ func (c *Compiler) compileVar(st *parser.VarStmt) error {
 	}
 	if st.Type == nil {
 		if et := c.extractVectorElemType(exprStr); et != "" {
+			typ = fmt.Sprintf("std::vector<%s>", et)
+		} else if et := c.elemType[exprStr]; et != "" {
 			typ = fmt.Sprintf("std::vector<%s>", et)
 		} else if isEmptyListExpr(st.Value) {
 			if et := c.predictElemType(st.Name); et != "" {
@@ -2257,6 +2261,15 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		} else {
 			itemType = "int"
 		}
+	} else if strings.HasPrefix(itemType, "decltype(") {
+		if t := c.varStruct[val]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = t
+		} else if t := c.elemType[val]; t != "" {
+			itemType = t
+		}
 	}
 	if val == q.Var {
 		if t := c.varStruct[q.Var]; t != "" {
@@ -2841,6 +2854,15 @@ func (c *Compiler) compileGroupedQueryExpr(q *parser.QueryExpr) (string, error) 
 		} else {
 			itemType = "int"
 		}
+	} else if strings.HasPrefix(itemType, "decltype(") {
+		if t := c.varStruct[valExpr]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			itemType = t
+		} else if t := c.elemType[valExpr]; t != "" {
+			itemType = t
+		}
 	}
 	if selectIsGroup {
 		itemType = groupStruct
@@ -3269,8 +3291,8 @@ func (c *Compiler) isStructName(name string) bool {
 }
 
 func (c *Compiler) extractVectorStruct(expr string) string {
-	if idx := strings.Index(expr, "v.push_back("); idx != -1 {
-		inner := expr[idx+len("v.push_back("):]
+	if idx := strings.Index(expr, "push_back("); idx != -1 {
+		inner := expr[idx+len("push_back("):]
 		end := strings.Index(inner, ")")
 		if end != -1 {
 			val := inner[:end]
@@ -3297,6 +3319,15 @@ func (c *Compiler) extractVectorStruct(expr string) string {
 		if inner == "true" || inner == "false" {
 			return "bool"
 		}
+		if t := c.varStruct[inner]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			return t
+		}
+		if t := c.elemType[inner]; t != "" {
+			return t
+		}
 	}
 	if idx := strings.Index(inner, "{"); idx != -1 {
 		inner = inner[:idx]
@@ -3311,8 +3342,8 @@ func (c *Compiler) extractVectorStruct(expr string) string {
 }
 
 func (c *Compiler) extractVectorElemType(expr string) string {
-	if strings.Contains(expr, "v.push_back(") {
-		inner := expr[strings.Index(expr, "v.push_back(")+len("v.push_back("):]
+	if strings.Contains(expr, "push_back(") {
+		inner := expr[strings.Index(expr, "push_back(")+len("push_back("):]
 		end := strings.Index(inner, ")")
 		if end != -1 {
 			val := inner[:end]
@@ -3353,8 +3384,20 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 				return t
 			}
 			if t := c.varStruct[base]; t != "" {
+				if idx := strings.Index(t, "{"); idx != -1 {
+					t = t[:idx]
+				}
 				return t
 			}
+		}
+		if t := c.varStruct[texpr]; t != "" {
+			if idx := strings.Index(t, "{"); idx != -1 {
+				t = t[:idx]
+			}
+			return t
+		}
+		if t := c.elemType[texpr]; t != "" {
+			return t
 		}
 		if strings.HasPrefix(texpr, "std::declval<") && strings.Contains(texpr, ">().") {
 			tmp := strings.TrimPrefix(texpr, "std::declval<")
