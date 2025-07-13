@@ -20,7 +20,7 @@ func TestRustCompiler_JOBQueries(t *testing.T) {
 		t.Skip("rustc not installed")
 	}
 	root := findRepoRoot(t)
-	for i := 11; i <= 20; i++ {
+       for i := 10; i <= 20; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "rust", base+".rust")

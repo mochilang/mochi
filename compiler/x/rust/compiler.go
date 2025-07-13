@@ -3399,7 +3399,9 @@ func (c *Compiler) tryMapListStruct(varName string, list *parser.ListLiteral) (s
 	firstMap := list.Elems[0].Binary.Left.Value.Target.Map
 	for _, k := range firstKeys {
 		expr := c.valueForKey(firstMap, k)
-		t := types.TypeOfExprBasic(expr, c.env)
+		// Use full type inference so aggregated expressions like min()
+		// over string fields are typed correctly.
+		t := types.TypeOfExpr(expr, c.env)
 		st.Fields[k] = t
 	}
 	c.structs[structName] = st
