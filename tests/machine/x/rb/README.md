@@ -107,6 +107,11 @@ All standard test programs compile and run successfully except for a few that de
 - [x] python_auto.mochi
 - [x] python_math.mochi
 
+## Dataset queries
+
+- [x] tpc-h/q1.mochi
+- [ ] tpc-h/q2.mochi
+
 ## Remaining tasks
 
-None
+- [ ] Run `tpc-h/q2.mochi` once join helpers support multi-table queries.
