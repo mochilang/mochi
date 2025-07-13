@@ -822,7 +822,8 @@ func (c *Compiler) queryEnv(q *parser.QueryExpr) *types.Env {
 		env.SetVar(jo.Var, elem(jo.Src), true)
 	}
 	if q.Group != nil {
-		env.SetVar(q.Group.Name, types.GroupType{Elem: elem(q.Source)}, true)
+		keyT := types.ExprType(q.Group.Exprs[0], env)
+		env.SetVar(q.Group.Name, types.GroupType{Key: keyT, Elem: elem(q.Source)}, true)
 	}
 	return env
 }
@@ -1447,6 +1448,13 @@ func (c *Compiler) compileGroup(q *parser.QueryExpr) (string, error) {
 			keyTyp = c.ocamlType(s)
 		}
 	}
+	if keyTyp == "" {
+		t := types.ExprType(q.Group.Exprs[0], qenv)
+		guess := c.ocamlType(t)
+		if guess != "" && guess != "Obj.t" {
+			keyTyp = guess
+		}
+	}
 
 	var elemType types.Type
 	if name, ok := identName(q.Source); ok {
@@ -1995,7 +2003,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if _, ok := elem.(types.FloatType); ok {
 			return fmt.Sprintf("(List.fold_left (+.) 0.0 %s /. float_of_int (List.length %s))", args[0], args[0]), nil
 		}
-		return fmt.Sprintf("(List.fold_left (+) 0 %s / List.length %s)", args[0], args[0]), nil
+		return fmt.Sprintf("(float_of_int (List.fold_left (+) 0 %s) /. float_of_int (List.length %s))", args[0], args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")

@@ -1,0 +1,6 @@
+File "tests/machine/x/ocaml/q1.ml", line 31, characters 0-16:
+31 | List.rev !__res2)
+     ^^^^^^^^^^^^^^^^
+Error: This expression has type float list
+       but an expression was expected of type int list
+       Type float is not compatible with type int 
