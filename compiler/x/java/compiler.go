@@ -2077,6 +2077,21 @@ func (c *Compiler) compileReturn(r *parser.ReturnStmt) error {
 }
 
 func (c *Compiler) compileExprStmt(e *parser.ExprStmt) error {
+	// Directly translate simple append calls to list mutations for readability
+	if call, ok := callPattern(e.Expr); ok && call.Func == "append" && len(call.Args) == 2 {
+		if _, ok := identName(call.Args[0]); ok {
+			list, err := c.compileExpr(call.Args[0])
+			if err != nil {
+				return err
+			}
+			item, err := c.compileExpr(call.Args[1])
+			if err != nil {
+				return err
+			}
+			c.writeln(fmt.Sprintf("%s.add(%s);", list, item))
+			return nil
+		}
+	}
 	expr, err := c.compileExpr(e.Expr)
 	if err != nil {
 		return err
