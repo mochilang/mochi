@@ -5,5 +5,6 @@
 - [2025-07-13 05:05] Fixed element type inference for grouped query results.
 
 ## Remaining Work
-- [ ] Support advanced dataset queries required for TPC-H Q1.
+- [x] Support advanced dataset queries required for TPC-H Q1.
+- [x] Compile TPC-H queries q1-q5 end-to-end.
 - [ ] Ensure all programs in `tests/vm/valid` compile without manual edits.
