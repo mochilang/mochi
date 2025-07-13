@@ -1387,9 +1387,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			if !strings.HasSuffix(src, ".Items") {
-				src += ".Items.items"
-			}
+			src = ensureGroupSlice(src)
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
@@ -1894,9 +1892,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 			elemType = gt.Elem
-			if !strings.HasSuffix(src, ".Items") {
-				src += ".Items.items"
-			}
+			src = ensureGroupSlice(src)
 		}
 		child := types.NewEnv(c.env)
 		child.SetVar(q.Var, elemType, true)
@@ -2018,9 +2014,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	}
 	if gt, ok := c.inferExprType(q.Source).(types.GroupType); ok {
 		elemType = gt.Elem
-		if !strings.HasSuffix(src, ".Items") {
-			src += ".Items.items"
-		}
+		src = ensureGroupSlice(src)
 	}
 	child := types.NewEnv(c.env)
 	child.SetVar(q.Var, elemType, true)
@@ -4377,6 +4371,18 @@ func stripOuterParens(s string) string {
 		}
 	}
 	return s
+}
+
+// ensureGroupSlice ensures the correct ".Items.items" suffix is applied to a
+// group source expression without duplicating it.
+func ensureGroupSlice(src string) string {
+	if strings.HasSuffix(src, ".Items.items") || strings.HasSuffix(src, ".items") {
+		return src
+	}
+	if strings.HasSuffix(src, ".Items") {
+		return src + ".items"
+	}
+	return src + ".Items.items"
 }
 
 func (c *Compiler) rangeArgs(e *parser.Expr) (*parser.Expr, *parser.Expr, *parser.Expr, bool) {

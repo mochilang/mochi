@@ -109,12 +109,13 @@ The files in this directory were produced by the Zig compiler tests. Each Mochi 
 - [x] while_loop.mochi
 
 ## Remaining Tasks
-* Improve handling of group slices to avoid extra `.Items.items` chains.
-* Implement missing struct field type inference for TPCH datasets.
-* Verify float field handling across TPCH queries (q2 works).
-* Continue work on TPCH q3 query; aggregation uses `_sum_int` instead of float.
+* [x] Group slices no longer emit repeated `.Items.items` chains.
+* [ ] Implement struct field type inference for TPCH datasets.
+* [ ] Verify float field handling across TPCH queries (q2 works).
+* [ ] Continue work on TPCH q3 query; aggregation uses `_sum_int` instead of float.
 
 ## Recent Improvements
+- Added helper `ensureGroupSlice` to simplify grouped list access.
 - Join group elements now include all joined rows for q3.
 - Generated Zig for q3 query compiles further but fails due to float sums.
 - Documentation checklist updated.
