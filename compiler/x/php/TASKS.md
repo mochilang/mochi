@@ -7,6 +7,8 @@
   match variable handling.
 - 2025-07-13 15:53 - Added support for TPC-H queries 9-12 and updated golden
   tests.
+- 2025-07-14 00:00 - Generated PHP code for TPC-H queries 13-22 and extended
+  tests to cover all queries.
 
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
