@@ -6,6 +6,7 @@ Initial work added support for generating C structs and list helpers when a prog
 ## Progress log
 
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
+- 2025-08-23 10:20 – Fixed relative path resolution in `compileLoadExpr` so `load_yaml.mochi` compiles.
 - 2025-07-13 09:37 – Added experimental map-literal grouping for two string keys to begin TPC-H q1 support.
 
 - 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.
@@ -77,5 +78,5 @@ should compile and run successfully.
 - [ ] Add join support for JOB dataset programs
 - [ ] Emit aggregation helpers (`sum`, `avg`, `count`) for floats and ints
 - [ ] Serialize lists of structs to JSON for query results
-- [ ] Support loading YAML files at compile time
+- [x] Support loading YAML files at compile time
 - [ ] Implement JSONL output helper for `save` statements

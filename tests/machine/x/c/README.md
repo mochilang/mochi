@@ -56,7 +56,7 @@ Checklist:
 - [x] list_index
 - [x] list_nested_assign
 - [x] list_set_ops
-- [ ] load_yaml
+- [x] load_yaml
 - [x] map_assign
 - [x] map_in_operator
 - [x] map_index
@@ -114,8 +114,6 @@ Checklist:
 - [ ] group_by_multi_join
 - [ ] group_by_multi_join_sort
 - [ ] group_items_iteration
-- [x] load_yaml
 - [ ] python_math
 - [ ] save_jsonl_stdout
 - [ ] tpc-h q1 grouping
-- [ ] TPC-H q1 grouping (wip)

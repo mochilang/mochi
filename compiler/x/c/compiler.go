@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -84,6 +85,7 @@ type Compiler struct {
 	listLens       map[string]int
 	listVals       map[string][]int
 	stackArrays    map[string]bool
+	baseDir        string
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -115,6 +117,7 @@ func New(env *types.Env) *Compiler {
 		listLens:       map[string]int{},
 		listVals:       map[string][]int{},
 		stackArrays:    map[string]bool{},
+		baseDir:        "",
 	}
 }
 
@@ -489,6 +492,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
+	if prog != nil && prog.Pos.Filename != "" {
+		c.baseDir = filepath.Dir(prog.Pos.Filename)
+	}
 	return c.compileProgram(prog)
 }
 
@@ -1913,7 +1919,24 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 	path := "\"\""
+	rawPath := ""
 	if l.Path != nil {
+		rawPath = *l.Path
+		if c.baseDir != "" && !filepath.IsAbs(rawPath) {
+			cand := filepath.Join(c.baseDir, rawPath)
+			if _, err := os.Stat(cand); err != nil {
+				cand2 := filepath.Join(c.baseDir, "..", rawPath)
+				if _, err2 := os.Stat(cand2); err2 == nil {
+					cand = cand2
+				} else {
+					cand3 := filepath.Join(c.baseDir, "..", "..", rawPath)
+					if _, err3 := os.Stat(cand3); err3 == nil {
+						cand = cand3
+					}
+				}
+			}
+			rawPath = cand
+		}
 		path = fmt.Sprintf("%q", *l.Path)
 	}
 	format := "json"
@@ -1929,7 +1952,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 
 	if format == "yaml" && l.Path != nil && l.Type != nil && l.Type.Simple != nil && c.env != nil {
 		if st, ok := c.env.GetStruct(*l.Type.Simple); ok {
-			data, err := os.ReadFile(*l.Path)
+			data, err := os.ReadFile(rawPath)
 			if err == nil {
 				var rows []map[string]any
 				if yaml.Unmarshal(data, &rows) == nil {
