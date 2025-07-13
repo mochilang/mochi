@@ -14,28 +14,10 @@ import (
 	"testing"
 
 	"mochi/compiler/x/ocaml"
+	testutil "mochi/compiler/x/testutil"
 	"mochi/parser"
 	"mochi/types"
 )
-
-func repoRoot(t *testing.T) string {
-	dir, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
-		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
-	t.Fatal("go.mod not found")
-	return ""
-}
 
 // writeError writes a detailed error report.
 func writeError(dir, base string, src []byte, stage string, errOut []byte) {
@@ -67,7 +49,7 @@ func TestPrograms(t *testing.T) {
 	if _, err := exec.LookPath("ocamlc"); err != nil {
 		t.Skipf("ocamlc not installed: %v", err)
 	}
-	root := repoRoot(t)
+	root := testutil.FindRepoRoot(t)
 	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
 	if err != nil {
 		t.Fatalf("glob error: %v", err)
@@ -131,7 +113,7 @@ func TestMain(m *testing.M) {
 }
 
 func updateReadme() {
-	root := repoRoot(&testing.T{})
+	root := testutil.FindRepoRoot(&testing.T{})
 	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "machine", "x", "ocaml")
 	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
