@@ -22,15 +22,15 @@ Compiled programs: 75/100 successful.
 - [x] exists_builtin.mochi
 - [x] for_list_collection.mochi
 - [x] for_loop.mochi
- - [x] for_map_collection.mochi
+- [x] for_map_collection.mochi
 - [x] fun_call.mochi
 - [x] fun_expr_in_let.mochi
 - [x] fun_three_args.mochi
 - [x] go_auto.mochi
-- [ ] group_by.mochi
+- [x] group_by.mochi
 - [ ] group_by_conditional_sum.mochi
 - [ ] group_by_having.mochi
-- [ ] group_by_join.mochi
+- [x] group_by_join.mochi
 - [ ] group_by_left_join.mochi
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
@@ -110,3 +110,6 @@ Compiled programs: 75/100 successful.
 - [ ] Integrate an OCaml runtime to execute compiled programs in CI
 - [x] Expand anonymous record typing for clearer generated code
 - [x] Emit native `for` loops when iterating over numeric ranges
+
+## TPCH Progress
+- [ ] q1.mochi
