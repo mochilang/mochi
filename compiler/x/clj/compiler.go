@@ -1449,6 +1449,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if p.Lit.Str != nil {
 			return strconv.Quote(*p.Lit.Str), nil
 		}
+		if p.Lit.Null {
+			return "nil", nil
+		}
 	case p.List != nil:
 		elems := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
