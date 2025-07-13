@@ -111,8 +111,3 @@ Checklist:
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
-- [ ] Verify TPC-H `q1.mochi` output matches the VM
-
-### Recent Improvements
-
-* Added concise `formatDuration` helper for test output

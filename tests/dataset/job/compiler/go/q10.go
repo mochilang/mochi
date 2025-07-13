@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -40,30 +42,53 @@ func printTestFail(err error, d time.Duration) {
 	fmt.Printf(" fail %v (%s)\n", err, formatDuration(d))
 }
 
-func test_Q3_returns_lexicographically_smallest_sequel_title() {
-	expect(_equal(result, []map[string]string{map[string]string{"movie_title": "Alpha"}}))
+func test_Q10_finds_uncredited_voice_actor_in_Russian_movie() {
+	expect(_equal(result, []map[string]string{map[string]string{"uncredited_voiced_character": "Ivan", "russian_movie": "Vodka Dreams"}}))
 }
 
-type KeywordItem struct {
-	Id      int    `json:"id"`
-	Keyword string `json:"keyword"`
+type Char_nameItem struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
 }
 
-var keyword []KeywordItem
+var char_name []Char_nameItem
 
-type Movie_infoItem struct {
-	Movie_id int    `json:"movie_id"`
-	Info     string `json:"info"`
+type Cast_infoItem struct {
+	Movie_id       int    `json:"movie_id"`
+	Person_role_id int    `json:"person_role_id"`
+	Role_id        int    `json:"role_id"`
+	Note           string `json:"note"`
 }
 
-var movie_info []Movie_infoItem
+var cast_info []Cast_infoItem
 
-type Movie_keywordItem struct {
-	Movie_id   int `json:"movie_id"`
-	Keyword_id int `json:"keyword_id"`
+type Company_nameItem struct {
+	Id           int    `json:"id"`
+	Country_code string `json:"country_code"`
 }
 
-var movie_keyword []Movie_keywordItem
+var company_name []Company_nameItem
+
+type Company_typeItem struct {
+	Id int `json:"id"`
+}
+
+var company_type []Company_typeItem
+
+type Movie_companiesItem struct {
+	Movie_id        int `json:"movie_id"`
+	Company_id      int `json:"company_id"`
+	Company_type_id int `json:"company_type_id"`
+}
+
+var movie_companies []Movie_companiesItem
+
+type Role_typeItem struct {
+	Id   int    `json:"id"`
+	Role string `json:"role"`
+}
+
+var role_type []Role_typeItem
 
 type TitleItem struct {
 	Id              int    `json:"id"`
@@ -72,93 +97,99 @@ type TitleItem struct {
 }
 
 var title []TitleItem
-var allowed_infos []string
-var candidate_titles []string
+var matches []map[string]string
 
 type ResultItem struct {
-	Movie_title any `json:"movie_title"`
+	Uncredited_voiced_character any `json:"uncredited_voiced_character"`
+	Russian_movie               any `json:"russian_movie"`
 }
 
 var result []ResultItem
 
 func main() {
 	failures := 0
-	keyword = _cast[[]KeywordItem]([]KeywordItem{KeywordItem{
-		Id:      1,
-		Keyword: "amazing sequel",
-	}, KeywordItem{
-		Id:      2,
-		Keyword: "prequel",
+	char_name = _cast[[]Char_nameItem]([]Char_nameItem{Char_nameItem{
+		Id:   1,
+		Name: "Ivan",
+	}, Char_nameItem{
+		Id:   2,
+		Name: "Alex",
 	}})
-	movie_info = _cast[[]Movie_infoItem]([]Movie_infoItem{Movie_infoItem{
-		Movie_id: 10,
-		Info:     "Germany",
-	}, Movie_infoItem{
-		Movie_id: 30,
-		Info:     "Sweden",
-	}, Movie_infoItem{
-		Movie_id: 20,
-		Info:     "France",
+	cast_info = _cast[[]Cast_infoItem]([]Cast_infoItem{Cast_infoItem{
+		Movie_id:       10,
+		Person_role_id: 1,
+		Role_id:        1,
+		Note:           "Soldier (voice) (uncredited)",
+	}, Cast_infoItem{
+		Movie_id:       11,
+		Person_role_id: 2,
+		Role_id:        1,
+		Note:           "(voice)",
 	}})
-	movie_keyword = _cast[[]Movie_keywordItem]([]Movie_keywordItem{
-		Movie_keywordItem{
-			Movie_id:   10,
-			Keyword_id: 1,
-		},
-		Movie_keywordItem{
-			Movie_id:   30,
-			Keyword_id: 1,
-		},
-		Movie_keywordItem{
-			Movie_id:   20,
-			Keyword_id: 1,
-		},
-		Movie_keywordItem{
-			Movie_id:   10,
-			Keyword_id: 2,
-		},
-	})
+	company_name = _cast[[]Company_nameItem]([]Company_nameItem{Company_nameItem{
+		Id:           1,
+		Country_code: "[ru]",
+	}, Company_nameItem{
+		Id:           2,
+		Country_code: "[us]",
+	}})
+	company_type = _cast[[]Company_typeItem]([]Company_typeItem{Company_typeItem{Id: 1}, Company_typeItem{Id: 2}})
+	movie_companies = _cast[[]Movie_companiesItem]([]Movie_companiesItem{Movie_companiesItem{
+		Movie_id:        10,
+		Company_id:      1,
+		Company_type_id: 1,
+	}, Movie_companiesItem{
+		Movie_id:        11,
+		Company_id:      2,
+		Company_type_id: 1,
+	}})
+	role_type = _cast[[]Role_typeItem]([]Role_typeItem{Role_typeItem{
+		Id:   1,
+		Role: "actor",
+	}, Role_typeItem{
+		Id:   2,
+		Role: "director",
+	}})
 	title = _cast[[]TitleItem]([]TitleItem{TitleItem{
 		Id:              10,
-		Title:           "Alpha",
+		Title:           "Vodka Dreams",
 		Production_year: 2006,
 	}, TitleItem{
-		Id:              30,
-		Title:           "Beta",
-		Production_year: 2008,
-	}, TitleItem{
-		Id:              20,
-		Title:           "Gamma",
-		Production_year: 2009,
+		Id:              11,
+		Title:           "Other Film",
+		Production_year: 2004,
 	}})
-	allowed_infos = []string{
-		"Sweden",
-		"Norway",
-		"Germany",
-		"Denmark",
-		"Swedish",
-		"Denish",
-		"Norwegian",
-		"German",
-	}
-	candidate_titles = func() []string {
-		_res := []string{}
-		for _, k := range keyword {
-			for _, mk := range movie_keyword {
-				if !(mk.Keyword_id == k.Id) {
+	matches = func() []map[string]string {
+		_res := []map[string]string{}
+		for _, chn := range char_name {
+			for _, ci := range cast_info {
+				if !(chn.Id == ci.Person_role_id) {
 					continue
 				}
-				for _, mi := range movie_info {
-					if !(mi.Movie_id == mk.Movie_id) {
+				for _, rt := range role_type {
+					if !(rt.Id == ci.Role_id) {
 						continue
 					}
 					for _, t := range title {
-						if !(t.Id == mi.Movie_id) {
+						if !(t.Id == ci.Movie_id) {
 							continue
 						}
-						if ((strings.Contains(k.Keyword, "sequel") && _contains[string](allowed_infos, mi.Info)) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
-							if ((strings.Contains(k.Keyword, "sequel") && _contains[string](allowed_infos, mi.Info)) && (t.Production_year > 2005)) && (mk.Movie_id == mi.Movie_id) {
-								_res = append(_res, t.Title)
+						for _, mc := range movie_companies {
+							if !(mc.Movie_id == t.Id) {
+								continue
+							}
+							for _, cn := range company_name {
+								if !(cn.Id == mc.Company_id) {
+									continue
+								}
+								if (((strings.Contains(ci.Note, "(voice)") && strings.Contains(ci.Note, "(uncredited)")) && (cn.Country_code == "[ru]")) && (rt.Role == "actor")) && (t.Production_year > 2005) {
+									for _, ct := range company_type {
+										if !(ct.Id == mc.Company_type_id) {
+											continue
+										}
+										_res = append(_res, map[string]string{"character": chn.Name, "movie": t.Title})
+									}
+								}
 							}
 						}
 					}
@@ -167,10 +198,25 @@ func main() {
 		}
 		return _res
 	}()
-	result = _cast[[]ResultItem]([]ResultItem{ResultItem{Movie_title: _min(candidate_titles)}})
+	result = _cast[[]ResultItem]([]ResultItem{ResultItem{
+		Uncredited_voiced_character: _min(func() []string {
+			_res := []string{}
+			for _, x := range matches {
+				_res = append(_res, x["character"])
+			}
+			return _res
+		}()),
+		Russian_movie: _min(func() []string {
+			_res := []string{}
+			for _, x := range matches {
+				_res = append(_res, x["movie"])
+			}
+			return _res
+		}()),
+	}})
 	func() { b, _ := json.Marshal(result); fmt.Println(string(b)) }()
 	{
-		printTestStart("Q3 returns lexicographically smallest sequel title")
+		printTestStart("Q10 finds uncredited voice actor in Russian movie")
 		start := time.Now()
 		var failed error
 		func() {
@@ -179,7 +225,7 @@ func main() {
 					failed = fmt.Errorf("%v", r)
 				}
 			}()
-			test_Q3_returns_lexicographically_smallest_sequel_title()
+			test_Q10_finds_uncredited_voice_actor_in_Russian_movie()
 		}()
 		if failed != nil {
 			failures++
@@ -238,15 +284,6 @@ func _cast[T any](v any) T {
 		panic(err)
 	}
 	return out
-}
-
-func _contains[T comparable](s []T, v T) bool {
-	for _, x := range s {
-		if x == v {
-			return true
-		}
-	}
-	return false
 }
 
 func _convertMapAny(m map[any]any) map[string]any {
