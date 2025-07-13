@@ -26,7 +26,7 @@ func TestFSCompiler_TPCH(t *testing.T) {
 
 	runQuery := func(q string) {
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "fs", q+".fs.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "fs", q+".fs")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "out", q+".out")
 
 		prog, err := parser.Parse(src)
@@ -46,7 +46,7 @@ func TestFSCompiler_TPCH(t *testing.T) {
 			t.Fatalf("read golden: %v", err)
 		}
 		if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-			t.Errorf("generated code mismatch for %s.fs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
+			t.Errorf("generated code mismatch for %s.fs\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, bytes.TrimSpace(wantCode))
 		}
 		dir := t.TempDir()
 		fsPath := filepath.Join(dir, "main.fs")
@@ -77,7 +77,7 @@ func TestFSCompiler_TPCH(t *testing.T) {
 		}
 	}
 
-	for _, q := range []string{"q1", "q2"} {
+	for _, q := range []string{"q1", "q2", "q3", "q4", "q5"} {
 		t.Run(q, func(t *testing.T) { runQuery(q) })
 	}
 }
