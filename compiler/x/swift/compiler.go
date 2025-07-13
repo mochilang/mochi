@@ -45,6 +45,8 @@ func New(env *types.Env) *Compiler {
 		groups:          make(map[string]bool),
 		groupElemType:   make(map[string]string),
 		groupElemFields: make(map[string]map[string]string),
+		groupKeyFields:  make(map[string]map[string]string),
+		groupKeyType:    make(map[string]string),
 		helpers:         make(map[string]bool),
 		autoStructs:     make(map[string]bool),
 		structKeys:      make(map[string]string),
@@ -91,6 +93,8 @@ type compiler struct {
 	groups          map[string]bool
 	groupElemType   map[string]string
 	groupElemFields map[string]map[string]string
+	groupKeyFields  map[string]map[string]string
+	groupKeyType    map[string]string
 	helpers         map[string]bool
 	tupleMap        bool
 	autoStructs     map[string]bool
@@ -1379,7 +1383,21 @@ func (c *compiler) selector(s *parser.SelectorExpr) string {
 	expr := s.Root
 	typ := c.varTypes[s.Root]
 	fields := c.mapFields[s.Root]
-	for _, f := range s.Tail {
+	for i, f := range s.Tail {
+		if c.groups[s.Root] && i == 0 {
+			switch f {
+			case "key":
+				expr += ".key"
+				typ = c.groupKeyType[s.Root]
+				fields = c.groupKeyFields[s.Root]
+				continue
+			case "items":
+				expr += ".Items"
+				typ = "list_" + c.groupElemType[s.Root]
+				fields = nil
+				continue
+			}
+		}
 		if strings.HasPrefix(typ, "map") || fields != nil {
 			t := "Any"
 			if fields != nil {
@@ -1852,6 +1870,10 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 		keyTyp = c.exprType(q.Group.Exprs[0])
 	}
 	gname := q.Group.Name
+	if kf := c.elementFieldTypes(q.Group.Exprs[0]); kf != nil {
+		c.groupKeyFields[gname] = kf
+	}
+	c.groupKeyType[gname] = swiftTypeOf(keyTyp)
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
@@ -1997,6 +2019,8 @@ func (c *compiler) groupQuery(q *parser.QueryExpr) (string, error) {
 	delete(c.groups, gname)
 	delete(c.groupElemType, gname)
 	delete(c.groupElemFields, gname)
+	delete(c.groupKeyFields, gname)
+	delete(c.groupKeyType, gname)
 	return b.String(), nil
 }
 
@@ -2098,6 +2122,10 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	useMapKey := kt == "[String:Any]"
 
 	gname := q.Group.Name
+	if kf := c.elementFieldTypes(q.Group.Exprs[0]); kf != nil {
+		c.groupKeyFields[gname] = kf
+	}
+	c.groupKeyType[gname] = kt
 	c.varTypes[gname] = ""
 	c.mapFields[gname] = nil
 	c.groups[gname] = true
@@ -2327,6 +2355,8 @@ func (c *compiler) groupJoinQuery(q *parser.QueryExpr) (string, error) {
 	delete(c.groups, gname)
 	delete(c.groupElemType, gname)
 	delete(c.groupElemFields, gname)
+	delete(c.groupKeyFields, gname)
+	delete(c.groupKeyType, gname)
 	c.varTypes = savedVars
 	c.mapFields = savedFields
 	return b.String(), nil
@@ -3679,6 +3709,13 @@ const helperGroup = `class _Group {
     var key: Any
     var Items: [Any] = []
     init(_ k: Any) { self.key = k }
+}
+
+@dynamicMemberLookup
+extension Dictionary where Key == String {
+    subscript(dynamicMember member: String) -> Any {
+        return self[member]!
+    }
 }
 
 func _keyStr(_ v: Any) -> String {
