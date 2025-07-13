@@ -539,7 +539,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if name, ok := identName(p.Call.Args[0]); ok && c.groups[name] {
 				return fmt.Sprintf("(length (hash-ref %s 'items))", args[0]), nil
 			}
-			return fmt.Sprintf("(length %s)", args[0]), nil
+			return fmt.Sprintf("(if (and (hash? %[1]s) (hash-has-key? %[1]s 'items)) (length (hash-ref %[1]s 'items)) (length %[1]s))", args[0]), nil
 		case "len":
 			if len(args) != 1 {
 				return "", fmt.Errorf("len expects 1 arg")
@@ -581,7 +581,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", fmt.Errorf("json expects 1 arg")
 			}
 			c.needJSONLib = true
-			return fmt.Sprintf("(displayln (jsexpr->string %s))", args[0]), nil
+			c.needRuntime = true
+			return fmt.Sprintf("(displayln (jsexpr->string (_json-fix %s)))", args[0]), nil
 		default:
 			if ar, ok := c.funArity[p.Call.Func]; ok && len(args) < ar {
 				c.needFuncLib = true
