@@ -1,8 +1,0 @@
-line: 0
-error: cc error: exit status 1
-/workspace/mochi/tests/machine/x/c/list_nested_assign.c: In function ‘main’:
-/workspace/mochi/tests/machine/x/c/list_nested_assign.c:38:17: error: subscripted value is neither array nor pointer nor vector
-   38 |   matrix.data[1][0] = 5;
-      |                 ^
-
-   1: #include <stdio.h>
