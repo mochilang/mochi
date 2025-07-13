@@ -2121,8 +2121,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.AnyType{}, true)
 		elemType := typeString(types.TypeOfExpr(q.Select, genv))
-		if elemType == "" {
+		if elemType == "" || elemType == "_" {
 			elemType = "integer"
+		}
+		if asMapLiteral(q.Select) != nil {
+			elemType = "specialize TFPGMap<string, Variant>"
 		}
 		groupType := typeString(elem)
 		filtered := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", groupType))
@@ -2142,12 +2145,39 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			keyType = "Variant"
 		}
 		tmpGrp := c.newTypedVar(fmt.Sprintf("specialize TArray<specialize _Group<%s, %s>>", keyType, groupType))
-		c.use("_group_by")
 		c.use("_Group")
-		c.writeln(fmt.Sprintf("%s := specialize _group_by<%s, %s>(%s, function(%s: %s): %s begin Result := %s end);", tmpGrp, keyType, groupType, filtered, sanitizeName(q.Var), groupType, keyType, keyExpr))
+		tmpKey := c.newTypedVar(keyType)
+		tmpKs := c.newTypedVar("string")
+		tmpIdx := c.newTypedVar("integer")
+		tmpJ := c.newTypedVar("integer")
+		tmpG := c.newTypedVar(fmt.Sprintf("specialize _Group<%s, %s>", keyType, groupType))
+		c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmpGrp))
+		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Var), filtered))
+		c.writeln("begin")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s := %s;", tmpKey, keyExpr))
+		c.writeln(fmt.Sprintf("%s := VarToStr(%s);", tmpKs, tmpKey))
+		c.writeln(fmt.Sprintf("%s := -1;", tmpIdx))
+		c.writeln(fmt.Sprintf("for %s := 0 to High(%s) do", tmpJ, tmpGrp))
+		c.indent++
+		c.writeln(fmt.Sprintf("if VarToStr(%s[%s].Key) = %s then begin %s := %s; Break; end;", tmpGrp, tmpJ, tmpKs, tmpIdx, tmpJ))
+		c.indent--
+		c.writeln(fmt.Sprintf("if %s = -1 then", tmpIdx))
+		c.writeln("begin")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s := Length(%s);", tmpIdx, tmpGrp))
+		c.writeln(fmt.Sprintf("SetLength(%s, %s + 1);", tmpGrp, tmpIdx))
+		c.writeln(fmt.Sprintf("%s[%s].Key := %s;", tmpGrp, tmpIdx, tmpKey))
+		c.writeln(fmt.Sprintf("SetLength(%s[%s].Items, 0);", tmpGrp, tmpIdx))
+		c.indent--
+		c.writeln("end;")
+		c.writeln(fmt.Sprintf("SetLength(%s[%s].Items, Length(%s[%s].Items)+1);", tmpGrp, tmpIdx, tmpGrp, tmpIdx))
+		c.writeln(fmt.Sprintf("%s[%s].Items[High(%s[%s].Items)] := %s;", tmpGrp, tmpIdx, tmpGrp, tmpIdx, sanitizeName(q.Var)))
+		c.indent--
+		c.writeln("end;")
 		tmpRes := c.newTypedVar(fmt.Sprintf("specialize TArray<%s>", elemType))
 		c.writeln(fmt.Sprintf("SetLength(%s, 0);", tmpRes))
-		c.writeln(fmt.Sprintf("for %s in %s do", sanitizeName(q.Group.Name), tmpGrp))
+		c.writeln(fmt.Sprintf("for %s in %s do", tmpG, tmpGrp))
 		c.writeln("begin")
 		c.indent++
 		c.env = genv
@@ -2157,6 +2187,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			return "", err
 		}
 		c.env = orig
+		valExpr = strings.ReplaceAll(valExpr, sanitizeName(q.Group.Name), tmpG)
 		c.writeln(fmt.Sprintf("%s := Concat(%s, [%s]);", tmpRes, tmpRes, valExpr))
 		c.indent--
 		c.writeln("end;")
@@ -3328,7 +3359,12 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("end;")
 			c.writeln("")
 		case "_group_by":
-			c.writeln("generic function _group_by<K,T>(src: specialize TArray<T>; keyfn: function(it: T): K): specialize TArray<specialize _Group<K,T>>;")
+			c.writeln("type")
+			c.indent++
+			c.writeln("generic TKeyFunc<K,T> = function(it: T): K is nested;")
+			c.indent--
+			c.writeln("")
+			c.writeln("generic function _group_by<K,T>(src: specialize TArray<T>; keyfn: specialize TKeyFunc<K,T>): specialize TArray<specialize _Group<K,T>>;")
 			c.writeln("var i,j,idx: Integer; key: K; keyVar: Variant; ks: string;")
 			c.writeln("begin")
 			c.indent++
