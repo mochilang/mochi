@@ -1547,7 +1547,51 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		resType := zigTypeOf(resTT)
 		c.env = orig
 
-		groupElem := strings.TrimPrefix(zigTypeOf(elemType), "[]const ")
+		// determine element type stored in each group
+		itemType := elemType
+		itemExpr := sanitizeName(q.Var)
+		if len(q.Froms) > 0 || len(q.Joins) > 0 {
+			st := types.StructType{Name: "", Fields: map[string]types.Type{}, Order: []string{}}
+			fields := []string{fmt.Sprintf(".%s = %s", sanitizeName(q.Var), sanitizeName(q.Var))}
+			st.Fields[q.Var] = elemType
+			st.Order = append(st.Order, q.Var)
+			for _, f := range q.Froms {
+				var fe types.Type = types.AnyType{}
+				if lt, ok := c.inferExprType(f.Src).(types.ListType); ok {
+					fe = lt.Elem
+				}
+				st.Fields[f.Var] = fe
+				st.Order = append(st.Order, f.Var)
+				fields = append(fields, fmt.Sprintf(".%s = %s", sanitizeName(f.Var), sanitizeName(f.Var)))
+			}
+			for _, j := range q.Joins {
+				var je types.Type = types.AnyType{}
+				if lt, ok := c.inferExprType(j.Src).(types.ListType); ok {
+					je = lt.Elem
+				}
+				st.Fields[j.Var] = je
+				st.Order = append(st.Order, j.Var)
+				fields = append(fields, fmt.Sprintf(".%s = %s", sanitizeName(j.Var), sanitizeName(j.Var)))
+			}
+			name := c.newStructName()
+			st.Name = name
+			st = c.nameNestedStructs(name, st).(types.StructType)
+			if !c.structs[name] {
+				c.writeln(fmt.Sprintf("const %s = struct {", name))
+				c.indent++
+				for _, f := range st.Order {
+					c.writeln(fmt.Sprintf("%s: %s,", sanitizeName(f), zigTypeOf(st.Fields[f])))
+				}
+				c.indent--
+				c.writeln("};")
+				c.structs[name] = true
+			}
+			child.SetStruct(name, st)
+			itemType = st
+			itemExpr = fmt.Sprintf("%s{ %s }", name, strings.Join(fields, ", "))
+		}
+
+		groupElem := strings.TrimPrefix(zigTypeOf(itemType), "[]const ")
 		resElem := strings.TrimPrefix(resType, "[]const ")
 		groupStruct := c.newStructName()
 		groupType := groupStruct
@@ -1574,7 +1618,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyVar := c.newTmp()
 		b.WriteString(" const " + keyVar + " = " + keyExpr + ";")
 		b.WriteString(" var _found = false; var _idx: usize = 0; for (" + tmp + ".items, 0..) |it, i| { if (_equal(it.key, " + keyVar + ")) { _found = true; _idx = i; break; } }")
-		b.WriteString(" if (_found) { " + tmp + ".items[_idx].Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + ";" + " } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + sanitizeName(q.Var) + ")" + c.catchHandler() + "; " + tmp + ".append(g)" + c.catchHandler() + "; }")
+		b.WriteString(" if (_found) { " + tmp + ".items[_idx].Items.append(" + itemExpr + ")" + c.catchHandler() + ";" + " } else { var g = " + groupType + "{ .key = " + keyVar + ", .Items = std.ArrayList(" + groupElem + ").init(std.heap.page_allocator) }; g.Items.append(" + itemExpr + ")" + c.catchHandler() + "; " + tmp + ".append(g)" + c.catchHandler() + "; }")
 		for i := 0; i < len(q.Joins); i++ {
 			b.WriteString(" }")
 		}
