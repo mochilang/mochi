@@ -1,0 +1,12 @@
+#lang racket
+(require racket/list)
+(require json)
+(define keyword (list (hash 'id 1 'keyword "amazing sequel") (hash 'id 2 'keyword "prequel")))
+(define movie_info (list (hash 'movie_id 10 'info "Germany") (hash 'movie_id 30 'info "Sweden") (hash 'movie_id 20 'info "France")))
+(define movie_keyword (list (hash 'movie_id 10 'keyword_id 1) (hash 'movie_id 30 'keyword_id 1) (hash 'movie_id 20 'keyword_id 1) (hash 'movie_id 10 'keyword_id 2)))
+(define title (list (hash 'id 10 'title "Alpha" 'production_year 2006) (hash 'id 30 'title "Beta" 'production_year 2008) (hash 'id 20 'title "Gamma" 'production_year 2009)))
+(define allowed_infos '("Sweden" "Norway" "Germany" "Denmark" "Swedish" "Denish" "Norwegian" "German"))
+(define candidate_titles (for*/list ([k keyword] [mk movie_keyword] [mi movie_info] [t title] #:when (and (equal? (hash-ref mk 'keyword_id) (hash-ref k 'id)) (equal? (hash-ref mi 'movie_id) (hash-ref mk 'movie_id)) (equal? (hash-ref t 'id) (hash-ref mi 'movie_id)) (and (and (and (regexp-match? (regexp "sequel") (hash-ref k 'keyword)) (cond [(string? allowed_infos) (regexp-match? (regexp (hash-ref mi 'info)) allowed_infos)] [(hash? allowed_infos) (hash-has-key? allowed_infos (hash-ref mi 'info))] [else (member (hash-ref mi 'info) allowed_infos)])) (> (hash-ref t 'production_year) 2005)) (equal? (hash-ref mk 'movie_id) (hash-ref mi 'movie_id))))) (hash-ref t 'title)))
+(define result (list (hash 'movie_title (apply min candidate_titles))))
+(displayln (jsexpr->string result))
+(when (equal? result (list (hash 'movie_title "Alpha"))) (displayln "ok"))
