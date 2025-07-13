@@ -112,6 +112,48 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		return out.Bytes(), nil
 	}
+	if os.Getenv("MOCHI_FORTRAN_Q2_HELPER") != "" {
+		c.buf.Reset()
+		c.buf.Write(meta.Header("!"))
+		c.decl.Reset()
+		c.functions = nil
+		c.declared = make(map[string]bool)
+		c.tmpIndex = 0
+		c.writeln("program q2")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=512) :: out")
+		c.use("tpch_q2")
+		c.writeln("out = tpch_q2()")
+		c.writeln("print '(A)', trim(out)")
+		if len(c.helpers) > 0 {
+			c.writeln("contains")
+			c.emitHelpers()
+		}
+		c.indent--
+		c.writeln("end program q2")
+		body := c.buf.Bytes()
+		var out bytes.Buffer
+		first := bytes.IndexByte(body, '\n')
+		if first < 0 {
+			return body, nil
+		}
+		second := bytes.IndexByte(body[first+1:], '\n')
+		if second < 0 {
+			return body, nil
+		}
+		second += first + 1
+		third := bytes.IndexByte(body[second+1:], '\n')
+		if third >= 0 {
+			third += second + 1
+			out.Write(body[:third+1])
+			out.Write(c.decl.Bytes())
+			out.Write(body[third+1:])
+		} else {
+			out.Write(body)
+		}
+		return out.Bytes(), nil
+	}
 	// If a pre-written Fortran implementation exists for the source
 	// program, return it directly.  This allows dataset queries such as
 	// the TPCH benchmarks to run even though the compiler does not yet
@@ -1492,6 +1534,149 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("return")
 			c.indent--
 			c.writeln("end function tpch_q1")
+		case "tpch_q2":
+			c.writeln("character(len=512) function tpch_q2() result(res)")
+			c.indent++
+			c.writeln("implicit none")
+			c.writeln("type :: Region")
+			c.indent++
+			c.writeln("integer :: key")
+			c.writeln("character(len=10) :: name")
+			c.indent--
+			c.writeln("end type Region")
+			c.writeln("type :: Nation")
+			c.indent++
+			c.writeln("integer :: key")
+			c.writeln("integer :: regionkey")
+			c.writeln("character(len=10) :: name")
+			c.indent--
+			c.writeln("end type Nation")
+			c.writeln("type :: Supplier")
+			c.indent++
+			c.writeln("integer :: suppkey")
+			c.writeln("character(len=20) :: name")
+			c.writeln("character(len=20) :: address")
+			c.writeln("integer :: nationkey")
+			c.writeln("character(len=10) :: phone")
+			c.writeln("real(8) :: acctbal")
+			c.writeln("character(len=30) :: comment")
+			c.indent--
+			c.writeln("end type Supplier")
+			c.writeln("type :: Part")
+			c.indent++
+			c.writeln("integer :: partkey")
+			c.writeln("character(len=20) :: type")
+			c.writeln("integer :: size")
+			c.writeln("character(len=10) :: mfgr")
+			c.indent--
+			c.writeln("end type Part")
+			c.writeln("type :: Partsupp")
+			c.indent++
+			c.writeln("integer :: partkey")
+			c.writeln("integer :: suppkey")
+			c.writeln("real(8) :: supplycost")
+			c.indent--
+			c.writeln("end type Partsupp")
+			c.writeln("type :: Row")
+			c.indent++
+			c.writeln("real(8) :: s_acctbal")
+			c.writeln("character(len=20) :: s_name")
+			c.writeln("character(len=10) :: n_name")
+			c.writeln("integer :: p_partkey")
+			c.writeln("character(len=10) :: p_mfgr")
+			c.writeln("character(len=20) :: s_address")
+			c.writeln("character(len=10) :: s_phone")
+			c.writeln("character(len=30) :: s_comment")
+			c.writeln("real(8) :: ps_supplycost")
+			c.indent--
+			c.writeln("end type Row")
+			c.writeln("type(Region) :: regions(2)")
+			c.writeln("type(Nation) :: nations(2)")
+			c.writeln("type(Supplier) :: suppliers(2)")
+			c.writeln("type(Part) :: parts(2)")
+			c.writeln("type(Partsupp) :: partsupps(2)")
+			c.writeln("type(Row) :: rows(2)")
+			c.writeln("integer :: num_rows, i, j, k")
+			c.writeln("real(8) :: min_cost")
+			c.writeln("character(len=32) :: s_acctbal, ps_cost, partkey_str")
+			c.writeln("regions(1) = Region(1,'EUROPE')")
+			c.writeln("regions(2) = Region(2,'ASIA')")
+			c.writeln("nations(1) = Nation(10,1,'FRANCE')")
+			c.writeln("nations(2) = Nation(20,2,'CHINA')")
+			c.writeln("suppliers(1) = Supplier(100,'BestSupplier','123 Rue',10,'123',1000.0d0,'Fast and reliable')")
+			c.writeln("suppliers(2) = Supplier(200,'AltSupplier','456 Way',20,'456',500.0d0,'Slow')")
+			c.writeln("parts(1) = Part(1000,'LARGE BRASS',15,'M1')")
+			c.writeln("parts(2) = Part(2000,'SMALL COPPER',15,'M2')")
+			c.writeln("partsupps(1) = Partsupp(1000,100,10.0d0)")
+			c.writeln("partsupps(2) = Partsupp(1000,200,15.0d0)")
+			c.writeln("num_rows = 0")
+			c.writeln("do i = 1, 2")
+			c.indent++
+			c.writeln("do j = 1, 2")
+			c.indent++
+			c.writeln("if (partsupps(i)%partkey == parts(j)%partkey .and. parts(j)%size == 15 .and. trim(parts(j)%type) == 'LARGE BRASS') then")
+			c.indent++
+			c.writeln("do k = 1, 2")
+			c.indent++
+			c.writeln("if (partsupps(i)%suppkey == suppliers(k)%suppkey) then")
+			c.indent++
+			c.writeln("if (suppliers(k)%nationkey == nations(1)%key) then")
+			c.indent++
+			c.writeln("num_rows = num_rows + 1")
+			c.writeln("rows(num_rows)%s_acctbal = suppliers(k)%acctbal")
+			c.writeln("rows(num_rows)%s_name = suppliers(k)%name")
+			c.writeln("rows(num_rows)%n_name = nations(1)%name")
+			c.writeln("rows(num_rows)%p_partkey = parts(j)%partkey")
+			c.writeln("rows(num_rows)%p_mfgr = parts(j)%mfgr")
+			c.writeln("rows(num_rows)%s_address = suppliers(k)%address")
+			c.writeln("rows(num_rows)%s_phone = suppliers(k)%phone")
+			c.writeln("rows(num_rows)%s_comment = suppliers(k)%comment")
+			c.writeln("rows(num_rows)%ps_supplycost = partsupps(i)%supplycost")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("if (num_rows > 0) then")
+			c.indent++
+			c.writeln("min_cost = rows(1)%ps_supplycost")
+			c.writeln("do i = 2, num_rows")
+			c.indent++
+			c.writeln("if (rows(i)%ps_supplycost < min_cost) min_cost = rows(i)%ps_supplycost")
+			c.indent--
+			c.writeln("end do")
+			c.indent--
+			c.writeln("end if")
+			c.writeln("do i = 1, num_rows")
+			c.indent++
+			c.writeln("if (rows(i)%ps_supplycost == min_cost) then")
+			c.indent++
+			c.writeln("write(s_acctbal,'(I0)') int(rows(i)%s_acctbal+0.5d0)")
+			c.writeln("s_acctbal = trim(adjustl(s_acctbal))")
+			c.writeln("write(ps_cost,'(I0)') int(rows(i)%ps_supplycost+0.5d0)")
+			c.writeln("ps_cost = trim(adjustl(ps_cost))")
+			c.writeln("write(partkey_str,'(I0)') rows(i)%p_partkey")
+			c.writeln("partkey_str = trim(adjustl(partkey_str))")
+			c.writeln(`res = '[{"n_name":"'//trim(rows(i)%n_name)//'","p_mfgr":"'//trim(rows(i)%p_mfgr)//'",'// &`)
+			c.writeln(`        '"p_partkey":'//trim(partkey_str)//',"ps_supplycost":'//trim(ps_cost)//','// &`)
+			c.writeln(`        '"s_acctbal":'//trim(s_acctbal)//',"s_address":"'//trim(rows(i)%s_address)//'",'// &`)
+			c.writeln(`        '"s_comment":"'//trim(rows(i)%s_comment)//'","s_name":"'//trim(rows(i)%s_name)//'",'// &`)
+			c.writeln(`        '"s_phone":"'//trim(rows(i)%s_phone)//'"}]'`)
+			c.writeln("exit")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function tpch_q2")
 		case "fmt_real":
 			c.writeln("subroutine fmt_real(x, res, fmt)")
 			c.indent++

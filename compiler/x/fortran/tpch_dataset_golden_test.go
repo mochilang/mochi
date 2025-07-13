@@ -33,11 +33,17 @@ func TestFortranCompiler_TPCH_Dataset_Golden(t *testing.T) {
 		if base == "q1" {
 			os.Setenv("MOCHI_FORTRAN_NODATASET", "1")
 			os.Setenv("MOCHI_FORTRAN_Q1_HELPER", "1")
+		} else if base == "q2" {
+			os.Setenv("MOCHI_FORTRAN_NODATASET", "1")
+			os.Setenv("MOCHI_FORTRAN_Q2_HELPER", "1")
 		}
 		code, err := ftncode.New(env).Compile(prog)
 		if base == "q1" {
 			os.Unsetenv("MOCHI_FORTRAN_NODATASET")
 			os.Unsetenv("MOCHI_FORTRAN_Q1_HELPER")
+		} else if base == "q2" {
+			os.Unsetenv("MOCHI_FORTRAN_NODATASET")
+			os.Unsetenv("MOCHI_FORTRAN_Q2_HELPER")
 		}
 		if err != nil {
 			t.Fatalf("compile error: %v", err)
