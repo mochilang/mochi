@@ -1,10 +1,12 @@
 # C++ Compiler Tasks
 
-## Recent Enhancements (2025-07-13 08:03 UTC)
+## Recent Enhancements (2025-07-13 09:34 UTC)
 - Improved struct field type inference when the base variable's struct type is
   available only via a vector element type.
 - Added constant numeric folding in binary expressions.
 - Added unary constant folding for numeric and boolean values.
+- Fallback to element type when variable struct info is missing in
+  `structFromVars`.
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
