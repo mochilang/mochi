@@ -1028,54 +1028,114 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
+	type operand struct {
+		expr  string
+		isStr bool
+		part  *parser.BinaryOp
+	}
+
 	left, err := c.compileUnary(b.Left)
 	if err != nil {
 		return "", err
 	}
-	res := left
-	leftIsStr := isStringUnary(b.Left)
-	for _, op := range b.Right {
-		r, err := c.compilePostfix(op.Right)
+	operands := []operand{{expr: left, isStr: isStringUnary(b.Left)}}
+	ops := []string{}
+
+	for _, p := range b.Right {
+		r, err := c.compilePostfix(p.Right)
 		if err != nil {
 			return "", err
 		}
-		switch op.Op {
-		case "in":
-			typ := c.typeOfPostfix(op.Right)
-			switch typ {
-			case "map":
-				res = fmt.Sprintf("maps:is_key(%s, %s)", res, r)
-			case "string":
-				res = fmt.Sprintf("string:str(%s, %s) > 0", r, res)
+		op := p.Op
+		if op == "union" && p.All {
+			op = "union_all"
+		}
+		operands = append(operands, operand{expr: r, isStr: isStringPostfix(p.Right), part: p})
+		ops = append(ops, op)
+	}
+
+	prec := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	contains := func(sl []string, s string) bool {
+		for _, v := range sl {
+			if v == s {
+				return true
+			}
+		}
+		return false
+	}
+
+	for _, level := range prec {
+		for i := 0; i < len(ops); {
+			if !contains(level, ops[i]) {
+				i++
+				continue
+			}
+			l := operands[i]
+			r := operands[i+1]
+			op := ops[i]
+
+			var expr string
+			var isStr bool
+
+			switch op {
+			case "+":
+				if l.isStr || r.isStr {
+					expr = fmt.Sprintf("%s ++ %s", l.expr, r.expr)
+					isStr = true
+				} else {
+					expr = fmt.Sprintf("(%s + %s)", l.expr, r.expr)
+				}
+			case "-", "*", "/", "<", "<=", ">", ">=", "&&", "||":
+				opStr, _ := c.mapBinOp(op)
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, opStr, r.expr)
+			case "%":
+				expr = fmt.Sprintf("rem(%s, %s)", l.expr, r.expr)
+			case "==", "!=":
+				opStr, _ := c.mapBinOp(op)
+				expr = fmt.Sprintf("(%s %s %s)", l.expr, opStr, r.expr)
+			case "in":
+				typ := ""
+				if r.part != nil {
+					typ = c.typeOfPostfix(r.part.Right)
+				}
+				if typ == "map" {
+					expr = fmt.Sprintf("maps:is_key(%s, %s)", l.expr, r.expr)
+				} else if typ == "string" || (typ == "" && (l.isStr || r.isStr)) {
+					expr = fmt.Sprintf("string:str(%s, %s) > 0", r.expr, l.expr)
+				} else {
+					expr = fmt.Sprintf("lists:member(%s, %s)", l.expr, r.expr)
+				}
+			case "union_all":
+				expr = fmt.Sprintf("(%s ++ %s)", l.expr, r.expr)
+			case "union":
+				expr = fmt.Sprintf("ordsets:union(%s, %s)", l.expr, r.expr)
+			case "except":
+				expr = fmt.Sprintf("ordsets:subtract(%s, %s)", l.expr, r.expr)
+			case "intersect":
+				expr = fmt.Sprintf("ordsets:intersection(%s, %s)", l.expr, r.expr)
 			default:
-				res = fmt.Sprintf("lists:member(%s, %s)", res, r)
+				return "", fmt.Errorf("unsupported operator %s", op)
 			}
-		case "union":
-			if op.All {
-				res = fmt.Sprintf("(%s ++ %s)", res, r)
-			} else {
-				res = fmt.Sprintf("ordsets:union(%s, %s)", res, r)
-			}
-		case "except":
-			res = fmt.Sprintf("ordsets:subtract(%s, %s)", res, r)
-		case "intersect":
-			res = fmt.Sprintf("ordsets:intersection(%s, %s)", res, r)
-		default:
-			opStr, err := c.mapBinOp(op.Op)
-			if err != nil {
-				return "", err
-			}
-			rightIsStr := isStringPostfix(op.Right)
-			if op.Op == "+" && (leftIsStr || rightIsStr) {
-				opStr = "++"
-				leftIsStr = true
-			} else {
-				leftIsStr = false
-			}
-			res = fmt.Sprintf("(%s %s %s)", res, opStr, r)
+
+			operands[i] = operand{expr: expr, isStr: isStr, part: l.part}
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return res, nil
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected binary expr state")
+	}
+	return operands[0].expr, nil
 }
 
 func (c *Compiler) mapBinOp(op string) (string, error) {
@@ -1188,13 +1248,17 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			}
 		case op.Field != nil:
 			name := op.Field.Name
-			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && name == "contains" {
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil && (name == "contains" || name == "starts_with") {
 				i++
 				arg, err := c.compileExpr(p.Ops[i].Call.Args[0])
 				if err != nil {
 					return "", err
 				}
-				val = fmt.Sprintf("(string:str(%s, %s) > 0)", val, arg)
+				if name == "contains" {
+					val = fmt.Sprintf("(string:str(%s, %s) > 0)", val, arg)
+				} else {
+					val = fmt.Sprintf("(string:prefix(%s, %s) /= nomatch)", val, arg)
+				}
 				typ = "bool"
 			} else {
 				val = fmt.Sprintf("maps:get(%s, %s)", name, val)
@@ -1208,7 +1272,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				args[j] = s
 			}
-			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" {
+			if p.Target.Selector != nil && len(p.Target.Selector.Tail) > 0 && (p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "contains" || p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1] == "starts_with") {
 				base := c.refVar(p.Target.Selector.Root)
 				if v, ok := c.globals[p.Target.Selector.Root]; ok {
 					base = v
@@ -1216,7 +1280,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
 					base = fmt.Sprintf("maps:get(%s, %s)", f, base)
 				}
-				val = fmt.Sprintf("(string:str(%s, %s) > 0)", base, args[0])
+				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
+				if method == "contains" {
+					val = fmt.Sprintf("(string:str(%s, %s) > 0)", base, args[0])
+				} else {
+					val = fmt.Sprintf("(string:prefix(%s, %s) /= nomatch)", base, args[0])
+				}
 				typ = "bool"
 			} else {
 				val = fmt.Sprintf("%s(%s)", val, strings.Join(args, ", "))
