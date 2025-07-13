@@ -1,10 +1,10 @@
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Nation {
     n_nationkey: i32,
     n_name: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Customer {
     c_custkey: i32,
     c_name: &'static str,
@@ -15,14 +15,14 @@ struct Customer {
     c_comment: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Order {
     o_orderkey: i32,
     o_custkey: i32,
     o_orderdate: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Lineitem {
     l_orderkey: i32,
     l_returnflag: &'static str,
@@ -30,7 +30,7 @@ struct Lineitem {
     l_discount: f64,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Key {
     c_custkey: i32,
     c_name: &'static str,
@@ -41,7 +41,7 @@ struct Key {
     n_name: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Item {
     c: Customer,
     o: Order,
@@ -49,13 +49,13 @@ struct Item {
     n: Nation,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Group {
     key: Key,
     items: Vec<Item>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Result {
     c_custkey: i32,
     c_name: &'static str,

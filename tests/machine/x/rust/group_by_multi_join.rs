@@ -1,16 +1,16 @@
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Nation {
     id: i32,
     name: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Supplier {
     id: i32,
     nation: i32,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Partsupp {
     part: i32,
     supplier: i32,
@@ -18,19 +18,19 @@ struct Partsupp {
     qty: i32,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Result {
     part: i32,
     value: f64,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Group {
     key: i32,
     items: Vec<Result>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
+#[derive(Default, Debug, Clone, PartialEq, PartialOrd)]
 struct Result1 {
     part: i32,
     total: f64,

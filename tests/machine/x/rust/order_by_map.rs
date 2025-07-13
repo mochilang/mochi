@@ -1,4 +1,4 @@
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Data {
     a: i32,
     b: i32,

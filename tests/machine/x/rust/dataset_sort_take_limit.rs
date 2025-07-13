@@ -1,4 +1,4 @@
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Product {
     name: &'static str,
     price: i32,
