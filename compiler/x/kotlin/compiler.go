@@ -20,11 +20,12 @@ var runtimePieces = map[string]string{
     res.add(item)
     return res
 }`,
-	"avg": `fun avg(list: List<Any?>): Double {
-    if (list.isEmpty()) return 0.0
+	"avg": `fun avg(list: List<Any?>): Number {
+    if (list.isEmpty()) return 0
     var s = 0.0
     for (n in list) s += toDouble(n)
-    return s / list.size
+    val r = s / list.size
+    return if (r % 1.0 == 0.0) r.toInt() else r
 }`,
 	"div": `fun div(a: Any?, b: Any?): Double {
     val x = toDouble(a)
@@ -56,10 +57,15 @@ var runtimePieces = map[string]string{
     }
     return if (m == Int.MAX_VALUE) 0 else m
 }`,
-	"sum": `fun sum(list: List<Any?>): Int {
-    var s = 0
-    for (n in list) s += toInt(n)
-    return s
+	"sum": `fun sum(list: List<Any?>): Number {
+    var s = 0.0
+    var allInt = true
+    for (n in list) {
+        val d = toDouble(n)
+        if (d % 1.0 != 0.0) allInt = false
+        s += d
+    }
+    return if (allInt) s.toInt() else s
 }`,
 	"str":       `fun str(v: Any?): String = v.toString()`,
 	"substring": `fun substring(s: String, start: Int, end: Int): String = s.substring(start, end)`,
@@ -1244,15 +1250,19 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 	case "avg":
 		if len(args) == 1 {
 			c.use("toDouble")
-			return fmt.Sprintf("%s.map{ toDouble(it) }.average()", args[0]), true
+			return fmt.Sprintf("run { val r = %s.map{ toDouble(it) }.average(); if (r %s 1.0 == 0.0) r.toInt() else r }", args[0], "%"), true
 		}
 	case "sum":
 		if len(args) == 1 {
 			t := c.inferExprType(call.Args[0])
 			if lt, ok := t.(types.ListType); ok {
-				if _, ok := lt.Elem.(types.FloatType); ok {
+				switch lt.Elem.(type) {
+				case types.FloatType:
 					c.use("toDouble")
 					return fmt.Sprintf("%s.sumOf { toDouble(it) }", args[0]), true
+				case types.IntType, types.Int64Type:
+					c.use("toInt")
+					return fmt.Sprintf("%s.sumOf { toInt(it) }", args[0]), true
 				}
 			}
 			c.use("sum")
