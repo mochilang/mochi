@@ -1587,6 +1587,34 @@ func (c *Compiler) aggregateExpr(name, list string) string {
 	return list
 }
 
+// simpleMapQuery returns a Dart expression using collection methods if the
+// query is of the form `from v in src select expr` with no additional clauses.
+func (c *Compiler) simpleMapQuery(q *parser.QueryExpr) (string, bool) {
+	if q == nil || len(q.Froms) != 0 || len(q.Joins) != 0 || q.Where != nil ||
+		q.Group != nil || q.Sort != nil || q.Skip != nil || q.Take != nil ||
+		q.Distinct {
+		return "", false
+	}
+
+	src := c.mustExpr(q.Source)
+	child := types.NewEnv(c.env)
+	srcType := types.TypeOfExpr(q.Source, c.env)
+	var elemT types.Type = types.AnyType{}
+	if lt, ok := srcType.(types.ListType); ok {
+		elemT = lt.Elem
+		if _, ok := lt.Elem.(types.MapType); ok {
+			c.mapVars[q.Var] = true
+		}
+	}
+	child.SetVar(q.Var, elemT, true)
+	orig := c.env
+	c.env = child
+	sel := c.mustExpr(q.Select)
+	c.env = orig
+
+	return fmt.Sprintf("%s.map((%s) => %s)", src, q.Var, sel), true
+}
+
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	root := sel.Root
 	tail := sel.Tail
@@ -1702,6 +1730,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
+		}
+		if arg := call.Args[0]; arg != nil && arg.Binary != nil && len(arg.Binary.Right) == 0 && arg.Binary.Left != nil && arg.Binary.Left.Value != nil && arg.Binary.Left.Value.Target != nil && arg.Binary.Left.Value.Target.Query != nil {
+			if expr, ok := c.simpleMapQuery(arg.Binary.Left.Value.Target.Query); ok {
+				return fmt.Sprintf("%s.reduce((a, b) => a + b)", expr), nil
+			}
 		}
 		a := args[0]
 		if _, ok := c.simpleIdentifier(call.Args[0]); ok {
