@@ -1,0 +1,13 @@
+#lang racket
+(require racket/list)
+(require json)
+(define customer (list (hash 'c_custkey 1) (hash 'c_custkey 2) (hash 'c_custkey 3)))
+(define orders (list (hash 'o_orderkey 100 'o_custkey 1 'o_comment "fast delivery") (hash 'o_orderkey 101 'o_custkey 1 'o_comment "no comment") (hash 'o_orderkey 102 'o_custkey 2 'o_comment "special requests only")))
+(define per_customer (for*/list ([c customer]) (hash 'c_count (length (for*/list ([o orders] #:when (and (and (and (equal? (hash-ref o 'o_custkey) (hash-ref c 'c_custkey)) (not (cond [(string? (hash-ref o 'o_comment)) (regexp-match? (regexp "special") (hash-ref o 'o_comment))] [(hash? (hash-ref o 'o_comment)) (hash-has-key? (hash-ref o 'o_comment) "special")] [else (member "special" (hash-ref o 'o_comment))]))) (not (cond [(string? (hash-ref o 'o_comment)) (regexp-match? (regexp "requests") (hash-ref o 'o_comment))] [(hash? (hash-ref o 'o_comment)) (hash-has-key? (hash-ref o 'o_comment) "requests")] [else (member "requests" (hash-ref o 'o_comment))]))))) o)))))
+(define grouped (let ([groups (make-hash)])
+  (for* ([x per_customer]) (let* ([key (hash-ref x 'c_count)] [bucket (hash-ref groups key '())]) (hash-set! groups key (cons x bucket))))
+  (define _groups (for/list ([k (hash-keys groups)]) (hash 'key k 'items (hash-ref groups k))))
+  (set! _groups (sort _groups (lambda (a b) (cond [(string? (let ([g a]) (- (hash-ref g 'key)))) (string>? (let ([g a]) (- (hash-ref g 'key))) (let ([g b]) (- (hash-ref g 'key))))] [(string? (let ([g b]) (- (hash-ref g 'key)))) (string>? (let ([g a]) (- (hash-ref g 'key))) (let ([g b]) (- (hash-ref g 'key))))] [else (> (let ([g a]) (- (hash-ref g 'key))) (let ([g b]) (- (hash-ref g 'key))))]))))
+  (for/list ([g _groups]) (hash 'c_count (hash-ref g 'key) 'custdist (length (hash-ref g 'items))))))
+(displayln (jsexpr->string grouped))
+(when (equal? grouped (list (hash 'c_count 2 'custdist 1) (hash 'c_count 0 'custdist 2))) (displayln "ok"))
