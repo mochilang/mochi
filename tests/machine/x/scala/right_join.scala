@@ -11,9 +11,9 @@ object right_join {
     println("--- Right Join using syntax ---")
     for(entry <- result) {
       if (entry.order != null) {
-        println("Customer" + " " + entry.customerName + " " + "has order" + " " + entry.order.id + " " + "- $" + " " + entry.order.total)
+        println(s"Customer ${entry.customerName} has order ${entry.order.id} - $ ${entry.order.total}")
       } else {
-        println("Customer" + " " + entry.customerName + " " + "has no orders")
+        println(s"Customer ${entry.customerName} has no orders")
       }
     }
   }

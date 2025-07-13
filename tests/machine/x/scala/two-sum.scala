@@ -3,7 +3,7 @@ object two_sum {
     val n = nums.length
     for(i <- 0 until n) {
       for(j <- i + 1 until n) {
-        if ((nums(i) + nums(j)).asInstanceOf[Int] == target) {
+        if (nums(i) + nums(j) == target) {
           return List(i, j)
         }
       }

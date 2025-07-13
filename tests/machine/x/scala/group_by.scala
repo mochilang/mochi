@@ -1,6 +1,7 @@
 object group_by {
   case class People(name: String, age: Int, city: String)
-  case class Stat(city: String, count: Int, avg_age: Double)
+  case class Stat(city: Any, count: Int, avg_age: Double)
+  case class Stat1(city: String, count: Int, avg_age: Double)
 
   case class _Group[K,T](key: K, items: List[T]) extends Iterable[T] { def iterator: Iterator[T] = items.iterator }
 
@@ -9,7 +10,7 @@ object group_by {
   def main(args: Array[String]): Unit = {
     println("--- People grouped by city ---")
     for(s <- stats) {
-      println(s.city + " " + ": count =" + " " + s.count + " " + ", avg_age =" + " " + s.avg_age)
+      println(s"${s.city}: count = ${s.count}, avg_age = ${s.avg_age}")
     }
   }
 }

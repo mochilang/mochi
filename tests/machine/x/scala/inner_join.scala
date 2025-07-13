@@ -9,7 +9,7 @@ object inner_join {
   def main(args: Array[String]): Unit = {
     println("--- Orders with customer info ---")
     for(entry <- result) {
-      println("Order" + " " + entry.orderId + " " + "by" + " " + entry.customerName + " " + "- $" + " " + entry.total)
+      println(s"Order ${entry.orderId} by ${entry.customerName} - $ ${entry.total}")
     }
   }
 }

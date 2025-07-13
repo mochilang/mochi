@@ -1,6 +1,7 @@
 object group_by_multi_join {
   case class Filtered(part: Int, value: Double)
-  case class Grouped(part: Int, total: Int)
+  case class Grouped(part: Any, total: Double)
+  case class Grouped1(part: Int, total: Double)
   case class Nation(id: Int, name: String)
   case class Partsupp(part: Int, supplier: Int, cost: Double, qty: Int)
   case class Supplier(id: Int, nation: Int)

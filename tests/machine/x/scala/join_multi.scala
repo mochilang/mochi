@@ -11,7 +11,7 @@ object join_multi {
   def main(args: Array[String]): Unit = {
     println("--- Multi Join ---")
     for(r <- result) {
-      println(r.name + " " + "bought item" + " " + r.sku)
+      println(s"${r.name} bought item ${r.sku}")
     }
   }
 }

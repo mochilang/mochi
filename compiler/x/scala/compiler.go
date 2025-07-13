@@ -1098,7 +1098,12 @@ func (c *Compiler) compileExprStmt(s *parser.ExprStmt) error {
 					parts[i] = fmt.Sprintf("${%s}", a)
 				}
 			}
-			c.writeln(fmt.Sprintf("println(s\"%s\")", strings.Join(parts, " ")))
+			msg := strings.Join(parts, " ")
+			msg = strings.ReplaceAll(msg, " :", ":")
+			msg = strings.ReplaceAll(msg, " ,", ",")
+			msg = strings.ReplaceAll(msg, " ;", ";")
+			msg = strings.ReplaceAll(msg, " .", ".")
+			c.writeln(fmt.Sprintf("println(s\"%s\")", msg))
 		}
 		return nil
 	}

@@ -6,7 +6,7 @@ object dataset_sort_take_limit {
   def main(args: Array[String]): Unit = {
     println("--- Top products (excluding most expensive) ---")
     for(item <- expensive) {
-      println(item.name + " " + "costs $" + " " + item.price)
+      println(s"${item.name} costs $ ${item.price}")
     }
   }
 }
