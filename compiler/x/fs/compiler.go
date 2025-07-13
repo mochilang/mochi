@@ -1790,15 +1790,24 @@ func (c *Compiler) isStringPrimary(p *parser.Primary) bool {
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
-	if e == nil || e.Binary == nil {
+	if e == nil {
 		return "obj"
 	}
+
 	if isBoolExpr(e) {
 		return "bool"
 	}
+
 	if c.isStringExpr(e) {
 		return "string"
 	}
+
+	if name, ok := c.simpleIdentifier(e); ok {
+		if t, ok2 := c.vars[name]; ok2 {
+			return t
+		}
+	}
+
 	if p := rootPrimary(e); p != nil {
 		if p.Lit != nil {
 			if p.Lit.Int != nil {
@@ -1807,7 +1816,14 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			if p.Lit.Float != nil {
 				return "float"
 			}
+			if p.Lit.Str != nil {
+				return "string"
+			}
+			if p.Lit.Bool != nil {
+				return "bool"
+			}
 		}
+
 		if p.Struct != nil {
 			names := make([]string, len(p.Struct.Fields))
 			types := make([]string, len(p.Struct.Fields))
@@ -1821,6 +1837,7 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			}
 			return c.ensureAnonStruct(names, types, typeMap)
 		}
+
 		if p.Selector != nil {
 			if t, ok := c.vars[p.Selector.Root]; ok {
 				if fields, ok := c.structs[t]; ok && len(p.Selector.Tail) == 1 {
@@ -1831,7 +1848,23 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 				return t
 			}
 		}
+
+		if p.List != nil && len(p.List.Elems) > 0 {
+			return c.inferType(p.List.Elems[0]) + " list"
+		}
+
+		if p.Query != nil {
+			return c.inferQueryElemType(p.Query) + " list"
+		}
 	}
+
+	if e.Binary != nil && len(e.Binary.Right) > 0 {
+		t := c.inferType(e.Binary.Left.Value)
+		if t != "obj" {
+			return t
+		}
+	}
+
 	return "obj"
 }
 
