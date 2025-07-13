@@ -1,1 +1,5 @@
-ERROR on line 50 of file /tmp/job_scheme/q4.scm: invalid type, expected Number: "5.0"
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"rating":"6.2","movie_title":"Alpha Movie"}]
+   test Q4 returns minimum rating and title for sequels ... ok

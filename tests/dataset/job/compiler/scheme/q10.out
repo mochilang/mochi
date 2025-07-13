@@ -1,1 +1,5 @@
-ERROR on line 56 of file /tmp/job_scheme/q10.scm: invalid type, expected Number: #f
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"uncredited_voiced_character":"Ivan","russian_movie":"Vodka Dreams"}]
+   test Q10 finds uncredited voice actor in Russian movie ... ok
