@@ -4,6 +4,7 @@
 - 2025-07-13 05:09 – improved type inference for `append()` calls so list variables adopt the element type.
 - 2025-07-13 07:03 – fixed nested selector handling and avoided unnecessary casts when grouping by built-in keys.
 - 2025-07-13 07:31 – added optional-aware struct generation for join queries.
+- 2025-07-13 08:07 – generated initial Swift code for `tpc-h/q1.mochi` but compilation still fails.
 
 ## Remaining Work
 - [ ] Generate safer optional handling in join queries
