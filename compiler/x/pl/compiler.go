@@ -14,25 +14,26 @@ import (
 )
 
 type Compiler struct {
-	buf           bytes.Buffer
-	funcBuf       bytes.Buffer
-	lambdaBuf     bytes.Buffer
-	out           *bytes.Buffer
-	indent        int
-	tmp           int
-	vars          map[string]string
-	mutVars       map[string]bool
-	retVar        string
-	needsGetItem  bool
-	needsSlice    bool
-	needsContains bool
-	needsLenAny   bool
-	needsSetItem  bool
-	needsGroup    bool
-	needsSetOps   bool
-	needsLoad     bool
-	needsSave     bool
-	needsExpect   bool
+	buf             bytes.Buffer
+	funcBuf         bytes.Buffer
+	lambdaBuf       bytes.Buffer
+	out             *bytes.Buffer
+	indent          int
+	tmp             int
+	vars            map[string]string
+	mutVars         map[string]bool
+	retVar          string
+	needsGetItem    bool
+	needsSlice      bool
+	needsContains   bool
+	needsStartsWith bool
+	needsLenAny     bool
+	needsSetItem    bool
+	needsGroup      bool
+	needsSetOps     bool
+	needsLoad       bool
+	needsSave       bool
+	needsExpect     bool
 
 	currentFun string
 	nested     map[string]nestedInfo
@@ -85,6 +86,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.needsGetItem = false
 	c.needsSlice = false
 	c.needsContains = false
+	c.needsStartsWith = false
 	c.needsLenAny = false
 	c.needsSetItem = false
 	c.needsGroup = false
@@ -157,6 +159,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("contains(List, Item, Res) :-\n")
 		out.WriteString("    string(List), !, (sub_string(List, _, _, _, Item) -> Res = true ; Res = false).\n")
 		out.WriteString("contains(List, Item, Res) :- (member(Item, List) -> Res = true ; Res = false).\n\n")
+	}
+	if c.needsStartsWith {
+		out.WriteString("starts_with(Str, Prefix, Res) :-\n")
+		out.WriteString("    string(Str), !, (sub_string(Str, 0, _, _, Prefix) -> Res = true ; Res = false).\n\n")
 	}
 	if c.needsLenAny {
 		out.WriteString("len_any(Value, Len) :-\n")
@@ -2014,6 +2020,16 @@ func (c *Compiler) compileMethodCall(container, method string, call *parser.Call
 		tmp := c.newTmp()
 		c.needsContains = true
 		c.writeln(fmt.Sprintf("contains(%s, %s, %s),", container, arg, tmp))
+		return tmp, false, nil
+	}
+	if method == "starts_with" && len(call.Args) == 1 {
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.needsStartsWith = true
+		c.writeln(fmt.Sprintf("starts_with(%s, %s, %s),", container, arg, tmp))
 		return tmp, false, nil
 	}
 	if mod, ok := c.ffiModules[container]; ok {
