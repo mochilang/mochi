@@ -5,7 +5,7 @@ struct Person {
         email: &'static str,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 struct Result {
     name: &'static str,
     email: &'static str,

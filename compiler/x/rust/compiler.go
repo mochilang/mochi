@@ -645,6 +645,26 @@ func isEqHashable(t types.Type) bool {
 	return true
 }
 
+func isOrdable(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.FloatType:
+		return false
+	case types.ListType:
+		return isOrdable(tt.Elem)
+	case types.MapType:
+		return false
+	case types.StructType:
+		for _, f := range tt.Order {
+			if !isOrdable(tt.Fields[f]) {
+				return false
+			}
+		}
+	case types.UnionType:
+		return false
+	}
+	return true
+}
+
 // Compile converts a parsed Mochi program into Rust source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
@@ -677,6 +697,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		derives := "#[derive(Default, Debug, Clone, PartialEq"
 		if isEqHashable(st) {
 			derives += ", Eq, Hash"
+		}
+		if isOrdable(st) {
+			derives += ", PartialOrd, Ord"
+		} else {
+			derives += ", PartialOrd"
 		}
 		out.WriteString(derives + ")]\n")
 		out.WriteString("struct " + st.Name + " {\n")
@@ -1465,11 +1490,13 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						rt = types.FloatType{}
 					}
 					if _, ok := lt.(types.FloatType); ok {
-						if _, ok2 := rt.(types.IntType); ok2 {
+						switch rt.(type) {
+						case types.IntType, types.Int64Type:
 							r = fmt.Sprintf("%s as f64", r)
 						}
 					} else if _, ok := rt.(types.FloatType); ok {
-						if _, ok2 := lt.(types.IntType); ok2 {
+						switch lt.(type) {
+						case types.IntType, types.Int64Type:
 							res = fmt.Sprintf("(%s as f64)", res)
 						}
 					}
