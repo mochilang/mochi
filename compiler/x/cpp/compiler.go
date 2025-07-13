@@ -2126,11 +2126,15 @@ func (c *Compiler) compileStructLiteral(sl *parser.StructLiteral) (string, error
 				}
 			}
 			if simple {
-				if t := c.varStruct[v]; t != "" {
-					if idx := strings.Index(t, "{"); idx != -1 {
-						t = t[:idx]
+				typ := c.varStruct[v]
+				if typ == "" {
+					typ = c.elemType[v]
+				}
+				if typ != "" {
+					if idx := strings.Index(typ, "{"); idx != -1 {
+						typ = typ[:idx]
 					}
-					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", t, fld)
+					ftype = fmt.Sprintf("decltype(std::declval<%s>().%s)", typ, fld)
 				}
 			}
 		} else if t := c.varStruct[val]; t != "" {
