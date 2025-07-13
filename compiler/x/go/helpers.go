@@ -340,15 +340,19 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 	}
 
 	// Handle list conversions specially to avoid unnecessary helper calls.
-	if fl, ok := from.(types.ListType); ok {
-		if tl, ok := to.(types.ListType); ok {
-			if equalTypes(fl.Elem, tl.Elem) {
-				return fmt.Sprintf("%s(%s)", toGo, expr)
-			}
-			c.use("_convSlice")
-			return fmt.Sprintf("_convSlice[%s,%s](%s)", goType(fl.Elem), goType(tl.Elem), expr)
-		}
-	}
+       if fl, ok := from.(types.ListType); ok {
+               if tl, ok := to.(types.ListType); ok {
+                       if equalTypes(fl.Elem, tl.Elem) {
+                               return fmt.Sprintf("%s(%s)", toGo, expr)
+                       }
+                       convPrefix := fmt.Sprintf("_convSlice[%s,%s](", goType(fl.Elem), goType(tl.Elem))
+                       if strings.HasPrefix(strings.TrimSpace(expr), convPrefix) {
+                               return expr
+                       }
+                       c.use("_convSlice")
+                       return fmt.Sprintf("_convSlice[%s,%s](%s)", goType(fl.Elem), goType(tl.Elem), expr)
+               }
+       }
 
 	if isString(from) {
 		c.imports["strconv"] = true

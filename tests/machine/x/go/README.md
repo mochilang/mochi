@@ -109,16 +109,16 @@ Checklist:
 - [x] q1.mochi
 - [ ] q2.mochi
 
-### TPCH Progress
-
-- [ ] Confirm runtime output for `q1.mochi`
-
 ## Remaining Tasks
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
 - [ ] Verify TPC-H `q1.mochi` output matches the VM
 - [x] Fix struct inference for dataset queries (e.g. `q1.mochi`)
+
+### TPCH Progress
+
+- [ ] Confirm runtime output for `q1.mochi`
 
 ### Recent Improvements
 

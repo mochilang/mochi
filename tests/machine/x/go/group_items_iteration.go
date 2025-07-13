@@ -72,8 +72,12 @@ func _print(args ...any) {
 			fmt.Print(" ")
 		}
 		first = false
+		if a == nil {
+			fmt.Print("<nil>")
+			continue
+		}
 		rv := reflect.ValueOf(a)
-		if a == nil || ((rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil()) {
+		if (rv.Kind() == reflect.Map || rv.Kind() == reflect.Slice) && rv.IsNil() {
 			fmt.Print("<nil>")
 			continue
 		}
