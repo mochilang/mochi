@@ -25,7 +25,7 @@ func shouldUpdate() bool {
 	return f != nil && f.Value.String() == "true"
 }
 
-// TestZigCompiler_TPCH_Golden compiles TPCH queries q1 and q2
+// TestZigCompiler_TPCH_Golden compiles TPCH queries q1 through q5
 // and compares the generated Zig code with golden files.
 func TestZigCompiler_TPCH_Golden(t *testing.T) {
 	zigc, err := zigcode.EnsureZig()
@@ -33,7 +33,7 @@ func TestZigCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("zig not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 2; i++ {
+	for i := 1; i <= 5; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
@@ -50,7 +50,7 @@ func TestZigCompiler_TPCH_Golden(t *testing.T) {
 				t.Fatalf("compile error: %v", err)
 			}
 			code = bytes.TrimSpace(code)
-			wantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "zig", q+".zig.out")
+			wantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "zig", q+".zig")
 			if shouldUpdate() {
 				if err := os.WriteFile(wantPath, append(code, '\n'), 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
@@ -61,7 +61,7 @@ func TestZigCompiler_TPCH_Golden(t *testing.T) {
 					t.Fatalf("read golden: %v", err)
 				}
 				if !bytes.Equal(code, bytes.TrimSpace(want)) {
-					t.Errorf("generated code mismatch for %s.zig.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, code, bytes.TrimSpace(want))
+					t.Errorf("generated code mismatch for %s.zig\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, code, bytes.TrimSpace(want))
 				}
 			}
 
