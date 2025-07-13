@@ -1,7 +1,8 @@
 # C++ Compiler Tasks
 
-## Recent Enhancements (2025-07-13 05:15 UTC)
+## Recent Enhancements (2025-07-13 07:26 UTC)
 - Added constant numeric folding in binary expressions.
+- Added unary constant folding for numeric and boolean values.
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
