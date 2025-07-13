@@ -41,21 +41,21 @@ var runtimePieces = map[string]string{
     is Map<*, *> -> v.size
     else -> 0
 }`,
-	"max": `fun max(list: List<Any?>): Int {
-    var m = Int.MIN_VALUE
+	"max": `fun max(list: List<Any?>): Any? {
+    if (list.isEmpty()) return 0
+    var m = list[0]
     for (n in list) {
-        val v = toInt(n)
-        if (v > m) m = v
+        if ((n as Comparable<Any?>) > (m as Comparable<Any?>)) m = n
     }
-    return if (m == Int.MIN_VALUE) 0 else m
+    return m
 }`,
-	"min": `fun min(list: List<Any?>): Int {
-    var m = Int.MAX_VALUE
+	"min": `fun min(list: List<Any?>): Any? {
+    if (list.isEmpty()) return 0
+    var m = list[0]
     for (n in list) {
-        val v = toInt(n)
-        if (v < m) m = v
+        if ((n as Comparable<Any?>) < (m as Comparable<Any?>)) m = n
     }
-    return if (m == Int.MAX_VALUE) 0 else m
+    return m
 }`,
 	"sum": `fun sum(list: List<Any?>): Number {
     var s = 0.0
@@ -1123,6 +1123,18 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 			}
 			return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
 		}
+		if name, ok := c.structForMap(p.Map); ok {
+			fields := make([]string, len(p.Map.Items))
+			for i, it := range p.Map.Items {
+				v, err := c.expr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				k, _ := identName(it.Key)
+				fields[i] = fmt.Sprintf("%s = %s", escapeIdent(k), v)
+			}
+			return fmt.Sprintf("%s(%s)", name, strings.Join(fields, ", ")), nil
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			var k string
@@ -1271,11 +1283,13 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "max":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.max() ?: 0", args[0]), true
+			c.use("max")
+			return fmt.Sprintf("max(%s)", args[0]), true
 		}
 	case "min":
 		if len(args) == 1 {
-			return fmt.Sprintf("%s.min() ?: 0", args[0]), true
+			c.use("min")
+			return fmt.Sprintf("min(%s)", args[0]), true
 		}
 	case "values":
 		if len(args) == 1 {
@@ -2077,16 +2091,12 @@ func listLiteral(e *parser.Expr) (*parser.ListLiteral, bool) {
 func (c *Compiler) discoverStructs(prog *parser.Program) {
 	for _, st := range prog.Statements {
 		var list *parser.ListLiteral
-		var mp *parser.MapLiteral
 		var q *parser.QueryExpr
 		var name string
 		var mutable bool
 		switch {
 		case st.Let != nil && st.Let.Value != nil:
 			list, _ = listLiteral(st.Let.Value)
-			if list == nil {
-				mp, _ = mapLiteral(st.Let.Value)
-			}
 			if ql := st.Let.Value.Binary.Left.Value.Target.Query; ql != nil {
 				q = ql
 			}
@@ -2094,9 +2104,6 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 			mutable = false
 		case st.Var != nil && st.Var.Value != nil:
 			list, _ = listLiteral(st.Var.Value)
-			if list == nil {
-				mp, _ = mapLiteral(st.Var.Value)
-			}
 			if ql := st.Var.Value.Binary.Left.Value.Target.Query; ql != nil {
 				q = ql
 			}
@@ -2158,29 +2165,6 @@ func (c *Compiler) discoverStructs(prog *parser.Program) {
 					c.mapNodes[m] = structName
 				}
 			}
-		} else if mp != nil {
-			keys := []string{}
-			for _, it := range mp.Items {
-				if k, ok := identName(it.Key); ok {
-					keys = append(keys, k)
-				} else {
-					keys = nil
-					break
-				}
-			}
-			if keys == nil || len(keys) == 0 {
-				continue
-			}
-			fields := map[string]types.Type{}
-			for i, it := range mp.Items {
-				fields[keys[i]] = c.inferExprType(it.Value)
-			}
-			structName := structNameFromVar(name)
-			stype := types.StructType{Name: structName, Fields: fields, Order: keys}
-			c.inferred[structName] = stype
-			c.env.SetStruct(structName, stype)
-			c.env.SetVar(name, stype, mutable)
-			c.mapNodes[mp] = structName
 		} else if q != nil {
 			if id, ok := identName(q.Select); ok && id == q.Var {
 				if lt, ok := c.inferExprType(q.Source).(types.ListType); ok {
@@ -2252,6 +2236,33 @@ func fieldType(t types.Type, path []string) types.Type {
 		}
 	}
 	return t
+}
+
+func (c *Compiler) structForMap(m *parser.MapLiteral) (string, bool) {
+	keys := make([]string, len(m.Items))
+	for i, it := range m.Items {
+		k, ok := identName(it.Key)
+		if !ok {
+			return "", false
+		}
+		keys[i] = k
+	}
+	for _, st := range c.inferred {
+		if len(st.Order) != len(keys) {
+			continue
+		}
+		match := true
+		for i, k := range st.Order {
+			if k != keys[i] {
+				match = false
+				break
+			}
+		}
+		if match {
+			return st.Name, true
+		}
+	}
+	return "", false
 }
 
 func kotlinCastType(t types.Type) string {
