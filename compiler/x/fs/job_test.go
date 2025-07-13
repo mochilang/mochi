@@ -33,7 +33,7 @@ func TestFSCompiler_JOB(t *testing.T) {
 
 	runQuery := func(q string) {
 		src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "fs", q+".fs.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "fs", q+".fs")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "out", q+".out")
 
 		prog, err := parser.Parse(src)
@@ -55,7 +55,7 @@ func TestFSCompiler_JOB(t *testing.T) {
 		got := stripHeaderJob(bytes.TrimSpace(code))
 		want := bytes.TrimSpace(wantCode)
 		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch for %s.fs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+			t.Errorf("generated code mismatch for %s.fs\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 		}
 		dir := t.TempDir()
 		fsPath := filepath.Join(dir, "main.fs")
@@ -87,7 +87,7 @@ func TestFSCompiler_JOB(t *testing.T) {
 		}
 	}
 
-	for _, q := range []string{"q1", "q2", "q3", "q4", "q5"} {
+	for _, q := range []string{"q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"} {
 		t.Run(q, func(t *testing.T) { runQuery(q) })
 	}
 }
