@@ -1,0 +1,10 @@
+#lang racket
+(require json)
+(define cast_info (list (hash 'movie_id 1 'person_id 101) (hash 'movie_id 2 'person_id 102)))
+(define keyword (list (hash 'id 100 'keyword "marvel-cinematic-universe") (hash 'id 200 'keyword "other")))
+(define movie_keyword (list (hash 'movie_id 1 'keyword_id 100) (hash 'movie_id 2 'keyword_id 200)))
+(define name (list (hash 'id 101 'name "Downey Robert Jr.") (hash 'id 102 'name "Chris Evans")))
+(define title (list (hash 'id 1 'title "Iron Man 3" 'production_year 2013) (hash 'id 2 'title "Old Movie" 'production_year 2000)))
+(define result (for*/list ([ci cast_info] [mk movie_keyword] [k keyword] [n name] [t title] #:when (and (equal? (hash-ref ci 'movie_id) (hash-ref mk 'movie_id)) (equal? (hash-ref mk 'keyword_id) (hash-ref k 'id)) (equal? (hash-ref ci 'person_id) (hash-ref n 'id)) (equal? (hash-ref ci 'movie_id) (hash-ref t 'id)) (and (and (and (string=? (hash-ref k 'keyword) "marvel-cinematic-universe") (regexp-match? (regexp "Downey") (hash-ref n 'name))) (regexp-match? (regexp "Robert") (hash-ref n 'name))) (> (hash-ref t 'production_year) 2010)))) (hash 'movie_keyword (hash-ref k 'keyword) 'actor_name (hash-ref n 'name) 'marvel_movie (hash-ref t 'title))))
+(displayln (jsexpr->string result))
+(when (equal? result (list (hash 'movie_keyword "marvel-cinematic-universe" 'actor_name "Downey Robert Jr." 'marvel_movie "Iron Man 3"))) (displayln "ok"))

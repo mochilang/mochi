@@ -1,0 +1,13 @@
+#lang racket
+(require json)
+(define aka_name (list (hash 'person_id 1 'name "Y. S.")))
+(define cast_info (list (hash 'person_id 1 'movie_id 10 'note "(voice: English version)" 'role_id 1000)))
+(define company_name (list (hash 'id 50 'country_code "[jp]")))
+(define movie_companies (list (hash 'movie_id 10 'company_id 50 'note "Studio (Japan)")))
+(define name (list (hash 'id 1 'name "Yoko Ono") (hash 'id 2 'name "Yuichi")))
+(define role_type (list (hash 'id 1000 'role "actress")))
+(define title (list (hash 'id 10 'title "Dubbed Film")))
+(define eligible (for*/list ([an1 aka_name] [n1 name] [ci cast_info] [t title] [mc movie_companies] [cn company_name] [rt role_type] #:when (and (equal? (hash-ref n1 'id) (hash-ref an1 'person_id)) (equal? (hash-ref ci 'person_id) (hash-ref an1 'person_id)) (equal? (hash-ref t 'id) (hash-ref ci 'movie_id)) (equal? (hash-ref mc 'movie_id) (hash-ref ci 'movie_id)) (equal? (hash-ref cn 'id) (hash-ref mc 'company_id)) (equal? (hash-ref rt 'id) (hash-ref ci 'role_id)) (and (and (and (and (and (and (string=? (hash-ref ci 'note) "(voice: English version)") (string=? (hash-ref cn 'country_code) "[jp]")) (regexp-match? (regexp "(Japan)") (hash-ref mc 'note))) (not (regexp-match? (regexp "(USA)") (hash-ref mc 'note)))) (regexp-match? (regexp "Yo") (hash-ref n1 'name))) (not (regexp-match? (regexp "Yu") (hash-ref n1 'name)))) (string=? (hash-ref rt 'role) "actress")))) (hash 'pseudonym (hash-ref an1 'name) 'movie_title (hash-ref t 'title))))
+(define result (list (hash 'actress_pseudonym (apply min (for*/list ([x eligible]) (hash-ref x 'pseudonym))) 'japanese_movie_dubbed (apply min (for*/list ([x eligible]) (hash-ref x 'movie_title))))))
+(displayln (jsexpr->string result))
+(when (equal? result (list (hash 'actress_pseudonym "Y. S." 'japanese_movie_dubbed "Dubbed Film"))) (displayln "ok"))
