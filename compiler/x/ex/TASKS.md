@@ -3,6 +3,13 @@
 ## Recent Enhancements (2025-07-13 05:12)
 - Documented machine output checklist and TPCH progress.
 
+## TPC-H Progress (2025-07-13 22:45)
+All twenty-two queries (`q1` to `q22`) now compile and execute correctly. The
+golden test `TestExCompiler_TPCHQueries` generates Elixir code for each query,
+runs it through the `elixir` executable, and compares the printed result with
+the expected `.out` file. The generated sources live under
+`tests/dataset/tpc-h/compiler/ex`.
+
 ## Remaining Enhancements
 - [ ] Finish YAML loader support for `load_yaml.mochi`.
 - [ ] Improve formatting of generated code.
