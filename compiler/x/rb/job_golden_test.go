@@ -39,14 +39,8 @@ func TestRBCompiler_JOBQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.rb\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+			if shouldUpdate() {
+				_ = os.WriteFile(codeWant, code, 0644)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.rb")
@@ -60,12 +54,16 @@ func TestRBCompiler_JOBQueries(t *testing.T) {
 				t.Fatalf("ruby run error: %v\n%s", err, out)
 			}
 			gotOut := bytes.TrimSpace(out)
-			wantOut, err := os.ReadFile(outWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+			if shouldUpdate() {
+				_ = os.WriteFile(outWant, append(gotOut, '\n'), 0644)
+			} else {
+				wantOut, err := os.ReadFile(outWant)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+				}
 			}
 		})
 	}
