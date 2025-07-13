@@ -7,6 +7,8 @@
 - Added unary constant folding for numeric and boolean values.
 - Fallback to element type when variable struct info is missing in
   `structFromVars`.
+- Added fallback to element type when inferring field types in map literals
+  (2025-07-13 09:51 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
