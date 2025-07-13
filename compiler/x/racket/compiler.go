@@ -518,12 +518,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return fmt.Sprintf("(length (hash-ref %s 'items))", args[0]), nil
 			}
 			return fmt.Sprintf("(length %s)", args[0]), nil
-		case "len":
-			if len(args) != 1 {
-				return "", fmt.Errorf("len expects 1 arg")
-			}
-			x := args[0]
-			return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
+               case "len":
+                       if len(args) != 1 {
+                               return "", fmt.Errorf("len expects 1 arg")
+                       }
+                       x := args[0]
+                       if isStringExpr(p.Call.Args[0]) {
+                               return fmt.Sprintf("(string-length %s)", x), nil
+                       }
+                       return fmt.Sprintf("(cond [(string? %s) (string-length %s)] [(hash? %s) (hash-count %s)] [else (length %s)])", x, x, x, x, x), nil
 		case "min":
 			if len(args) != 1 {
 				return "", fmt.Errorf("min expects 1 arg")
