@@ -1,1 +1,7 @@
-[{"movie_title":"Good Movie","movie_year":1995,"production_note":"ACME (co-production)"}]
+[
+  {
+    "movie_title": "Good Movie",
+    "movie_year": 1995,
+    "production_note": "ACME (co-production)"
+  }
+]
