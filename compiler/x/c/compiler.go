@@ -57,29 +57,30 @@ type captureInfo struct {
 }
 
 type Compiler struct {
-	structLits     map[*parser.MapLiteral]types.StructType
-	buf            bytes.Buffer
-	indent         int
-	tmp            int
-	env            *types.Env
-	lambdas        []string
-	needs          map[string]bool
-	externs        []string
-	externObjects  []string
-	structs        map[string]bool
-	listStructs    map[string]bool
-	fetchStructs   map[string]bool
-	currentStruct  string
-	autoType       bool
-	captures       map[string]captureInfo
-	capturesByFun  map[string][]string
-	uninitVars     map[string]bool
-	pointerVars    map[string]bool
-	groupKeys      map[string]types.Type
-	builtinAliases map[string]string
-	needMath       bool
-	listLens       map[string]int
-	listVals       map[string][]int
+	structLits      map[*parser.MapLiteral]types.StructType
+	buf             bytes.Buffer
+	indent          int
+	tmp             int
+	env             *types.Env
+	lambdas         []string
+	needs           map[string]bool
+	externs         []string
+	externObjects   []string
+	structs         map[string]bool
+	listStructs     map[string]bool
+	fetchStructs    map[string]bool
+	currentStruct   string
+	autoType        bool
+	captures        map[string]captureInfo
+	capturesByFun   map[string][]string
+	uninitVars      map[string]bool
+	pointerVars     map[string]bool
+	groupKeys       map[string]types.Type
+	groupKeyAliases map[string]map[string]string
+	builtinAliases  map[string]string
+	needMath        bool
+	listLens        map[string]int
+	listVals        map[string][]int
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -94,22 +95,23 @@ func (c *Compiler) popPointerVars(old map[string]bool) {
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:            env,
-		structLits:     map[*parser.MapLiteral]types.StructType{},
-		lambdas:        []string{},
-		needs:          map[string]bool{},
-		structs:        map[string]bool{},
-		listStructs:    map[string]bool{},
-		fetchStructs:   map[string]bool{},
-		externObjects:  []string{},
-		captures:       map[string]captureInfo{},
-		capturesByFun:  map[string][]string{},
-		uninitVars:     map[string]bool{},
-		pointerVars:    map[string]bool{},
-		groupKeys:      map[string]types.Type{},
-		builtinAliases: map[string]string{},
-		listLens:       map[string]int{},
-		listVals:       map[string][]int{},
+		env:             env,
+		structLits:      map[*parser.MapLiteral]types.StructType{},
+		lambdas:         []string{},
+		needs:           map[string]bool{},
+		structs:         map[string]bool{},
+		listStructs:     map[string]bool{},
+		fetchStructs:    map[string]bool{},
+		externObjects:   []string{},
+		captures:        map[string]captureInfo{},
+		capturesByFun:   map[string][]string{},
+		uninitVars:      map[string]bool{},
+		pointerVars:     map[string]bool{},
+		groupKeys:       map[string]types.Type{},
+		groupKeyAliases: map[string]map[string]string{},
+		builtinAliases:  map[string]string{},
+		listLens:        map[string]int{},
+		listVals:        map[string][]int{},
 	}
 }
 
@@ -1188,6 +1190,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 					if keyT != nil {
 						c.groupKeys[q.Group.Name] = keyT
+						if alias := aliasMapFromGroup(q.Group); alias != nil {
+							c.groupKeyAliases[q.Group.Name] = alias
+						}
 					}
 				}
 				if st, ok := c.inferStructFromMap(ml, stmt.Name); ok {
@@ -1202,6 +1207,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				}
 				if q.Group != nil {
 					delete(c.groupKeys, q.Group.Name)
+					delete(c.groupKeyAliases, q.Group.Name)
 				}
 			}
 		}
@@ -2067,6 +2073,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = genv
 					}
 					c.groupKeys[q.Group.Name] = lt.Elem
+					if alias := aliasMapFromGroup(q.Group); alias != nil {
+						c.groupKeyAliases[q.Group.Name] = alias
+					}
 					var retT types.Type
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := c.structLits[ml]; ok {
@@ -2146,6 +2155,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					delete(c.groupKeyAliases, q.Group.Name)
 					if keyType != "" {
 						tmpK := c.newTemp()
 						tmpV := c.newTemp()
@@ -2234,6 +2244,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = genv
 					}
 					c.groupKeys[q.Group.Name] = types.StringType{}
+					if alias := aliasMapFromGroup(q.Group); alias != nil {
+						c.groupKeyAliases[q.Group.Name] = alias
+					}
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if _, ok := c.structLits[ml]; !ok {
 							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -2331,6 +2344,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					delete(c.groupKeyAliases, q.Group.Name)
 					if keyType != "" {
 						tmpK := c.newTemp()
 						tmpV := c.newTemp()
@@ -2406,6 +2420,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = genv
 					}
 					c.groupKeys[q.Group.Name] = types.IntType{}
+					if alias := aliasMapFromGroup(q.Group); alias != nil {
+						c.groupKeyAliases[q.Group.Name] = alias
+					}
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if _, ok := c.structLits[ml]; !ok {
 							if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -2503,6 +2520,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 						c.env = prevEnv
 					}
 					delete(c.groupKeys, q.Group.Name)
+					delete(c.groupKeyAliases, q.Group.Name)
 					if keyType != "" {
 						tmpK := c.newTemp()
 						tmpV := c.newTemp()
@@ -2592,6 +2610,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.env = genv
 						}
 						c.groupKeys[q.Group.Name] = types.StructType{Name: "pair_string", Fields: map[string]types.Type{"a": types.StringType{}, "b": types.StringType{}}, Order: []string{"a", "b"}}
+						if alias := aliasMapFromGroup(q.Group); alias != nil {
+							c.groupKeyAliases[q.Group.Name] = alias
+						}
 						if ml := asMapLiteral(q.Select); ml != nil {
 							if _, ok := c.structLits[ml]; !ok {
 								if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
@@ -2690,6 +2711,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							c.env = prevEnv
 						}
 						delete(c.groupKeys, q.Group.Name)
+						delete(c.groupKeyAliases, q.Group.Name)
 						if keyType != "" {
 							tmpK := c.newTemp()
 							tmpV := c.newTemp()
@@ -4985,6 +5007,8 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 	expr := sanitizeName(s.Root)
 	ptr := c.pointerVars[s.Root]
 	var typ types.Type
+	aliasMap := c.groupKeyAliases[s.Root]
+	keyActive := false
 	if c.currentStruct != "" && c.env != nil {
 		if st, ok := c.env.GetStruct(c.currentStruct); ok {
 			if ft, ok2 := st.Fields[s.Root]; ok2 {
@@ -5013,11 +5037,13 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 			if f == "key" {
 				expr += ".key"
 				typ = gt.Elem
+				keyActive = true
 				continue
 			}
 			if f == "items" {
 				expr += ".items"
 				typ = types.ListType{Elem: gt.Elem}
+				keyActive = false
 				continue
 			}
 		}
@@ -5038,6 +5064,11 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), sanitizeName(f))
 				typ = ft
 				continue
+			}
+		}
+		if keyActive {
+			if alias, ok := aliasMap[f]; ok {
+				f = alias
 			}
 		}
 		if ptr && i == 0 {
@@ -6002,6 +6033,60 @@ func isListStructExpr(e *parser.Expr, env *types.Env) bool {
 		}
 	}
 	return false
+}
+
+func groupExprAlias(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if u == nil || u.Value == nil || u.Value.Target == nil {
+		return ""
+	}
+	if sel := u.Value.Target.Selector; sel != nil {
+		if len(sel.Tail) > 0 {
+			return sanitizeName(sel.Tail[len(sel.Tail)-1])
+		}
+		return sanitizeName(sel.Root)
+	}
+	return ""
+}
+
+func aliasMapFromMapLiteral(ml *parser.MapLiteral) map[string]string {
+	m := map[string]string{}
+	if ml == nil {
+		return m
+	}
+	for _, it := range ml.Items {
+		if key, ok := types.SimpleStringKey(it.Key); ok {
+			name := sanitizeName(key)
+			m[name] = name
+		}
+	}
+	return m
+}
+
+func aliasMapFromGroup(g *parser.GroupByClause) map[string]string {
+	if g == nil {
+		return nil
+	}
+	if len(g.Exprs) == 1 {
+		if ml := asMapLiteral(g.Exprs[0]); ml != nil {
+			return aliasMapFromMapLiteral(ml)
+		}
+	} else if len(g.Exprs) == 2 {
+		a := groupExprAlias(g.Exprs[0])
+		b := groupExprAlias(g.Exprs[1])
+		m := map[string]string{}
+		if a != "" {
+			m[a] = "a"
+		}
+		if b != "" {
+			m[b] = "b"
+		}
+		return m
+	}
+	return nil
 }
 
 func asMapLiteral(e *parser.Expr) *parser.MapLiteral {
