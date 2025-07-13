@@ -6,6 +6,7 @@
   version and the current UTC time.
 - [2025-07-13 05:22] Regenerated Erlang machine outputs with dynamic headers.
 - [2025-07-13 05:23] Added golden outputs for TPCH queries q16 through q21.
+- [2025-07-13 16:26] Added golden output for TPCH query q22.
 - [2025-07-13 05:02] Added support for `MOCHI_HEADER_TIME` and `MOCHI_HEADER_VERSION` environment variables in `meta.Header`.
 - [2025-07-13 05:02] Inline constants when calling `contains` to avoid unbound variable errors.
 
@@ -14,4 +15,4 @@
 - [ ] Fix nested accumulation bug in `group_items_iteration`.
 - [ ] Support extern values for `python_math`.
 - [x] Compile TPC-H query `q1.mochi` successfully.
-- [ ] Compile TPC-H query `q22.mochi` successfully.
+- [x] Compile TPC-H query `q22.mochi` successfully.
