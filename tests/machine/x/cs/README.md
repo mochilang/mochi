@@ -111,4 +111,5 @@ Checklist:
 ## Remaining tasks
 
 - [ ] Compile remaining TPC-H queries in C#
+- [ ] Verify dictionary mode across grouped queries
 - [ ] Refine formatting to mirror manual translations

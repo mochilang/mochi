@@ -565,9 +565,9 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 							c.DictMode = true
 						}
 					}
-				}
-				if isAnonStructExpr(q.Select) {
-					c.DictMode = true
+					if isAnonStructExpr(q.Select) {
+						c.DictMode = true
+					}
 				}
 				return
 			}
@@ -586,9 +586,9 @@ func (c *Compiler) scanProgram(prog *parser.Program) {
 								c.DictMode = true
 							}
 						}
-					}
-					if isAnonStructExpr(q.Select) {
-						c.DictMode = true
+						if isAnonStructExpr(q.Select) {
+							c.DictMode = true
+						}
 					}
 					return
 				}
