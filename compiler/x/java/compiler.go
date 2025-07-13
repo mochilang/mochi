@@ -2564,7 +2564,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			typ := listElemType(c.inferType(p.Call.Args[0]))
-			if typ == "double" {
+			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).sum()", a1), nil
 			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).sum()", a1), nil
@@ -2586,7 +2586,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			typ := listElemType(c.inferType(p.Call.Args[0]))
-			if typ == "double" {
+			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).min().orElse(Double.MAX_VALUE)", a1), nil
 			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).min().orElse(Integer.MAX_VALUE)", a1), nil
@@ -2599,7 +2599,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				return "", err
 			}
 			typ := listElemType(c.inferType(p.Call.Args[0]))
-			if typ == "double" {
+			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).max().orElse(-Double.MAX_VALUE)", a1), nil
 			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).max().orElse(Integer.MIN_VALUE)", a1), nil
