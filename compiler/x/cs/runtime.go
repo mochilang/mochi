@@ -282,6 +282,16 @@ func (c *Compiler) emitRuntime() {
 				c.writeln("return Convert.ToDouble(a) == Convert.ToDouble(b);")
 				c.indent--
 				c.writeln("}")
+				c.writeln("if (a != null && b != null && a.GetType() != b.GetType()) {")
+				c.indent++
+				c.writeln("return JsonSerializer.Serialize(a) == JsonSerializer.Serialize(b);")
+				c.indent--
+				c.writeln("}")
+				c.writeln("if (a != null && b != null && !a.GetType().IsPrimitive && !b.GetType().IsPrimitive && a is not string && b is not string) {")
+				c.indent++
+				c.writeln("return JsonSerializer.Serialize(a) == JsonSerializer.Serialize(b);")
+				c.indent--
+				c.writeln("}")
 				c.writeln("return Equals(a, b);")
 				c.indent--
 				c.writeln("}")
