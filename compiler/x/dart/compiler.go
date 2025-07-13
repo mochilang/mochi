@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
@@ -1737,6 +1738,12 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 	if _, ok := c.groupKeys[sel.Root]; ok && root != sel.Root {
 		typ = types.MapType{}
 	}
+	if (typ == nil || typ == types.AnyType{}) && len(tail) > 0 {
+		r := []rune(root)
+		if len(r) > 0 && unicode.IsLower(r[0]) {
+			typ = types.MapType{}
+		}
+	}
 	if st, ok := c.env.GetStruct(root); ok && len(st.Order) == 0 {
 		return root + "()"
 	}
@@ -1764,7 +1771,31 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 			switch tt := tcur.(type) {
 			case types.MapType:
 				s += fmt.Sprintf("['%s']", part)
-				tcur = tt.Value
+				if tt.Value == nil {
+					if i+1 < len(tail) {
+						nx := tail[i+1]
+						if nx != "contains" && nx != "starts_with" && nx != "ends_with" {
+							tcur = types.MapType{}
+						} else {
+							tcur = types.AnyType{}
+						}
+					} else {
+						tcur = types.MapType{}
+					}
+				} else if _, ok := tt.Value.(types.AnyType); ok {
+					if i+1 < len(tail) {
+						nx := tail[i+1]
+						if nx != "contains" && nx != "starts_with" && nx != "ends_with" {
+							tcur = types.MapType{}
+						} else {
+							tcur = types.AnyType{}
+						}
+					} else {
+						tcur = types.MapType{}
+					}
+				} else {
+					tcur = tt.Value
+				}
 			case types.StructType:
 				s += "." + part
 				if ft, ok := tt.Fields[part]; ok {
