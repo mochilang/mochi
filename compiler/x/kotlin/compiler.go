@@ -1072,44 +1072,29 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Selector != nil:
 		name := p.Selector.Root
 		t, _ := c.env.GetVar(p.Selector.Root)
-		if len(p.Selector.Tail) > 0 {
-			if gt, ok := t.(types.GroupType); ok && p.Selector.Tail[0] == "key" {
-				name += ".key"
-				t = gt.Key
-				tail := p.Selector.Tail[1:]
-				if len(tail) > 0 {
-					if isStructType(t) || isStringType(t) {
-						parts := make([]string, len(tail))
-						for i, part := range tail {
-							parts[i] = escapeIdent(part)
-						}
-						name += "." + strings.Join(parts, ".")
-					} else {
-						if mt, ok := t.(types.MapType); ok {
-							name = fmt.Sprintf("(%s as MutableMap<%s, %s>)", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
-						} else {
-							name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
-						}
-						for _, part := range tail {
-							name += fmt.Sprintf("[%q]", part)
-						}
-					}
+		for i, part := range p.Selector.Tail {
+			if i == 0 {
+				if gt, ok := t.(types.GroupType); ok && part == "key" {
+					name += ".key"
+					t = gt.Key
+					continue
 				}
-			} else if isStructType(t) || isStringType(t) {
-				parts := make([]string, len(p.Selector.Tail))
-				for i, part := range p.Selector.Tail {
-					parts[i] = escapeIdent(part)
-				}
-				name += "." + strings.Join(parts, ".")
-			} else {
-				if mt, ok := t.(types.MapType); ok {
-					name = fmt.Sprintf("(%s as MutableMap<%s, %s>)", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value))
+			}
+			if isStructType(t) {
+				name += "." + escapeIdent(part)
+				if st, ok := t.(types.StructType); ok {
+					t = st.Fields[part]
 				} else {
-					name = fmt.Sprintf("(%s as MutableMap<*, *>)", name)
+					t = types.AnyType{}
 				}
-				for _, part := range p.Selector.Tail {
-					name += fmt.Sprintf("[%q]", part)
-				}
+				continue
+			}
+			if mt, ok := t.(types.MapType); ok {
+				name = fmt.Sprintf("(%s as MutableMap<%s, %s>)[%q]", name, kotlinTypeOf(mt.Key), kotlinTypeOf(mt.Value), part)
+				t = mt.Value
+			} else {
+				name = fmt.Sprintf("(%s as MutableMap<*, *>)[%q]", name, part)
+				t = types.AnyType{}
 			}
 		}
 		return name, nil
@@ -1287,19 +1272,8 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "sum":
 		if len(args) == 1 {
-			t := c.inferExprType(call.Args[0])
-			if lt, ok := t.(types.ListType); ok {
-				switch lt.Elem.(type) {
-				case types.FloatType:
-					c.use("toDouble")
-					return fmt.Sprintf("%s.sumOf { toDouble(it) }", args[0]), true
-				case types.IntType, types.Int64Type:
-					c.use("toInt")
-					return fmt.Sprintf("%s.sumOf { toInt(it) }", args[0]), true
-				}
-			}
 			c.use("sum")
-			c.use("toInt")
+			c.use("toDouble")
 			return fmt.Sprintf("sum(%s)", args[0]), true
 		}
 	case "max":
