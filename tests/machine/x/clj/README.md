@@ -2,7 +2,7 @@
 
 This directory contains Clojure code generated from the Mochi programs in `tests/vm/valid` using the Clojure compiler. Each program was compiled and executed. Successful runs produced an `.out` file while failures produced an `.error` file.
 
-Compiled programs: 99/100 successful.
+Compiled programs: 98/100 successful.
 - [x] append_builtin.mochi
 - [x] avg_builtin.mochi
 - [x] basic_compare.mochi
@@ -53,7 +53,7 @@ Compiled programs: 99/100 successful.
 - [x] list_index.mochi
 - [x] list_nested_assign.mochi
 - [x] list_set_ops.mochi
-- [x] load_yaml.mochi
+- [ ] load_yaml.mochi
 - [x] map_assign.mochi
 - [x] map_in_operator.mochi
 - [x] map_index.mochi
@@ -105,7 +105,14 @@ Compiled programs: 99/100 successful.
 - [x] while_loop.mochi
 
 ## Status
-1 program failed.
+2 programs failed.
+
+### TPCH Queries
+- [x] q1.mochi
+- [x] q2.mochi
 
 ## Remaining tasks
 - [ ] Fix failing examples
+- [ ] Investigate `outer_join.mochi` runtime error
+- [ ] Handle data file path for `load_yaml.mochi`
+- [ ] Compile additional TPCH queries
