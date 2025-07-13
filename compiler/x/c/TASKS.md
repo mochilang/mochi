@@ -3,6 +3,10 @@
 The current C backend cannot compile dataset queries that use grouping. The implementation stops when encountering a `group by` clause and emits `return 0`.
 Initial work added support for generating C structs and list helpers when a program contains a list of map literals. This allows datasets like `lineitem` in Q1 to be represented as native structs.
 
+## Progress log
+
+- 2025-07-13 05:01 – Added struct printing and basic left join support so `left_join.mochi` and `left_join_multi.mochi` compile and run.
+
 Relevant code showing the limitation:
 
 ```
