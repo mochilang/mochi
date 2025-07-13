@@ -96,7 +96,7 @@ const europe_suppliers = (() => {
   return _tmp2;
 })()
 ;
-const target_parts = part.filter((p) => (((p.p_size == 15) && p.p_type) == "LARGE BRASS"));
+const target_parts = part.filter((p) => ((p.p_size == 15) && (p.p_type == "LARGE BRASS")));
 const target_partsupp = (() => {
   const _tmp3: Array<{ n_name: any; p_mfgr: any; p_partkey: any; ps_supplycost: any; s_acctbal: any; s_address: any; s_comment: any; s_name: any; s_phone: any }> = [];
   for (const ps of partsupp) {
@@ -138,4 +138,3 @@ if (!(JSON.stringify(result) === JSON.stringify([
   ps_supplycost: 10
 }
 ]))) { throw new Error("Q2 returns only supplier with min cost in Europe for brass part failed"); }
-

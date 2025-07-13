@@ -100,7 +100,7 @@ const local_customer_supplier_orders = (() => {
           if (!((l.l_orderkey == o.o_orderkey))) continue;
           for (const s of supplier) {
             if (!((s.s_suppkey == l.l_suppkey))) continue;
-            if (!((((((o.o_orderdate >= "1994-01-01") && o.o_orderdate) < "1995-01-01") && s.s_nationkey) == c.c_nationkey))) continue;
+            if (!((((o.o_orderdate >= "1994-01-01") && (o.o_orderdate < "1995-01-01")) && (s.s_nationkey == c.c_nationkey)))) continue;
             _tmp2.push({
   nation: n.n_name,
   revenue: (l.l_extendedprice * ((1 - l.l_discount)))
