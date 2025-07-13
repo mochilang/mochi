@@ -87,8 +87,13 @@ func Ensure() error { return EnsureElixir() }
 // Format runs Elixir's Code formatter on the provided source code. If the
 // `elixir` binary is not available, the code is returned unchanged. Formatting
 // errors are returned.
+func exHeader() []byte {
+	base := meta.Header("#")
+	return bytes.Replace(base, []byte("Mochi compiler"), []byte("Mochi Elixir compiler"), 1)
+}
+
 func Format(code []byte) ([]byte, error) {
-	header := meta.Header("#")
+	header := exHeader()
 	if path, err := exec.LookPath("mix"); err == nil {
 		cmd := exec.Command(path, "format", "-")
 		cmd.Stdin = bytes.NewReader(code)

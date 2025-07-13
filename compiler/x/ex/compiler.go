@@ -11,7 +11,6 @@ import (
 	"sort"
 	"strings"
 
-	"mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -385,7 +384,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		code = formatted
 	}
 	var out bytes.Buffer
-	out.Write(meta.Header("#"))
+	out.Write(exHeader())
 	for _, def := range c.structDefs {
 		out.WriteString(def)
 	}
