@@ -1,0 +1,48 @@
+let orders = [
+  { o_orderkey: 1, o_orderdate: "1993-07-01", o_orderpriority: "1-URGENT" },
+  { o_orderkey: 2, o_orderdate: "1993-07-15", o_orderpriority: "2-HIGH" },
+  { o_orderkey: 3, o_orderdate: "1993-08-01", o_orderpriority: "3-NORMAL" }
+]
+
+let lineitem = [
+  { l_orderkey: 1, l_commitdate: "1993-07-10", l_receiptdate: "1993-07-12" }, // late
+  { l_orderkey: 1, l_commitdate: "1993-07-12", l_receiptdate: "1993-07-10" }, // not late
+  { l_orderkey: 2, l_commitdate: "1993-07-20", l_receiptdate: "1993-07-25" }, // late
+  { l_orderkey: 3, l_commitdate: "1993-08-02", l_receiptdate: "1993-08-01" }, // not late
+  { l_orderkey: 3, l_commitdate: "1993-08-05", l_receiptdate: "1993-08-10" }  // late
+]
+
+let start_date = "1993-07-01"
+let end_date = "1993-08-01"
+
+let date_filtered_orders =
+  from o in orders
+  where o.o_orderdate >= start_date && o.o_orderdate < end_date
+  select o
+
+let late_orders =
+  from o in date_filtered_orders
+  where exists(
+    from l in lineitem
+    where l.l_orderkey == o.o_orderkey && l.l_commitdate < l.l_receiptdate
+    select l
+  )
+  select o
+
+let result =
+  from o in late_orders
+  group by o.o_orderpriority into g
+  order by g.key
+  select {
+    o_orderpriority: g.key,
+    order_count: count(g)
+  }
+
+json(result)
+
+test "Q4 returns count of orders with late lineitems in range" {
+  expect result == [
+    { o_orderpriority: "1-URGENT", order_count: 1 },
+    { o_orderpriority: "2-HIGH", order_count: 1 }
+  ]
+}

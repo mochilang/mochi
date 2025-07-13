@@ -121,6 +121,13 @@ func updateReadme() {
 	buf.WriteString(strings.Join(lines, "\n"))
 	buf.WriteString("\n\n")
 	buf.WriteString("## Dataset Tasks\n")
-	buf.WriteString("- [ ] tpch/q1.mochi\n")
+	compDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "php")
+	for i := 1; i <= 5; i++ {
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(compDir, fmt.Sprintf("q%d.out", i))); err == nil {
+			mark = "[x]"
+		}
+		fmt.Fprintf(&buf, "- %s tpch/q%d.mochi\n", mark, i)
+	}
 	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
 }

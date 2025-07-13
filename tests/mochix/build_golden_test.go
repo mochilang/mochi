@@ -171,7 +171,7 @@ func TestBuildXPascal(t *testing.T) {
 }
 
 func TestBuildXPHP(t *testing.T) {
-	golden.Run(t, "tests/mochix", ".mochi", ".php.out", func(src string) ([]byte, error) {
+	golden.Run(t, "tests/mochix", ".mochi", ".php", func(src string) ([]byte, error) {
 		return runMochix(t, "buildx", "--target", "php", src)
 	})
 }

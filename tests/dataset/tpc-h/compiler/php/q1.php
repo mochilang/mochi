@@ -41,7 +41,8 @@ $result = (function() use ($lineitem) {
     }
     $result = [];
     foreach ($groups as $_k => $__g) {
-        $g = ['key'=>json_decode($_k, true),'items'=> $__g];
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
         $result[] = [
     "returnflag" => $g['key']['returnflag'],
     "linestatus" => $g['key']['linestatus'],
