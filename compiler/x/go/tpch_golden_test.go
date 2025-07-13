@@ -4,6 +4,7 @@ package gocode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,6 +18,13 @@ import (
 	"mochi/runtime/vm"
 	"mochi/types"
 )
+
+var update = flag.Bool("update", false, "update golden files")
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
+}
 
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -80,7 +88,9 @@ func runTPCHQuery(t *testing.T, base string) {
 	}
 
 	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".go")
-	if want, err := os.ReadFile(codeWant); err == nil {
+	if shouldUpdate() {
+		_ = os.WriteFile(codeWant, code, 0644)
+	} else if want, err := os.ReadFile(codeWant); err == nil {
 		got := stripHeaderTPCH(bytes.TrimSpace(code))
 		want = stripHeaderTPCH(bytes.TrimSpace(want))
 		if !bytes.Equal(got, want) {
@@ -125,6 +135,9 @@ func runTPCHQuery(t *testing.T, base string) {
 	}
 
 	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "out", base+".out")
+	if shouldUpdate() {
+		_ = os.WriteFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".out"), append(gotOut, '\n'))
+	}
 	wantOut, err := os.ReadFile(outWant)
 	if err != nil {
 		t.Skipf("read golden: %v", err)

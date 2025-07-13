@@ -3,11 +3,15 @@
 package main
 
 import (
-	"mochi/compiler/x/go"
+	"bytes"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+
+	gocode "mochi/compiler/x/go"
 	"mochi/parser"
 	"mochi/types"
-	"os"
-	"path/filepath"
 )
 
 func main() {
@@ -22,19 +26,44 @@ func main() {
 		}
 		root = parent
 	}
-	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
-	prog, err := parser.Parse(src)
-	if err != nil {
-		panic(err)
+	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go")
+	_ = os.MkdirAll(outDir, 0o755)
+	for i := 1; i <= 22; i++ {
+		q := fmt.Sprintf("q%d", i)
+		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
+		prog, err := parser.Parse(src)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "parse", q, err)
+			continue
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			fmt.Fprintln(os.Stderr, "type", q, errs[0])
+			continue
+		}
+		code, err := gocode.New(env).Compile(prog)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "compile", q, err)
+			continue
+		}
+		codePath := filepath.Join(outDir, q+".go")
+		if err := os.WriteFile(codePath, code, 0o644); err != nil {
+			fmt.Fprintln(os.Stderr, "write code", q, err)
+			continue
+		}
+		tmp := filepath.Join(os.TempDir(), q+".go")
+		if err := os.WriteFile(tmp, code, 0o644); err != nil {
+			fmt.Fprintln(os.Stderr, "tmp write", q, err)
+			continue
+		}
+		out, err := exec.Command("go", "run", tmp).CombinedOutput()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "run %s: %v\n%s\n", q, err, out)
+			continue
+		}
+		outPath := filepath.Join(outDir, q+".out")
+		if err := os.WriteFile(outPath, bytes.TrimSpace(out), 0o644); err != nil {
+			fmt.Fprintln(os.Stderr, "write out", q, err)
+		}
 	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		panic(errs[0])
-	}
-	code, err := gocode.New(env).Compile(prog)
-	if err != nil {
-		panic(err)
-	}
-	outPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", "q1.go")
-	os.WriteFile(outPath, code, 0644)
 }
