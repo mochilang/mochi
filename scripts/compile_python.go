@@ -18,8 +18,8 @@ import (
 func main() {
 	outDir := filepath.Join("tests", "dataset", "tpc-h", "compiler", "py")
 	_ = os.MkdirAll(outDir, 0o755)
-	// Compile TPCH queries q1 to q10 for golden tests.
-	for i := 1; i <= 10; i++ {
+	// Compile TPCH queries q1 to q22 for golden tests.
+	for i := 1; i <= 22; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join("tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
@@ -51,6 +51,7 @@ func main() {
 		if err != nil {
 			panic(fmt.Errorf("run %s: %v\n%s", q, err, out))
 		}
-		os.WriteFile(filepath.Join(outDir, q+".out"), bytes.TrimSpace(out), 0o644)
+		cleaned := append(bytes.TrimSpace(out), '\n')
+		os.WriteFile(filepath.Join(outDir, q+".out"), cleaned, 0o644)
 	}
 }
