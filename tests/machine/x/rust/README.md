@@ -106,6 +106,10 @@ Compiled programs: 100/100
 - [x] var_assignment
 - [x] while_loop
 
+### TPCH Queries
+
+- [x] q1 (generated `q1.rs` and ran successfully)
+
 ## Remaining Tasks
 
 - [ ] Implement support for dataset joins that currently fail to compile
@@ -120,7 +124,4 @@ Compiled programs: 100/100
 - [ ] Enhance type inference for nested structs
 - [ ] Implement benchmarking harness
 - [ ] Add code formatting similar to rustfmt
-- [ ] Compile `tpc-h/q1.mochi` with Rust compiler
-  - [x] Derive `PartialOrd` for key structs
-  - [x] Cast int literals to `f64` when mixing with floats
-  - [ ] Validate generated output against `tests/dataset/tpc-h/compiler/rust/q1.rs.out`
+- [ ] Validate generated output for `tpc-h/q1.mochi` against reference
