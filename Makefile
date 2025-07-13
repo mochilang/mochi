@@ -13,6 +13,8 @@ BUILD_TIME := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
 # Source paths
 MAIN_SRC := cmd/mochi/main.go
 RUN_SRC  := cmd/mochi-run/main.go
+MOCHIX_NAME := mochix
+MOCHIX_SRC  := cmd/mochix/main.go
 
 # Build flags
 GO       := go
@@ -23,7 +25,7 @@ LDFLAGS := "-s -w -X 'main.version=$(VERSION)' -X 'main.gitCommit=$(GIT_COMMIT)'
 # Build Targets
 # --------------------------
 
-build: build-mochi build-run ## Build all binaries
+build: build-mochi build-run buildx ## Build all binaries
 
 build-mochi:
 	@mkdir -p $(BIN_DIR)
@@ -36,6 +38,12 @@ build-run:
 	@echo "🔧 Building $(RUN_NAME)..."
 	@$(GO) build $(GOFLAGS) -ldflags=$(LDFLAGS) -o $(BIN_DIR)/$(RUN_NAME) $(RUN_SRC)
 	@echo "✅ Built: $(BIN_DIR)/$(RUN_NAME) (v$(VERSION))"
+
+buildx: ## Build mochix binary
+	@mkdir -p $(BIN_DIR)
+	@echo "🔧 Building $(MOCHIX_NAME)..."
+	@$(GO) build -tags slow $(GOFLAGS) -ldflags=$(LDFLAGS) -o $(BIN_DIR)/$(MOCHIX_NAME) $(MOCHIX_SRC)
+	@echo "✅ Built: $(BIN_DIR)/$(MOCHIX_NAME) (v$(VERSION))"
 
 # --------------------------
 # Testing and Golden Update
@@ -92,7 +100,7 @@ update: ## Update Go module dependencies
 
 clean: ## Clean built binaries
 	@echo "🧽 Cleaning binaries..."
-	@rm -f $(BIN_DIR)/$(APP_NAME) $(BIN_DIR)/$(RUN_NAME)
+	@rm -f $(BIN_DIR)/$(APP_NAME) $(BIN_DIR)/$(RUN_NAME) $(BIN_DIR)/$(MOCHIX_NAME)
 	@echo "🗑️  Removed binaries"
 
 release-src: ## Sync source code to GitHub repo
