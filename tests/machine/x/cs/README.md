@@ -106,8 +106,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-## Remaining Tasks
-
-- [ ] Complete dictionary generation for `tpc-h/q1.mochi`
-- [ ] Verify output order matches reference

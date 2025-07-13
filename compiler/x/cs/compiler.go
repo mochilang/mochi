@@ -36,6 +36,10 @@ type Compiler struct {
 	structCount  int
 	Namespace    string
 	testArgs     map[string][]string
+	// When true, compile anonymous struct literals as Dictionary values
+	DictMode bool
+	// internal flag to temporarily force struct literals to dictionaries
+	structAsDict bool
 }
 
 // New creates a new C# compiler.
@@ -55,6 +59,8 @@ func New(env *types.Env) *Compiler {
 		structCount:  0,
 		Namespace:    "",
 		testArgs:     make(map[string][]string),
+		DictMode:     false,
+		structAsDict: false,
 	}
 }
 
@@ -652,6 +658,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 				expr = "null"
 			}
 		}
+		if c.DictMode {
+			switch st := static.(type) {
+			case types.StructType:
+				static = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			case types.ListType:
+				if _, ok := st.Elem.(types.StructType); ok {
+					st.Elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+					static = st
+				}
+			}
+		}
 		c.env.SetVar(s.Let.Name, static, false)
 		c.varTypes[name] = typ
 		decl := "var"
@@ -720,6 +737,17 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			} else {
 				typ = "dynamic"
 				expr = "null"
+			}
+		}
+		if c.DictMode {
+			switch st := static.(type) {
+			case types.StructType:
+				static = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+			case types.ListType:
+				if _, ok := st.Elem.(types.StructType); ok {
+					st.Elem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
+					static = st
+				}
 			}
 		}
 		c.env.SetVar(s.Var.Name, static, true)
@@ -2538,7 +2566,14 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+			if c.DictMode || c.structAsDict {
+				parts[i] = fmt.Sprintf("{ \"%s\", %s }", f.Name, v)
+			} else {
+				parts[i] = fmt.Sprintf("%s = %s", sanitizeName(f.Name), v)
+			}
+		}
+		if c.DictMode || c.structAsDict {
+			return fmt.Sprintf("new Dictionary<string, dynamic> { %s }", strings.Join(parts, ", ")), nil
 		}
 		return fmt.Sprintf("new %s { %s }", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
 	case p.Lit != nil:
@@ -2547,7 +2582,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		t := c.inferPrimaryType(p)
 		elemType := "dynamic"
 		if lt, ok := t.(types.ListType); ok {
-			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" {
+			if st, ok2 := lt.Elem.(types.StructType); ok2 && st.Name == "" && !c.DictMode {
 				base := c.structHint
 				if base == "" {
 					base = "Item"
@@ -2578,7 +2613,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return fmt.Sprintf("new List<%s> { %s }", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
 		t := c.inferPrimaryType(p)
-		if st, ok := t.(types.StructType); ok {
+		if st, ok := t.(types.StructType); ok && !c.DictMode {
 			name := st.Name
 			if name == "" {
 				base := c.structHint
