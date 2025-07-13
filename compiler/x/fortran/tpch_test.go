@@ -34,7 +34,7 @@ func TestFortranCompiler_TPCH(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCodePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "fortran", q+".f90.out")
+			wantCodePath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "fortran", q+".f90")
 			wantCode, err := os.ReadFile(wantCodePath)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
