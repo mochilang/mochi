@@ -1,17 +1,20 @@
 # Scheme Backend Tasks for TPCH Queries
 
-The Scheme backend now targets chibi-scheme and is capable of compiling the
-`tpc-h/q1.mochi` and `tpc-h/q2.mochi` benchmarks. Initial support for the JOB dataset was
-experimented with by compiling `job/q1.mochi`. Compilation and execution for
-`job/q1.mochi` through `job/q10.mochi` are covered by golden tests. Later
-queries currently compile but raise runtime errors because dataset operations
-such as date comparisons and sorting are not fully supported.
+The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi` and `tpc-h/q2.mochi` benchmarks. Initial JOB dataset support was explored for `job/q1.mochi`. Later queries compile but fail at runtime because sorting and date operations are incomplete.
 
-- Rows are represented as association lists and grouped using helper
-  procedures.
-- Aggregations `sum`, `avg` and `count` are implemented as simple folds.
-- A minimal `json` builtin prints values for test output.
-- Golden tests under `tests/compiler/scheme` verify the generated code and
-  execution result for `tpch_q1.mochi`. Additional golden files under
-  `tests/dataset/tpc-h/compiler/scheme` ensure `q1` and `q2` compile even though
-  the programs fail at runtime.
+### Recent Enhancements
+- 2025-07-13 05:05 – Added machine generated output for `tpc-h/q1.mochi` and updated checklist.
+
+### Remaining Work
+- [ ] Better handling of date comparisons and sorting when running JOB benchmarks
+- [ ] More efficient dataset grouping and aggregation
+- [ ] Support for concurrent agents and streaming primitives
+- [ ] Improve macro support for generated Scheme code
+- [ ] Add pattern matching for union types
+- [ ] Implement async/await semantics
+- [ ] Optimize tail-call recursion
+- [ ] Enhance foreign function interface bindings
+- [ ] Provide REPL mode for compiled programs
+- [ ] Add generic type parameter compilation
+- [ ] Extend dataset query language with window functions
+- [ ] Improve error messages for invalid constructs

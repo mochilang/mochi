@@ -104,6 +104,9 @@ This directory contains Scheme code generated from the Mochi programs in `tests/
 - [x] var_assignment
 - [x] while_loop
 
+### TPC-H progress
+- [ ] tpch_q1.mochi
+
 ## Remaining tasks
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
 - [ ] More efficient dataset grouping and aggregation
