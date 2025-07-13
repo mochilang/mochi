@@ -119,6 +119,8 @@ func updateReadme() {
 	fmt.Fprintf(&buf, "## Summary\n%d/%d files compiled successfully\n\n", compiled, total)
 	buf.WriteString("## Checklist\n")
 	buf.WriteString(strings.Join(lines, "\n"))
-	buf.WriteString("\n")
+	buf.WriteString("\n\n")
+	buf.WriteString("## Dataset Tasks\n")
+	buf.WriteString("- [ ] tpch/q1.mochi\n")
 	os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
 }
