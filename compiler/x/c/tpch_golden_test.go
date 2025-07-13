@@ -41,7 +41,7 @@ func TestCCompiler_TPCH_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRootTPCH(t)
-	for i := 1; i <= 15; i++ {
+	for i := 1; i <= 16; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "tpc-h", query+".mochi")
