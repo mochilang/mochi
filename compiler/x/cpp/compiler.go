@@ -123,19 +123,6 @@ func (c *Compiler) defineStruct(info *structInfo) {
 	}
 	def.WriteString("};")
 	c.headerWriteln(def.String())
-	if len(info.Fields) > 0 {
-		var eq strings.Builder
-		eq.WriteString("inline bool operator==(const " + info.Name + " &a, const " + info.Name + " &b){ return ")
-		for i, n := range info.Fields {
-			if i > 0 {
-				eq.WriteString(" && ")
-			}
-			eq.WriteString("a." + n + "==b." + n)
-		}
-		eq.WriteString("; }")
-		c.headerWriteln(eq.String())
-		c.headerWriteln("inline bool operator!=(const " + info.Name + " &a, const " + info.Name + " &b){ return !(a==b); }")
-	}
 }
 
 func sanitizeName(name string) string {
