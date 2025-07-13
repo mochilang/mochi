@@ -2052,6 +2052,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			c.needSumFloat = true
 			return fmt.Sprintf("(sum_float %s)", args[0]), nil
 		}
+		if _, ok := types.TypeOfPrimary(&parser.Primary{Call: call}, c.env).(types.FloatType); ok {
+			c.needSumFloat = true
+			return fmt.Sprintf("(sum_float %s)", args[0]), nil
+		}
 		c.needSum = true
 		return fmt.Sprintf("(sum %s)", args[0]), nil
 	case "values":

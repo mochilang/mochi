@@ -24,9 +24,21 @@ func main() {
 		}
 		root = parent
 	}
+
+	start, end := 1, 22
+	if len(os.Args) > 1 {
+		fmt.Sscanf(os.Args[1], "%d", &start)
+	}
+	if len(os.Args) > 2 {
+		fmt.Sscanf(os.Args[2], "%d", &end)
+	}
+
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
+
 	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "ocaml")
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 1; i <= 5; i++ {
+	for i := start; i <= end; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
@@ -37,7 +49,7 @@ func main() {
 		if errs := types.Check(prog, env); len(errs) > 0 {
 			panic(errs[0])
 		}
-		code, err := ocaml.New(env).Compile(prog, src)
+		code, err := ocaml.New(env).Compile(prog, "")
 		if err != nil {
 			panic(err)
 		}
