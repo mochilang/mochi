@@ -190,7 +190,9 @@ const sliceHelper = `(define (_slice obj i j)
                         (cons (car xs) out)
                         out)))))))`
 
-const groupHelpers = `(define (_count v)
+const groupHelpers = `(import (scheme base))
+
+(define (_count v)
   (cond
     ((string? v) (string-length v))
     ((and (pair? v) (assq 'Items v)) (length (cdr (assq 'Items v))))
@@ -1412,6 +1414,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return "", fmt.Errorf("count expects 1 arg")
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_count %s)", args[0]), nil
 	case "exists":
 		if len(args) != 1 {
@@ -1425,30 +1428,35 @@ func (c *Compiler) compileCall(call *parser.CallExpr, recv string) (string, erro
 			return fmt.Sprintf("(> (length %s) 0)", args[0]), nil
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_exists %s)", args[0]), nil
 	case "avg":
 		if len(args) != 1 {
 			return "", fmt.Errorf("avg expects 1 arg")
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_avg %s)", args[0]), nil
 	case "max":
 		if len(args) != 1 {
 			return "", fmt.Errorf("max expects 1 arg")
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_max %s)", args[0]), nil
 	case "min":
 		if len(args) != 1 {
 			return "", fmt.Errorf("min expects 1 arg")
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_min %s)", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
 		}
 		c.needGroup = true
+		c.needDataset = true
 		return fmt.Sprintf("(_sum %s)", args[0]), nil
 	case "substr":
 		if len(args) != 3 {
