@@ -114,62 +114,85 @@ def _query(src, joins, opts):
     return res
 
 
-def test_Q7_finds_movie_features_biography_for_person():
-    assert result == [{"of_person": "Alan Brown", "biography_movie": "Feature Film"}]
+def test_Q11_returns_min_company__link_type_and_title():
+    assert result == [
+        {
+            "from_company": "Best Film Co",
+            "movie_link_type": "follow-up",
+            "non_polish_sequel_movie": "Alpha",
+        }
+    ]
 
 
-aka_name = [{"person_id": 1, "name": "Anna Mae"}, {"person_id": 2, "name": "Chris"}]
-cast_info = [{"person_id": 1, "movie_id": 10}, {"person_id": 2, "movie_id": 20}]
-info_type = [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
-link_type = [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
+company_name = [
+    {"id": 1, "name": "Best Film Co", "country_code": "[us]"},
+    {"id": 2, "name": "Warner Studios", "country_code": "[de]"},
+    {"id": 3, "name": "Polish Films", "country_code": "[pl]"},
+]
+company_type = [
+    {"id": 1, "kind": "production companies"},
+    {"id": 2, "kind": "distributors"},
+]
+keyword = [{"id": 1, "keyword": "sequel"}, {"id": 2, "keyword": "thriller"}]
+link_type = [
+    {"id": 1, "link": "follow-up"},
+    {"id": 2, "link": "follows from"},
+    {"id": 3, "link": "remake"},
+]
+movie_companies = [
+    {"movie_id": 10, "company_id": 1, "company_type_id": 1, "note": None},
+    {"movie_id": 20, "company_id": 2, "company_type_id": 1, "note": None},
+    {"movie_id": 30, "company_id": 3, "company_type_id": 1, "note": None},
+]
+movie_keyword = [
+    {"movie_id": 10, "keyword_id": 1},
+    {"movie_id": 20, "keyword_id": 1},
+    {"movie_id": 20, "keyword_id": 2},
+    {"movie_id": 30, "keyword_id": 1},
+]
 movie_link = [
-    {"linked_movie_id": 10, "link_type_id": 1},
-    {"linked_movie_id": 20, "link_type_id": 2},
-]
-name = [
-    {"id": 1, "name": "Alan Brown", "name_pcode_cf": "B", "gender": "m"},
-    {"id": 2, "name": "Zoe", "name_pcode_cf": "Z", "gender": "f"},
-]
-person_info = [
-    {"person_id": 1, "info_type_id": 1, "note": "Volker Boehm"},
-    {"person_id": 2, "info_type_id": 1, "note": "Other"},
+    {"movie_id": 10, "link_type_id": 1},
+    {"movie_id": 20, "link_type_id": 2},
+    {"movie_id": 30, "link_type_id": 3},
 ]
 title = [
-    {"id": 10, "title": "Feature Film", "production_year": 1990},
-    {"id": 20, "title": "Late Film", "production_year": 2000},
+    {"id": 10, "production_year": 1960, "title": "Alpha"},
+    {"id": 20, "production_year": 1970, "title": "Beta"},
+    {"id": 30, "production_year": 1985, "title": "Polish Movie"},
 ]
-rows = _query(
-    aka_name,
+matches = _query(
+    company_name,
     [
-        {"items": name, "on": lambda an, n: n["id"] == an["person_id"]},
+        {"items": movie_companies, "on": lambda cn, mc: mc["company_id"] == cn["id"]},
         {
-            "items": person_info,
-            "on": lambda an, n, pi: pi["person_id"] == an["person_id"],
+            "items": company_type,
+            "on": lambda cn, mc, ct: ct["id"] == mc["company_type_id"],
+        },
+        {"items": title, "on": lambda cn, mc, ct, t: t["id"] == mc["movie_id"]},
+        {
+            "items": movie_keyword,
+            "on": lambda cn, mc, ct, t, mk: mk["movie_id"] == t["id"],
         },
         {
-            "items": info_type,
-            "on": lambda an, n, pi, it: it["id"] == pi["info_type_id"],
+            "items": keyword,
+            "on": lambda cn, mc, ct, t, mk, k: k["id"] == mk["keyword_id"],
         },
-        {
-            "items": cast_info,
-            "on": lambda an, n, pi, it, ci: ci["person_id"] == n["id"],
-        },
-        {"items": title, "on": lambda an, n, pi, it, ci, t: t["id"] == ci["movie_id"]},
         {
             "items": movie_link,
-            "on": lambda an, n, pi, it, ci, t, ml: ml["linked_movie_id"] == t["id"],
+            "on": lambda cn, mc, ct, t, mk, k, ml: ml["movie_id"] == t["id"],
         },
         {
             "items": link_type,
-            "on": lambda an, n, pi, it, ci, t, ml, lt: lt["id"] == ml["link_type_id"],
+            "on": lambda cn, mc, ct, t, mk, k, ml, lt: lt["id"] == ml["link_type_id"],
         },
     ],
     {
-        "select": lambda an, n, pi, it, ci, t, ml, lt: {
-            "person_name": n["name"],
-            "movie_title": t["title"],
+        "select": lambda cn, mc, ct, t, mk, k, ml, lt: {
+            "company": cn["name"],
+            "link": lt["link"],
+            "title": t["title"],
         },
-        "where": lambda an, n, pi, it, ci, t, ml, lt: (
+        "where": lambda cn, mc, ct, t, mk, k, ml, lt: (
             (
                 (
                     (
@@ -178,45 +201,37 @@ rows = _query(
                                 (
                                     (
                                         (
-                                            (
-                                                (
-                                                    "a" in an["name"]
-                                                    and it["info"] == "mini biography"
-                                                )
-                                                and lt["link"] == "features"
+                                            cn["country_code"] != "[pl]"
+                                            and (
+                                                "Film" in cn["name"]
+                                                or "Warner" in cn["name"]
                                             )
-                                            and n["name_pcode_cf"] >= "A"
                                         )
-                                        and n["name_pcode_cf"] <= "F"
+                                        and ct["kind"] == "production companies"
                                     )
-                                    and (
-                                        n["gender"] == "m"
-                                        or (
-                                            n["gender"] == "f"
-                                            and str(n["name"]).startswith("B")
-                                        )
-                                    )
+                                    and k["keyword"] == "sequel"
                                 )
-                                and pi["note"] == "Volker Boehm"
+                                and "follow" in lt["link"]
                             )
-                            and t["production_year"] >= 1980
+                            and mc["note"] == None
                         )
-                        and t["production_year"] <= 1995
+                        and t["production_year"] >= 1950
                     )
-                    and pi["person_id"] == an["person_id"]
+                    and t["production_year"] <= 2000
                 )
-                and pi["person_id"] == ci["person_id"]
+                and ml["movie_id"] == mk["movie_id"]
             )
-            and an["person_id"] == ci["person_id"]
+            and ml["movie_id"] == mc["movie_id"]
         )
-        and ci["movie_id"] == ml["linked_movie_id"],
+        and mk["movie_id"] == mc["movie_id"],
     },
 )
 result = [
     {
-        "of_person": _min([r["person_name"] for r in rows]),
-        "biography_movie": _min([r["movie_title"] for r in rows]),
+        "from_company": _min([x["company"] for x in matches]),
+        "movie_link_type": _min([x["link"] for x in matches]),
+        "non_polish_sequel_movie": _min([x["title"] for x in matches]),
     }
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
-test_Q7_finds_movie_features_biography_for_person()
+test_Q11_returns_min_company__link_type_and_title()

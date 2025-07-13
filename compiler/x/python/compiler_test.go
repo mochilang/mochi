@@ -4,6 +4,7 @@ package pycode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -261,7 +262,7 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 		t.Skip("python3 not installed")
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 20; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
@@ -280,18 +281,25 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
+			update := flag.Lookup("update") != nil && flag.Lookup("update").Value.String() == "true"
 			codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".py")
 			if _, err := os.Stat(codeWantPath); err != nil {
 				codeWantPath = codeWantPath + ".out"
 			}
-			wantCode, err := os.ReadFile(codeWantPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
 			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+			if update {
+				if err := os.WriteFile(codeWantPath, got, 0o644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+			} else {
+				wantCode, err := os.ReadFile(codeWantPath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				want := stripHeader(bytes.TrimSpace(wantCode))
+				if !bytes.Equal(got, want) {
+					t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+				}
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
@@ -305,12 +313,18 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			}
 			gotOut := bytes.TrimSpace(out)
 			outWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".out")
-			wantOut, err := os.ReadFile(outWantPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
+			if update {
+				if err := os.WriteFile(outWantPath, gotOut, 0o644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+			} else {
+				wantOut, err := os.ReadFile(outWantPath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
+				}
 			}
 		})
 	}

@@ -114,109 +114,100 @@ def _query(src, joins, opts):
     return res
 
 
-def test_Q7_finds_movie_features_biography_for_person():
-    assert result == [{"of_person": "Alan Brown", "biography_movie": "Feature Film"}]
+def test_Q15_finds_the_earliest_US_internet_movie_release_after_2000():
+    assert result == [
+        {"release_date": "USA: March 2005", "internet_movie": "Example Movie"}
+    ]
 
 
-aka_name = [{"person_id": 1, "name": "Anna Mae"}, {"person_id": 2, "name": "Chris"}]
-cast_info = [{"person_id": 1, "movie_id": 10}, {"person_id": 2, "movie_id": 20}]
-info_type = [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
-link_type = [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
-movie_link = [
-    {"linked_movie_id": 10, "link_type_id": 1},
-    {"linked_movie_id": 20, "link_type_id": 2},
+aka_title = [{"movie_id": 1}, {"movie_id": 2}]
+company_name = [{"id": 1, "country_code": "[us]"}, {"id": 2, "country_code": "[gb]"}]
+company_type = [{"id": 10}, {"id": 20}]
+info_type = [{"id": 5, "info": "release dates"}, {"id": 6, "info": "other"}]
+keyword = [{"id": 100}, {"id": 200}]
+movie_companies = [
+    {
+        "movie_id": 1,
+        "company_id": 1,
+        "company_type_id": 10,
+        "note": "release (2005) (worldwide)",
+    },
+    {
+        "movie_id": 2,
+        "company_id": 2,
+        "company_type_id": 20,
+        "note": "release (1999) (worldwide)",
+    },
 ]
-name = [
-    {"id": 1, "name": "Alan Brown", "name_pcode_cf": "B", "gender": "m"},
-    {"id": 2, "name": "Zoe", "name_pcode_cf": "Z", "gender": "f"},
+movie_info = [
+    {"movie_id": 1, "info_type_id": 5, "note": "internet", "info": "USA: March 2005"},
+    {"movie_id": 2, "info_type_id": 5, "note": "theater", "info": "USA: May 1999"},
 ]
-person_info = [
-    {"person_id": 1, "info_type_id": 1, "note": "Volker Boehm"},
-    {"person_id": 2, "info_type_id": 1, "note": "Other"},
-]
+movie_keyword = [{"movie_id": 1, "keyword_id": 100}, {"movie_id": 2, "keyword_id": 200}]
 title = [
-    {"id": 10, "title": "Feature Film", "production_year": 1990},
-    {"id": 20, "title": "Late Film", "production_year": 2000},
+    {"id": 1, "title": "Example Movie", "production_year": 2005},
+    {"id": 2, "title": "Old Movie", "production_year": 1999},
 ]
 rows = _query(
-    aka_name,
+    title,
     [
-        {"items": name, "on": lambda an, n: n["id"] == an["person_id"]},
+        {"items": aka_title, "on": lambda t, at: at["movie_id"] == t["id"]},
+        {"items": movie_info, "on": lambda t, at, mi: mi["movie_id"] == t["id"]},
+        {"items": movie_keyword, "on": lambda t, at, mi, mk: mk["movie_id"] == t["id"]},
         {
-            "items": person_info,
-            "on": lambda an, n, pi: pi["person_id"] == an["person_id"],
+            "items": movie_companies,
+            "on": lambda t, at, mi, mk, mc: mc["movie_id"] == t["id"],
+        },
+        {
+            "items": keyword,
+            "on": lambda t, at, mi, mk, mc, k: k["id"] == mk["keyword_id"],
         },
         {
             "items": info_type,
-            "on": lambda an, n, pi, it: it["id"] == pi["info_type_id"],
+            "on": lambda t, at, mi, mk, mc, k, it1: it1["id"] == mi["info_type_id"],
         },
         {
-            "items": cast_info,
-            "on": lambda an, n, pi, it, ci: ci["person_id"] == n["id"],
-        },
-        {"items": title, "on": lambda an, n, pi, it, ci, t: t["id"] == ci["movie_id"]},
-        {
-            "items": movie_link,
-            "on": lambda an, n, pi, it, ci, t, ml: ml["linked_movie_id"] == t["id"],
+            "items": company_name,
+            "on": lambda t, at, mi, mk, mc, k, it1, cn: cn["id"] == mc["company_id"],
         },
         {
-            "items": link_type,
-            "on": lambda an, n, pi, it, ci, t, ml, lt: lt["id"] == ml["link_type_id"],
+            "items": company_type,
+            "on": lambda t, at, mi, mk, mc, k, it1, cn, ct: ct["id"]
+            == mc["company_type_id"],
         },
     ],
     {
-        "select": lambda an, n, pi, it, ci, t, ml, lt: {
-            "person_name": n["name"],
-            "movie_title": t["title"],
+        "select": lambda t, at, mi, mk, mc, k, it1, cn, ct: {
+            "release_date": mi["info"],
+            "internet_movie": t["title"],
         },
-        "where": lambda an, n, pi, it, ci, t, ml, lt: (
+        "where": lambda t, at, mi, mk, mc, k, it1, cn, ct: (
             (
                 (
                     (
                         (
                             (
-                                (
-                                    (
-                                        (
-                                            (
-                                                (
-                                                    "a" in an["name"]
-                                                    and it["info"] == "mini biography"
-                                                )
-                                                and lt["link"] == "features"
-                                            )
-                                            and n["name_pcode_cf"] >= "A"
-                                        )
-                                        and n["name_pcode_cf"] <= "F"
-                                    )
-                                    and (
-                                        n["gender"] == "m"
-                                        or (
-                                            n["gender"] == "f"
-                                            and str(n["name"]).startswith("B")
-                                        )
-                                    )
-                                )
-                                and pi["note"] == "Volker Boehm"
+                                cn["country_code"] == "[us]"
+                                and it1["info"] == "release dates"
                             )
-                            and t["production_year"] >= 1980
+                            and "200" in mc["note"]
                         )
-                        and t["production_year"] <= 1995
+                        and "worldwide" in mc["note"]
                     )
-                    and pi["person_id"] == an["person_id"]
+                    and "internet" in mi["note"]
                 )
-                and pi["person_id"] == ci["person_id"]
+                and "USA:" in mi["info"]
             )
-            and an["person_id"] == ci["person_id"]
+            and "200" in mi["info"]
         )
-        and ci["movie_id"] == ml["linked_movie_id"],
+        and t["production_year"] > 2000,
     },
 )
 result = [
     {
-        "of_person": _min([r["person_name"] for r in rows]),
-        "biography_movie": _min([r["movie_title"] for r in rows]),
+        "release_date": _min([r["release_date"] for r in rows]),
+        "internet_movie": _min([r["internet_movie"] for r in rows]),
     }
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
-test_Q7_finds_movie_features_biography_for_person()
+test_Q15_finds_the_earliest_US_internet_movie_release_after_2000()

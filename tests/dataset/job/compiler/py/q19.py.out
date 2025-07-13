@@ -114,62 +114,84 @@ def _query(src, joins, opts):
     return res
 
 
-def test_Q7_finds_movie_features_biography_for_person():
-    assert result == [{"of_person": "Alan Brown", "biography_movie": "Feature Film"}]
+def test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009():
+    assert result == [
+        {"voicing_actress": "Angela Stone", "voiced_movie": "Voiced Movie"}
+    ]
 
 
-aka_name = [{"person_id": 1, "name": "Anna Mae"}, {"person_id": 2, "name": "Chris"}]
-cast_info = [{"person_id": 1, "movie_id": 10}, {"person_id": 2, "movie_id": 20}]
-info_type = [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
-link_type = [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
-movie_link = [
-    {"linked_movie_id": 10, "link_type_id": 1},
-    {"linked_movie_id": 20, "link_type_id": 2},
+aka_name = [{"person_id": 1, "name": "A. Stone"}, {"person_id": 2, "name": "J. Doe"}]
+char_name = [{"id": 1, "name": "Protagonist"}, {"id": 2, "name": "Extra"}]
+cast_info = [
+    {
+        "movie_id": 1,
+        "person_role_id": 1,
+        "person_id": 1,
+        "role_id": 1,
+        "note": "(voice)",
+    },
+    {"movie_id": 2, "person_role_id": 2, "person_id": 2, "role_id": 2, "note": "Cameo"},
+]
+company_name = [{"id": 10, "country_code": "[us]"}, {"id": 20, "country_code": "[gb]"}]
+info_type = [{"id": 100, "info": "release dates"}]
+movie_companies = [
+    {"movie_id": 1, "company_id": 10, "note": "Studio (USA)"},
+    {"movie_id": 2, "company_id": 20, "note": "Other (worldwide)"},
+]
+movie_info = [
+    {"movie_id": 1, "info_type_id": 100, "info": "USA: June 2006"},
+    {"movie_id": 2, "info_type_id": 100, "info": "UK: 1999"},
 ]
 name = [
-    {"id": 1, "name": "Alan Brown", "name_pcode_cf": "B", "gender": "m"},
-    {"id": 2, "name": "Zoe", "name_pcode_cf": "Z", "gender": "f"},
+    {"id": 1, "name": "Angela Stone", "gender": "f"},
+    {"id": 2, "name": "Bob Angstrom", "gender": "m"},
 ]
-person_info = [
-    {"person_id": 1, "info_type_id": 1, "note": "Volker Boehm"},
-    {"person_id": 2, "info_type_id": 1, "note": "Other"},
-]
+role_type = [{"id": 1, "role": "actress"}, {"id": 2, "role": "actor"}]
 title = [
-    {"id": 10, "title": "Feature Film", "production_year": 1990},
-    {"id": 20, "title": "Late Film", "production_year": 2000},
+    {"id": 1, "title": "Voiced Movie", "production_year": 2006},
+    {"id": 2, "title": "Other Movie", "production_year": 2010},
 ]
-rows = _query(
+matches = _query(
     aka_name,
     [
         {"items": name, "on": lambda an, n: n["id"] == an["person_id"]},
         {
-            "items": person_info,
-            "on": lambda an, n, pi: pi["person_id"] == an["person_id"],
+            "items": cast_info,
+            "on": lambda an, n, ci: ci["person_id"] == an["person_id"],
+        },
+        {
+            "items": char_name,
+            "on": lambda an, n, ci, chn: chn["id"] == ci["person_role_id"],
+        },
+        {
+            "items": role_type,
+            "on": lambda an, n, ci, chn, rt: rt["id"] == ci["role_id"],
+        },
+        {"items": title, "on": lambda an, n, ci, chn, rt, t: t["id"] == ci["movie_id"]},
+        {
+            "items": movie_companies,
+            "on": lambda an, n, ci, chn, rt, t, mc: mc["movie_id"] == t["id"],
+        },
+        {
+            "items": company_name,
+            "on": lambda an, n, ci, chn, rt, t, mc, cn: cn["id"] == mc["company_id"],
+        },
+        {
+            "items": movie_info,
+            "on": lambda an, n, ci, chn, rt, t, mc, cn, mi: mi["movie_id"] == t["id"],
         },
         {
             "items": info_type,
-            "on": lambda an, n, pi, it: it["id"] == pi["info_type_id"],
-        },
-        {
-            "items": cast_info,
-            "on": lambda an, n, pi, it, ci: ci["person_id"] == n["id"],
-        },
-        {"items": title, "on": lambda an, n, pi, it, ci, t: t["id"] == ci["movie_id"]},
-        {
-            "items": movie_link,
-            "on": lambda an, n, pi, it, ci, t, ml: ml["linked_movie_id"] == t["id"],
-        },
-        {
-            "items": link_type,
-            "on": lambda an, n, pi, it, ci, t, ml, lt: lt["id"] == ml["link_type_id"],
+            "on": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: it["id"]
+            == mi["info_type_id"],
         },
     ],
     {
-        "select": lambda an, n, pi, it, ci, t, ml, lt: {
-            "person_name": n["name"],
-            "movie_title": t["title"],
+        "select": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: {
+            "actress": n["name"],
+            "movie": t["title"],
         },
-        "where": lambda an, n, pi, it, ci, t, ml, lt: (
+        "where": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: (
             (
                 (
                     (
@@ -179,44 +201,48 @@ rows = _query(
                                     (
                                         (
                                             (
-                                                (
-                                                    "a" in an["name"]
-                                                    and it["info"] == "mini biography"
-                                                )
-                                                and lt["link"] == "features"
+                                                ci["note"]
+                                                in [
+                                                    "(voice)",
+                                                    "(voice: Japanese version)",
+                                                    "(voice) (uncredited)",
+                                                    "(voice: English version)",
+                                                ]
+                                                and cn["country_code"] == "[us]"
                                             )
-                                            and n["name_pcode_cf"] >= "A"
+                                            and it["info"] == "release dates"
                                         )
-                                        and n["name_pcode_cf"] <= "F"
+                                        and mc["note"] != None
                                     )
                                     and (
-                                        n["gender"] == "m"
-                                        or (
-                                            n["gender"] == "f"
-                                            and str(n["name"]).startswith("B")
-                                        )
+                                        "(USA)" in mc["note"]
+                                        or "(worldwide)" in mc["note"]
                                     )
                                 )
-                                and pi["note"] == "Volker Boehm"
+                                and mi["info"] != None
                             )
-                            and t["production_year"] >= 1980
+                            and (
+                                "Japan:" in mi["info"]
+                                and "200" in mi["info"]
+                                or ("USA:" in mi["info"] and "200" in mi["info"])
+                            )
                         )
-                        and t["production_year"] <= 1995
+                        and n["gender"] == "f"
                     )
-                    and pi["person_id"] == an["person_id"]
+                    and "Ang" in n["name"]
                 )
-                and pi["person_id"] == ci["person_id"]
+                and rt["role"] == "actress"
             )
-            and an["person_id"] == ci["person_id"]
+            and t["production_year"] >= 2005
         )
-        and ci["movie_id"] == ml["linked_movie_id"],
+        and t["production_year"] <= 2009,
     },
 )
 result = [
     {
-        "of_person": _min([r["person_name"] for r in rows]),
-        "biography_movie": _min([r["movie_title"] for r in rows]),
+        "voicing_actress": _min([r["actress"] for r in matches]),
+        "voiced_movie": _min([r["movie"] for r in matches]),
     }
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
-test_Q7_finds_movie_features_biography_for_person()
+test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009()

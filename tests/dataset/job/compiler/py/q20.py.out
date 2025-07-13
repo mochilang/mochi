@@ -114,109 +114,99 @@ def _query(src, joins, opts):
     return res
 
 
-def test_Q7_finds_movie_features_biography_for_person():
-    assert result == [{"of_person": "Alan Brown", "biography_movie": "Feature Film"}]
+def test_Q20_finds_complete_cast_Iron_Man_movie():
+    assert result == [{"complete_downey_ironman_movie": "Iron Man"}]
 
 
-aka_name = [{"person_id": 1, "name": "Anna Mae"}, {"person_id": 2, "name": "Chris"}]
-cast_info = [{"person_id": 1, "movie_id": 10}, {"person_id": 2, "movie_id": 20}]
-info_type = [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
-link_type = [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
-movie_link = [
-    {"linked_movie_id": 10, "link_type_id": 1},
-    {"linked_movie_id": 20, "link_type_id": 2},
+comp_cast_type = [{"id": 1, "kind": "cast"}, {"id": 2, "kind": "complete cast"}]
+char_name = [{"id": 1, "name": "Tony Stark"}, {"id": 2, "name": "Sherlock Holmes"}]
+complete_cast = [
+    {"movie_id": 1, "subject_id": 1, "status_id": 2},
+    {"movie_id": 2, "subject_id": 1, "status_id": 2},
 ]
-name = [
-    {"id": 1, "name": "Alan Brown", "name_pcode_cf": "B", "gender": "m"},
-    {"id": 2, "name": "Zoe", "name_pcode_cf": "Z", "gender": "f"},
+name = [{"id": 1, "name": "Robert Downey Jr."}, {"id": 2, "name": "Another Actor"}]
+cast_info = [
+    {"movie_id": 1, "person_role_id": 1, "person_id": 1},
+    {"movie_id": 2, "person_role_id": 2, "person_id": 2},
 ]
-person_info = [
-    {"person_id": 1, "info_type_id": 1, "note": "Volker Boehm"},
-    {"person_id": 2, "info_type_id": 1, "note": "Other"},
-]
+keyword = [{"id": 10, "keyword": "superhero"}, {"id": 20, "keyword": "romance"}]
+movie_keyword = [{"movie_id": 1, "keyword_id": 10}, {"movie_id": 2, "keyword_id": 20}]
+kind_type = [{"id": 1, "kind": "movie"}]
 title = [
-    {"id": 10, "title": "Feature Film", "production_year": 1990},
-    {"id": 20, "title": "Late Film", "production_year": 2000},
+    {"id": 1, "kind_id": 1, "production_year": 2008, "title": "Iron Man"},
+    {"id": 2, "kind_id": 1, "production_year": 1940, "title": "Old Hero"},
 ]
-rows = _query(
-    aka_name,
+matches = _query(
+    complete_cast,
     [
-        {"items": name, "on": lambda an, n: n["id"] == an["person_id"]},
         {
-            "items": person_info,
-            "on": lambda an, n, pi: pi["person_id"] == an["person_id"],
+            "items": comp_cast_type,
+            "on": lambda cc, cct1: cct1["id"] == cc["subject_id"],
         },
         {
-            "items": info_type,
-            "on": lambda an, n, pi, it: it["id"] == pi["info_type_id"],
+            "items": comp_cast_type,
+            "on": lambda cc, cct1, cct2: cct2["id"] == cc["status_id"],
         },
         {
             "items": cast_info,
-            "on": lambda an, n, pi, it, ci: ci["person_id"] == n["id"],
-        },
-        {"items": title, "on": lambda an, n, pi, it, ci, t: t["id"] == ci["movie_id"]},
-        {
-            "items": movie_link,
-            "on": lambda an, n, pi, it, ci, t, ml: ml["linked_movie_id"] == t["id"],
+            "on": lambda cc, cct1, cct2, ci: ci["movie_id"] == cc["movie_id"],
         },
         {
-            "items": link_type,
-            "on": lambda an, n, pi, it, ci, t, ml, lt: lt["id"] == ml["link_type_id"],
+            "items": char_name,
+            "on": lambda cc, cct1, cct2, ci, chn: chn["id"] == ci["person_role_id"],
+        },
+        {
+            "items": name,
+            "on": lambda cc, cct1, cct2, ci, chn, n: n["id"] == ci["person_id"],
+        },
+        {
+            "items": movie_keyword,
+            "on": lambda cc, cct1, cct2, ci, chn, n, mk: mk["movie_id"]
+            == cc["movie_id"],
+        },
+        {
+            "items": keyword,
+            "on": lambda cc, cct1, cct2, ci, chn, n, mk, k: k["id"] == mk["keyword_id"],
+        },
+        {
+            "items": title,
+            "on": lambda cc, cct1, cct2, ci, chn, n, mk, k, t: t["id"]
+            == cc["movie_id"],
+        },
+        {
+            "items": kind_type,
+            "on": lambda cc, cct1, cct2, ci, chn, n, mk, k, t, kt: kt["id"]
+            == t["kind_id"],
         },
     ],
     {
-        "select": lambda an, n, pi, it, ci, t, ml, lt: {
-            "person_name": n["name"],
-            "movie_title": t["title"],
-        },
-        "where": lambda an, n, pi, it, ci, t, ml, lt: (
+        "select": lambda cc, cct1, cct2, ci, chn, n, mk, k, t, kt: t["title"],
+        "where": lambda cc, cct1, cct2, ci, chn, n, mk, k, t, kt: (
             (
                 (
                     (
-                        (
-                            (
-                                (
-                                    (
-                                        (
-                                            (
-                                                (
-                                                    "a" in an["name"]
-                                                    and it["info"] == "mini biography"
-                                                )
-                                                and lt["link"] == "features"
-                                            )
-                                            and n["name_pcode_cf"] >= "A"
-                                        )
-                                        and n["name_pcode_cf"] <= "F"
-                                    )
-                                    and (
-                                        n["gender"] == "m"
-                                        or (
-                                            n["gender"] == "f"
-                                            and str(n["name"]).startswith("B")
-                                        )
-                                    )
-                                )
-                                and pi["note"] == "Volker Boehm"
-                            )
-                            and t["production_year"] >= 1980
-                        )
-                        and t["production_year"] <= 1995
+                        (cct1["kind"] == "cast" and "complete" in cct2["kind"])
+                        and (not "Sherlock" in chn["name"])
                     )
-                    and pi["person_id"] == an["person_id"]
+                    and ("Tony Stark" in chn["name"] or "Iron Man" in chn["name"])
                 )
-                and pi["person_id"] == ci["person_id"]
+                and k["keyword"]
+                in [
+                    "superhero",
+                    "sequel",
+                    "second-part",
+                    "marvel-comics",
+                    "based-on-comic",
+                    "tv-special",
+                    "fight",
+                    "violence",
+                ]
             )
-            and an["person_id"] == ci["person_id"]
+            and kt["kind"] == "movie"
         )
-        and ci["movie_id"] == ml["linked_movie_id"],
+        and t["production_year"] > 1950,
     },
 )
-result = [
-    {
-        "of_person": _min([r["person_name"] for r in rows]),
-        "biography_movie": _min([r["movie_title"] for r in rows]),
-    }
-]
+result = [{"complete_downey_ironman_movie": _min(matches)}]
 print(json.dumps(result, default=lambda o: vars(o)))
-test_Q7_finds_movie_features_biography_for_person()
+test_Q20_finds_complete_cast_Iron_Man_movie()
