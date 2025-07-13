@@ -19,11 +19,13 @@ func TestRustCompiler_TPCHQueries(t *testing.T) {
 	if _, err := exec.LookPath("rustc"); err != nil {
 		t.Skip("rustc not installed")
 	}
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	root := findRepoRoot(t)
-	for i := 2; i <= 2; i++ {
+	for i := 1; i <= 4; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rust", base+".rs.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rust", base+".rs")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rust", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -46,7 +48,7 @@ func TestRustCompiler_TPCHQueries(t *testing.T) {
 				t.Fatalf("read golden: %v", err)
 			}
 			if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-				t.Errorf("generated code mismatch for %s.rs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(wantCode))
+				t.Errorf("generated code mismatch for %s.rs\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, bytes.TrimSpace(wantCode))
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "prog.rs")
