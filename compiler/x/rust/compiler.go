@@ -90,6 +90,10 @@ func (c *Compiler) fieldType(e *parser.Expr) types.Type {
 			return types.IntType{}
 		}
 	}
+	if call, ok := isBuiltinCall(e, "substring"); ok {
+		_ = call // unused
+		return types.StringType{}
+	}
 	if e == nil || e.Binary == nil {
 		return types.TypeOfExprBasic(e, c.env)
 	}
@@ -1789,6 +1793,10 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if info, ok := c.variantInfo[p.Selector.Root]; ok {
 				return fmt.Sprintf("%s::%s", info.Union, p.Selector.Root), nil
 			}
+			if _, err := c.env.GetVar(p.Selector.Root); err != nil && len(c.groupVars) > 0 {
+				gv := c.groupVars[len(c.groupVars)-1]
+				return fmt.Sprintf("%s.key.%s", gv, p.Selector.Root), nil
+			}
 			return loopVal(p.Selector.Root, c.env), nil
 		}
 		if c.modules[p.Selector.Root] {
@@ -3057,7 +3065,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					return "", err
 				}
 			}
-			c.env = orig
 			acc := c.newTmp()
 			var b strings.Builder
 			init := "0"
@@ -3068,6 +3075,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			} else if c.exprHasFloat(arg) {
 				init = "0.0"
 			}
+			c.env = orig
 			fmt.Fprintf(&b, "{ let mut %s = %s;", acc, init)
 			b.WriteString(loopHead(q.Var, src, child))
 			for i, fs := range fromSrcs {
@@ -3981,6 +3989,21 @@ func (c *Compiler) aggCall(e *parser.Expr) (string, *parser.Expr, bool) {
 		return "", nil, false
 	}
 	return call.Func, call.Args[0], true
+}
+
+func isBuiltinCall(e *parser.Expr, name string) (*parser.CallExpr, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return nil, false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil || u.Value.Target.Call == nil {
+		return nil, false
+	}
+	call := u.Value.Target.Call
+	if call.Func != name {
+		return nil, false
+	}
+	return call, true
 }
 
 func (c *Compiler) writeln(s string) {
