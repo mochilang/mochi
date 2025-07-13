@@ -116,6 +116,8 @@ func findRepoRoot(t *testing.T) string {
 }
 
 func TestMain(m *testing.M) {
+	// Ensure generated headers are deterministic for golden tests
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 	code := m.Run()
 	updateReadme()
 	os.Exit(code)
