@@ -112,3 +112,4 @@ Compiled programs: 100/100
 - Ensure new features continue to compile correctly.
 - Keep generated code in sync with `tests/human/x/racket`.
 - Verify query features like `sort`, `skip`, and `take` remain accurate.
+- Work towards running `tests/dataset/tpc-h/q1.mochi` successfully.
