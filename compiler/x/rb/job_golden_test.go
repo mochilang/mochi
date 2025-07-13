@@ -18,7 +18,7 @@ func TestRBCompiler_JOBQueries(t *testing.T) {
 		t.Skipf("ruby not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 33; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "rb", base+".rb")
