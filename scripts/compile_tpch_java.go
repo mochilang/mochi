@@ -47,7 +47,8 @@ func main() {
 	outDir := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "java")
 	_ = os.MkdirAll(outDir, 0o755)
 
-	for i := 10; i <= 10; i++ {
+	// Generate golden Java files for additional TPCH queries.
+	for i := 11; i <= 13; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
