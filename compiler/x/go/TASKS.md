@@ -21,3 +21,4 @@ TPC-H progress:
 
 - 2025-07-13 07:13 - Ensured struct declarations are always written to the
   generated source.
+- 2025-07-13 07:30 - Began verifying TPCH q1 runtime output
