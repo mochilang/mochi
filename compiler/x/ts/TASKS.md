@@ -7,6 +7,9 @@
 ### 2025-07-13 04:56 UTC
 - Added dataset support and compiled TPC-H q1.mochi.
 
+### 2025-07-13 16:33 UTC
+- Compiled TPC-H queries q1-q22 and regenerated golden outputs.
+
 ## Remaining Enhancements
-- [ ] Compile the rest of the TPC-H queries
+- [x] Compile the rest of the TPC-H queries
 - [ ] Refine generated code formatting for readability
