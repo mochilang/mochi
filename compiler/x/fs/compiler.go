@@ -1859,7 +1859,8 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 	}
 
 	if e.Binary != nil && len(e.Binary.Right) > 0 {
-		t := c.inferType(e.Binary.Left.Value)
+		// Infer type from the left-hand side of a binary expression.
+		t := c.inferType(&parser.Expr{Binary: &parser.BinaryExpr{Left: e.Binary.Left}})
 		if t != "obj" {
 			return t
 		}
