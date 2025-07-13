@@ -1346,6 +1346,16 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 	var types []string
 	for _, it := range m.Items {
 		t := c.inferType(it.Value)
+		if t == "" {
+			if s, ok := c.selectorString(it.Value); ok {
+				t = c.exprType(s)
+			}
+		}
+		if t == "" || t == "Object" {
+			if tt := c.selectorType(it.Value); tt != "" {
+				t = tt
+			}
+		}
 		if t == "var" {
 			t = wrapperType(c.litType(it.Value))
 		}
@@ -2765,6 +2775,69 @@ func simpleStringKey(e *parser.Expr) (string, bool) {
 		return *p.Target.Lit.Str, true
 	}
 	return "", false
+}
+
+func (c *Compiler) selectorString(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return "", false
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return "", false
+	}
+	sel := p.Target.Selector
+	if len(sel.Tail) == 0 {
+		return sel.Root, true
+	}
+	root := sel.Root
+	tail := sel.Tail
+	if keyVar, ok := c.groupKeys[root]; ok && tail[0] == "key" {
+		root = keyVar
+		tail = tail[1:]
+	}
+	if len(tail) == 0 {
+		return root, true
+	}
+	return root + "." + strings.Join(tail, "."), true
+}
+
+// selectorType returns the type of a simple selector expression like a.b.c.
+func (c *Compiler) selectorType(e *parser.Expr) string {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil || len(e.Binary.Right) != 0 {
+		return ""
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 || u.Value == nil {
+		return ""
+	}
+	p := u.Value
+	if len(p.Ops) != 0 || p.Target == nil || p.Target.Selector == nil {
+		return ""
+	}
+	root := p.Target.Selector.Root
+	tail := p.Target.Selector.Tail
+	var typ string
+	if keyVar, ok := c.groupKeys[root]; ok && len(tail) > 0 && tail[0] == "key" {
+		typ = c.vars[keyVar]
+		tail = tail[1:]
+	} else {
+		typ = c.vars[root]
+	}
+	if typ == "" {
+		return ""
+	}
+	for _, f := range tail {
+		if strings.HasPrefix(typ, "Map<") {
+			typ = mapValueType(typ)
+		} else {
+			typ = c.fieldType(typ, f)
+		}
+	}
+	return typ
 }
 
 func containsStr(list []string, s string) bool {
