@@ -1,0 +1,5 @@
+/tmp/q1javac/Q1.java:168: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ReturnflagLinestatusSumQtySumBasePriceSumDiscPriceSumChargeAvgQtyAvgPriceAvgDiscCountOrder("N", "O", 53, 3000, 950.000000 + 1800.000000, (950.000000 * 1.070000) + (1800.000000 * 1.050000), 26.500000, 1500, 0.075000, 2))))) throw new AssertionError("expect failed");
+                                                                                                                                                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+1 error
