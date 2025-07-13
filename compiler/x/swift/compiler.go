@@ -3,12 +3,14 @@
 package swift
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"regexp"
 	"sort"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -69,7 +71,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		c.emitAutoStructs()
 	}
 	c.buf.WriteString(body)
-	return []byte(c.buf.String()), nil
+	var out bytes.Buffer
+	out.Write(meta.Header("//"))
+	out.WriteString(c.buf.String())
+	return out.Bytes(), nil
 }
 
 type compiler struct {

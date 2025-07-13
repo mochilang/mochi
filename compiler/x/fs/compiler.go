@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 )
 
@@ -115,6 +116,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		}
 	}
 	var header bytes.Buffer
+	header.Write(meta.Header("//"))
 	header.WriteString("open System\n")
 	if c.usesJson {
 		header.WriteString("open System.Text.Json\n")

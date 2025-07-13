@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -54,6 +55,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	c.buf.Reset()
+	c.buf.Write(meta.Header("!"))
 	c.decl.Reset()
 	c.functions = nil
 	c.declared = make(map[string]bool)

@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 )
 
@@ -46,6 +47,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 
+	var out bytes.Buffer
+	out.Write(meta.Header("\""))
 	vars := collectVars(p.Statements)
 	if len(vars) > 0 {
 		c.writeln("| " + strings.Join(vars, " ") + " |")
@@ -61,7 +64,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 
 	c.buf.Write(bodyBytes)
-	return c.buf.Bytes(), nil
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
 }
 
 func collectVars(st []*parser.Statement) []string {

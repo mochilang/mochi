@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 
+	meta "mochi/compiler/meta"
+
 	"gopkg.in/yaml.v3"
 
 	"mochi/parser"
@@ -257,6 +259,7 @@ func detectExistsQuery(arg *parser.Expr) (src *parser.Expr, varName string, cond
 // Compile converts the parsed Mochi program into TypeScript source code.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.buf.Write(meta.Header("//"))
 	c.indent = 0
 	c.needContainsHelper = false
 	c.needJSONHelper = false
