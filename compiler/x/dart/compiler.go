@@ -1229,7 +1229,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 					if loop.boolCond {
 						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
 					} else {
-						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+						w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
 					}
 				}
 			}
@@ -1238,7 +1238,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				if isBoolType(types.TypeOfExpr(q.Where, c.env)) {
 					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
 				} else {
-					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+					w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
 				}
 			}
 			val := c.mustExpr(arg)
@@ -1326,7 +1326,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if loop.boolCond {
 				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!(%s)) continue;\n", cond))
 			} else {
-				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (%s == null) continue;\n", cond))
+				w(strings.Repeat("  ", i+2) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", cond))
 			}
 		}
 	}
@@ -1336,7 +1336,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if isBoolType(types.TypeOfExpr(q.Where, c.env)) {
 			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!(%s)) continue;\n", condStr))
 		} else {
-			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (%s == null) continue;\n", condStr))
+			w(strings.Repeat("  ", len(loops)+1) + fmt.Sprintf("if (!((%s) ?? false)) continue;\n", condStr))
 		}
 	}
 
@@ -1422,7 +1422,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if isBoolType(types.TypeOfExpr(q.Group.Having, c.env)) {
 				w(fmt.Sprintf("    if (!(%s)) continue;\n", condStr))
 			} else {
-				w(fmt.Sprintf("    if (%s == null) continue;\n", condStr))
+				w(fmt.Sprintf("    if (!((%s) ?? false)) continue;\n", condStr))
 			}
 		}
 		sel := c.mustExpr(q.Select)
