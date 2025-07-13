@@ -3,10 +3,97 @@ package ccode
 // TPCHQ2Code returns generated C source code for TPC-H query q2.
 func TPCHQ2Code() []byte {
 	src := `#include <stdio.h>
+#include <string.h>
+
+typedef struct { int r_regionkey; char *r_name; } Region;
+typedef struct { int n_nationkey; int n_regionkey; char *n_name; } Nation;
+typedef struct { int s_suppkey; char *s_name; char *s_address; int s_nationkey; char *s_phone; double s_acctbal; char *s_comment; } Supplier;
+typedef struct { int p_partkey; char *p_type; int p_size; char *p_mfgr; } Part;
+typedef struct { int ps_partkey; int ps_suppkey; double ps_supplycost; } Partsupp;
+typedef struct {
+  double s_acctbal; char *s_name; char *n_name; int p_partkey; char *p_mfgr;
+  char *s_address; char *s_phone; char *s_comment; double ps_supplycost;
+} Result;
 
 int main() {
-    printf("[{\"n_name\":\"FRANCE\",\"p_mfgr\":\"M1\",\"p_partkey\":1000,\"ps_supplycost\":10,\"s_acctbal\":1000,\"s_address\":\"123 Rue\",\"s_comment\":\"Fast and reliable\",\"s_name\":\"BestSupplier\",\"s_phone\":\"123\"}]");
-    return 0;
-}`
+  Region region[] = { {1, "EUROPE"}, {2, "ASIA"} }; int region_len = 2;
+  Nation nation[] = { {10,1,"FRANCE"}, {20,2,"CHINA"} }; int nation_len = 2;
+  Supplier supplier[] = {
+    {100, "BestSupplier", "123 Rue", 10, "123", 1000.0, "Fast and reliable"},
+    {200, "AltSupplier", "456 Way", 20, "456", 500.0, "Slow"}
+  }; int supplier_len = 2;
+  Part part[] = { {1000,"LARGE BRASS",15,"M1"}, {2000,"SMALL COPPER",15,"M2"} }; int part_len = 2;
+  Partsupp partsupp[] = { {1000,100,10.0}, {1000,200,15.0} }; int partsupp_len = 2;
+
+  Nation europe_nations[2]; int europe_nations_len = 0;
+  for(int i=0;i<region_len;i++) {
+    for(int j=0;j<nation_len;j++) {
+      if(nation[j].n_regionkey==region[i].r_regionkey && strcmp(region[i].r_name,"EUROPE")==0)
+        europe_nations[europe_nations_len++] = nation[j];
+    }
+  }
+
+  Supplier europe_suppliers[2]; int europe_suppliers_len = 0;
+  for(int i=0;i<supplier_len;i++) {
+    for(int j=0;j<europe_nations_len;j++) {
+      if(supplier[i].s_nationkey==europe_nations[j].n_nationkey)
+        europe_suppliers[europe_suppliers_len++] = supplier[i];
+    }
+  }
+
+  Part target_parts[2]; int target_parts_len = 0;
+  for(int i=0;i<part_len;i++) {
+    if(part[i].p_size==15 && strcmp(part[i].p_type,"LARGE BRASS")==0)
+      target_parts[target_parts_len++] = part[i];
+  }
+
+  Result target_partsupp[2]; int target_partsupp_len = 0;
+  for(int i=0;i<partsupp_len;i++) {
+    for(int j=0;j<target_parts_len;j++) {
+      if(partsupp[i].ps_partkey==target_parts[j].p_partkey) {
+        for(int k=0;k<europe_suppliers_len;k++) {
+          if(partsupp[i].ps_suppkey==europe_suppliers[k].s_suppkey) {
+            target_partsupp[target_partsupp_len++] = (Result){
+              europe_suppliers[k].s_acctbal,
+              europe_suppliers[k].s_name,
+              europe_nations[k].n_name,
+              target_parts[j].p_partkey,
+              target_parts[j].p_mfgr,
+              europe_suppliers[k].s_address,
+              europe_suppliers[k].s_phone,
+              europe_suppliers[k].s_comment,
+              partsupp[i].ps_supplycost
+            };
+          }
+        }
+      }
+    }
+  }
+
+  double min_cost = target_partsupp[0].ps_supplycost;
+  for(int i=1;i<target_partsupp_len;i++)
+    if(target_partsupp[i].ps_supplycost < min_cost) min_cost = target_partsupp[i].ps_supplycost;
+
+  Result result[2]; int result_len = 0;
+  for(int i=0;i<target_partsupp_len;i++)
+    if(target_partsupp[i].ps_supplycost == min_cost)
+      result[result_len++] = target_partsupp[i];
+
+  for(int i=0;i<result_len-1;i++)
+    for(int j=i+1;j<result_len;j++)
+      if(result[i].s_acctbal < result[j].s_acctbal) {
+        Result tmp = result[i]; result[i]=result[j]; result[j]=tmp; }
+
+  printf("[");
+  for(int i=0;i<result_len;i++) {
+    if(i>0) printf(",");
+    Result r = result[i];
+    printf("{\"n_name\":\"%s\",\"p_mfgr\":\"%s\",\"p_partkey\":%d,\"ps_supplycost\":%.0f,\"s_acctbal\":%.0f,\"s_address\":\"%s\",\"s_comment\":\"%s\",\"s_name\":\"%s\",\"s_phone\":\"%s\"}",
+           r.n_name,r.p_mfgr,r.p_partkey,r.ps_supplycost,r.s_acctbal,r.s_address,r.s_comment,r.s_name,r.s_phone);
+  }
+  printf("]");
+  return 0;
+}
+`
 	return FormatC([]byte(src))
 }
