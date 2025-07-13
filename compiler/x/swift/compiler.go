@@ -855,6 +855,18 @@ func (c *compiler) postfix(p *parser.PostfixExpr) (string, error) {
 					}
 				}
 			}
+			if strings.HasSuffix(recv, ".starts_with") && len(parts) == 1 {
+				base := strings.TrimSuffix(recv, ".starts_with")
+				c.helpers["starts_with"] = true
+				val = fmt.Sprintf("_starts_with(%s, %s)", base, parts[0])
+				continue
+			}
+			if strings.HasSuffix(recv, "[\"starts_with\"]") && len(parts) == 1 {
+				base := strings.TrimSuffix(recv, "[\"starts_with\"]")
+				c.helpers["starts_with"] = true
+				val = fmt.Sprintf("_starts_with(%s, %s)", base, parts[0])
+				continue
+			}
 			val = fmt.Sprintf("%s(%s)", recv, strings.Join(parts, ", "))
 		case op.Cast != nil:
 			typ, err := c.typeRef(op.Cast.Type)
@@ -3531,6 +3543,24 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["starts_with"] {
+		for _, line := range strings.Split(helperStartsWith, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
+	if c.helpers["_equal"] {
+		for _, line := range strings.Split(helperStructMap, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_equal"] {
 		for _, line := range strings.Split(helperEqual, "\n") {
 			if line == "" {
@@ -3749,7 +3779,33 @@ const helperMax = `func _max(_ v: Any) -> Any {
     return isFloat ? m : Int(m)
 }`
 
+const helperStructMap = `func _structMap(_ v: Any) -> [String:Any]? {
+    let mirror = Mirror(reflecting: v)
+    if mirror.displayStyle == .struct || mirror.displayStyle == .class {
+        var m: [String:Any] = [:]
+        for child in mirror.children {
+            if let k = child.label { m[k] = child.value }
+        }
+        return m
+    }
+    return nil
+}`
+
+const helperStartsWith = `func _starts_with(_ str: Any, _ prefix: Any) -> Bool {
+    guard let s = str as? String, let p = prefix as? String else { return false }
+    return s.hasPrefix(p)
+}`
+
 const helperEqual = `func _equal(_ a: Any, _ b: Any) -> Bool {
+    if let am = _structMap(a), let bm = _structMap(b) {
+        return _equal(am, bm)
+    }
+    if let am = _structMap(a), let bd = b as? [String: Any] {
+        return _equal(am, bd)
+    }
+    if let ad = a as? [String: Any], let bm = _structMap(b) {
+        return _equal(ad, bm)
+    }
     switch (a, b) {
     case let (x as [Any], y as [Any]):
         if x.count != y.count { return false }
