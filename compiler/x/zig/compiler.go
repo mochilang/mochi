@@ -1433,6 +1433,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		keyType := zigTypeOf(keyT)
 		if ml := extractMapLiteral(q.Group.Exprs[0]); ml != nil {
 			structName := c.newStructName()
+			if name, ok := c.matchStructFromMapLiteral(ml); ok {
+				structName = sanitizeName(name)
+			}
 			decl, init, ok, err := c.mapLiteralStruct(ml, structName)
 			if err != nil {
 				c.env = orig
@@ -1935,6 +1938,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		var elem string
 		if ml := extractMapLiteral(q.Select); ml != nil {
 			structName := c.newStructName()
+			if name, ok := c.matchStructFromMapLiteral(ml); ok {
+				structName = sanitizeName(name)
+			}
 			decl, init, ok, err := c.mapLiteralStruct(ml, structName)
 			if err != nil {
 				c.env = orig
@@ -2024,6 +2030,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	var elem string
 	if ml := extractMapLiteral(q.Select); ml != nil {
 		structName := c.newStructName()
+		if name, ok := c.matchStructFromMapLiteral(ml); ok {
+			structName = sanitizeName(name)
+		}
 		decl, init, ok, err := c.mapLiteralStruct(ml, structName)
 		if err != nil {
 			c.env = orig
@@ -2768,6 +2777,10 @@ func (c *Compiler) compileCallOp(receiver string, call *parser.CallOp) (string, 
 				}
 			}
 		}
+	}
+	if strings.HasSuffix(receiver, ".contains") && len(args) == 1 {
+		recv := strings.TrimSuffix(receiver, ".contains")
+		return fmt.Sprintf("std.mem.indexOf(u8, %s, %s) != null", recv, args[0]), nil
 	}
 	return fmt.Sprintf("%s(%s)", receiver, strings.Join(args, ", ")), nil
 }
