@@ -1356,19 +1356,60 @@ func (c *Compiler) matchExpr(m *parser.MatchExpr) (string, error) {
 	b.WriteString("    val __t = " + target + "\n")
 	b.WriteString("    when (__t) {\n")
 	for _, cse := range m.Cases {
-		res, err := c.expr(cse.Result)
-		if err != nil {
-			return "", err
-		}
+		// prepare environment for pattern variables if needed
+		oldEnv := c.env
+		c.env = types.NewEnv(c.env)
+
+		var patCode string
 		if name, ok := identName(cse.Pattern); ok && name == "_" {
-			b.WriteString("        else -> " + res + "\n")
-			continue
+			patCode = "else"
+		} else if call := cse.Pattern.Binary.Left.Value.Target.Call; call != nil {
+			if ut, ok := c.env.FindUnionByVariant(call.Func); ok {
+				st := ut.Variants[call.Func]
+				patCode = "is " + call.Func
+				b.WriteString("        " + patCode + " -> {")
+				b.WriteString("\n")
+				for i, arg := range call.Args {
+					if argName, ok := identName(arg); ok {
+						if i < len(st.Order) {
+							field := escapeIdent(st.Order[i])
+							c.env.SetVar(argName, st.Fields[st.Order[i]], true)
+							b.WriteString("            val " + argName + " = __t." + field + "\n")
+						} else {
+							c.env.SetVar(argName, types.AnyType{}, true)
+						}
+					}
+				}
+				res, err := c.expr(cse.Result)
+				if err != nil {
+					c.env = oldEnv
+					return "", err
+				}
+				b.WriteString("            " + res + "\n")
+				b.WriteString("        }\n")
+				c.env = oldEnv
+				continue
+			}
 		}
+
+		// fallback: simple expression pattern
 		pat, err := c.expr(cse.Pattern)
 		if err != nil {
+			c.env = oldEnv
 			return "", err
 		}
-		b.WriteString("        " + pat + " -> " + res + "\n")
+		patCode = pat
+		res, err := c.expr(cse.Result)
+		if err != nil {
+			c.env = oldEnv
+			return "", err
+		}
+		if patCode == "else" {
+			b.WriteString("        else -> " + res + "\n")
+		} else {
+			b.WriteString("        " + patCode + " -> " + res + "\n")
+		}
+		c.env = oldEnv
 	}
 	b.WriteString("    }\n")
 	b.WriteString("}")
@@ -1621,6 +1662,45 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	b.WriteString(indent(lvl))
 	b.WriteString("}\n")
 	if q.Group != nil {
+		if q.Sort != nil {
+			sortEnv := types.NewEnv(c.env)
+			sortEnv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elem}, true)
+			oldSort := c.env
+			c.env = sortEnv
+			sortExpr, err := c.expr(q.Sort)
+			c.env = oldSort
+			if err != nil {
+				return "", err
+			}
+			cast := ""
+			switch types.TypeOfExprBasic(q.Sort, sortEnv).(type) {
+			case types.IntType:
+				cast = " as Int"
+			case types.FloatType:
+				cast = " as Double"
+			case types.StringType:
+				cast = " as String"
+			default:
+				cast = " as Comparable<Any>"
+			}
+			if strings.HasPrefix(sortExpr, "-") {
+				sortExpr = strings.TrimPrefix(sortExpr, "-")
+				b.WriteString(indent(lvl))
+				b.WriteString("__order.sortByDescending { k ->\n")
+			} else {
+				b.WriteString(indent(lvl))
+				b.WriteString("__order.sortBy { k ->\n")
+			}
+			lvl++
+			b.WriteString(indent(lvl))
+			b.WriteString(fmt.Sprintf("val %s = __groups[k]!!\n", q.Group.Name))
+			b.WriteString(indent(lvl))
+			b.WriteString(sortExpr + cast + "\n")
+			lvl--
+			b.WriteString(indent(lvl))
+			b.WriteString("}\n")
+		}
+
 		b.WriteString(indent(lvl))
 		b.WriteString(fmt.Sprintf("val __res = mutableListOf<%s>()\n", kotlinTypeOf(selType)))
 		b.WriteString(indent(lvl))
@@ -1661,7 +1741,7 @@ func (c *Compiler) queryExpr(q *parser.QueryExpr) (string, error) {
 	}
 
 	res := b.String()
-	if q.Sort != nil {
+	if q.Sort != nil && q.Group == nil {
 		sortEnv := c.env
 		if q.Group != nil {
 			sortEnv = types.NewEnv(c.env)

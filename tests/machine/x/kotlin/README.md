@@ -30,7 +30,7 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - [x] fun_three_args.mochi
 - [x] go_auto.mochi
 - [x] group_by.mochi
-- [ ] group_by_conditional_sum.mochi
+- [x] group_by_conditional_sum.mochi
 - [x] group_by_having.mochi
 - [ ] group_by_join.mochi
 - [ ] group_by_left_join.mochi
@@ -96,7 +96,7 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - [x] sum_builtin.mochi
 - [x] tail_recursion.mochi
 - [x] test_block.mochi
-- [ ] tree_sum.mochi
+- [x] tree_sum.mochi
 - [x] two-sum.mochi
 - [x] typed_let.mochi
 - [x] typed_var.mochi
@@ -117,3 +117,8 @@ The table below lists every Mochi example and whether the generated Kotlin code 
 - Get TPC-H `q2.mochi` compiling and running successfully.
 - Improve numeric division so queries like `q1.mochi` compute floating point
   results correctly.
+
+## Recent improvements
+
+- Added support for pattern matching on union variants.
+- Grouped query results can now be sorted by group keys.
