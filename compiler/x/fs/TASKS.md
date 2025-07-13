@@ -13,3 +13,6 @@
 - [ ] Generate F# code for `tpch/q1.mochi` during tests.
 - [ ] Add coverage tests exercising dataset queries.
 - [ ] Continue refining inference to reduce `obj` usage.
+
+- 2025-07-14 00:20 - Installed mono and dotnet runtime. q1 still fails to compile due to type errors in generated code; investigate group_by and numeric inference.
+
