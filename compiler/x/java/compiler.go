@@ -1336,13 +1336,6 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 		return ""
 	}
 	shape := "map|" + strings.Join(keys, ";")
-	if dc, ok := c.dataClasses[shape]; ok {
-		return dc.name
-	}
-	name := classNameFromVar(strings.Join(keys, "_"))
-	if name == "" || c.dataClassByName(name) != nil {
-		name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
-	}
 	var types []string
 	for _, it := range m.Items {
 		t := c.inferType(it.Value)
@@ -1363,6 +1356,18 @@ func (c *Compiler) dataClassFor(m *parser.MapLiteral) string {
 			t = "Object"
 		}
 		types = append(types, t)
+	}
+	if dc, ok := c.dataClasses[shape]; ok {
+		for i, t := range types {
+			if dc.types[i] == "Object" && t != "Object" {
+				dc.types[i] = t
+			}
+		}
+		return dc.name
+	}
+	name := classNameFromVar(strings.Join(keys, "_"))
+	if name == "" || c.dataClassByName(name) != nil {
+		name = fmt.Sprintf("DataClass%d", len(c.dataClasses)+1)
 	}
 	c.dataClasses[shape] = &dataClass{name: name, fields: keys, types: types}
 	c.dataClassOrder = append(c.dataClassOrder, shape)
