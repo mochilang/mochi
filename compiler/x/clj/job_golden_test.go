@@ -30,7 +30,7 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 	for i := 1; i <= 5; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".clj.out")
+               codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".clj")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "clj", base+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -54,9 +54,9 @@ func TestCLJCompiler_JOBQueries(t *testing.T) {
 			}
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.clj.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
-			}
+                       if !bytes.Equal(got, want) {
+                               t.Errorf("generated code mismatch for %s.clj\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+                       }
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.clj")
 			if err := os.WriteFile(file, code, 0644); err != nil {
