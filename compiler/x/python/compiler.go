@@ -1844,6 +1844,34 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) (string, error) {
 		return "", err
 	}
 
+	// Special case: boolean match with default branch can be compiled
+	// using a Python conditional expression. This avoids generating a
+	// helper function that fails to capture surrounding variables.
+	if len(m.Cases) == 2 {
+		if isBoolLiteralExpr(m.Cases[0].Pattern, true) && isUnderscoreExpr(m.Cases[1].Pattern) {
+			thenExpr, err := c.compileExpr(m.Cases[0].Result)
+			if err != nil {
+				return "", err
+			}
+			elseExpr, err := c.compileExpr(m.Cases[1].Result)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s if %s else %s)", thenExpr, target, elseExpr), nil
+		}
+		if isBoolLiteralExpr(m.Cases[1].Pattern, true) && isUnderscoreExpr(m.Cases[0].Pattern) {
+			thenExpr, err := c.compileExpr(m.Cases[1].Result)
+			if err != nil {
+				return "", err
+			}
+			elseExpr, err := c.compileExpr(m.Cases[0].Result)
+			if err != nil {
+				return "", err
+			}
+			return fmt.Sprintf("(%s if %s else %s)", thenExpr, target, elseExpr), nil
+		}
+	}
+
 	fn := fmt.Sprintf("_match%d", c.tmpCount)
 	arg := fmt.Sprintf("_t%d", c.tmpCount)
 	c.tmpCount++
