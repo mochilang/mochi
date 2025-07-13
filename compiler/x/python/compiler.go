@@ -1117,15 +1117,15 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			return "{" + strings.Join(items, ", ") + "}", nil
 		}
 	}
-       if st, ok := hint.(types.StructType); ok {
-               if ml := e.Binary.Left.Value.Target.Map; ml != nil {
-                       if len(ml.Items) == len(st.Fields) {
-                               if st.Name == "" {
-                                       // Anonymous struct literals are rendered as
-                                       // plain dictionaries to match other backends.
-                                       return c.compileMapLiteral(ml)
-                               }
-                               st = c.ensureStructName(st)
+	if st, ok := hint.(types.StructType); ok {
+		if ml := e.Binary.Left.Value.Target.Map; ml != nil {
+			if len(ml.Items) == len(st.Fields) {
+				if st.Name == "" {
+					// Anonymous struct literals are rendered as
+					// plain dictionaries to match other backends.
+					return c.compileMapLiteral(ml)
+				}
+				st = c.ensureStructName(st)
 				fields := make([]string, len(ml.Items))
 				for i, it := range ml.Items {
 					name, ok := identName(it.Key)
@@ -1173,6 +1173,27 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 	name := fmt.Sprintf("_fn%d", c.tmpCount)
 	c.tmpCount++
 	stmt := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: fn.BlockBody}
+	if err := c.compileFunStmt(stmt); err != nil {
+		return "", err
+	}
+	return name, nil
+}
+
+// compileFunExprDef compiles fn to a named function even when it has an
+// expression body. It is used for return statements so the output resembles the
+// hand-written examples.
+func (c *Compiler) compileFunExprDef(fn *parser.FunExpr) (string, error) {
+	name := fmt.Sprintf("_fn%d", c.tmpCount)
+	c.tmpCount++
+
+	var body []*parser.Statement
+	if fn.ExprBody != nil {
+		body = []*parser.Statement{{Return: &parser.ReturnStmt{Value: fn.ExprBody}}}
+	} else {
+		body = fn.BlockBody
+	}
+
+	stmt := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
 	if err := c.compileFunStmt(stmt); err != nil {
 		return "", err
 	}
@@ -1979,12 +2000,12 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, error) {
 	switch {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int), nil
-       case l.Float != nil:
-               s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
-               if !strings.Contains(s, ".") {
-                       s += ".0"
-               }
-               return s, nil
+	case l.Float != nil:
+		s := strconv.FormatFloat(*l.Float, 'f', -1, 64)
+		if !strings.Contains(s, ".") {
+			s += ".0"
+		}
+		return s, nil
 	case l.Str != nil:
 		return fmt.Sprintf("%q", *l.Str), nil
 	case l.Bool != nil:
