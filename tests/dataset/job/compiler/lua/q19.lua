@@ -271,44 +271,48 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production()
-    if not (__eq(result, {["production_note"]="ACME (co-production)", ["movie_title"]="Good Movie", ["movie_year"]=1995})) then error('expect failed') end
+function test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009()
+    if not (__eq(result, {{["voicing_actress"]="Angela Stone", ["voiced_movie"]="Voiced Movie"}})) then error('expect failed') end
 end
 
-company_type = {{["id"]=1, ["kind"]="production companies"}, {["id"]=2, ["kind"]="distributors"}}
-info_type = {{["id"]=10, ["info"]="top 250 rank"}, {["id"]=20, ["info"]="bottom 10 rank"}}
-title = {{["id"]=100, ["title"]="Good Movie", ["production_year"]=1995}, {["id"]=200, ["title"]="Bad Movie", ["production_year"]=2000}}
-movie_companies = {{["movie_id"]=100, ["company_type_id"]=1, ["note"]="ACME (co-production)"}, {["movie_id"]=200, ["company_type_id"]=1, ["note"]="MGM (as Metro-Goldwyn-Mayer Pictures)"}}
-movie_info_idx = {{["movie_id"]=100, ["info_type_id"]=10}, {["movie_id"]=200, ["info_type_id"]=20}}
-filtered = (function()
-    local _src = company_type
+aka_name = {{["person_id"]=1, ["name"]="A. Stone"}, {["person_id"]=2, ["name"]="J. Doe"}}
+char_name = {{["id"]=1, ["name"]="Protagonist"}, {["id"]=2, ["name"]="Extra"}}
+cast_info = {{["movie_id"]=1, ["person_role_id"]=1, ["person_id"]=1, ["role_id"]=1, ["note"]="(voice)"}, {["movie_id"]=2, ["person_role_id"]=2, ["person_id"]=2, ["role_id"]=2, ["note"]="Cameo"}}
+company_name = {{["id"]=10, ["country_code"]="[us]"}, {["id"]=20, ["country_code"]="[gb]"}}
+info_type = {{["id"]=100, ["info"]="release dates"}}
+movie_companies = {{["movie_id"]=1, ["company_id"]=10, ["note"]="Studio (USA)"}, {["movie_id"]=2, ["company_id"]=20, ["note"]="Other (worldwide)"}}
+movie_info = {{["movie_id"]=1, ["info_type_id"]=100, ["info"]="USA: June 2006"}, {["movie_id"]=2, ["info_type_id"]=100, ["info"]="UK: 1999"}}
+name = {{["id"]=1, ["name"]="Angela Stone", ["gender"]="f"}, {["id"]=2, ["name"]="Bob Angstrom", ["gender"]="m"}}
+role_type = {{["id"]=1, ["role"]="actress"}, {["id"]=2, ["role"]="actor"}}
+title = {{["id"]=1, ["title"]="Voiced Movie", ["production_year"]=2006}, {["id"]=2, ["title"]="Other Movie", ["production_year"]=2010}}
+matches = (function()
+    local _src = aka_name
     return __query(_src, {
-        { items = movie_companies, on = function(ct, mc) return __eq(ct.id, mc.company_type_id) end },
-        { items = title, on = function(ct, mc, t) return __eq(t.id, mc.movie_id) end },
-        { items = movie_info_idx, on = function(ct, mc, t, mi) return __eq(mi.movie_id, t.id) end },
-        { items = info_type, on = function(ct, mc, t, mi, it) return __eq(it.id, mi.info_type_id) end }
-    }, { selectFn = function(ct, mc, t, mi, it) return {["note"]=mc.note, ["title"]=t.title, ["year"]=t.production_year} end, where = function(ct, mc, t, mi, it) return ((((__eq(ct.kind, "production companies") and __eq(it.info, "top 250 rank")) and (not __contains(mc.note, "(as Metro-Goldwyn-Mayer Pictures)"))) and ((__contains(mc.note, "(co-production)") or __contains(mc.note, "(presents)"))))) end })
+        { items = name, on = function(an, n) return __eq(n.id, an.person_id) end },
+        { items = cast_info, on = function(an, n, ci) return __eq(ci.person_id, an.person_id) end },
+        { items = char_name, on = function(an, n, ci, chn) return __eq(chn.id, ci.person_role_id) end },
+        { items = role_type, on = function(an, n, ci, chn, rt) return __eq(rt.id, ci.role_id) end },
+        { items = title, on = function(an, n, ci, chn, rt, t) return __eq(t.id, ci.movie_id) end },
+        { items = movie_companies, on = function(an, n, ci, chn, rt, t, mc) return __eq(mc.movie_id, t.id) end },
+        { items = company_name, on = function(an, n, ci, chn, rt, t, mc, cn) return __eq(cn.id, mc.company_id) end },
+        { items = movie_info, on = function(an, n, ci, chn, rt, t, mc, cn, mi) return __eq(mi.movie_id, t.id) end },
+        { items = info_type, on = function(an, n, ci, chn, rt, t, mc, cn, mi, it) return __eq(it.id, mi.info_type_id) end }
+    }, { selectFn = function(an, n, ci, chn, rt, t, mc, cn, mi, it) return {["actress"]=n.name, ["movie"]=t.title} end, where = function(an, n, ci, chn, rt, t, mc, cn, mi, it) return ((((((((((((__contains({"(voice)", "(voice: Japanese version)", "(voice) (uncredited)", "(voice: English version)"}, ci.note) and __eq(cn.country_code, "[us]")) and __eq(it.info, "release dates")) and not __eq(mc.note, nil)) and ((__contains(mc.note, "(USA)") or __contains(mc.note, "(worldwide)")))) and not __eq(mi.info, nil)) and ((((__contains(mi.info, "Japan:") and __contains(mi.info, "200"))) or ((__contains(mi.info, "USA:") and __contains(mi.info, "200")))))) and __eq(n.gender, "f")) and __contains(n.name, "Ang")) and __eq(rt.role, "actress")) and (t.production_year >= 2005)) and (t.production_year <= 2009))) end })
 end)()
-result = {["production_note"]=__min((function()
+result = {{["voicing_actress"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.note
+    for _, r in ipairs(matches) do
+        _res[#_res+1] = r.actress
     end
     return _res
-end)()), ["movie_title"]=__min((function()
+end)()), ["voiced_movie"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.title
+    for _, r in ipairs(matches) do
+        _res[#_res+1] = r.movie
     end
     return _res
-end)()), ["movie_year"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.year
-    end
-    return _res
-end)())}
-__json({result})
+end)())}}
+__json(result)
 local __tests = {
-    {name="Q1 returns min note, title and year for top ranked co-production", fn=test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production},
+    {name="Q19 finds female voice actress in US/Japan release between 2005 and 2009", fn=test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009},
 }

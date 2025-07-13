@@ -225,7 +225,7 @@ func TestLuaCompiler_JOB(t *testing.T) {
 	}
 
 	root := findRepoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 20; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")

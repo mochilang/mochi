@@ -106,6 +106,11 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperStartsWith = "function __starts_with(str, prefix)\n" +
+		"    if type(str) ~= 'string' or type(prefix) ~= 'string' then return false end\n" +
+		"    return string.sub(str, 1, #prefix) == prefix\n" +
+		"end\n"
+
 	helperInput = "function __input()\n" +
 		"    local line = io.read('*l')\n" +
 		"    if line == nil then return '' end\n" +
@@ -851,6 +856,7 @@ var helperMap = map[string]string{
 	"add":            helperAdd,
 	"eq":             helperEq,
 	"contains":       helperContains,
+	"starts_with":    helperStartsWith,
 	"input":          helperInput,
 	"count":          helperCount,
 	"exists":         helperExists,

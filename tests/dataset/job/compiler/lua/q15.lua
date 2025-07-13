@@ -271,44 +271,46 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production()
-    if not (__eq(result, {["production_note"]="ACME (co-production)", ["movie_title"]="Good Movie", ["movie_year"]=1995})) then error('expect failed') end
+function test_Q15_finds_the_earliest_US_internet_movie_release_after_2000()
+    if not (__eq(result, {{["release_date"]="USA: March 2005", ["internet_movie"]="Example Movie"}})) then error('expect failed') end
 end
 
-company_type = {{["id"]=1, ["kind"]="production companies"}, {["id"]=2, ["kind"]="distributors"}}
-info_type = {{["id"]=10, ["info"]="top 250 rank"}, {["id"]=20, ["info"]="bottom 10 rank"}}
-title = {{["id"]=100, ["title"]="Good Movie", ["production_year"]=1995}, {["id"]=200, ["title"]="Bad Movie", ["production_year"]=2000}}
-movie_companies = {{["movie_id"]=100, ["company_type_id"]=1, ["note"]="ACME (co-production)"}, {["movie_id"]=200, ["company_type_id"]=1, ["note"]="MGM (as Metro-Goldwyn-Mayer Pictures)"}}
-movie_info_idx = {{["movie_id"]=100, ["info_type_id"]=10}, {["movie_id"]=200, ["info_type_id"]=20}}
-filtered = (function()
-    local _src = company_type
+aka_title = {{["movie_id"]=1}, {["movie_id"]=2}}
+company_name = {{["id"]=1, ["country_code"]="[us]"}, {["id"]=2, ["country_code"]="[gb]"}}
+company_type = {{["id"]=10}, {["id"]=20}}
+info_type = {{["id"]=5, ["info"]="release dates"}, {["id"]=6, ["info"]="other"}}
+keyword = {{["id"]=100}, {["id"]=200}}
+movie_companies = {{["movie_id"]=1, ["company_id"]=1, ["company_type_id"]=10, ["note"]="release (2005) (worldwide)"}, {["movie_id"]=2, ["company_id"]=2, ["company_type_id"]=20, ["note"]="release (1999) (worldwide)"}}
+movie_info = {{["movie_id"]=1, ["info_type_id"]=5, ["note"]="internet", ["info"]="USA: March 2005"}, {["movie_id"]=2, ["info_type_id"]=5, ["note"]="theater", ["info"]="USA: May 1999"}}
+movie_keyword = {{["movie_id"]=1, ["keyword_id"]=100}, {["movie_id"]=2, ["keyword_id"]=200}}
+title = {{["id"]=1, ["title"]="Example Movie", ["production_year"]=2005}, {["id"]=2, ["title"]="Old Movie", ["production_year"]=1999}}
+rows = (function()
+    local _src = title
     return __query(_src, {
-        { items = movie_companies, on = function(ct, mc) return __eq(ct.id, mc.company_type_id) end },
-        { items = title, on = function(ct, mc, t) return __eq(t.id, mc.movie_id) end },
-        { items = movie_info_idx, on = function(ct, mc, t, mi) return __eq(mi.movie_id, t.id) end },
-        { items = info_type, on = function(ct, mc, t, mi, it) return __eq(it.id, mi.info_type_id) end }
-    }, { selectFn = function(ct, mc, t, mi, it) return {["note"]=mc.note, ["title"]=t.title, ["year"]=t.production_year} end, where = function(ct, mc, t, mi, it) return ((((__eq(ct.kind, "production companies") and __eq(it.info, "top 250 rank")) and (not __contains(mc.note, "(as Metro-Goldwyn-Mayer Pictures)"))) and ((__contains(mc.note, "(co-production)") or __contains(mc.note, "(presents)"))))) end })
+        { items = aka_title, on = function(t, at) return __eq(at.movie_id, t.id) end },
+        { items = movie_info, on = function(t, at, mi) return __eq(mi.movie_id, t.id) end },
+        { items = movie_keyword, on = function(t, at, mi, mk) return __eq(mk.movie_id, t.id) end },
+        { items = movie_companies, on = function(t, at, mi, mk, mc) return __eq(mc.movie_id, t.id) end },
+        { items = keyword, on = function(t, at, mi, mk, mc, k) return (k.id == mk.keyword_id) end },
+        { items = info_type, on = function(t, at, mi, mk, mc, k, it1) return __eq(it1.id, mi.info_type_id) end },
+        { items = company_name, on = function(t, at, mi, mk, mc, k, it1, cn) return __eq(cn.id, mc.company_id) end },
+        { items = company_type, on = function(t, at, mi, mk, mc, k, it1, cn, ct) return __eq(ct.id, mc.company_type_id) end }
+    }, { selectFn = function(t, at, mi, mk, mc, k, it1, cn, ct) return {["release_date"]=mi.info, ["internet_movie"]=t.title} end, where = function(t, at, mi, mk, mc, k, it1, cn, ct) return ((((((((__eq(cn.country_code, "[us]") and __eq(it1.info, "release dates")) and __contains(mc.note, "200")) and __contains(mc.note, "worldwide")) and __contains(mi.note, "internet")) and __contains(mi.info, "USA:")) and __contains(mi.info, "200")) and (t.production_year > 2000))) end })
 end)()
-result = {["production_note"]=__min((function()
+result = {{["release_date"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.note
+    for _, r in ipairs(rows) do
+        _res[#_res+1] = r.release_date
     end
     return _res
-end)()), ["movie_title"]=__min((function()
+end)()), ["internet_movie"]=__min((function()
     local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.title
+    for _, r in ipairs(rows) do
+        _res[#_res+1] = r.internet_movie
     end
     return _res
-end)()), ["movie_year"]=__min((function()
-    local _res = {}
-    for _, r in ipairs(filtered) do
-        _res[#_res+1] = r.year
-    end
-    return _res
-end)())}
-__json({result})
+end)())}}
+__json(result)
 local __tests = {
-    {name="Q1 returns min note, title and year for top ranked co-production", fn=test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production},
+    {name="Q15 finds the earliest US internet movie release after 2000", fn=test_Q15_finds_the_earliest_US_internet_movie_release_after_2000},
 }
