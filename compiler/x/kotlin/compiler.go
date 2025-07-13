@@ -891,6 +891,16 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 					r = fmt.Sprintf("toDouble(%s)", r)
 				}
 			}
+			if op.Op == "/" {
+				if _, ok := lType.(types.IntType); ok {
+					res = fmt.Sprintf("(%s).toDouble()", res)
+					lType = types.FloatType{}
+				}
+				if _, ok := rType.(types.IntType); ok {
+					r = fmt.Sprintf("(%s).toDouble()", r)
+					rType = types.FloatType{}
+				}
+			}
 		}
 		res = fmt.Sprintf("%s %s %s", res, op.Op, r)
 		lType = rType
