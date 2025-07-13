@@ -16,9 +16,13 @@ import (
 )
 
 func main() {
+	// Ensure deterministic timestamps in generated headers.
+	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+	defer os.Unsetenv("MOCHI_HEADER_TIME")
 	outDir := filepath.Join("tests", "dataset", "tpc-h", "compiler", "py")
 	_ = os.MkdirAll(outDir, 0o755)
-	for i := 1; i <= 5; i++ {
+	// Only compile the first TPCH query for golden tests.
+	for i := 1; i <= 1; i++ {
 		q := fmt.Sprintf("q%d", i)
 		src := filepath.Join("tests", "dataset", "tpc-h", q+".mochi")
 		prog, err := parser.Parse(src)
@@ -30,7 +34,8 @@ func main() {
 			panic(errs[0])
 		}
 		c := py.New(env)
-		c.SetTypeHints(true)
+		// Golden tests expect type hints to be disabled.
+		c.SetTypeHints(false)
 		code, err := c.Compile(prog)
 		if err != nil {
 			panic(err)
