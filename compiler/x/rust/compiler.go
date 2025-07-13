@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 
 	meta "mochi/compiler/meta"
@@ -761,6 +762,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	if c.helpers["_save"] {
 		out.WriteString("fn _save<T>(_src: &[T], _path: &str, _opts: std::collections::HashMap<String, String>) { }\n\n")
+	}
+	if c.helpers["_json"] {
+		out.WriteString("fn _json<T: std::fmt::Debug>(value: &T) {\n")
+		out.WriteString("    println!(\"{:?}\", value);\n")
+		out.WriteString("}\n\n")
 	}
 	out.Write(c.buf.Bytes())
 	return out.Bytes(), nil
@@ -3671,7 +3677,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) != 1 {
 			return "", fmt.Errorf("json expects 1 arg")
 		}
-		return fmt.Sprintf("println!(\"{:?}\", %s)", args[0]), nil
+		if ml := tryMapLiteral(call.Args[0]); ml != nil {
+			if s, ok := c.mapLiteralJSON(ml); ok {
+				return fmt.Sprintf("println!(%q)", s), nil
+			}
+		}
+		c.helpers["_json"] = true
+		return fmt.Sprintf("_json(&%s)", args[0]), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ", ")), nil
 	}
@@ -3851,6 +3863,59 @@ func (c *Compiler) simpleString(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return *p.Target.Lit.Str, true
+}
+
+func (c *Compiler) simpleConstJSON(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) > 0 || u.Value == nil || len(u.Value.Ops) > 0 || u.Value.Target == nil || u.Value.Target.Lit == nil {
+		return "", false
+	}
+	l := u.Value.Target.Lit
+	switch {
+	case l.Int != nil:
+		return fmt.Sprintf("%d", *l.Int), true
+	case l.Float != nil:
+		f := *l.Float
+		if math.Trunc(f) == f {
+			return fmt.Sprintf("%.1f", f), true
+		}
+		return fmt.Sprintf("%v", f), true
+	case l.Bool != nil:
+		return strconv.FormatBool(bool(*l.Bool)), true
+	case l.Str != nil:
+		s := strings.ReplaceAll(*l.Str, "\"", "\\\"")
+		return fmt.Sprintf("\"%s\"", s), true
+	case l.Null:
+		return "null", true
+	}
+	return "", false
+}
+
+func (c *Compiler) mapLiteralJSON(m *parser.MapLiteral) (string, bool) {
+	var b strings.Builder
+	b.WriteByte('{')
+	for i, it := range m.Items {
+		key, ok := c.simpleKey(it.Key)
+		if !ok {
+			return "", false
+		}
+		val, ok := c.simpleConstJSON(it.Value)
+		if !ok {
+			return "", false
+		}
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		b.WriteString("\"")
+		b.WriteString(key)
+		b.WriteString("\":")
+		b.WriteString(val)
+	}
+	b.WriteByte('}')
+	return b.String(), true
 }
 
 func (c *Compiler) simpleKey(e *parser.Expr) (string, bool) {
