@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 )
 
@@ -53,7 +54,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			"}\n"
 		code = append([]byte(helper), code...)
 	}
-	return code, nil
+	var out bytes.Buffer
+	out.Write(meta.Header("//"))
+	out.Write(code)
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) writeln(s string) {

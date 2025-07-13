@@ -9,6 +9,7 @@ import (
 	"strings"
 	"unicode"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 )
 
@@ -129,6 +130,7 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.writeln("true.")
 	c.indent--
 	var out bytes.Buffer
+	out.Write(meta.Header("%"))
 	out.WriteString(":- style_check(-singleton).\n")
 	if c.needsGetItem {
 		out.WriteString("get_item(Container, Key, Val) :-\n")

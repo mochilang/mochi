@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -95,6 +96,7 @@ func New(env *types.Env) *Compiler {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.buf.Write(meta.Header("*>"))
 	c.indent = 7
 	c.vars = nil
 	c.init = nil

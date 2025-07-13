@@ -11,6 +11,7 @@ import (
 	"strings"
 	"unicode"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -466,10 +467,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.emitHelpers(&out, indentStep)
 	out.Write(data[idx:])
 	data = out.Bytes()
-	if len(data) == 0 || data[len(data)-1] != '\n' {
-		data = append(data, '\n')
+	var final bytes.Buffer
+	final.Write(meta.Header("//"))
+	final.Write(data)
+	if final.Len() == 0 || final.Bytes()[final.Len()-1] != '\n' {
+		final.WriteByte('\n')
 	}
-	return data, nil
+	return final.Bytes(), nil
 }
 
 func (c *Compiler) compileStmt(s *parser.Statement) error {

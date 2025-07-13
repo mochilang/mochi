@@ -8,6 +8,7 @@ import (
 	"math"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -686,6 +687,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// prepend generated enums, structs and helpers
 	var out bytes.Buffer
+	out.Write(meta.Header("//"))
 	for _, decl := range c.enumDecls {
 		out.WriteString(decl)
 		if !strings.HasSuffix(decl, "\n") {

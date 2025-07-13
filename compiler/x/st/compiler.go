@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 )
 
@@ -28,6 +29,8 @@ func New() *Compiler {
 // Compile converts a parsed Mochi program to Smalltalk code.
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	var out bytes.Buffer
+	out.Write(meta.Header("\""))
 	c.vars = make(map[string]bool)
 	c.indent = 0
 	c.needBreak = false
@@ -58,7 +61,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 
 	c.buf.Write(bodyBytes)
-	return c.buf.Bytes(), nil
+	out.Write(c.buf.Bytes())
+	return out.Bytes(), nil
 }
 
 func (c *Compiler) collectVars(st *parser.Statement) {

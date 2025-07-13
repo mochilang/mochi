@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -64,6 +65,8 @@ func New(env *types.Env) *Compiler {
 // Compile emits OCaml code for prog. Only a few constructs are supported.
 func (c *Compiler) Compile(prog *parser.Program, _ string) ([]byte, error) {
 	c.buf.Reset()
+	hdr := strings.TrimSpace(string(meta.Header("")))
+	c.writeln("(* " + hdr + " *)")
 	c.indent = 0
 
 	c.vars = make(map[string]bool)

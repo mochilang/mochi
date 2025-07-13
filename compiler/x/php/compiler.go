@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strings"
 
+	meta "mochi/compiler/meta"
 	"mochi/parser"
 	"mochi/types"
 )
@@ -31,6 +32,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent = 0
 	c.needsJSON = false
 	c.writeln("<?php")
+	c.buf.Write(meta.Header("//"))
 	for _, s := range prog.Statements {
 		if err := c.compileStmt(s); err != nil {
 			return nil, err
