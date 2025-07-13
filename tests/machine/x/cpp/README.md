@@ -2,7 +2,7 @@
 
 This directory contains C++ source code generated from Mochi programs and the corresponding outputs or error logs.
 
-Compiled programs: 100/100
+Compiled programs: 101/101
 
 ## Checklist
 
@@ -105,9 +105,5 @@ Compiled programs: 100/100
 - [x] user_type_literal
 - [x] values_builtin
 - [x] var_assignment
+- [x] q1.mochi
 - [x] while_loop
-
-All programs above compiled and ran successfully.
-
-## Remaining Tasks
-None
