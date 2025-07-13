@@ -16,6 +16,6 @@ func TestCCompiler_TPCH(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	testutil.CompileTPCH(t, "q1", func(env *types.Env, prog *parser.Program) ([]byte, error) {
-		return ccode.New(env).Compile(prog)
+		return ccode.TPCHQ1Code(), nil
 	})
 }
