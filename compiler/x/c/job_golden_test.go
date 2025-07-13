@@ -48,7 +48,7 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 		t.Skipf("C compiler not installed: %v", err)
 	}
 	root := repoRoot(t)
-	for i := 1; i <= 1; i++ {
+	for i := 1; i <= 10; i++ {
 		query := fmt.Sprintf("q%d", i)
 		t.Run(query, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", query+".mochi")
