@@ -732,7 +732,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if sortStr != "" && q.Group == nil {
 			sortFn = fmt.Sprintf("->(%s){ %s }", allParams, sortStr)
 		}
-		var sortExpr, skipExpr, takeExpr string
+		var sortExpr, skipExpr, takeExpr, havingExpr string
 		if q.Group != nil {
 			vars := append([]string{sanitizeName(q.Var)}, names[1:]...)
 			for _, j := range q.Joins {
@@ -771,6 +771,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				c.env = genv
 				c.groupVar = q.Group.Name
 				takeExpr, err = c.compileExpr(q.Take)
+				c.groupVar = ""
+				c.env = origEnv
+				if err != nil {
+					delete(c.queryRows, q.Group.Name)
+					return "", err
+				}
+			}
+			if q.Group.Having != nil {
+				genv := types.NewEnv(c.env)
+				genv.SetVar(q.Group.Name, types.AnyType{}, true)
+				c.env = genv
+				c.groupVar = q.Group.Name
+				havingExpr, err = c.compileExpr(q.Group.Having)
 				c.groupVar = ""
 				c.env = origEnv
 				if err != nil {
@@ -846,6 +859,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				}
 			}
 			delete(c.queryRows, q.Group.Name)
+			if havingExpr != "" {
+				b.WriteString("\t\tnext unless " + havingExpr + "\n")
+			}
 			b.WriteString("\t\t_res << " + valExpr + "\n")
 			b.WriteString("\tend\n")
 			b.WriteString("\t_res\n")
