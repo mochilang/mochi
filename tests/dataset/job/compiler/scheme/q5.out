@@ -5,8 +5,8 @@ ERROR: exception handler returned
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
   called from error on line 100 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
-  called from <anonymous> on line 236 of file tests/dataset/job/compiler/scheme/q5.scm
+  called from <anonymous> on line 238 of file tests/dataset/job/compiler/scheme/q5.scm
   called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
   called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
 [{"typical_european_movie":0}]
-   test Q5 finds the lexicographically first qualifying title ... fail #<Exception 139775728415776>
+   test Q5 finds the lexicographically first qualifying title ... fail #<Exception 140068236950400>

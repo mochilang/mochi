@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"cool_actor_pseudonym":"Alpha","series_named_after_char":"Hero Bob"}]
+   test Q16 finds series named after a character between episodes 50 and 99 ... ok

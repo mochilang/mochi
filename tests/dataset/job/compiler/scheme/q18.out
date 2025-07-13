@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+{"movie_budget":90,"movie_votes":400,"movie_title":"Alpha"}
+   test Q18 finds minimal budget, votes and title for Tim productions ... ok

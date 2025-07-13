@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"member_in_charnamed_american_movie":"Bob Smith","a1":"Bob Smith"}]
+   test Q17 finds US character-name movie with actor starting with B ... ok

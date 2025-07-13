@@ -1,0 +1,3 @@
+WARNING: reference to undefined variable: open-input-pipe
+[{"movie_company":"Best Pictures","rating":8.3,"drama_horror_movie":"Great Drama"}]
+   test Q12 finds high-rated US drama or horror with company ... ok

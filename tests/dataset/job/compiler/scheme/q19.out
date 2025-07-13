@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"voicing_actress":"Angela Stone","voiced_movie":"Voiced Movie"}]
+   test Q19 finds female voice actress in US/Japan release between 2005 and 2009 ... ok

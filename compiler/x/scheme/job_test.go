@@ -40,7 +40,7 @@ func TestSchemeCompiler_JOB(t *testing.T) {
 		t.Skipf("scheme not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 20; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")

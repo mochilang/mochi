@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+[{"release_date":"USA: March 2005","internet_movie":"Example Movie"}]
+   test Q15 finds the earliest US internet movie release after 2000 ... ok

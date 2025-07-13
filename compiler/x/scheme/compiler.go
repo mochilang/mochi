@@ -267,7 +267,8 @@ const groupHelpers = `(import (scheme base))
 
 const jsonHelper = `(define (_json v)
   (cond
-    ((and (list? v) (pair? v) (pair? (car v)))
+    ;; list of objects
+    ((and (list? v) (pair? v) (pair? (car v)) (pair? (caar v)))
      (display "[")
      (let loop ((xs v) (first #t))
        (unless (null? xs)
@@ -275,6 +276,7 @@ const jsonHelper = `(define (_json v)
          (display (json->string (car xs)))
          (loop (cdr xs) #f)))
      (display "]"))
+    ;; single object or other value
     (else
      (display (json->string v))))
   (newline))`
@@ -1128,7 +1130,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						}
 					}
 				}
-				if method == "contains" && len(args) == 1 {
+				if (method == "contains" || method == "starts_with") && len(args) == 1 {
 					c.needStringLib = true
 					base := *p.Target
 					if base.Selector != nil && len(base.Selector.Tail) > 0 {
@@ -1140,7 +1142,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					if err != nil {
 						return "", err
 					}
-					expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", recvExpr, args[0])
+					if method == "contains" {
+						expr = fmt.Sprintf("(if (string-contains %s %s) #t #f)", recvExpr, args[0])
+					} else {
+						expr = fmt.Sprintf("(if (string-prefix? %s %s) #t #f)", args[0], recvExpr)
+					}
 					continue
 				}
 			}

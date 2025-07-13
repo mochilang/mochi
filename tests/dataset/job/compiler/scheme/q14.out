@@ -1,0 +1,5 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+{"rating":7,"northern_dark_movie":"A Dark Movie"}
+   test Q14 selects minimal rating and title for dark movies ... ok
