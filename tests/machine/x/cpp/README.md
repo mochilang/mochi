@@ -106,8 +106,3 @@ Compiled programs: 100/100
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-All programs above compiled and ran successfully.
-
-## Remaining Tasks
-None
