@@ -4101,12 +4101,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 					isStringList = false
 				} else {
 					c.need(needSliceListInt)
-					if _, ok := c.listLens[expr]; ok {
-						// wrap stack-based array as list_int
-						wrapper := c.newTemp()
+					if l, ok := c.listLens[expr]; ok {
 						c.need(needListInt)
-						c.writeln(fmt.Sprintf("list_int %s = {%s, %s};", wrapper, c.listLenExpr(expr), expr))
-						expr = wrapper
+						expr = fmt.Sprintf("(list_int){%d, %s}", l, expr)
 					} else {
 						c.need(needListInt)
 					}
