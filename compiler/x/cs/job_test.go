@@ -1,5 +1,3 @@
-//go:build slow
-
 package cscode_test
 
 import (
@@ -9,21 +7,21 @@ import (
 	"path/filepath"
 	"testing"
 
-	"mochi/compiler/x/testutil"
-
 	cscode "mochi/compiler/x/cs"
+	"mochi/compiler/x/testutil"
 	"mochi/parser"
 	"mochi/types"
 )
 
-func TestCSCompiler_TPCH_Q1(t *testing.T) {
+func TestCSCompiler_JOB_Q1(t *testing.T) {
 	if err := cscode.EnsureDotnet(); err != nil {
 		t.Skipf("dotnet not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	src := filepath.Join(root, "tests", "dataset", "tpc-h", "q1.mochi")
-	codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cs", "q1.cs.out")
-	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "cs", "q1.out")
+	src := filepath.Join(root, "tests", "dataset", "job", "q1.mochi")
+	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "cs", "q1.cs.out")
+	outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "cs", "q1.out")
+
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)
@@ -45,6 +43,7 @@ func TestCSCompiler_TPCH_Q1(t *testing.T) {
 	if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
 		t.Errorf("generated code mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", got, bytes.TrimSpace(wantCode))
 	}
+
 	dir := t.TempDir()
 	proj := filepath.Join(dir, "app.csproj")
 	csproj := `<Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework></PropertyGroup><ItemGroup><PackageReference Include="YamlDotNet" Version="13.3.1" /></ItemGroup></Project>`
