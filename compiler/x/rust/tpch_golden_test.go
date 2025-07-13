@@ -27,7 +27,7 @@ func TestRustCompiler_TPCHQueries(t *testing.T) {
 		t.Skip("rustc not installed")
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 6; i++ {
+	for i := 1; i <= 7; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "rust", base+".rs")
