@@ -16,7 +16,7 @@ Checklist:
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [x] cross_join (simplified printf)
+- [x] cross_join (improved printf and snake_case structs)
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit

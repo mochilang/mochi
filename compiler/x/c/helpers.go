@@ -72,6 +72,10 @@ func baseName(name string) string {
 	return b.String()
 }
 
+func fieldName(name string) string {
+	return baseName(name)
+}
+
 // singular returns a naive singular form of name by dropping a trailing 's'.
 func singular(name string) string {
 	if strings.HasSuffix(name, "s") && len(name) > 1 {
