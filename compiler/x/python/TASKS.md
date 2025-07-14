@@ -28,6 +28,10 @@
 - `_Group` now defines `__len__` so groups behave like lists.
 - Aggregate helpers emit `len(g)` instead of `len(g.Items)` when counting or averaging.
 
+## Recent Enhancements (2025-07-16 05:00)
+- Auto and named dataclasses now implement `__iter__` for easier unpacking.
+- Prepared compiler output formatting for TPCH Q1 regeneration.
+
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
