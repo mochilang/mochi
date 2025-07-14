@@ -105,7 +105,7 @@ Compiled programs: 100/100 successful.
 - [x] while_loop.mochi
 
 ## TPCH Progress
-- [x] q1.mochi generates valid Python using attribute-access dataclasses and output matches `tests/dataset/tpc-h/compiler/py/q1.out`
+- [x] q1.mochi regenerated with dataclasses and attribute access
 - [ ] q2.mochi through q22.mochi
 
 ## Remaining Tasks

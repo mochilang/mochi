@@ -263,7 +263,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 				t = types.AnyType{}
 			}
 		}
+		t = c.namedType(t)
 		c.env.SetVar(s.Name, t, false)
+		typ = t
 	}
 	explicit := s.Type != nil
 	useAnn := c.typeHints && typ != nil && !isAny(typ)
@@ -345,7 +347,9 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 				t = types.AnyType{}
 			}
 		}
+		t = c.namedType(t)
 		c.env.SetVar(s.Name, t, true)
+		typ = t
 	}
 	if s.Type != nil {
 		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))

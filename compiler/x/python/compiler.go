@@ -1240,22 +1240,19 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	// check if this literal represents a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	if st, ok := c.inferExprType(expr).(types.StructType); ok {
-		// Only emit a dataclass instance for named structs. Anonymous
-		// struct literals are rendered as plain Python dictionaries to
-		// better match the hand-written examples.
-		if st.Name != "" {
-			st = c.ensureStructName(st)
-			fields := make([]string, len(m.Items))
-			for i, it := range m.Items {
-				name, _ := identName(it.Key)
-				val, err := c.compileExpr(it.Value)
-				if err != nil {
-					return "", err
-				}
-				fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
+		// Emit dataclasses even for anonymous struct literals so that
+		// query results produce structured records.
+		st = c.ensureStructName(st)
+		fields := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			name, _ := identName(it.Key)
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
 			}
-			return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+			fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
 		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
 	}
 
 	items := make([]string, len(m.Items))

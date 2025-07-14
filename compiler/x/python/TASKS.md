@@ -11,6 +11,9 @@
 ## Recent Enhancements (2025-07-13 19:29)
 - Auto-struct lists update environment types so dataset queries use attribute access.
 - `tpc-h/q1.mochi` runs with generated dataclasses using dot notation.
+## Recent Enhancements (2025-07-14 01:31)
+- Anonymous struct literals now emit dataclasses.
+- `let` and `var` statements store named types for later attribute access.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
