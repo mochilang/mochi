@@ -518,12 +518,39 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	value := "undefined"
+	var unwrapped []string
+	var retVar string
 	if s.Value != nil {
 		v, err := c.compileExpr(s.Value)
 		if err != nil {
 			return err
 		}
-		value = v
+		if strings.HasPrefix(v, "(() => {") && strings.HasSuffix(v, "})()") {
+			body := strings.TrimSuffix(strings.TrimPrefix(v, "(() => {"), "})()")
+			body = strings.TrimSuffix(body, "\n")
+			lines := strings.Split(body, "\n")
+			if len(lines) > 0 && strings.TrimSpace(lines[0]) == "" {
+				lines = lines[1:]
+			}
+			for i, ln := range lines {
+				if strings.HasPrefix(ln, indentStr) {
+					lines[i] = strings.TrimPrefix(ln, indentStr)
+				}
+			}
+			if len(lines) > 0 {
+				last := strings.TrimSpace(lines[len(lines)-1])
+				if strings.HasPrefix(last, "return ") && strings.HasSuffix(last, ";") {
+					retVar = strings.TrimSuffix(strings.TrimPrefix(last, "return "), ";")
+					unwrapped = lines[:len(lines)-1]
+				}
+			}
+			if len(unwrapped) == 0 {
+				value = strings.TrimSpace(v)
+			}
+		}
+		if len(unwrapped) == 0 {
+			value = v
+		}
 	}
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
@@ -545,12 +572,31 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		} else {
 			c.globals[name] = fmt.Sprintf("let %s", name)
 		}
-		c.writeln(fmt.Sprintf("%s = %s", name, value))
-	} else {
-		if needType && typStr != "" {
-			c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+		if len(unwrapped) > 0 && retVar != "" {
+			for _, ln := range unwrapped {
+				c.writeln(ln)
+			}
+			c.writeln(fmt.Sprintf("%s = %s", name, retVar))
 		} else {
-			c.writeln(fmt.Sprintf("let %s = %s", name, value))
+			c.writeln(fmt.Sprintf("%s = %s", name, value))
+		}
+	} else {
+		if len(unwrapped) > 0 && retVar != "" {
+			if needType && typStr != "" {
+				c.writeln(fmt.Sprintf("let %s: %s", name, typStr))
+			} else {
+				c.writeln(fmt.Sprintf("let %s", name))
+			}
+			for _, ln := range unwrapped {
+				c.writeln(ln)
+			}
+			c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+		} else {
+			if needType && typStr != "" {
+				c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))
+			} else {
+				c.writeln(fmt.Sprintf("let %s = %s", name, value))
+			}
 		}
 	}
 	return nil
