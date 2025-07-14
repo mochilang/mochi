@@ -13,6 +13,13 @@ import (
 	"mochi/types"
 )
 
+func escapeCString(s string) string {
+	s = strings.ReplaceAll(s, "\\", "\\\\")
+	s = strings.ReplaceAll(s, "\"", "\\\"")
+	s = strings.ReplaceAll(s, "\n", "\\n")
+	return s
+}
+
 func equalTypes(a, b types.Type) bool {
 	if _, ok := a.(types.AnyType); ok {
 		return true
