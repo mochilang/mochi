@@ -1871,9 +1871,6 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			}
 			if templatable {
 				out := strings.Join(tmpl, " ")
-				out = strings.ReplaceAll(out, " ,", ",")
-				out = strings.ReplaceAll(out, " )", ")")
-				out = strings.ReplaceAll(out, "$ ${", "$${")
 				return fmt.Sprintf("console.log(`%s`)", out), nil
 			}
 		}
