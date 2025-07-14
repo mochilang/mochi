@@ -64,7 +64,7 @@ var helperSum = "def _sum(v):\n" +
 	"            s += float(it)\n" +
 	"        else:\n" +
 	"            raise Exception('sum() expects numbers')\n" +
-	"    return s\n"
+	"    return int(s) if s.is_integer() else s\n"
 
 var helperMin = "def _min(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
@@ -87,14 +87,14 @@ var helperMax = "def _max(v):\n" +
 	"    return max(vals)\n"
 
 var helperGroupClass = "class _Group(Generic[K, T]):\n" +
-        "    def __init__(self, key: K):\n" +
-        "        self.key = key\n" +
-        "        self.Items: list[T] = []\n" +
-        "        self.items = self.Items\n" +
-        "    def __iter__(self):\n" +
-        "        return iter(self.Items)\n" +
-        "    def __len__(self):\n" +
-        "        return len(self.Items)\n"
+	"    def __init__(self, key: K):\n" +
+	"        self.key = key\n" +
+	"        self.Items: list[T] = []\n" +
+	"        self.items = self.Items\n" +
+	"    def __iter__(self):\n" +
+	"        return iter(self.Items)\n" +
+	"    def __len__(self):\n" +
+	"        return len(self.Items)\n"
 
 var helperGroupBy = "def _group_by(src: list[T], keyfn: Callable[[T], K]) -> list[_Group[K, T]]:\n" +
 	"    groups: dict[str, _Group[K, T]] = {}\n" +

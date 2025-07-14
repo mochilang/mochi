@@ -1,7 +1,9 @@
+exit status 1
+[{"returnflag": "N", "linestatus": "O", "sum_qty": 53, "sum_base_price": 3000, "sum_disc_price": 2750, "sum_charge": 2906.5, "avg_qty": 26.5, "avg_price": 1500.0, "avg_disc": 0.07500000000000001, "count_order": 2}]
 Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/q1.py", line 327, in <module>
+  File "/workspace/mochi/tests/machine/x/python/q1.py", line 375, in <module>
     test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
-  File "/workspace/mochi/tests/machine/x/python/q1.py", line 244, in test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus
+  File "/workspace/mochi/tests/machine/x/python/q1.py", line 292, in test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus
     assert result == [
            ^^^^^^^^^^^
 AssertionError
