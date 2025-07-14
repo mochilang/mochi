@@ -680,17 +680,7 @@ func (c *Compiler) compileStructType(st types.StructType) error {
 				}
 			}
 		}
-		if len(st.Order) > 0 {
-			c.writeln("")
-			c.writeln("def __iter__(self):")
-			c.indent++
-			parts := make([]string, len(st.Order))
-			for i, fn := range st.Order {
-				parts[i] = fmt.Sprintf("self.%s", sanitizeName(fn))
-			}
-			c.writeln(fmt.Sprintf("return iter((%s))", strings.Join(parts, ", ")))
-			c.indent--
-		}
+		// no extra magic methods needed for plain structs
 	}
 	c.indent--
 	c.writeln("")

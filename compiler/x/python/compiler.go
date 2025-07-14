@@ -197,7 +197,7 @@ func (c *Compiler) emitAutoStructs() {
 	sort.Strings(names)
 	for _, n := range names {
 		st := c.autoStructs[n]
-		c.writeln("@dataclasses.dataclass(eq=False)")
+		c.writeln("@dataclasses.dataclass")
 		c.writeln(fmt.Sprintf("class %s:", n))
 		c.indent++
 		if len(st.Order) == 0 {
@@ -214,20 +214,6 @@ func (c *Compiler) emitAutoStructs() {
 			c.writeln("def __getitem__(self, key):")
 			c.indent++
 			c.writeln("return getattr(self, key)")
-			c.indent--
-			c.writeln("")
-			c.writeln("def __iter__(self):")
-			c.indent++
-			parts := make([]string, len(st.Order))
-			for i, f := range st.Order {
-				parts[i] = fmt.Sprintf("self.%s", sanitizeName(f))
-			}
-			c.writeln(fmt.Sprintf("return iter((%s))", strings.Join(parts, ", ")))
-			c.indent--
-			c.writeln("")
-			c.writeln("def __eq__(self, other):")
-			c.indent++
-			c.writeln("return hasattr(other, '__dict__') and self.__dict__ == other.__dict__")
 			c.indent--
 		}
 		c.indent--
