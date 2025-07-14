@@ -819,7 +819,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		c.indent++
 		for _, fn := range st.Order {
 			ft := st.Fields[fn]
-			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), fieldName(fn)))
 		}
 		c.indent--
 		c.writeln(fmt.Sprintf("}%s;", name))
@@ -832,7 +832,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		c.indent++
 		for _, fn := range st.Order {
 			ft := st.Fields[fn]
-			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), sanitizeName(fn)))
+			c.writeln(fmt.Sprintf("%s %s;", cTypeFromType(ft), fieldName(fn)))
 		}
 		c.indent--
 		c.writeln(fmt.Sprintf("}%s;", name))
@@ -899,7 +899,7 @@ func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
 	c.writeln(fmt.Sprintf("%s out;", sanitizeTypeName(st.Name)))
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
-		field := sanitizeName(fn)
+		field := fieldName(fn)
 		switch ft.(type) {
 		case types.IntType, types.BoolType:
 			c.writeln(fmt.Sprintf("out.%s = atoi(map_string_get(row, \"%s\"));", field, fn))
@@ -1034,7 +1034,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			if st, ok := curT.(types.StructType); ok {
 				if key, ok2 := types.SimpleStringKey(idx.Start); ok2 {
 					if ft, ok3 := st.Fields[key]; ok3 {
-						target = fmt.Sprintf("%s.%s", target, sanitizeName(key))
+						target = fmt.Sprintf("%s.%s", target, fieldName(key))
 						curT = ft
 						continue
 					}
@@ -1055,10 +1055,10 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		useArrow := c.pointerVars[lhs] && len(s.Assign.Index) == 0
 		for i, f := range s.Assign.Field {
 			if i == 0 && useArrow {
-				target = fmt.Sprintf("%s->%s", target, sanitizeName(f.Name))
+				target = fmt.Sprintf("%s->%s", target, fieldName(f.Name))
 				useArrow = false
 			} else {
-				target = fmt.Sprintf("%s.%s", target, sanitizeName(f.Name))
+				target = fmt.Sprintf("%s.%s", target, fieldName(f.Name))
 			}
 		}
 		val := c.compileExpr(s.Assign.Value)
@@ -1315,6 +1315,16 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			} else {
 				val := c.compileFetchExpr(f)
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			}
 		} else if isEmptyListLiteral(stmt.Value) {
 			if isListStringType(t) {
@@ -1322,43 +1332,83 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_string %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isListFloatType(t) {
 				c.need(needListFloat)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_float %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isListListIntType(t) {
 				c.need(needListListInt)
 				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isListIntType(t) || isListBoolType(t) {
 				c.need(needListInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if st, ok := isListStructType(t); ok {
 				c.compileStructListType(st)
 				listName := sanitizeListName(st.Name)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("%s %s = {0, NULL};", listName, val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isMapStringIntType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapStringInt)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_string_int %s = map_string_int_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isMapIntStringType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntString)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_string %s = map_int_string_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isMapStringIntType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapStringInt)
 				val := c.newTemp()
@@ -1803,7 +1853,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 		}
 		val := c.compileExpr(it.Value)
 		val = strings.ReplaceAll(val, "self->", item+".")
-		c.writeln(fmt.Sprintf("%s.%s = %s;", item, sanitizeName(key), val))
+		c.writeln(fmt.Sprintf("%s.%s = %s;", item, fieldName(key), val))
 	}
 	if u.Where != nil {
 		c.indent--
@@ -1883,7 +1933,7 @@ func (c *Compiler) compileMatchExpr(m *parser.MatchExpr) string {
 						if name, ok := identName(arg); ok {
 							field := st.Order[i]
 							ft := st.Fields[field]
-							expr := fmt.Sprintf("%s.value.%s.%s", tmp, sanitizeName(call.Func), sanitizeName(field))
+							expr := fmt.Sprintf("%s.value.%s.%s", tmp, sanitizeName(call.Func), fieldName(field))
 							if _, ok := ft.(types.UnionType); ok {
 								expr = "*" + expr
 							}
@@ -1988,13 +2038,13 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 							v := r[f]
 							switch st.Fields[f].(type) {
 							case types.StringType:
-								parts = append(parts, fmt.Sprintf(".%s = %q", sanitizeName(f), v))
+								parts = append(parts, fmt.Sprintf(".%s = %q", fieldName(f), v))
 							case types.FloatType:
 								fv, _ := strconv.ParseFloat(fmt.Sprint(v), 64)
-								parts = append(parts, fmt.Sprintf(".%s = %.17g", sanitizeName(f), fv))
+								parts = append(parts, fmt.Sprintf(".%s = %.17g", fieldName(f), fv))
 							default:
 								iv, _ := strconv.Atoi(fmt.Sprint(v))
-								parts = append(parts, fmt.Sprintf(".%s = %d", sanitizeName(f), iv))
+								parts = append(parts, fmt.Sprintf(".%s = %d", fieldName(f), iv))
 							}
 						}
 						line := fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
@@ -4172,9 +4222,9 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 						ft := st.Fields[f]
 						if _, ok := ft.(types.StringType); ok {
 							c.need(needStringHeader)
-							parts = append(parts, fmt.Sprintf("strcmp(%s.data[%s].%s, %s.data[%s].%s) != 0", left, idx, sanitizeName(f), right, idx, sanitizeName(f)))
+							parts = append(parts, fmt.Sprintf("strcmp(%s.data[%s].%s, %s.data[%s].%s) != 0", left, idx, fieldName(f), right, idx, fieldName(f)))
 						} else {
-							parts = append(parts, fmt.Sprintf("%s.data[%s].%s != %s.data[%s].%s", left, idx, sanitizeName(f), right, idx, sanitizeName(f)))
+							parts = append(parts, fmt.Sprintf("%s.data[%s].%s != %s.data[%s].%s", left, idx, fieldName(f), right, idx, fieldName(f)))
 						}
 					}
 					cond := strings.Join(parts, " || ")
@@ -4266,7 +4316,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 			for i, it := range p.Target.Map.Items {
 				key, _ := types.SimpleStringKey(it.Key)
 				val := c.compileExpr(it.Value)
-				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
+				parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), val)
 			}
 			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
@@ -4283,7 +4333,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				if st, ok := curT.(types.StructType); ok {
 					if key, ok2 := types.SimpleStringKey(op.Index.Start); ok2 {
 						if ft, ok3 := st.Fields[key]; ok3 {
-							expr = fmt.Sprintf("%s.%s", expr, sanitizeName(key))
+							expr = fmt.Sprintf("%s.%s", expr, fieldName(key))
 							curT = ft
 							isStr = isStringType(ft)
 							isFloatList = isListFloatType(ft)
@@ -4402,7 +4452,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) string {
 				for i, it := range p.Target.Map.Items {
 					key, _ := types.SimpleStringKey(it.Key)
 					val := c.compileExpr(it.Value)
-					parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), val)
+					parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), val)
 				}
 				expr = fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 				isStr = false
@@ -4561,7 +4611,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				}
 			}
-			parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(f.Name), v)
+			parts[i] = fmt.Sprintf(".%s = %s", fieldName(f.Name), v)
 		}
 		if c.env != nil {
 			if ut, ok := c.env.FindUnionByVariant(p.Struct.Name); ok {
@@ -4675,7 +4725,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, it := range p.Map.Items {
 				key, _ := types.SimpleStringKey(it.Key)
 				v := c.compileExpr(it.Value)
-				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
+				parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), v)
 			}
 			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
@@ -4690,7 +4740,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			for i, it := range p.Map.Items {
 				key, _ := types.SimpleStringKey(it.Key)
 				v := c.compileExpr(it.Value)
-				parts[i] = fmt.Sprintf(".%s = %s", sanitizeName(key), v)
+				parts[i] = fmt.Sprintf(".%s = %s", fieldName(key), v)
 			}
 			return fmt.Sprintf("(%s){%s}", sanitizeTypeName(st.Name), strings.Join(parts, ", "))
 		}
@@ -4876,7 +4926,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 							c.writeln("printf(\" \");")
 						}
 						c.writeln(fmt.Sprintf("printf(\"%s:\");", field))
-						fe := fmt.Sprintf("it.%s", sanitizeName(field))
+						fe := fmt.Sprintf("it.%s", fieldName(field))
 						switch st.Fields[field].(type) {
 						case types.StringType:
 							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
@@ -4905,7 +4955,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 							c.writeln("printf(\" \");")
 						}
 						c.writeln(fmt.Sprintf("printf(\"%s:\");", field))
-						fe := fmt.Sprintf("%s.%s", argExpr, sanitizeName(field))
+						fe := fmt.Sprintf("%s.%s", argExpr, fieldName(field))
 						switch st.Fields[field].(type) {
 						case types.StringType:
 							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%s", fe))
@@ -5283,10 +5333,10 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 		typ := capInfo.typ
 		for _, f := range s.Tail {
 			if st, ok := typ.(types.StructType); ok {
-				expr += "." + sanitizeName(f)
+				expr += "." + fieldName(f)
 				typ = st.Fields[f]
 			} else {
-				expr += "." + sanitizeName(f)
+				expr += "." + fieldName(f)
 				typ = nil
 			}
 		}
@@ -5345,15 +5395,15 @@ func (c *Compiler) compileSelector(s *parser.SelectorExpr) string {
 				}
 			}
 			if variant != "" {
-				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), sanitizeName(f))
+				expr += fmt.Sprintf(".value.%s.%s", sanitizeName(variant), fieldName(f))
 				typ = ft
 				continue
 			}
 		}
 		if ptr && i == 0 {
-			expr += "->" + sanitizeName(f)
+			expr += "->" + fieldName(f)
 		} else {
-			expr += "." + sanitizeName(f)
+			expr += "." + fieldName(f)
 		}
 		if st, ok := typ.(types.StructType); ok {
 			typ = st.Fields[f]
@@ -6411,7 +6461,7 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 			}
 			c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
 			c.writeln("printf(\":\");")
-			fe := fmt.Sprintf("it.%s", sanitizeName(field))
+			fe := fmt.Sprintf("it.%s", fieldName(field))
 			switch st.Fields[field].(type) {
 			case types.IntType, types.BoolType:
 				c.writeln(fmt.Sprintf("_json_int(%s);", fe))
@@ -6440,7 +6490,7 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 				}
 				c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
 				c.writeln("printf(\":\");")
-				fe := fmt.Sprintf("it.%s", sanitizeName(field))
+				fe := fmt.Sprintf("it.%s", fieldName(field))
 				switch st.Fields[field].(type) {
 				case types.IntType, types.BoolType:
 					c.writeln(fmt.Sprintf("_json_int(%s);", fe))
@@ -6475,7 +6525,7 @@ func (c *Compiler) emitJSONExpr(e *parser.Expr) {
 			}
 			c.writeln(fmt.Sprintf("_json_string(\"%s\");", field))
 			c.writeln("printf(\":\");")
-			fe := fmt.Sprintf("%s.%s", argExpr, sanitizeName(field))
+			fe := fmt.Sprintf("%s.%s", argExpr, fieldName(field))
 			switch st.Fields[field].(type) {
 			case types.IntType:
 				c.writeln(fmt.Sprintf("_json_int(%s);", fe))

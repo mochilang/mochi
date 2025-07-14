@@ -100,6 +100,10 @@ func createListFuncName(name string) string {
 	return "create_" + baseName(name) + "_list"
 }
 
+func fieldName(name string) string {
+	return baseName(name)
+}
+
 func cTypeFromType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.BoolType:
