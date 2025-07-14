@@ -3296,6 +3296,112 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		}
 	}
 
+	// handle a single join grouped by a string expression and counting rows
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group != nil && len(q.Group.Exprs) == 1 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		j := q.Joins[0]
+		leftExpr := c.compileExpr(q.Source)
+		leftT := c.exprType(q.Source)
+		leftLt, ok := leftT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		rightExpr := c.compileExpr(j.Src)
+		rightT := c.exprType(j.Src)
+		rightLt, ok := rightT.(types.ListType)
+		if !ok {
+			return "0"
+		}
+		joinOn := c.compileExpr(j.On)
+
+		oldEnv := c.env
+		if c.env != nil {
+			c.env = types.NewEnv(c.env)
+			c.env.SetVar(j.Var, rightLt.Elem, true)
+			c.env.SetVar(q.Var, leftLt.Elem, true)
+		}
+
+		var cond string
+		if q.Where != nil {
+			cond = c.compileExpr(q.Where)
+		}
+
+		if ml := asMapLiteral(q.Select); ml != nil {
+			if _, ok := c.structLits[ml]; !ok {
+				if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+					c.structLits[ml] = st
+					if c.env != nil {
+						c.env.SetStruct(st.Name, st)
+					}
+					c.compileStructType(st)
+					c.compileStructListType(st)
+				}
+			}
+		}
+
+		ml := asMapLiteral(q.Select)
+		var retT types.StructType
+		if ml != nil {
+			if st, ok := c.structLits[ml]; ok {
+				retT = st
+			}
+		}
+		if retT.Name == "" {
+			retT = types.StructType{Name: "Stat", Fields: map[string]types.Type{"name": types.StringType{}, "count": types.IntType{}}, Order: []string{"name", "count"}}
+			c.compileStructType(retT)
+			c.compileStructListType(retT)
+		}
+
+		listName := sanitizeListName(retT.Name)
+		createFunc := createListFuncName(retT.Name)
+
+		res := c.newTemp()
+		idx := c.newTemp()
+		c.writeln(fmt.Sprintf("%s %s = %s(%s * %s);", listName, res, createFunc, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
+		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+		loopL := c.newLoopVar()
+		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopL, loopL, c.listLenExpr(leftExpr), loopL))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), c.listItemExpr(leftExpr, loopL)))
+		loopR := c.newLoopVar()
+		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopR, loopR, c.listLenExpr(rightExpr), loopR))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), c.listItemExpr(rightExpr, loopR)))
+		c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", joinOn))
+		if cond != "" {
+			c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+		}
+		key := c.compileExpr(q.Group.Exprs[0])
+		found := c.newTemp()
+		kloop := c.newLoopVar()
+		c.writeln(fmt.Sprintf("int %s = -1;", found))
+		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", kloop, kloop, idx, kloop))
+		c.indent++
+		c.writeln(fmt.Sprintf("if (strcmp(%s.data[%s].name, %s) == 0) { %s = %s; break; }", res, kloop, key, found, kloop))
+		c.indent--
+		c.writeln("}")
+		c.writeln(fmt.Sprintf("if (%s == -1) {", found))
+		c.indent++
+		c.writeln(fmt.Sprintf("%s.data[%s].name = %s;", res, idx, key))
+		c.writeln(fmt.Sprintf("%s.data[%s].count = 1;", res, idx))
+		c.writeln(fmt.Sprintf("%s = %s;", found, idx))
+		c.writeln(fmt.Sprintf("%s++;", idx))
+		c.indent--
+		c.writeln("} else {")
+		c.indent++
+		c.writeln(fmt.Sprintf("%s.data[%s].count++;", res, found))
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.indent--
+		c.writeln("}")
+		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if c.env != nil {
+			c.env = oldEnv
+		}
+		return res
+	}
+
 	// handle joins without grouping
 	if len(q.Joins) > 0 && q.Group == nil {
 		type srcInfo struct {
