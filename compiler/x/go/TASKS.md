@@ -18,6 +18,7 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-13 19:22 - Emitted struct declarations for query select results
 - 2025-07-13 19:01 - Added explicit struct types for cross join outputs and dataset examples
 
 - 2025-07-13 09:30 - Normalized `_convSlice` detection to avoid nested conversions
@@ -42,3 +43,4 @@ TPC-H progress:
 * [ ] Investigate missing output for JOB q7
 * [ ] Audit generated code after `_toAnyMap` removal
 * [ ] Remove helper functions prefixed with `_` from generated code
+* [ ] Improve dataset query struct inference
