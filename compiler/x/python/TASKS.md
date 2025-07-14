@@ -1,5 +1,8 @@
 # Python Compiler Tasks
 
+## Recent Enhancements (2025-07-14 02:43)
+- Query result structs are now named using the destination variable for improved readability.
+
 ## Recent Enhancements (2025-07-13 05:14)
 - Added nested function generation for returned arrow functions.
 - Added versioned header comments to generated Python files.

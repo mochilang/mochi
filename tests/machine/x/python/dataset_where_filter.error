@@ -1,0 +1,5 @@
+exit status 1
+  File "/workspace/mochi/tests/machine/x/python/dataset_where_filter.py", line 21
+    print(f"{person.name} is {person.age} {(" (senior)" if person.is_senior else "")}")
+                                              ^
+SyntaxError: f-string: unmatched '('

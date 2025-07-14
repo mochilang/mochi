@@ -38,6 +38,7 @@ type Compiler struct {
 	queryStructs       map[*parser.QueryExpr]types.StructType
 	typeHints          bool
 	autoStructsEnabled bool
+	recordNameHint     string
 }
 
 func New(env *types.Env) *Compiler {
@@ -59,6 +60,7 @@ func New(env *types.Env) *Compiler {
 		queryStructs:       make(map[*parser.QueryExpr]types.StructType),
 		typeHints:          true,
 		autoStructsEnabled: true,
+		recordNameHint:     "",
 	}
 }
 
@@ -1263,7 +1265,17 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	// check if this literal represents a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	if st, ok := c.inferExprType(expr).(types.StructType); ok {
-		st = c.ensureStructName(st)
+		if st.Name == "" && c.recordNameHint != "" {
+			st.Name = c.recordNameHint
+			c.imports["dataclasses"] = "dataclasses"
+			c.autoStructs[st.Name] = st
+			c.structKeys[structKey(st)] = st.Name
+			if c.env != nil {
+				c.env.SetStruct(st.Name, st)
+			}
+		} else {
+			st = c.ensureStructName(st)
+		}
 		fields := make([]string, len(m.Items))
 		for i, it := range m.Items {
 			name, _ := identName(it.Key)
@@ -1290,7 +1302,17 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	}
 	if okStruct {
 		st := types.StructType{Fields: fields, Order: keys}
-		st = c.ensureStructName(st)
+		if st.Name == "" && c.recordNameHint != "" {
+			st.Name = c.recordNameHint
+			c.imports["dataclasses"] = "dataclasses"
+			c.autoStructs[st.Name] = st
+			c.structKeys[structKey(st)] = st.Name
+			if c.env != nil {
+				c.env.SetStruct(st.Name, st)
+			}
+		} else {
+			st = c.ensureStructName(st)
+		}
 		parts := make([]string, len(m.Items))
 		for i, it := range m.Items {
 			val, err := c.compileExpr(it.Value)
@@ -1463,7 +1485,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		if okStruct {
 			st := types.StructType{Fields: fields, Order: keys}
-			st = c.ensureStructName(st)
 			c.queryStructs[q] = st
 		}
 	}

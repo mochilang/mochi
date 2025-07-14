@@ -1,1 +1,1 @@
-[{'cat': 'b', 'total': 7.0}, {'cat': 'a', 'total': 4.0}]
+[Grouped(cat='b', total=7.0), Grouped(cat='a', total=4.0)]

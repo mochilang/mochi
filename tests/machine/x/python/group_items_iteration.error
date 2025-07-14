@@ -1,0 +1,6 @@
+exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/group_items_iteration.py", line 176, in <module>
+    total = total + x["val"]
+                    ~^^^^^^^
+TypeError: 'Data' object is not subscriptable

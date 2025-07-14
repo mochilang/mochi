@@ -1,0 +1,5 @@
+exit status 1
+  File "/workspace/mochi/tests/machine/x/python/map_literal_dynamic.py", line 5
+    print(f"{m["a"]} {m["b"]}")
+                ^
+SyntaxError: f-string: unmatched '['

@@ -1,0 +1,6 @@
+exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/order_by_map.py", line 32, in <module>
+    x for x in sorted([x for x in data], key=lambda x: _sort_key(Sorted(a=x.a, b=x.b)))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '<' not supported between instances of 'Sorted' and 'Sorted'

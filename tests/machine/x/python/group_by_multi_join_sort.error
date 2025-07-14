@@ -1,0 +1,15 @@
+exit status 1
+Traceback (most recent call last):
+  File "/workspace/mochi/tests/machine/x/python/group_by_multi_join_sort.py", line 293, in <module>
+    result = _q0()
+             ^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_multi_join_sort.py", line 249, in _q0
+    _groups = _group_by(
+              ^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_multi_join_sort.py", line 91, in _group_by
+    key = keyfn(*it)
+          ^^^^^^^^^^
+  File "/workspace/mochi/tests/machine/x/python/group_by_multi_join_sort.py", line 251, in <lambda>
+    lambda c, o, l, n: Result(
+                       ^^^^^^^
+TypeError: Result.__init__() missing 1 required positional argument: 'revenue'

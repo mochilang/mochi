@@ -51,6 +51,21 @@ func (c *Compiler) registerAutoStruct(name string, st types.StructType) types.St
 	return st
 }
 
+func (c *Compiler) renameAutoStruct(oldName, newName string, st types.StructType) {
+	if oldName == newName {
+		return
+	}
+	if _, ok := c.autoStructs[oldName]; ok {
+		delete(c.autoStructs, oldName)
+	}
+	key := structKey(st)
+	c.autoStructs[newName] = st
+	c.structKeys[key] = newName
+	if c.env != nil {
+		c.env.SetStruct(newName, st)
+	}
+}
+
 func (c *Compiler) listAsStruct(ll *parser.ListLiteral, varName string) (string, types.StructType, bool, error) {
 	if ll == nil || len(ll.Elems) == 0 {
 		return "", types.StructType{}, false, nil
@@ -215,6 +230,10 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		typ = c.inferExprType(s.Value)
 	}
 	if s.Value != nil {
+		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+			c.recordNameHint = dataclassNameFromVar(s.Name)
+			defer func() { c.recordNameHint = "" }()
+		}
 		if c.autoStructsEnabled {
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
 				if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
@@ -255,9 +274,17 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	if c.env != nil {
-		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.queryStructs[q]; ok {
-				typ = types.ListType{Elem: st}
+		if s.Value != nil {
+			if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+				if st, ok := c.queryStructs[q]; ok {
+					if st.Name == "" || strings.HasPrefix(st.Name, "Auto") {
+						newName := dataclassNameFromVar(s.Name)
+						c.renameAutoStruct(st.Name, newName, st)
+						st.Name = newName
+						c.queryStructs[q] = st
+					}
+					typ = types.ListType{Elem: st}
+				}
 			}
 		}
 		t := typ
@@ -308,6 +335,10 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		typ = c.resolveTypeRef(s.Type)
 	}
 	if s.Value != nil {
+		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+			c.recordNameHint = dataclassNameFromVar(s.Name)
+			defer func() { c.recordNameHint = "" }()
+		}
 		if c.autoStructsEnabled {
 			if ll := s.Value.Binary.Left.Value.Target.List; ll != nil {
 				if val, st, ok, err := c.listAsStruct(ll, s.Name); ok && err == nil {
@@ -344,9 +375,17 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if c.env != nil {
-		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.queryStructs[q]; ok {
-				typ = types.ListType{Elem: st}
+		if s.Value != nil {
+			if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+				if st, ok := c.queryStructs[q]; ok {
+					if st.Name == "" || strings.HasPrefix(st.Name, "Auto") {
+						newName := dataclassNameFromVar(s.Name)
+						c.renameAutoStruct(st.Name, newName, st)
+						st.Name = newName
+						c.queryStructs[q] = st
+					}
+					typ = types.ListType{Elem: st}
+				}
 			}
 		}
 		t := typ

@@ -1,0 +1,5 @@
+exit status 1
+  File "/workspace/mochi/tests/machine/x/python/dataset_sort_take_limit.py", line 22
+    print(f"{item["name"]} costs $ {item["price"]}")
+                   ^^^^
+SyntaxError: f-string: unmatched '['
