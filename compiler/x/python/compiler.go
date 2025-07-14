@@ -129,7 +129,12 @@ func structKey(st types.StructType) string {
 	for _, f := range st.Order {
 		b.WriteString(f)
 		if ft, ok := st.Fields[f]; ok && ft != nil {
-			b.WriteString(":" + ft.String())
+			typeName := ft.String()
+			switch typeName {
+			case "int", "int64", "float":
+				typeName = "number"
+			}
+			b.WriteString(":" + typeName)
 		} else {
 			b.WriteString(":")
 		}
@@ -192,7 +197,7 @@ func (c *Compiler) emitAutoStructs() {
 	sort.Strings(names)
 	for _, n := range names {
 		st := c.autoStructs[n]
-		c.writeln("@dataclasses.dataclass")
+		c.writeln("@dataclasses.dataclass(eq=False)")
 		c.writeln(fmt.Sprintf("class %s:", n))
 		c.indent++
 		if len(st.Order) == 0 {
@@ -218,6 +223,11 @@ func (c *Compiler) emitAutoStructs() {
 				parts[i] = fmt.Sprintf("self.%s", sanitizeName(f))
 			}
 			c.writeln(fmt.Sprintf("return iter((%s))", strings.Join(parts, ", ")))
+			c.indent--
+			c.writeln("")
+			c.writeln("def __eq__(self, other):")
+			c.indent++
+			c.writeln("return hasattr(other, '__dict__') and self.__dict__ == other.__dict__")
 			c.indent--
 		}
 		c.indent--
@@ -796,6 +806,19 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
 					typ = ft
 				} else {
+					c.use("_get")
+					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					typ = types.AnyType{}
+				}
+			case types.GroupType:
+				switch sanitizeName(s) {
+				case "key":
+					expr = fmt.Sprintf("%s.key", expr)
+					typ = t.Key
+				case "items", "Items":
+					expr = fmt.Sprintf("%s.Items", expr)
+					typ = types.ListType{Elem: t.Elem}
+				default:
 					c.use("_get")
 					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
 					typ = types.AnyType{}
@@ -1501,6 +1524,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.env = orig
 			return "", err
 		}
+		keyType := c.inferExprType(q.Group.Exprs[0])
 
 		fromSrcs := make([]string, len(q.Froms))
 		varNames := []string{sanitizeName(q.Var)}
@@ -1585,7 +1609,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		opts += " }"
 
 		genv := types.NewEnv(child)
-		genv.SetVar(q.Group.Name, types.GroupType{Elem: elemType}, true)
+		genv.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemType}, true)
 
 		keyNames := groupKeyNames(q.Group.Exprs[0])
 		prevGroup := c.currentGroup

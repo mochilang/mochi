@@ -31,6 +31,9 @@
 ## Recent Enhancements (2025-07-16 05:00)
 - Auto and named dataclasses now implement `__iter__` for easier unpacking.
 - Prepared compiler output formatting for TPCH Q1 regeneration.
+## Recent Enhancements (2025-07-14 04:33)
+- Group selector paths now handle `group` types so `g.key` and `g.Items` use
+  attribute access with proper type inference.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
