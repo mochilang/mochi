@@ -10,6 +10,7 @@ Compiled: 100/100 programs
 - [x] q1.mochi
 
 Regenerated group_by_join.ts with idiomatic loops.
+Regenerated q1.ts from dataset query.
 
 ## Next Steps
 - [ ] Compile remaining TPC-H queries (q2–q22)
