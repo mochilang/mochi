@@ -48,3 +48,4 @@ TPC-H progress:
 * [ ] Remove helper functions prefixed with `_` from generated code
 * [ ] Improve dataset query struct inference
 * [ ] Improve singular name heuristics for inferred structs
+- 2025-07-14 02:53 - Added conditional printf generation for simple left join print and capitalized ID field names
