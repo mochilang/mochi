@@ -1,6 +1,9 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-14 06:16 UTC
+- `append` builtin now uses the spread operator for cleaner arrays.
+- Disabled query unwrapping to avoid duplicate temp variables.
 ### 2025-07-14 02:56 UTC
 - Added explanatory comments in `group_by_join` output.
 - Regenerated `q1.ts` from TPC-H `q1.mochi`.
