@@ -546,7 +546,20 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					unwrapped = lines[:len(lines)-1]
 				}
 			}
-			if len(unwrapped) == 0 {
+			if retVar == "_res" && len(unwrapped) >= 2 {
+				first := strings.TrimSpace(unwrapped[0])
+				second := strings.TrimSpace(unwrapped[1])
+				if strings.HasPrefix(first, "const _src = ") && strings.HasSuffix(first, ";") &&
+					(strings.HasPrefix(second, "const _res = []") || strings.HasPrefix(second, "let _res = []") || strings.HasPrefix(second, "var _res = []")) {
+					// pattern recognized; keep unwrapped for further rewrite
+				} else {
+					unwrapped = nil
+					retVar = ""
+					value = strings.TrimSpace(v)
+				}
+			} else {
+				unwrapped = nil
+				retVar = ""
 				value = strings.TrimSpace(v)
 			}
 		}
@@ -573,7 +586,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		first := strings.TrimSpace(unwrapped[0])
 		second := strings.TrimSpace(unwrapped[1])
 		if strings.HasPrefix(first, "const _src = ") && strings.HasSuffix(first, ";") &&
-			strings.HasPrefix(second, "const _res = []") {
+			(strings.HasPrefix(second, "const _res = []") || strings.HasPrefix(second, "let _res = []") || strings.HasPrefix(second, "var _res = []")) {
 			srcExpr := strings.TrimSuffix(strings.TrimPrefix(first, "const _src = "), ";")
 			var body []string
 			body = append(body, fmt.Sprintf("%s = []", name))

@@ -1,6 +1,8 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-14 02:40 UTC
+- Expanded query unwrapping to handle `let` and `var` buffers, enabling cleaner output for `q1.mochi`.
 ### 2025-07-13 05:08 UTC
 - Included source filename comment in generated output.
 

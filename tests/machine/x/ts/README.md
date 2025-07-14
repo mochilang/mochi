@@ -9,9 +9,10 @@ Compiled: 100/100 programs
 ### TPC-H
 - [x] q1.mochi
 
-## Next Steps
+## Remaining Tasks
 - [ ] Compile remaining TPC-H queries (q2–q22)
 - [ ] Improve generated code readability to align with human references
+- [ ] Keep generated code in sync with `tests/human/x/ts`
 
 ## Checklist
 
