@@ -237,6 +237,16 @@ func isListOfAny(t types.Type) bool {
 	return false
 }
 
+// isTypedSimpleList reports whether t is a list whose elements are of a
+// simple built-in type (int, int64, float, bool or string). Such lists can be
+// printed directly using fmt.Println without custom helpers.
+func isTypedSimpleList(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		return isComparableSimple(lt.Elem)
+	}
+	return false
+}
+
 func containsAny(t types.Type) bool {
 	switch tt := t.(type) {
 	case types.AnyType:
