@@ -128,6 +128,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	bodyBytes := c.buf.Bytes()
 
+	// Ensure inferred struct types are included even if none were written earlier
+	if c.decls.Len() == 0 && c.env != nil {
+		for _, st := range c.env.Structs() {
+			c.compileStructType(st)
+		}
+	}
+
 	// Restore buffer and write final output with updated imports.
 	c.buf = oldBuf
 	c.indent = 0
