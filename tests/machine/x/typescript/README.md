@@ -9,6 +9,8 @@ Compiled: 100/100 programs
 ### TPC-H
 - [x] q1.mochi
 
+Regenerated outputs with compact formatting for small lists and objects.
+
 ## Next Steps
 - [ ] Compile remaining TPC-H queries (q2–q22)
 - [ ] Improve generated code readability to align with human references

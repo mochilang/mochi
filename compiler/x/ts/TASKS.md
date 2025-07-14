@@ -4,6 +4,9 @@
 ### 2025-07-14 02:56 UTC
 - Added explanatory comments in `group_by_join` output.
 - Regenerated `q1.ts` from TPC-H `q1.mochi`.
+### 2025-07-14 04:59 UTC
+- Lists and maps with three or fewer elements now render on a single line for
+  cleaner output.
 ### 2025-07-13 05:08 UTC
 - Included source filename comment in generated output.
 
