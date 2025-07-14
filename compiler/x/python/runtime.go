@@ -364,6 +364,8 @@ var helperGet = "def _get(obj, name):\n" +
 	"    raise Exception('field not found: ' + name)\n"
 
 var helperSortKey = "def _sort_key(k):\n" +
+	"    if hasattr(k, '__dataclass_fields__'):\n" +
+	"        return str(k)\n" +
 	"    if isinstance(k, (list, tuple, dict)):\n" +
 	"        return str(k)\n" +
 	"    return k\n"

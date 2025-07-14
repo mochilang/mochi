@@ -111,4 +111,3 @@ Compiled programs: 100/100 successful.
 ## Remaining Tasks
 - [ ] Review generated code style against tests/human/x/python
 - [ ] Compile more TPCH queries
-
