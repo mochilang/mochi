@@ -18,6 +18,7 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-14 04:23 - Injected fallback struct generation to match human left join output
 - 2025-07-14 03:18 - Removed inline closure for left join print; always emit inferred structs
 - 2025-07-13 19:22 - Emitted struct declarations for query select results
 - 2025-07-13 19:01 - Added explicit struct types for cross join outputs and dataset examples

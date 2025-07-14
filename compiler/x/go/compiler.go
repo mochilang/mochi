@@ -141,6 +141,36 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Write(bodyBytes)
 
 	src := c.buf.Bytes()
+
+	// Fallback: if no declarations were written but the environment
+	// contains inferred struct types, emit minimal struct definitions so the
+	// generated program compiles on its own.
+	if c.decls.Len() == 0 && c.env != nil && len(c.env.Structs()) > 0 {
+		var decl bytes.Buffer
+		names := make([]string, 0, len(c.env.Structs()))
+		for name := range c.env.Structs() {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			st := c.env.Structs()[name]
+			decl.WriteString(fmt.Sprintf("type %s struct {\n", sanitizeName(st.Name)))
+			for _, fn := range st.Order {
+				ft := st.Fields[fn]
+				decl.WriteString(fmt.Sprintf("\t%s %s `json:\"%s\"`\n", exportName(sanitizeName(fn)), goType(ft), fn))
+			}
+			decl.WriteString("}\n\n")
+		}
+		// insert after imports
+		idx := bytes.Index(src, []byte("\n)\n"))
+		if idx != -1 {
+			idx += len("\n)\n")
+			src = append(src[:idx], append(decl.Bytes(), src[idx:]...)...)
+		} else {
+			src = append(src, decl.Bytes()...)
+		}
+	}
+
 	formatted := FormatGo(src)
 	return formatted, nil
 }
