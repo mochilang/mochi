@@ -465,6 +465,9 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 			c.use("_exists")
 			return fmt.Sprintf("_exists(%s)", expr)
 		}
+		if isNumeric(to) && strings.ContainsAny(expr, "+-*/%") {
+			return fmt.Sprintf("%s(%s)", toGo, expr)
+		}
 		return fmt.Sprintf("(%s).(%s)", expr, toGo)
 	}
 

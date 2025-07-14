@@ -64,3 +64,4 @@ TPC-H progress:
 * [x] Extend fmt.Println optimisation to struct slices
 
 - 2025-07-14 07:39 - Investigated TPCH q1 runtime build issues; added placeholder alias for v
+- 2025-07-14 12:19 - Regenerated TPCH q1 Go code after fixing numeric casting
