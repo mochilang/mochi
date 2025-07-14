@@ -6530,7 +6530,7 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 			}
 		}
 	}
-	stName := sanitizeName(name) + "Item"
+	stName := sanitizeName(singular(name))
 	idx := 1
 	base := stName
 	for {
