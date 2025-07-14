@@ -535,6 +535,8 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			for i, ln := range lines {
 				if strings.HasPrefix(ln, indentStr) {
 					lines[i] = strings.TrimPrefix(ln, indentStr)
+				} else if strings.HasPrefix(ln, "\t") {
+					lines[i] = strings.TrimPrefix(ln, "\t")
 				}
 			}
 			if len(lines) > 0 {
@@ -1852,6 +1854,30 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
+		if len(args) > 1 {
+			templatable := true
+			tmpl := make([]string, len(args))
+			for i, a := range args {
+				if s, ok := stringLiteralFromUnary(call.Args[i].Binary.Left); ok {
+					tmpl[i] = strings.ReplaceAll(s, "`", "\x60")
+					continue
+				}
+				t := c.inferExprType(call.Args[i])
+				switch t.(type) {
+				case types.ListType, types.MapType, types.StructType, types.UnionType:
+					templatable = false
+				}
+				tmpl[i] = "${" + a + "}"
+			}
+			if templatable {
+				out := strings.Join(tmpl, " ")
+				out = strings.ReplaceAll(out, " ,", ",")
+				out = strings.ReplaceAll(out, " )", ")")
+				out = strings.ReplaceAll(out, "$ ${", "$${")
+				return fmt.Sprintf("console.log(`%s`)", out), nil
+			}
+		}
+
 		parts := make([]string, len(args))
 		for i, a := range args {
 			t := c.inferExprType(call.Args[i])
