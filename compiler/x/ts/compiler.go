@@ -2416,7 +2416,8 @@ func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 
 func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	items := make([]string, len(m.Items))
-	multiline := len(m.Items) > 1
+	// Use single-line objects when a map is small and simple
+	multiline := len(m.Items) > 3
 	for i, it := range m.Items {
 		var k string
 		if s, ok := simpleStringKey(it.Key); ok {
