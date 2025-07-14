@@ -1430,6 +1430,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
@@ -1442,6 +1447,11 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				}
 			}
 			c.writeln(formatFuncPtrDecl(typ, name, val))
+			for i, a := range c.allocs {
+				if a == val {
+					c.allocs[i] = name
+				}
+			}
 		}
 	} else {
 		// uninitialized variables default to the zero value of their type
@@ -1600,18 +1610,38 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("list_int %s = {0, NULL};", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else if isMapIntBoolType(t) && isEmptyMapLiteral(stmt.Value) {
 				c.need(needMapIntBool)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("map_int_bool %s = map_int_bool_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			} else {
 				val := c.compileExpr(stmt.Value)
 				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
+				}
 			}
 		} else {
 			val := c.compileExpr(stmt.Value)
 			c.writeln(formatFuncPtrDecl(typ, name, val))
+			for i, a := range c.allocs {
+				if a == val {
+					c.allocs[i] = name
+				}
+			}
 		}
 	} else {
 		val := ""
@@ -3055,7 +3085,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.writeln("}")
 		}
 		loop(0)
-		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		if cond != "" {
+			c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
+		}
 		if c.env != nil {
 			c.env = oldEnv
 		}
@@ -4939,14 +4971,15 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(c.compileExpr(a)) {
 						fmtStr = "%.17g"
 					}
-					fmtParts = append(fmtParts, fmtStr)
 					if isBoolArg(a, c.env) {
+						fmtStr = "%s"
 						params = append(params, fmt.Sprintf("(%s)?\"true\":\"false\"", c.compileExpr(a)))
 					} else {
 						params = append(params, c.compileExpr(a))
 					}
+					fmtParts = append(fmtParts, fmtStr)
 				}
-				fmtParts = append(fmtParts, "\n")
+				fmtParts = append(fmtParts, "\\n")
 				format := strings.Join(fmtParts, "")
 				if len(params) > 0 {
 					c.writeln(fmt.Sprintf("printf(\"%s\", %s);", format, strings.Join(params, ", ")))
