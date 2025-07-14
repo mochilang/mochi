@@ -15,6 +15,10 @@ type Todo struct {
 	Title string `json:"title"`
 }
 
+type Todo struct {
+	Title string `json:"title"`
+}
+
 func main() {
 	todo := map[string]string{"title": "hi"}
 	_ = todo

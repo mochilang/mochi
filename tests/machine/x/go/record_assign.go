@@ -15,6 +15,10 @@ type Counter struct {
 	N int `json:"n"`
 }
 
+type Counter struct {
+	N int `json:"n"`
+}
+
 // line 3
 func inc(c *Counter) {
 	c.N = (c.N + 1)

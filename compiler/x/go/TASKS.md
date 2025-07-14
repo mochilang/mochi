@@ -54,6 +54,7 @@ TPC-H progress:
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
 * [ ] Validate TPCH q1 runtime results
+* [ ] Remove stale `.error` files after successful compilation
 * [ ] Fix failing JOB query expectations
 * [ ] Investigate missing output for JOB q7
 * [ ] Audit generated code after `_toAnyMap` removal
