@@ -1,7 +1,0 @@
-Error on line 0: run error: exit status 1
-# command-line-arguments
-../../../tests/machine/x/go/save_jsonl_stdout.go:15:14: undefined: People
-../../../tests/machine/x/go/save_jsonl_stdout.go:18:5: undefined: People
-../../../tests/machine/x/go/save_jsonl_stdout.go:22:21: undefined: v
-
-1: //go:build ignore

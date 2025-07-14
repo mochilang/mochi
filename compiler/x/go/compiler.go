@@ -982,6 +982,12 @@ func (c *Compiler) compileStructType(st types.StructType) {
 	if c.structs[name] {
 		return
 	}
+	// avoid emitting duplicate definitions if a previous compilation pass
+	// already wrote the same struct to the declarations buffer
+	if bytes.Contains(c.decls.Bytes(), []byte("type "+name+" struct")) {
+		c.structs[name] = true
+		return
+	}
 	c.structs[name] = true
 	// write type definition to declarations buffer
 	oldBuf := c.buf

@@ -41,10 +41,12 @@ TPC-H progress:
 - 2025-07-14 02:28 - Switched left join translation to use maps for fast lookup
 - 2025-07-14 02:37 - Generated human-readable left join using map and singular struct names
 - 2025-07-14 02:53 - Added conditional printf generation for simple left join print and capitalized ID field names
+- 2025-07-14 04:39 - Skipped duplicate struct emission when regenerating declarations
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
 * [ ] Validate TPCH q1 runtime results
+* [ ] Remove stale `.error` files after successful compilation
 * [ ] Fix failing JOB query expectations
 * [ ] Investigate missing output for JOB q7
 * [ ] Audit generated code after `_toAnyMap` removal

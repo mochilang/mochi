@@ -111,5 +111,6 @@ Checklist:
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
-- [ ] Verify TPCH q1 generation
+- [ ] Verify TPCH q1 generation and runtime output
 - [ ] Emit struct definitions for dataset queries
+- [ ] Remove outdated `.error` files after successful runs
