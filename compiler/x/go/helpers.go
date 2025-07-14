@@ -247,6 +247,16 @@ func isTypedSimpleList(t types.Type) bool {
 	return false
 }
 
+// isStructList reports whether t is a list of struct values.
+func isStructList(t types.Type) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok := lt.Elem.(types.StructType); ok {
+			return true
+		}
+	}
+	return false
+}
+
 func containsAny(t types.Type) bool {
 	switch tt := t.(type) {
 	case types.AnyType:
