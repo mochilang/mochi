@@ -4,6 +4,7 @@ The current C backend cannot compile dataset queries that use grouping. The impl
 Initial work added support for generating C structs and list helpers when a program contains a list of map literals. This allows datasets like `lineitem` in Q1 to be represented as native structs.
 
 ## Progress log
+- 2025-07-14 02:44 – Implemented join+group-by counting so `group_by_join.mochi` compiles and runs.
 
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
 - 2025-08-23 10:20 – Fixed relative path resolution in `compileLoadExpr` so `load_yaml.mochi` compiles.

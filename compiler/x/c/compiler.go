@@ -2147,6 +2147,89 @@ func (c *Compiler) compilePartialCall(fnName string, ft types.FuncType, args []*
 // supports optional `sort by`, `skip` and `take` clauses in addition to basic
 // `from`/`where`/`select`. Joins and grouping remain unimplemented.
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
+	// handle a single join followed by grouping by a string key with count
+	if len(q.Joins) == 1 && q.Group != nil && len(q.Group.Exprs) == 1 && len(q.Froms) == 0 && q.Where == nil && q.Sort == nil && q.Skip == nil && q.Take == nil {
+		src := c.compileExpr(q.Source)
+		srcT, ok1 := c.exprType(q.Source).(types.ListType)
+		join := q.Joins[0]
+		joinSrc := c.compileExpr(join.Src)
+		joinT, ok2 := c.exprType(join.Src).(types.ListType)
+		if ok1 && ok2 {
+			// infer struct type from select map {name: g.key, count: count(g)}
+			if ml := asMapLiteral(q.Select); ml != nil {
+				st, ok := c.structLits[ml]
+				if !ok {
+					if st2, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+						st = st2
+						c.structLits[ml] = st2
+						if c.env != nil {
+							c.env.SetStruct(st2.Name, st2)
+						}
+						c.compileStructType(st2)
+						c.compileStructListType(st2)
+					}
+				}
+				if st.Name != "" {
+					listC := sanitizeListName(st.Name)
+					listCreate := createListFuncName(st.Name)
+					res := c.newTemp()
+					idxVar := c.newTemp()
+					c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, res, listCreate, c.listLenExpr(src)))
+					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
+					oldEnv := c.env
+					if c.env != nil {
+						genv := types.NewEnv(c.env)
+						genv.SetVar(q.Var, srcT.Elem, true)
+						genv.SetVar(join.Var, joinT.Elem, true)
+						c.env = genv
+					}
+					loopO := c.newLoopVar()
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loopO, loopO, src, loopO))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(srcT.Elem), sanitizeName(q.Var), c.listItemExpr(src, loopO)))
+					loopJ := c.newLoopVar()
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loopJ, loopJ, joinSrc, loopJ))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(joinT.Elem), sanitizeName(join.Var), c.listItemExpr(joinSrc, loopJ)))
+					cond := c.compileExpr(join.On)
+					c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", cond))
+					key := c.compileExpr(q.Group.Exprs[0])
+					ktmp := c.newTemp()
+					c.writeln(fmt.Sprintf("char* %s = %s;", ktmp, key))
+					found := c.newTemp()
+					c.writeln(fmt.Sprintf("int %s = 0;", found))
+					loopS := c.newLoopVar()
+					c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopS, loopS, idxVar, loopS))
+					c.indent++
+					c.writeln(fmt.Sprintf("if (strcmp(%s.data[%s].name, %s)==0) {", res, loopS, ktmp))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s.data[%s].count++;", res, loopS))
+					c.writeln(fmt.Sprintf("%s = 1;", found))
+					c.writeln("break;")
+					c.indent--
+					c.writeln("}")
+					c.indent--
+					c.writeln("}")
+					c.writeln(fmt.Sprintf("if (!%s) {", found))
+					c.indent++
+					c.writeln(fmt.Sprintf("%s.data[%s].name = %s;", res, idxVar, ktmp))
+					c.writeln(fmt.Sprintf("%s.data[%s].count = 1;", res, idxVar))
+					c.writeln(fmt.Sprintf("%s++;", idxVar))
+					c.indent--
+					c.writeln("}")
+					c.indent--
+					c.writeln("}")
+					c.indent--
+					c.writeln("}")
+					c.writeln(fmt.Sprintf("%s.len = %s;", res, idxVar))
+					if c.env != nil {
+						c.env = oldEnv
+					}
+					return res
+				}
+			}
+		}
+	}
 	if q.Group != nil && len(q.Froms) == 0 && len(q.Joins) == 0 && q.Skip == nil && q.Take == nil {
 		if name, ok := identName(q.Group.Exprs[0]); ok && name == q.Var {
 			src := c.compileExpr(q.Source)
