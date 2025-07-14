@@ -1,5 +1,8 @@
 # Python Compiler Tasks
 
+## Recent Enhancements (2025-07-14 04:53)
+- Auto structs reuse previously generated dataclasses when only field names match.
+
 ## Recent Enhancements (2025-07-13 05:14)
 - Added nested function generation for returned arrow functions.
 - Added versioned header comments to generated Python files.

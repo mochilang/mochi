@@ -105,7 +105,7 @@ Compiled programs: 100/100 successful.
 - [x] while_loop.mochi
 
 ## TPCH Progress
-- [x] q1.mochi regenerated with dataclasses
+- [ ] q1.mochi
 - [ ] q2.mochi through q22.mochi
 
 ## Remaining Tasks

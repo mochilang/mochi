@@ -34,6 +34,7 @@ type Compiler struct {
 	groupFields        map[string]bool
 	autoStructs        map[string]types.StructType
 	structKeys         map[string]string
+	structFields       map[string]string
 	autoCount          int
 	queryStructs       map[*parser.QueryExpr]types.StructType
 	typeHints          bool
@@ -55,6 +56,7 @@ func New(env *types.Env) *Compiler {
 		groupFields:        nil,
 		autoStructs:        make(map[string]types.StructType),
 		structKeys:         make(map[string]string),
+		structFields:       make(map[string]string),
 		autoCount:          0,
 		queryStructs:       make(map[*parser.QueryExpr]types.StructType),
 		typeHints:          true,
@@ -138,13 +140,31 @@ func structKey(st types.StructType) string {
 	return b.String()
 }
 
+func structFieldKey(st types.StructType) string {
+	var b strings.Builder
+	for _, f := range st.Order {
+		b.WriteString(f)
+		b.WriteByte(';')
+	}
+	return b.String()
+}
+
 func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	if st.Name != "" {
 		return st
 	}
 	key := structKey(st)
+	fieldsKey := structFieldKey(st)
 	if name, ok := c.structKeys[key]; ok {
 		st.Name = name
+		if c.env != nil {
+			c.env.SetStruct(name, st)
+		}
+		return st
+	}
+	if name, ok := c.structFields[fieldsKey]; ok {
+		st.Name = name
+		c.structKeys[key] = name
 		if c.env != nil {
 			c.env.SetStruct(name, st)
 		}
@@ -156,6 +176,7 @@ func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	st.Name = name
 	c.autoStructs[name] = st
 	c.structKeys[key] = name
+	c.structFields[fieldsKey] = name
 	if c.env != nil {
 		c.env.SetStruct(name, st)
 	}
