@@ -13,6 +13,8 @@ Compiled: 100/100 programs
 - [ ] Compile remaining TPC-H queries (q2–q22)
 - [ ] Improve generated code readability to align with human references
 
+### Recent Updates
+- Spread operator used for `append` builtin to match human references.
 
 ## Checklist
 

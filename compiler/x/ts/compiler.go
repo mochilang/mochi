@@ -522,42 +522,15 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	value := "undefined"
-	var unwrapped []string
-	var retVar string
 	if s.Value != nil {
 		v, err := c.compileExpr(s.Value)
 		if err != nil {
 			return err
 		}
-		if strings.HasPrefix(v, "(() => {") && strings.HasSuffix(v, "})()") {
-			body := strings.TrimSuffix(strings.TrimPrefix(v, "(() => {"), "})()")
-			body = strings.TrimSuffix(body, "\n")
-			lines := strings.Split(body, "\n")
-			if len(lines) > 0 && strings.TrimSpace(lines[0]) == "" {
-				lines = lines[1:]
-			}
-			for i, ln := range lines {
-				if strings.HasPrefix(ln, indentStr) {
-					lines[i] = strings.TrimPrefix(ln, indentStr)
-				} else if strings.HasPrefix(ln, "\t") {
-					lines[i] = strings.TrimPrefix(ln, "\t")
-				}
-			}
-			if len(lines) > 0 {
-				last := strings.TrimSpace(lines[len(lines)-1])
-				if strings.HasPrefix(last, "return ") && strings.HasSuffix(last, ";") {
-					retVar = strings.TrimSuffix(strings.TrimPrefix(last, "return "), ";")
-					unwrapped = lines[:len(lines)-1]
-				}
-			}
-			if len(unwrapped) == 0 {
-				value = strings.TrimSpace(v)
-			}
-		}
-		if len(unwrapped) == 0 {
-			value = v
-		}
+		value = v
 	}
+	var unwrapped []string
+	var retVar string
 	var typ types.Type = types.AnyType{}
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
@@ -1949,10 +1922,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		c.use("_count")
 		return fmt.Sprintf("_count(%s)", argStr), nil
 	case "append":
-		c.use("_append")
 		if len(args) == 2 {
-			return fmt.Sprintf("_append(%s, %s)", args[0], args[1]), nil
+			return fmt.Sprintf("[...%s, %s]", args[0], args[1]), nil
 		}
+		c.use("_append")
 		return fmt.Sprintf("_append(%s)", argStr), nil
 	case "contains":
 		if len(args) != 2 {

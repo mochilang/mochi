@@ -1,2 +1,3 @@
 --- Left Join Multi ---
-100 Alice { orderId: 100, sku: "a" }
+100 Alice [object Object]
+101 Bob null
