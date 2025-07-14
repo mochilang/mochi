@@ -32,9 +32,9 @@ type Compiler struct {
 	tupleFields        map[string]map[string]int
 	currentGroup       string
 	groupFields        map[string]bool
-        autoStructs        map[string]types.StructType
-        structKeys         map[string]string
-        structFields       map[string]string
+	autoStructs        map[string]types.StructType
+	structKeys         map[string]string
+	structFields       map[string]string
 	autoCount          int
 	queryStructs       map[*parser.QueryExpr]types.StructType
 	typeHints          bool
@@ -55,8 +55,8 @@ func New(env *types.Env) *Compiler {
 		currentGroup:       "",
 		groupFields:        nil,
 		autoStructs:        make(map[string]types.StructType),
-                structKeys:         make(map[string]string),
-                structFields:       make(map[string]string),
+		structKeys:         make(map[string]string),
+		structFields:       make(map[string]string),
 		autoCount:          0,
 		queryStructs:       make(map[*parser.QueryExpr]types.StructType),
 		typeHints:          true,
@@ -146,40 +146,40 @@ func structKey(st types.StructType) string {
 }
 
 func structFieldsKey(st types.StructType) string {
-        return strings.Join(st.Order, ";")
+	return strings.Join(st.Order, ";")
 }
 
 func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	if st.Name != "" {
 		return st
 	}
-        key := structKey(st)
-        if name, ok := c.structKeys[key]; ok {
-                st.Name = name
-                if c.env != nil {
-                        c.env.SetStruct(name, st)
-                }
-                return st
-        }
-        fkey := structFieldsKey(st)
-        if name, ok := c.structFields[fkey]; ok {
-                st.Name = name
-                if c.env != nil {
-                        c.env.SetStruct(name, st)
-                }
-                return st
-        }
-        c.autoCount++
-        name := fmt.Sprintf("Auto%d", c.autoCount)
-        c.imports["dataclasses"] = "dataclasses"
-        st.Name = name
-        c.autoStructs[name] = st
-        c.structKeys[key] = name
-        c.structFields[fkey] = name
-        if c.env != nil {
-                c.env.SetStruct(name, st)
-        }
-        return st
+	key := structKey(st)
+	if name, ok := c.structKeys[key]; ok {
+		st.Name = name
+		if c.env != nil {
+			c.env.SetStruct(name, st)
+		}
+		return st
+	}
+	fkey := structFieldsKey(st)
+	if name, ok := c.structFields[fkey]; ok {
+		st.Name = name
+		if c.env != nil {
+			c.env.SetStruct(name, st)
+		}
+		return st
+	}
+	c.autoCount++
+	name := fmt.Sprintf("Auto%d", c.autoCount)
+	c.imports["dataclasses"] = "dataclasses"
+	st.Name = name
+	c.autoStructs[name] = st
+	c.structKeys[key] = name
+	c.structFields[fkey] = name
+	if c.env != nil {
+		c.env.SetStruct(name, st)
+	}
+	return st
 }
 
 func (c *Compiler) namedType(t types.Type) types.Type {
