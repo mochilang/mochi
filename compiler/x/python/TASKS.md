@@ -14,6 +14,9 @@
 ## Recent Enhancements (2025-07-14 01:31)
 - Anonymous struct literals now emit dataclasses.
 - `let` and `var` statements store named types for later attribute access.
+## Recent Enhancements (2025-07-14 01:42)
+- List literals with complex elements now use multi-line formatting.
+- `cross_join.mochi` output aligns with human reference style.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
