@@ -3423,8 +3423,128 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		return res
 	}
 
-	// handle query over a group variable
-	if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil {
+        // handle simple join followed by grouping by a single string key
+        if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group != nil && len(q.Group.Exprs) == 1 && q.Sort == nil && q.Skip == nil && q.Take == nil {
+                if _, ok := c.exprType(q.Group.Exprs[0]).(types.StringType); ok {
+                        leftExpr := c.compileExpr(q.Source)
+                        leftT := c.exprType(q.Source)
+                        leftLt, ok := leftT.(types.ListType)
+                        if !ok {
+                                return "0"
+                        }
+                        j := q.Joins[0]
+                        rightExpr := c.compileExpr(j.Src)
+                        rightT := c.exprType(j.Src)
+                        rightLt, ok := rightT.(types.ListType)
+                        if !ok {
+                                return "0"
+                        }
+                        onExpr := c.compileExpr(j.On)
+                        oldEnv := c.env
+                        if c.env != nil {
+                                c.env = types.NewEnv(c.env)
+                                c.env.SetVar(q.Var, leftLt.Elem, true)
+                                c.env.SetVar(j.Var, rightLt.Elem, true)
+                        }
+                        rows := c.newTemp()
+                        keys := c.newTemp()
+                        idxVar := c.newTemp()
+                        leftListC := cTypeFromType(leftT)
+                        if st, ok := leftLt.Elem.(types.StructType); ok {
+                                c.compileStructType(st)
+                                c.compileStructListType(st)
+                                leftListC = sanitizeListName(st.Name)
+                        }
+                        c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len * %s.len);", leftListC, rows, leftListC, leftExpr, rightExpr))
+                        c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s.len * %s.len);", keys, leftExpr, rightExpr))
+                        c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
+                        loopL := c.newLoopVar()
+                        c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loopL, loopL, leftExpr, loopL))
+                        c.indent++
+                        c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(leftLt.Elem), sanitizeName(q.Var), c.listItemExpr(leftExpr, loopL)))
+                        loopR := c.newLoopVar()
+                        c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", loopR, loopR, rightExpr, loopR))
+                        c.indent++
+                        c.writeln(fmt.Sprintf("%s %s = %s;", cTypeFromType(rightLt.Elem), sanitizeName(j.Var), c.listItemExpr(rightExpr, loopR)))
+                        c.writeln(fmt.Sprintf("if (!(%s)) { continue; }", onExpr))
+                        keyExpr := c.compileExpr(q.Group.Exprs[0])
+                        c.writeln(fmt.Sprintf("%s.data[%s] = %s;", rows, idxVar, sanitizeName(q.Var)))
+                        c.writeln(fmt.Sprintf("%s.data[%s] = %s;", keys, idxVar, keyExpr))
+                        c.writeln(fmt.Sprintf("%s++;", idxVar))
+                        c.indent--
+                        c.writeln("}")
+                        c.indent--
+                        c.writeln("}")
+                        c.writeln(fmt.Sprintf("%s.len = %s;", rows, idxVar))
+                        c.writeln(fmt.Sprintf("%s.len = %s;", keys, idxVar))
+                        groups := c.newTemp()
+                        c.need(needGroupByString)
+                        c.need(needListString)
+                        c.writeln(fmt.Sprintf("list_group_string %s = _group_by_string(%s);", groups, keys))
+                        if c.env != nil {
+                                genv := types.NewEnv(c.env)
+                                genv.SetVar(q.Group.Name, types.GroupType{Elem: leftLt.Elem}, true)
+                                c.env = genv
+                        }
+                        c.groupKeys[q.Group.Name] = types.StringType{}
+                        if ml := asMapLiteral(q.Select); ml != nil {
+                                if _, ok := c.structLits[ml]; !ok {
+                                        if st, ok2 := c.inferStructFromMap(ml, q.Var); ok2 {
+                                                c.structLits[ml] = st
+                                                if c.env != nil {
+                                                        c.env.SetStruct(st.Name, st)
+                                                }
+                                                c.compileStructType(st)
+                                                c.compileStructListType(st)
+                                        }
+                                }
+                        }
+                        valT := c.exprType(q.Select)
+                        if ml := asMapLiteral(q.Select); ml != nil {
+                                if st, ok := c.structLits[ml]; ok {
+                                        valT = st
+                                }
+                        }
+                        retList := types.ListType{Elem: valT}
+                        listC := cTypeFromType(retList)
+                        listCreate := listC + "_create"
+                        if st, ok := valT.(types.StructType); ok {
+                                listC = sanitizeListName(st.Name)
+                                listCreate = createListFuncName(st.Name)
+                        }
+                        if listC == "list_string" { c.need(needListString) } else if listC == "list_float" { c.need(needListFloat) } else if listC == "list_int" { c.need(needListInt) }
+                        res := c.newTemp()
+                        idxRes := c.newTemp()
+                        c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listC, res, listCreate, groups))
+                        c.writeln(fmt.Sprintf("int %s = 0;", idxRes))
+                        c.writeln(fmt.Sprintf("for (int gi=0; gi<%s.len; gi++) {", groups))
+                        c.indent++
+                        c.writeln(fmt.Sprintf("_GroupString _gp = %s.data[gi];", groups))
+                        items := c.newTemp()
+                        c.writeln(fmt.Sprintf("%s %s = %s_create(_gp.items.len);", leftListC, items, leftListC))
+                        c.writeln(fmt.Sprintf("for (int ii=0; ii<_gp.items.len; ii++) {"))
+                        c.indent++
+                        c.writeln(fmt.Sprintf("%s.data[ii] = %s.data[_gp.items.data[ii]];", items, rows))
+                        c.indent--
+                        c.writeln("}")
+                        c.writeln(fmt.Sprintf("%s.len = _gp.items.len;", items))
+                        c.writeln(fmt.Sprintf("struct {char* key; %s items;} %s = { _gp.key, %s };", leftListC, sanitizeName(q.Group.Name), items))
+                        val := c.compileExpr(q.Select)
+                        c.writeln(fmt.Sprintf("%s.data[%s] = %s;", res, idxRes, val))
+                        c.writeln(fmt.Sprintf("%s++;", idxRes))
+                        c.indent--
+                        c.writeln("}")
+                        c.writeln(fmt.Sprintf("%s.len = %s;", res, idxRes))
+                        if c.env != nil {
+                                c.env = oldEnv
+                        }
+                        delete(c.groupKeys, q.Group.Name)
+                        return res
+                }
+        }
+
+        // handle query over a group variable
+        if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Group == nil {
 		if gt, ok := c.exprType(q.Source).(types.GroupType); ok {
 			src := c.compileExpr(q.Source)
 			elemType := gt.Elem
