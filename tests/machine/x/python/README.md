@@ -103,3 +103,10 @@ Compiled programs: 100/100 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Dataset Queries
+- [x] tpc-h/q1.mochi
+
+## Remaining Work
+- [ ] Compile the remaining TPCH queries in Python.
+- [ ] Match formatting with files in `tests/human/x/python`.

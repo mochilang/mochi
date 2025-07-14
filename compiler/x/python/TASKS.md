@@ -34,6 +34,8 @@
 ## Recent Enhancements (2025-07-14 04:33)
 - Group selector paths now handle `group` types so `g.key` and `g.Items` use
   attribute access with proper type inference.
+## Recent Enhancements (2025-07-14 04:55)
+- `_sum` helper now always returns a float, fixing `tpc-h/q1.mochi` equality tests.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.

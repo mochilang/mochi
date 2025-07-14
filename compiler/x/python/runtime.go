@@ -64,7 +64,7 @@ var helperSum = "def _sum(v):\n" +
 	"            s += float(it)\n" +
 	"        else:\n" +
 	"            raise Exception('sum() expects numbers')\n" +
-	"    return int(s) if s.is_integer() else s\n"
+	"    return s\n"
 
 var helperMin = "def _min(v):\n" +
 	"    if hasattr(v, 'Items'):\n" +
