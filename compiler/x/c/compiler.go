@@ -3384,11 +3384,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		}
 
 		listName := sanitizeListName(retT.Name)
-		createFunc := createListFuncName(retT.Name)
-
 		res := c.newTemp()
+		data := res + "_data"
+		c.writeln(fmt.Sprintf("%s %s[%s * %s];", sanitizeTypeName(retT.Name), data, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
+		c.writeln(fmt.Sprintf("%s %s = {0, %s};", listName, res, data))
+		if c.stackArrays != nil {
+			c.stackArrays[data] = true
+		}
 		idx := c.newTemp()
-		c.writeln(fmt.Sprintf("%s %s = %s(%s * %s);", listName, res, createFunc, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
 		loopL := c.newLoopVar()
 		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopL, loopL, c.listLenExpr(leftExpr), loopL))
@@ -4981,6 +4984,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				}
 				fmtParts = append(fmtParts, "\\n")
 				format := strings.Join(fmtParts, "")
+				format = strings.ReplaceAll(format, "\n", "\\n")
+				format = strings.ReplaceAll(format, "\"", "\\\"")
 				if len(params) > 0 {
 					c.writeln(fmt.Sprintf("printf(\"%s\", %s);", format, strings.Join(params, ", ")))
 				} else {
