@@ -36,6 +36,8 @@ type Result struct {
 	Count_order    int     `json:"count_order"`
 }
 
+type v = Result
+
 func expect(cond bool) {
 	if !cond {
 		panic("expect failed")
