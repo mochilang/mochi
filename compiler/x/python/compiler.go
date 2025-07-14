@@ -1226,12 +1226,29 @@ func (c *Compiler) compileFunExprDef(fn *parser.FunExpr) (string, error) {
 
 func (c *Compiler) compileListLiteral(l *parser.ListLiteral) (string, error) {
 	elems := make([]string, len(l.Elems))
+	multiline := false
 	for i, e := range l.Elems {
 		v, err := c.compileExpr(e)
 		if err != nil {
 			return "", err
 		}
+		if strings.ContainsAny(v, "([{=") || len(v) > 20 {
+			multiline = true
+		}
 		elems[i] = v
+	}
+	if multiline && len(elems) > 1 {
+		var b strings.Builder
+		b.WriteString("[\n")
+		indent := strings.Repeat("\t", c.indent+1)
+		for _, v := range elems {
+			b.WriteString(indent)
+			b.WriteString(v)
+			b.WriteString(",\n")
+		}
+		b.WriteString(strings.Repeat("\t", c.indent))
+		b.WriteByte(']')
+		return b.String(), nil
 	}
 	return "[" + strings.Join(elems, ", ") + "]", nil
 }

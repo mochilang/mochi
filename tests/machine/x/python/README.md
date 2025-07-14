@@ -106,6 +106,7 @@ Compiled programs: 100/100 successful.
 
 ## TPCH Progress
 - [x] q1.mochi regenerated with dataclasses and attribute access
+- [x] cross_join.mochi regenerated with multi-line list formatting
 - [ ] q2.mochi through q22.mochi
 
 ## Remaining Tasks
