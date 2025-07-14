@@ -31,6 +31,9 @@
 ## Recent Enhancements (2025-07-16 05:00)
 - Auto and named dataclasses now implement `__iter__` for easier unpacking.
 - Prepared compiler output formatting for TPCH Q1 regeneration.
+## Recent Enhancements (2025-07-14 05:06)
+- Struct name reuse now ignores field type differences to match expectations.
+- TPCH `q1.mochi` passes without errors.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.

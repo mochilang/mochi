@@ -34,6 +34,7 @@ type Compiler struct {
 	groupFields        map[string]bool
 	autoStructs        map[string]types.StructType
 	structKeys         map[string]string
+	structNameKeys     map[string]string
 	autoCount          int
 	queryStructs       map[*parser.QueryExpr]types.StructType
 	typeHints          bool
@@ -55,6 +56,7 @@ func New(env *types.Env) *Compiler {
 		groupFields:        nil,
 		autoStructs:        make(map[string]types.StructType),
 		structKeys:         make(map[string]string),
+		structNameKeys:     make(map[string]string),
 		autoCount:          0,
 		queryStructs:       make(map[*parser.QueryExpr]types.StructType),
 		typeHints:          true,
@@ -138,6 +140,15 @@ func structKey(st types.StructType) string {
 	return b.String()
 }
 
+func structKeyNames(st types.StructType) string {
+	var b strings.Builder
+	for _, f := range st.Order {
+		b.WriteString(f)
+		b.WriteByte(';')
+	}
+	return b.String()
+}
+
 func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	if st.Name != "" {
 		return st
@@ -150,12 +161,21 @@ func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 		}
 		return st
 	}
+	if name, ok := c.structNameKeys[structKeyNames(st)]; ok {
+		st.Name = name
+		c.structKeys[key] = name
+		if c.env != nil {
+			c.env.SetStruct(name, st)
+		}
+		return st
+	}
 	c.autoCount++
 	name := fmt.Sprintf("Auto%d", c.autoCount)
 	c.imports["dataclasses"] = "dataclasses"
 	st.Name = name
 	c.autoStructs[name] = st
 	c.structKeys[key] = name
+	c.structNameKeys[structKeyNames(st)] = name
 	if c.env != nil {
 		c.env.SetStruct(name, st)
 	}
@@ -1475,25 +1495,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		return "", err
 	}
-	if ml := q.Select.Binary.Left.Value.Target.Map; ml != nil && len(q.Select.Binary.Right) == 0 {
-		keys := make([]string, len(ml.Items))
-		fields := make(map[string]types.Type, len(ml.Items))
-		okStruct := true
-		for i, it := range ml.Items {
-			name, ok := identName(it.Key)
-			if !ok {
-				okStruct = false
-				break
-			}
-			keys[i] = name
-			fields[name] = c.inferExprType(it.Value)
-		}
-		if okStruct {
-			st := types.StructType{Fields: fields, Order: keys}
-			st = c.ensureStructName(st)
-			c.queryStructs[q] = st
-		}
-	}
 
 	if q.Group != nil {
 		keyExpr, err := c.compileExpr(q.Group.Exprs[0])
@@ -1642,6 +1643,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		if err != nil {
 			c.env = orig
 			return "", err
+		}
+		if ml := q.Select.Binary.Left.Value.Target.Map; ml != nil && len(q.Select.Binary.Right) == 0 {
+			keys := make([]string, len(ml.Items))
+			fields := make(map[string]types.Type, len(ml.Items))
+			okStruct := true
+			for i, it := range ml.Items {
+				name, ok := identName(it.Key)
+				if !ok {
+					okStruct = false
+					break
+				}
+				keys[i] = name
+				fields[name] = c.inferExprType(it.Value)
+			}
+			if okStruct {
+				st := types.StructType{Fields: fields, Order: keys}
+				st = c.ensureStructName(st)
+				c.queryStructs[q] = st
+			}
 		}
 		c.env = orig
 

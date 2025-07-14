@@ -1,7 +1,0 @@
-Traceback (most recent call last):
-  File "/workspace/mochi/tests/machine/x/python/q1.py", line 327, in <module>
-    test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus()
-  File "/workspace/mochi/tests/machine/x/python/q1.py", line 244, in test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus
-    assert result == [
-           ^^^^^^^^^^^
-AssertionError
