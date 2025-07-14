@@ -86,6 +86,7 @@ type Compiler struct {
 	listVals       map[string][]int
 	stackArrays    map[string]bool
 	baseDir        string
+	allocs         []string
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -118,6 +119,7 @@ func New(env *types.Env) *Compiler {
 		listVals:       map[string][]int{},
 		stackArrays:    map[string]bool{},
 		baseDir:        "",
+		allocs:         []string{},
 	}
 }
 
@@ -443,6 +445,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 			c.writeln(name + "();")
 		}
+	}
+	for _, v := range c.allocs {
+		c.writeln(fmt.Sprintf("free(%s.data);", v))
 	}
 	c.writeln("return 0;")
 	c.indent--
@@ -2977,6 +2982,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			lenExpr = fmt.Sprintf("%s * %s", lenExpr, c.listLenExpr(sources[i].expr))
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, res, listCreate, lenExpr))
+		c.allocs = append(c.allocs, res)
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
 
 		var loop func(int)
@@ -3649,7 +3655,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			keyType = "int"
 		}
 	}
-	c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, c.listLenExpr(src)))
+	c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, res, listCreate, c.listLenExpr(src)))
+	c.allocs = append(c.allocs, res)
 	if keyType != "" {
 		keyArr = c.newTemp()
 		c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s);", keyType, keyArr, keyType, keyType, c.listLenExpr(src)))
