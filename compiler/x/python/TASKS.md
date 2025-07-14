@@ -20,6 +20,9 @@
 ## Recent Enhancements (2025-07-14 02:10)
 - Query results with map literals emit dataclasses and update parent scope.
 - `cross_join.mochi` uses attribute access and typed result list.
+## Recent Enhancements (2025-07-16 03:21)
+- Fixed nil dereference in `let` and `var` handling when no initializer is provided.
+- Added `__getitem__` back to auto dataclasses and improved `_sort_key` helper for dataclass arguments.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.

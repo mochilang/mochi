@@ -255,9 +255,11 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	if c.env != nil {
-		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.queryStructs[q]; ok {
-				typ = types.ListType{Elem: st}
+		if s.Value != nil {
+			if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+				if st, ok := c.queryStructs[q]; ok {
+					typ = types.ListType{Elem: st}
+				}
 			}
 		}
 		t := typ
@@ -344,9 +346,11 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if c.env != nil {
-		if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
-			if st, ok := c.queryStructs[q]; ok {
-				typ = types.ListType{Elem: st}
+		if s.Value != nil {
+			if q := s.Value.Binary.Left.Value.Target.Query; q != nil {
+				if st, ok := c.queryStructs[q]; ok {
+					typ = types.ListType{Elem: st}
+				}
 			}
 		}
 		t := typ

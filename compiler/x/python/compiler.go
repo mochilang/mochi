@@ -205,6 +205,11 @@ func (c *Compiler) emitAutoStructs() {
 				}
 				c.writeln(fmt.Sprintf("%s: %s", sanitizeName(f), typStr))
 			}
+			c.writeln("")
+			c.writeln("def __getitem__(self, key):")
+			c.indent++
+			c.writeln("return getattr(self, key)")
+			c.indent--
 		}
 		c.indent--
 		c.writeln("")
@@ -650,6 +655,19 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case types.MapType:
 					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = tt.Value
+				case types.StructType:
+					if s, ok := stringLit(idx.Start); ok {
+						field := sanitizeName(strings.Trim(s, "\""))
+						expr = fmt.Sprintf("%s.%s", expr, field)
+						if ft, ok := tt.Fields[field]; ok {
+							typ = ft
+						} else {
+							typ = types.AnyType{}
+						}
+					} else {
+						expr = fmt.Sprintf("getattr(%s, %s)", expr, idxExpr)
+						typ = types.AnyType{}
+					}
 				case types.StringType:
 					expr = fmt.Sprintf("%s[%s]", expr, idxExpr)
 					typ = types.StringType{}
@@ -1098,7 +1116,7 @@ func buildFString(args []string, exprs []*parser.Expr) string {
 			parts[i] = fmt.Sprintf("{%s}", a)
 		}
 	}
-	return "f\"" + strings.Join(parts, " ") + "\""
+	return "f'" + strings.Join(parts, " ") + "'"
 }
 
 // compileExprHint compiles an expression using a type hint when dealing with
