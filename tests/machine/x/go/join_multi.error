@@ -1,13 +1,13 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/join_multi.go:12:17: undefined: Customer
-../../../tests/machine/x/go/join_multi.go:15:5: undefined: Customer
-../../../tests/machine/x/go/join_multi.go:19:14: undefined: Order
-../../../tests/machine/x/go/join_multi.go:22:5: undefined: Order
-../../../tests/machine/x/go/join_multi.go:26:13: undefined: Item
-../../../tests/machine/x/go/join_multi.go:29:5: undefined: Item
-../../../tests/machine/x/go/join_multi.go:33:21: undefined: Result
-../../../tests/machine/x/go/join_multi.go:34:16: undefined: Result
-../../../tests/machine/x/go/join_multi.go:44:32: undefined: Result
+../../../tests/machine/x/go/join_multi.go:13:17: undefined: Customer
+../../../tests/machine/x/go/join_multi.go:16:5: undefined: Customer
+../../../tests/machine/x/go/join_multi.go:20:14: undefined: Order
+../../../tests/machine/x/go/join_multi.go:23:5: undefined: Order
+../../../tests/machine/x/go/join_multi.go:27:13: undefined: Item
+../../../tests/machine/x/go/join_multi.go:30:5: undefined: Item
+../../../tests/machine/x/go/join_multi.go:34:21: undefined: Result
+../../../tests/machine/x/go/join_multi.go:35:16: undefined: Result
+../../../tests/machine/x/go/join_multi.go:45:32: undefined: Result
 
 1: //go:build ignore

@@ -1,15 +1,15 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/outer_join.go:13:17: undefined: Customer
-../../../tests/machine/x/go/outer_join.go:14:3: undefined: Customer
-../../../tests/machine/x/go/outer_join.go:18:3: undefined: Customer
-../../../tests/machine/x/go/outer_join.go:22:3: undefined: Customer
-../../../tests/machine/x/go/outer_join.go:26:3: undefined: Customer
-../../../tests/machine/x/go/outer_join.go:31:14: undefined: Order
-../../../tests/machine/x/go/outer_join.go:32:3: undefined: Order
-../../../tests/machine/x/go/outer_join.go:37:3: undefined: Order
-../../../tests/machine/x/go/outer_join.go:42:3: undefined: Order
-../../../tests/machine/x/go/outer_join.go:47:3: undefined: Order
-../../../tests/machine/x/go/outer_join.go:47:3: too many errors
+../../../tests/machine/x/go/outer_join.go:14:17: undefined: Customer
+../../../tests/machine/x/go/outer_join.go:15:3: undefined: Customer
+../../../tests/machine/x/go/outer_join.go:19:3: undefined: Customer
+../../../tests/machine/x/go/outer_join.go:23:3: undefined: Customer
+../../../tests/machine/x/go/outer_join.go:27:3: undefined: Customer
+../../../tests/machine/x/go/outer_join.go:32:14: undefined: Order
+../../../tests/machine/x/go/outer_join.go:33:3: undefined: Order
+../../../tests/machine/x/go/outer_join.go:38:3: undefined: Order
+../../../tests/machine/x/go/outer_join.go:43:3: undefined: Order
+../../../tests/machine/x/go/outer_join.go:48:3: undefined: Order
+../../../tests/machine/x/go/outer_join.go:48:3: too many errors
 
 1: //go:build ignore

@@ -1,9 +1,9 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/load_yaml.go:21:65: undefined: v
-../../../tests/machine/x/go/load_yaml.go:24:13: invalid operation: r (variable of type map[string]any) is not an interface
-../../../tests/machine/x/go/load_yaml.go:28:21: undefined: Adult
-../../../tests/machine/x/go/load_yaml.go:29:16: undefined: Adult
-../../../tests/machine/x/go/load_yaml.go:33:32: undefined: Adult
+../../../tests/machine/x/go/load_yaml.go:22:65: undefined: v
+../../../tests/machine/x/go/load_yaml.go:25:13: invalid operation: r (variable of type map[string]any) is not an interface
+../../../tests/machine/x/go/load_yaml.go:29:21: undefined: Adult
+../../../tests/machine/x/go/load_yaml.go:30:16: undefined: Adult
+../../../tests/machine/x/go/load_yaml.go:34:32: undefined: Adult
 
 1: //go:build ignore

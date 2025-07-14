@@ -40,6 +40,8 @@ func TestGoCompiler_ValidPrograms(t *testing.T) {
 }
 
 func runGoCompile(t *testing.T, srcPath, name, outDir string) {
+	_ = os.Setenv("MOCHI_SRC", srcPath)
+	defer os.Unsetenv("MOCHI_SRC")
 	data, err := os.ReadFile(srcPath)
 	if err != nil {
 		t.Fatalf("read: %v", err)

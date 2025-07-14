@@ -1,15 +1,15 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by.go:15:14: undefined: People
-../../../tests/machine/x/go/group_by.go:16:3: undefined: People
-../../../tests/machine/x/go/group_by.go:21:3: undefined: People
-../../../tests/machine/x/go/group_by.go:26:3: undefined: People
-../../../tests/machine/x/go/group_by.go:31:3: undefined: People
-../../../tests/machine/x/go/group_by.go:36:3: undefined: People
-../../../tests/machine/x/go/group_by.go:41:3: undefined: People
-../../../tests/machine/x/go/group_by.go:47:20: undefined: Stat
-../../../tests/machine/x/go/group_by.go:61:16: undefined: Stat
-../../../tests/machine/x/go/group_by.go:64:30: undefined: Stat
-../../../tests/machine/x/go/group_by.go:64:30: too many errors
+../../../tests/machine/x/go/group_by.go:16:14: undefined: People
+../../../tests/machine/x/go/group_by.go:17:3: undefined: People
+../../../tests/machine/x/go/group_by.go:22:3: undefined: People
+../../../tests/machine/x/go/group_by.go:27:3: undefined: People
+../../../tests/machine/x/go/group_by.go:32:3: undefined: People
+../../../tests/machine/x/go/group_by.go:37:3: undefined: People
+../../../tests/machine/x/go/group_by.go:42:3: undefined: People
+../../../tests/machine/x/go/group_by.go:48:20: undefined: Stat
+../../../tests/machine/x/go/group_by.go:62:16: undefined: Stat
+../../../tests/machine/x/go/group_by.go:65:30: undefined: Stat
+../../../tests/machine/x/go/group_by.go:65:30: too many errors
 
 1: //go:build ignore

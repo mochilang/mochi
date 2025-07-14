@@ -120,6 +120,9 @@ func FormatGo(src []byte) []byte {
 	if os.Getenv("MOCHI_NO_HEADER") != "" {
 		header = nil
 	}
+	if path := os.Getenv("MOCHI_SRC"); path != "" {
+		header = append(header, []byte(fmt.Sprintf("// Source: %s\n", path))...)
+	}
 	var prefix []byte
 	if bytes.HasPrefix(src, []byte("//go:")) || bytes.HasPrefix(src, []byte("// +build")) {
 		if i := bytes.IndexByte(src, '\n'); i != -1 {

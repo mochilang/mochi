@@ -65,6 +65,9 @@ func runJOBQuery(t *testing.T, base string) {
 	root := repoRootJob(t)
 	src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 
+	_ = os.Setenv("MOCHI_SRC", src)
+	defer os.Unsetenv("MOCHI_SRC")
+
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)

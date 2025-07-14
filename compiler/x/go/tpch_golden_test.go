@@ -72,6 +72,9 @@ func runTPCHQuery(t *testing.T, base string) {
 	root := repoRoot(t)
 	src := filepath.Join(root, "tests", "dataset", "tpc-h", base+".mochi")
 
+	_ = os.Setenv("MOCHI_SRC", src)
+	defer os.Unsetenv("MOCHI_SRC")
+
 	prog, err := parser.Parse(src)
 	if err != nil {
 		t.Fatalf("parse error: %v", err)

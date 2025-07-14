@@ -1,15 +1,15 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/order_by_map.go:14:15: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:17:5: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:20:5: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:24:21: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:28:10: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:30:15: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:36:10: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:38:15: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:41:11: undefined: v
-../../../tests/machine/x/go/order_by_map.go:46:17: undefined: DataVar
-../../../tests/machine/x/go/order_by_map.go:46:17: too many errors
+../../../tests/machine/x/go/order_by_map.go:15:15: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:18:5: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:21:5: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:25:21: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:29:10: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:31:15: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:37:10: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:39:15: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:42:11: undefined: v
+../../../tests/machine/x/go/order_by_map.go:47:17: undefined: DataVar
+../../../tests/machine/x/go/order_by_map.go:47:17: too many errors
 
 1: //go:build ignore
