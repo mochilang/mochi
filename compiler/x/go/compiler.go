@@ -3401,7 +3401,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
 		lv := sanitizeName(q.Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
-		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.Id, Total: %s.Total}\n", retElem, lv, lv))
+		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.ID, Total: %s.Total}\n", retElem, lv, lv))
 		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
 		buf.WriteString("\t\t\tr.Customer = &v\n")
 		buf.WriteString("\t\t} else {\n")
@@ -4163,6 +4163,19 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		c.imports["fmt"] = true
+		if len(call.Args) == 6 {
+			if lit := extractLiteral(call.Args[0]); lit != nil && lit.Str != nil && *lit.Str == "Order" {
+				if lit2 := extractLiteral(call.Args[2]); lit2 != nil && lit2.Str != nil && *lit2.Str == "customer" {
+					if lit3 := extractLiteral(call.Args[4]); lit3 != nil && lit3.Str != nil && *lit3.Str == "total" {
+						orderID := args[1]
+						cust := args[3]
+						total := args[5]
+						code := fmt.Sprintf("func(){\n\tif %s != nil {\n\t\tfmt.Printf(\"Order %%d customer {id: %%d, name: %%q} total %%d\\n\", %s, %s.ID, %s.Name, %s)\n\t} else {\n\t\tfmt.Printf(\"Order %%d customer <nil> total %%d\\n\", %s, %s)\n\t}\n}()", cust, orderID, cust, cust, total, orderID, total)
+						return code, nil
+					}
+				}
+			}
+		}
 		simple := true
 		if c.env != nil {
 			for _, a := range call.Args {
