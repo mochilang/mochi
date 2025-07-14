@@ -210,6 +210,15 @@ func (c *Compiler) emitAutoStructs() {
 			c.indent++
 			c.writeln("return getattr(self, key)")
 			c.indent--
+			c.writeln("")
+			c.writeln("def __iter__(self):")
+			c.indent++
+			parts := make([]string, len(st.Order))
+			for i, f := range st.Order {
+				parts[i] = fmt.Sprintf("self.%s", sanitizeName(f))
+			}
+			c.writeln(fmt.Sprintf("return iter((%s))", strings.Join(parts, ", ")))
+			c.indent--
 		}
 		c.indent--
 		c.writeln("")
@@ -904,8 +913,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			switch t.(type) {
 			case types.ListType:
 				return fmt.Sprintf("len(%s)", args[0]), nil
-                        case types.GroupType:
-                                return fmt.Sprintf("len(%s)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("len(%s)", args[0]), nil
 			case types.MapType, types.StringType:
 				return fmt.Sprintf("len(%s)", args[0]), nil
 			}
@@ -918,8 +927,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			switch t.(type) {
 			case types.ListType:
 				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
-                        case types.GroupType:
-                                return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
+			case types.GroupType:
+				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
 			case types.MapType, types.StringType:
 				return fmt.Sprintf("(len(%s) > 0)", args[0]), nil
 			}
@@ -934,10 +943,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if isNumeric(tt.Elem) {
 					return fmt.Sprintf("(sum(%s)/len(%s) if %s else 0)", args[0], args[0], args[0]), nil
 				}
-                        case types.GroupType:
-                                if isNumeric(tt.Elem) {
-                                        return fmt.Sprintf("(sum(%s)/len(%s) if %s else 0)", args[0], args[0], args[0]), nil
-                                }
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(sum(%s)/len(%s) if %s else 0)", args[0], args[0], args[0]), nil
+				}
 			}
 		}
 		c.use("_avg")
@@ -950,10 +959,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if isNumeric(tt.Elem) {
 					return fmt.Sprintf("sum(%s)", args[0]), nil
 				}
-                        case types.GroupType:
-                                if isNumeric(tt.Elem) {
-                                        return fmt.Sprintf("sum(%s)", args[0]), nil
-                                }
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("sum(%s)", args[0]), nil
+				}
 			}
 			c.use("_sum")
 			return fmt.Sprintf("_sum(%s)", args[0]), nil
@@ -967,10 +976,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if isNumeric(tt.Elem) {
 					return fmt.Sprintf("(min([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
 				}
-                        case types.GroupType:
-                                if isNumeric(tt.Elem) {
-                                        return fmt.Sprintf("(min([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
-                                }
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(min([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
+				}
 			}
 			c.use("_min")
 			return fmt.Sprintf("_min(%s)", args[0]), nil
@@ -984,10 +993,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if isNumeric(tt.Elem) {
 					return fmt.Sprintf("(max([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
 				}
-                        case types.GroupType:
-                                if isNumeric(tt.Elem) {
-                                        return fmt.Sprintf("(max([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
-                                }
+			case types.GroupType:
+				if isNumeric(tt.Elem) {
+					return fmt.Sprintf("(max([it for it in %s if it is not None]) if %s else 0)", args[0], args[0]), nil
+				}
 			}
 			c.use("_max")
 			return fmt.Sprintf("_max(%s)", args[0]), nil
@@ -1001,9 +1010,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		case types.ListType:
 			arg := args[0]
 			return fmt.Sprintf("(%s[0] if len(%s) > 0 else None)", arg, arg), nil
-                case types.GroupType:
-                        arg := args[0]
-                        return fmt.Sprintf("(%s[0] if len(%s) > 0 else None)", arg, arg), nil
+		case types.GroupType:
+			arg := args[0]
+			return fmt.Sprintf("(%s[0] if len(%s) > 0 else None)", arg, arg), nil
 		}
 		c.use("_first")
 		return fmt.Sprintf("_first(%s)", args[0]), nil
@@ -1085,8 +1094,8 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
 		case types.MapType:
 			return fmt.Sprintf("(str(%s) in %s)", args[1], args[0]), nil
-                case types.GroupType:
-                        return fmt.Sprintf("(%s in %s)", args[1], args[0]), nil
+		case types.GroupType:
+			return fmt.Sprintf("(%s in %s)", args[1], args[0]), nil
 		}
 		c.use("_contains")
 		return fmt.Sprintf("_contains(%s, %s)", args[0], args[1]), nil
