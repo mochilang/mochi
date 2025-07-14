@@ -6,9 +6,6 @@ This directory contains TypeScript code compiled from Mochi programs in `tests/v
 
 Compiled: 100/100 programs
 
-### Recent Updates
-- Spread operator used for `append` builtin to match human references.
-
 ## Checklist
 
 - [x] append_builtin.mochi

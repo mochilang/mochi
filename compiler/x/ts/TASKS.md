@@ -1,6 +1,8 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-14 09:34 UTC
+- Removed `_order` slice; grouped queries now use `Map` insertion order.
 ### 2025-07-14 06:16 UTC
 - `append` builtin now uses the spread operator for cleaner arrays.
 - Disabled query unwrapping to avoid duplicate temp variables.
