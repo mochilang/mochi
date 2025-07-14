@@ -3984,11 +3984,11 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 	capMap := map[string]captureInfo{}
 	for _, v := range captured {
 		if c.env != nil {
-			if typ, err := c.env.GetVar(v); err == nil {
-				g := fmt.Sprintf("%s_%s", name, sanitizeName(v))
-				capMap[v] = captureInfo{global: g, typ: typ}
-				c.writeln(fmt.Sprintf("static %s %s;", cTypeFromType(typ), g))
-			}
+			expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Selector: &parser.SelectorExpr{Root: v}}}}}}
+			typ := c.exprType(expr)
+			g := fmt.Sprintf("%s_%s", name, sanitizeName(v))
+			capMap[v] = captureInfo{global: g, typ: typ}
+			c.writeln(fmt.Sprintf("static %s %s;", cTypeFromType(typ), g))
 		}
 	}
 	oldCaps := c.captures
@@ -4824,6 +4824,37 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		if len(p.List.Elems) > 0 {
 			if isListLiteral(p.List.Elems[0]) || isListIntExpr(p.List.Elems[0], c.env) {
 				nested = true
+			}
+		}
+		if len(p.List.Elems) > 0 {
+			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
+				if _, ok := c.structLits[ml]; !ok {
+					if st, ok2 := c.inferStructFromList(p.List, name); ok2 {
+						c.structLits[ml] = st
+						if c.env != nil {
+							c.env.SetStruct(st.Name, st)
+						}
+						c.compileStructType(st)
+						c.compileStructListType(st)
+					}
+				}
+				if st, ok := c.structLits[ml]; ok {
+					c.compileStructType(st)
+					vals := make([]string, len(p.List.Elems))
+					for i, el := range p.List.Elems {
+						vals[i] = c.compileExpr(el)
+					}
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
+					lenVar := name + "_len"
+					c.writeln(fmt.Sprintf("int %s = sizeof(%s)/sizeof(%s[0]);", lenVar, name, name))
+					if c.stackArrays != nil {
+						c.stackArrays[name] = true
+					}
+					if c.arrayLens != nil {
+						c.arrayLens[name] = lenVar
+					}
+					return name
+				}
 			}
 		}
 		if nested {

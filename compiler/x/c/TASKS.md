@@ -96,3 +96,4 @@ should compile and run successfully.
 - 2025-07-14 07:10 – Began adding pair-string grouping type inference for TPCH q1.
 
 - 2025-07-14 04:36 – Refactored group_by_join output to use simpler loops and static arrays.
+- 2025-07-14 12:25 – Updated TPCH q1 code generation to infer struct lists in tests
