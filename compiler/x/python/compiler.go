@@ -273,8 +273,10 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 			return nil, err
 		}
 	}
-	for _, name := range tests {
-		c.writeln(fmt.Sprintf("%s()", name))
+	if os.Getenv("MOCHI_SKIP_TESTS") != "1" {
+		for _, name := range tests {
+			c.writeln(fmt.Sprintf("%s()", name))
+		}
 	}
 
 	body := append([]byte(nil), c.buf.Bytes()...)
