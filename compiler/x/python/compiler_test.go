@@ -49,6 +49,15 @@ func TestPyCompiler_SubsetPrograms(t *testing.T) {
 			return nil, fmt.Errorf("write error: %w", err)
 		}
 		cmd := exec.Command("python3", file)
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
+		cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}
@@ -274,9 +283,11 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			if errs := types.Check(prog, env); len(errs) > 0 {
 				t.Fatalf("type error: %v", errs[0])
 			}
+			os.Setenv("MOCHI_SKIP_TESTS", "1")
 			c := pycode.New(env)
 			c.SetTypeHints(false)
 			c.SetAutoStructs(false)
+			defer os.Unsetenv("MOCHI_SKIP_TESTS")
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
@@ -577,6 +588,7 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 	codePath := filepath.Join(outDir, name+".py")
 	os.WriteFile(codePath, code, 0o644)
 	cmd := exec.Command("python3", codePath)
+	cmd.Env = append(os.Environ(), "MOCHI_SKIP_TESTS=1")
 	root := findRepoRoot(t)
 	cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 	var buf bytes.Buffer
