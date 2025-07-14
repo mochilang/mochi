@@ -4223,16 +4223,16 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				}
 			}
 		}
-		simple := true
-		if c.env != nil {
-			for _, a := range call.Args {
-				t := c.inferExprType(a)
-				if isMap(t) || (isList(t) && !(isTypedSimpleList(t) || isStructList(t))) || (isAny(t) && isListOrMapExpr(a)) {
-					simple = false
-					break
-				}
-			}
-		}
+               simple := true
+               if c.env != nil {
+                       for _, a := range call.Args {
+                               t := c.inferExprType(a)
+                               if isMap(t) || isList(t) || (isAny(t) && isListOrMapExpr(a)) {
+                                       simple = false
+                                       break
+                               }
+                       }
+               }
 		if simple {
 			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 		}
