@@ -92,4 +92,6 @@ should compile and run successfully.
 - [x] Support loading YAML files at compile time
 - [ ] Implement JSONL output helper for `save` statements
 
+- 2025-07-14 06:30 – Generated static arrays for list literals and cleaned join-group logic to match idiomatic C.
+
 - 2025-07-14 04:36 – Refactored group_by_join output to use simpler loops and static arrays.

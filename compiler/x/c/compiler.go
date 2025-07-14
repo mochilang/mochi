@@ -85,6 +85,8 @@ type Compiler struct {
 	listLens       map[string]int
 	listVals       map[string][]int
 	stackArrays    map[string]bool
+	arrayLens      map[string]string
+	assignVar      string
 	baseDir        string
 	allocs         []string
 }
@@ -118,6 +120,7 @@ func New(env *types.Env) *Compiler {
 		listLens:       map[string]int{},
 		listVals:       map[string][]int{},
 		stackArrays:    map[string]bool{},
+		arrayLens:      map[string]string{},
 		baseDir:        "",
 		allocs:         []string{},
 	}
@@ -1420,7 +1423,9 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(fmt.Sprintf("map_int_string %s = map_int_string_create(0);", val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else {
+				c.assignVar = name
 				val := c.compileExpr(stmt.Value)
+				c.assignVar = ""
 				if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := c.structLits[ml]; ok {
@@ -1429,15 +1434,19 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 						}
 					}
 				}
-				c.writeln(formatFuncPtrDecl(typ, name, val))
-				for i, a := range c.allocs {
-					if a == val {
-						c.allocs[i] = name
+				if val != name || !c.stackArrays[name] {
+					c.writeln(formatFuncPtrDecl(typ, name, val))
+					for i, a := range c.allocs {
+						if a == val {
+							c.allocs[i] = name
+						}
 					}
 				}
 			}
 		} else {
+			c.assignVar = name
 			val := c.compileExpr(stmt.Value)
+			c.assignVar = ""
 			if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 				if ml := asMapLiteral(q.Select); ml != nil {
 					if st, ok := c.structLits[ml]; ok {
@@ -1446,10 +1455,12 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 					}
 				}
 			}
-			c.writeln(formatFuncPtrDecl(typ, name, val))
-			for i, a := range c.allocs {
-				if a == val {
-					c.allocs[i] = name
+			if val != name || !c.stackArrays[name] {
+				c.writeln(formatFuncPtrDecl(typ, name, val))
+				for i, a := range c.allocs {
+					if a == val {
+						c.allocs[i] = name
+					}
 				}
 			}
 		}
@@ -1626,20 +1637,28 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 					}
 				}
 			} else {
+				c.assignVar = name
 				val := c.compileExpr(stmt.Value)
+				c.assignVar = ""
+				if val != name || !c.stackArrays[name] {
+					c.writeln(formatFuncPtrDecl(typ, name, val))
+					for i, a := range c.allocs {
+						if a == val {
+							c.allocs[i] = name
+						}
+					}
+				}
+			}
+		} else {
+			c.assignVar = name
+			val := c.compileExpr(stmt.Value)
+			c.assignVar = ""
+			if val != name || !c.stackArrays[name] {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 				for i, a := range c.allocs {
 					if a == val {
 						c.allocs[i] = name
 					}
-				}
-			}
-		} else {
-			val := c.compileExpr(stmt.Value)
-			c.writeln(formatFuncPtrDecl(typ, name, val))
-			for i, a := range c.allocs {
-				if a == val {
-					c.allocs[i] = name
 				}
 			}
 		}
@@ -3383,16 +3402,19 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.compileStructListType(retT)
 		}
 
-		listName := sanitizeListName(retT.Name)
-		res := c.newTemp()
-		data := res + "_data"
-		c.writeln(fmt.Sprintf("%s %s[%s * %s];", sanitizeTypeName(retT.Name), data, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
-		c.writeln(fmt.Sprintf("%s %s = {0, %s};", listName, res, data))
-		if c.stackArrays != nil {
-			c.stackArrays[data] = true
+		res := c.assignVar
+		if res == "" {
+			res = c.newTemp()
 		}
-		idx := c.newTemp()
-		c.writeln(fmt.Sprintf("int %s = 0;", idx))
+		lenVar := res + "_len"
+		c.writeln(fmt.Sprintf("%s %s[10];", sanitizeTypeName(retT.Name), res))
+		c.writeln(fmt.Sprintf("int %s = 0;", lenVar))
+		if c.stackArrays != nil {
+			c.stackArrays[res] = true
+		}
+		if c.arrayLens != nil {
+			c.arrayLens[res] = lenVar
+		}
 		loopL := c.newLoopVar()
 		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopL, loopL, c.listLenExpr(leftExpr), loopL))
 		c.indent++
@@ -3409,28 +3431,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		found := c.newTemp()
 		kloop := c.newLoopVar()
 		c.writeln(fmt.Sprintf("int %s = -1;", found))
-		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", kloop, kloop, idx, kloop))
+		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", kloop, kloop, lenVar, kloop))
 		c.indent++
-		c.writeln(fmt.Sprintf("if (strcmp(%s.data[%s].name, %s) == 0) { %s = %s; break; }", res, kloop, key, found, kloop))
+		c.writeln(fmt.Sprintf("if (strcmp(%s[%s].name, %s) == 0) { %s = %s; break; }", res, kloop, key, found, kloop))
 		c.indent--
 		c.writeln("}")
 		c.writeln(fmt.Sprintf("if (%s == -1) {", found))
 		c.indent++
-		c.writeln(fmt.Sprintf("%s.data[%s].name = %s;", res, idx, key))
-		c.writeln(fmt.Sprintf("%s.data[%s].count = 1;", res, idx))
-		c.writeln(fmt.Sprintf("%s = %s;", found, idx))
-		c.writeln(fmt.Sprintf("%s++;", idx))
+		c.writeln(fmt.Sprintf("%s[%s].name = %s;", res, lenVar, key))
+		c.writeln(fmt.Sprintf("%s[%s].count = 1;", res, lenVar))
+		c.writeln(fmt.Sprintf("%s = %s;", found, lenVar))
+		c.writeln(fmt.Sprintf("%s++;", lenVar))
 		c.indent--
 		c.writeln("} else {")
 		c.indent++
-		c.writeln(fmt.Sprintf("%s.data[%s].count++;", res, found))
+		c.writeln(fmt.Sprintf("%s[%s].count++;", res, found))
 		c.indent--
 		c.writeln("}")
 		c.indent--
 		c.writeln("}")
 		c.indent--
 		c.writeln("}")
-		c.writeln(fmt.Sprintf("%s.len = %s;", res, idx))
 		if c.env != nil {
 			c.env = oldEnv
 		}
@@ -4761,7 +4782,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		}
 		return fmt.Sprintf("(%s){%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", "))
 	case p.List != nil:
-		name := c.newTemp()
+		var name string
+		if c.assignVar != "" {
+			name = sanitizeName(c.assignVar)
+		} else {
+			name = c.newTemp()
+		}
 		nested := false
 		if len(p.List.Elems) > 0 {
 			if isListLiteral(p.List.Elems[0]) || isListIntExpr(p.List.Elems[0], c.env) {
@@ -4811,35 +4837,38 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
-					listName := sanitizeListName(st.Name)
-					c.compileStructListType(st)
+					c.compileStructType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
 						vals[i] = c.compileExpr(el)
 					}
-					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
-					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
+					lenVar := name + "_len"
+					c.writeln(fmt.Sprintf("int %s = sizeof(%s)/sizeof(%s[0]);", lenVar, name, name))
 					if c.stackArrays != nil {
-						c.stackArrays[data] = true
+						c.stackArrays[name] = true
+					}
+					if c.arrayLens != nil {
+						c.arrayLens[name] = lenVar
 					}
 					return name
 				}
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
 				stName := sl.Name
 				if st, ok := c.env.GetStruct(stName); ok {
-					listName := sanitizeListName(st.Name)
 					c.compileStructType(st)
-					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
 						vals[i] = c.compileExpr(el)
 					}
-					data := name + "_data"
-					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), data, strings.Join(vals, ", ")))
-					c.writeln(fmt.Sprintf("%s %s = {%d, %s};", listName, name, len(vals), data))
+					c.writeln(fmt.Sprintf("%s %s[] = {%s};", sanitizeTypeName(st.Name), name, strings.Join(vals, ", ")))
+					lenVar := name + "_len"
+					c.writeln(fmt.Sprintf("int %s = sizeof(%s)/sizeof(%s[0]);", lenVar, name, name))
 					if c.stackArrays != nil {
-						c.stackArrays[data] = true
+						c.stackArrays[name] = true
+					}
+					if c.arrayLens != nil {
+						c.arrayLens[name] = lenVar
 					}
 					return name
 				}
@@ -7028,6 +7057,9 @@ func (c *Compiler) emitConstListInt(vals []int) string {
 }
 
 func (c *Compiler) listLenExpr(name string) string {
+	if expr, ok := c.arrayLens[name]; ok {
+		return expr
+	}
 	if l, ok := c.listLens[name]; ok {
 		return strconv.Itoa(l)
 	}
