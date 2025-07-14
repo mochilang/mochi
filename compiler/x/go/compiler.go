@@ -2853,6 +2853,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	joinTypes := make([]string, len(q.Joins))
 	joinLeftKeys := make([]string, len(q.Joins))
 	joinRightKeys := make([]string, len(q.Joins))
+	joinLeftKeyTypes := make([]types.Type, len(q.Joins))
+	joinRightKeyTypes := make([]types.Type, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -2872,9 +2874,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			return "", err
 		}
 		joinOns[i] = on
-		if lk, rk, ok := c.eqJoinKeys(j.On, q.Var, j.Var); ok {
+		if lk, lkT, rk, rkT, ok := c.eqJoinKeysInfo(j.On, q.Var, j.Var); ok {
 			joinLeftKeys[i] = lk
 			joinRightKeys[i] = rk
+			joinLeftKeyTypes[i] = lkT
+			joinRightKeyTypes[i] = rkT
 		}
 		if j.Side != nil {
 			joinSides[i] = *j.Side
@@ -3385,6 +3389,52 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	}
 
 	var buf bytes.Buffer
+
+	specialLeftMap := simple && len(q.Joins) == 1 && joinSides[0] == "left" &&
+		joinLeftKeys[0] != "" && joinRightKeys[0] != "" && len(q.Froms) == 0 &&
+		q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && cond == ""
+	if specialLeftMap {
+		keyGo := goType(joinRightKeyTypes[0])
+		if keyGo == "" {
+			keyGo = "any"
+		}
+		jvar := sanitizeName(q.Joins[0].Var)
+		mapName := jvar + "Map"
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapName, keyGo, joinTypes[0]))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jvar, joinSrcs[0]))
+		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, joinRightKeys[0], jvar))
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", sanitizeName(q.Var), src))
+		// construct struct
+		ml := mapLiteral(q.Select)
+		if ml != nil {
+			buf.WriteString(fmt.Sprintf("\t\tres := %s{\n", retElem))
+			for _, it := range ml.Items {
+				key, _ := simpleStringKey(it.Key)
+				if key == "customer" {
+					continue
+				}
+				val, _ := c.compileExpr(it.Value)
+				buf.WriteString(fmt.Sprintf("\t\t\t%s: %s,\n", exportName(sanitizeName(key)), val))
+			}
+			buf.WriteString("\t\t}\n")
+		} else {
+			buf.WriteString(fmt.Sprintf("\t\tres := %s{}\n", retElem))
+		}
+		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
+		buf.WriteString("\t\t\tres.Customer = &v\n")
+		buf.WriteString("\t\t} else {\n")
+		buf.WriteString("\t\t\tres.Customer = nil\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tresults = append(results, res)\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn results\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+
 	buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
 	if simple {
 		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))

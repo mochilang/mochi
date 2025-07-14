@@ -36,6 +36,7 @@ TPC-H progress:
 - 2025-07-13 18:28 - Removed `_toAnyMap` helper; added `_copyToMap` and `_getField`
 - 2025-07-13 18:41 - Generated `tpch/q1.go`; planning to drop helper functions
 - 2025-07-14 01:45 - Added loop-based translation for simple left join; emits typed structs
+- 2025-07-14 02:34 - Optimized left join with map lookup
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
@@ -45,3 +46,4 @@ TPC-H progress:
 * [ ] Audit generated code after `_toAnyMap` removal
 * [ ] Remove helper functions prefixed with `_` from generated code
 * [ ] Improve dataset query struct inference
+* [ ] Review pointer handling for optional joins
