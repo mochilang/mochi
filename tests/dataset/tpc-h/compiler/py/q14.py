@@ -135,19 +135,28 @@ def test_Q14_calculates_promo_revenue_percent_in_1995_09():
 
 
 part = [
-    Part(p_partkey=1, p_type="PROMO LUXURY"),
-    Part(p_partkey=2, p_type="STANDARD BRASS"),
+    {"p_partkey": 1, "p_type": "PROMO LUXURY"},
+    {"p_partkey": 2, "p_type": "STANDARD BRASS"},
 ]
 lineitem = [
-    Lineitem(
-        l_partkey=1, l_extendedprice=1000.0, l_discount=0.1, l_shipdate="1995-09-05"
-    ),
-    Lineitem(
-        l_partkey=2, l_extendedprice=800.0, l_discount=0.0, l_shipdate="1995-09-20"
-    ),
-    Lineitem(
-        l_partkey=1, l_extendedprice=500.0, l_discount=0.2, l_shipdate="1995-10-02"
-    ),
+    {
+        "l_partkey": 1,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+        "l_shipdate": "1995-09-05",
+    },
+    {
+        "l_partkey": 2,
+        "l_extendedprice": 800.0,
+        "l_discount": 0.0,
+        "l_shipdate": "1995-09-20",
+    },
+    {
+        "l_partkey": 1,
+        "l_extendedprice": 500.0,
+        "l_discount": 0.2,
+        "l_shipdate": "1995-10-02",
+    },
 ]
 start_date = "1995-09-01"
 end_date = "1995-10-01"

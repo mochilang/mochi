@@ -92,33 +92,33 @@ def test_Q1_aggregates_revenue_and_quantity_by_returnflag___linestatus():
 
 
 lineitem = [
-    Lineitem(
-        l_quantity=17,
-        l_extendedprice=1000.0,
-        l_discount=0.05,
-        l_tax=0.07,
-        l_returnflag="N",
-        l_linestatus="O",
-        l_shipdate="1998-08-01",
-    ),
-    Lineitem(
-        l_quantity=36,
-        l_extendedprice=2000.0,
-        l_discount=0.1,
-        l_tax=0.05,
-        l_returnflag="N",
-        l_linestatus="O",
-        l_shipdate="1998-09-01",
-    ),
-    Lineitem(
-        l_quantity=25,
-        l_extendedprice=1500.0,
-        l_discount=0.0,
-        l_tax=0.08,
-        l_returnflag="R",
-        l_linestatus="F",
-        l_shipdate="1998-09-03",
-    ),
+    {
+        "l_quantity": 17,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.05,
+        "l_tax": 0.07,
+        "l_returnflag": "N",
+        "l_linestatus": "O",
+        "l_shipdate": "1998-08-01",
+    },
+    {
+        "l_quantity": 36,
+        "l_extendedprice": 2000.0,
+        "l_discount": 0.1,
+        "l_tax": 0.05,
+        "l_returnflag": "N",
+        "l_linestatus": "O",
+        "l_shipdate": "1998-09-01",
+    },
+    {
+        "l_quantity": 25,
+        "l_extendedprice": 1500.0,
+        "l_discount": 0.0,
+        "l_tax": 0.08,
+        "l_returnflag": "R",
+        "l_linestatus": "F",
+        "l_shipdate": "1998-09-03",
+    },
 ]
 
 

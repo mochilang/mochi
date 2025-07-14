@@ -246,36 +246,41 @@ def test_Q18_returns_large_volume_customers_with_total_quantity___200():
     ]
 
 
-nation = [Nation(n_nationkey=1, n_name="GERMANY")]
+nation = [{"n_nationkey": 1, "n_name": "GERMANY"}]
 customer = [
-    Customer(
-        c_custkey=1,
-        c_name="Alice",
-        c_acctbal=1000.0,
-        c_nationkey=1,
-        c_address="123 Market St",
-        c_phone="123-456",
-        c_comment="Premium client",
-    ),
-    Customer(
-        c_custkey=2,
-        c_name="Bob",
-        c_acctbal=200.0,
-        c_nationkey=1,
-        c_address="456 Side St",
-        c_phone="987-654",
-        c_comment="Frequent returns",
-    ),
+    {
+        "c_custkey": 1,
+        "c_name": "Alice",
+        "c_acctbal": 1000.0,
+        "c_nationkey": 1,
+        "c_address": "123 Market St",
+        "c_phone": "123-456",
+        "c_comment": "Premium client",
+    },
+    {
+        "c_custkey": 2,
+        "c_name": "Bob",
+        "c_acctbal": 200.0,
+        "c_nationkey": 1,
+        "c_address": "456 Side St",
+        "c_phone": "987-654",
+        "c_comment": "Frequent returns",
+    },
 ]
 orders = [
-    Order(o_orderkey=100, o_custkey=1),
-    Order(o_orderkey=200, o_custkey=1),
-    Order(o_orderkey=300, o_custkey=2),
+    {"o_orderkey": 100, "o_custkey": 1},
+    {"o_orderkey": 200, "o_custkey": 1},
+    {"o_orderkey": 300, "o_custkey": 2},
 ]
 lineitem = [
-    Lineitem(l_orderkey=100, l_quantity=150, l_extendedprice=1000.0, l_discount=0.1),
-    Lineitem(l_orderkey=200, l_quantity=100, l_extendedprice=800.0, l_discount=0.0),
-    Lineitem(l_orderkey=300, l_quantity=30, l_extendedprice=300.0, l_discount=0.05),
+    {
+        "l_orderkey": 100,
+        "l_quantity": 150,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+    },
+    {"l_orderkey": 200, "l_quantity": 100, "l_extendedprice": 800.0, "l_discount": 0.0},
+    {"l_orderkey": 300, "l_quantity": 30, "l_extendedprice": 300.0, "l_discount": 0.05},
 ]
 threshold = 200
 

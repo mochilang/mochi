@@ -232,23 +232,42 @@ def test_Q3_returns_revenue_per_order_with_correct_priority():
 
 
 customer = [
-    Customer(c_custkey=1, c_mktsegment="BUILDING"),
-    Customer(c_custkey=2, c_mktsegment="AUTOMOBILE"),
+    {"c_custkey": 1, "c_mktsegment": "BUILDING"},
+    {"c_custkey": 2, "c_mktsegment": "AUTOMOBILE"},
 ]
 orders = [
-    Order(o_orderkey=100, o_custkey=1, o_orderdate="1995-03-14", o_shippriority=1),
-    Order(o_orderkey=200, o_custkey=2, o_orderdate="1995-03-10", o_shippriority=2),
+    {
+        "o_orderkey": 100,
+        "o_custkey": 1,
+        "o_orderdate": "1995-03-14",
+        "o_shippriority": 1,
+    },
+    {
+        "o_orderkey": 200,
+        "o_custkey": 2,
+        "o_orderdate": "1995-03-10",
+        "o_shippriority": 2,
+    },
 ]
 lineitem = [
-    Lineitem(
-        l_orderkey=100, l_extendedprice=1000.0, l_discount=0.05, l_shipdate="1995-03-16"
-    ),
-    Lineitem(
-        l_orderkey=100, l_extendedprice=500.0, l_discount=0.0, l_shipdate="1995-03-20"
-    ),
-    Lineitem(
-        l_orderkey=200, l_extendedprice=1000.0, l_discount=0.1, l_shipdate="1995-03-14"
-    ),
+    {
+        "l_orderkey": 100,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.05,
+        "l_shipdate": "1995-03-16",
+    },
+    {
+        "l_orderkey": 100,
+        "l_extendedprice": 500.0,
+        "l_discount": 0.0,
+        "l_shipdate": "1995-03-20",
+    },
+    {
+        "l_orderkey": 200,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+        "l_shipdate": "1995-03-14",
+    },
 ]
 cutoff = "1995-03-15"
 segment = "BUILDING"

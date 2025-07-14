@@ -248,39 +248,36 @@ def test_Q8_returns_correct_market_share_for_BRAZIL_in_1995():
     assert result == [Auto1(o_year="1995", mkt_share=share)]
 
 
-region = [Region(r_regionkey=0, r_name="AMERICA")]
+region = [{"r_regionkey": 0, "r_name": "AMERICA"}]
 nation = [
-    Nation(n_nationkey=10, n_regionkey=0, n_name="BRAZIL"),
-    Nation(n_nationkey=20, n_regionkey=0, n_name="CANADA"),
+    {"n_nationkey": 10, "n_regionkey": 0, "n_name": "BRAZIL"},
+    {"n_nationkey": 20, "n_regionkey": 0, "n_name": "CANADA"},
 ]
-customer = [
-    Customer(c_custkey=1, c_nationkey=10),
-    Customer(c_custkey=2, c_nationkey=20),
-]
+customer = [{"c_custkey": 1, "c_nationkey": 10}, {"c_custkey": 2, "c_nationkey": 20}]
 orders = [
-    Order(o_orderkey=100, o_custkey=1, o_orderdate="1995-04-10"),
-    Order(o_orderkey=200, o_custkey=2, o_orderdate="1995-07-15"),
+    {"o_orderkey": 100, "o_custkey": 1, "o_orderdate": "1995-04-10"},
+    {"o_orderkey": 200, "o_custkey": 2, "o_orderdate": "1995-07-15"},
 ]
 lineitem = [
-    Lineitem(
-        l_orderkey=100,
-        l_suppkey=1000,
-        l_partkey=5000,
-        l_extendedprice=1000.0,
-        l_discount=0.1,
-    ),
-    Lineitem(
-        l_orderkey=200,
-        l_suppkey=2000,
-        l_partkey=5000,
-        l_extendedprice=500.0,
-        l_discount=0.05,
-    ),
+    {
+        "l_orderkey": 100,
+        "l_suppkey": 1000,
+        "l_partkey": 5000,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+    },
+    {
+        "l_orderkey": 200,
+        "l_suppkey": 2000,
+        "l_partkey": 5000,
+        "l_extendedprice": 500.0,
+        "l_discount": 0.05,
+    },
 ]
-supplier = [Supplier(s_suppkey=1000), Supplier(s_suppkey=2000)]
+supplier = [{"s_suppkey": 1000}, {"s_suppkey": 2000}]
 part = [
-    Part(p_partkey=5000, p_type="ECONOMY ANODIZED STEEL"),
-    Part(p_partkey=6000, p_type="SMALL BRASS"),
+    {"p_partkey": 5000, "p_type": "ECONOMY ANODIZED STEEL"},
+    {"p_partkey": 6000, "p_type": "SMALL BRASS"},
 ]
 start_date = "1995-01-01"
 end_date = "1996-12-31"

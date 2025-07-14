@@ -184,11 +184,11 @@ def test_Q13_groups_customers_by_non_special_order_count():
     assert grouped == [Auto1(c_count=2, custdist=1), Auto1(c_count=0, custdist=2)]
 
 
-customer = [Customer(c_custkey=1), Customer(c_custkey=2), Customer(c_custkey=3)]
+customer = [{"c_custkey": 1}, {"c_custkey": 2}, {"c_custkey": 3}]
 orders = [
-    Order(o_orderkey=100, o_custkey=1, o_comment="fast delivery"),
-    Order(o_orderkey=101, o_custkey=1, o_comment="no comment"),
-    Order(o_orderkey=102, o_custkey=2, o_comment="special requests only"),
+    {"o_orderkey": 100, "o_custkey": 1, "o_comment": "fast delivery"},
+    {"o_orderkey": 101, "o_custkey": 1, "o_comment": "no comment"},
+    {"o_orderkey": 102, "o_custkey": 2, "o_comment": "special requests only"},
 ]
 per_customer = [
     Auto2(

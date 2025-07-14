@@ -247,25 +247,35 @@ def test_Q10_returns_customer_revenue_from_returned_items():
     ]
 
 
-nation = [Nation(n_nationkey=1, n_name="BRAZIL")]
+nation = [{"n_nationkey": 1, "n_name": "BRAZIL"}]
 customer = [
-    Customer(
-        c_custkey=1,
-        c_name="Alice",
-        c_acctbal=100.0,
-        c_nationkey=1,
-        c_address="123 St",
-        c_phone="123-456",
-        c_comment="Loyal",
-    )
+    {
+        "c_custkey": 1,
+        "c_name": "Alice",
+        "c_acctbal": 100.0,
+        "c_nationkey": 1,
+        "c_address": "123 St",
+        "c_phone": "123-456",
+        "c_comment": "Loyal",
+    }
 ]
 orders = [
-    Order(o_orderkey=1000, o_custkey=1, o_orderdate="1993-10-15"),
-    Order(o_orderkey=2000, o_custkey=1, o_orderdate="1994-01-02"),
+    {"o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1993-10-15"},
+    {"o_orderkey": 2000, "o_custkey": 1, "o_orderdate": "1994-01-02"},
 ]
 lineitem = [
-    Lineitem(l_orderkey=1000, l_returnflag="R", l_extendedprice=1000.0, l_discount=0.1),
-    Lineitem(l_orderkey=2000, l_returnflag="N", l_extendedprice=500.0, l_discount=0.0),
+    {
+        "l_orderkey": 1000,
+        "l_returnflag": "R",
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.1,
+    },
+    {
+        "l_orderkey": 2000,
+        "l_returnflag": "N",
+        "l_extendedprice": 500.0,
+        "l_discount": 0.0,
+    },
 ]
 start_date = "1993-10-01"
 end_date = "1994-01-01"

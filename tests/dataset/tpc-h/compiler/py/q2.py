@@ -216,38 +216,38 @@ def test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part():
     ]
 
 
-region = [Region(r_regionkey=1, r_name="EUROPE"), Region(r_regionkey=2, r_name="ASIA")]
+region = [{"r_regionkey": 1, "r_name": "EUROPE"}, {"r_regionkey": 2, "r_name": "ASIA"}]
 nation = [
-    Nation(n_nationkey=10, n_regionkey=1, n_name="FRANCE"),
-    Nation(n_nationkey=20, n_regionkey=2, n_name="CHINA"),
+    {"n_nationkey": 10, "n_regionkey": 1, "n_name": "FRANCE"},
+    {"n_nationkey": 20, "n_regionkey": 2, "n_name": "CHINA"},
 ]
 supplier = [
-    Supplier(
-        s_suppkey=100,
-        s_name="BestSupplier",
-        s_address="123 Rue",
-        s_nationkey=10,
-        s_phone="123",
-        s_acctbal=1000.0,
-        s_comment="Fast and reliable",
-    ),
-    Supplier(
-        s_suppkey=200,
-        s_name="AltSupplier",
-        s_address="456 Way",
-        s_nationkey=20,
-        s_phone="456",
-        s_acctbal=500.0,
-        s_comment="Slow",
-    ),
+    {
+        "s_suppkey": 100,
+        "s_name": "BestSupplier",
+        "s_address": "123 Rue",
+        "s_nationkey": 10,
+        "s_phone": "123",
+        "s_acctbal": 1000.0,
+        "s_comment": "Fast and reliable",
+    },
+    {
+        "s_suppkey": 200,
+        "s_name": "AltSupplier",
+        "s_address": "456 Way",
+        "s_nationkey": 20,
+        "s_phone": "456",
+        "s_acctbal": 500.0,
+        "s_comment": "Slow",
+    },
 ]
 part = [
-    Part(p_partkey=1000, p_type="LARGE BRASS", p_size=15, p_mfgr="M1"),
-    Part(p_partkey=2000, p_type="SMALL COPPER", p_size=15, p_mfgr="M2"),
+    {"p_partkey": 1000, "p_type": "LARGE BRASS", "p_size": 15, "p_mfgr": "M1"},
+    {"p_partkey": 2000, "p_type": "SMALL COPPER", "p_size": 15, "p_mfgr": "M2"},
 ]
 partsupp = [
-    Partsupp(ps_partkey=1000, ps_suppkey=100, ps_supplycost=10.0),
-    Partsupp(ps_partkey=1000, ps_suppkey=200, ps_supplycost=15.0),
+    {"ps_partkey": 1000, "ps_suppkey": 100, "ps_supplycost": 10.0},
+    {"ps_partkey": 1000, "ps_suppkey": 200, "ps_supplycost": 15.0},
 ]
 europe_nations = _query(
     region,

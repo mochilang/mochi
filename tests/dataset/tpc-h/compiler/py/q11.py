@@ -161,19 +161,19 @@ def test_Q11_returns_high_value_partkeys_from_GERMANY():
 
 
 nation = [
-    Nation(n_nationkey=1, n_name="GERMANY"),
-    Nation(n_nationkey=2, n_name="FRANCE"),
+    {"n_nationkey": 1, "n_name": "GERMANY"},
+    {"n_nationkey": 2, "n_name": "FRANCE"},
 ]
 supplier = [
-    Supplier(s_suppkey=100, s_nationkey=1),
-    Supplier(s_suppkey=200, s_nationkey=1),
-    Supplier(s_suppkey=300, s_nationkey=2),
+    {"s_suppkey": 100, "s_nationkey": 1},
+    {"s_suppkey": 200, "s_nationkey": 1},
+    {"s_suppkey": 300, "s_nationkey": 2},
 ]
 partsupp = [
-    Partsupp(ps_partkey=1000, ps_suppkey=100, ps_supplycost=10.0, ps_availqty=100),
-    Partsupp(ps_partkey=1000, ps_suppkey=200, ps_supplycost=20.0, ps_availqty=50),
-    Partsupp(ps_partkey=2000, ps_suppkey=100, ps_supplycost=5.0, ps_availqty=10),
-    Partsupp(ps_partkey=3000, ps_suppkey=300, ps_supplycost=8.0, ps_availqty=500),
+    {"ps_partkey": 1000, "ps_suppkey": 100, "ps_supplycost": 10.0, "ps_availqty": 100},
+    {"ps_partkey": 1000, "ps_suppkey": 200, "ps_supplycost": 20.0, "ps_availqty": 50},
+    {"ps_partkey": 2000, "ps_suppkey": 100, "ps_supplycost": 5.0, "ps_availqty": 10},
+    {"ps_partkey": 3000, "ps_suppkey": 300, "ps_supplycost": 8.0, "ps_availqty": 500},
 ]
 target_nation = "GERMANY"
 filtered = _query(

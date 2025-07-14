@@ -210,28 +210,34 @@ def test_Q20_returns_suppliers_from_CANADA_with_forest_part_stock___50__of_1994_
 
 
 nation = [
-    Nation(n_nationkey=1, n_name="CANADA"),
-    Nation(n_nationkey=2, n_name="GERMANY"),
+    {"n_nationkey": 1, "n_name": "CANADA"},
+    {"n_nationkey": 2, "n_name": "GERMANY"},
 ]
 supplier = [
-    Supplier(
-        s_suppkey=100, s_name="Maple Supply", s_address="123 Forest Lane", s_nationkey=1
-    ),
-    Supplier(
-        s_suppkey=200, s_name="Berlin Metals", s_address="456 Iron Str", s_nationkey=2
-    ),
+    {
+        "s_suppkey": 100,
+        "s_name": "Maple Supply",
+        "s_address": "123 Forest Lane",
+        "s_nationkey": 1,
+    },
+    {
+        "s_suppkey": 200,
+        "s_name": "Berlin Metals",
+        "s_address": "456 Iron Str",
+        "s_nationkey": 2,
+    },
 ]
 part = [
-    Part(p_partkey=10, p_name="forest glade bricks"),
-    Part(p_partkey=20, p_name="desert sand paper"),
+    {"p_partkey": 10, "p_name": "forest glade bricks"},
+    {"p_partkey": 20, "p_name": "desert sand paper"},
 ]
 partsupp = [
-    Partsupp(ps_partkey=10, ps_suppkey=100, ps_availqty=100),
-    Partsupp(ps_partkey=20, ps_suppkey=200, ps_availqty=30),
+    {"ps_partkey": 10, "ps_suppkey": 100, "ps_availqty": 100},
+    {"ps_partkey": 20, "ps_suppkey": 200, "ps_availqty": 30},
 ]
 lineitem = [
-    Lineitem(l_partkey=10, l_suppkey=100, l_quantity=100, l_shipdate="1994-05-15"),
-    Lineitem(l_partkey=10, l_suppkey=100, l_quantity=50, l_shipdate="1995-01-01"),
+    {"l_partkey": 10, "l_suppkey": 100, "l_quantity": 100, "l_shipdate": "1994-05-15"},
+    {"l_partkey": 10, "l_suppkey": 100, "l_quantity": 50, "l_shipdate": "1995-01-01"},
 ]
 prefix = "forest"
 

@@ -232,29 +232,36 @@ def test_Q5_returns_revenue_per_nation_in_ASIA_with_local_suppliers():
     ]
 
 
-region = [Region(r_regionkey=0, r_name="ASIA"), Region(r_regionkey=1, r_name="EUROPE")]
+region = [{"r_regionkey": 0, "r_name": "ASIA"}, {"r_regionkey": 1, "r_name": "EUROPE"}]
 nation = [
-    Nation(n_nationkey=10, n_regionkey=0, n_name="JAPAN"),
-    Nation(n_nationkey=20, n_regionkey=0, n_name="INDIA"),
-    Nation(n_nationkey=30, n_regionkey=1, n_name="FRANCE"),
+    {"n_nationkey": 10, "n_regionkey": 0, "n_name": "JAPAN"},
+    {"n_nationkey": 20, "n_regionkey": 0, "n_name": "INDIA"},
+    {"n_nationkey": 30, "n_regionkey": 1, "n_name": "FRANCE"},
 ]
-customer = [
-    Customer(c_custkey=1, c_nationkey=10),
-    Customer(c_custkey=2, c_nationkey=20),
-]
+customer = [{"c_custkey": 1, "c_nationkey": 10}, {"c_custkey": 2, "c_nationkey": 20}]
 supplier = [
-    Supplier(s_suppkey=100, s_nationkey=10),
-    Supplier(s_suppkey=200, s_nationkey=20),
+    {"s_suppkey": 100, "s_nationkey": 10},
+    {"s_suppkey": 200, "s_nationkey": 20},
 ]
 orders = [
-    Order(o_orderkey=1000, o_custkey=1, o_orderdate="1994-03-15"),
-    Order(o_orderkey=2000, o_custkey=2, o_orderdate="1994-06-10"),
-    Order(o_orderkey=3000, o_custkey=2, o_orderdate="1995-01-01"),
+    {"o_orderkey": 1000, "o_custkey": 1, "o_orderdate": "1994-03-15"},
+    {"o_orderkey": 2000, "o_custkey": 2, "o_orderdate": "1994-06-10"},
+    {"o_orderkey": 3000, "o_custkey": 2, "o_orderdate": "1995-01-01"},
 ]
 lineitem = [
-    Lineitem(l_orderkey=1000, l_suppkey=100, l_extendedprice=1000.0, l_discount=0.05),
-    Lineitem(l_orderkey=2000, l_suppkey=200, l_extendedprice=800.0, l_discount=0.1),
-    Lineitem(l_orderkey=3000, l_suppkey=200, l_extendedprice=900.0, l_discount=0.05),
+    {
+        "l_orderkey": 1000,
+        "l_suppkey": 100,
+        "l_extendedprice": 1000.0,
+        "l_discount": 0.05,
+    },
+    {"l_orderkey": 2000, "l_suppkey": 200, "l_extendedprice": 800.0, "l_discount": 0.1},
+    {
+        "l_orderkey": 3000,
+        "l_suppkey": 200,
+        "l_extendedprice": 900.0,
+        "l_discount": 0.05,
+    },
 ]
 asia_nations = _query(
     region,
