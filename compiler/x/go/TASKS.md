@@ -19,6 +19,7 @@ TPC-H progress:
 
 ## Recent Updates
 - 2025-07-14 06:18 - Added helper `isPlainAnyList` for future printing logic
+- 2025-07-14 07:16 - Relaxed struct type comparison to match anonymous structs
 - 2025-07-14 05:56 - Used `_toAnySlice` when converting to `[]any` and simplified print detection
 - 2025-07-14 04:23 - Injected fallback struct generation to match human left join output
 - 2025-07-14 03:18 - Removed inline closure for left join print; always emit inferred structs

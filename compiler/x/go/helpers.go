@@ -187,6 +187,15 @@ func equalTypes(a, b types.Type) bool {
 	if isInt(a) && isInt(b) {
 		return true
 	}
+	if sa, ok := a.(types.StructType); ok {
+		if sb, ok := b.(types.StructType); ok {
+			if sa.Name == "" || sb.Name == "" {
+				if structTypesMatch(sa, sb) {
+					return true
+				}
+			}
+		}
+	}
 	return reflect.DeepEqual(a, b)
 }
 
@@ -343,6 +352,24 @@ func structMatches(existing types.StructType, fields map[string]types.Type, orde
 			return false
 		}
 		if !equalTypes(existing.Fields[name], fields[name]) {
+			return false
+		}
+	}
+	return true
+}
+
+// structTypesMatch reports whether two struct types have the same set of fields
+// and ordering, ignoring their names. This is used for comparing inferred
+// anonymous structs with named ones.
+func structTypesMatch(a, b types.StructType) bool {
+	if len(a.Fields) != len(b.Fields) || len(a.Order) != len(b.Order) {
+		return false
+	}
+	for i, name := range a.Order {
+		if b.Order[i] != name {
+			return false
+		}
+		if !equalTypes(a.Fields[name], b.Fields[name]) {
 			return false
 		}
 	}

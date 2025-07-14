@@ -4069,6 +4069,14 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 		if e.Binary != nil && len(e.Binary.Right) == 0 {
 			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
 				parts := make([]string, len(ml.Items))
+				if st.Name == "" {
+					for name, existing := range c.env.Structs() {
+						if structMatches(existing, st.Fields, st.Order) {
+							st.Name = name
+							break
+						}
+					}
+				}
 				if len(ml.Items) == len(st.Order) {
 					for i, item := range ml.Items {
 						key, ok2 := simpleStringKey(item.Key)
