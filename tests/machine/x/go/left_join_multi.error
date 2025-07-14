@@ -1,0 +1,10 @@
+Error on line 0: output mismatch
+-- got --
+--- Left Join Multi ---
+100 Alice {100 a}
+101 Bob {0 }
+-- want --
+--- Left Join Multi ---
+100 Alice map[orderId:100 sku:a]
+101 Bob <nil>
+1: //go:build ignore

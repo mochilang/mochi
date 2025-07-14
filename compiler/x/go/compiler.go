@@ -3954,6 +3954,17 @@ func isListOrMapExpr(e *parser.Expr) bool {
 	return false
 }
 
+// isPlainAnyList reports whether the type is []any and the expression is not a
+// list literal. Used by future printing optimisations.
+func isPlainAnyList(t types.Type, e *parser.Expr) bool {
+	if lt, ok := t.(types.ListType); ok {
+		if _, ok := lt.Elem.(types.AnyType); ok {
+			return !isListOrMapExpr(e)
+		}
+	}
+	return false
+}
+
 func (c *Compiler) callKey(call *parser.CallExpr) string {
 	parts := make([]string, len(call.Args)+1)
 	parts[0] = call.Func

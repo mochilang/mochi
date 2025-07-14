@@ -1,0 +1,6 @@
+Error on line 0: run error: exit status 1
+# command-line-arguments
+../../../tests/machine/x/go/outer_join.go:121:11: cannot convert row.Order (variable of struct type Order) to type bool
+../../../tests/machine/x/go/outer_join.go:122:12: cannot convert row.Customer (variable of struct type Customer) to type bool
+
+1: //go:build ignore
