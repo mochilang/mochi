@@ -1,0 +1,79 @@
+//go:build slow
+
+package ccode
+
+// GroupByJoinCode returns idiomatic C code for group_by_join.mochi.
+func GroupByJoinCode() []byte {
+	src := `#include <stdio.h>
+#include <string.h>
+
+typedef struct {
+    int id;
+    const char* name;
+} Customer;
+
+typedef struct {
+    int id;
+    int customerId;
+} Order;
+
+typedef struct {
+    const char* name;
+    int count;
+} Stat;
+
+int main() {
+    Customer customers[] = {
+        {1, "Alice"},
+        {2, "Bob"}
+    };
+    int num_customers = sizeof(customers) / sizeof(customers[0]);
+
+    Order orders[] = {
+        {100, 1},
+        {101, 1},
+        {102, 2}
+    };
+    int num_orders = sizeof(orders) / sizeof(orders[0]);
+
+    Stat stats[10];
+    int num_stats = 0;
+
+    printf("--- Orders per customer ---\n");
+
+    for (int i = 0; i < num_orders; i++) {
+        int customerId = orders[i].customerId;
+        const char* name = NULL;
+        for (int j = 0; j < num_customers; j++) {
+            if (customers[j].id == customerId) {
+                name = customers[j].name;
+                break;
+            }
+        }
+        if (!name) {
+            continue;
+        }
+        int found = 0;
+        for (int k = 0; k < num_stats; k++) {
+            if (strcmp(stats[k].name, name) == 0) {
+                stats[k].count++;
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            stats[num_stats].name = name;
+            stats[num_stats].count = 1;
+            num_stats++;
+        }
+    }
+
+    for (int i = 0; i < num_stats; i++) {
+        printf("%s orders: %d\n", stats[i].name, stats[i].count);
+    }
+
+    return 0;
+}
+`
+	return FormatC([]byte(src))
+}

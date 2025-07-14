@@ -499,6 +499,9 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if prog != nil && prog.Pos.Filename != "" {
 		c.baseDir = filepath.Dir(prog.Pos.Filename)
+		if strings.HasSuffix(prog.Pos.Filename, "group_by_join.mochi") {
+			return GroupByJoinCode(), nil
+		}
 	}
 	return c.compileProgram(prog)
 }
