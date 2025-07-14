@@ -18,6 +18,7 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-14 02:49 - Typed group key fields without `_getField`
 - 2025-07-13 19:22 - Emitted struct declarations for query select results
 - 2025-07-13 19:01 - Added explicit struct types for cross join outputs and dataset examples
 

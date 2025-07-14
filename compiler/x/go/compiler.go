@@ -47,6 +47,8 @@ type Compiler struct {
 	receiver string
 
 	anonStructCount int
+
+	groupKeyTypes map[string]types.Type
 }
 
 // New creates a new Go compiler instance.
@@ -69,6 +71,7 @@ func New(env *types.Env) *Compiler {
 		externObjects:   map[string]bool{},
 		tempVarCount:    0,
 		anonStructCount: 0,
+		groupKeyTypes:   map[string]types.Type{},
 	}
 }
 
@@ -2227,7 +2230,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				case types.GroupType:
 					if field == "key" {
 						base = fmt.Sprintf("%s.Key", base)
-						typ = types.AnyType{}
+						if kt, ok := c.groupKeyTypes[p.Selector.Root]; ok {
+							base = fmt.Sprintf("%s.(%s)", base, goType(kt))
+							typ = kt
+						} else {
+							typ = types.AnyType{}
+						}
 					} else if field == "items" {
 						base = fmt.Sprintf("%s.Items", base)
 						typ = types.ListType{Elem: tt.Elem}
@@ -2739,6 +2747,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	}
 
 	var groupKey string
+	var groupKeyType types.Type
 	if q.Group != nil {
 		gtype := types.GroupType{Elem: elemType}
 		keyEnv := child
@@ -2749,6 +2758,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			c.env = original
 			return "", err
 		}
+		groupKeyType = c.inferExprType(q.Group.Exprs[0])
+		if ml := q.Group.Exprs[0].Binary.Left.Value.Target.Map; ml != nil {
+			if st, ok := c.inferStructFromMapEnv(ml, q.Group.Name+"Key", child); ok {
+				groupKeyType = st
+				if c.env != nil {
+					c.env.SetStruct(st.Name, st)
+				}
+				c.compileStructType(st)
+			}
+		}
+		c.groupKeyTypes[q.Group.Name] = groupKeyType
+		defer delete(c.groupKeyTypes, q.Group.Name)
 		child.SetVar(q.Group.Name, gtype, true)
 	}
 	c.env = child
