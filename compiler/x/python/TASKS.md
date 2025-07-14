@@ -24,6 +24,10 @@
 - Fixed nil dereference in `let` and `var` handling when no initializer is provided.
 - Added `__getitem__` back to auto dataclasses and improved `_sort_key` helper for dataclass arguments.
 
+## Recent Enhancements (2025-07-16 04:10)
+- `_Group` now defines `__len__` so groups behave like lists.
+- Aggregate helpers emit `len(g)` instead of `len(g.Items)` when counting or averaging.
+
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
