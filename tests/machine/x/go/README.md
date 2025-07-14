@@ -106,10 +106,8 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-- [x] tpch/q1
 
 ## Remaining Tasks
 
 - [ ] Simplify slice conversions and printing logic
 - [ ] Expand coverage to more examples in `tests/vm/valid`
-- [ ] Verify TPCH q1 runtime matches reference

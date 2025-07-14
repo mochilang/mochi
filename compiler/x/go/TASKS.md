@@ -45,6 +45,7 @@ TPC-H progress:
 - 2025-07-14 04:38 - Avoided duplicate struct declarations by preserving seen set
 - 2025-07-14 04:49 - Used fmt.Println for typed lists to match human output
 - 2025-07-14 05:36 - Extended fmt.Println optimisation to struct slices
+- 2025-07-14 06:41 - Regenerated TPCH golden Go files q1-q22 after fixing struct inference
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
@@ -57,3 +58,4 @@ TPC-H progress:
 * [ ] Improve singular name heuristics for inferred structs
 * [ ] Compare generated TPCH q1 with human output
 * [x] Extend fmt.Println optimisation to struct slices
+
