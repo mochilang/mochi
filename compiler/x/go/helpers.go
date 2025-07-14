@@ -92,7 +92,9 @@ func exportName(name string) string {
 	if runes[0] >= 'a' && runes[0] <= 'z' {
 		runes[0] = runes[0] - 'a' + 'A'
 	}
-	return string(runes)
+	s := string(runes)
+	s = strings.ReplaceAll(s, "Id", "ID")
+	return s
 }
 
 func singular(name string) string {

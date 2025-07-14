@@ -38,6 +38,7 @@ TPC-H progress:
 - 2025-07-14 01:45 - Added loop-based translation for simple left join; emits typed structs
 - 2025-07-14 02:28 - Switched left join translation to use maps for fast lookup
 - 2025-07-14 02:37 - Generated human-readable left join using map and singular struct names
+- 2025-07-14 03:06 - Fixed struct declaration output and normalized ID field names
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support

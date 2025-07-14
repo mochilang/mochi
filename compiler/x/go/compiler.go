@@ -108,8 +108,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// ensure inferred struct types are emitted
 	if c.env != nil {
-		// reset set to avoid skipping structs inferred during global decls
-		c.structs = make(map[string]bool)
 		for _, st := range c.env.Structs() {
 			c.compileStructType(st)
 		}
@@ -961,22 +959,16 @@ func (c *Compiler) compileStructType(st types.StructType) {
 		return
 	}
 	c.structs[name] = true
-	// write type definition to declarations buffer
-	oldBuf := c.buf
-	oldIndent := c.indent
-	c.buf = c.decls
-	c.indent = 0
-	c.writeln(fmt.Sprintf("type %s struct {", name))
-	c.indent++
+
+	var buf bytes.Buffer
+	buf.WriteString(fmt.Sprintf("type %s struct {\n", name))
 	for _, fn := range st.Order {
 		ft := st.Fields[fn]
-		c.writeln(fmt.Sprintf("%s %s `json:\"%s\"`", exportName(sanitizeName(fn)), goType(ft), fn))
+		buf.WriteString(fmt.Sprintf("\t%s %s `json:\"%s\"`\n", exportName(sanitizeName(fn)), goType(ft), fn))
 	}
-	c.indent--
-	c.writeln("}")
-	c.writeln("")
-	c.buf = oldBuf
-	c.indent = oldIndent
+	buf.WriteString("}\n\n")
+	c.decls.Write(buf.Bytes())
+
 	for _, ft := range st.Fields {
 		if sub, ok := ft.(types.StructType); ok {
 			c.compileStructType(sub)
@@ -3396,13 +3388,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapName, keyGo, joinTypes[0]))
 		jv := sanitizeName(q.Joins[0].Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
-		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, joinRightKeys[0], jv))
+		rk := strings.ReplaceAll(joinRightKeys[0], ".Id", ".ID")
+		rk = strings.ReplaceAll(rk, ".CustomerId", ".CustomerID")
+		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, rk, jv))
 		buf.WriteString("\t}\n")
 		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
 		lv := sanitizeName(q.Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
-		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.Id, Total: %s.Total}\n", retElem, lv, lv))
-		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
+		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.ID, Total: %s.Total}\n", retElem, lv, lv))
+		lk := strings.ReplaceAll(joinLeftKeys[0], ".Id", ".ID")
+		lk = strings.ReplaceAll(lk, ".CustomerId", ".CustomerID")
+		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, lk))
 		buf.WriteString("\t\t\tr.Customer = &v\n")
 		buf.WriteString("\t\t} else {\n")
 		buf.WriteString("\t\t\tr.Customer = nil\n")
