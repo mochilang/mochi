@@ -2220,6 +2220,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					retList := types.ListType{Elem: retT}
 					listC := cTypeFromType(retList)
+					listCreate := listC + "_create"
+					if st, ok := retT.(types.StructType); ok {
+						listC = sanitizeListName(st.Name)
+						listCreate = createListFuncName(st.Name)
+					}
 					if listC == "list_string" {
 						c.need(needListString)
 					} else if listC == "list_float" {
@@ -2950,6 +2955,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		}
 		retList := types.ListType{Elem: retT}
 		listC := cTypeFromType(retList)
+		listCreate := listC + "_create"
+		if st, ok := retT.(types.StructType); ok {
+			listC = sanitizeListName(st.Name)
+			listCreate = createListFuncName(st.Name)
+		}
 		if listC == "list_string" {
 			c.need(needListString)
 		} else if listC == "list_float" {
@@ -2966,7 +2976,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 		for i := 1; i < len(sources); i++ {
 			lenExpr = fmt.Sprintf("%s * %s", lenExpr, c.listLenExpr(sources[i].expr))
 		}
-		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
+		c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, res, listCreate, lenExpr))
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
 
 		var loop func(int)
