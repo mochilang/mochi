@@ -2354,6 +2354,9 @@ func (c *Compiler) compileIterExpr(e *parser.Expr) (string, error) {
 }
 
 func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
+	if code, ok, err := c.compileGroupByJoinCount(q); ok {
+		return code, err
+	}
 	src, err := c.compileIterExpr(q.Source)
 	if err != nil {
 		return "", err
@@ -3431,6 +3434,83 @@ func joinEqFields(e *parser.Expr, leftVar, rightVar string) (string, string, boo
 		}
 	}
 	return "", "", false
+}
+
+func (c *Compiler) compileGroupByJoinCount(q *parser.QueryExpr) (string, bool, error) {
+	if len(q.Froms) != 0 || len(q.Joins) != 1 || q.Group == nil || q.Where != nil || q.Sort != nil || q.Skip != nil || q.Take != nil {
+		return "", false, nil
+	}
+	j := q.Joins[0]
+	if j.Side != nil {
+		return "", false, nil
+	}
+	lf, rf, ok := joinEqFields(j.On, q.Var, j.Var)
+	if !ok {
+		return "", false, nil
+	}
+	keyField, ok := fieldFromUnary(q.Group.Exprs[0].Binary.Left, j.Var)
+	if !ok {
+		return "", false, nil
+	}
+	m := q.Select.Binary.Left.Value.Target.Map
+	if m == nil || len(m.Items) != 2 {
+		return "", false, nil
+	}
+	hasName := false
+	hasCount := false
+	for _, it := range m.Items {
+		k, ok := identName(it.Key)
+		if !ok {
+			return "", false, nil
+		}
+		switch k {
+		case "name":
+			if sel, ok := fieldFromUnary(it.Value.Binary.Left, q.Group.Name); ok && sel == "key" && len(it.Value.Binary.Right) == 0 {
+				hasName = true
+			}
+		case "count":
+			if name, arg, ok := detectAggCall(it.Value); ok && name == "count" {
+				if ident, ok := identName(arg); ok && ident == q.Group.Name {
+					hasCount = true
+				}
+			}
+		default:
+			return "", false, nil
+		}
+	}
+	if !(hasName && hasCount) {
+		return "", false, nil
+	}
+
+	src, err := c.compileIterExpr(q.Source)
+	if err != nil {
+		return "", false, err
+	}
+	joinSrc, err := c.compileIterExpr(j.Src)
+	if err != nil {
+		return "", false, err
+	}
+	qv := sanitizeName(q.Var)
+	jv := sanitizeName(j.Var)
+	var b strings.Builder
+	b.WriteString("(() => {\n")
+	b.WriteString("  const " + jv + "Map = new Map<any, any>()\n")
+	b.WriteString("  for (const " + jv + " of " + joinSrc + ") {\n")
+	b.WriteString("    " + jv + "Map.set(" + jv + "." + rf + ", " + jv + "." + keyField + ")\n")
+	b.WriteString("  }\n")
+	b.WriteString("  const counts = new Map<any, number>()\n")
+	b.WriteString("  for (const " + qv + " of " + src + ") {\n")
+	b.WriteString("    const name = " + jv + "Map.get(" + qv + "." + lf + ")\n")
+	b.WriteString("    if (!name) continue\n")
+	b.WriteString("    counts.set(name, (counts.get(name) || 0) + 1)\n")
+	b.WriteString("  }\n")
+	b.WriteString("  const _res = []\n")
+	b.WriteString("  for (const [name, count] of counts) {\n")
+	b.WriteString("    _res.push({ name, count })\n")
+	b.WriteString("  }\n")
+	b.WriteString("  return _res\n")
+	b.WriteString("})()")
+	return b.String(), true, nil
 }
 
 func formatTS(src []byte) []byte {

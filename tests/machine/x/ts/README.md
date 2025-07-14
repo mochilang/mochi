@@ -12,6 +12,7 @@ Compiled: 100/100 programs
 ## Next Steps
 - [ ] Compile remaining TPC-H queries (q2–q22)
 - [ ] Improve generated code readability to align with human references
+- [ ] Expand idiomatic patterns for joins and grouping
 
 ## Checklist
 

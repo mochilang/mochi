@@ -16,6 +16,9 @@
 ### 2025-07-13 16:33 UTC
 - Compiled TPC-H queries q1-q22 and regenerated golden outputs.
 
+### 2025-07-14 02:46 UTC
+- Added named struct generation and optimized join/group queries.
+
 ## Remaining Enhancements
 - [x] Compile the rest of the TPC-H queries
 - [ ] Refine generated code formatting for readability
