@@ -2853,6 +2853,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	joinTypes := make([]string, len(q.Joins))
 	joinLeftKeys := make([]string, len(q.Joins))
 	joinRightKeys := make([]string, len(q.Joins))
+	joinLeftTypes := make([]types.Type, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -2872,9 +2873,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			return "", err
 		}
 		joinOns[i] = on
-		if lk, rk, ok := c.eqJoinKeys(j.On, q.Var, j.Var); ok {
+		if lk, rk, lt, _, ok := c.eqJoinKeysTyped(j.On, q.Var, j.Var); ok {
 			joinLeftKeys[i] = lk
 			joinRightKeys[i] = rk
+			joinLeftTypes[i] = lt
 		}
 		if j.Side != nil {
 			joinSides[i] = *j.Side
@@ -3375,6 +3377,36 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 				}
 			}
 		}
+	}
+
+	// Special case: simple left join using a map for fast lookup.
+	if len(q.Joins) == 1 && len(q.Froms) == 0 && q.Group == nil &&
+		joinSides[0] == "left" && cond == "" && sortExpr == "" &&
+		skipExpr == "" && takeExpr == "" && joinLeftKeys[0] != "" && joinRightKeys[0] != "" {
+		keyGo := goType(joinLeftTypes[0])
+		if keyGo == "" {
+			keyGo = "any"
+		}
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tlookup := make(map[%s]%s)\n", keyGo, joinTypes[0]))
+		jv := sanitizeName(q.Joins[0].Var)
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
+		buf.WriteString(fmt.Sprintf("\t\tlookup[%s] = %s\n", joinRightKeys[0], jv))
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
+		lv := sanitizeName(q.Var)
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
+		buf.WriteString(fmt.Sprintf("\t\tvar %s *%s\n", jv, joinTypes[0]))
+		buf.WriteString(fmt.Sprintf("\t\tif v, ok := lookup[%s]; ok {\n", joinLeftKeys[0]))
+		buf.WriteString(fmt.Sprintf("\t\t\t%s = &v\n", jv))
+		buf.WriteString("\t\t}\n")
+		buf.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", sel))
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn results\n")
+		buf.WriteString("}()")
+		c.env = original
+		return buf.String(), nil
 	}
 
 	simple := q.Sort == nil && q.Skip == nil && q.Take == nil

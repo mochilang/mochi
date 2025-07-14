@@ -115,4 +115,4 @@ Checklist:
 - [ ] Expand coverage to more examples in `tests/vm/valid`
 - [ ] Verify map conversion after `_toAnyMap` removal
 - [ ] Drop remaining runtime helper functions prefixed with `_`
-- [ ] Tune left join output; use maps for faster lookup
+- [x] Tune left join output; use maps for faster lookup

@@ -484,6 +484,44 @@ func (c *Compiler) eqJoinKeys(e *parser.Expr, leftVar, rightVar string) (string,
 	return "", "", false
 }
 
+// eqJoinKeysTyped is like eqJoinKeys but also returns the static types of the
+// left and right key expressions.
+func (c *Compiler) eqJoinKeysTyped(e *parser.Expr, leftVar, rightVar string) (string, string, types.Type, types.Type, bool) {
+	if e == nil || len(e.Binary.Right) != 1 {
+		return "", "", nil, nil, false
+	}
+	op := e.Binary.Right[0]
+	if op.Op != "==" {
+		return "", "", nil, nil, false
+	}
+	lhs := e.Binary.Left
+	rhs := op.Right
+	if len(lhs.Ops) != 0 || len(rhs.Ops) != 0 || lhs.Value == nil || rhs.Target == nil {
+		return "", "", nil, nil, false
+	}
+	ls := lhs.Value.Target.Selector
+	rs := rhs.Target.Selector
+	if ls == nil || rs == nil {
+		return "", "", nil, nil, false
+	}
+	lExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: lhs}}
+	rExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: rhs}}}
+	lStr, err1 := c.compileExpr(lExpr)
+	rStr, err2 := c.compileExpr(rExpr)
+	lType := c.inferExprType(lExpr)
+	rType := c.inferExprType(rExpr)
+	if err1 != nil || err2 != nil {
+		return "", "", nil, nil, false
+	}
+	if ls.Root == leftVar && rs.Root == rightVar {
+		return lStr, rStr, lType, rType, true
+	}
+	if ls.Root == rightVar && rs.Root == leftVar {
+		return rStr, lStr, rType, lType, true
+	}
+	return "", "", nil, nil, false
+}
+
 func (c *Compiler) newVar() string {
 	name := fmt.Sprintf("tmp%d", c.tempVarCount)
 	c.tempVarCount++
