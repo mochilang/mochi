@@ -1,3 +1,5 @@
+## Recent Enhancements (2025-07-14 07:13)
+- TPCH queries q1-q22 regenerate with shared dataclass names.
 ## Recent Enhancements (2025-07-14 05:55)
 - Auto dataclasses omit `__iter__` and `__eq__`; dataclasses use default equality.
 - Named structs no longer generate `__iter__` methods.
