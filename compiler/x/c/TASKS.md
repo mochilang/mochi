@@ -6,6 +6,7 @@ Initial work added support for generating C structs and list helpers when a prog
 ## Progress log
 
 - 2025-07-14 03:21 – Implemented inner join grouping with count so `group_by_join.mochi` compiles.
+- 2025-07-14 04:03 – Refined join grouping output to use stack arrays and `const char*` fields.
 
 - 2025-08-29 12:00 – Simplified `print` code generation and removed `static` from struct list helpers.
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.

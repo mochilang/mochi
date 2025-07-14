@@ -168,6 +168,16 @@ func (c *Compiler) stackListInt(name, lenExpr, initLen string) {
 	}
 }
 
+func (c *Compiler) stackStructList(name string, st types.StructType, lenExpr, initLen string) {
+	listName := sanitizeListName(st.Name)
+	data := name + "_data"
+	c.writeln(fmt.Sprintf("%s %s[%s];", sanitizeTypeName(st.Name), data, lenExpr))
+	c.writeln(fmt.Sprintf("%s %s = {%s, %s};", listName, name, initLen, data))
+	if c.stackArrays != nil {
+		c.stackArrays[data] = true
+	}
+}
+
 func (c *Compiler) need(key string) {
 	if c.needs == nil {
 		c.needs = map[string]bool{}
@@ -3351,12 +3361,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 			c.compileStructListType(retT)
 		}
 
-		listName := sanitizeListName(retT.Name)
-		createFunc := createListFuncName(retT.Name)
-
 		res := c.newTemp()
 		idx := c.newTemp()
-		c.writeln(fmt.Sprintf("%s %s = %s(%s * %s);", listName, res, createFunc, c.listLenExpr(leftExpr), c.listLenExpr(rightExpr)))
+		lenExpr := fmt.Sprintf("%s * %s", c.listLenExpr(leftExpr), c.listLenExpr(rightExpr))
+		c.stackStructList(res, retT, lenExpr, "0")
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
 		loopL := c.newLoopVar()
 		c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", loopL, loopL, c.listLenExpr(leftExpr), loopL))
@@ -4946,7 +4954,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						params = append(params, c.compileExpr(a))
 					}
 				}
-				fmtParts = append(fmtParts, "\n")
+				fmtParts = append(fmtParts, "\\n")
 				format := strings.Join(fmtParts, "")
 				if len(params) > 0 {
 					c.writeln(fmt.Sprintf("printf(\"%s\", %s);", format, strings.Join(params, ", ")))

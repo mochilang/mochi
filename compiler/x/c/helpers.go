@@ -111,7 +111,7 @@ func cTypeFromType(t types.Type) string {
 	case types.FloatType:
 		return "double"
 	case types.StringType:
-		return "char*"
+		return "const char*"
 	case types.UnionType:
 		return sanitizeTypeName(tt.Name)
 	case types.StructType:
