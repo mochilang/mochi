@@ -38,6 +38,8 @@ type Compiler struct {
 	tsAuto        map[string]bool
 	externObjects map[string]bool
 
+	groupKeyTypes map[string]types.Type
+
 	tempVarCount int
 
 	returnType types.Type
@@ -69,6 +71,7 @@ func New(env *types.Env) *Compiler {
 		externObjects:   map[string]bool{},
 		tempVarCount:    0,
 		anonStructCount: 0,
+		groupKeyTypes:   map[string]types.Type{},
 	}
 }
 
@@ -2219,7 +2222,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				case types.GroupType:
 					if field == "key" {
 						base = fmt.Sprintf("%s.Key", base)
-						typ = types.AnyType{}
+						if kt, ok := c.groupKeyTypes[sanitizeName(p.Selector.Root)]; ok {
+							base = fmt.Sprintf("(%s).(%s)", base, goType(kt))
+							typ = kt
+						} else {
+							typ = types.AnyType{}
+						}
 					} else if field == "items" {
 						base = fmt.Sprintf("%s.Items", base)
 						typ = types.ListType{Elem: tt.Elem}
@@ -2741,6 +2749,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			c.env = original
 			return "", err
 		}
+		keyType := c.inferExprType(q.Group.Exprs[0])
+		c.groupKeyTypes[sanitizeName(q.Group.Name)] = keyType
+		defer delete(c.groupKeyTypes, sanitizeName(q.Group.Name))
 		child.SetVar(q.Group.Name, gtype, true)
 	}
 	c.env = child
