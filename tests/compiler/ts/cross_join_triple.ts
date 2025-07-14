@@ -16,12 +16,11 @@ function main(): void {
     true,
     false,
   ];
-  const _src = nums;
-  const _res = [];
-  for (const n of _src) {
+  combos = [];
+  for (const n of nums) {
     for (const l of letters) {
       for (const b of bools) {
-        _res.push({
+        combos.push({
           "n": n,
           "l": l,
           "b": b,
@@ -29,7 +28,6 @@ function main(): void {
       }
     }
   }
-  combos = _res;
   console.log("--- Cross Join of three lists ---");
   for (const c of combos) {
     console.log(`${c.n} ${c.l} ${c.b}`);

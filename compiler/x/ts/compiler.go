@@ -567,6 +567,25 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	}
 	typStr := cleanTSType(tsType(typ))
 	needType := s.Type != nil || s.Value == nil || (c.moduleScope && c.indent == 1)
+
+	// Optimize simple query loop bodies to push directly into the target variable.
+	if len(unwrapped) > 0 && retVar == "_res" && len(unwrapped) >= 2 {
+		first := strings.TrimSpace(unwrapped[0])
+		second := strings.TrimSpace(unwrapped[1])
+		if strings.HasPrefix(first, "const _src = ") && strings.HasSuffix(first, ";") &&
+			strings.HasPrefix(second, "const _res = []") {
+			srcExpr := strings.TrimSuffix(strings.TrimPrefix(first, "const _src = "), ";")
+			var body []string
+			body = append(body, fmt.Sprintf("%s = []", name))
+			for _, ln := range unwrapped[2:] {
+				ln = strings.ReplaceAll(ln, "_src", srcExpr)
+				ln = strings.ReplaceAll(ln, "_res", name)
+				body = append(body, ln)
+			}
+			unwrapped = body
+			retVar = ""
+		}
+	}
 	if c.moduleScope && c.indent == 1 {
 		// declare at module scope
 		if needType && typStr != "" {
@@ -574,16 +593,18 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		} else {
 			c.globals[name] = fmt.Sprintf("let %s", name)
 		}
-		if len(unwrapped) > 0 && retVar != "" {
+		if len(unwrapped) > 0 {
 			for _, ln := range unwrapped {
 				c.writeln(ln)
 			}
-			c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+			if retVar != "" {
+				c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+			}
 		} else {
 			c.writeln(fmt.Sprintf("%s = %s", name, value))
 		}
 	} else {
-		if len(unwrapped) > 0 && retVar != "" {
+		if len(unwrapped) > 0 {
 			if needType && typStr != "" {
 				c.writeln(fmt.Sprintf("let %s: %s", name, typStr))
 			} else {
@@ -592,7 +613,9 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 			for _, ln := range unwrapped {
 				c.writeln(ln)
 			}
-			c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+			if retVar != "" {
+				c.writeln(fmt.Sprintf("%s = %s", name, retVar))
+			}
 		} else {
 			if needType && typStr != "" {
 				c.writeln(fmt.Sprintf("let %s: %s = %s", name, typStr, value))

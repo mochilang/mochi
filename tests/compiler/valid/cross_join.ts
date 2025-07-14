@@ -52,11 +52,10 @@ function main(): void {
       total: 300,
     },
   ];
-  const _src = orders;
-  const _res = [];
-  for (const o of _src) {
+  result = [];
+  for (const o of orders) {
     for (const c of customers) {
-      _res.push({
+      result.push({
         orderId: o.id,
         orderCustomerId: o.customerId,
         pairedCustomerName: c.name,
@@ -64,7 +63,6 @@ function main(): void {
       });
     }
   }
-  result = _res;
   console.log("--- Cross Join: All order-customer pairs ---");
   for (const entry of result) {
     console.log(
