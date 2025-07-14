@@ -394,6 +394,16 @@ func (c *Compiler) castExpr(expr string, from, to types.Type) string {
 			if equalTypes(fl.Elem, tl.Elem) {
 				return fmt.Sprintf("%s(%s)", toGo, expr)
 			}
+			if _, ok := tl.Elem.(types.AnyType); ok {
+				// converting to []any only needs a simple copy
+				convPrefix := "_toAnySlice("
+				normExpr := strings.ReplaceAll(strings.TrimSpace(expr), " ", "")
+				if strings.HasPrefix(normExpr, convPrefix) {
+					return expr
+				}
+				c.use("_toAnySlice")
+				return fmt.Sprintf("_toAnySlice(%s)", expr)
+			}
 			convPrefix := fmt.Sprintf("_convSlice[%s,%s](", goType(fl.Elem), goType(tl.Elem))
 			// Allow optional spaces inside the generic parameters to avoid
 			// accidentally wrapping the same conversion multiple times.
