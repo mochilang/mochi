@@ -108,8 +108,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 	// ensure inferred struct types are emitted
 	if c.env != nil {
-		// reset set to avoid skipping structs inferred during global decls
-		c.structs = make(map[string]bool)
 		for _, st := range c.env.Structs() {
 			c.compileStructType(st)
 		}
@@ -1163,6 +1161,10 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 		return nil
 	}
 	c.structs[name] = true
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = c.decls
+	c.indent = 0
 	if len(t.Variants) > 0 {
 		iface := fmt.Sprintf("type %s interface { is%s() }", name, name)
 		c.writeln(iface)
@@ -1201,6 +1203,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 				c.env.SetUnion(t.Name, ut)
 			}
 		}
+		c.buf = oldBuf
+		c.indent = oldIndent
 		return nil
 	}
 	c.writeln(fmt.Sprintf("type %s struct {", name))
@@ -1226,6 +1230,8 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			}
 		}
 	}
+	c.buf = oldBuf
+	c.indent = oldIndent
 	return nil
 }
 
