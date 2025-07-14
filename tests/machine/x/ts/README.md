@@ -9,6 +9,8 @@ Compiled: 100/100 programs
 ### TPC-H
 - [x] q1.mochi
 
+Regenerated group_by_join.ts with idiomatic loops.
+
 ## Next Steps
 - [ ] Compile remaining TPC-H queries (q2–q22)
 - [ ] Improve generated code readability to align with human references
