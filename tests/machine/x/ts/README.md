@@ -108,3 +108,8 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
+## Remaining Tasks
+
+- [ ] Refine formatting for readability
+- [ ] Expand idiomatic patterns for more query shapes
