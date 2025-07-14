@@ -4219,7 +4219,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.env != nil {
 			for _, a := range call.Args {
 				t := c.inferExprType(a)
-				if isMap(t) || (isList(t) && !(isTypedSimpleList(t) || isStructList(t))) || (isAny(t) && isListOrMapExpr(a)) {
+				if isMap(t) || isList(t) || (isAny(t) && isListOrMapExpr(a)) {
 					simple = false
 					break
 				}
@@ -4228,8 +4228,17 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if simple {
 			return fmt.Sprintf("fmt.Println(%s)", strings.Join(args, ", ")), nil
 		}
-		c.use("_print")
-		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
+		c.imports["strings"] = true
+		parts := make([]string, len(args))
+		for i, a := range call.Args {
+			at := c.inferExprType(a)
+			if isList(at) || (isAny(at) && isListOrMapExpr(a)) {
+				parts[i] = fmt.Sprintf("strings.Trim(strings.Trim(fmt.Sprint(%s), \"[]\"), \" \" )", args[i])
+			} else {
+				parts[i] = fmt.Sprintf("fmt.Sprint(%s)", args[i])
+			}
+		}
+		return fmt.Sprintf("fmt.Println(strings.TrimSpace(strings.Join([]string{%s}, \" \")))", strings.Join(parts, ", ")), nil
 	case "str":
 		c.imports["fmt"] = true
 		return fmt.Sprintf("fmt.Sprint(%s)", argStr), nil

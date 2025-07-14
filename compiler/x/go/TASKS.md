@@ -18,6 +18,8 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-14 07:19 - Removed `_print` helper usage; inline fmt.Println with string trimming for typed lists
+- 2025-07-14 07:05 - Reverted fmt.Println optimisation for typed lists to match VM output
 - 2025-07-14 06:18 - Added helper `isPlainAnyList` for future printing logic
 - 2025-07-14 05:56 - Used `_toAnySlice` when converting to `[]any` and simplified print detection
 - 2025-07-14 04:23 - Injected fallback struct generation to match human left join output
