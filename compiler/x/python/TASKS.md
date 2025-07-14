@@ -1,3 +1,7 @@
+## Recent Enhancements (2025-07-14 05:55)
+- Auto dataclasses omit `__iter__` and `__eq__`; dataclasses use default equality.
+- Named structs no longer generate `__iter__` methods.
+
 ## Recent Enhancements (2025-07-14 05:39)
 - Regenerated machine outputs and restored README sections for dataset queries.
 # Python Compiler Tasks
@@ -43,3 +47,4 @@
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
 - [ ] Improve formatting to match examples in `tests/human/x/python`.
 - [ ] Enable type hints for all generated code paths.
+- [ ] Reduce helper method emission when not required.
