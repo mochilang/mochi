@@ -19,6 +19,9 @@
 - Added specialized output for `group_by_join.mochi` with idiomatic loops.
 - Regenerated `q1.ts` from the TPC-H suite.
 
+### 2025-07-14 02:58 UTC
+- Regenerated q1.ts and group_by_join.ts with latest compiler improvements.
+
 ## Remaining Enhancements
 - [x] Compile the rest of the TPC-H queries
 - [ ] Refine generated code formatting for readability
