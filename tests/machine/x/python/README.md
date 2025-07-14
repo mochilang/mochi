@@ -105,10 +105,10 @@ Compiled programs: 100/100 successful.
 - [x] while_loop.mochi
 
 ## TPCH Progress
-- [x] q1.mochi regenerated with dataclasses and attribute access
-- [x] cross_join.mochi regenerated with multi-line list formatting
+- [x] q1.mochi regenerated with dataclasses
 - [ ] q2.mochi through q22.mochi
 
 ## Remaining Tasks
-- [ ] Review generated code style for closer match to `tests/human/x/python`
-- [ ] Compile and verify additional TPCH queries
+- [ ] Review generated code style against tests/human/x/python
+- [ ] Compile more TPCH queries
+

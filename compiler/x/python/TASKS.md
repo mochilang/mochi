@@ -17,6 +17,9 @@
 ## Recent Enhancements (2025-07-14 01:42)
 - List literals with complex elements now use multi-line formatting.
 - `cross_join.mochi` output aligns with human reference style.
+## Recent Enhancements (2025-07-14 02:10)
+- Query results with map literals emit dataclasses and update parent scope.
+- `cross_join.mochi` uses attribute access and typed result list.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.
