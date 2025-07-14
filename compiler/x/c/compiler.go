@@ -61,34 +61,35 @@ type captureInfo struct {
 }
 
 type Compiler struct {
-	structLits     map[*parser.MapLiteral]types.StructType
-	buf            bytes.Buffer
-	indent         int
-	tmp            int
-	env            *types.Env
-	lambdas        []string
-	needs          map[string]bool
-	externs        []string
-	externObjects  []string
-	structs        map[string]bool
-	listStructs    map[string]bool
-	fetchStructs   map[string]bool
-	currentStruct  string
-	autoType       bool
-	captures       map[string]captureInfo
-	capturesByFun  map[string][]string
-	uninitVars     map[string]bool
-	pointerVars    map[string]bool
-	groupKeys      map[string]types.Type
-	builtinAliases map[string]string
-	needMath       bool
-	listLens       map[string]int
-	listVals       map[string][]int
-	stackArrays    map[string]bool
-	arrayLens      map[string]string
-	assignVar      string
-	baseDir        string
-	allocs         []string
+	structLits       map[*parser.MapLiteral]types.StructType
+	buf              bytes.Buffer
+	indent           int
+	tmp              int
+	env              *types.Env
+	lambdas          []string
+	needs            map[string]bool
+	externs          []string
+	externObjects    []string
+	structs          map[string]bool
+	listStructs      map[string]bool
+	fetchStructs     map[string]bool
+	currentStruct    string
+	autoType         bool
+	captures         map[string]captureInfo
+	capturesByFun    map[string][]string
+	uninitVars       map[string]bool
+	pointerVars      map[string]bool
+	groupKeys        map[string]types.Type
+	builtinAliases   map[string]string
+	needMath         bool
+	listLens         map[string]int
+	listVals         map[string][]int
+	stackArrays      map[string]bool
+	arrayLens        map[string]string
+	assignVar        string
+	baseDir          string
+	allocs           []string
+	equalListStructs map[string]bool
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -103,26 +104,27 @@ func (c *Compiler) popPointerVars(old map[string]bool) {
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
-		env:            env,
-		structLits:     map[*parser.MapLiteral]types.StructType{},
-		lambdas:        []string{},
-		needs:          map[string]bool{},
-		structs:        map[string]bool{},
-		listStructs:    map[string]bool{},
-		fetchStructs:   map[string]bool{},
-		externObjects:  []string{},
-		captures:       map[string]captureInfo{},
-		capturesByFun:  map[string][]string{},
-		uninitVars:     map[string]bool{},
-		pointerVars:    map[string]bool{},
-		groupKeys:      map[string]types.Type{},
-		builtinAliases: map[string]string{},
-		listLens:       map[string]int{},
-		listVals:       map[string][]int{},
-		stackArrays:    map[string]bool{},
-		arrayLens:      map[string]string{},
-		baseDir:        "",
-		allocs:         []string{},
+		env:              env,
+		structLits:       map[*parser.MapLiteral]types.StructType{},
+		lambdas:          []string{},
+		needs:            map[string]bool{},
+		structs:          map[string]bool{},
+		listStructs:      map[string]bool{},
+		fetchStructs:     map[string]bool{},
+		externObjects:    []string{},
+		captures:         map[string]captureInfo{},
+		capturesByFun:    map[string][]string{},
+		uninitVars:       map[string]bool{},
+		pointerVars:      map[string]bool{},
+		groupKeys:        map[string]types.Type{},
+		builtinAliases:   map[string]string{},
+		listLens:         map[string]int{},
+		listVals:         map[string][]int{},
+		stackArrays:      map[string]bool{},
+		arrayLens:        map[string]string{},
+		baseDir:          "",
+		allocs:           []string{},
+		equalListStructs: map[string]bool{},
 	}
 }
 
@@ -920,6 +922,36 @@ func (c *Compiler) emitFetchStructFunc(st types.StructType) string {
 	c.lambdas = append(c.lambdas, c.buf.String())
 	c.buf = oldBuf
 	c.indent = oldIndent
+	return name
+}
+
+func (c *Compiler) emitEqualListStructFunc(st types.StructType) string {
+	name := "_equal_list_" + sanitizeName(st.Name)
+	if c.equalListStructs[name] {
+		return name
+	}
+	c.equalListStructs[name] = true
+	oldBuf := c.buf
+	oldIndent := c.indent
+	c.buf = bytes.Buffer{}
+	c.indent = 0
+	listName := sanitizeListName(st.Name)
+	structName := sanitizeTypeName(st.Name)
+	c.writeln(fmt.Sprintf("static int %s(%s a, %s b){", name, listName, listName))
+	c.indent++
+	c.writeln("if (a.len != b.len) return 0;")
+	c.writeln("for(int i=0;i<a.len;i++){")
+	c.indent++
+	c.writeln(fmt.Sprintf("if (memcmp(&a.data[i], &b.data[i], sizeof(%s)) != 0) return 0;", structName))
+	c.indent--
+	c.writeln("}")
+	c.writeln("return 1;")
+	c.indent--
+	c.writeln("}")
+	c.lambdas = append(c.lambdas, c.buf.String())
+	c.buf = oldBuf
+	c.indent = oldIndent
+	c.need(needStringHeader)
 	return name
 }
 

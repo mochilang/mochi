@@ -2170,9 +2170,36 @@ func checkQueryExpr(q *parser.QueryExpr, env *Env, expected Type) (Type, error) 
 
 	var selT Type
 	if q.Group != nil {
-		keyT, err := checkExpr(q.Group.Exprs[0], child)
-		if err != nil {
-			return nil, err
+		var keyT Type
+		if len(q.Group.Exprs) == 1 {
+			var err error
+			keyT, err = checkExpr(q.Group.Exprs[0], child)
+			if err != nil {
+				return nil, err
+			}
+		} else if len(q.Group.Exprs) == 2 {
+			k1, err := checkExpr(q.Group.Exprs[0], child)
+			if err != nil {
+				return nil, err
+			}
+			k2, err := checkExpr(q.Group.Exprs[1], child)
+			if err != nil {
+				return nil, err
+			}
+			if _, ok := k1.(StringType); ok {
+				if _, ok2 := k2.(StringType); ok2 {
+					keyT = StructType{Name: "pair_string", Fields: map[string]Type{"a": StringType{}, "b": StringType{}}, Order: []string{"a", "b"}}
+				}
+			}
+			if keyT == nil {
+				keyT = AnyType{}
+			}
+		} else {
+			var err error
+			keyT, err = checkExpr(q.Group.Exprs[0], child)
+			if err != nil {
+				return nil, err
+			}
 		}
 		genv := NewEnv(child)
 		gStruct := GroupType{Key: keyT, Elem: elemT}
