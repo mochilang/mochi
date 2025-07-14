@@ -857,7 +857,7 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		c.buf = bytes.Buffer{}
 		c.indent = 0
 		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
-		c.writeln(fmt.Sprintf("static %s %s(int len) {", listName, createListFuncName(st.Name)))
+		c.writeln(fmt.Sprintf("%s %s(int len) {", listName, createListFuncName(st.Name)))
 		c.indent++
 		c.writeln(fmt.Sprintf("%s l;", listName))
 		c.writeln("l.len = len;")
@@ -872,7 +872,7 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		return
 	}
 	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
-	c.writeln(fmt.Sprintf("static %s %s(int len) {", listName, createListFuncName(st.Name)))
+	c.writeln(fmt.Sprintf("%s %s(int len) {", listName, createListFuncName(st.Name)))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s l;", listName))
 	c.writeln("l.len = len;")
@@ -4755,46 +4755,48 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				}
 			}
 			if simple {
-				c.writeln("{")
-				c.indent++
-				c.writeln("int first = 1;")
+				var fmtParts []string
+				var params []string
 				for _, a := range p.Call.Args {
-					argExpr := c.compileExpr(a)
-					if isBoolArg(a, c.env) {
-						c.writeln("if(!first) printf(\" \");")
-						c.writeln(fmt.Sprintf("printf(\"%s\", (%s)?\"true\":\"false\");", "%s", argExpr))
-						c.writeln("first = 0;")
-					} else {
-						fmtStr := "%d"
-						if isStringArg(a, c.env) {
-							fmtStr = "%s"
-						} else if isFloatArg(a, c.env) {
-							fmtStr = "%.17g"
-						} else if name, okn := identName(a); okn && c.env != nil {
-							if vt, err := c.env.GetVar(name); err == nil {
-								if _, okf := vt.(types.FloatType); okf {
-									fmtStr = "%.17g"
-								}
+					if typ, val, ok := constLiteralTypeVal(a); ok && typ == "char*" {
+						if len(fmtParts) > 0 {
+							fmtParts = append(fmtParts, " ")
+						}
+						unq := strings.Trim(val, "\"")
+						fmtParts = append(fmtParts, escapeCString(unq))
+						continue
+					}
+					if len(fmtParts) > 0 {
+						fmtParts = append(fmtParts, " ")
+					}
+					fmtStr := "%d"
+					if isStringArg(a, c.env) {
+						fmtStr = "%s"
+					} else if isFloatArg(a, c.env) {
+						fmtStr = "%.17g"
+					} else if name, okn := identName(a); okn && c.env != nil {
+						if vt, err := c.env.GetVar(name); err == nil {
+							if _, okf := vt.(types.FloatType); okf {
+								fmtStr = "%.17g"
 							}
-						} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(argExpr) {
-							fmtStr = "%.17g"
 						}
-						if isStringArg(a, c.env) {
-							c.need(needStringHeader)
-							cond := fmt.Sprintf("strlen(%s) > 0", argExpr)
-							c.writeln(fmt.Sprintf("if(!first && %s) printf(\" \");", cond))
-							c.writeln(fmt.Sprintf("if(%s) printf(\"%s\", %s);", cond, fmtStr, argExpr))
-							c.writeln(fmt.Sprintf("if(%s) first = 0;", cond))
-						} else {
-							c.writeln("if(!first) printf(\" \");")
-							c.writeln(fmt.Sprintf("printf(\"%s\", %s);", fmtStr, argExpr))
-							c.writeln("first = 0;")
-						}
+					} else if _, ok := constFloatValue(a); ok || looksLikeFloatConst(c.compileExpr(a)) {
+						fmtStr = "%.17g"
+					}
+					fmtParts = append(fmtParts, fmtStr)
+					if isBoolArg(a, c.env) {
+						params = append(params, fmt.Sprintf("(%s)?\"true\":\"false\"", c.compileExpr(a)))
+					} else {
+						params = append(params, c.compileExpr(a))
 					}
 				}
-				c.writeln("printf(\"\\n\");")
-				c.indent--
-				c.writeln("}")
+				fmtParts = append(fmtParts, "\n")
+				format := strings.Join(fmtParts, "")
+				if len(params) > 0 {
+					c.writeln(fmt.Sprintf("printf(\"%s\", %s);", format, strings.Join(params, ", ")))
+				} else {
+					c.writeln(fmt.Sprintf("printf(\"%s\");", format))
+				}
 				return ""
 			}
 			for i, a := range p.Call.Args {
