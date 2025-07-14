@@ -8,6 +8,9 @@
 - Dataclasses now use concrete field types and omit `__getitem__` helpers.
 - Result records are emitted as dataclasses instead of plain dicts.
 - Print calls with multiple arguments emit a single f-string for clarity.
+## Recent Enhancements (2025-07-13 19:29)
+- Auto-struct lists update environment types so dataset queries use attribute access.
+- `tpc-h/q1.mochi` runs with generated dataclasses using dot notation.
 
 ## Remaining Work
 - [x] Extend dataset query support for `tpc-h` queries beyond `q1`.

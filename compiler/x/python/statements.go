@@ -255,17 +255,15 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 		}
 	}
 	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if typ != nil {
-				t = typ
-			} else if s.Value != nil {
+		t := typ
+		if t == nil {
+			if s.Value != nil {
 				t = c.inferExprType(s.Value)
 			} else {
 				t = types.AnyType{}
 			}
-			c.env.SetVar(s.Name, t, false)
 		}
+		c.env.SetVar(s.Name, t, false)
 	}
 	explicit := s.Type != nil
 	useAnn := c.typeHints && typ != nil && !isAny(typ)
@@ -339,17 +337,15 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 		}
 	}
 	if c.env != nil {
-		t, err := c.env.GetVar(s.Name)
-		if err != nil {
-			if typ != nil {
-				t = typ
-			} else if s.Value != nil {
+		t := typ
+		if t == nil {
+			if s.Value != nil {
 				t = c.inferExprType(s.Value)
 			} else {
 				t = types.AnyType{}
 			}
-			c.env.SetVar(s.Name, t, true)
 		}
+		c.env.SetVar(s.Name, t, true)
 	}
 	if s.Type != nil {
 		typStr := pyType(c.namedType(c.resolveTypeRef(s.Type)))
