@@ -35,6 +35,7 @@ type Compiler struct {
 	autoStructs        map[string]types.StructType
 	structKeys         map[string]string
 	autoCount          int
+	queryStructs       map[*parser.QueryExpr]types.StructType
 	typeHints          bool
 	autoStructsEnabled bool
 }
@@ -55,6 +56,7 @@ func New(env *types.Env) *Compiler {
 		autoStructs:        make(map[string]types.StructType),
 		structKeys:         make(map[string]string),
 		autoCount:          0,
+		queryStructs:       make(map[*parser.QueryExpr]types.StructType),
 		typeHints:          true,
 		autoStructsEnabled: true,
 	}
@@ -143,6 +145,9 @@ func (c *Compiler) ensureStructName(st types.StructType) types.StructType {
 	key := structKey(st)
 	if name, ok := c.structKeys[key]; ok {
 		st.Name = name
+		if c.env != nil {
+			c.env.SetStruct(name, st)
+		}
 		return st
 	}
 	c.autoCount++
@@ -208,6 +213,7 @@ func (c *Compiler) emitAutoStructs() {
 
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
+	c.queryStructs = make(map[*parser.QueryExpr]types.StructType)
 
 	// Collect Python imports first so they can be emitted at the top.
 	c.collectImports(prog.Statements)
@@ -1257,8 +1263,6 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	// check if this literal represents a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	if st, ok := c.inferExprType(expr).(types.StructType); ok {
-		// Emit dataclasses even for anonymous struct literals so that
-		// query results produce structured records.
 		st = c.ensureStructName(st)
 		fields := make([]string, len(m.Items))
 		for i, it := range m.Items {
@@ -1270,6 +1274,32 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 			fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
 		}
 		return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+	}
+	// treat as struct when all keys are identifiers even if type inference produced a map
+	keys := make([]string, len(m.Items))
+	okStruct := true
+	fields := make(map[string]types.Type, len(m.Items))
+	for i, it := range m.Items {
+		name, ok := identName(it.Key)
+		if !ok {
+			okStruct = false
+			break
+		}
+		keys[i] = name
+		fields[name] = c.inferExprType(it.Value)
+	}
+	if okStruct {
+		st := types.StructType{Fields: fields, Order: keys}
+		st = c.ensureStructName(st)
+		parts := make([]string, len(m.Items))
+		for i, it := range m.Items {
+			val, err := c.compileExpr(it.Value)
+			if err != nil {
+				return "", err
+			}
+			parts[i] = fmt.Sprintf("%s=%s", sanitizeName(keys[i]), val)
+		}
+		return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(parts, ", ")), nil
 	}
 
 	items := make([]string, len(m.Items))
@@ -1417,6 +1447,25 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if err != nil {
 		c.env = orig
 		return "", err
+	}
+	if ml := q.Select.Binary.Left.Value.Target.Map; ml != nil && len(q.Select.Binary.Right) == 0 {
+		keys := make([]string, len(ml.Items))
+		fields := make(map[string]types.Type, len(ml.Items))
+		okStruct := true
+		for i, it := range ml.Items {
+			name, ok := identName(it.Key)
+			if !ok {
+				okStruct = false
+				break
+			}
+			keys[i] = name
+			fields[name] = c.inferExprType(it.Value)
+		}
+		if okStruct {
+			st := types.StructType{Fields: fields, Order: keys}
+			st = c.ensureStructName(st)
+			c.queryStructs[q] = st
+		}
 	}
 
 	if q.Group != nil {
