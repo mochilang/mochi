@@ -2312,38 +2312,26 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				ok = true
 			}
 		}
-		if ok && len(p.Struct.Fields) == len(st.Order) {
-			pos := true
+		if ok {
 			for i, f := range p.Struct.Fields {
-				if f.Name != st.Order[i] {
-					pos = false
-					break
-				}
-			}
-			if pos {
-				for i, f := range p.Struct.Fields {
-					v, err := c.compileExprHint(f.Value, st.Fields[f.Name])
-					if err != nil {
-						return "", err
-					}
-					parts[i] = v
-				}
-				c.compileStructType(st)
-				return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
-			}
-		}
-		for i, f := range p.Struct.Fields {
-			var v string
-			var err error
-			if ok {
-				if ft, ok2 := st.Fields[f.Name]; ok2 {
+				ft, ok2 := st.Fields[f.Name]
+				var v string
+				var err error
+				if ok2 {
 					v, err = c.compileExprHint(f.Value, ft)
 				} else {
 					v, err = c.compileExpr(f.Value)
 				}
-			} else {
-				v, err = c.compileExpr(f.Value)
+				if err != nil {
+					return "", err
+				}
+				parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(f.Name)), v)
 			}
+			c.compileStructType(st)
+			return fmt.Sprintf("%s{%s}", sanitizeName(p.Struct.Name), strings.Join(parts, ", ")), nil
+		}
+		for i, f := range p.Struct.Fields {
+			v, err := c.compileExpr(f.Value)
 			if err != nil {
 				return "", err
 			}
@@ -3994,23 +3982,19 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 			if ml := e.Binary.Left.Value.Target.Map; ml != nil {
 				parts := make([]string, len(ml.Items))
 				if len(ml.Items) == len(st.Order) {
-					pos := true
 					for i, item := range ml.Items {
 						key, ok2 := simpleStringKey(item.Key)
 						if !ok2 || key != st.Order[i] {
-							pos = false
 							break
 						}
-					}
-					if pos {
-						for i, item := range ml.Items {
-							ft := st.Fields[st.Order[i]]
-							v, err := c.compileExprHint(item.Value, ft)
-							if err != nil {
-								return "", err
-							}
-							parts[i] = v
+						ft := st.Fields[key]
+						v, err := c.compileExprHint(item.Value, ft)
+						if err != nil {
+							return "", err
 						}
+						parts[i] = fmt.Sprintf("%s: %s", exportName(sanitizeName(key)), v)
+					}
+					if len(parts) == len(ml.Items) {
 						c.compileStructType(st)
 						return fmt.Sprintf("%s{%s}", sanitizeName(st.Name), joinItems(parts, c.indent, 1)), nil
 					}
