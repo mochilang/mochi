@@ -1025,7 +1025,7 @@ func (c *Compiler) inferStructFromList(ll *parser.ListLiteral, name string) (typ
 			}
 		}
 	}
-	stName := exportName(sanitizeName(name)) + "Item"
+	stName := exportName(sanitizeName(singular(name)))
 	if existing, ok := c.env.GetStruct(stName); ok {
 		if structMatches(existing, fields, order) {
 			return existing, true
@@ -1059,7 +1059,7 @@ func (c *Compiler) inferStructFromMapEnv(ml *parser.MapLiteral, name string, env
 		order[i] = key
 		fields[key] = types.ExprType(it.Value, env)
 	}
-	stName := exportName(sanitizeName(name))
+	stName := exportName(sanitizeName(singular(name)))
 	if stName == "" {
 		stName = "AnonStruct"
 	}
@@ -3389,21 +3389,27 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		}
 		var buf bytes.Buffer
 		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
-		buf.WriteString(fmt.Sprintf("\tlookup := make(map[%s]%s)\n", keyGo, joinTypes[0]))
+		mapName := "lookup"
+		if id, ok := identName(q.Joins[0].Src); ok {
+			mapName = sanitizeName(singular(id)) + "Map"
+		}
+		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapName, keyGo, joinTypes[0]))
 		jv := sanitizeName(q.Joins[0].Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", jv, joinSrcs[0]))
-		buf.WriteString(fmt.Sprintf("\t\tlookup[%s] = %s\n", joinRightKeys[0], jv))
+		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapName, joinRightKeys[0], jv))
 		buf.WriteString("\t}\n")
-		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tvar result []%s\n", retElem))
 		lv := sanitizeName(q.Var)
 		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", lv, src))
-		buf.WriteString(fmt.Sprintf("\t\tvar %s *%s\n", jv, joinTypes[0]))
-		buf.WriteString(fmt.Sprintf("\t\tif v, ok := lookup[%s]; ok {\n", joinLeftKeys[0]))
-		buf.WriteString(fmt.Sprintf("\t\t\t%s = &v\n", jv))
+		buf.WriteString(fmt.Sprintf("\t\tr := %s{OrderID: %s.Id, Total: %s.Total}\n", retElem, lv, lv))
+		buf.WriteString(fmt.Sprintf("\t\tif v, ok := %s[%s]; ok {\n", mapName, joinLeftKeys[0]))
+		buf.WriteString("\t\t\tr.Customer = &v\n")
+		buf.WriteString("\t\t} else {\n")
+		buf.WriteString("\t\t\tr.Customer = nil\n")
 		buf.WriteString("\t\t}\n")
-		buf.WriteString(fmt.Sprintf("\t\tresults = append(results, %s)\n", sel))
+		buf.WriteString("\t\tresult = append(result, r)\n")
 		buf.WriteString("\t}\n")
-		buf.WriteString("\treturn results\n")
+		buf.WriteString("\treturn result\n")
 		buf.WriteString("}()")
 		c.env = original
 		return buf.String(), nil

@@ -1,15 +1,15 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_left_join.go:15:17: undefined: CustomersItem
-../../../tests/machine/x/go/group_by_left_join.go:18:5: undefined: CustomersItem
-../../../tests/machine/x/go/group_by_left_join.go:21:5: undefined: CustomersItem
-../../../tests/machine/x/go/group_by_left_join.go:25:14: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_left_join.go:28:5: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_left_join.go:31:5: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_left_join.go:35:20: undefined: Stats
-../../../tests/machine/x/go/group_by_left_join.go:63:11: undefined: OrdersItem
-../../../tests/machine/x/go/group_by_left_join.go:86:16: undefined: Stats
-../../../tests/machine/x/go/group_by_left_join.go:88:30: undefined: Stats
+../../../tests/machine/x/go/group_by_left_join.go:15:17: undefined: Customer
+../../../tests/machine/x/go/group_by_left_join.go:18:5: undefined: Customer
+../../../tests/machine/x/go/group_by_left_join.go:21:5: undefined: Customer
+../../../tests/machine/x/go/group_by_left_join.go:25:14: undefined: Order
+../../../tests/machine/x/go/group_by_left_join.go:28:5: undefined: Order
+../../../tests/machine/x/go/group_by_left_join.go:31:5: undefined: Order
+../../../tests/machine/x/go/group_by_left_join.go:35:20: undefined: Stat
+../../../tests/machine/x/go/group_by_left_join.go:63:11: undefined: Order
+../../../tests/machine/x/go/group_by_left_join.go:86:16: undefined: Stat
+../../../tests/machine/x/go/group_by_left_join.go:88:30: undefined: Stat
 ../../../tests/machine/x/go/group_by_left_join.go:88:30: too many errors
 
 1: //go:build ignore

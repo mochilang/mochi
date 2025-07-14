@@ -1,15 +1,15 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/group_by_having.go:12:14: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:13:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:17:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:21:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:25:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:29:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:33:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:37:3: undefined: PeopleItem
-../../../tests/machine/x/go/group_by_having.go:42:18: undefined: Big
-../../../tests/machine/x/go/group_by_having.go:56:16: undefined: Big
-../../../tests/machine/x/go/group_by_having.go:56:16: too many errors
+../../../tests/machine/x/go/group_by_having.go:14:14: undefined: People
+../../../tests/machine/x/go/group_by_having.go:15:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:19:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:23:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:27:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:31:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:35:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:39:3: undefined: People
+../../../tests/machine/x/go/group_by_having.go:44:18: undefined: Big
+../../../tests/machine/x/go/group_by_having.go:58:16: undefined: Big
+../../../tests/machine/x/go/group_by_having.go:58:16: too many errors
 
 1: //go:build ignore
