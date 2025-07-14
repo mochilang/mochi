@@ -2519,7 +2519,6 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\tconst _src = " + src + ";\n")
 		if group {
 			b.WriteString("\tconst _map = new Map<string, any>();\n")
-			b.WriteString("\tconst _order: string[] = [];\n")
 		}
 		if simple && !group {
 			b.WriteString("\tconst _res = [];\n")
@@ -2633,7 +2632,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			b.WriteString(indent + "const _key = " + keyExpr + ";\n")
 			b.WriteString(indent + "const _ks = JSON.stringify(_key);\n")
 			b.WriteString(indent + "let _g = _map.get(_ks);\n")
-			b.WriteString(indent + "if (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
+			b.WriteString(indent + "if (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); }\n")
 			b.WriteString(indent + "_g.items.push({")
 			parts := []string{}
 			vars := []string{sanitizeName(q.Var)}
@@ -2676,7 +2675,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(indentStr + "}\n")
 
 		if group {
-			b.WriteString("\tlet _groups = _order.map(k => _map.get(k)!);\n")
+			b.WriteString("\tlet _groups = Array.from(_map.values());\n")
 			if havingStr != "" {
 				b.WriteString("\t_groups = _groups.filter(" + sanitizeName(q.Group.Name) + " => (" + havingStr + "));\n")
 			}
@@ -3046,13 +3045,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString(" });\n")
 		b.WriteString("\tconst _map = new Map<string, any>();\n")
-		b.WriteString("\tconst _order: string[] = [];\n")
 		b.WriteString("\tfor (const _r of _items) {\n")
 		b.WriteString("\t\tconst [" + allParams + "] = _r;\n")
 		b.WriteString("\t\tconst _key = " + keyExpr + ";\n")
 		b.WriteString("\t\tconst _ks = JSON.stringify(_key);\n")
 		b.WriteString("\t\tlet _g = _map.get(_ks);\n")
-		b.WriteString("\t\tif (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); _order.push(_ks); }\n")
+		b.WriteString("\t\tif (!_g) { _g = { key: _key, items: [] }; _map.set(_ks, _g); }\n")
 		b.WriteString("\t\t_g.items.push({")
 		parts := []string{}
 		vars := []string{sanitizeName(q.Var)}
@@ -3071,7 +3069,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString(strings.Join(parts, ", "))
 		b.WriteString("});\n")
 		b.WriteString("\t}\n")
-		b.WriteString("\tlet _itemsG = _order.map(k => _map.get(k)!);\n")
+		b.WriteString("\tlet _itemsG = Array.from(_map.values());\n")
 		if sortExpr != "" {
 			b.WriteString("\tlet _pairs = _itemsG.map(it => { const " + sanitizeName(q.Group.Name) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
 			b.WriteString("\t_pairs.sort((a, b) => {\n")

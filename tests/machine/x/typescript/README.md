@@ -14,6 +14,7 @@ Compiled: 100/100 programs
 - [ ] Improve generated code readability to align with human references
 
 ### Recent Updates
+- Removed redundant `_order` slice for grouped queries.
 - Spread operator used for `append` builtin to match human references.
 
 ## Checklist
