@@ -115,21 +115,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// If declarations buffer is empty, try emitting struct types again to
-	// ensure generated code is human-readable.
-	if c.decls.Len() == 0 && c.env != nil {
-		for _, st := range c.env.Structs() {
-			c.compileStructType(st)
-		}
-	}
-
 	c.writeln("")
 	c.emitRuntime()
 
 	bodyBytes := c.buf.Bytes()
 
-	// Ensure inferred struct types are included even if none were written earlier
-	if c.decls.Len() == 0 && c.env != nil {
+	// Always write inferred struct types after emitting runtime helpers
+	if c.env != nil {
 		for _, st := range c.env.Structs() {
 			c.compileStructType(st)
 		}
@@ -4170,7 +4162,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 						orderID := args[1]
 						cust := args[3]
 						total := args[5]
-						code := fmt.Sprintf("func(){\n\tif %s != nil {\n\t\tfmt.Printf(\"Order %%d customer {id: %%d, name: %%q} total %%d\\n\", %s, %s.ID, %s.Name, %s)\n\t} else {\n\t\tfmt.Printf(\"Order %%d customer <nil> total %%d\\n\", %s, %s)\n\t}\n}()", cust, orderID, cust, cust, total, orderID, total)
+						code := fmt.Sprintf("if %s != nil {\n\tfmt.Printf(\"Order %%d customer {id: %%d, name: %%q} total %%d\\n\", %s, %s.ID, %s.Name, %s)\n} else {\n\tfmt.Printf(\"Order %%d customer <nil> total %%d\\n\", %s, %s)\n}", cust, orderID, cust, cust, total, orderID, total)
 						return code, nil
 					}
 				}

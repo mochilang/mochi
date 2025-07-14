@@ -18,6 +18,7 @@ TPC-H progress:
   Golden code has been regenerated for all queries.
 
 ## Recent Updates
+- 2025-07-14 03:18 - Removed inline closure for left join print; always emit inferred structs
 - 2025-07-13 19:22 - Emitted struct declarations for query select results
 - 2025-07-13 19:01 - Added explicit struct types for cross join outputs and dataset examples
 
@@ -38,6 +39,7 @@ TPC-H progress:
 - 2025-07-14 01:45 - Added loop-based translation for simple left join; emits typed structs
 - 2025-07-14 02:28 - Switched left join translation to use maps for fast lookup
 - 2025-07-14 02:37 - Generated human-readable left join using map and singular struct names
+- 2025-07-14 02:53 - Added conditional printf generation for simple left join print and capitalized ID field names
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
@@ -48,4 +50,4 @@ TPC-H progress:
 * [ ] Remove helper functions prefixed with `_` from generated code
 * [ ] Improve dataset query struct inference
 * [ ] Improve singular name heuristics for inferred structs
-- 2025-07-14 02:53 - Added conditional printf generation for simple left join print and capitalized ID field names
+* [ ] Compare generated TPCH q1 with human output
