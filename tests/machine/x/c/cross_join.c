@@ -4,101 +4,73 @@
 typedef struct {
   int id;
   char *name;
-} CustomersItem;
-typedef struct {
-  int len;
-  CustomersItem *data;
-} list_CustomersItem;
-static list_CustomersItem list_CustomersItem_create(int len) {
-  list_CustomersItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(CustomersItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
+} customer_t;
 
 typedef struct {
   int id;
-  int customerId;
+  int customer_id;
   int total;
-} OrdersItem;
-typedef struct {
-  int len;
-  OrdersItem *data;
-} list_OrdersItem;
-static list_OrdersItem list_OrdersItem_create(int len) {
-  list_OrdersItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(OrdersItem));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
+} order_t;
 
 typedef struct {
-  int orderId;
-  int orderCustomerId;
-  char *pairedCustomerName;
-  int orderTotal;
-} ResultItem;
+  int order_id;
+  int order_customer_id;
+  char *paired_customer_name;
+  int order_total;
+} result_t;
+
 typedef struct {
   int len;
-  ResultItem *data;
-} list_ResultItem;
-static list_ResultItem list_ResultItem_create(int len) {
-  list_ResultItem l;
-  l.len = len;
-  l.data = calloc(len, sizeof(ResultItem));
-  if (!l.data && len > 0) {
+  result_t *data;
+} result_list_t;
+
+static result_list_t create_result_list(int len) {
+  result_list_t list;
+  list.len = len;
+  list.data = calloc(len, sizeof(result_t));
+  if (!list.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
   }
-  return l;
+  return list;
 }
 
 int main() {
-  CustomersItem tmp1_data[] = {(CustomersItem){.id = 1, .name = "Alice"},
-                               (CustomersItem){.id = 2, .name = "Bob"},
-                               (CustomersItem){.id = 3, .name = "Charlie"}};
-  list_CustomersItem tmp1 = {3, tmp1_data};
-  list_CustomersItem customers = tmp1;
-  OrdersItem tmp2_data[] = {
-      (OrdersItem){.id = 100, .customerId = 1, .total = 250},
-      (OrdersItem){.id = 101, .customerId = 2, .total = 125},
-      (OrdersItem){.id = 102, .customerId = 1, .total = 300}};
-  list_OrdersItem tmp2 = {3, tmp2_data};
-  list_OrdersItem orders = tmp2;
-  list_ResultItem tmp3 = list_ResultItem_create(orders.len * customers.len);
-  int tmp4 = 0;
-  for (int o_idx = 0; o_idx < orders.len; o_idx++) {
-    OrdersItem o = orders.data[o_idx];
-    for (int c_idx = 0; c_idx < customers.len; c_idx++) {
-      CustomersItem c = customers.data[c_idx];
-      tmp3.data[tmp4] = (ResultItem){.orderId = o.id,
-                                     .orderCustomerId = o.customerId,
-                                     .pairedCustomerName = c.name,
-                                     .orderTotal = o.total};
-      tmp4++;
+  customer_t customers[] = {
+      {1, "Alice"},
+      {2, "Bob"},
+      {3, "Charlie"},
+  };
+  int num_customers = sizeof(customers) / sizeof(customers[0]);
+
+  order_t orders[] = {
+      {100, 1, 250},
+      {101, 2, 125},
+      {102, 1, 300},
+  };
+  int num_orders = sizeof(orders) / sizeof(orders[0]);
+
+  result_list_t result = create_result_list(num_orders * num_customers);
+
+  int idx = 0;
+  for (int i = 0; i < num_orders; i++) {
+    for (int j = 0; j < num_customers; j++) {
+      result.data[idx].order_id = orders[i].id;
+      result.data[idx].order_customer_id = orders[i].customer_id;
+      result.data[idx].paired_customer_name = customers[j].name;
+      result.data[idx].order_total = orders[i].total;
+      idx++;
     }
   }
-  tmp3.len = tmp4;
-  list_ResultItem result = tmp3;
-  printf("%s\n", "--- Cross Join: All order-customer pairs ---");
-  for (int tmp5 = 0; tmp5 < result.len; tmp5++) {
-    ResultItem entry = result.data[tmp5];
-    printf("%s ", "Order");
-    printf("%d ", entry.orderId);
-    printf("%s ", "(customerId:");
-    printf("%d ", entry.orderCustomerId);
-    printf("%s ", ", total: $");
-    printf("%d ", entry.orderTotal);
-    printf("%s ", ") paired with");
-    printf("%s\n", entry.pairedCustomerName);
+
+  printf("--- Cross Join: All order-customer pairs ---\n");
+  for (int i = 0; i < result.len; i++) {
+    result_t entry = result.data[i];
+    printf("Order %d (customerId: %d, total: $%d) paired with %s\n",
+           entry.order_id, entry.order_customer_id, entry.order_total,
+           entry.paired_customer_name);
   }
+
+  free(result.data);
   return 0;
 }
