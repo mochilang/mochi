@@ -109,7 +109,7 @@ Compiled programs: 100/100
 
 ## TPCH Queries
 
-- [ ] q1 – compilation still fails (struct field types improved 2025-07-13)
+- [ ] q1 – compilation still fails (struct type resolution updated 2025-07-14)
 - [x] q4
 - [ ] q5 – compilation fails
 - [x] q6

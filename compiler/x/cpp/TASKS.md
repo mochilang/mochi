@@ -13,6 +13,8 @@
   (2025-07-13 10:12 UTC).
 - Updated `structFromVars` to refresh cached field types when more
   information becomes available (2025-07-13 10:44 UTC).
+- Fixed struct field type replacement for grouped query key structs
+  (2025-07-14 04:56 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.

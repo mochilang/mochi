@@ -126,6 +126,22 @@ func (c *Compiler) headerWriteln(s string) {
 }
 
 func (c *Compiler) defineStruct(info *structInfo) {
+	// Replace any field types that reference known variables with their
+	// underlying struct type to avoid undeclared identifiers in the
+	// generated C++ output. This is helpful when map literals are used
+	// before the variable's struct type information is fully propagated.
+	for i, t := range info.Types {
+		for v, st := range c.varStruct {
+			if st == "" {
+				continue
+			}
+			base := strings.TrimSuffix(st, "{}")
+			if strings.Contains(t, v+".") {
+				info.Types[i] = strings.ReplaceAll(t, v+".",
+					fmt.Sprintf("std::declval<%s>().", base))
+			}
+		}
+	}
 	var def strings.Builder
 	def.WriteString("struct " + info.Name + " {")
 	for i, n := range info.Fields {
