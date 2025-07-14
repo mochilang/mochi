@@ -1,36 +1,36 @@
-/tmp/q1.cpp:64:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp:64:12: error: ‘row’ was not declared in this scope
    64 |   decltype(row.l_returnflag) returnflag;
       |            ^~~
-/tmp/q1.cpp:64:12: error: ‘row’ was not declared in this scope
-/tmp/q1.cpp:65:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp:64:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp:65:12: error: ‘row’ was not declared in this scope
    65 |   decltype(row.l_linestatus) linestatus;
       |            ^~~
-/tmp/q1.cpp:65:12: error: ‘row’ was not declared in this scope
-/tmp/q1.cpp:68:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp:65:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp:68:12: error: ‘row’ was not declared in this scope
    68 |   decltype(row) row;
       |            ^~~
-/tmp/q1.cpp:68:12: error: ‘row’ was not declared in this scope
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:227:31: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+tests/machine/x/cpp/tpch_q1.cpp:68:12: error: ‘row’ was not declared in this scope
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:227:31: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
   227 |       auto __key = Result{row.l_returnflag, row.l_linestatus};
       |                           ~~~~^~~~~~~~~~~~
       |                               |
       |                               std::string {aka std::__cxx11::basic_string<char>}
-/tmp/q1.cpp:231:41: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
+tests/machine/x/cpp/tpch_q1.cpp:231:41: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
   231 |           __g.items.push_back(__struct3{row});
       |                                         ^~~
       |                                         |
       |                                         Lineitem
-/tmp/q1.cpp:238:63: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
+tests/machine/x/cpp/tpch_q1.cpp:238:63: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
   238 |             __struct4{__key, std::vector<__struct3>{__struct3{row}}});
       |                                                               ^~~
       |                                                               |
       |                                                               Lineitem
-/tmp/q1.cpp:238:67: error: no matching function for call to ‘std::vector<__struct3>::vector(<brace-enclosed initializer list>)’
+tests/machine/x/cpp/tpch_q1.cpp:238:67: error: no matching function for call to ‘std::vector<__struct3>::vector(<brace-enclosed initializer list>)’
   238 |             __struct4{__key, std::vector<__struct3>{__struct3{row}}});
       |                                                                   ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/q1.cpp:7:
+                 from tests/machine/x/cpp/tpch_q1.cpp:7:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct3; _Alloc = std::allocator<__struct3>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
@@ -79,146 +79,146 @@ In file included from /usr/include/c++/13/vector:66,
   531 |       vector() = default;
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:247:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:247:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
   247 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
       |                                                            ^~~~~~~~~~
-/tmp/q1.cpp:247:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
-/tmp/q1.cpp:247:71: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:247:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp:247:71: error: template argument 1 is invalid
   247 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
       |                                                                       ^
-/tmp/q1.cpp:247:71: error: template argument 2 is invalid
-/tmp/q1.cpp:249:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:247:71: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:249:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   249 |               __items.push_back(x.l_quantity);
       |                       ^~~~~~~~~
-/tmp/q1.cpp:249:35: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp:249:35: error: ‘struct __struct3’ has no member named ‘l_quantity’
   249 |               __items.push_back(x.l_quantity);
       |                                   ^~~~~~~~~~
-/tmp/q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/q1.cpp:246:13:   required from here
-/tmp/q1.cpp:245:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+tests/machine/x/cpp/tpch_q1.cpp:246:13:   required from here
+tests/machine/x/cpp/tpch_q1.cpp:245:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   245 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                    ~~^~~~~
-/tmp/q1.cpp:245:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:245:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   245 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:255:64: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:255:64: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   255 |                 std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
       |                                                                ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:255:64: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
-/tmp/q1.cpp:255:80: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:255:64: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:255:80: error: template argument 1 is invalid
   255 |                 std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
       |                                                                                ^
-/tmp/q1.cpp:255:80: error: template argument 2 is invalid
-/tmp/q1.cpp:258:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:255:80: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:258:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   258 |                   __items.push_back(x.l_extendedprice);
       |                           ^~~~~~~~~
-/tmp/q1.cpp:258:39: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:258:39: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   258 |                   __items.push_back(x.l_extendedprice);
       |                                       ^~~~~~~~~~~~~~~
-/tmp/q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-/tmp/q1.cpp:253:77:   required from here
-/tmp/q1.cpp:253:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+tests/machine/x/cpp/tpch_q1.cpp:253:77:   required from here
+tests/machine/x/cpp/tpch_q1.cpp:253:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   253 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                 ~~^~~~~
-/tmp/q1.cpp:253:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:253:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   253 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                            ~~^~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:265:47: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:265:47: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   265 |                     std::declval<__struct3>().l_extendedprice *
       |                                               ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:266:53: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:266:53: error: ‘struct __struct3’ has no member named ‘l_discount’
   266 |                     ((1 - std::declval<__struct3>().l_discount))))>
       |                                                     ^~~~~~~~~~
-/tmp/q1.cpp:265:47: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:265:47: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   265 |                     std::declval<__struct3>().l_extendedprice *
       |                                               ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:266:53: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:266:53: error: ‘struct __struct3’ has no member named ‘l_discount’
   266 |                     ((1 - std::declval<__struct3>().l_discount))))>
       |                                                     ^~~~~~~~~~
-/tmp/q1.cpp:266:67: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:266:67: error: template argument 1 is invalid
   266 |                     ((1 - std::declval<__struct3>().l_discount))))>
       |                                                                   ^
-/tmp/q1.cpp:266:67: error: template argument 2 is invalid
-/tmp/q1.cpp:269:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:266:67: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:269:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   269 |                   __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
       |                           ^~~~~~~~~
-/tmp/q1.cpp:269:40: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:269:40: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   269 |                   __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
       |                                        ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:269:66: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:269:66: error: ‘struct __struct3’ has no member named ‘l_discount’
   269 |                   __items.push_back((x.l_extendedprice * ((1 - x.l_discount))));
       |                                                                  ^~~~~~~~~~
-/tmp/q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
-/tmp/q1.cpp:262:77:   required from here
-/tmp/q1.cpp:262:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
+tests/machine/x/cpp/tpch_q1.cpp:262:77:   required from here
+tests/machine/x/cpp/tpch_q1.cpp:262:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   262 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                 ~~^~~~~
-/tmp/q1.cpp:262:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:262:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   262 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                            ~~^~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:277:44: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:277:44: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   277 |                 (std::declval<__struct3>().l_extendedprice *
       |                                            ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:278:50: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:278:50: error: ‘struct __struct3’ has no member named ‘l_discount’
   278 |                  ((1 - std::declval<__struct3>().l_discount))) *
       |                                                  ^~~~~~~~~~
-/tmp/q1.cpp:279:49: error: ‘struct __struct3’ has no member named ‘l_tax’
+tests/machine/x/cpp/tpch_q1.cpp:279:49: error: ‘struct __struct3’ has no member named ‘l_tax’
   279 |                 ((1 + std::declval<__struct3>().l_tax))))>
       |                                                 ^~~~~
-/tmp/q1.cpp:277:44: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:277:44: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   277 |                 (std::declval<__struct3>().l_extendedprice *
       |                                            ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:278:50: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:278:50: error: ‘struct __struct3’ has no member named ‘l_discount’
   278 |                  ((1 - std::declval<__struct3>().l_discount))) *
       |                                                  ^~~~~~~~~~
-/tmp/q1.cpp:279:49: error: ‘struct __struct3’ has no member named ‘l_tax’
+tests/machine/x/cpp/tpch_q1.cpp:279:49: error: ‘struct __struct3’ has no member named ‘l_tax’
   279 |                 ((1 + std::declval<__struct3>().l_tax))))>
       |                                                 ^~~~~
-/tmp/q1.cpp:279:58: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:279:58: error: template argument 1 is invalid
   279 |                 ((1 + std::declval<__struct3>().l_tax))))>
       |                                                          ^
-/tmp/q1.cpp:279:58: error: template argument 2 is invalid
-/tmp/q1.cpp:282:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:279:58: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:282:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   282 |               __items.push_back(((x.l_extendedprice * ((1 - x.l_discount))) *
       |                       ^~~~~~~~~
-/tmp/q1.cpp:282:37: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:282:37: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   282 |               __items.push_back(((x.l_extendedprice * ((1 - x.l_discount))) *
       |                                     ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:282:63: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:282:63: error: ‘struct __struct3’ has no member named ‘l_discount’
   282 |               __items.push_back(((x.l_extendedprice * ((1 - x.l_discount))) *
       |                                                               ^~~~~~~~~~
-/tmp/q1.cpp:283:42: error: ‘struct __struct3’ has no member named ‘l_tax’
+tests/machine/x/cpp/tpch_q1.cpp:283:42: error: ‘struct __struct3’ has no member named ‘l_tax’
   283 |                                  ((1 + x.l_tax))));
       |                                          ^~~~~
-/tmp/q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:4)> [with auto:4 = int]’:
-/tmp/q1.cpp:275:13:   required from here
-/tmp/q1.cpp:274:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:4)> [with auto:4 = int]’:
+tests/machine/x/cpp/tpch_q1.cpp:275:13:   required from here
+tests/machine/x/cpp/tpch_q1.cpp:274:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   274 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                    ~~^~~~~
-/tmp/q1.cpp:274:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:274:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   274 |             return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:288:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:288:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
   288 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
       |                                                            ^~~~~~~~~~
-/tmp/q1.cpp:288:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
-/tmp/q1.cpp:288:71: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:288:60: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp:288:71: error: template argument 1 is invalid
   288 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
       |                                                                       ^
-/tmp/q1.cpp:288:71: error: template argument 2 is invalid
-/tmp/q1.cpp:290:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:288:71: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:290:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   290 |               __items.push_back(x.l_quantity);
       |                       ^~~~~~~~~
-/tmp/q1.cpp:290:35: error: ‘struct __struct3’ has no member named ‘l_quantity’
+tests/machine/x/cpp/tpch_q1.cpp:290:35: error: ‘struct __struct3’ has no member named ‘l_quantity’
   290 |               __items.push_back(x.l_quantity);
       |                                   ^~~~~~~~~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:287:16: error: no matching function for call to ‘__avg(int)’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:287:16: error: no matching function for call to ‘__avg(int)’
   287 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   288 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
@@ -233,11 +233,11 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   293 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
    74 | template <typename T> double __avg(const std::vector<T> &v) {
       |                              ^~~~~
-/tmp/q1.cpp:74:30: note:   template argument deduction/substitution failed:
-/tmp/q1.cpp:287:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note:   template argument deduction/substitution failed:
+tests/machine/x/cpp/tpch_q1.cpp:287:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
   287 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   288 |             std::vector<decltype(std::declval<__struct3>().l_quantity)> __items;
@@ -252,23 +252,23 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   293 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:295:60: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:295:60: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   295 |             std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
       |                                                            ^~~~~~~~~~~~~~~
-/tmp/q1.cpp:295:60: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
-/tmp/q1.cpp:295:76: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:295:60: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:295:76: error: template argument 1 is invalid
   295 |             std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
       |                                                                            ^
-/tmp/q1.cpp:295:76: error: template argument 2 is invalid
-/tmp/q1.cpp:298:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:295:76: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:298:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   298 |               __items.push_back(x.l_extendedprice);
       |                       ^~~~~~~~~
-/tmp/q1.cpp:298:35: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
+tests/machine/x/cpp/tpch_q1.cpp:298:35: error: ‘struct __struct3’ has no member named ‘l_extendedprice’
   298 |               __items.push_back(x.l_extendedprice);
       |                                   ^~~~~~~~~~~~~~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:294:16: error: no matching function for call to ‘__avg(int)’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:294:16: error: no matching function for call to ‘__avg(int)’
   294 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   295 |             std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
@@ -285,11 +285,11 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   301 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
    74 | template <typename T> double __avg(const std::vector<T> &v) {
       |                              ^~~~~
-/tmp/q1.cpp:74:30: note:   template argument deduction/substitution failed:
-/tmp/q1.cpp:294:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note:   template argument deduction/substitution failed:
+tests/machine/x/cpp/tpch_q1.cpp:294:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
   294 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   295 |             std::vector<decltype(std::declval<__struct3>().l_extendedprice)>
@@ -306,23 +306,23 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   301 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:303:60: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:303:60: error: ‘struct __struct3’ has no member named ‘l_discount’
   303 |             std::vector<decltype(std::declval<__struct3>().l_discount)> __items;
       |                                                            ^~~~~~~~~~
-/tmp/q1.cpp:303:60: error: ‘struct __struct3’ has no member named ‘l_discount’
-/tmp/q1.cpp:303:71: error: template argument 1 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:303:60: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:303:71: error: template argument 1 is invalid
   303 |             std::vector<decltype(std::declval<__struct3>().l_discount)> __items;
       |                                                                       ^
-/tmp/q1.cpp:303:71: error: template argument 2 is invalid
-/tmp/q1.cpp:305:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:303:71: error: template argument 2 is invalid
+tests/machine/x/cpp/tpch_q1.cpp:305:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   305 |               __items.push_back(x.l_discount);
       |                       ^~~~~~~~~
-/tmp/q1.cpp:305:35: error: ‘struct __struct3’ has no member named ‘l_discount’
+tests/machine/x/cpp/tpch_q1.cpp:305:35: error: ‘struct __struct3’ has no member named ‘l_discount’
   305 |               __items.push_back(x.l_discount);
       |                                   ^~~~~~~~~~
-/tmp/q1.cpp: In lambda function:
-/tmp/q1.cpp:302:16: error: no matching function for call to ‘__avg(int)’
+tests/machine/x/cpp/tpch_q1.cpp: In lambda function:
+tests/machine/x/cpp/tpch_q1.cpp:302:16: error: no matching function for call to ‘__avg(int)’
   302 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   303 |             std::vector<decltype(std::declval<__struct3>().l_discount)> __items;
@@ -337,11 +337,11 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   308 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
    74 | template <typename T> double __avg(const std::vector<T> &v) {
       |                              ^~~~~
-/tmp/q1.cpp:74:30: note:   template argument deduction/substitution failed:
-/tmp/q1.cpp:302:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+tests/machine/x/cpp/tpch_q1.cpp:74:30: note:   template argument deduction/substitution failed:
+tests/machine/x/cpp/tpch_q1.cpp:302:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
   302 |           __avg(([&]() {
       |           ~~~~~^~~~~~~~~
   303 |             std::vector<decltype(std::declval<__struct3>().l_discount)> __items;
@@ -356,8 +356,8 @@ In file included from /usr/include/c++/13/vector:66,
       |             ~~~~~~~~~~~~~~~
   308 |           })()),
       |           ~~~~~ 
-/tmp/q1.cpp: In function ‘int main()’:
-/tmp/q1.cpp:312:5: error: conversion from ‘vector<__struct5>’ to non-scalar type ‘vector<__struct3>’ requested
+tests/machine/x/cpp/tpch_q1.cpp: In function ‘int main()’:
+tests/machine/x/cpp/tpch_q1.cpp:312:5: error: conversion from ‘vector<__struct5>’ to non-scalar type ‘vector<__struct3>’ requested
   222 |   std::vector<__struct3> result = ([&]() {
       |                                   ~~~~~~~~
   223 |     std::vector<__struct4> __groups;
