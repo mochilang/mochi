@@ -552,6 +552,16 @@ func primaryUsesVar(p *parser.Primary, name string) bool {
 		if exprUsesVar(p.Query.Source, name) {
 			return true
 		}
+		for _, f := range p.Query.Froms {
+			if exprUsesVar(f.Src, name) {
+				return true
+			}
+		}
+		for _, j := range p.Query.Joins {
+			if exprUsesVar(j.Src, name) || exprUsesVar(j.On, name) {
+				return true
+			}
+		}
 		if p.Query.Where != nil && exprUsesVar(p.Query.Where, name) {
 			return true
 		}
