@@ -95,6 +95,13 @@ func exportName(name string) string {
 	return string(runes)
 }
 
+func singular(name string) string {
+	if len(name) > 1 && strings.HasSuffix(name, "s") {
+		return name[:len(name)-1]
+	}
+	return name
+}
+
 func goType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType:
