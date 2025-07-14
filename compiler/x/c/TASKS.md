@@ -90,3 +90,5 @@ should compile and run successfully.
 - [ ] Serialize lists of structs to JSON for query results
 - [x] Support loading YAML files at compile time
 - [ ] Implement JSONL output helper for `save` statements
+
+- 2025-07-14 04:36 – Refactored group_by_join output to use simpler loops and static arrays.
