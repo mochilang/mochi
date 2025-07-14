@@ -136,7 +136,7 @@ func runTPCHQuery(t *testing.T, base string) {
 
 	outWant := filepath.Join(root, "tests", "dataset", "tpc-h", "out", base+".out")
 	if shouldUpdate() {
-		_ = os.WriteFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".out"), append(gotOut, '\n'))
+		_ = os.WriteFile(filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "go", base+".out"), append(gotOut, '\n'), 0o644)
 	}
 	wantOut, err := os.ReadFile(outWant)
 	if err != nil {

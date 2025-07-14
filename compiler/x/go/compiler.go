@@ -2768,12 +2768,14 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 
 	var sel string
 	var retElem string
+	var retType types.Type
 	if lt, ok := hint.(types.ListType); ok {
 		sel, err = c.compileExprHint(q.Select, lt.Elem)
 		if err != nil {
 			c.env = original
 			return "", err
 		}
+		retType = lt.Elem
 		retElem = goType(lt.Elem)
 		if retElem == "" {
 			retElem = "any"
@@ -2784,10 +2786,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			c.env = original
 			return "", err
 		}
-		retElem = goType(c.inferExprType(q.Select))
+		retType = c.inferExprType(q.Select)
+		retElem = goType(retType)
 		if retElem == "" {
 			retElem = "any"
 		}
+	}
+	if st, ok := retType.(types.StructType); ok {
+		if c.env != nil {
+			c.env.SetStruct(st.Name, st)
+		}
+		c.compileStructType(st)
 	}
 	var havingExpr string
 	if q.Group != nil && q.Group.Having != nil {
