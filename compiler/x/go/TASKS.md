@@ -43,6 +43,7 @@ TPC-H progress:
 - 2025-07-14 02:53 - Added conditional printf generation for simple left join print and capitalized ID field names
 - 2025-07-14 04:38 - Avoided duplicate struct declarations by preserving seen set
 - 2025-07-14 04:49 - Used fmt.Println for typed lists to match human output
+- 2025-07-14 05:36 - Extended fmt.Println optimisation to struct slices
 
 ## Remaining Work
 * [ ] Recompile group_by variants with struct support
@@ -54,4 +55,4 @@ TPC-H progress:
 * [ ] Improve dataset query struct inference
 * [ ] Improve singular name heuristics for inferred structs
 * [ ] Compare generated TPCH q1 with human output
-* [ ] Extend fmt.Println optimisation to struct slices
+* [x] Extend fmt.Println optimisation to struct slices
