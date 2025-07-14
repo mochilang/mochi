@@ -16,7 +16,7 @@ Checklist:
 - [x] cast_struct
 - [x] closure
 - [x] count_builtin
-- [x] cross_join (updated naming style)
+- [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
 - [x] dataset_sort_take_limit
@@ -106,14 +106,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-### Remaining tasks
-
-- [ ] group_by_join
-- [ ] group_by_left_join
-- [ ] group_by_multi_join
-- [ ] group_by_multi_join_sort
-- [ ] group_items_iteration
-- [ ] python_math
-- [ ] save_jsonl_stdout
-- [ ] tpc-h q1 grouping

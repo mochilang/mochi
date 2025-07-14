@@ -719,7 +719,7 @@ static void _save_json(list_map_string rows,const char* path){ FILE* f=(!path||p
 	helperPrintListFloat = `static void _print_list_float(list_float v) {
     for (int i = 0; i < v.len; i++) {
         if (i > 0) printf(" ");
-        printf("%g", v.data[i]);
+        printf("%.17g", v.data[i]);
     }
 }`
 	helperPrintListString = `static void _print_list_string(list_string v) {

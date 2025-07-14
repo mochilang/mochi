@@ -7,6 +7,7 @@ Initial work added support for generating C structs and list helpers when a prog
 
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
 - 2025-08-23 10:20 – Fixed relative path resolution in `compileLoadExpr` so `load_yaml.mochi` compiles.
+- 2025-08-30 04:30 – Updated float list printing to use `%.17g` for improved precision.
 - 2025-08-24 11:00 – Updated cross join code generation to use snake_case struct list helpers via `createListFuncName`.
 - 2025-07-14 01:50 – Added singular struct naming for cleaner C output.
 - 2025-07-14 01:29 – Added free-list tracking so cross join results are freed.
