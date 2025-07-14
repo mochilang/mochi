@@ -4791,7 +4791,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 					}
 				}
 				fmtParts = append(fmtParts, "\n")
-				format := strings.Join(fmtParts, "")
+				format := escapeCString(strings.Join(fmtParts, ""))
 				if len(params) > 0 {
 					c.writeln(fmt.Sprintf("printf(\"%s\", %s);", format, strings.Join(params, ", ")))
 				} else {
@@ -4826,7 +4826,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 						c.writeln(fmt.Sprintf("for (int %s=0; %s<%d; %s++) {", loop, loop, l, loop))
 						c.indent++
 						c.writeln(fmt.Sprintf("if(%s>0) printf(\" \");", loop))
-						c.writeln(fmt.Sprintf("printf(\"%s\", %s[%s]);", "%d", argExpr, loop))
+						c.writeln(fmt.Sprintf("printf(\"%s\", %s);", "%d", c.listItemExpr(argExpr, loop)))
 						c.indent--
 						c.writeln("}")
 						if i == len(p.Call.Args)-1 {
@@ -6623,10 +6623,7 @@ func constLiteralTypeVal(e *parser.Expr) (typ, val string, ok bool) {
 	case lit.Int != nil:
 		return "int", strconv.Itoa(*lit.Int), true
 	case lit.Float != nil:
-		s := strconv.FormatFloat(*lit.Float, 'f', -1, 64)
-		if !strings.ContainsAny(s, ".eE") {
-			s += ".0"
-		}
+		s := strconv.FormatFloat(*lit.Float, 'g', -1, 64)
 		return "double", s, true
 	case lit.Bool != nil:
 		if bool(*lit.Bool) {

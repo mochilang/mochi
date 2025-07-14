@@ -4,6 +4,7 @@ The current C backend cannot compile dataset queries that use grouping. The impl
 Initial work added support for generating C structs and list helpers when a program contains a list of map literals. This allows datasets like `lineitem` in Q1 to be represented as native structs.
 
 ## Progress log
+- 2025-07-14 03:05 – Escaped `print` format strings and switched float literals to `FormatFloat(g)` for better precision.
 
 - 2025-08-29 12:00 – Simplified `print` code generation and removed `static` from struct list helpers.
 - 2025-08-16 02:15 – Reviewed YAML and JSONL features; noted missing runtime helpers.
