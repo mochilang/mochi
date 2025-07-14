@@ -4208,7 +4208,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if c.env != nil {
 			for _, a := range call.Args {
 				t := c.inferExprType(a)
-				if isList(t) || isMap(t) || (isAny(t) && isListOrMapExpr(a)) {
+				if isMap(t) || (isList(t) && !isTypedSimpleList(t)) || (isAny(t) && isListOrMapExpr(a)) {
 					simple = false
 					break
 				}
