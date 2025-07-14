@@ -841,7 +841,7 @@ func (c *Compiler) compileStructType(st types.StructType) {
 }
 
 func (c *Compiler) compileStructListType(st types.StructType) {
-	listName := "list_" + sanitizeTypeName(st.Name)
+	listName := sanitizeListName(st.Name)
 	if c.listStructs[listName] {
 		return
 	}
@@ -852,7 +852,7 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		c.buf = bytes.Buffer{}
 		c.indent = 0
 		c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
-		c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
+		c.writeln(fmt.Sprintf("static %s %s(int len) {", listName, createListFuncName(st.Name)))
 		c.indent++
 		c.writeln(fmt.Sprintf("%s l;", listName))
 		c.writeln("l.len = len;")
@@ -867,7 +867,7 @@ func (c *Compiler) compileStructListType(st types.StructType) {
 		return
 	}
 	c.writeln(fmt.Sprintf("typedef struct { int len; %s *data; } %s;", sanitizeTypeName(st.Name), listName))
-	c.writeln(fmt.Sprintf("static %s %s_create(int len) {", listName, listName))
+	c.writeln(fmt.Sprintf("static %s %s(int len) {", listName, createListFuncName(st.Name)))
 	c.indent++
 	c.writeln(fmt.Sprintf("%s l;", listName))
 	c.writeln("l.len = len;")
@@ -1335,7 +1335,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				c.writeln(formatFuncPtrDecl(typ, name, val))
 			} else if st, ok := isListStructType(t); ok {
 				c.compileStructListType(st)
-				listName := "list_" + sanitizeTypeName(st.Name)
+				listName := sanitizeListName(st.Name)
 				val := c.newTemp()
 				c.writeln(fmt.Sprintf("%s %s = {0, NULL};", listName, val))
 				c.writeln(formatFuncPtrDecl(typ, name, val))
@@ -1369,7 +1369,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 				if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 					if ml := asMapLiteral(q.Select); ml != nil {
 						if st, ok := c.structLits[ml]; ok {
-							typ = "list_" + sanitizeTypeName(st.Name)
+							typ = sanitizeListName(st.Name)
 							t = types.ListType{Elem: st}
 						}
 					}
@@ -1381,7 +1381,7 @@ func (c *Compiler) compileLet(stmt *parser.LetStmt) error {
 			if q := stmt.Value.Binary.Left.Value.Target.Query; q != nil {
 				if ml := asMapLiteral(q.Select); ml != nil {
 					if st, ok := c.structLits[ml]; ok {
-						typ = "list_" + sanitizeTypeName(st.Name)
+						typ = sanitizeListName(st.Name)
 						t = types.ListType{Elem: st}
 					}
 				}
@@ -1971,7 +1971,7 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) string {
 			if err == nil {
 				var rows []map[string]any
 				if yaml.Unmarshal(data, &rows) == nil {
-					listName := "list_" + sanitizeTypeName(st.Name)
+					listName := sanitizeListName(st.Name)
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					arr := c.newTempPrefix("arr")
@@ -2239,7 +2239,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							keyType = "int"
 						}
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listC, res, listC, groups))
+					c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listC, res, listCreate, groups))
 					if keyType != "" {
 						keyArr = c.newTemp()
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
@@ -2325,11 +2325,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					keys := c.newTemp()
 					idxVar := c.newTemp()
 					listC := cTypeFromType(srcT)
+					var listCreate string
 					if st, ok := lt.Elem.(types.StructType); ok {
 						c.compileStructType(st)
 						c.compileStructListType(st)
+						listC = sanitizeListName(st.Name)
+						listCreate = createListFuncName(st.Name)
+					} else {
+						listCreate = listC + "_create"
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+					c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, rows, listCreate, c.listLenExpr(src)))
 					c.writeln(fmt.Sprintf("list_string %s = list_string_create(%s);", keys, c.listLenExpr(src)))
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 					loop := c.newLoopVar()
@@ -2406,6 +2411,11 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					}
 					retList := types.ListType{Elem: retT}
 					listRes := cTypeFromType(retList)
+					listResCreate := listRes + "_create"
+					if st, ok := retT.(types.StructType); ok {
+						listRes = sanitizeListName(st.Name)
+						listResCreate = createListFuncName(st.Name)
+					}
 					if listRes == "list_string" {
 						c.need(needListString)
 					} else if listRes == "list_float" {
@@ -2427,7 +2437,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 							keyType = "int"
 						}
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s.len);", listRes, res, listRes, groups))
+					c.writeln(fmt.Sprintf("%s %s = %s(%s.len);", listRes, res, listResCreate, groups))
 					if keyType != "" {
 						keyArr = c.newTemp()
 						c.writeln(fmt.Sprintf("%s *%s = (%s*)malloc(sizeof(%s)*%s.len);", keyType, keyArr, keyType, keyType, groups))
@@ -2517,11 +2527,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 					keys := c.newTemp()
 					idxVar := c.newTemp()
 					listC := cTypeFromType(srcT)
+					var listCreate string
 					if st, ok := lt.Elem.(types.StructType); ok {
 						c.compileStructType(st)
 						c.compileStructListType(st)
+						listC = sanitizeListName(st.Name)
+						listCreate = createListFuncName(st.Name)
+					} else {
+						listCreate = listC + "_create"
 					}
-					c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, rows, listC, c.listLenExpr(src)))
+					c.writeln(fmt.Sprintf("%s %s = %s(%s);", listC, rows, listCreate, c.listLenExpr(src)))
 					c.stackListInt(keys, c.listLenExpr(src), "0")
 					c.writeln(fmt.Sprintf("int %s = 0;", idxVar))
 					loop := c.newLoopVar()
@@ -3593,8 +3608,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 	}
 	retList := types.ListType{Elem: retT}
 	listC := cTypeFromType(retList)
+	var listCreate string
 	if hasStruct {
-		listC = "list_" + sanitizeTypeName(selStruct.Name)
+		listC = sanitizeListName(selStruct.Name)
+		listCreate = createListFuncName(selStruct.Name)
+	} else {
+		listCreate = listC + "_create"
 	}
 	if listC == "" {
 		listC = "list_int"
@@ -4584,7 +4603,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 		} else if len(p.List.Elems) > 0 {
 			if ml := asMapLiteral(p.List.Elems[0]); ml != nil {
 				if st, ok := c.structLits[ml]; ok {
-					listName := "list_" + sanitizeTypeName(st.Name)
+					listName := sanitizeListName(st.Name)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))
 					for i, el := range p.List.Elems {
@@ -4601,7 +4620,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			} else if sl := asStructLiteral(p.List.Elems[0]); sl != nil {
 				stName := sl.Name
 				if st, ok := c.env.GetStruct(stName); ok {
-					listName := "list_" + sanitizeTypeName(st.Name)
+					listName := sanitizeListName(st.Name)
 					c.compileStructType(st)
 					c.compileStructListType(st)
 					vals := make([]string, len(p.List.Elems))

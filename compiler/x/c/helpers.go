@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"unicode"
 
 	"mochi/parser"
 	"mochi/types"
@@ -49,12 +50,39 @@ func isString(t types.Type) bool {
 	return ok
 }
 
-func sanitizeTypeName(name string) string {
+func baseName(name string) string {
 	s := sanitizeName(name)
 	if s == "" {
 		return s
 	}
-	return strings.ToUpper(s[:1]) + s[1:]
+	var b strings.Builder
+	for i, r := range s {
+		if unicode.IsUpper(r) && i > 0 {
+			b.WriteByte('_')
+		}
+		b.WriteRune(unicode.ToLower(r))
+	}
+	return b.String()
+}
+
+func sanitizeTypeName(name string) string {
+	b := baseName(name)
+	if b == "" {
+		return b
+	}
+	return b + "_t"
+}
+
+func sanitizeListName(name string) string {
+	b := baseName(name)
+	if b == "" {
+		return b
+	}
+	return b + "_list_t"
+}
+
+func createListFuncName(name string) string {
+	return "create_" + baseName(name) + "_list"
 }
 
 func cTypeFromType(t types.Type) string {
@@ -90,7 +118,7 @@ func cTypeFromType(t types.Type) string {
 			return "list_group_int"
 		}
 		if st, ok := tt.Elem.(types.StructType); ok {
-			return "list_" + sanitizeTypeName(st.Name)
+			return sanitizeListName(st.Name)
 		}
 	case types.MapType:
 		if isMapIntBoolType(tt) {
