@@ -1,3 +1,5 @@
+## Recent Enhancements (2025-07-14 12:56)
+- Regenerated TPCH q1-q22 Python outputs using compile_python.go.
 ## Recent Enhancements (2025-07-14 12:16)
 - Recompiled all programs and restored dataset checklist.
 ## Recent Enhancements (2025-07-14 07:13)
