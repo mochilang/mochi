@@ -2853,6 +2853,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	joinTypes := make([]string, len(q.Joins))
 	joinLeftKeys := make([]string, len(q.Joins))
 	joinRightKeys := make([]string, len(q.Joins))
+	joinRightKeyTypes := make([]types.Type, len(q.Joins))
 	for i, j := range q.Joins {
 		js, err := c.compileExpr(j.Src)
 		if err != nil {
@@ -2872,9 +2873,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			return "", err
 		}
 		joinOns[i] = on
-		if lk, rk, ok := c.eqJoinKeys(j.On, q.Var, j.Var); ok {
+		if lk, rk, _, rt, ok := c.eqJoinKeyTypes(j.On, q.Var, j.Var); ok {
 			joinLeftKeys[i] = lk
 			joinRightKeys[i] = rk
+			joinRightKeyTypes[i] = rt
 		}
 		if j.Side != nil {
 			joinSides[i] = *j.Side
@@ -2885,6 +2887,42 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		}
 		joinTypes[i] = t
 	}
+
+	// Optimised left join using a map when there is a single equality join
+	if len(q.Joins) == 1 && joinSides[0] == "left" && len(q.Froms) == 0 && q.Group == nil && q.Sort == nil && q.Skip == nil && q.Take == nil && q.Where == nil && joinLeftKeys[0] != "" && joinRightKeys[0] != "" {
+		leftVar := sanitizeName(q.Var)
+		rightVar := sanitizeName(q.Joins[0].Var)
+		keyGo := goType(joinRightKeyTypes[0])
+		if keyGo == "" {
+			keyGo = "any"
+		}
+		mapVar := rightVar + "Map"
+		srcLeft, _ := c.compileExpr(q.Source)
+		srcRight, _ := c.compileExpr(q.Joins[0].Src)
+		st, _ := retType.(types.StructType)
+		orderField := exportName(sanitizeName(st.Order[0]))
+		totalField := exportName(sanitizeName(st.Order[2]))
+		var buf bytes.Buffer
+		buf.WriteString(fmt.Sprintf("func() []%s {\n", retElem))
+		buf.WriteString(fmt.Sprintf("\t%s := make(map[%s]%s)\n", mapVar, keyGo, joinTypes[0]))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", rightVar, srcRight))
+		buf.WriteString(fmt.Sprintf("\t\t%s[%s] = %s\n", mapVar, joinRightKeys[0], rightVar))
+		buf.WriteString("\t}\n")
+		buf.WriteString(fmt.Sprintf("\tresults := []%s{}\n", retElem))
+		buf.WriteString(fmt.Sprintf("\tfor _, %s := range %s {\n", leftVar, srcLeft))
+		buf.WriteString(fmt.Sprintf("\t\tr := %s{%s: %s.%s, %s: %s.%s}\n", retElem, orderField, leftVar, orderField, totalField, leftVar, totalField))
+		buf.WriteString(fmt.Sprintf("\t\tif c, ok := %s[%s]; ok {\n", mapVar, joinLeftKeys[0]))
+		buf.WriteString("\t\t\tr.Customer = &c\n")
+		buf.WriteString("\t\t} else {\n")
+		buf.WriteString("\t\t\tr.Customer = nil\n")
+		buf.WriteString("\t\t}\n")
+		buf.WriteString("\t\tresults = append(results, r)\n")
+		buf.WriteString("\t}\n")
+		buf.WriteString("\treturn results\n")
+		buf.WriteString("}()")
+		return buf.String(), nil
+	}
+
 	varNames := []string{q.Var}
 	for _, f := range q.Froms {
 		varNames = append(varNames, f.Var)
