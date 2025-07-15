@@ -1699,8 +1699,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 				fieldTypes[s] = types.AnyType{}
 			}
 		}
-		c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
-		c.tupleTypes[sanitizeName(q.Group.Name)] = fieldTypes
+		if len(paramCopy) > 1 {
+			c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
+			c.tupleTypes[sanitizeName(q.Group.Name)] = fieldTypes
+		}
 		rowExpr := "(" + allParams + ")"
 		selectFn := fmt.Sprintf("lambda %s: %s", allParams, rowExpr)
 		var whereFn string

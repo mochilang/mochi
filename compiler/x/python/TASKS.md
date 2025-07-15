@@ -2,6 +2,11 @@
 - Updated _sort_key to handle nested lists and tuples
 - Regenerated TPCDS q1-q3 Python outputs
 
+## Recent Enhancements (2025-07-15 08:19)
+- Fixed group-by code generation for single-value rows so TPCH q1-q22 compile
+  and run without indexing errors.
+- Regenerated TPCH Python outputs and verified golden tests pass.
+
 ## Recent Enhancements (2025-07-15 05:05)
 - Regenerated TPCDS q1-q2 Python outputs without type hints; tests pass.
 
