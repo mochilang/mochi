@@ -6,6 +6,12 @@
 - Added direct `Sum` aggregation support for simple queries.
 ## Recent Updates (2025-07-13 16:52)
 - Adjusted group-by code generation to avoid C# generic mismatches.
+## Recent Updates (2025-07-15 04:44)
+- Added golden test for TPC-DS queries to verify generated code and runtime output.
+## Recent Updates (2025-07-15 05:04)
+- Began refactoring query codegen to support dynamic grouping and sort keys.
+## Recent Updates (2025-07-15 05:46)
+- Regenerated TPC-DS q1 golden with dynamic sort fix.
 
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.

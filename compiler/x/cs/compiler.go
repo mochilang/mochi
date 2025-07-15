@@ -714,7 +714,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.env.SetVar(s.Let.Name, static, false)
 		c.varTypes[name] = typ
 		decl := "var"
-		if typ != "" && !strings.Contains(typ, "dynamic") {
+		if !c.DictMode && typ != "" && !strings.Contains(typ, "dynamic") {
 			decl = typ
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
@@ -795,7 +795,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		c.env.SetVar(s.Var.Name, static, true)
 		c.varTypes[name] = typ
 		decl := "var"
-		if typ != "" && !strings.Contains(typ, "dynamic") {
+		if !c.DictMode && typ != "" && !strings.Contains(typ, "dynamic") {
 			decl = typ
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s;", decl, name, expr))
@@ -2040,7 +2040,32 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		buf.WriteString("\t}\n")
 		if sortExpr != "" {
-			buf.WriteString(fmt.Sprintf("\t_res = _res.OrderBy(%s => %s).ToList();\n", v, sortExpr))
+			se := sortExpr
+			aliases := []string{}
+			if q.Froms != nil {
+				for _, f := range q.Froms {
+					aliases = append(aliases, sanitizeName(f.Var))
+				}
+			}
+			if q.Joins != nil {
+				for _, j := range q.Joins {
+					aliases = append(aliases, sanitizeName(j.Var))
+				}
+			}
+			for _, a := range aliases {
+				if a == "" {
+					continue
+				}
+				for _, pfx := range []string{a + ".", a + "["} {
+					if strings.HasPrefix(se, pfx) {
+						field := strings.TrimPrefix(se, pfx)
+						field = strings.TrimSuffix(strings.TrimPrefix(field, "["), "]")
+						field = strings.Trim(field, "\"")
+						se = fmt.Sprintf("%s[\"%s\"]", v, field)
+					}
+				}
+			}
+			buf.WriteString(fmt.Sprintf("\t_res = _res.OrderBy(%s => %s).ToList();\n", v, se))
 		}
 		if skipExpr != "" {
 			buf.WriteString(fmt.Sprintf("\t_res = _res.Skip(%s).ToList();\n", skipExpr))
