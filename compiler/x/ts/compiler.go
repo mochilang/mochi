@@ -2713,15 +2713,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			if group {
 				sv = sanitizeName(q.Group.Name)
 			} else {
-				sv = sanitizeName(q.Var)
+				vars := []string{sanitizeName(q.Var)}
+				for _, f := range q.Froms {
+					vars = append(vars, sanitizeName(f.Var))
+				}
+				for _, j := range q.Joins {
+					vars = append(vars, sanitizeName(j.Var))
+				}
+				sv = "{" + strings.Join(vars, ", ") + "}"
 			}
 			b.WriteString("\tlet _pairs = _items.map(it => { const " + sv + " = it; return {item: it, key: " + sortExpr + "}; });\n")
-			b.WriteString("\t_pairs.sort((a, b) => {\n")
-			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
-			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
-			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
-			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
-			b.WriteString("\t});\n")
+			c.use("_cmp")
+			b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
 			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
 		}
 

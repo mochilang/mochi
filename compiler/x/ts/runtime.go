@@ -88,7 +88,20 @@ const (
 		"    }\n" +
 		"    return x;\n" +
 		"  }\n" +
-		"  return JSON.stringify(_sort(v), null, 2);\n" +
+		"  return JSON.stringify(_sort(v));\n" +
+		"}\n"
+
+	helperCmp = "function _cmp(a: any, b: any): number {\n" +
+		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
+		"    for (let i = 0; i < a.length && i < b.length; i++) {\n" +
+		"      const c = _cmp(a[i], b[i]);\n" +
+		"      if (c !== 0) return c;\n" +
+		"    }\n" +
+		"    return a.length - b.length;\n" +
+		"  }\n" +
+		"  if (typeof a === 'number' && typeof b === 'number') return a - b;\n" +
+		"  if (typeof a === 'string' && typeof b === 'string') return a < b ? -1 : (a > b ? 1 : 0);\n" +
+		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
 		"}\n"
 
 	helperFmt = "function _fmt(v: any): string {\n" +
@@ -553,6 +566,7 @@ var helperMap = map[string]string{
 	"_hashJoin":    helperHashJoin,
 	"_dataset":     helperDataset,
 	"_json":        helperJSON,
+	"_cmp":         helperCmp,
 	"_fmt":         helperFmt,
 }
 

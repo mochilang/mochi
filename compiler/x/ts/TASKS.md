@@ -1,6 +1,10 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-15 03:24 UTC
+- Added `_cmp` helper and improved array sorting in generated code.
+- Updated `_json` to emit minified output.
+- Compiled TPC-DS queries q1-q10 with new TypeScript compiler.
 ### 2025-07-14 09:34 UTC
 - Removed `_order` slice; grouped queries now use `Map` insertion order.
 ### 2025-07-14 06:16 UTC
