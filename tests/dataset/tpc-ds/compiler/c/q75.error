@@ -1,126 +1,126 @@
-/tmp/q75.c: In function ‘test_TPCDS_Q75_simplified’:
-/tmp/q75.c:384:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  384 |   if (test_TPCDS_Q75_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c: In function ‘test_TPCDS_Q75_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:383:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  383 |   if (test_TPCDS_Q75_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q75.c:388:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  388 |       if (test_TPCDS_Q75_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:387:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  387 |       if (test_TPCDS_Q75_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q75.c: In function ‘main’:
-/tmp/q75.c:438:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
-  438 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:437:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
+  437 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
       |                         ^~~~~~~~~~~~~~~~~~~~~
-/tmp/q75.c:438:58: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  438 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:437:58: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  437 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
       |                                                          ^
       |                                                          ->
-/tmp/q75.c:438:73: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  438 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:437:73: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  437 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len);
       |                                                                         ^
       |                                                                         ->
-/tmp/q75.c:455:25: warning: implicit declaration of function ‘ws_item_list_t_create’ [-Wimplicit-function-declaration]
-  455 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:454:25: warning: implicit declaration of function ‘ws_item_list_t_create’ [-Wimplicit-function-declaration]
+  454 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
       |                         ^~~~~~~~~~~~~~~~~~~~~
-/tmp/q75.c:455:56: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
-  455 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:454:56: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  454 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
       |                                                        ^
       |                                                        ->
-/tmp/q75.c:455:71: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  455 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:454:71: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  454 |   ws_item_list_t tmp8 = ws_item_list_t_create(web_sales.len * date_dim.len);
       |                                                                       ^
       |                                                                       ->
-/tmp/q75.c:473:7: warning: implicit declaration of function ‘cs_item_list_t_create’ [-Wimplicit-function-declaration]
-  473 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:472:7: warning: implicit declaration of function ‘cs_item_list_t_create’ [-Wimplicit-function-declaration]
+  472 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
       |       ^~~~~~~~~~~~~~~~~~~~~
-/tmp/q75.c:473:42: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  473 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:472:42: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  472 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
       |                                          ^
       |                                          ->
-/tmp/q75.c:473:57: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  473 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:472:57: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  472 |       cs_item_list_t_create(catalog_sales.len * date_dim.len);
       |                                                         ^
       |                                                         ->
-/tmp/q75.c:490:27: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
-  490 |   list_int sales_detail = concat(tmp4, tmp8, tmp12);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:489:27: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  489 |   list_int sales_detail = concat(tmp4, tmp8, tmp12);
       |                           ^~~~~~
-/tmp/q75.c:490:27: error: invalid initializer
-/tmp/q75.c:497:30: error: request for member ‘i_item_sk’ in something not a structure or union
-  497 |       if (!(i.i_item_sk == sd.i_item_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:489:27: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:496:30: error: request for member ‘i_item_sk’ in something not a structure or union
+  496 |       if (!(i.i_item_sk == sd.i_item_sk)) {
       |                              ^
-/tmp/q75.c:505:34: error: ‘all_sales_item_t’ has no member named ‘name’
-  505 |         if (strcmp(all_sales[i19].name,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:504:34: error: ‘all_sales_item_t’ has no member named ‘name’
+  504 |         if (strcmp(all_sales[i19].name,
       |                                  ^
-/tmp/q75.c:506:43: error: request for member ‘d_year’ in something not a structure or union
-  506 |                    (tmp_item_t){.year = sd.d_year,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:505:43: error: request for member ‘d_year’ in something not a structure or union
+  505 |                    (tmp_item_t){.year = sd.d_year,
       |                                           ^
-/tmp/q75.c:516:33: error: ‘all_sales_item_t’ has no member named ‘name’
-  516 |         all_sales[all_sales_len].name =
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:515:33: error: ‘all_sales_item_t’ has no member named ‘name’
+  515 |         all_sales[all_sales_len].name =
       |                                 ^
-/tmp/q75.c:517:36: error: request for member ‘d_year’ in something not a structure or union
-  517 |             (tmp_item_t){.year = sd.d_year,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:516:36: error: request for member ‘d_year’ in something not a structure or union
+  516 |             (tmp_item_t){.year = sd.d_year,
       |                                    ^
-/tmp/q75.c:522:33: error: ‘all_sales_item_t’ has no member named ‘count’
-  522 |         all_sales[all_sales_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:521:33: error: ‘all_sales_item_t’ has no member named ‘count’
+  521 |         all_sales[all_sales_len].count = 1;
       |                                 ^
-/tmp/q75.c:526:25: error: ‘all_sales_item_t’ has no member named ‘count’
-  526 |         all_sales[tmp18].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:525:25: error: ‘all_sales_item_t’ has no member named ‘count’
+  525 |         all_sales[tmp18].count++;
       |                         ^
-/tmp/q75.c:530:33: warning: implicit declaration of function ‘all_sales_item_list_t_create’ [-Wimplicit-function-declaration]
-  530 |   all_sales_item_list_t tmp20 = all_sales_item_list_t_create(all_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:529:33: warning: implicit declaration of function ‘all_sales_item_list_t_create’ [-Wimplicit-function-declaration]
+  529 |   all_sales_item_list_t tmp20 = all_sales_item_list_t_create(all_sales_len);
       |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q75.c:530:33: error: invalid initializer
-/tmp/q75.c:541:17: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
-  541 |   int prev_yr = first(tmp20);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:529:33: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:540:17: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  540 |   int prev_yr = first(tmp20);
       |                 ^~~~~
-/tmp/q75.c:542:33: error: invalid initializer
-  542 |   all_sales_item_list_t tmp23 = all_sales_item_list_t_create(all_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:541:33: error: invalid initializer
+  541 |   all_sales_item_list_t tmp23 = all_sales_item_list_t_create(all_sales_len);
       |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q75.c:555:38: error: request for member ‘d_year’ in something not a structure or union
-  555 |       (result_t){.prev_year = prev_yr.d_year,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:554:38: error: request for member ‘d_year’ in something not a structure or union
+  554 |       (result_t){.prev_year = prev_yr.d_year,
       |                                      ^
-/tmp/q75.c:556:33: error: request for member ‘d_year’ in something not a structure or union
-  556 |                  .year = curr_yr.d_year,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:555:33: error: request for member ‘d_year’ in something not a structure or union
+  555 |                  .year = curr_yr.d_year,
       |                                 ^
-/tmp/q75.c:557:39: error: request for member ‘i_brand_id’ in something not a structure or union
-  557 |                  .i_brand_id = curr_yr.i_brand_id,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:556:39: error: request for member ‘i_brand_id’ in something not a structure or union
+  556 |                  .i_brand_id = curr_yr.i_brand_id,
       |                                       ^
-/tmp/q75.c:558:39: error: request for member ‘i_class_id’ in something not a structure or union
-  558 |                  .i_class_id = curr_yr.i_class_id,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:557:39: error: request for member ‘i_class_id’ in something not a structure or union
+  557 |                  .i_class_id = curr_yr.i_class_id,
       |                                       ^
-/tmp/q75.c:559:42: error: request for member ‘i_category_id’ in something not a structure or union
-  559 |                  .i_category_id = curr_yr.i_category_id,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:558:42: error: request for member ‘i_category_id’ in something not a structure or union
+  558 |                  .i_category_id = curr_yr.i_category_id,
       |                                          ^
-/tmp/q75.c:560:42: error: request for member ‘i_manufact_id’ in something not a structure or union
-  560 |                  .i_manufact_id = curr_yr.i_manufact_id,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:559:42: error: request for member ‘i_manufact_id’ in something not a structure or union
+  559 |                  .i_manufact_id = curr_yr.i_manufact_id,
       |                                          ^
-/tmp/q75.c:561:40: error: request for member ‘sales_cnt’ in something not a structure or union
-  561 |                  .prev_yr_cnt = prev_yr.sales_cnt,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:560:40: error: request for member ‘sales_cnt’ in something not a structure or union
+  560 |                  .prev_yr_cnt = prev_yr.sales_cnt,
       |                                        ^
-/tmp/q75.c:562:40: error: request for member ‘sales_cnt’ in something not a structure or union
-  562 |                  .curr_yr_cnt = curr_yr.sales_cnt,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:561:40: error: request for member ‘sales_cnt’ in something not a structure or union
+  561 |                  .curr_yr_cnt = curr_yr.sales_cnt,
       |                                        ^
-/tmp/q75.c:563:43: error: request for member ‘sales_cnt’ in something not a structure or union
-  563 |                  .sales_cnt_diff = curr_yr.sales_cnt - prev_yr.sales_cnt,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:562:43: error: request for member ‘sales_cnt’ in something not a structure or union
+  562 |                  .sales_cnt_diff = curr_yr.sales_cnt - prev_yr.sales_cnt,
       |                                           ^
-/tmp/q75.c:563:63: error: request for member ‘sales_cnt’ in something not a structure or union
-  563 |                  .sales_cnt_diff = curr_yr.sales_cnt - prev_yr.sales_cnt,
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:562:63: error: request for member ‘sales_cnt’ in something not a structure or union
+  562 |                  .sales_cnt_diff = curr_yr.sales_cnt - prev_yr.sales_cnt,
       |                                                               ^
-/tmp/q75.c:564:43: error: request for member ‘sales_amt’ in something not a structure or union
-  564 |                  .sales_amt_diff = curr_yr.sales_amt - prev_yr.sales_amt}};
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:563:43: error: request for member ‘sales_amt’ in something not a structure or union
+  563 |                  .sales_amt_diff = curr_yr.sales_amt - prev_yr.sales_amt}};
       |                                           ^
-/tmp/q75.c:564:63: error: request for member ‘sales_amt’ in something not a structure or union
-  564 |                  .sales_amt_diff = curr_yr.sales_amt - prev_yr.sales_amt}};
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:563:63: error: request for member ‘sales_amt’ in something not a structure or union
+  563 |                  .sales_amt_diff = curr_yr.sales_amt - prev_yr.sales_amt}};
       |                                                               ^
-/tmp/q75.c:567:12: error: conflicting types for ‘result’; have ‘list_int’
-  567 |   list_int result =
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:566:12: error: conflicting types for ‘result’; have ‘list_int’
+  566 |   list_int result =
       |            ^~~~~~
-/tmp/q75.c:554:12: note: previous definition of ‘result’ with type ‘result_t[1]’
-  554 |   result_t result[] = {
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:553:12: note: previous definition of ‘result’ with type ‘result_t[1]’
+  553 |   result_t result[] = {
       |            ^~~~~~
-/tmp/q75.c:568:17: error: request for member ‘sales_cnt’ in something not a structure or union
-  568 |       (((curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9) ? result : tmp26);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:567:17: error: request for member ‘sales_cnt’ in something not a structure or union
+  567 |       (((curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9) ? result : tmp26);
       |                 ^
-/tmp/q75.c:568:37: error: request for member ‘sales_cnt’ in something not a structure or union
-  568 |       (((curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9) ? result : tmp26);
+/tmp/TestCCompiler_TPCDS_Goldenq752181472273/001/prog.c:567:37: error: request for member ‘sales_cnt’ in something not a structure or union
+  567 |       (((curr_yr.sales_cnt / prev_yr.sales_cnt) < 0.9) ? result : tmp26);
       |                                     ^

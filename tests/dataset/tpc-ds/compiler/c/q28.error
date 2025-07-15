@@ -1,15 +1,15 @@
-/tmp/q28.c: In function ‘test_TPCDS_Q28_buckets’:
-/tmp/q28.c:188:39: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
-  188 |   if (!(test_TPCDS_Q28_buckets_result == (tmp_item_t){.b1__l_p = 100.0,
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c: In function ‘test_TPCDS_Q28_buckets’:
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c:187:39: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  187 |   if (!(test_TPCDS_Q28_buckets_result == (tmp_item_t){.b1__l_p = 100.0,
       |                                       ^~
-/tmp/q28.c: In function ‘main’:
-/tmp/q28.c:213:28: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
-  213 |   store_sale_list_t tmp1 = store_sale_list_t_create(store_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c:212:28: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  212 |   store_sale_list_t tmp1 = store_sale_list_t_create(store_sales_len);
       |                            ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q28.c:213:28: error: invalid initializer
-/tmp/q28.c:228:28: error: invalid initializer
-  228 |   store_sale_list_t tmp4 = store_sale_list_t_create(store_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c:212:28: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c:227:28: error: invalid initializer
+  227 |   store_sale_list_t tmp4 = store_sale_list_t_create(store_sales_len);
       |                            ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q28.c:291:35: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
-  291 |   test_TPCDS_Q28_buckets_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq28771164393/001/prog.c:290:35: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  290 |   test_TPCDS_Q28_buckets_result = result;
       |                                   ^~~~~~

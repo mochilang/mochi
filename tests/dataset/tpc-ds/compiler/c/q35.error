@@ -1,21 +1,21 @@
-/tmp/q35.c: In function ‘test_TPCDS_Q35_simplified’:
-/tmp/q35.c:262:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  262 |   if (test_TPCDS_Q35_simplified_groups.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c: In function ‘test_TPCDS_Q35_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c:261:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  261 |   if (test_TPCDS_Q35_simplified_groups.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q35.c:266:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  266 |       if (test_TPCDS_Q35_simplified_groups.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c:265:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  265 |       if (test_TPCDS_Q35_simplified_groups.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q35.c: In function ‘main’:
-/tmp/q35.c:311:46: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  311 |   list_int tmp4 = list_int_create(store_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c:310:46: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  310 |   list_int tmp4 = list_int_create(store_sales.len * date_dim.len);
       |                                              ^
       |                                              ->
-/tmp/q35.c:311:61: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  311 |   list_int tmp4 = list_int_create(store_sales.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c:310:61: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  310 |   list_int tmp4 = list_int_create(store_sales.len * date_dim.len);
       |                                                             ^
       |                                                             ->
-/tmp/q35.c:366:38: error: incompatible types when assigning to type ‘list_int’ from type ‘groups_item_list_t’
-  366 |   test_TPCDS_Q35_simplified_groups = groups;
+/tmp/TestCCompiler_TPCDS_Goldenq35854115483/001/prog.c:365:38: error: incompatible types when assigning to type ‘list_int’ from type ‘groups_item_list_t’
+  365 |   test_TPCDS_Q35_simplified_groups = groups;
       |                                      ^~~~~~

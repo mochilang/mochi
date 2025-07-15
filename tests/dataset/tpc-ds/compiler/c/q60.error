@@ -1,15 +1,15 @@
-/tmp/q60.c: In function ‘main’:
-/tmp/q60.c:181:19: warning: initialization of ‘int’ from ‘store_sale_t *’ makes integer from pointer without a cast [-Wint-conversion]
-  181 |   int all_sales = store_sales union catalog_sales union web_sales;
+/tmp/TestCCompiler_TPCDS_Goldenq601826285068/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq601826285068/001/prog.c:180:19: warning: initialization of ‘int’ from ‘store_sale_t *’ makes integer from pointer without a cast [-Wint-conversion]
+  180 |   int all_sales = store_sales union catalog_sales union web_sales;
       |                   ^~~~~~~~~~~
-/tmp/q60.c:181:31: error: expected ‘,’ or ‘;’ before ‘union’
-  181 |   int all_sales = store_sales union catalog_sales union web_sales;
+/tmp/TestCCompiler_TPCDS_Goldenq601826285068/001/prog.c:180:31: error: expected ‘,’ or ‘;’ before ‘union’
+  180 |   int all_sales = store_sales union catalog_sales union web_sales;
       |                               ^~~~~
-/tmp/q60.c:182:28: error: incompatible type for argument 1 of ‘_sum_int’
-  182 |   double result = _sum_int(0);
+/tmp/TestCCompiler_TPCDS_Goldenq601826285068/001/prog.c:181:28: error: incompatible type for argument 1 of ‘_sum_int’
+  181 |   double result = _sum_int(0);
       |                            ^
       |                            |
       |                            int
-/tmp/q60.c:63:30: note: expected ‘list_int’ but argument is of type ‘int’
-   63 | static int _sum_int(list_int v) {
+/tmp/TestCCompiler_TPCDS_Goldenq601826285068/001/prog.c:62:30: note: expected ‘list_int’ but argument is of type ‘int’
+   62 | static int _sum_int(list_int v) {
       |                     ~~~~~~~~~^

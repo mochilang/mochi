@@ -1,39 +1,39 @@
-/tmp/q31.c: In function ‘test_TPCDS_Q31_simplified’:
-/tmp/q31.c:214:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  214 |   if (test_TPCDS_Q31_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c: In function ‘test_TPCDS_Q31_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:213:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  213 |   if (test_TPCDS_Q31_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q31.c:218:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  218 |       if (test_TPCDS_Q31_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:217:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  217 |       if (test_TPCDS_Q31_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q31.c: In function ‘main’:
-/tmp/q31.c:284:7: error: conflicting types for ‘counties’; have ‘int’
-  284 |   int counties = counties;
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:283:7: error: conflicting types for ‘counties’; have ‘int’
+  283 |   int counties = counties;
       |       ^~~~~~~~
-/tmp/q31.c:281:15: note: previous definition of ‘counties’ with type ‘list_string’
-  281 |   list_string counties = list_string_create(2);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:280:15: note: previous definition of ‘counties’ with type ‘list_string’
+  280 |   list_string counties = list_string_create(2);
       |               ^~~~~~~~
-/tmp/q31.c:368:23: error: incompatible types when assigning to type ‘int’ from type ‘tmp_item_t’
-  368 |       tmp24.data[0] = (tmp_item_t){.ca_county = county,
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:367:23: error: incompatible types when assigning to type ‘int’ from type ‘tmp_item_t’
+  367 |       tmp24.data[0] = (tmp_item_t){.ca_county = county,
       |                       ^
-/tmp/q31.c:382:8: error: ‘tmp5’ undeclared (first use in this function)
-  382 |   free(tmp5.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:381:8: error: ‘tmp5’ undeclared (first use in this function)
+  381 |   free(tmp5.data);
       |        ^~~~
-/tmp/q31.c:382:8: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q31.c:383:8: error: ‘tmp8’ undeclared (first use in this function)
-  383 |   free(tmp8.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:381:8: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:382:8: error: ‘tmp8’ undeclared (first use in this function)
+  382 |   free(tmp8.data);
       |        ^~~~
-/tmp/q31.c:384:8: error: ‘tmp11’ undeclared (first use in this function)
-  384 |   free(tmp11.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:383:8: error: ‘tmp11’ undeclared (first use in this function)
+  383 |   free(tmp11.data);
       |        ^~~~~
-/tmp/q31.c:385:8: error: ‘tmp14’ undeclared (first use in this function)
-  385 |   free(tmp14.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:384:8: error: ‘tmp14’ undeclared (first use in this function)
+  384 |   free(tmp14.data);
       |        ^~~~~
-/tmp/q31.c:386:8: error: ‘tmp17’ undeclared (first use in this function)
-  386 |   free(tmp17.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:385:8: error: ‘tmp17’ undeclared (first use in this function)
+  385 |   free(tmp17.data);
       |        ^~~~~
-/tmp/q31.c:387:8: error: ‘tmp20’ undeclared (first use in this function); did you mean ‘tmp26’?
-  387 |   free(tmp20.data);
+/tmp/TestCCompiler_TPCDS_Goldenq312844248204/001/prog.c:386:8: error: ‘tmp20’ undeclared (first use in this function); did you mean ‘tmp26’?
+  386 |   free(tmp20.data);
       |        ^~~~~
       |        tmp26

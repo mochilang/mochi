@@ -1,22 +1,22 @@
-/tmp/q19.c:295:3: error: unknown type name ‘customer_address_t’
-  295 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:294:3: error: unknown type name ‘customer_address_t’
+  294 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q19.c: In function ‘create_customer_address_list’:
-/tmp/q19.c:300:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  300 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:299:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  299 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q19.c:300:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q19.c: In function ‘test_TPCDS_Q19_brand’:
-/tmp/q19.c:336:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  336 |   if (test_TPCDS_Q19_brand_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:299:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c: In function ‘test_TPCDS_Q19_brand’:
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:335:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  335 |   if (test_TPCDS_Q19_brand_result.len != tmp1.len) {
       |                                              ^
       |                                              ->
-/tmp/q19.c:340:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  340 |       if (test_TPCDS_Q19_brand_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:339:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  339 |       if (test_TPCDS_Q19_brand_result.data[i3] != tmp1.data[i3]) {
       |                                                       ^
       |                                                       ->
-/tmp/q19.c: In function ‘main’:
-/tmp/q19.c:407:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  407 |   test_TPCDS_Q19_brand_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq191539294356/001/prog.c:406:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  406 |   test_TPCDS_Q19_brand_result = result;
       |                                 ^~~~~~

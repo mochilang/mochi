@@ -1,57 +1,57 @@
-/tmp/q51.c: In function ‘cumulative’:
-/tmp/q51.c:252:18: error: request for member ‘price’ in something not a structure or union
-  252 |     acc = acc + x.price;
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c: In function ‘cumulative’:
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:251:18: error: request for member ‘price’ in something not a structure or union
+  251 |     acc = acc + x.price;
       |                  ^
-/tmp/q51.c:256:42: error: request for member ‘date’ in something not a structure or union
-  256 |     tmp3.data[0] = (tmp_item_t){.date = x.date, .cum = acc};
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:255:42: error: request for member ‘date’ in something not a structure or union
+  255 |     tmp3.data[0] = (tmp_item_t){.date = x.date, .cum = acc};
       |                                          ^
-/tmp/q51.c: In function ‘test_TPCDS_Q51_simplified’:
-/tmp/q51.c:267:34: error: ‘tmp_item_t’ has no member named ‘item_sk’
-  267 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c: In function ‘test_TPCDS_Q51_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:266:34: error: ‘tmp_item_t’ has no member named ‘item_sk’
+  266 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
       |                                  ^~~~~~~
-/tmp/q51.c:267:48: error: ‘tmp_item_t’ has no member named ‘d_date’; did you mean ‘date’?
-  267 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:266:48: error: ‘tmp_item_t’ has no member named ‘d_date’; did you mean ‘date’?
+  266 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
       |                                                ^~~~~~
       |                                                date
-/tmp/q51.c:267:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
-  267 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:266:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  266 |                    (tmp_item_t){.item_sk = 1, .d_date = 2}};
       |                    ^
-/tmp/q51.c:270:39: error: request for member ‘len’ in something not a structure or union
-  270 |   if (test_TPCDS_Q51_simplified_result.len != tmp6.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:269:39: error: request for member ‘len’ in something not a structure or union
+  269 |   if (test_TPCDS_Q51_simplified_result.len != tmp6.len) {
       |                                       ^
-/tmp/q51.c:270:51: error: ‘(tmp6_t *)&tmp6’ is a pointer; did you mean to use ‘->’?
-  270 |   if (test_TPCDS_Q51_simplified_result.len != tmp6.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:269:51: error: ‘(tmp6_t *)&tmp6’ is a pointer; did you mean to use ‘->’?
+  269 |   if (test_TPCDS_Q51_simplified_result.len != tmp6.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q51.c:273:59: error: request for member ‘len’ in something not a structure or union
-  273 |     for (int i8 = 0; i8 < test_TPCDS_Q51_simplified_result.len; i8++) {
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:272:59: error: request for member ‘len’ in something not a structure or union
+  272 |     for (int i8 = 0; i8 < test_TPCDS_Q51_simplified_result.len; i8++) {
       |                                                           ^
-/tmp/q51.c:274:43: error: request for member ‘data’ in something not a structure or union
-  274 |       if (test_TPCDS_Q51_simplified_result.data[i8] != tmp6.data[i8]) {
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:273:43: error: request for member ‘data’ in something not a structure or union
+  273 |       if (test_TPCDS_Q51_simplified_result.data[i8] != tmp6.data[i8]) {
       |                                           ^
-/tmp/q51.c:274:60: error: ‘(tmp6_t *)&tmp6’ is a pointer; did you mean to use ‘->’?
-  274 |       if (test_TPCDS_Q51_simplified_result.data[i8] != tmp6.data[i8]) {
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:273:60: error: ‘(tmp6_t *)&tmp6’ is a pointer; did you mean to use ‘->’?
+  273 |       if (test_TPCDS_Q51_simplified_result.data[i8] != tmp6.data[i8]) {
       |                                                            ^
       |                                                            ->
-/tmp/q51.c: In function ‘main’:
-/tmp/q51.c:316:3: error: ‘web_cum’ undeclared (first use in this function)
-  316 |   web_cum = cumulative((list_int)((tmp9)));
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:315:3: error: ‘web_cum’ undeclared (first use in this function)
+  315 |   web_cum = cumulative((list_int)((tmp9)));
       |   ^~~~~~~
-/tmp/q51.c:316:3: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q51.c:316:3: error: conversion to non-scalar type requested
-/tmp/q51.c:339:3: error: ‘store_cum’ undeclared (first use in this function)
-  339 |   store_cum = cumulative((list_int)((tmp17)));
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:315:3: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:315:3: error: conversion to non-scalar type requested
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:338:3: error: ‘store_cum’ undeclared (first use in this function)
+  338 |   store_cum = cumulative((list_int)((tmp17)));
       |   ^~~~~~~~~
-/tmp/q51.c:339:3: error: conversion to non-scalar type requested
-/tmp/q51.c:341:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
-  341 |       joined_item_list_t_create(web_cum.len * store_cum.len);
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:338:3: error: conversion to non-scalar type requested
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:340:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  340 |       joined_item_list_t_create(web_cum.len * store_cum.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q51.c:344:5: error: ‘w’ undeclared (first use in this function)
-  344 |     w = web_cum.data[tmp27];
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:343:5: error: ‘w’ undeclared (first use in this function)
+  343 |     w = web_cum.data[tmp27];
       |     ^
-/tmp/q51.c:346:7: error: ‘s’ undeclared (first use in this function)
-  346 |       s = store_cum.data[tmp28];
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:345:7: error: ‘s’ undeclared (first use in this function)
+  345 |       s = store_cum.data[tmp28];
       |       ^
-/tmp/q51.c:376:38: error: incompatible types when assigning to type ‘int’ from type ‘joined_item_list_t’
-  376 |   test_TPCDS_Q51_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq513927084274/001/prog.c:375:38: error: incompatible types when assigning to type ‘int’ from type ‘joined_item_list_t’
+  375 |   test_TPCDS_Q51_simplified_result = result;
       |                                      ^~~~~~

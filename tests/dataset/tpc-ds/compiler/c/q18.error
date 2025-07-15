@@ -1,62 +1,62 @@
-/tmp/q18.c:299:3: error: unknown type name ‘customer_demographics_t’
-  299 |   customer_demographics_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:298:3: error: unknown type name ‘customer_demographics_t’
+  298 |   customer_demographics_t *data;
       |   ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q18.c: In function ‘create_customer_demographics_list’:
-/tmp/q18.c:304:31: error: ‘customer_demographics_t’ undeclared (first use in this function); did you mean ‘customer_demographic_t’?
-  304 |   l.data = calloc(len, sizeof(customer_demographics_t));
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c: In function ‘create_customer_demographics_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:303:31: error: ‘customer_demographics_t’ undeclared (first use in this function); did you mean ‘customer_demographic_t’?
+  303 |   l.data = calloc(len, sizeof(customer_demographics_t));
       |                               ^~~~~~~~~~~~~~~~~~~~~~~
       |                               customer_demographic_t
-/tmp/q18.c:304:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q18.c: At top level:
-/tmp/q18.c:342:3: error: unknown type name ‘customer_address_t’
-  342 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:303:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c: At top level:
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:341:3: error: unknown type name ‘customer_address_t’
+  341 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q18.c: In function ‘create_customer_address_list’:
-/tmp/q18.c:347:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  347 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:346:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  346 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q18.c: In function ‘test_TPCDS_Q18_averages’:
-/tmp/q18.c:408:49: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  408 |   if (test_TPCDS_Q18_averages_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c: In function ‘test_TPCDS_Q18_averages’:
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:407:49: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  407 |   if (test_TPCDS_Q18_averages_result.len != tmp1.len) {
       |                                                 ^
       |                                                 ->
-/tmp/q18.c:412:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  412 |       if (test_TPCDS_Q18_averages_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:411:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  411 |       if (test_TPCDS_Q18_averages_result.data[i3] != tmp1.data[i3]) {
       |                                                          ^
       |                                                          ->
-/tmp/q18.c: In function ‘main’:
-/tmp/q18.c:464:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
-  464 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:463:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  463 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q18.c:464:46: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  464 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:463:46: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  463 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
       |                                              ^
       |                                              ->
-/tmp/q18.c:464:74: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
-  464 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:463:74: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
+  463 |       joined_item_list_t_create(catalog_sales.len * customer_demographics.len *
       |                                                                          ^
       |                                                                          ->
-/tmp/q18.c:465:41: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
-  465 |                                 customer.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:464:41: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  464 |                                 customer.len * customer_demographics.len *
       |                                         ^
       |                                         ->
-/tmp/q18.c:465:69: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
-  465 |                                 customer.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:464:69: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
+  464 |                                 customer.len * customer_demographics.len *
       |                                                                     ^
       |                                                                     ->
-/tmp/q18.c:466:49: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
-  466 |                                 customer_address.len * date_dim.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:465:49: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  465 |                                 customer_address.len * date_dim.len * item.len);
       |                                                 ^
       |                                                 ->
-/tmp/q18.c:466:64: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  466 |                                 customer_address.len * date_dim.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:465:64: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  465 |                                 customer_address.len * date_dim.len * item.len);
       |                                                                ^
       |                                                                ->
-/tmp/q18.c:466:75: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  466 |                                 customer_address.len * date_dim.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:465:75: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  465 |                                 customer_address.len * date_dim.len * item.len);
       |                                                                           ^
       |                                                                           ->
-/tmp/q18.c:575:36: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  575 |   test_TPCDS_Q18_averages_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq184198931382/001/prog.c:574:36: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  574 |   test_TPCDS_Q18_averages_result = result;
       |                                    ^~~~~~

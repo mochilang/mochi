@@ -1,28 +1,28 @@
-/tmp/q12.c: In function ‘test_TPCDS_Q12_revenue_ratio’:
-/tmp/q12.c:355:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  355 |                    (tmp_item_t){.i_item_id = "ITEM2",
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c: In function ‘test_TPCDS_Q12_revenue_ratio’:
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:354:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  354 |                    (tmp_item_t){.i_item_id = "ITEM2",
       |                    ^
-/tmp/q12.c:364:54: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  364 |   if (test_TPCDS_Q12_revenue_ratio_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:363:54: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  363 |   if (test_TPCDS_Q12_revenue_ratio_result.len != tmp1.len) {
       |                                                      ^
       |                                                      ->
-/tmp/q12.c:368:63: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  368 |       if (test_TPCDS_Q12_revenue_ratio_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:367:63: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  367 |       if (test_TPCDS_Q12_revenue_ratio_result.data[i3] != tmp1.data[i3]) {
       |                                                               ^
       |                                                               ->
-/tmp/q12.c: In function ‘main’:
-/tmp/q12.c:429:35: warning: implicit declaration of function ‘class_totals_item_list_t_create’ [-Wimplicit-function-declaration]
-  429 |   class_totals_item_list_t tmp9 = class_totals_item_list_t_create(tmp8.len);
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:428:35: warning: implicit declaration of function ‘class_totals_item_list_t_create’ [-Wimplicit-function-declaration]
+  428 |   class_totals_item_list_t tmp9 = class_totals_item_list_t_create(tmp8.len);
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q12.c:429:35: error: invalid initializer
-/tmp/q12.c:433:34: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
-  433 |     filtered_item_list_t tmp11 = filtered_item_list_t_create(_gp.items.len);
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:428:35: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:432:34: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
+  432 |     filtered_item_list_t tmp11 = filtered_item_list_t_create(_gp.items.len);
       |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q12.c:433:34: error: invalid initializer
-/tmp/q12.c:457:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
-  457 |       result_item_list_t_create(filtered.len * class_totals.len);
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:432:34: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:456:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  456 |       result_item_list_t_create(filtered.len * class_totals.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q12.c:457:7: error: invalid initializer
-/tmp/q12.c:515:41: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  515 |   test_TPCDS_Q12_revenue_ratio_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:456:7: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq123772658519/001/prog.c:514:41: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  514 |   test_TPCDS_Q12_revenue_ratio_result = result;
       |                                         ^~~~~~

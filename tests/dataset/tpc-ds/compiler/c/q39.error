@@ -1,80 +1,80 @@
-/tmp/q39.c: In function ‘test_TPCDS_Q39_simplified’:
-/tmp/q39.c:370:52: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  370 |   if (test_TPCDS_Q39_simplified_summary.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c: In function ‘test_TPCDS_Q39_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:369:52: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  369 |   if (test_TPCDS_Q39_simplified_summary.len != tmp1.len) {
       |                                                    ^
       |                                                    ->
-/tmp/q39.c:374:61: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  374 |       if (test_TPCDS_Q39_simplified_summary.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:373:61: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  373 |       if (test_TPCDS_Q39_simplified_summary.data[i3] != tmp1.data[i3]) {
       |                                                             ^
       |                                                             ->
-/tmp/q39.c: In function ‘main’:
-/tmp/q39.c:412:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
-  412 |   int grouped = tmp4;
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:411:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  411 |   int grouped = tmp4;
       |                 ^~~~
-/tmp/q39.c:415:35: error: incompatible type for argument 1 of ‘_str’
-  415 |     char *tmp6 = _str((tmp_item_t){.w = m.w, .i = m.i});
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:414:35: error: incompatible type for argument 1 of ‘_str’
+  414 |     char *tmp6 = _str((tmp_item_t){.w = m.w, .i = m.i});
       |                                   ^~~~~~~~~~~~~~~~~~~~
       |                                   |
       |                                   tmp_item_t
-/tmp/q39.c:141:23: note: expected ‘int’ but argument is of type ‘tmp_item_t’
-  141 | static char *_str(int v) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:140:23: note: expected ‘int’ but argument is of type ‘tmp_item_t’
+  140 | static char *_str(int v) {
       |                   ~~~~^
-/tmp/q39.c:417:12: error: expected ‘)’ before ‘in’
-  417 |     if (key in grouped) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:416:12: error: expected ‘)’ before ‘in’
+  416 |     if (key in grouped) {
       |        ~   ^~~
       |            )
-/tmp/q39.c:418:22: error: request for member ‘data’ in something not a structure or union
-  418 |       int g = grouped.data[key];
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:417:22: error: request for member ‘data’ in something not a structure or union
+  417 |       int g = grouped.data[key];
       |                      ^
-/tmp/q39.c:419:14: error: request for member ‘data’ in something not a structure or union
-  419 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:418:14: error: request for member ‘data’ in something not a structure or union
+  418 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
       |              ^
-/tmp/q39.c:419:47: error: request for member ‘w’ in something not a structure or union
-  419 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:418:47: error: request for member ‘w’ in something not a structure or union
+  418 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
       |                                               ^
-/tmp/q39.c:419:57: error: request for member ‘i’ in something not a structure or union
-  419 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:418:57: error: request for member ‘i’ in something not a structure or union
+  418 |       grouped.data[key] = (tmp_item1_t){.w = g.w, .i = g.i, .qtys = 0};
       |                                                         ^
-/tmp/q39.c:425:14: error: request for member ‘data’ in something not a structure or union
-  425 |       grouped.data[key] = (tmp_item2_t){.w = m.w, .i = m.i, .qtys = tmp8};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:424:14: error: request for member ‘data’ in something not a structure or union
+  424 |       grouped.data[key] = (tmp_item2_t){.w = m.w, .i = m.i, .qtys = tmp8};
       |              ^
-/tmp/q39.c:425:69: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-  425 |       grouped.data[key] = (tmp_item2_t){.w = m.w, .i = m.i, .qtys = tmp8};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:424:69: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  424 |       grouped.data[key] = (tmp_item2_t){.w = m.w, .i = m.i, .qtys = tmp8};
       |                                                                     ^~~~
-/tmp/q39.c:429:29: error: invalid suffix "len" on floating constant
-  429 |   for (int tmp9 = 0; tmp9 < 0.len; tmp9++) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:428:29: error: invalid suffix "len" on floating constant
+  428 |   for (int tmp9 = 0; tmp9 < 0.len; tmp9++) {
       |                             ^~~~~
-/tmp/q39.c:430:13: error: invalid suffix "data" on floating constant
-  430 |     int g = 0.data [tmp9];
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:429:13: error: invalid suffix "data" on floating constant
+  429 |     int g = 0.data [tmp9];
       |             ^~~~~~
-/tmp/q39.c:431:25: error: request for member ‘qtys’ in something not a structure or union
-  431 |     double mean = _avg(g.qtys);
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:430:25: error: request for member ‘qtys’ in something not a structure or union
+  430 |     double mean = _avg(g.qtys);
       |                         ^
-/tmp/q39.c:433:34: error: request for member ‘qtys’ in something not a structure or union
-  433 |     for (int tmp10 = 0; tmp10 < g.qtys.len; tmp10++) {
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:432:34: error: request for member ‘qtys’ in something not a structure or union
+  432 |     for (int tmp10 = 0; tmp10 < g.qtys.len; tmp10++) {
       |                                  ^
-/tmp/q39.c:434:16: error: request for member ‘qtys’ in something not a structure or union
-  434 |       int q = g.qtys.data[tmp10];
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:433:16: error: request for member ‘qtys’ in something not a structure or union
+  433 |       int q = g.qtys.data[tmp10];
       |                ^
-/tmp/q39.c:437:33: error: request for member ‘qtys’ in something not a structure or union
-  437 |     double variance = sumsq / (g.qtys.len - 1);
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:436:33: error: request for member ‘qtys’ in something not a structure or union
+  436 |     double variance = sumsq / (g.qtys.len - 1);
       |                                 ^
-/tmp/q39.c:444:25: error: ‘tmp_item_t’ has no member named ‘w_warehouse_sk’
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:25: error: ‘tmp_item_t’ has no member named ‘w_warehouse_sk’
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                         ^~~~~~~~~~~~~~
-/tmp/q39.c:444:43: error: request for member ‘w’ in something not a structure or union
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:43: error: request for member ‘w’ in something not a structure or union
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                                           ^
-/tmp/q39.c:444:48: error: ‘tmp_item_t’ has no member named ‘i_item_sk’
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:48: error: ‘tmp_item_t’ has no member named ‘i_item_sk’
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                                                ^~~~~~~~~
-/tmp/q39.c:444:61: error: request for member ‘i’ in something not a structure or union
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:61: error: request for member ‘i’ in something not a structure or union
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                                                             ^
-/tmp/q39.c:444:66: error: ‘tmp_item_t’ has no member named ‘cov’
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:66: error: ‘tmp_item_t’ has no member named ‘cov’
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                                                                  ^~~
-/tmp/q39.c:444:72: warning: excess elements in struct initializer
-  444 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:72: warning: excess elements in struct initializer
+  443 |           (tmp_item_t){.w_warehouse_sk = g.w, .i_item_sk = g.i, .cov = cov};
       |                                                                        ^~~
-/tmp/q39.c:444:72: note: (near initialization for ‘(anonymous)’)
+/tmp/TestCCompiler_TPCDS_Goldenq392570694533/001/prog.c:443:72: note: (near initialization for ‘(anonymous)’)

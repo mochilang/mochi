@@ -1,30 +1,30 @@
-/tmp/q24.c:356:3: error: unknown type name ‘customer_address_t’
-  356 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:355:3: error: unknown type name ‘customer_address_t’
+  355 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q24.c: In function ‘create_customer_address_list’:
-/tmp/q24.c:361:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  361 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:360:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  360 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q24.c:361:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q24.c: In function ‘test_TPCDS_Q24_customer_net_paid’:
-/tmp/q24.c:377:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  377 |   if (test_TPCDS_Q24_customer_net_paid_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:360:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c: In function ‘test_TPCDS_Q24_customer_net_paid’:
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:376:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  376 |   if (test_TPCDS_Q24_customer_net_paid_result.len != tmp1.len) {
       |                                                          ^
       |                                                          ->
-/tmp/q24.c:381:67: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  381 |       if (test_TPCDS_Q24_customer_net_paid_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:380:67: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  380 |       if (test_TPCDS_Q24_customer_net_paid_result.data[i3] != tmp1.data[i3]) {
       |                                                                   ^
       |                                                                   ->
-/tmp/q24.c: In function ‘main’:
-/tmp/q24.c:465:19: warning: comparison between pointer and integer
-  465 |     if (!(x.color == "RED" && x.netpaid > 0.05 * avg_paid)) {
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:464:19: warning: comparison between pointer and integer
+  464 |     if (!(x.color == "RED" && x.netpaid > 0.05 * avg_paid)) {
       |                   ^~
-/tmp/q24.c:482:22: error: invalid operands to binary > (have ‘list_int’ and ‘list_int’)
-  482 |       if (tmp10[i13] > tmp10[i14]) {
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:481:22: error: invalid operands to binary > (have ‘list_int’ and ‘list_int’)
+  481 |       if (tmp10[i13] > tmp10[i14]) {
       |           ~~~~~~~~~~ ^ ~~~~~~~~~~
       |                |            |
       |                list_int     list_int
-/tmp/q24.c:517:45: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  517 |   test_TPCDS_Q24_customer_net_paid_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq242062592171/001/prog.c:516:45: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  516 |   test_TPCDS_Q24_customer_net_paid_result = result;
       |                                             ^~~~~~

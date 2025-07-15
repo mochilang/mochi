@@ -1,34 +1,34 @@
-/tmp/q49.c: In function ‘test_TPCDS_Q49_simplified’:
-/tmp/q49.c:329:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  329 |                    (tmp_item_t){.channel = "store",
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c: In function ‘test_TPCDS_Q49_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:328:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  328 |                    (tmp_item_t){.channel = "store",
       |                    ^
-/tmp/q49.c:346:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  346 |   if (test_TPCDS_Q49_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:345:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  345 |   if (test_TPCDS_Q49_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q49.c:350:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  350 |       if (test_TPCDS_Q49_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:349:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  349 |       if (test_TPCDS_Q49_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q49.c: In function ‘main’:
-/tmp/q49.c:431:19: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
-  431 |   list_int tmp = (concat(tmp4, tmp7, tmp10));
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:430:19: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  430 |   list_int tmp = (concat(tmp4, tmp7, tmp10));
       |                   ^~~~~~
-/tmp/q49.c:431:18: error: invalid initializer
-  431 |   list_int tmp = (concat(tmp4, tmp7, tmp10));
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:430:18: error: invalid initializer
+  430 |   list_int tmp = (concat(tmp4, tmp7, tmp10));
       |                  ^
-/tmp/q49.c:439:23: error: request for member ‘channel’ in something not a structure or union
-  439 |     result.data[0] = r.channel;
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:438:23: error: request for member ‘channel’ in something not a structure or union
+  438 |     result.data[0] = r.channel;
       |                       ^
-/tmp/q49.c:440:23: error: request for member ‘return_rank’ in something not a structure or union
-  440 |     result.data[1] = r.return_rank;
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:439:23: error: request for member ‘return_rank’ in something not a structure or union
+  439 |     result.data[1] = r.return_rank;
       |                       ^
-/tmp/q49.c:441:23: error: request for member ‘currency_rank’ in something not a structure or union
-  441 |     result.data[2] = r.currency_rank;
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:440:23: error: request for member ‘currency_rank’ in something not a structure or union
+  440 |     result.data[2] = r.currency_rank;
       |                       ^
-/tmp/q49.c:442:23: error: request for member ‘item’ in something not a structure or union
-  442 |     result.data[3] = r.item;
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:441:23: error: request for member ‘item’ in something not a structure or union
+  441 |     result.data[3] = r.item;
       |                       ^
-/tmp/q49.c:443:20: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
-  443 |     tmp16[tmp14] = result;
+/tmp/TestCCompiler_TPCDS_Goldenq492082997002/001/prog.c:442:20: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  442 |     tmp16[tmp14] = result;
       |                    ^~~~~~

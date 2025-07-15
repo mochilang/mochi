@@ -1,42 +1,42 @@
-/tmp/q40.c: In function ‘test_TPCDS_Q40_simplified’:
-/tmp/q40.c:275:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  275 |   if (test_TPCDS_Q40_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c: In function ‘test_TPCDS_Q40_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:274:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  274 |   if (test_TPCDS_Q40_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q40.c:279:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  279 |       if (test_TPCDS_Q40_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:278:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  278 |       if (test_TPCDS_Q40_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q40.c: In function ‘main’:
-/tmp/q40.c:316:7: warning: implicit declaration of function ‘records_item_list_t_create’ [-Wimplicit-function-declaration]
-  316 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:315:7: warning: implicit declaration of function ‘records_item_list_t_create’ [-Wimplicit-function-declaration]
+  315 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q40.c:316:47: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  316 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:315:47: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  315 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
       |                                               ^
       |                                               ->
-/tmp/q40.c:316:69: error: ‘(catalog_return_t *)&catalog_returns’ is a pointer; did you mean to use ‘->’?
-  316 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:315:69: error: ‘(catalog_return_t *)&catalog_returns’ is a pointer; did you mean to use ‘->’?
+  315 |       records_item_list_t_create(catalog_sales.len * catalog_returns.len *
       |                                                                     ^
       |                                                                     ->
-/tmp/q40.c:317:43: error: ‘(warehouse_t *)&warehouse’ is a pointer; did you mean to use ‘->’?
-  317 |                                  warehouse.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:316:43: error: ‘(warehouse_t *)&warehouse’ is a pointer; did you mean to use ‘->’?
+  316 |                                  warehouse.len * item.len * date_dim.len);
       |                                           ^
       |                                           ->
-/tmp/q40.c:317:54: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  317 |                                  warehouse.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:316:54: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  316 |                                  warehouse.len * item.len * date_dim.len);
       |                                                      ^
       |                                                      ->
-/tmp/q40.c:317:69: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  317 |                                  warehouse.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:316:69: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  316 |                                  warehouse.len * item.len * date_dim.len);
       |                                                                     ^
       |                                                                     ->
-/tmp/q40.c:350:41: error: invalid operands to binary == (have ‘catalog_return_t’ and ‘int’)
-  350 |                 .net = cs.price - (((cr == 0) ? 0.0 : cr.refunded))};
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:349:41: error: invalid operands to binary == (have ‘catalog_return_t’ and ‘int’)
+  349 |                 .net = cs.price - (((cr == 0) ? 0.0 : cr.refunded))};
       |                                         ^~
-/tmp/q40.c:380:41: error: invalid operands to binary == (have ‘catalog_return_t’ and ‘int’)
-  380 |                 .net = cs.price - (((cr == 0) ? 0.0 : cr.refunded))};
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:379:41: error: invalid operands to binary == (have ‘catalog_return_t’ and ‘int’)
+  379 |                 .net = cs.price - (((cr == 0) ? 0.0 : cr.refunded))};
       |                                         ^~
-/tmp/q40.c:414:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  414 |   test_TPCDS_Q40_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq40500994703/001/prog.c:413:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  413 |   test_TPCDS_Q40_simplified_result = result;
       |                                      ^~~~~~

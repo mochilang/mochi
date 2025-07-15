@@ -1,198 +1,198 @@
-/tmp/q77.c: In function ‘test_TPCDS_Q77_simplified’:
-/tmp/q77.c:528:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  528 |                    (tmp_item_t){.channel = "store channel",
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c: In function ‘test_TPCDS_Q77_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:527:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  527 |                    (tmp_item_t){.channel = "store channel",
       |                    ^
-/tmp/q77.c:540:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  540 |   if (test_TPCDS_Q77_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:539:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  539 |   if (test_TPCDS_Q77_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q77.c:544:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  544 |       if (test_TPCDS_Q77_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:543:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  543 |       if (test_TPCDS_Q77_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q77.c: In function ‘main’:
-/tmp/q77.c:603:22: error: subscripted value is neither array nor pointer nor vector
-  603 |         if (strcmp(ss[i7].name, ss.s_store_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:602:22: error: subscripted value is neither array nor pointer nor vector
+  602 |         if (strcmp(ss[i7].name, ss.s_store_sk) == 0) {
       |                      ^
-/tmp/q77.c:603:35: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  603 |         if (strcmp(ss[i7].name, ss.s_store_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:602:35: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  602 |         if (strcmp(ss[i7].name, ss.s_store_sk) == 0) {
       |                                 ~~^~~~~~~~~~~
       |                                   |
       |                                   int
-In file included from /tmp/q77.c:5:
+In file included from /tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:4:
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:609:11: error: subscripted value is neither array nor pointer nor vector
-  609 |         ss[ss_len].name = ss.s_store_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:608:11: error: subscripted value is neither array nor pointer nor vector
+  608 |         ss[ss_len].name = ss.s_store_sk;
       |           ^
-/tmp/q77.c:610:11: error: subscripted value is neither array nor pointer nor vector
-  610 |         ss[ss_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:609:11: error: subscripted value is neither array nor pointer nor vector
+  609 |         ss[ss_len].count = 1;
       |           ^
-/tmp/q77.c:614:11: error: subscripted value is neither array nor pointer nor vector
-  614 |         ss[tmp6].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:613:11: error: subscripted value is neither array nor pointer nor vector
+  613 |         ss[tmp6].count++;
       |           ^
-/tmp/q77.c:629:22: error: subscripted value is neither array nor pointer nor vector
-  629 |         if (strcmp(sr[i11].name, sr.s_store_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:628:22: error: subscripted value is neither array nor pointer nor vector
+  628 |         if (strcmp(sr[i11].name, sr.s_store_sk) == 0) {
       |                      ^
-/tmp/q77.c:629:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  629 |         if (strcmp(sr[i11].name, sr.s_store_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:628:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  628 |         if (strcmp(sr[i11].name, sr.s_store_sk) == 0) {
       |                                  ~~^~~~~~~~~~~
       |                                    |
       |                                    int
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:635:11: error: subscripted value is neither array nor pointer nor vector
-  635 |         sr[sr_len].name = sr.s_store_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:634:11: error: subscripted value is neither array nor pointer nor vector
+  634 |         sr[sr_len].name = sr.s_store_sk;
       |           ^
-/tmp/q77.c:636:11: error: subscripted value is neither array nor pointer nor vector
-  636 |         sr[sr_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:635:11: error: subscripted value is neither array nor pointer nor vector
+  635 |         sr[sr_len].count = 1;
       |           ^
-/tmp/q77.c:640:11: error: subscripted value is neither array nor pointer nor vector
-  640 |         sr[tmp10].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:639:11: error: subscripted value is neither array nor pointer nor vector
+  639 |         sr[tmp10].count++;
       |           ^
-/tmp/q77.c:655:22: error: subscripted value is neither array nor pointer nor vector
-  655 |         if (strcmp(cs[i15].name, cs.cs_call_center_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:654:22: error: subscripted value is neither array nor pointer nor vector
+  654 |         if (strcmp(cs[i15].name, cs.cs_call_center_sk) == 0) {
       |                      ^
-/tmp/q77.c:655:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  655 |         if (strcmp(cs[i15].name, cs.cs_call_center_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:654:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  654 |         if (strcmp(cs[i15].name, cs.cs_call_center_sk) == 0) {
       |                                  ~~^~~~~~~~~~~~~~~~~~
       |                                    |
       |                                    int
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:661:11: error: subscripted value is neither array nor pointer nor vector
-  661 |         cs[cs_len].name = cs.cs_call_center_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:660:11: error: subscripted value is neither array nor pointer nor vector
+  660 |         cs[cs_len].name = cs.cs_call_center_sk;
       |           ^
-/tmp/q77.c:662:11: error: subscripted value is neither array nor pointer nor vector
-  662 |         cs[cs_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:661:11: error: subscripted value is neither array nor pointer nor vector
+  661 |         cs[cs_len].count = 1;
       |           ^
-/tmp/q77.c:666:11: error: subscripted value is neither array nor pointer nor vector
-  666 |         cs[tmp14].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:665:11: error: subscripted value is neither array nor pointer nor vector
+  665 |         cs[tmp14].count++;
       |           ^
-/tmp/q77.c:681:22: error: subscripted value is neither array nor pointer nor vector
-  681 |         if (strcmp(cr[i19].name, cr.cr_call_center_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:680:22: error: subscripted value is neither array nor pointer nor vector
+  680 |         if (strcmp(cr[i19].name, cr.cr_call_center_sk) == 0) {
       |                      ^
-/tmp/q77.c:681:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  681 |         if (strcmp(cr[i19].name, cr.cr_call_center_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:680:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  680 |         if (strcmp(cr[i19].name, cr.cr_call_center_sk) == 0) {
       |                                  ~~^~~~~~~~~~~~~~~~~~
       |                                    |
       |                                    int
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:687:11: error: subscripted value is neither array nor pointer nor vector
-  687 |         cr[cr_len].name = cr.cr_call_center_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:686:11: error: subscripted value is neither array nor pointer nor vector
+  686 |         cr[cr_len].name = cr.cr_call_center_sk;
       |           ^
-/tmp/q77.c:688:11: error: subscripted value is neither array nor pointer nor vector
-  688 |         cr[cr_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:687:11: error: subscripted value is neither array nor pointer nor vector
+  687 |         cr[cr_len].count = 1;
       |           ^
-/tmp/q77.c:692:11: error: subscripted value is neither array nor pointer nor vector
-  692 |         cr[tmp18].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:691:11: error: subscripted value is neither array nor pointer nor vector
+  691 |         cr[tmp18].count++;
       |           ^
-/tmp/q77.c:707:22: error: subscripted value is neither array nor pointer nor vector
-  707 |         if (strcmp(ws[i23].name, ws.ws_web_page_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:706:22: error: subscripted value is neither array nor pointer nor vector
+  706 |         if (strcmp(ws[i23].name, ws.ws_web_page_sk) == 0) {
       |                      ^
-/tmp/q77.c:707:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  707 |         if (strcmp(ws[i23].name, ws.ws_web_page_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:706:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  706 |         if (strcmp(ws[i23].name, ws.ws_web_page_sk) == 0) {
       |                                  ~~^~~~~~~~~~~~~~~
       |                                    |
       |                                    int
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:713:11: error: subscripted value is neither array nor pointer nor vector
-  713 |         ws[ws_len].name = ws.ws_web_page_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:712:11: error: subscripted value is neither array nor pointer nor vector
+  712 |         ws[ws_len].name = ws.ws_web_page_sk;
       |           ^
-/tmp/q77.c:714:11: error: subscripted value is neither array nor pointer nor vector
-  714 |         ws[ws_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:713:11: error: subscripted value is neither array nor pointer nor vector
+  713 |         ws[ws_len].count = 1;
       |           ^
-/tmp/q77.c:718:11: error: subscripted value is neither array nor pointer nor vector
-  718 |         ws[tmp22].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:717:11: error: subscripted value is neither array nor pointer nor vector
+  717 |         ws[tmp22].count++;
       |           ^
-/tmp/q77.c:733:22: error: subscripted value is neither array nor pointer nor vector
-  733 |         if (strcmp(wr[i27].name, wr.wr_web_page_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:732:22: error: subscripted value is neither array nor pointer nor vector
+  732 |         if (strcmp(wr[i27].name, wr.wr_web_page_sk) == 0) {
       |                      ^
-/tmp/q77.c:733:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
-  733 |         if (strcmp(wr[i27].name, wr.wr_web_page_sk) == 0) {
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:732:36: warning: passing argument 2 of ‘strcmp’ makes pointer from integer without a cast [-Wint-conversion]
+  732 |         if (strcmp(wr[i27].name, wr.wr_web_page_sk) == 0) {
       |                                  ~~^~~~~~~~~~~~~~~
       |                                    |
       |                                    int
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘int’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q77.c:739:11: error: subscripted value is neither array nor pointer nor vector
-  739 |         wr[wr_len].name = wr.wr_web_page_sk;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:738:11: error: subscripted value is neither array nor pointer nor vector
+  738 |         wr[wr_len].name = wr.wr_web_page_sk;
       |           ^
-/tmp/q77.c:740:11: error: subscripted value is neither array nor pointer nor vector
-  740 |         wr[wr_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:739:11: error: subscripted value is neither array nor pointer nor vector
+  739 |         wr[wr_len].count = 1;
       |           ^
-/tmp/q77.c:744:11: error: subscripted value is neither array nor pointer nor vector
-  744 |         wr[tmp26].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:743:11: error: subscripted value is neither array nor pointer nor vector
+  743 |         wr[tmp26].count++;
       |           ^
-/tmp/q77.c:748:25: warning: implicit declaration of function ‘s_item_list_t_create’ [-Wimplicit-function-declaration]
-  748 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:747:25: warning: implicit declaration of function ‘s_item_list_t_create’ [-Wimplicit-function-declaration]
+  747 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
       |                         ^~~~~~~~~~~~~~~~~~~~
-/tmp/q77.c:748:48: error: ‘(ss_item_t *)&ss’ is a pointer; did you mean to use ‘->’?
-  748 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:747:48: error: ‘(ss_item_t *)&ss’ is a pointer; did you mean to use ‘->’?
+  747 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
       |                                                ^
       |                                                ->
-/tmp/q77.c:748:57: error: ‘(sr_item_t *)&sr’ is a pointer; did you mean to use ‘->’?
-  748 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:747:57: error: ‘(sr_item_t *)&sr’ is a pointer; did you mean to use ‘->’?
+  747 |   s_item_list_t tmp28 = s_item_list_t_create(ss.len * sr.len);
       |                                                         ^
       |                                                         ->
-/tmp/q77.c:763:37: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
-  763 |                      .returns = ((r == 0) ? 0.0 : r.returns),
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:762:37: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
+  762 |                      .returns = ((r == 0) ? 0.0 : r.returns),
       |                                     ^~
-/tmp/q77.c:764:48: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
-  764 |                      .profit = s.profit - (((r == 0) ? 0.0 : r.profit_loss))};
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:763:48: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
+  763 |                      .profit = s.profit - (((r == 0) ? 0.0 : r.profit_loss))};
       |                                                ^~
-/tmp/q77.c:773:37: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
-  773 |                      .returns = ((r == 0) ? 0.0 : r.returns),
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:772:37: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
+  772 |                      .returns = ((r == 0) ? 0.0 : r.returns),
       |                                     ^~
-/tmp/q77.c:774:48: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
-  774 |                      .profit = s.profit - (((r == 0) ? 0.0 : r.profit_loss))};
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:773:48: error: invalid operands to binary == (have ‘sr_item_t’ and ‘int’)
+  773 |                      .profit = s.profit - (((r == 0) ? 0.0 : r.profit_loss))};
       |                                                ^~
-/tmp/q77.c:779:25: warning: implicit declaration of function ‘c_item_list_t_create’ [-Wimplicit-function-declaration]
-  779 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:778:25: warning: implicit declaration of function ‘c_item_list_t_create’ [-Wimplicit-function-declaration]
+  778 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
       |                         ^~~~~~~~~~~~~~~~~~~~
-/tmp/q77.c:779:48: error: ‘(cs_item_t *)&cs’ is a pointer; did you mean to use ‘->’?
-  779 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:778:48: error: ‘(cs_item_t *)&cs’ is a pointer; did you mean to use ‘->’?
+  778 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
       |                                                ^
       |                                                ->
-/tmp/q77.c:779:57: error: ‘(cr_item_t *)&cr’ is a pointer; did you mean to use ‘->’?
-  779 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:778:57: error: ‘(cr_item_t *)&cr’ is a pointer; did you mean to use ‘->’?
+  778 |   c_item_list_t tmp33 = c_item_list_t_create(cs.len * cr.len);
       |                                                         ^
       |                                                         ->
-/tmp/q77.c:797:25: warning: implicit declaration of function ‘w_item_list_t_create’ [-Wimplicit-function-declaration]
-  797 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:796:25: warning: implicit declaration of function ‘w_item_list_t_create’ [-Wimplicit-function-declaration]
+  796 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
       |                         ^~~~~~~~~~~~~~~~~~~~
-/tmp/q77.c:797:48: error: ‘(ws_item_t *)&ws’ is a pointer; did you mean to use ‘->’?
-  797 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:796:48: error: ‘(ws_item_t *)&ws’ is a pointer; did you mean to use ‘->’?
+  796 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
       |                                                ^
       |                                                ->
-/tmp/q77.c:797:57: error: ‘(wr_item_t *)&wr’ is a pointer; did you mean to use ‘->’?
-  797 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:796:57: error: ‘(wr_item_t *)&wr’ is a pointer; did you mean to use ‘->’?
+  796 |   w_item_list_t tmp37 = w_item_list_t_create(ws.len * wr.len);
       |                                                         ^
       |                                                         ->
-/tmp/q77.c:812:37: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
-  812 |                      .returns = ((r == 0) ? 0.0 : r.returns),
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:811:37: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
+  811 |                      .returns = ((r == 0) ? 0.0 : r.returns),
       |                                     ^~
-/tmp/q77.c:813:48: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
-  813 |                      .profit = w.profit - (((r == 0) ? 0.0 : r.profit_loss))};
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:812:48: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
+  812 |                      .profit = w.profit - (((r == 0) ? 0.0 : r.profit_loss))};
       |                                                ^~
-/tmp/q77.c:822:37: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
-  822 |                      .returns = ((r == 0) ? 0.0 : r.returns),
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:821:37: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
+  821 |                      .returns = ((r == 0) ? 0.0 : r.returns),
       |                                     ^~
-/tmp/q77.c:823:48: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
-  823 |                      .profit = w.profit - (((r == 0) ? 0.0 : r.profit_loss))};
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:822:48: error: invalid operands to binary == (have ‘wr_item_t’ and ‘int’)
+  822 |                      .profit = w.profit - (((r == 0) ? 0.0 : r.profit_loss))};
       |                                                ^~
-/tmp/q77.c:828:26: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
-  828 |   list_int per_channel = concat(tmp28, tmp33, tmp37);
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:827:26: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  827 |   list_int per_channel = concat(tmp28, tmp33, tmp37);
       |                          ^~~~~~
-/tmp/q77.c:828:26: error: invalid initializer
-/tmp/q77.c:858:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  858 |   test_TPCDS_Q77_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:827:26: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq772698154696/001/prog.c:857:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  857 |   test_TPCDS_Q77_simplified_result = result;
       |                                      ^~~~~~

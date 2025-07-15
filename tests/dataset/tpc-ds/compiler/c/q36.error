@@ -1,16 +1,16 @@
-/tmp/q36.c: In function ‘test_TPCDS_Q36_simplified’:
-/tmp/q36.c:266:7: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  266 |       (tmp_item_t){
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c: In function ‘test_TPCDS_Q36_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c:265:7: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  265 |       (tmp_item_t){
       |       ^
-/tmp/q36.c:272:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  272 |   if (test_TPCDS_Q36_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c:271:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  271 |   if (test_TPCDS_Q36_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q36.c:276:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  276 |       if (test_TPCDS_Q36_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c:275:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  275 |       if (test_TPCDS_Q36_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q36.c: In function ‘main’:
-/tmp/q36.c:336:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  336 |   test_TPCDS_Q36_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq36555746198/001/prog.c:335:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  335 |   test_TPCDS_Q36_simplified_result = result;
       |                                      ^~~~~~

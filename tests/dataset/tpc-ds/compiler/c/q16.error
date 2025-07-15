@@ -1,35 +1,35 @@
-/tmp/q16.c:244:3: error: unknown type name ‘customer_address_t’
-  244 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:243:3: error: unknown type name ‘customer_address_t’
+  243 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q16.c: In function ‘create_customer_address_list’:
-/tmp/q16.c:249:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  249 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:248:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  248 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q16.c:249:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q16.c: At top level:
-/tmp/q16.c:281:3: error: unknown type name ‘catalog_return_t’
-  281 |   catalog_return_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:248:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: At top level:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:280:3: error: unknown type name ‘catalog_return_t’
+  280 |   catalog_return_t *data;
       |   ^~~~~~~~~~~~~~~~
-/tmp/q16.c: In function ‘create_catalog_return_list’:
-/tmp/q16.c:286:31: error: ‘catalog_return_t’ undeclared (first use in this function); did you mean ‘CatalogReturn’?
-  286 |   l.data = calloc(len, sizeof(catalog_return_t));
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: In function ‘create_catalog_return_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:285:31: error: ‘catalog_return_t’ undeclared (first use in this function); did you mean ‘CatalogReturn’?
+  285 |   l.data = calloc(len, sizeof(catalog_return_t));
       |                               ^~~~~~~~~~~~~~~~
       |                               CatalogReturn
-/tmp/q16.c: In function ‘distinct’:
-/tmp/q16.c:299:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
-  299 |     if (((!contains(tmp2, x)))) {
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: In function ‘distinct’:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:298:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  298 |     if (((!contains(tmp2, x)))) {
       |            ^~~~~~~~
-/tmp/q16.c: In function ‘test_TPCDS_Q16_shipping’:
-/tmp/q16.c:318:51: error: ‘(tmp7_t *)&tmp7’ is a pointer; did you mean to use ‘->’?
-  318 |   if (test_TPCDS_Q16_shipping_filtered.len != tmp7.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: In function ‘test_TPCDS_Q16_shipping’:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:317:51: error: ‘(tmp7_t *)&tmp7’ is a pointer; did you mean to use ‘->’?
+  317 |   if (test_TPCDS_Q16_shipping_filtered.len != tmp7.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q16.c:322:60: error: ‘(tmp7_t *)&tmp7’ is a pointer; did you mean to use ‘->’?
-  322 |       if (test_TPCDS_Q16_shipping_filtered.data[i9] != tmp7.data[i9]) {
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:321:60: error: ‘(tmp7_t *)&tmp7’ is a pointer; did you mean to use ‘->’?
+  321 |       if (test_TPCDS_Q16_shipping_filtered.data[i9] != tmp7.data[i9]) {
       |                                                            ^
       |                                                            ->
-/tmp/q16.c: In function ‘main’:
-/tmp/q16.c:382:38: error: incompatible types when assigning to type ‘list_int’ from type ‘filtered_item_list_t’
-  382 |   test_TPCDS_Q16_shipping_filtered = filtered;
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq161462815179/001/prog.c:381:38: error: incompatible types when assigning to type ‘list_int’ from type ‘filtered_item_list_t’
+  381 |   test_TPCDS_Q16_shipping_filtered = filtered;
       |                                      ^~~~~~~~

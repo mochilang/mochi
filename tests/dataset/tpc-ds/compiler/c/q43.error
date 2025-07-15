@@ -1,28 +1,28 @@
-/tmp/q43.c: In function ‘test_TPCDS_Q43_simplified’:
-/tmp/q43.c:252:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  252 |   if (test_TPCDS_Q43_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c: In function ‘test_TPCDS_Q43_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:251:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  251 |   if (test_TPCDS_Q43_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q43.c:256:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  256 |       if (test_TPCDS_Q43_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:255:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  255 |       if (test_TPCDS_Q43_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q43.c: In function ‘main’:
-/tmp/q43.c:291:7: warning: implicit declaration of function ‘records_item_list_t_create’ [-Wimplicit-function-declaration]
-  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:290:7: warning: implicit declaration of function ‘records_item_list_t_create’ [-Wimplicit-function-declaration]
+  290 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q43.c:291:42: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:290:42: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  290 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
       |                                          ^
       |                                          ->
-/tmp/q43.c:291:60: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:290:60: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  290 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
       |                                                            ^
       |                                                            ->
-/tmp/q43.c:291:72: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
-  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:290:72: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  290 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
       |                                                                        ^
       |                                                                        ->
-/tmp/q43.c:364:38: error: incompatible types when assigning to type ‘list_int’ from type ‘base_item_list_t’
-  364 |   test_TPCDS_Q43_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq433591584919/001/prog.c:363:38: error: incompatible types when assigning to type ‘list_int’ from type ‘base_item_list_t’
+  363 |   test_TPCDS_Q43_simplified_result = result;
       |                                      ^~~~~~

@@ -1,13 +1,13 @@
-/tmp/q32.c: In function ‘main’:
-/tmp/q32.c:198:38: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  198 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq323576200409/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq323576200409/001/prog.c:197:38: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  197 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
       |                                      ^
       |                                      ->
-/tmp/q32.c:198:49: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  198 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq323576200409/001/prog.c:197:49: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  197 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
       |                                                 ^
       |                                                 ->
-/tmp/q32.c:198:64: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  198 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq323576200409/001/prog.c:197:64: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  197 |       list_float_create(catalog_sales.len * item.len * date_dim.len);
       |                                                                ^
       |                                                                ->

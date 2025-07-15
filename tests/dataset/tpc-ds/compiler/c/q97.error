@@ -1,41 +1,41 @@
-/tmp/q97.c:102:34: error: unknown type name ‘map_string_int’
-  102 | static void _json_map_string_int(map_string_int m) {
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:101:34: error: unknown type name ‘map_string_int’
+  101 | static void _json_map_string_int(map_string_int m) {
       |                                  ^~~~~~~~~~~~~~
-/tmp/q97.c:222:8: error: unknown type name ‘map_string_int’
-  222 | static map_string_int test_TPCDS_Q97_overlap_result;
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:221:8: error: unknown type name ‘map_string_int’
+  221 | static map_string_int test_TPCDS_Q97_overlap_result;
       |        ^~~~~~~~~~~~~~
-/tmp/q97.c: In function ‘test_TPCDS_Q97_overlap’:
-/tmp/q97.c:224:38: error: request for member ‘store_only’ in something not a structure or union
-  224 |   if (!(test_TPCDS_Q97_overlap_result.store_only == 1 &&
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c: In function ‘test_TPCDS_Q97_overlap’:
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:223:38: error: request for member ‘store_only’ in something not a structure or union
+  223 |   if (!(test_TPCDS_Q97_overlap_result.store_only == 1 &&
       |                                      ^
-/tmp/q97.c:225:38: error: request for member ‘catalog_only’ in something not a structure or union
-  225 |         test_TPCDS_Q97_overlap_result.catalog_only == 1 &&
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:224:38: error: request for member ‘catalog_only’ in something not a structure or union
+  224 |         test_TPCDS_Q97_overlap_result.catalog_only == 1 &&
       |                                      ^
-/tmp/q97.c:226:38: error: request for member ‘store_and_catalog’ in something not a structure or union
-  226 |         test_TPCDS_Q97_overlap_result.store_and_catalog == 1)) {
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:225:38: error: request for member ‘store_and_catalog’ in something not a structure or union
+  225 |         test_TPCDS_Q97_overlap_result.store_and_catalog == 1)) {
       |                                      ^
-/tmp/q97.c: In function ‘main’:
-/tmp/q97.c:258:27: warning: implicit declaration of function ‘csci_item_list_t_create’ [-Wimplicit-function-declaration]
-  258 |   csci_item_list_t tmp5 = csci_item_list_t_create(csci.len);
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:257:27: warning: implicit declaration of function ‘csci_item_list_t_create’ [-Wimplicit-function-declaration]
+  257 |   csci_item_list_t tmp5 = csci_item_list_t_create(csci.len);
       |                           ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q97.c:258:27: error: invalid initializer
-/tmp/q97.c:262:11: error: ‘s’ undeclared (first use in this function)
-  262 |     if (!(s.customer_sk == c.customer_sk && s.item_sk == c.item_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:257:27: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:261:11: error: ‘s’ undeclared (first use in this function)
+  261 |     if (!(s.customer_sk == c.customer_sk && s.item_sk == c.item_sk)) {
       |           ^
-/tmp/q97.c:262:11: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q97.c:281:28: warning: implicit declaration of function ‘ssci_item_list_t_create’ [-Wimplicit-function-declaration]
-  281 |   ssci_item_list_t tmp11 = ssci_item_list_t_create(ssci.len);
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:261:11: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:280:28: warning: implicit declaration of function ‘ssci_item_list_t_create’ [-Wimplicit-function-declaration]
+  280 |   ssci_item_list_t tmp11 = ssci_item_list_t_create(ssci.len);
       |                            ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q97.c:281:28: error: invalid initializer
-/tmp/q97.c:285:28: error: ‘c’ undeclared (first use in this function)
-  285 |     if (!(s.customer_sk == c.customer_sk && s.item_sk == c.item_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:280:28: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:284:28: error: ‘c’ undeclared (first use in this function)
+  284 |     if (!(s.customer_sk == c.customer_sk && s.item_sk == c.item_sk)) {
       |                            ^
-/tmp/q97.c:304:3: error: unknown type name ‘map_string_int’
-  304 |   map_string_int result = (tmp_item_t){.store_only = store_only,
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:303:3: error: unknown type name ‘map_string_int’
+  303 |   map_string_int result = (tmp_item_t){.store_only = store_only,
       |   ^~~~~~~~~~~~~~
-/tmp/q97.c:304:27: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
-  304 |   map_string_int result = (tmp_item_t){.store_only = store_only,
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:303:27: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  303 |   map_string_int result = (tmp_item_t){.store_only = store_only,
       |                           ^
-/tmp/q97.c:307:3: warning: implicit declaration of function ‘_json_map_string_int’ [-Wimplicit-function-declaration]
-  307 |   _json_map_string_int(result);
+/tmp/TestCCompiler_TPCDS_Goldenq972623130418/001/prog.c:306:3: warning: implicit declaration of function ‘_json_map_string_int’ [-Wimplicit-function-declaration]
+  306 |   _json_map_string_int(result);
       |   ^~~~~~~~~~~~~~~~~~~~
