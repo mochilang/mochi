@@ -30,6 +30,7 @@ type Compiler struct {
 	models             bool
 	methodFields       map[string]bool
 	tupleFields        map[string]map[string]int
+	tupleTypes         map[string]map[string]types.Type
 	currentGroup       string
 	groupFields        map[string]bool
 	autoStructs        map[string]types.StructType
@@ -52,6 +53,7 @@ func New(env *types.Env) *Compiler {
 		tmpCount:           0,
 		methodFields:       nil,
 		tupleFields:        make(map[string]map[string]int),
+		tupleTypes:         make(map[string]map[string]types.Type),
 		currentGroup:       "",
 		groupFields:        nil,
 		autoStructs:        make(map[string]types.StructType),
@@ -759,6 +761,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "(" + expr + ")", nil
 	case p.Selector != nil:
 		expr := sanitizeName(p.Selector.Root)
+		rootName := expr
 		var typ types.Type = types.AnyType{}
 		if c.env != nil {
 			if u, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
@@ -777,13 +780,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		// a group-by key field, reference it via the current group
 		if _, ok := typ.(types.AnyType); ok && len(p.Selector.Tail) == 0 &&
 			c.currentGroup != "" && c.groupFields[sanitizeName(p.Selector.Root)] {
-			c.use("_get")
-			return fmt.Sprintf("_get(_get(%s, \"key\"), %q)", c.currentGroup, sanitizeName(p.Selector.Root)), nil
+			return fmt.Sprintf("%s.key.%s", c.currentGroup, sanitizeName(p.Selector.Root)), nil
 		}
 		tail := p.Selector.Tail
-		if fm, ok := c.tupleFields[expr]; ok && len(tail) > 0 {
-			if idx, ok := fm[sanitizeName(tail[0])]; ok {
+		if fm, ok := c.tupleFields[rootName]; ok && len(tail) > 0 {
+			key := sanitizeName(tail[0])
+			if idx, ok := fm[key]; ok {
 				expr += fmt.Sprintf("[%d]", idx)
+				if ftm, ok := c.tupleTypes[rootName]; ok {
+					if t, ok := ftm[key]; ok {
+						typ = t
+					} else {
+						typ = types.AnyType{}
+					}
+				} else {
+					typ = types.AnyType{}
+				}
 				tail = tail[1:]
 			}
 		}
@@ -798,8 +810,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
 					typ = ft
 				} else {
-					c.use("_get")
-					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					expr = fmt.Sprintf("(%s.get(%q) if isinstance(%s, dict) else getattr(%s, %q))", expr, sanitizeName(s), expr, expr, sanitizeName(s))
 					typ = types.AnyType{}
 				}
 			case types.UnionType:
@@ -807,8 +818,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					expr = fmt.Sprintf("%s.%s", expr, sanitizeName(s))
 					typ = ft
 				} else {
-					c.use("_get")
-					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					expr = fmt.Sprintf("(%s.get(%q) if isinstance(%s, dict) else getattr(%s, %q))", expr, sanitizeName(s), expr, expr, sanitizeName(s))
 					typ = types.AnyType{}
 				}
 			case types.GroupType:
@@ -820,13 +830,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					expr = fmt.Sprintf("%s.Items", expr)
 					typ = types.ListType{Elem: t.Elem}
 				default:
-					c.use("_get")
-					expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+					expr = fmt.Sprintf("(%s.get(%q) if isinstance(%s, dict) else getattr(%s, %q))", expr, sanitizeName(s), expr, expr, sanitizeName(s))
 					typ = types.AnyType{}
 				}
 			default:
-				c.use("_get")
-				expr = fmt.Sprintf("_get(%s, %q)", expr, sanitizeName(s))
+				expr = fmt.Sprintf("(%s.get(%q) if isinstance(%s, dict) else getattr(%s, %q))", expr, sanitizeName(s), expr, expr, sanitizeName(s))
 				typ = types.AnyType{}
 			}
 		}
@@ -1459,6 +1467,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.tupleFields[sanitizeName(q.Var)] = fm
 			defer delete(c.tupleFields, sanitizeName(q.Var))
 		}
+		if ft, ok := c.tupleTypes[sanitizeName(name)]; ok {
+			c.tupleTypes[sanitizeName(q.Var)] = ft
+			defer delete(c.tupleTypes, sanitizeName(q.Var))
+		}
 	}
 
 	child := types.NewEnv(c.env)
@@ -1591,10 +1603,18 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		allParams := strings.Join(paramCopy, ", ")
 		fieldMap := map[string]int{}
+		fieldTypes := map[string]types.Type{}
 		for i, n := range paramCopy {
-			fieldMap[sanitizeName(n)] = i
+			s := sanitizeName(n)
+			fieldMap[s] = i
+			if t, err := child.GetVar(n); err == nil {
+				fieldTypes[s] = t
+			} else {
+				fieldTypes[s] = types.AnyType{}
+			}
 		}
 		c.tupleFields[sanitizeName(q.Group.Name)] = fieldMap
+		c.tupleTypes[sanitizeName(q.Group.Name)] = fieldTypes
 		rowExpr := "(" + allParams + ")"
 		selectFn := fmt.Sprintf("lambda %s: %s", allParams, rowExpr)
 		var whereFn string
@@ -1698,6 +1718,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.writeln("")
 
 		delete(c.tupleFields, sanitizeName(q.Group.Name))
+		delete(c.tupleTypes, sanitizeName(q.Group.Name))
 		c.use("_query")
 		c.use("_group_by")
 		c.use("_group")
