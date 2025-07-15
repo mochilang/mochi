@@ -296,12 +296,6 @@ const (
 		"        for _,k in ipairs(keys) do out[k] = sort(x[k]) end\n" +
 		"        return out\n" +
 		"    end\n" +
-		"    local ok, json = pcall(require, 'json')\n" +
-		"    if not ok then ok, json = pcall(require, 'cjson') end\n" +
-		"    if ok then\n" +
-		"        print(json.encode(sort(v)))\n" +
-		"        return\n" +
-		"    end\n" +
 		"    local function enc(x)\n" +
 		"        local t = type(x)\n" +
 		"        if t == 'nil' then\n" +

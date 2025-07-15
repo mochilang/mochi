@@ -1,2 +1,1 @@
-[{"warehouse":"Warehouse1","d120":1,"dmore":1,"cc_name":"CC1","d90":1,"d30":1,"d60":1,"sm_type":"EXP"}]
-   test TPCDS Q99 buckets ... ok (6.0µs)
+[{"cc_name":"CC1","d120":1,"d30":1,"d60":1,"d90":1,"dmore":1,"sm_type":"EXP","warehouse":"Warehouse1"}]

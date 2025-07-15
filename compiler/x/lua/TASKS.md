@@ -9,3 +9,7 @@
 
 ## Remaining Work
 - [ ] Improve map pretty-printing for joins
+
+## Progress (2025-07-15 04:49)
+- Generated Lua code for all TPC-DS queries using new helper script.
+- Added golden test covering TPC-DS dataset to verify compilation and runtime output.
