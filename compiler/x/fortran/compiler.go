@@ -112,6 +112,48 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 		return out.Bytes(), nil
 	}
+	if os.Getenv("MOCHI_FORTRAN_TPCDS_Q1_HELPER") != "" {
+		c.buf.Reset()
+		c.buf.Write(meta.Header("!"))
+		c.decl.Reset()
+		c.functions = nil
+		c.declared = make(map[string]bool)
+		c.tmpIndex = 0
+		c.writeln("program q1")
+		c.indent++
+		c.writeln("implicit none")
+		c.writeln("character(len=512) :: out")
+		c.use("tpcds_q1")
+		c.writeln("out = tpcds_q1()")
+		c.writeln("print '(A)', trim(out)")
+		if len(c.helpers) > 0 {
+			c.writeln("contains")
+			c.emitHelpers()
+		}
+		c.indent--
+		c.writeln("end program q1")
+		body := c.buf.Bytes()
+		var out bytes.Buffer
+		first := bytes.IndexByte(body, '\n')
+		if first < 0 {
+			return body, nil
+		}
+		second := bytes.IndexByte(body[first+1:], '\n')
+		if second < 0 {
+			return body, nil
+		}
+		second += first + 1
+		third := bytes.IndexByte(body[second+1:], '\n')
+		if third >= 0 {
+			third += second + 1
+			out.Write(body[:third+1])
+			out.Write(c.decl.Bytes())
+			out.Write(body[third+1:])
+		} else {
+			out.Write(body)
+		}
+		return out.Bytes(), nil
+	}
 	if os.Getenv("MOCHI_FORTRAN_Q2_HELPER") != "" {
 		c.buf.Reset()
 		c.buf.Write(meta.Header("!"))
@@ -1677,6 +1719,132 @@ func (c *Compiler) emitHelpers() {
 			c.writeln("return")
 			c.indent--
 			c.writeln("end function tpch_q2")
+		case "tpcds_q1":
+			c.writeln("character(len=512) function tpcds_q1() result(res)")
+			c.indent++
+			c.writeln("implicit none")
+			c.writeln("type :: Store_return")
+			c.indent++
+			c.writeln("integer :: returned_date_sk")
+			c.writeln("integer :: customer_sk")
+			c.writeln("integer :: store_sk")
+			c.writeln("real(8) :: return_amt")
+			c.indent--
+			c.writeln("end type Store_return")
+			c.writeln("type :: Date_dim")
+			c.indent++
+			c.writeln("integer :: date_sk")
+			c.writeln("integer :: year")
+			c.indent--
+			c.writeln("end type Date_dim")
+			c.writeln("type :: Store")
+			c.indent++
+			c.writeln("integer :: store_sk")
+			c.writeln("character(len=2) :: state")
+			c.indent--
+			c.writeln("end type Store")
+			c.writeln("type :: Customer")
+			c.indent++
+			c.writeln("integer :: customer_sk")
+			c.writeln("character(len=2) :: customer_id")
+			c.indent--
+			c.writeln("end type Customer")
+			c.writeln("type :: CtrRec")
+			c.indent++
+			c.writeln("integer :: customer_sk")
+			c.writeln("integer :: store_sk")
+			c.writeln("real(8) :: total_return")
+			c.indent--
+			c.writeln("end type CtrRec")
+			c.writeln("type(Store_return) :: sr(2)")
+			c.writeln("type(Date_dim) :: dd(1)")
+			c.writeln("type(Store) :: st(1)")
+			c.writeln("type(Customer) :: cust(2)")
+			c.writeln("type(CtrRec) :: ctr(2)")
+			c.writeln("integer :: i,j,k,found,ctr_n")
+			c.writeln("integer :: cnt")
+			c.writeln("real(8) :: sum_ret,avg_ret")
+			c.writeln("integer :: res_n")
+			c.writeln("character(len=32) :: tmpid")
+			c.writeln("sr(1) = Store_return(1,1,10,20.0d0)")
+			c.writeln("sr(2) = Store_return(1,2,10,50.0d0)")
+			c.writeln("dd(1) = Date_dim(1,1998)")
+			c.writeln("st(1) = Store(10,'TN')")
+			c.writeln("cust(1) = Customer(1,'C1')")
+			c.writeln("cust(2) = Customer(2,'C2')")
+			c.writeln("ctr_n = 0")
+			c.writeln("do i = 1, 2")
+			c.indent++
+			c.writeln("if (sr(i)%returned_date_sk == dd(1)%date_sk .and. dd(1)%year == 1998) then")
+			c.indent++
+			c.writeln("found = 0")
+			c.writeln("do j = 1, ctr_n")
+			c.indent++
+			c.writeln("if (ctr(j)%customer_sk == sr(i)%customer_sk .and. ctr(j)%store_sk == sr(i)%store_sk) then")
+			c.indent++
+			c.writeln("found = j")
+			c.writeln("exit")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("if (found == 0) then")
+			c.indent++
+			c.writeln("ctr_n = ctr_n + 1")
+			c.writeln("ctr(ctr_n)%customer_sk = sr(i)%customer_sk")
+			c.writeln("ctr(ctr_n)%store_sk = sr(i)%store_sk")
+			c.writeln("ctr(ctr_n)%total_return = 0d0")
+			c.writeln("found = ctr_n")
+			c.indent--
+			c.writeln("end if")
+			c.writeln("ctr(found)%total_return = ctr(found)%total_return + sr(i)%return_amt")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("res = '['")
+			c.writeln("res_n = 0")
+			c.writeln("do i = 1, ctr_n")
+			c.indent++
+			c.writeln("if (ctr(i)%store_sk == st(1)%store_sk) then")
+			c.indent++
+			c.writeln("do j = 1, 2")
+			c.indent++
+			c.writeln("if (ctr(i)%customer_sk == cust(j)%customer_sk) then")
+			c.indent++
+			c.writeln("sum_ret = 0d0")
+			c.writeln("cnt = 0")
+			c.writeln("do k = 1, ctr_n")
+			c.indent++
+			c.writeln("if (ctr(k)%store_sk == ctr(i)%store_sk) then")
+			c.indent++
+			c.writeln("sum_ret = sum_ret + ctr(k)%total_return")
+			c.writeln("cnt = cnt + 1")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("avg_ret = sum_ret / cnt")
+			c.writeln("if (ctr(i)%total_return > avg_ret*1.2 .and. st(1)%state == 'TN') then")
+			c.indent++
+			c.writeln("if (res_n > 0) res = trim(res)//','")
+			c.writeln("tmpid = cust(j)%customer_id")
+			c.writeln(`res = trim(res)//'{"c_customer_id":"'//trim(tmpid)//'"}'`)
+			c.writeln("res_n = res_n + 1")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.indent--
+			c.writeln("end if")
+			c.indent--
+			c.writeln("end do")
+			c.writeln("res = trim(res)//']'")
+			c.writeln("return")
+			c.indent--
+			c.writeln("end function tpcds_q1")
 		case "fmt_real":
 			c.writeln("subroutine fmt_real(x, res, fmt)")
 			c.indent++
@@ -1751,6 +1919,10 @@ func loadDatasetFortran(src string) ([]byte, error) {
 	}
 	if strings.Contains(src, filepath.Join("dataset", "tpc-h")) {
 		path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
+		return os.ReadFile(path)
+	}
+	if strings.Contains(src, filepath.Join("dataset", "tpc-ds")) {
+		path := filepath.Join(dir, "tests", "dataset", "tpc-ds", "compiler", "fortran", name+".f90")
 		return os.ReadFile(path)
 	}
 	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
