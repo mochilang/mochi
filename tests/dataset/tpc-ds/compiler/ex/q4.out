@@ -1,1 +1,50 @@
-[]
+warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 89 │                    %{items: date_dim, on: fn c, s, d -> s.ss_sold_date_sk == d.d_date_sk end}
+    │                                              ~
+    │
+    └─ /tmp/q4.exs:89:46: Main.main/0
+
+    warning: variable "s" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 99 │                _group_by(rows, fn %{c: c, s: s, d: d} ->
+    │                                              ~
+    │
+    └─ /tmp/q4.exs:99:46: Main.main/0
+
+     warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 140 │                    %{items: date_dim, on: fn c, cs, d -> cs.cs_sold_date_sk == d.d_date_sk end}
+     │                                              ~
+     │
+     └─ /tmp/q4.exs:140:46: Main.main/0
+
+     warning: variable "cs" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 150 │                _group_by(rows, fn %{c: c, cs: cs, d: d} ->
+     │                                               ~
+     │
+     └─ /tmp/q4.exs:150:47: Main.main/0
+
+     warning: variable "c" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 192 │                  %{items: date_dim, on: fn c, ws, d -> ws.ws_sold_date_sk == d.d_date_sk end}
+     │                                            ~
+     │
+     └─ /tmp/q4.exs:192:44: Main.main/0
+
+     warning: variable "ws" is unused (if the variable is not meant to be used, prefix it with an underscore)
+     │
+ 202 │              _group_by(rows, fn %{c: c, ws: ws, d: d} ->
+     │                                             ~
+     │
+     └─ /tmp/q4.exs:202:45: Main.main/0
+
+     warning: default values for the optional arguments in _query/3 are never used
+     │
+ 376 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ /tmp/q4.exs:376:8: Main (module)
+
+[{"customer_first_name":"Alice","customer_id":"C1","customer_last_name":"A","customer_login":"alice"}]
