@@ -99,3 +99,4 @@ should compile and run successfully.
 - 2025-07-14 12:25 – Updated TPCH q1 code generation to infer struct lists in tests
 - 2025-07-15 03:06 – Generated C code for JOB queries q1-q33 and extended golden tests
 - 2025-07-15 03:20 - Attempted JOB query compilation; added golden update flag in tests. Compilation still fails for many queries.
+- 2025-07-15 03:31 – Added error capture to JOB golden tests and re-ran q1-q33. Compilation still failing but .error files are recorded.

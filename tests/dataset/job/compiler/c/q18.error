@@ -1,0 +1,78 @@
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c: In function ‘test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions’:
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:310:83: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  310 |   if (!(test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions_result ==
+      |                                                                                   ^~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:350:27: warning: implicit declaration of function ‘rows_item_list_t_create’ [-Wimplicit-function-declaration]
+  350 |   rows_item_list_t tmp1 = rows_item_list_t_create(
+      |                           ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:351:16: error: ‘(cast_info_t *)&cast_info’ is a pointer; did you mean to use ‘->’?
+  351 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:351:27: error: ‘(name_t *)&name’ is a pointer; did you mean to use ‘->’?
+  351 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                           ^
+      |                           ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:351:39: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  351 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                                       ^
+      |                                       ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:351:56: error: ‘(movie_info_t *)&movie_info’ is a pointer; did you mean to use ‘->’?
+  351 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                                                        ^
+      |                                                        ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:352:21: error: ‘(movie_info_idx_t *)&movie_info_idx’ is a pointer; did you mean to use ‘->’?
+  352 |       movie_info_idx.len * info_type.len * info_type.len);
+      |                     ^
+      |                     ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:352:37: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  352 |       movie_info_idx.len * info_type.len * info_type.len);
+      |                                     ^
+      |                                     ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:352:53: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  352 |       movie_info_idx.len * info_type.len * info_type.len);
+      |                                                     ^
+      |                                                     ->
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:386:53: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  386 |                 if (!((contains_list_string(rows, ci.note) &&
+      |                                                   ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:388:60: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  388 |                        n.gender == "m" && contains_string(n.name, "Tim") &&
+      |                                                           ~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:86:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   86 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:405:20: error: conflicting types for ‘rows’; have ‘rows_item_list_t’
+  405 |   rows_item_list_t rows = tmp1;
+      |                    ^~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:347:15: note: previous definition of ‘rows’ with type ‘list_string’
+  347 |   list_string rows = list_string_create(2);
+      |               ^~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:422:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  422 |   int tmp16 = int_create(rows.len);
+      |               ^~~~~~~~~~
+      |               list_int_create
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:426:10: error: request for member ‘data’ in something not a structure or union
+  426 |     tmp16.data[tmp17] = r.title;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:429:8: error: request for member ‘len’ in something not a structure or union
+  429 |   tmp16.len = tmp17;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:432:69: error: incompatible type for argument 1 of ‘_min_string’
+  432 |                                          .movie_title = _min_string(tmp16)};
+      |                                                                     ^~~~~
+      |                                                                     |
+      |                                                                     int
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:447:7: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  447 |       result;
+      |       ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq182931055666/001/prog.c:451:13: error: request for member ‘data’ in something not a structure or union
+  451 |   free(tmp16.data);
+      |             ^

@@ -1,0 +1,141 @@
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c: In function ‘test_Q13_finds_earliest_German_movie_info’:
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:319:58: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  319 |   if (!(test_Q13_finds_earliest_German_movie_info_result ==
+      |                                                          ^~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:364:33: warning: implicit declaration of function ‘candidates_item_list_t_create’ [-Wimplicit-function-declaration]
+  364 |   candidates_item_list_t tmp1 = candidates_item_list_t_create(
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:365:19: error: ‘(company_name_t *)&company_name’ is a pointer; did you mean to use ‘->’?
+  365 |       company_name.len * movie_companies.len * company_type.len * title.len *
+      |                   ^
+      |                   ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:365:41: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  365 |       company_name.len * movie_companies.len * company_type.len * title.len *
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:365:60: error: ‘(company_type_t *)&company_type’ is a pointer; did you mean to use ‘->’?
+  365 |       company_name.len * movie_companies.len * company_type.len * title.len *
+      |                                                            ^
+      |                                                            ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:365:72: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  365 |       company_name.len * movie_companies.len * company_type.len * title.len *
+      |                                                                        ^
+      |                                                                        ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:366:16: error: ‘(kind_type_t *)&kind_type’ is a pointer; did you mean to use ‘->’?
+  366 |       kind_type.len * movie_info.len * info_type.len * movie_info_idx.len *
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:366:33: error: ‘(movie_info_t *)&movie_info’ is a pointer; did you mean to use ‘->’?
+  366 |       kind_type.len * movie_info.len * info_type.len * movie_info_idx.len *
+      |                                 ^
+      |                                 ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:366:49: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  366 |       kind_type.len * movie_info.len * info_type.len * movie_info_idx.len *
+      |                                                 ^
+      |                                                 ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:366:70: error: ‘(movie_info_idx_t *)&movie_info_idx’ is a pointer; did you mean to use ‘->’?
+  366 |       kind_type.len * movie_info.len * info_type.len * movie_info_idx.len *
+      |                                                                      ^
+      |                                                                      ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:367:16: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  367 |       info_type.len);
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:433:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  433 |   int tmp12 = int_create(candidates.len);
+      |               ^~~~~~~~~~
+      |               list_int_create
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:439:10: error: request for member ‘data’ in something not a structure or union
+  439 |     tmp12.data[tmp13] = x.release_date;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:443:8: error: request for member ‘len’ in something not a structure or union
+  443 |   tmp12.len = tmp13;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:450:34: error: request for member ‘data’ in something not a structure or union
+  450 |         const char *tmp17 = tmp12.data[i18];
+      |                                  ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:451:14: error: request for member ‘data’ in something not a structure or union
+  451 |         tmp12.data[i18] = tmp12.data[i19];
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:451:32: error: request for member ‘data’ in something not a structure or union
+  451 |         tmp12.data[i18] = tmp12.data[i19];
+      |                                ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:452:14: error: request for member ‘data’ in something not a structure or union
+  452 |         tmp12.data[i19] = tmp17;
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:462:10: error: request for member ‘data’ in something not a structure or union
+  462 |     tmp20.data[tmp21] = x.rating;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:466:8: error: request for member ‘len’ in something not a structure or union
+  466 |   tmp20.len = tmp21;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:473:34: error: request for member ‘data’ in something not a structure or union
+  473 |         const char *tmp25 = tmp20.data[i26];
+      |                                  ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:474:14: error: request for member ‘data’ in something not a structure or union
+  474 |         tmp20.data[i26] = tmp20.data[i27];
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:474:32: error: request for member ‘data’ in something not a structure or union
+  474 |         tmp20.data[i26] = tmp20.data[i27];
+      |                                ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:475:14: error: request for member ‘data’ in something not a structure or union
+  475 |         tmp20.data[i27] = tmp25;
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:485:10: error: request for member ‘data’ in something not a structure or union
+  485 |     tmp28.data[tmp29] = x.german_movie;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:489:8: error: request for member ‘len’ in something not a structure or union
+  489 |   tmp28.len = tmp29;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:496:34: error: request for member ‘data’ in something not a structure or union
+  496 |         const char *tmp33 = tmp28.data[i34];
+      |                                  ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:497:14: error: request for member ‘data’ in something not a structure or union
+  497 |         tmp28.data[i34] = tmp28.data[i35];
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:497:32: error: request for member ‘data’ in something not a structure or union
+  497 |         tmp28.data[i34] = tmp28.data[i35];
+      |                                ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:498:14: error: request for member ‘data’ in something not a structure or union
+  498 |         tmp28.data[i35] = tmp33;
+      |              ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:502:65: error: request for member ‘data’ in something not a structure or union
+  502 |   result_item_t result = (result_item_t){.release_date = (tmp12).data[0],
+      |                                                                 ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:503:59: error: request for member ‘data’ in something not a structure or union
+  503 |                                          .rating = (tmp20).data[0],
+      |                                                           ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:504:65: error: request for member ‘data’ in something not a structure or union
+  504 |                                          .german_movie = (tmp28).data[0]};
+      |                                                                 ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:508:22: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  508 |   _json_string(result.release_date);
+      |                ~~~~~~^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:512:22: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  512 |   _json_string(result.rating);
+      |                ~~~~~~^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:516:22: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  516 |   _json_string(result.german_movie);
+      |                ~~~~~~^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:518:54: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  518 |   test_Q13_finds_earliest_German_movie_info_result = result;
+      |                                                      ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:520:13: error: request for member ‘data’ in something not a structure or union
+  520 |   free(tmp12.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:521:13: error: request for member ‘data’ in something not a structure or union
+  521 |   free(tmp20.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq131053870555/001/prog.c:522:13: error: request for member ‘data’ in something not a structure or union
+  522 |   free(tmp28.data);
+      |             ^

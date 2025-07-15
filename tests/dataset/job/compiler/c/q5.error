@@ -1,0 +1,62 @@
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c: In function ‘test_Q5_finds_the_lexicographically_first_qualifying_title’:
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:257:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  257 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:265:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  265 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:315:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  315 |   int tmp4 = int_create(company_type.len * movie_companies.len *
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:315:37: error: ‘(company_type_t *)&company_type’ is a pointer; did you mean to use ‘->’?
+  315 |   int tmp4 = int_create(company_type.len * movie_companies.len *
+      |                                     ^
+      |                                     ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:315:59: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  315 |   int tmp4 = int_create(company_type.len * movie_companies.len *
+      |                                                           ^
+      |                                                           ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:316:35: error: ‘(movie_info_t *)&movie_info’ is a pointer; did you mean to use ‘->’?
+  316 |                         movie_info.len * info_type.len * title.len);
+      |                                   ^
+      |                                   ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:316:51: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  316 |                         movie_info.len * info_type.len * title.len);
+      |                                                   ^
+      |                                                   ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:316:63: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  316 |                         movie_info.len * info_type.len * title.len);
+      |                                                               ^
+      |                                                               ->
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:341:33: error: expected ‘)’ before ‘in’
+  341 |                   "(theatrical)" in mc.note && "(France)" in mc.note &&
+      |                                 ^~~
+      |                                 )
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:340:18: note: to match this ‘(’
+  340 |             if (!((strcmp(ct.kind, "production companies") == 0) &&
+      |                  ^
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:346:17: error: request for member ‘data’ in something not a structure or union
+  346 |             tmp4.data[tmp5] = t.title;
+      |                 ^
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:353:7: error: request for member ‘len’ in something not a structure or union
+  353 |   tmp4.len = tmp5;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:354:7: error: conflicting types for ‘candidate_titles’; have ‘int’
+  354 |   int candidate_titles = tmp4;
+      |       ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:306:15: note: previous definition of ‘candidate_titles’ with type ‘list_string’
+  306 |   list_string candidate_titles = list_string_create(8);
+      |               ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:366:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  366 |     _json_string(it.typical_european_movie);
+      |                  ~~^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:79:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   79 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq51014489900/001/prog.c:370:71: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  370 |   test_Q5_finds_the_lexicographically_first_qualifying_title_result = result;
+      |                                                                       ^~~~~~

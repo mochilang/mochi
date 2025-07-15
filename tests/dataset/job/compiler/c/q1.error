@@ -1,0 +1,93 @@
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c: In function ‘test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production’:
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:283:86: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  283 |   if (!(test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production_result ==
+      |                                                                                      ^~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:317:31: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
+  317 |   filtered_item_list_t tmp1 = filtered_item_list_t_create(
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:318:19: error: ‘(company_type_t *)&company_type’ is a pointer; did you mean to use ‘->’?
+  318 |       company_type.len * movie_companies.len * title.len * movie_info_idx.len *
+      |                   ^
+      |                   ->
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:318:41: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  318 |       company_type.len * movie_companies.len * title.len * movie_info_idx.len *
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:318:53: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  318 |       company_type.len * movie_companies.len * title.len * movie_info_idx.len *
+      |                                                     ^
+      |                                                     ->
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:318:74: error: ‘(movie_info_idx_t *)&movie_info_idx’ is a pointer; did you mean to use ‘->’?
+  318 |       company_type.len * movie_companies.len * title.len * movie_info_idx.len *
+      |                                                                          ^
+      |                                                                          ->
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:319:16: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  319 |       info_type.len);
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:345:40: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  345 |                   ((!contains_string(mc.note,
+      |                                      ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:347:38: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  347 |                   (contains_string(mc.note, "(co-production)") ||
+      |                                    ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:348:38: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  348 |                    contains_string(mc.note, "(presents)")))) {
+      |                                    ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:80:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:361:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  361 |   int tmp8 = int_create(filtered.len);
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:365:9: error: request for member ‘data’ in something not a structure or union
+  365 |     tmp8.data[tmp9] = r.note;
+      |         ^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:368:7: error: request for member ‘len’ in something not a structure or union
+  368 |   tmp8.len = tmp9;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:373:10: error: request for member ‘data’ in something not a structure or union
+  373 |     tmp11.data[tmp12] = r.title;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:376:8: error: request for member ‘len’ in something not a structure or union
+  376 |   tmp11.len = tmp12;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:385:73: error: incompatible type for argument 1 of ‘_min_string’
+  385 |   result_item_t result = (result_item_t){.production_note = _min_string(tmp8),
+      |                                                                         ^~~~
+      |                                                                         |
+      |                                                                         int
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:386:69: error: incompatible type for argument 1 of ‘_min_string’
+  386 |                                          .movie_title = _min_string(tmp11),
+      |                                                                     ^~~~~
+      |                                                                     |
+      |                                                                     int
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:389:19: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  389 |   tmp17.data[0] = result;
+      |                   ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:394:24: error: invalid initializer
+  394 |     result_item_t it = tmp17.data[i18];
+      |                        ^~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:411:7: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  411 |       result;
+      |       ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:413:12: error: request for member ‘data’ in something not a structure or union
+  413 |   free(tmp8.data);
+      |            ^
+/tmp/TestCCompiler_JOB_Goldenq12875279128/001/prog.c:414:13: error: request for member ‘data’ in something not a structure or union
+  414 |   free(tmp11.data);
+      |             ^
