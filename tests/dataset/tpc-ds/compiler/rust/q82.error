@@ -1,0 +1,38 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q82.rs:14:8
+   |
+14 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: unused variable: `item`
+  --> /tmp/q82.rs:23:9
+   |
+23 |     let item = vec![Item { id: 1 }, Item { id: 2 }, Item { id: 3 }];
+   |         ^^^^ help: if this is intentional, prefix it with an underscore: `_item`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+error[E0382]: use of moved value: `store_sales`
+  --> /tmp/q82.rs:28:18
+   |
+25 |     let store_sales = vec![Store_sale { item: 1 }, Store_sale { item: 2 }];
+   |         ----------- move occurs because `store_sales` has type `Vec<Store_sale>`, which does not implement the `Copy` trait
+26 |     let mut result = 0;
+27 |     for inv in inventory {
+   |     -------------------- inside of this loop
+28 |         for s in store_sales {
+   |                  ^^^^^^^^^^^ `store_sales` moved due to this implicit call to `.into_iter()`, in previous iteration of loop
+   |
+note: `into_iter` takes ownership of the receiver `self`, which moves `store_sales`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<Store_sale>`'s content to avoid moving into the `for` loop
+   |
+28 |         for s in &store_sales {
+   |                  +
+
+error: aborting due to 1 previous error; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.

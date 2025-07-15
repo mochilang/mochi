@@ -1,0 +1,172 @@
+rustc: exit status 1
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q95.rs:89:25
+   |
+89 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+   |                         ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+89 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+   |                +++++
+
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q95.rs:89:38
+   |
+89 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+   |                                      ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+89 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+   |                +++++
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q95.rs:37:8
+   |
+37 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Web_return` should have an upper camel case name
+  --> /tmp/q95.rs:48:8
+   |
+48 | struct Web_return {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `WebReturn`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q95.rs:53:8
+   |
+53 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q95.rs:59:8
+   |
+59 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+warning: type `Web_site` should have an upper camel case name
+  --> /tmp/q95.rs:65:8
+   |
+65 | struct Web_site {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSite`
+
+error[E0277]: can't compare `&str` with `str`
+   --> /tmp/q95.rs:104:530
+    |
+104 | ..._order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) ...
+    |                                                    ^^ no implementation for `&str == str`
+    |
+    = help: the trait `PartialEq<str>` is not implemented for `&str`
+    = note: required for `&&str` to implement `PartialEq<&str>`
+help: consider removing the borrow
+    |
+104 -     let filtered = { let mut tmp4 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_ship_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ws.ws_ship_addr_sk == ca.ca_address_sk) { continue; } for w in &web_site { if !(ws.ws_web_site_sk == w.web_site_sk) { continue; } if !(({ let mut tmp3 = Vec::new();for wr in &web_returns { tmp3.push(wr.wr_order_number); } tmp3 }).contains(&({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4.push(ws.clone()); } } } } tmp4 };
+104 +     let filtered = { let mut tmp4 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_ship_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ws.ws_ship_addr_sk == ca.ca_address_sk) { continue; } for w in &web_site { if !(ws.ws_web_site_sk == w.web_site_sk) { continue; } if !(({ let mut tmp3 = Vec::new();for wr in &web_returns { tmp3.push(wr.wr_order_number); } tmp3 }).contains(&({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4.push(ws.clone()); } } } } tmp4 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:104:572
+    |
+104 | ...mp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4....
+    |                    ---------------------------------------------------    ^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+    |                    |
+    |                    expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:104:517
+    |
+104 | ... } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } t...
+    |               -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |               |
+    |               arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:104:420
+    |
+104 | ...ns(&({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) &&...
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+    |
+help: consider removing the borrow
+    |
+104 -     let filtered = { let mut tmp4 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_ship_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ws.ws_ship_addr_sk == ca.ca_address_sk) { continue; } for w in &web_site { if !(ws.ws_web_site_sk == w.web_site_sk) { continue; } if !(({ let mut tmp3 = Vec::new();for wr in &web_returns { tmp3.push(wr.wr_order_number); } tmp3 }).contains(&({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4.push(ws.clone()); } } } } tmp4 };
+104 +     let filtered = { let mut tmp4 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_ship_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ws.ws_ship_addr_sk == ca.ca_address_sk) { continue; } for w in &web_site { if !(ws.ws_web_site_sk == w.web_site_sk) { continue; } if !(({ let mut tmp3 = Vec::new();for wr in &web_returns { tmp3.push(wr.wr_order_number); } tmp3 }).contains(({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4.push(ws.clone()); } } } } tmp4 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:104:595
+    |
+104 | ...ny_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) { continue; } tmp4.push(ws.clone()); } } } } tmp4 };
+    |                                               ^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:104:420
+    |
+104 | ...}).contains(&({ let mut tmp2 = Vec::new();for x in &ws_wh { tmp2.push(x.ws_order_number); } tmp2 }).contains(&ca.ca_state == "CA" && w.web_company_name == "pri" && ws.ws_order_number) && ws.ws_order_number)) ...
+    |       -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |       |
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:107:140
+    |
+107 | ...Map::new(); m.insert("order_count", 1); m.insert("total_shipping_cost", 2.0); m.insert("total_net_profit", 5.0); m });
+    |                -                       -     ------                        ^^^ expected integer, found floating-point number
+    |                |                       |     |
+    |                |                       |     arguments to this method are incorrect
+    |                |                       this argument has type `{integer}`...
+    |                ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+    |
+help: the return type of this call is `{float}` due to the type of the argument passed
+   --> /tmp/q95.rs:107:108
+    |
+107 | ...ert("order_count", 1); m.insert("total_shipping_cost", 2.0); m.insert("total_net_profit", 5.0); m });
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^---^
+    |                                                           |
+    |                                                           this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+   --> /tmp/q95.rs:107:175
+    |
+107 | ...reeMap::new(); m.insert("order_count", 1); m.insert("total_shipping_cost", 2.0); m.insert("total_net_profit", 5.0); m });
+    |                   -                       -                                           ------                     ^^^ expected integer, found floating-point number
+    |                   |                       |                                           |
+    |                   |                       this argument has type `{integer}`...       arguments to this method are incorrect
+    |                   ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+    |
+help: the return type of this call is `{float}` due to the type of the argument passed
+   --> /tmp/q95.rs:107:146
+    |
+107 | ...l_shipping_cost", 2.0); m.insert("total_net_profit", 5.0); m });
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^---^
+    |                                                         |
+    |                                                         this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0425]: cannot find function `contains` in this scope
+  --> /tmp/q95.rs:92:17
+   |
+92 |             if !contains(out, x) {
+   |                 ^^^^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `contains` on `&[_]`
+   |
+92 -             if !contains(out, x) {
+92 +             if !out.contains(x) {
+   |
+
+error: aborting due to 11 previous errors; 5 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0412, E0425.
+For more information about an error, try `rustc --explain E0277`.

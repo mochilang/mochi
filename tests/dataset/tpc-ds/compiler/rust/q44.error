@@ -1,0 +1,73 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q44.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: unnecessary parentheses around assigned value
+  --> /tmp/q44.rs:39:24
+   |
+39 | ... = ({ let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { let key = ss.ss_item_sk; tmp1.entry(key).or_insert_with(Vec::new).push(ss.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { item_sk: g.key, avg_profit: avg(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) }); } result });
+   |       ^                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+39 -     let grouped_base = ({ let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { let key = ss.ss_item_sk; tmp1.entry(key).or_insert_with(Vec::new).push(ss.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { item_sk: g.key, avg_profit: avg(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) }); } result });
+39 +     let grouped_base = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { let key = ss.ss_item_sk; tmp1.entry(key).or_insert_with(Vec::new).push(ss.clone()); } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { item_sk: g.key, avg_profit: avg(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) }); } result };
+   |
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q44.rs:41:16
+   |
+41 |     let best = first({ let mut tmp4 = Vec::new();for x in &grouped { let tmp5 = x.clone(); let tmp6 = -x.avg_profit; tmp4.push((tmp6, tmp...
+   |                ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[Result]`
+   |
+41 -     let best = first({ let mut tmp4 = Vec::new();for x in &grouped { let tmp5 = x.clone(); let tmp6 = -x.avg_profit; tmp4.push((tmp6, tmp5)); } tmp4.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp7 = Vec::new(); for p in tmp4 { tmp7.push(p.1); } tmp7 });
+41 +     let best = { let mut tmp4 = Vec::new();for x in &grouped { let tmp5 = x.clone(); let tmp6 = -x.avg_profit; tmp4.push((tmp6, tmp5)); } tmp4.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp7 = Vec::new(); for p in tmp4 { tmp7.push(p.1); } tmp7 }.first();
+   |
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q44.rs:42:17
+   |
+42 |     let worst = first({ let mut tmp8 = Vec::new();for x in &grouped { let tmp9 = x.clone(); let tmp10 = x.avg_profit; tmp8.push((tmp10, t...
+   |                 ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[Result]`
+   |
+42 -     let worst = first({ let mut tmp8 = Vec::new();for x in &grouped { let tmp9 = x.clone(); let tmp10 = x.avg_profit; tmp8.push((tmp10, tmp9)); } tmp8.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp11 = Vec::new(); for p in tmp8 { tmp11.push(p.1); } tmp11 });
+42 +     let worst = { let mut tmp8 = Vec::new();for x in &grouped { let tmp9 = x.clone(); let tmp10 = x.avg_profit; tmp8.push((tmp10, tmp9)); } tmp8.sort_by(|a,b| a.0.partial_cmp(&b.0).unwrap()); let mut tmp11 = Vec::new(); for p in tmp8 { tmp11.push(p.1); } tmp11 }.first();
+   |
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q44.rs:43:21
+   |
+43 |     let best_name = first({ let mut tmp12 = Vec::new();for i in &item { if !(i.i_item_sk == best.item_sk) { continue; } tmp12.push(i.i_pr...
+   |                     ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[&str]`
+   |
+43 -     let best_name = first({ let mut tmp12 = Vec::new();for i in &item { if !(i.i_item_sk == best.item_sk) { continue; } tmp12.push(i.i_product_name); } tmp12 });
+43 +     let best_name = { let mut tmp12 = Vec::new();for i in &item { if !(i.i_item_sk == best.item_sk) { continue; } tmp12.push(i.i_product_name); } tmp12 }.first();
+   |
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q44.rs:44:22
+   |
+44 |     let worst_name = first({ let mut tmp13 = Vec::new();for i in &item { if !(i.i_item_sk == worst.item_sk) { continue; } tmp13.push(i.i_...
+   |                      ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[&str]`
+   |
+44 -     let worst_name = first({ let mut tmp13 = Vec::new();for i in &item { if !(i.i_item_sk == worst.item_sk) { continue; } tmp13.push(i.i_product_name); } tmp13 });
+44 +     let worst_name = { let mut tmp13 = Vec::new();for i in &item { if !(i.i_item_sk == worst.item_sk) { continue; } tmp13.push(i.i_product_name); } tmp13 }.first();
+   |
+
+error: aborting due to 4 previous errors; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

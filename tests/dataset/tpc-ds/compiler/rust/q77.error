@@ -1,0 +1,232 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+ --> /tmp/q77.rs:3:8
+  |
+3 | struct Date_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q77.rs:9:8
+  |
+9 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Store_return` should have an upper camel case name
+  --> /tmp/q77.rs:17:8
+   |
+17 | struct Store_return {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreReturn`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q77.rs:25:8
+   |
+25 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Catalog_return` should have an upper camel case name
+  --> /tmp/q77.rs:33:8
+   |
+33 | struct Catalog_return {
+   |        ^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogReturn`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q77.rs:41:8
+   |
+41 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+warning: type `Web_return` should have an upper camel case name
+  --> /tmp/q77.rs:49:8
+   |
+49 | struct Web_return {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `WebReturn`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:288
+    |
+240 | ...: s.s_store_sk, sales: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 }...
+    |                                                ---------    ^^ expected `Result3`, found `()`
+    |                                                |
+    |                                                expected because this is `Result3`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:293
+    |
+240 | ...es: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_lo...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:306
+    |
+240 | ...les, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) })...
+    |                                                    ^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:355
+    |
+240 | ... else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } if !_matched { let r: Result3 = Defa...
+    |                                                ---------    ^^ expected `Result3`, found `()`
+    |                                                |
+    |                                                expected because this is `Result3`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:555
+    |
+240 | ...: s.s_store_sk, sales: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 }...
+    |                                                ---------    ^^ expected `Result3`, found `()`
+    |                                                |
+    |                                                expected because this is `Result3`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:560
+    |
+240 | ...es: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_lo...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:573
+    |
+240 | ...les, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) })...
+    |                                                    ^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:622
+    |
+240 | ... else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } } tmp25 }, { let mut tmp26 = Vec::ne...
+    |                                                ---------    ^^ expected `Result3`, found `()`
+    |                                                |
+    |                                                expected because this is `Result3`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1225
+    |
+240 | ...p_web_page_sk, sales: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } ...
+    |                                               ---------    ^^ expected `Result15`, found `()`
+    |                                               |
+    |                                               expected because this is `Result15`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1230
+    |
+240 | ...es: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_lo...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1243
+    |
+240 | ...les, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) })...
+    |                                                    ^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1292
+    |
+240 | ...else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } if !_matched { let r: Result15 = Defa...
+    |                                               ---------    ^^ expected `Result15`, found `()`
+    |                                               |
+    |                                               expected because this is `Result15`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1495
+    |
+240 | ...p_web_page_sk, sales: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } ...
+    |                                               ---------    ^^ expected `Result15`, found `()`
+    |                                               |
+    |                                               expected because this is `Result15`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1500
+    |
+240 | ...es: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_lo...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1513
+    |
+240 | ...les, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) })...
+    |                                                    ^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:240:1562
+    |
+240 | ...else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } } tmp27 });
+    |                                               ---------    ^^ expected `Result15`, found `()`
+    |                                               |
+    |                                               expected because this is `Result15`
+
+error[E0423]: expected function, found macro `concat`
+   --> /tmp/q77.rs:240:23
+    |
+240 |     let per_channel = concat({ let mut tmp25 = Vec::new();for s in &ss { let mut _matched = false; for r in &sr { if !(s.s_store_sk == r....
+    |                       ^^^^^^ not a function
+    |
+help: use `!` to invoke the macro
+    |
+240 |     let per_channel = concat!({ let mut tmp25 = Vec::new();for s in &ss { let mut _matched = false; for r in &sr { if !(s.s_store_sk == r.s_store_sk) { continue; } _matched = true; tmp25.push(Result16 { channel: "store channel", id: s.s_store_sk, sales: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } if !_matched { let r: Result3 = Default::default(); tmp25.push(Result16 { channel: "store channel", id: s.s_store_sk, sales: s.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: s.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } } tmp25 }, { let mut tmp26 = Vec::new();for c in &cs { for r in &cr { if !(c.cs_call_center_sk == r.cr_call_center_sk) { continue; } tmp26.push(Result17 { channel: "catalog channel", id: c.cs_call_center_sk, sales: c.sales, returns: r.returns, profit: c.profit - r.profit_loss }); } } tmp26 }, { let mut tmp27 = Vec::new();for w in &ws { let mut _matched = false; for r in &wr { if !(w.wp_web_page_sk == r.wp_web_page_sk) { continue; } _matched = true; tmp27.push(Result18 { channel: "web channel", id: w.wp_web_page_sk, sales: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } if !_matched { let r: Result15 = Default::default(); tmp27.push(Result18 { channel: "web channel", id: w.wp_web_page_sk, sales: w.sales, returns: if r.clone() == () { 0.0 } else { r.returns }, profit: w.profit - (if r.clone() == () { 0.0 } else { r.profit_loss }) }); } } tmp27 });
+    |                             +
+
+error[E0609]: no field `p` on type `&Result18`
+   --> /tmp/q77.rs:241:629
+    |
+241 | ...mp30 = Vec::new();for x in &g.clone().items { tmp30.push(x.p.sales); } tmp30 }), returns: sum(&{ let mut tmp31 = Vec::new();for x in &...
+    |                                                               ^ unknown field
+    |
+    = note: available fields are: `channel`, `id`, `sales`, `returns`, `profit`
+
+error[E0609]: no field `p` on type `&Result18`
+   --> /tmp/q77.rs:241:735
+    |
+241 | ...mp31 = Vec::new();for x in &g.clone().items { tmp31.push(x.p.returns); } tmp31 }), profit: sum(&{ let mut tmp32 = Vec::new();for x in ...
+    |                                                               ^ unknown field
+    |
+    = note: available fields are: `channel`, `id`, `sales`, `returns`, `profit`
+
+error[E0609]: no field `p` on type `&Result18`
+   --> /tmp/q77.rs:241:842
+    |
+241 | ...mp32 = Vec::new();for x in &g.clone().items { tmp32.push(x.p.profit); } tmp32 }) }); } result };
+    |                                                               ^ unknown field
+    |
+    = note: available fields are: `channel`, `id`, `sales`, `returns`, `profit`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:81
+    |
+243 |     assert!(result == vec![Result20 { channel: "catalog channel", id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: ...
+    |                                                                                 ^^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:97
+    |
+243 | ...og channel", id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:110
+    |
+243 | ...id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0...
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:185
+    |
+243 | ...re channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result16 { channel: "web channel", id: 1, sales: 200.0, returns: 10.0, ...
+    |                                               ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:118
+    |
+243 | ...0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result16 { channel: "web channel", id: 1, ...
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result20`, found `Result18`
+
+error[E0308]: mismatched types
+   --> /tmp/q77.rs:243:270
+    |
+243 | ...eb channel", id: 1, sales: 200.0, returns: 10.0, profit: 18.0 }]);
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 26 previous errors; 7 warnings emitted
+
+Some errors have detailed explanations: E0308, E0423, E0609.
+For more information about an error, try `rustc --explain E0308`.

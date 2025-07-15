@@ -1,0 +1,42 @@
+rustc: exit status 1
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q20.rs:26:8
+   |
+26 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q20.rs:43:8
+   |
+43 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0609]: no field `cs_ext_sales_price` on type `&Item2`
+   --> /tmp/q20.rs:115:982
+    |
+115 | ...Vec::new();for x in &g.clone().items { tmp4.push(x.cs_ext_sales_price); } tmp4 }) }); } result };
+    |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+115 |     let filtered = { let mut tmp2 = Vec::<Group>::new();for cs in &catalog_sales { for i in &item { if !(cs.cs_item_sk == i.i_item_sk) { continue; } for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !(vec!["A", "B", "C"].contains(&i.i_category) && d.d_date >= "2000-02-01" && d.d_date <= "2000-03-02") { continue; } let key = Key { id: i.i_item_id, desc: i.i_item_desc, cat: i.i_category, class: i.i_class, price: i.i_current_price }; if let Some(tmp3) = tmp2.iter_mut().find(|g| g.key == key) { tmp3.items.push(Item2 {cs: cs.clone(), i: i.clone(), d: d.clone() }); } else { tmp2.push(Group { key: key, items: vec![Item2 {cs: cs.clone(), i: i.clone(), d: d.clone() }] }); } } } } let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_item_id: g.key.id, i_item_desc: g.key.desc, i_category: g.key.cat, i_class: g.key.class, i_current_price: g.key.price, itemrevenue: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.cs.cs_ext_sales_price); } tmp4 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      +++
+
+error[E0308]: mismatched types
+   --> /tmp/q20.rs:119:150
+    |
+119 | ... "X", i_current_price: 10.0, itemrevenue: 600.0, revenueratio: 66.66666666666667 }, Result5 { i_item_id: "ITEM2", i_item_desc: "Item T...
+    |                                              ^^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q20.rs:119:314
+    |
+119 | ... "X", i_current_price: 20.0, itemrevenue: 300.0, revenueratio: 33.333333333333336 }]);
+    |                                              ^^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 3 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

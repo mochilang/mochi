@@ -1,0 +1,23 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q22.rs:32:8
+   |
+32 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+error[E0609]: no field `inv_quantity_on_hand` on type `&Item3`
+  --> /tmp/q22.rs:89:914
+   |
+89 | ...ec::new();for x in &g.clone().items { tmp3.push(x.inv_quantity_on_hand); } tmp3 }) }); } result };
+   |                                                      ^^^^^^^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+89 |     let qoh = { let mut tmp1 = std::collections::HashMap::new();for inv in &inventory { for d in &date_dim { if !(inv.inv_date_sk == d.d_date_sk) { continue; } for i in &item { if !(inv.inv_item_sk == i.i_item_sk) { continue; } if !(d.d_month_seq >= 0 && d.d_month_seq <= 11) { continue; } let key = Key { product_name: i.i_product_name, brand: i.i_brand, class: i.i_class, category: i.i_category }; tmp1.entry(key).or_insert_with(Vec::new).push(Item3 {inv: inv.clone(), d: d.clone(), i: i.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_product_name: g.key.product_name, i_brand: g.key.brand, i_class: g.key.class, i_category: g.key.category, qoh: avg(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.inv.inv_quantity_on_hand); } tmp3 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ++++
+
+error: aborting due to 1 previous error; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0609`.

@@ -1,0 +1,34 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q21.rs:49:8
+   |
+49 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+error[E0609]: no field `inv_quantity_on_hand` on type `&Item4`
+   --> /tmp/q21.rs:134:684
+    |
+134 | ...ec::new();for x in &g.clone().items { tmp3.push(x.inv_quantity_on_hand); } tmp3 }) }); } result };
+    |                                                      ^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+134 |     let before = { let mut tmp1 = std::collections::HashMap::new();for inv in &inventory { for d in &date_dim { if !(inv.inv_date_sk == d.d_date_sk) { continue; } if !(d.d_date < "2000-03-15") { continue; } let key = Key { w: inv.inv_warehouse_sk, i: inv.inv_item_sk }; tmp1.entry(key).or_insert_with(Vec::new).push(Item4 {inv: inv.clone(), d: d.clone() }); } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { w: g.key.w, i: g.key.i, qty: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.inv.inv_quantity_on_hand); } tmp3 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ++++
+
+error[E0609]: no field `inv_quantity_on_hand` on type `&Item6`
+   --> /tmp/q21.rs:135:688
+    |
+135 | ...ec::new();for x in &g.clone().items { tmp6.push(x.inv_quantity_on_hand); } tmp6 }) }); } result };
+    |                                                      ^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+135 |     let after = { let mut tmp4 = std::collections::HashMap::new();for inv in &inventory { for d in &date_dim { if !(inv.inv_date_sk == d.d_date_sk) { continue; } if !(d.d_date >= "2000-03-15") { continue; } let key = Key5 { w: inv.inv_warehouse_sk, i: inv.inv_item_sk }; tmp4.entry(key).or_insert_with(Vec::new).push(Item6 {inv: inv.clone(), d: d.clone() }); } } let mut tmp5 = Vec::<Group7>::new(); for (k,v) in tmp4 { tmp5.push(Group7 { key: k, items: v }); } tmp5.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp5 { result.push(Result8 { w: g.key.w, i: g.key.i, qty: sum(&{ let mut tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.inv.inv_quantity_on_hand); } tmp6 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ++++
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0609`.

@@ -1,0 +1,64 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q60.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_sale` should have an upper camel case name
+ --> /tmp/q60.rs:9:8
+  |
+9 | struct Catalog_sale {
+  |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q60.rs:15:8
+   |
+15 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+error[E0308]: mismatched types
+  --> /tmp/q60.rs:37:56
+   |
+37 |     let all_sales = _union_all(_union_all(store_sales, catalog_sales), web_sales);
+   |                                ----------              ^^^^^^^^^^^^^ expected `Vec<Store_sale>`, found `Vec<Catalog_sale>`
+   |                                |
+   |                                arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<Store_sale>`
+              found struct `Vec<Catalog_sale>`
+note: function defined here
+  --> /tmp/q60.rs:24:4
+   |
+24 | fn _union_all<T: Clone>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {
+   |    ^^^^^^^^^^                          ---------
+
+error[E0308]: mismatched types
+  --> /tmp/q60.rs:37:72
+   |
+37 |     let all_sales = _union_all(_union_all(store_sales, catalog_sales), web_sales);
+   |                     ----------                                         ^^^^^^^^^ expected `Vec<Store_sale>`, found `Vec<Web_sale>`
+   |                     |
+   |                     arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<Store_sale>`
+              found struct `Vec<Web_sale>`
+note: function defined here
+  --> /tmp/q60.rs:24:4
+   |
+24 | fn _union_all<T: Clone>(mut a: Vec<T>, b: Vec<T>) -> Vec<T> {
+   |    ^^^^^^^^^^                          ---------
+
+error[E0308]: mismatched types
+  --> /tmp/q60.rs:40:23
+   |
+40 |     assert!(result == 60 as f64);
+   |             ------    ^^^^^^^^^ expected `i32`, found `f64`
+   |             |
+   |             expected because this is `i32`
+
+error: aborting due to 3 previous errors; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

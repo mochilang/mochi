@@ -1,0 +1,64 @@
+rustc: exit status 1
+error[E0425]: cannot find value `strings` in this scope
+   --> /tmp/q24.rs:165:546
+    |
+165 | ...ddress_sk) { continue; } if !(c.c_birth_country != strings.ToUpper(ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5) { con...
+    |                                                       ^^^^^^^ not found in this scope
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q24.rs:54:8
+   |
+54 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_return` should have an upper camel case name
+  --> /tmp/q24.rs:63:8
+   |
+63 | struct Store_return {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreReturn`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q24.rs:97:8
+   |
+97 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0609]: no field `ss_net_paid` on type `&Item4`
+   --> /tmp/q24.rs:165:1309
+    |
+165 | ... = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_paid); } tmp3 }) }); } result };
+    |                                                          ^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+165 |     let ssales = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for c in &customer { if !(ss.ss_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } if !(c.c_birth_country != strings.ToUpper(ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5) { continue; } let key = Key { last: c.c_last_name, first: c.c_first_name, store_name: s.s_store_name, color: i.i_color }; tmp1.entry(key).or_insert_with(Vec::new).push(Item4 {ss: ss.clone(), sr: sr.clone(), s: s.clone(), i: i.clone(), c: c.clone(), ca: ca.clone() }); } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { c_last_name: g.key.last, c_first_name: g.key.first, s_store_name: g.key.store_name, color: g.key.color, netpaid: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_net_paid); } tmp3 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             +++
+
+error[E0308]: mismatched types
+   --> /tmp/q24.rs:167:91
+    |
+167 | ...c::new();for x in &ssales { if !((x.color == "RED" && x.netpaid as f64) > 0.05 * avg_paid) { continue; } let tmp6 = Result5 { c_last_n...
+    |                                      ----------------    ^^^^^^^^^^^^^^^^ expected `bool`, found `f64`
+    |                                      |
+    |                                      expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q24.rs:167:111
+    |
+167 | ...for x in &ssales { if !((x.color == "RED" && x.netpaid as f64) > 0.05 * avg_paid) { continue; } let tmp6 = Result5 { c_last_name: x.c_...
+    |                            --------------------------------------   ^^^^^^^^^^^^^^^ expected `bool`, found `f64`
+    |                            |
+    |                            expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q24.rs:169:111
+    |
+169 |     assert!(result == vec![Result5 { c_last_name: "Smith", c_first_name: "Ann", s_store_name: "Store1", paid: 100.0 }]);
+    |                                                                                                               ^^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 5 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425, E0609.
+For more information about an error, try `rustc --explain E0308`.

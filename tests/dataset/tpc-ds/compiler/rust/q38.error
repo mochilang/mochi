@@ -1,0 +1,59 @@
+rustc: exit status 1
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q38.rs:47:25
+   |
+47 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+   |                         ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+47 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+   |                +++++
+
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q38.rs:47:38
+   |
+47 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+   |                                      ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+47 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+   |                +++++
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q38.rs:10:8
+   |
+10 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q38.rs:16:8
+   |
+16 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q38.rs:22:8
+   |
+22 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+error[E0425]: cannot find function `contains` in this scope
+  --> /tmp/q38.rs:50:17
+   |
+50 |             if !contains(out, x) {
+   |                 ^^^^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `contains` on `&[_]`
+   |
+50 -             if !contains(out, x) {
+50 +             if !out.contains(x) {
+   |
+
+error: aborting due to 3 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0412, E0425.
+For more information about an error, try `rustc --explain E0412`.

@@ -1,0 +1,37 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q54.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q54.rs:10:8
+   |
+10 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q54.rs:22:8
+   |
+22 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0308]: mismatched types
+  --> /tmp/q54.rs:90:506
+   |
+90 | ...e().items.len() as i32, segment_base: (g.key.seg as f64) * 50 as f64 }); } result };
+   |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/q54.rs:86:18
+   |
+86 |         return x.parse::<i32>().unwrap();
+   |                  ^^^^^ method not found in `f64`
+
+error: aborting due to 2 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

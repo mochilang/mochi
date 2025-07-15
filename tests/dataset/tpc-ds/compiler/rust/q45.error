@@ -1,0 +1,60 @@
+rustc: exit status 1
+warning: type `Web_sale` should have an upper camel case name
+ --> /tmp/q45.rs:3:8
+  |
+3 | struct Web_sale {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q45.rs:17:8
+   |
+17 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q45.rs:29:8
+   |
+29 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q45.rs:74:438
+   |
+74 | ...inue; } if !((item_ids.contains(&zip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) {...
+   |                                                        ^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/q45.rs:74:418
+   |
+74 | ...e; } if !((item_ids.contains(&zip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) { co...
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+   |
+help: consider removing the borrow
+   |
+74 -     let base = { let mut tmp1 = std::collections::HashMap::new();for ws in &web_sales { for c in &customer { if !(ws.bill_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for i in &item { if !(ws.item_sk == i.i_item_sk) { continue; } for d in &date_dim { if !(ws.sold_date_sk == d.d_date_sk) { continue; } if !((item_ids.contains(&zip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) { continue; } let key = ca.ca_zip; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ws: ws.clone(), c: c.clone(), ca: ca.clone(), i: i.clone(), d: d.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ca_zip: g.key, sum_ws_sales_price: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ws.sales_price); } tmp3 }) }); } result };
+74 +     let base = { let mut tmp1 = std::collections::HashMap::new();for ws in &web_sales { for c in &customer { if !(ws.bill_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for i in &item { if !(ws.item_sk == i.i_item_sk) { continue; } for d in &date_dim { if !(ws.sold_date_sk == d.d_date_sk) { continue; } if !((item_ids.contains(zip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) { continue; } let key = ca.ca_zip; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ws: ws.clone(), c: c.clone(), ca: ca.clone(), i: i.clone(), d: d.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ca_zip: g.key, sum_ws_sales_price: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ws.sales_price); } tmp3 }) }); } result };
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/q45.rs:74:466
+   |
+74 | ...ip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) { continue; } let key = ca.ca_zip; ...
+   |                                                  ^^^^^^^^^^^ expected `bool`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/q45.rs:74:418
+   |
+74 | ...} if !((item_ids.contains(&zip_list.contains(&substr(ca.ca_zip, 0, 5)) || i.i_item_id)) && d.d_qoy == qoy && d.d_year == year) { conti...
+   |                     -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&&str`, found `bool`
+   |                     |
+   |                     arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 4 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.

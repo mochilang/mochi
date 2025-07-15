@@ -1,0 +1,89 @@
+rustc: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/q58.rs:13:117
+   |
+13 |     let ss_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("ss_item_rev", 50.0); m };
+   |                                                                     -                   -     ------                ^^^^ expected integer, found floating-point number
+   |                                                                     |                   |     |
+   |                                                                     |                   |     arguments to this method are incorrect
+   |                                                                     |                   this argument has type `{integer}`...
+   |                                                                     ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+   |
+help: the return type of this call is `{float}` due to the type of the argument passed
+  --> /tmp/q58.rs:13:93
+   |
+13 |     let ss_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("ss_item_rev", 50.0); m };
+   |                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^----^
+   |                                                                                                                     |
+   |                                                                                                                     this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/q58.rs:14:117
+   |
+14 |     let cs_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("cs_item_rev", 60.0); m };
+   |                                                                     -                   -     ------                ^^^^ expected integer, found floating-point number
+   |                                                                     |                   |     |
+   |                                                                     |                   |     arguments to this method are incorrect
+   |                                                                     |                   this argument has type `{integer}`...
+   |                                                                     ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+   |
+help: the return type of this call is `{float}` due to the type of the argument passed
+  --> /tmp/q58.rs:14:93
+   |
+14 |     let cs_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("cs_item_rev", 60.0); m };
+   |                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^----^
+   |                                                                                                                     |
+   |                                                                                                                     this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/q58.rs:15:117
+   |
+15 |     let ws_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("ws_item_rev", 64.0); m };
+   |                                                                     -                   -     ------                ^^^^ expected integer, found floating-point number
+   |                                                                     |                   |     |
+   |                                                                     |                   |     arguments to this method are incorrect
+   |                                                                     |                   this argument has type `{integer}`...
+   |                                                                     ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+   |
+help: the return type of this call is `{float}` due to the type of the argument passed
+  --> /tmp/q58.rs:15:93
+   |
+15 |     let ws_items = { let mut m = std::collections::BTreeMap::new(); m.insert("item_id", 1); m.insert("ws_item_rev", 64.0); m };
+   |                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^----^
+   |                                                                                                                     |
+   |                                                                                                                     this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0609]: no field `ss_item_rev` on type `BTreeMap<&str, {integer}>`
+  --> /tmp/q58.rs:16:25
+   |
+16 |     let avg = (ss_items.ss_item_rev + cs_items.cs_item_rev + ws_items.ws_item_rev) / 3.0;
+   |                         ^^^^^^^^^^^ unknown field
+
+error[E0609]: no field `cs_item_rev` on type `BTreeMap<&str, {integer}>`
+  --> /tmp/q58.rs:16:48
+   |
+16 |     let avg = (ss_items.ss_item_rev + cs_items.cs_item_rev + ws_items.ws_item_rev) / 3.0;
+   |                                                ^^^^^^^^^^^ unknown field
+
+error[E0609]: no field `ws_item_rev` on type `BTreeMap<&str, {integer}>`
+  --> /tmp/q58.rs:16:71
+   |
+16 |     let avg = (ss_items.ss_item_rev + cs_items.cs_item_rev + ws_items.ws_item_rev) / 3.0;
+   |                                                                       ^^^^^^^^^^^ unknown field
+
+error[E0609]: no field `item_id` on type `BTreeMap<&str, {integer}>`
+  --> /tmp/q58.rs:17:50
+   |
+17 |     let result = vec![Result { item_id: ss_items.item_id, average: avg }];
+   |                                                  ^^^^^^^ unknown field
+
+error: aborting due to 7 previous errors
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

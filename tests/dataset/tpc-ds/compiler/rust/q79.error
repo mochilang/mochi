@@ -1,0 +1,32 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+ --> /tmp/q79.rs:3:8
+  |
+3 | struct Date_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q79.rs:17:8
+   |
+17 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q79.rs:24:8
+   |
+24 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+error[E0382]: borrow of partially moved value: `g`
+  --> /tmp/q79.rs:93:1029
+   |
+93 | ...push(Result { key: g.key, amt: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_coupon_amt); } tmp3 }), ...
+   |                       ----- value partially moved here                       ^ value borrowed here after partial move
+   |
+   = note: partial move occurs because `g.key` has type `Key`, which does not implement the `Copy` trait
+
+error: aborting due to 1 previous error; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.

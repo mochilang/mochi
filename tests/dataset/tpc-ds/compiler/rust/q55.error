@@ -1,0 +1,42 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q55.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q55.rs:17:8
+   |
+17 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0609]: no field `price` on type `&Item1`
+  --> /tmp/q55.rs:59:723
+   |
+59 | ...mp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.price); } tmp3 }) }); } result };
+   |                                                             ^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+59 |     let grouped = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for i in &item { if !(ss.item == i.i_item_sk && i.i_manager_id == 1) { continue; } for d in &date_dim { if !(ss.sold_date == d.d_date_sk) { continue; } let key = Key { brand_id: i.i_brand_id }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), i: i.clone(), d: d.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { brand_id: g.key.brand_id, ext_price: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.price); } tmp3 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   +++
+
+error[E0308]: mismatched types
+  --> /tmp/q55.rs:62:62
+   |
+62 |     assert!(result == vec![Result { brand_id: 10, ext_price: 35.0 }, Result { brand_id: 20, ext_price: 20.0 }]);
+   |                                                              ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+  --> /tmp/q55.rs:62:104
+   |
+62 |     assert!(result == vec![Result { brand_id: 10, ext_price: 35.0 }, Result { brand_id: 20, ext_price: 20.0 }]);
+   |                                                                                                        ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 3 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

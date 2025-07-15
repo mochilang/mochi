@@ -1,0 +1,99 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q74.rs:11:8
+   |
+11 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q74.rs:17:8
+   |
+17 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q74.rs:24:8
+   |
+24 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+error[E0423]: expected function, found macro `concat`
+   --> /tmp/q74.rs:105:22
+    |
+105 |     let year_total = concat({ let mut tmp1 = std::collections::HashMap::new();for c in &customer { for ss in &store_sales { if !(c.c_cust...
+    |                      ^^^^^^ not a function
+    |
+help: use `!` to invoke the macro
+    |
+105 |     let year_total = concat!({ let mut tmp1 = std::collections::HashMap::new();for c in &customer { for ss in &store_sales { if !(c.c_customer_sk == ss.ss_customer_sk) { continue; } for d in &date_dim { if !(d.d_date_sk == ss.ss_sold_date_sk) { continue; } if !(d.d_year == 1998 || d.d_year == 1999) { continue; } let key = Key { id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, year: d.d_year }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {c: c.clone(), ss: ss.clone(), d: d.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { customer_id: g.key.id, customer_first_name: g.key.first, customer_last_name: g.key.last, year: g.key.year, year_total: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_net_paid); } tmp3 }), sale_type: "s" }); } result }, { let mut tmp4 = std::collections::HashMap::new();for c in &customer { for ws in &web_sales { if !(c.c_customer_sk == ws.ws_bill_customer_sk) { continue; } for d in &date_dim { if !(d.d_date_sk == ws.ws_sold_date_sk) { continue; } if !(d.d_year == 1998 || d.d_year == 1999) { continue; } let key = Key1 { id: c.c_customer_id, first: c.c_first_name, last: c.c_last_name, year: d.d_year }; tmp4.entry(key).or_insert_with(Vec::new).push(Item2 {c: c.clone(), ws: ws.clone(), d: d.clone() }); } } } let mut tmp5 = Vec::<Group3>::new(); for (k,v) in tmp4 { tmp5.push(Group3 { key: k, items: v }); } tmp5.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp5 { result.push(Result4 { customer_id: g.key.id, customer_first_name: g.key.first, customer_last_name: g.key.last, year: g.key.year, year_total: sum(&{ let mut tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.ws.ws_net_paid); } tmp6 }), sale_type: "w" }); } result });
+    |                            +
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q74.rs:106:23
+    |
+106 |     let s_firstyear = first({ let mut tmp7 = Vec::new();for y in &year_total { if !(y.sale_type == "s" && y.year == 1998) { continue; } t...
+    |                       ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q74.rs:107:21
+    |
+107 |     let s_secyear = first({ let mut tmp8 = Vec::new();for y in &year_total { if !(y.sale_type == "s" && y.year == 1999) { continue; } tmp...
+    |                     ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q74.rs:108:23
+    |
+108 |     let w_firstyear = first({ let mut tmp9 = Vec::new();for y in &year_total { if !(y.sale_type == "w" && y.year == 1998) { continue; } t...
+    |                       ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q74.rs:109:21
+    |
+109 |     let w_secyear = first({ let mut tmp10 = Vec::new();for y in &year_total { if !(y.sale_type == "w" && y.year == 1999) { continue; } tm...
+    |                     ^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /tmp/q74.rs:112:137
+    |
+112 | ...:BTreeMap::new(); m.insert("customer_id", 1); m.insert("customer_first_name", "Alice"); m.insert("customer_last_name", "Smith"); m }]);
+    |                      -                       -     ------                        ^^^^^^^ expected integer, found `&str`
+    |                      |                       |     |
+    |                      |                       |     arguments to this method are incorrect
+    |                      |                       this argument has type `{integer}`...
+    |                      ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+    |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+   --> /tmp/q74.rs:112:105
+    |
+112 | ...t("customer_id", 1); m.insert("customer_first_name", "Alice"); m.insert("customer_last_name", "Smith"); m }]);
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------^
+    |                                                         |
+    |                                                         this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+   --> /tmp/q74.rs:112:178
+    |
+112 | ...ap::new(); m.insert("customer_id", 1); m.insert("customer_first_name", "Alice"); m.insert("customer_last_name", "Smith"); m }]);
+    |               -                       -                                               ------                       ^^^^^^^ expected integer, found `&str`
+    |               |                       |                                               |
+    |               |                       this argument has type `{integer}`...           arguments to this method are incorrect
+    |               ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+    |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+   --> /tmp/q74.rs:112:147
+    |
+112 | ...rst_name", "Alice"); m.insert("customer_last_name", "Smith"); m }]);
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^-------^
+    |                                                        |
+    |                                                        this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error: aborting due to 7 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0423, E0425.
+For more information about an error, try `rustc --explain E0308`.

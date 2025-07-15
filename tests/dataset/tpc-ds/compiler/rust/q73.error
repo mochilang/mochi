@@ -1,0 +1,41 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q73.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q73.rs:12:8
+   |
+12 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q73.rs:25:8
+   |
+25 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+error[E0308]: mismatched types
+  --> /tmp/q73.rs:87:464
+   |
+87 | ...!((d.d_dom >= 1 && d.d_dom <= 2 && (hd.hd_buy_potential == "1001-5000" || hd.hd_buy_potential == "0-500") && hd.hd_vehicle_count > 0 && hd.hd_dep_count as f64) /...
+   |       ---------------------------------------------------------------------------------------------------------------------------------    ^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `f64`
+   |       |
+   |       expected because this is `bool`
+
+error[E0369]: cannot divide `bool` by `f64`
+  --> /tmp/q73.rs:87:488
+   |
+87 | ... !((d.d_dom >= 1 && d.d_dom <= 2 && (hd.hd_buy_potential == "1001-5000" || hd.hd_buy_potential == "0-500") && hd.hd_vehicle_count > 0 && hd.hd_dep_count as f64) / (hd.hd_vehicle_count as f64) > ...
+   |       ------------------------------------------------------------------------------------------------------------------------------------------------------------- ^ ---------------------------- f64
+   |       |
+   |       bool
+
+error: aborting due to 2 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0369.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,0 +1,59 @@
+rustc: exit status 1
+warning: type `Catalog_sale` should have an upper camel case name
+ --> /tmp/q72.rs:3:8
+  |
+3 | struct Catalog_sale {
+  |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Customer_demographic` should have an upper camel case name
+  --> /tmp/q72.rs:35:8
+   |
+35 | struct Customer_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerDemographic`
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q72.rs:41:8
+   |
+41 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q72.rs:47:8
+   |
+47 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0308]: mismatched types
+  --> /tmp/q72.rs:95:191
+   |
+95 | ...bill_cdemo_sk: 1, cs_bill_hdemo_sk: 1, cs_promo_sk: () }];
+   |                                                        ^^ expected `i32`, found `()`
+
+error[E0609]: no field `cs_promo_sk` on type `&Item1`
+   --> /tmp/q72.rs:102:1651
+    |
+102 | ... tmp3 = Vec::new();for x in &g.clone().items { if !(x.cs_promo_sk == ()) { continue; } tmp3.push(x.clone()); } tmp3 }.len() as i32, pr...
+    |                                                          ^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+102 |     let result = { let mut tmp1 = std::collections::HashMap::new();for cs in &catalog_sales { for inv in &inventory { if !(inv.inv_item_sk == cs.cs_item_sk) { continue; } for w in &warehouse { if !(w.w_warehouse_sk == inv.inv_warehouse_sk) { continue; } for i in &item { if !(i.i_item_sk == cs.cs_item_sk) { continue; } for cd in &customer_demographics { if !(cd.cd_demo_sk == cs.cs_bill_cdemo_sk) { continue; } for hd in &household_demographics { if !(hd.hd_demo_sk == cs.cs_bill_hdemo_sk) { continue; } for d1 in &date_dim { if !(d1.d_date_sk == cs.cs_sold_date_sk) { continue; } for d2 in &date_dim { if !(d2.d_date_sk == inv.inv_date_sk) { continue; } for d3 in &date_dim { if !(d3.d_date_sk == cs.cs_ship_date_sk) { continue; } if !(d1.d_week_seq == d2.d_week_seq && inv.inv_quantity_on_hand < cs.cs_quantity && d3.d_date > d1.d_date + 5 && hd.hd_buy_potential == "5001-10000" && d1.d_year == 2000 && cd.cd_marital_status == "M") { continue; } let key = Key { item_desc: i.i_item_desc, warehouse: w.w_warehouse_name, week_seq: d1.d_week_seq }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {cs: cs.clone(), inv: inv.clone(), w: w.clone(), i: i.clone(), cd: cd.clone(), hd: hd.clone(), d1: d1.clone(), d2: d2.clone(), d3: d3.clone() }); } } } } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_item_desc: g.key.item_desc, w_warehouse_name: g.key.warehouse, d_week_seq: g.key.week_seq, no_promo: { let mut tmp3 = Vec::new();for x in &g.clone().items { if !(x.cs.cs_promo_sk == ()) { continue; } tmp3.push(x.clone()); } tmp3 }.len() as i32, promo: { let mut tmp4 = Vec::new();for x in &g.clone().items { if !(x.cs_promo_sk != ()) { continue; } tmp4.push(x.clone()); } tmp4 }.len() as i32, total_cnt: g.clone().items.len() as i32 }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   +++
+
+error[E0609]: no field `cs_promo_sk` on type `&Item1`
+   --> /tmp/q72.rs:102:1799
+    |
+102 | ... tmp4 = Vec::new();for x in &g.clone().items { if !(x.cs_promo_sk != ()) { continue; } tmp4.push(x.clone()); } tmp4 }.len() as i32, to...
+    |                                                          ^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+102 |     let result = { let mut tmp1 = std::collections::HashMap::new();for cs in &catalog_sales { for inv in &inventory { if !(inv.inv_item_sk == cs.cs_item_sk) { continue; } for w in &warehouse { if !(w.w_warehouse_sk == inv.inv_warehouse_sk) { continue; } for i in &item { if !(i.i_item_sk == cs.cs_item_sk) { continue; } for cd in &customer_demographics { if !(cd.cd_demo_sk == cs.cs_bill_cdemo_sk) { continue; } for hd in &household_demographics { if !(hd.hd_demo_sk == cs.cs_bill_hdemo_sk) { continue; } for d1 in &date_dim { if !(d1.d_date_sk == cs.cs_sold_date_sk) { continue; } for d2 in &date_dim { if !(d2.d_date_sk == inv.inv_date_sk) { continue; } for d3 in &date_dim { if !(d3.d_date_sk == cs.cs_ship_date_sk) { continue; } if !(d1.d_week_seq == d2.d_week_seq && inv.inv_quantity_on_hand < cs.cs_quantity && d3.d_date > d1.d_date + 5 && hd.hd_buy_potential == "5001-10000" && d1.d_year == 2000 && cd.cd_marital_status == "M") { continue; } let key = Key { item_desc: i.i_item_desc, warehouse: w.w_warehouse_name, week_seq: d1.d_week_seq }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {cs: cs.clone(), inv: inv.clone(), w: w.clone(), i: i.clone(), cd: cd.clone(), hd: hd.clone(), d1: d1.clone(), d2: d2.clone(), d3: d3.clone() }); } } } } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_item_desc: g.key.item_desc, w_warehouse_name: g.key.warehouse, d_week_seq: g.key.week_seq, no_promo: { let mut tmp3 = Vec::new();for x in &g.clone().items { if !(x.cs_promo_sk == ()) { continue; } tmp3.push(x.clone()); } tmp3 }.len() as i32, promo: { let mut tmp4 = Vec::new();for x in &g.clone().items { if !(x.cs.cs_promo_sk != ()) { continue; } tmp4.push(x.clone()); } tmp4 }.len() as i32, total_cnt: g.clone().items.len() as i32 }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       +++
+
+error: aborting due to 3 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

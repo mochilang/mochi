@@ -1,0 +1,55 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q98.rs:26:8
+   |
+26 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q98.rs:43:8
+   |
+43 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item2`
+   --> /tmp/q98.rs:115:889
+    |
+115 | ...Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+    |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+115 |     let grouped = { let mut tmp2 = Vec::<Group>::new();for ss in &store_sales { for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } let key = Key { item_id: i.i_item_id, item_desc: i.i_item_desc, category: i.i_category, class: i.i_class, price: i.i_current_price }; if let Some(tmp3) = tmp2.iter_mut().find(|g| g.key == key) { tmp3.items.push(Item2 {ss: ss.clone(), i: i.clone(), d: d.clone() }); } else { tmp2.push(Group { key: key, items: vec![Item2 {ss: ss.clone(), i: i.clone(), d: d.clone() }] }); } } } } let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_item_id: g.key.item_id, i_item_desc: g.key.item_desc, i_category: g.key.category, i_class: g.key.class, i_current_price: g.key.price, itemrevenue: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_ext_sales_price); } tmp4 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +++
+
+error[E0277]: cannot multiply `i32` by `f64`
+   --> /tmp/q98.rs:117:338
+    |
+117 | ...nue: g.itemrevenue, revenueratio: (g.itemrevenue * 100 as f64) / (t.total as f64) }; let tmp10 = (g.i_category, g.i_class, g.i_item_id...
+    |                                                     ^ no implementation for `i32 * f64`
+    |
+    = help: the trait `Mul<f64>` is not implemented for `i32`
+    = help: the following other types implement trait `Mul<Rhs>`:
+              `&i32` implements `Mul<i32>`
+              `&i32` implements `Mul`
+              `i32` implements `Mul<&i32>`
+              `i32` implements `Mul`
+
+error[E0308]: mismatched types
+   --> /tmp/q98.rs:119:153
+    |
+119 | ...ss1", i_current_price: 100.0, itemrevenue: 50.0, revenueratio: 33.333333333333336 }, Result5 { i_item_id: "I2", i_item_desc: "desc2", ...
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q98.rs:119:320
+    |
+119 | ...s1", i_current_price: 200.0, itemrevenue: 100.0, revenueratio: 66.66666666666667 }]);
+    |                                              ^^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 4 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0609.
+For more information about an error, try `rustc --explain E0277`.

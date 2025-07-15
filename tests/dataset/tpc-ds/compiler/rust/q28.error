@@ -1,0 +1,183 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q28.rs:11:8
+   |
+11 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:43:197
+   |
+43 | ...); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); ...
+   |       -                 ------------------------------------------------------------------------------------------     ------           ^^^^^^^^^^^^^^^^^^^^ expected `f64`, found `i32`
+   |       |                 |                                                                                              |
+   |       |                 |                                                                                              arguments to this method are incorrect
+   |       |                 this argument has type `f64`...
+   |       ... which causes `m` to have type `BTreeMap<&str, f64>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/q28.rs:43:178
+   |
+43 | ..._price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &buck...
+   |                         ^^^^^^^^^^^^^^^^^^^--------------------^
+   |                                            |
+   |                                            this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+help: you can convert an `i32` to an `f64`, producing the floating point representation of the integer
+   |
+43 |     let result = { let mut m = std::collections::BTreeMap::new(); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", (bucket1.len() as i32).into()); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32); m };
+   |                                                                                                                                                                                                     +                    ++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:43:240
+   |
+43 | ...); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); ...
+   |       -                 ------------------------------------------------------------------------------------------                                               ------            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^... `f64`, found `i32`
+   |       |                 |                                                                                                                                        |
+   |       |                 this argument has type `f64`...                                                                                                          arguments to this method are incorrect
+   |       ... which causes `m` to have type `BTreeMap<&str, f64>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/q28.rs:43:220
+   |
+43 | ...); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m...
+   |       ^^^^^^^^^^^^^^^^^^^^-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------^
+   |                           |
+   |                           this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+help: you can convert an `i32` to an `f64`, producing the floating point representation of the integer
+   |
+43 |     let result = { let mut m = std::collections::BTreeMap::new(); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", ({ let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32).into()); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32); m };
+   |                                                                                                                                                                                                                                                +                                                                                                                                                                                                                                                                                                                                         ++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:43:702
+   |
+43 | ...); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); ...
+   |       -                 ------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ------           ^^^^^^^^^^^^^^^^^^^^ expected `f64`, found `i32`
+   |       |                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+   |       |                 this argument has type `f64`...                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         arguments to this method are incorrect
+   |       ... which causes `m` to have type `BTreeMap<&str, f64>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/q28.rs:43:683
+   |
+43 | ..._price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &buc...
+   |                         ^^^^^^^^^^^^^^^^^^^--------------------^
+   |                                            |
+   |                                            this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+help: you can convert an `i32` to an `f64`, producing the floating point representation of the integer
+   |
+43 |     let result = { let mut m = std::collections::BTreeMap::new(); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", (bucket2.len() as i32).into()); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32); m };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              +                    ++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:43:745
+   |
+43 | ...); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32); ...
+   |       -                 ------------------------------------------------------------------------------------------                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ------            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^... `f64`, found `i32`
+   |       |                 |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+   |       |                 this argument has type `f64`...                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   arguments to this method are incorrect
+   |       ... which causes `m` to have type `BTreeMap<&str, f64>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/q28.rs:43:725
+   |
+43 | ...); m.insert("B2_CNTD", { let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32); m };
+   |       ^^^^^^^^^^^^^^^^^^^^---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------^
+   |                           |
+   |                           this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+help: you can convert an `i32` to an `f64`, producing the floating point representation of the integer
+   |
+43 |     let result = { let mut m = std::collections::BTreeMap::new(); m.insert("B1_LP", avg(&{ let mut tmp3 = Vec::new();for x in &bucket1 { tmp3.push(x.ss_list_price); } tmp3 })); m.insert("B1_CNT", bucket1.len() as i32); m.insert("B1_CNTD", { let mut tmp5 = Vec::<Group>::new();for x in &bucket1 { let key = x.ss_list_price; if let Some(tmp6) = tmp5.iter_mut().find(|g| g.key == key) { tmp6.items.push(x.clone()); } else { tmp5.push(Group { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp5 { result.push(g.key); } result }.len() as i32); m.insert("B2_LP", avg(&{ let mut tmp7 = Vec::new();for x in &bucket2 { tmp7.push(x.ss_list_price); } tmp7 })); m.insert("B2_CNT", bucket2.len() as i32); m.insert("B2_CNTD", ({ let mut tmp9 = Vec::<Group1>::new();for x in &bucket2 { let key = x.ss_list_price; if let Some(tmp10) = tmp9.iter_mut().find(|g| g.key == key) { tmp10.items.push(x.clone()); } else { tmp9.push(Group1 { key: key, items: vec![x.clone()] }); } } let mut result = Vec::new(); for g in tmp9 { result.push(g.key); } result }.len() as i32).into()); m };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +                                                                                                                                                                                                                                                                                                                                             ++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:45:125
+   |
+45 | ...ns::BTreeMap::new(); m.insert("B1_LP", 100.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CN...
+   |                         -                 -----     ------           ^ expected floating-point number, found integer
+   |                         |                 |         |
+   |                         |                 |         arguments to this method are incorrect
+   |                         |                 this argument has type `{float}`...
+   |                         ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /tmp/q28.rs:45:106
+   |
+45 | ...(); m.insert("B1_LP", 100.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.insert(...
+   |                                  ^^^^^^^^^^^^^^^^^^^-^
+   |                                                     |
+   |                                                     this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:45:149
+   |
+45 | ...::new(); m.insert("B1_LP", 100.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.in...
+   |             -                 -----                            ------            ^ expected floating-point number, found integer
+   |             |                 |                                |
+   |             |                 |                                arguments to this method are incorrect
+   |             |                 this argument has type `{float}`...
+   |             ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /tmp/q28.rs:45:129
+   |
+45 | ...00.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.insert("B2_CNTD", 1); m });
+   |                                  ^^^^^^^^^^^^^^^^^^^^-^
+   |                                                      |
+   |                                                      this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:45:197
+   |
+45 | ...new(); m.insert("B1_LP", 100.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.inse...
+   |           -                 -----                                                                             ------           ^ expected floating-point number, found integer
+   |           |                 |                                                                                 |
+   |           |                 this argument has type `{float}`...                                               arguments to this method are incorrect
+   |           ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /tmp/q28.rs:45:178
+   |
+45 | ... 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.insert("B2_CNTD", 1); m });
+   |                                  ^^^^^^^^^^^^^^^^^^^-^
+   |                                                     |
+   |                                                     this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/q28.rs:45:221
+   |
+45 | ...); m.insert("B1_LP", 100.0); m.insert("B1_CNT", 1); m.insert("B1_CNTD", 1); m.insert("B2_LP", 80.0); m.insert("B2_CNT", 1); m.insert("B2_CNTD", 1); ...
+   |       -                 -----                                                                                                    ------            ^ expected floating-point number, found integer
+   |       |                 |                                                                                                        |
+   |       |                 this argument has type `{float}`...                                                                      arguments to this method are incorrect
+   |       ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /tmp/q28.rs:45:201
+   |
+45 | ...80.0); m.insert("B2_CNT", 1); m.insert("B2_CNTD", 1); m });
+   |                                  ^^^^^^^^^^^^^^^^^^^^-^
+   |                                                      |
+   |                                                      this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error: aborting due to 8 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0308`.

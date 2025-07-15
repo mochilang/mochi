@@ -1,0 +1,39 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q50.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_return` should have an upper camel case name
+  --> /tmp/q50.rs:12:8
+   |
+12 | struct Store_return {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreReturn`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q50.rs:20:8
+   |
+20 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0507]: cannot move out of `j.s` which is behind a shared reference
+  --> /tmp/q50.rs:75:97
+   |
+75 | ...n &joined { let key = j.s; tmp2.entry(key).or_insert_with(Vec::new).push(j.clone()); } let mut tmp3 = Vec::<Group>::new(); for (k,v) i...
+   |                          ^^^ move occurs because `j.s` has type `Store`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+75 |     let result = { let mut tmp2 = std::collections::HashMap::new();for j in &joined { let key = &j.s; tmp2.entry(key).or_insert_with(Vec::new).push(j.clone()); } let mut tmp3 = Vec::<Group>::new(); for (k,v) in tmp2 { tmp3.push(Group { key: k, items: v }); } tmp3.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp3 { result.push(Result1 { s_store_name: g.key.s_store_name, d30: { let mut tmp4 = Vec::new();for x in &g.clone().items { if !(x.diff <= 30) { continue; } tmp4.push(1); } tmp4 }.len() as i32, d31_60: { let mut tmp5 = Vec::new();for x in &g.clone().items { if !(x.diff > 30 && x.diff <= 60) { continue; } tmp5.push(1); } tmp5 }.len() as i32, d61_90: { let mut tmp6 = Vec::new();for x in &g.clone().items { if !(x.diff > 60 && x.diff <= 90) { continue; } tmp6.push(1); } tmp6 }.len() as i32, d91_120: { let mut tmp7 = Vec::new();for x in &g.clone().items { if !(x.diff > 90 && x.diff <= 120) { continue; } tmp7.push(1); } tmp7 }.len() as i32, d_gt_120: { let mut tmp8 = Vec::new();for x in &g.clone().items { if !(x.diff > 120) { continue; } tmp8.push(1); } tmp8 }.len() as i32 }); } result };
+   |                                                                                                 +
+help: consider cloning the value if the performance cost is acceptable
+   |
+75 |     let result = { let mut tmp2 = std::collections::HashMap::new();for j in &joined { let key = j.s.clone(); tmp2.entry(key).or_insert_with(Vec::new).push(j.clone()); } let mut tmp3 = Vec::<Group>::new(); for (k,v) in tmp2 { tmp3.push(Group { key: k, items: v }); } tmp3.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp3 { result.push(Result1 { s_store_name: g.key.s_store_name, d30: { let mut tmp4 = Vec::new();for x in &g.clone().items { if !(x.diff <= 30) { continue; } tmp4.push(1); } tmp4 }.len() as i32, d31_60: { let mut tmp5 = Vec::new();for x in &g.clone().items { if !(x.diff > 30 && x.diff <= 60) { continue; } tmp5.push(1); } tmp5 }.len() as i32, d61_90: { let mut tmp6 = Vec::new();for x in &g.clone().items { if !(x.diff > 60 && x.diff <= 90) { continue; } tmp6.push(1); } tmp6 }.len() as i32, d91_120: { let mut tmp7 = Vec::new();for x in &g.clone().items { if !(x.diff > 90 && x.diff <= 120) { continue; } tmp7.push(1); } tmp7 }.len() as i32, d_gt_120: { let mut tmp8 = Vec::new();for x in &g.clone().items { if !(x.diff > 120) { continue; } tmp8.push(1); } tmp8 }.len() as i32 }); } result };
+   |                                                                                                    ++++++++
+
+error: aborting due to 1 previous error; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0507`.

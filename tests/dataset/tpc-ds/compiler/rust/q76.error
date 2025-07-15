@@ -1,0 +1,162 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+ --> /tmp/q76.rs:3:8
+  |
+3 | struct Date_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q76.rs:16:8
+   |
+16 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q76.rs:24:8
+   |
+24 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q76.rs:32:8
+   |
+32 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:106:57
+    |
+106 |     let store_sales = vec![Store_sale { ss_customer_sk: (), ss_item_sk: 1, ss_ext_sales_price: 10.0, ss_sold_date_sk: 1 }];
+    |                                                         ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:107:58
+    |
+107 |     let web_sales = vec![Web_sale { ws_bill_customer_sk: (), ws_item_sk: 2, ws_ext_sales_price: 15.0, ws_sold_date_sk: 1 }];
+    |                                                          ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:108:66
+    |
+108 |     let catalog_sales = vec![Catalog_sale { cs_bill_customer_sk: (), cs_item_sk: 3, cs_ext_sales_price: 20.0, cs_sold_date_sk: 1 }];
+    |                                                                  ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:109:242
+    |
+109 | ...== ss.ss_sold_date_sk) { continue; } if !(ss.ss_customer_sk == ()) { continue; } tmp1.push(Result { channel: "store", col_name: ss.ss_...
+    |                                              -----------------    ^^ expected `i32`, found `()`
+    |                                              |
+    |                                              expected because this is `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:110:243
+    |
+110 | ...ws.ws_sold_date_sk) { continue; } if !(ws.ws_bill_customer_sk == ()) { continue; } tmp2.push(Result1 { channel: "web", col_name: ws.ws...
+    |                                           ----------------------    ^^ expected `i32`, found `()`
+    |                                           |
+    |                                           expected because this is `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:111:251
+    |
+111 | ...cs.cs_sold_date_sk) { continue; } if !(cs.cs_bill_customer_sk == ()) { continue; } tmp3.push(Result2 { channel: "catalog", col_name: c...
+    |                                           ----------------------    ^^ expected `i32`, found `()`
+    |                                           |
+    |                                           expected because this is `i32`
+
+error[E0423]: expected function, found macro `concat`
+   --> /tmp/q76.rs:112:20
+    |
+112 |     let all_rows = concat(store_part, web_part, catalog_part);
+    |                    ^^^^^^ not a function
+    |
+help: use `!` to invoke the macro
+    |
+112 |     let all_rows = concat!(store_part, web_part, catalog_part);
+    |                          +
+
+error[E0609]: no field `r` on type `&i32`
+   --> /tmp/q76.rs:113:805
+    |
+113 | ... tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.r.ext_sales_price); } tmp6 }) }); } result };
+    |                                                               ^ unknown field
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:47
+    |
+115 |     assert!(result == vec![Result3 { channel: "store", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatA", sales_cnt: 1, sales_amt:...
+    |                                               ^^^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:66
+    |
+115 |     assert!(result == vec![Result3 { channel: "store", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatA", sales_cnt: 1, sales_amt:...
+    |                                                                  ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:106
+    |
+115 | ...ol_name: (), d_year: 1998, d_qoy: 1, i_category: "CatA", sales_cnt: 1, sales_amt: 10.0 }, Result3 { channel: "web", col_name: (), d_ye...
+    |                                                     ^^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:139
+    |
+115 | ...category: "CatA", sales_cnt: 1, sales_amt: 10.0 }, Result3 { channel: "web", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatB",...
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:166
+    |
+115 | ...les_cnt: 1, sales_amt: 10.0 }, Result3 { channel: "web", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatB", sales_cnt: 1, sales...
+    |                                                      ^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:183
+    |
+115 | ...es_amt: 10.0 }, Result3 { channel: "web", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatB", sales_cnt: 1, sales_amt: 15.0 }, R...
+    |                                                        ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:223
+    |
+115 | ...ol_name: (), d_year: 1998, d_qoy: 1, i_category: "CatB", sales_cnt: 1, sales_amt: 15.0 }, Result3 { channel: "catalog", col_name: (), ...
+    |                                                     ^^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:256
+    |
+115 | ...category: "CatB", sales_cnt: 1, sales_amt: 15.0 }, Result3 { channel: "catalog", col_name: (), d_year: 1998, d_qoy: 1, i_category: "Ca...
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:283
+    |
+115 | ...s_cnt: 1, sales_amt: 15.0 }, Result3 { channel: "catalog", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatC", sales_cnt: 1, sal...
+    |                                                    ^^^^^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:304
+    |
+115 | ...mt: 15.0 }, Result3 { channel: "catalog", col_name: (), d_year: 1998, d_qoy: 1, i_category: "CatC", sales_cnt: 1, sales_amt: 20.0 }]);
+    |                                                        ^^ expected `i32`, found `()`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:344
+    |
+115 | ...ol_name: (), d_year: 1998, d_qoy: 1, i_category: "CatC", sales_cnt: 1, sales_amt: 20.0 }]);
+    |                                                     ^^^^^^ expected `i32`, found `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/q76.rs:115:377
+    |
+115 | ...category: "CatC", sales_cnt: 1, sales_amt: 20.0 }]);
+    |                                               ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 20 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0308, E0423, E0609.
+For more information about an error, try `rustc --explain E0308`.

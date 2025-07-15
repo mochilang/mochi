@@ -1,0 +1,54 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q8.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q8.rs:10:8
+   |
+10 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q8.rs:24:8
+   |
+24 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q8.rs:71:13
+   |
+71 |     reverse(substr("zip", 0, 2));
+   |             ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `reverse` in this scope
+  --> /tmp/q8.rs:71:5
+   |
+71 |     reverse(substr("zip", 0, 2));
+   |     ^^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q8.rs:73:308
+   |
+73 | ...k) { continue; } for ca in &customer_address { if !(substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)) { continue; } for c in &customer...
+   |                                                        ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q8.rs:73:333
+   |
+73 | ...n &customer_address { if !(substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)) { continue; } for c in &customer { if !(ca.ca_address_sk ...
+   |                                                        ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q8.rs:73:511
+   |
+73 | ..._flag == "Y") { continue; } if !(zip_list.contains(&substr(ca.ca_zip, 0, 5))) { continue; } let key = s.s_store_name; tmp1.entry(key)....
+   |                                                        ^^^^^^ not found in this scope
+
+error: aborting due to 5 previous errors; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0425`.

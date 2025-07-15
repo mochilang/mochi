@@ -1,0 +1,85 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+ --> /tmp/q75.rs:3:8
+  |
+3 | struct Date_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q75.rs:9:8
+  |
+9 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q75.rs:17:8
+   |
+17 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q75.rs:25:8
+   |
+25 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+error[E0423]: expected function, found macro `concat`
+   --> /tmp/q75.rs:112:24
+    |
+112 |     let sales_detail = concat({ let mut tmp1 = Vec::new();for ss in &store_sales { for d in &date_dim { if !(d.d_date_sk == ss.ss_sold_da...
+    |                        ^^^^^^ not a function
+    |
+help: use `!` to invoke the macro
+    |
+112 |     let sales_detail = concat!({ let mut tmp1 = Vec::new();for ss in &store_sales { for d in &date_dim { if !(d.d_date_sk == ss.ss_sold_date_sk) { continue; } tmp1.push(Result { d_year: d.d_year, i_item_sk: ss.ss_item_sk, quantity: ss.ss_quantity, amount: ss.ss_sales_price }); } } tmp1 }, { let mut tmp2 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(d.d_date_sk == ws.ws_sold_date_sk) { continue; } tmp2.push(Result1 { d_year: d.d_year, i_item_sk: ws.ws_item_sk, quantity: ws.ws_quantity, amount: ws.ws_sales_price }); } } tmp2 }, { let mut tmp3 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(d.d_date_sk == cs.cs_sold_date_sk) { continue; } tmp3.push(Result2 { d_year: d.d_year, i_item_sk: cs.cs_item_sk, quantity: cs.cs_quantity, amount: cs.cs_sales_price }); } } tmp3 });
+    |                              +
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q75.rs:114:19
+    |
+114 |     let prev_yr = first({ let mut tmp8 = Vec::new();for a in &all_sales { if !(a.d_year == 2000) { continue; } tmp8.push(a.clone()); } tm...
+    |                   ^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `first` on `&[Result4]`
+    |
+114 -     let prev_yr = first({ let mut tmp8 = Vec::new();for a in &all_sales { if !(a.d_year == 2000) { continue; } tmp8.push(a.clone()); } tmp8 });
+114 +     let prev_yr = { let mut tmp8 = Vec::new();for a in &all_sales { if !(a.d_year == 2000) { continue; } tmp8.push(a.clone()); } tmp8 }.first();
+    |
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q75.rs:115:19
+    |
+115 |     let curr_yr = first({ let mut tmp9 = Vec::new();for a in &all_sales { if !(a.d_year == 2001) { continue; } tmp9.push(a.clone()); } tm...
+    |                   ^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `first` on `&[Result4]`
+    |
+115 -     let curr_yr = first({ let mut tmp9 = Vec::new();for a in &all_sales { if !(a.d_year == 2001) { continue; } tmp9.push(a.clone()); } tmp9 });
+115 +     let curr_yr = { let mut tmp9 = Vec::new();for a in &all_sales { if !(a.d_year == 2001) { continue; } tmp9.push(a.clone()); } tmp9 }.first();
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q75.rs:118:363
+    |
+118 | ...); m.insert("prev_year", 2000); m.insert("year", 2001); m.insert("i_brand_id", 1); m.insert("i_class_id", 2); m.insert("i_category_id", 3); m.insert("i_manufact_id", 4); m.insert("prev_yr_cnt", 100); m.insert("curr_yr_cnt", 80); m.insert("sales_cnt_diff", -20); m.insert("sales_amt_diff", -200.0); ...
+    |       -                     ----                                                                                                                                                                                                                                           ------                   ^^^^^^ expected integer, found floating-point number
+    |       |                     |                                                                                                                                                                                                                                              |
+    |       |                     this argument has type `{integer}`...                                                                                                                                                                                                          arguments to this method are incorrect
+    |       ... which causes `m` to have type `BTreeMap<&str, {integer}>`
+    |
+help: the return type of this call is `{float}` due to the type of the argument passed
+   --> /tmp/q75.rs:118:336
+    |
+118 | ..."sales_cnt_diff", -20); m.insert("sales_amt_diff", -200.0); m }]);
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^------^
+    |                                                       |
+    |                                                       this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error: aborting due to 4 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0308, E0423, E0425.
+For more information about an error, try `rustc --explain E0308`.
