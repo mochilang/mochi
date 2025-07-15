@@ -1,0 +1,36 @@
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:71:12: error: ‘ps’ was not declared in this scope
+   71 |   decltype(ps.ps_partkey) ps_partkey;
+      |            ^~
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:71:12: error: ‘ps’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:72:13: error: ‘ps’ was not declared in this scope
+   72 |   decltype((ps.ps_supplycost * ps.ps_availqty)) value;
+      |             ^~
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:72:32: error: ‘ps’ was not declared in this scope
+   72 |   decltype((ps.ps_supplycost * ps.ps_availqty)) value;
+      |                                ^~
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:72:13: error: ‘ps’ was not declared in this scope
+   72 |   decltype((ps.ps_supplycost * ps.ps_availqty)) value;
+      |             ^~
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:72:32: error: ‘ps’ was not declared in this scope
+   72 |   decltype((ps.ps_supplycost * ps.ps_availqty)) value;
+      |                                ^~
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq112428769883/001/prog.cpp:197:13: warning: narrowing conversion of ‘<lambda closure object>main()::<lambda()>::<lambda(auto:1)>().main()::<lambda()>::<lambda(auto:1)>(main()::<lambda()>::<lambda()>())’ from ‘double’ to ‘int’ [-Wnarrowing]
+  195 |           g.key, ([&](auto v) {
+      |                  ~~~~~~~~~~~~~~
+  196 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  197 |           })(([&]() {
+      |           ~~^~~~~~~~~
+  198 |             std::vector<decltype(std::declval<Filtered>().value)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  199 |             for (auto r : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  200 |               __items.push_back(r.value);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  201 |             }
+      |             ~
+  202 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  203 |           })())});
+      |           ~~~~~

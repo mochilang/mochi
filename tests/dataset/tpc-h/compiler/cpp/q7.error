@@ -1,0 +1,360 @@
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:80:12: error: ‘n1’ was not declared in this scope
+   80 |   decltype(n1.n_name) supp_nation;
+      |            ^~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:80:12: error: ‘n1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:81:12: error: ‘n2’ was not declared in this scope
+   81 |   decltype(n2.n_name) cust_nation;
+      |            ^~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:81:12: error: ‘n2’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:82:24: error: ‘l’ was not declared in this scope
+   82 |   decltype(std::string(l.l_shipdate).substr(0, (4) - (0))) l_year;
+      |                        ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:82:24: error: ‘l’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:85:12: error: ‘l’ was not declared in this scope
+   85 |   decltype(l) l;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:85:12: error: ‘l’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:86:12: error: ‘o’ was not declared in this scope
+   86 |   decltype(o) o;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:86:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:87:12: error: ‘c’ was not declared in this scope
+   87 |   decltype(c) c;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:87:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:88:12: error: ‘s’ was not declared in this scope
+   88 |   decltype(s) s;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:88:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:89:12: error: ‘n1’ was not declared in this scope
+   89 |   decltype(n1) n1;
+      |            ^~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:89:12: error: ‘n1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:90:12: error: ‘n2’ was not declared in this scope; did you mean ‘n1’?
+   90 |   decltype(n2) n2;
+      |            ^~
+      |            n1
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:90:12: error: ‘n2’ was not declared in this scope; did you mean ‘n1’?
+   90 |   decltype(n2) n2;
+      |            ^~
+      |            n1
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:103:12: error: ‘supp_nation’ was not declared in this scope
+  103 |   decltype(supp_nation) f0;
+      |            ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:103:12: error: ‘supp_nation’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:104:12: error: ‘cust_nation’ was not declared in this scope
+  104 |   decltype(cust_nation) f1;
+      |            ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:104:12: error: ‘cust_nation’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:105:12: error: ‘l_year’ was not declared in this scope
+  105 |   decltype(l_year) f2;
+      |            ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:105:12: error: ‘l_year’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:335:31: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  335 |                     Result{n1.n_name, n2.n_name,
+      |                            ~~~^~~~~~
+      |                               |
+      |                               std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:340:51: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
+  340 |                     __g.items.push_back(__struct7{l, o, c, s, n1, n2});
+      |                                                   ^
+      |                                                   |
+      |                                                   Lineitem
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:348:56: error: cannot convert ‘Lineitem’ to ‘int’ in initialization
+  348 |                       std::vector<__struct7>{__struct7{l, o, c, s, n1, n2}}});
+      |                                                        ^
+      |                                                        |
+      |                                                        Lineitem
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:348:75: error: no matching function for call to ‘std::vector<__struct7>::vector(<brace-enclosed initializer list>)’
+  348 |                       std::vector<__struct7>{__struct7{l, o, c, s, n1, n2}}});
+      |                                                                           ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:9:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; value_type = std::vector<__struct7>::value_type; allocator_type = std::allocator<__struct7>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; allocator_type = std::allocator<__struct7>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:359:23: error: ‘supp_nation’ was not declared in this scope
+  359 |           {__struct10{supp_nation, cust_nation, l_year},
+      |                       ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:359:36: error: ‘cust_nation’ was not declared in this scope
+  359 |           {__struct10{supp_nation, cust_nation, l_year},
+      |                                    ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:359:49: error: ‘l_year’ was not declared in this scope
+  359 |           {__struct10{supp_nation, cust_nation, l_year},
+      |                                                 ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:365:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct7>().__struct7::l’, which is of non-class type ‘int’
+  365 |                            std::declval<__struct7>().l.l_extendedprice *
+      |                                                        ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:366:62: error: request for member ‘l_discount’ in ‘std::declval<__struct7>().__struct7::l’, which is of non-class type ‘int’
+  366 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:365:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct7>().__struct7::l’, which is of non-class type ‘int’
+  365 |                            std::declval<__struct7>().l.l_extendedprice *
+      |                                                        ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:366:62: error: request for member ‘l_discount’ in ‘std::declval<__struct7>().__struct7::l’, which is of non-class type ‘int’
+  366 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
+      |                                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:366:76: error: template argument 1 is invalid
+  366 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
+      |                                                                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:366:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:369:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  369 |                          __items.push_back(
+      |                                  ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:370:35: error: request for member ‘l_extendedprice’ in ‘x.__struct7::l’, which is of non-class type ‘int’
+  370 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+      |                                   ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:370:63: error: request for member ‘l_discount’ in ‘x.__struct7::l’, which is of non-class type ‘int’
+  370 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+      |                                                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:363:24:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:362:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  362 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:362:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  362 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                          ~~^~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:358:24: error: no matching function for call to ‘std::vector<std::pair<__struct10, __struct9> >::push_back(<brace-enclosed initializer list>)’
+  358 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~^
+  359 |           {__struct10{supp_nation, cust_nation, l_year},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  360 |            __struct9{g.key.supp_nation, g.key.cust_nation, g.key.l_year,
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |                      ([&](auto v) {
+      |                      ~~~~~~~~~~~~~~
+  362 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  363 |                      })(([&]() {
+      |                      ~~~~~~~~~~~
+  364 |                        std::vector<decltype((
+      |                        ~~~~~~~~~~~~~~~~~~~~~~
+  365 |                            std::declval<__struct7>().l.l_extendedprice *
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |                            __items;
+      |                            ~~~~~~~~
+  368 |                        for (auto x : g.items) {
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |                          __items.push_back(
+      |                          ~~~~~~~~~~~~~~~~~~
+  370 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |                        }
+      |                        ~
+  372 |                        return __items;
+      |                        ~~~~~~~~~~~~~~~
+  373 |                      })())}});
+      |                      ~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<__struct10, __struct9>; _Alloc = std::allocator<std::pair<__struct10, __struct9> >; value_type = std::pair<__struct10, __struct9>]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::vector<std::pair<__struct10, __struct9> >::value_type&’ {aka ‘const std::pair<__struct10, __struct9>&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = std::pair<__struct10, __struct9>; _Alloc = std::allocator<std::pair<__struct10, __struct9> >; value_type = std::pair<__struct10, __struct9>]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<__struct10, __struct9> >::value_type&&’ {aka ‘std::pair<__struct10, __struct9>&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq71212774882/001/prog.cpp:383:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
+  310 |   std::vector<__struct7> result = ([&]() {
+      |                                   ~~~~~~~~
+  311 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  312 |     for (auto l : lineitem) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
+  313 |       for (auto o : orders) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~
+  314 |         if (!((o.o_orderkey == l.l_orderkey)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  315 |           continue;
+      |           ~~~~~~~~~
+  316 |         for (auto c : customer) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+  317 |           if (!((c.c_custkey == o.o_custkey)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  318 |             continue;
+      |             ~~~~~~~~~
+  319 |           for (auto s : supplier) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~
+  320 |             if (!((s.s_suppkey == l.l_suppkey)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  321 |               continue;
+      |               ~~~~~~~~~
+  322 |             for (auto n1 : nation) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  323 |               if (!((n1.n_nationkey == s.s_nationkey)))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  324 |                 continue;
+      |                 ~~~~~~~~~
+  325 |               for (auto n2 : nation) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  326 |                 if (!((n2.n_nationkey == c.c_nationkey)))
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  327 |                   continue;
+      |                   ~~~~~~~~~
+  328 |                 if (!((((((l.l_shipdate >= start_date) &&
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  329 |                           (l.l_shipdate <= end_date)) &&
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  330 |                          (((n1.n_name == nation1) &&
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  331 |                            (n2.n_name == nation2)))) ||
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  332 |                         (((n1.n_name == nation2) && (n2.n_name == nation1)))))))
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  333 |                   continue;
+      |                   ~~~~~~~~~
+  334 |                 auto __key =
+      |                 ~~~~~~~~~~~~
+  335 |                     Result{n1.n_name, n2.n_name,
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  336 |                            std::string(l.l_shipdate).substr(0, (4) - (0))};
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  337 |                 bool __found = false;
+      |                 ~~~~~~~~~~~~~~~~~~~~~
+  338 |                 for (auto &__g : __groups) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  339 |                   if (__g.key == __key) {
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~
+  340 |                     __g.items.push_back(__struct7{l, o, c, s, n1, n2});
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  341 |                     __found = true;
+      |                     ~~~~~~~~~~~~~~~
+  342 |                     break;
+      |                     ~~~~~~
+  343 |                   }
+      |                   ~
+  344 |                 }
+      |                 ~
+  345 |                 if (!__found) {
+      |                 ~~~~~~~~~~~~~~~
+  346 |                   __groups.push_back(__struct8{
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  347 |                       __key,
+      |                       ~~~~~~
+  348 |                       std::vector<__struct7>{__struct7{l, o, c, s, n1, n2}}});
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  349 |                 }
+      |                 ~
+  350 |               }
+      |               ~
+  351 |             }
+      |             ~
+  352 |           }
+      |           ~
+  353 |         }
+      |         ~
+  354 |       }
+      |       ~
+  355 |     }
+      |     ~
+  356 |     std::vector<std::pair<__struct10, __struct9>> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  357 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  358 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  359 |           {__struct10{supp_nation, cust_nation, l_year},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  360 |            __struct9{g.key.supp_nation, g.key.cust_nation, g.key.l_year,
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |                      ([&](auto v) {
+      |                      ~~~~~~~~~~~~~~
+  362 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  363 |                      })(([&]() {
+      |                      ~~~~~~~~~~~
+  364 |                        std::vector<decltype((
+      |                        ~~~~~~~~~~~~~~~~~~~~~~
+  365 |                            std::declval<__struct7>().l.l_extendedprice *
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |                            ((1 - std::declval<__struct7>().l.l_discount))))>
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |                            __items;
+      |                            ~~~~~~~~
+  368 |                        for (auto x : g.items) {
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |                          __items.push_back(
+      |                          ~~~~~~~~~~~~~~~~~~
+  370 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |                        }
+      |                        ~
+  372 |                        return __items;
+      |                        ~~~~~~~~~~~~~~~
+  373 |                      })())}});
+      |                      ~~~~~~~~~
+  374 |     }
+      |     ~
+  375 |     std::sort(__items.begin(), __items.end(), [](auto &a, auto &b) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |       return std::tie(a.first.f0, a.first.f1, a.first.f2) <
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  377 |              std::tie(b.first.f0, b.first.f1, b.first.f2);
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  378 |     });
+      |     ~~~
+  379 |     std::vector<__struct9> __res;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  380 |     for (auto &p : __items)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  381 |       __res.push_back(p.second);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  382 |     return __res;
+      |     ~~~~~~~~~~~~~
+  383 |   })();
+      |   ~~^~

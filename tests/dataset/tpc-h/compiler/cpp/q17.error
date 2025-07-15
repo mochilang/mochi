@@ -1,0 +1,73 @@
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:121:26: error: ‘l’ was not declared in this scope
+  121 |     std::vector<decltype(l.l_extendedprice)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:121:44: error: template argument 1 is invalid
+  121 |     std::vector<decltype(l.l_extendedprice)> __items;
+      |                                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:121:44: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:129:44: error: ‘x’ was not declared in this scope
+  129 |                       std::vector<decltype(x.l_quantity)> __items;
+      |                                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:129:57: error: template argument 1 is invalid
+  129 |                       std::vector<decltype(x.l_quantity)> __items;
+      |                                                         ^
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:129:57: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:133:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  133 |                         __items.push_back(x.l_quantity);
+      |                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:128:32: error: no matching function for call to ‘__avg(int)’
+  128 |                   ((0.2 * __avg(([&]() {
+      |                           ~~~~~^~~~~~~~~
+  129 |                       std::vector<decltype(x.l_quantity)> __items;
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  130 |                       for (auto x : lineitem) {
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  131 |                         if (!((x.l_partkey == p.p_partkey)))
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  132 |                           continue;
+      |                           ~~~~~~~~~
+  133 |                         __items.push_back(x.l_quantity);
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  134 |                       }
+      |                       ~         
+  135 |                       return __items;
+      |                       ~~~~~~~~~~~~~~~
+  136 |                     })())))))))))
+      |                     ~~~~~       
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:64:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   64 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:64:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:128:32: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  128 |                   ((0.2 * __avg(([&]() {
+      |                           ~~~~~^~~~~~~~~
+  129 |                       std::vector<decltype(x.l_quantity)> __items;
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  130 |                       for (auto x : lineitem) {
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  131 |                         if (!((x.l_partkey == p.p_partkey)))
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  132 |                           continue;
+      |                           ~~~~~~~~~
+  133 |                         __items.push_back(x.l_quantity);
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  134 |                       }
+      |                       ~         
+  135 |                       return __items;
+      |                       ~~~~~~~~~~~~~~~
+  136 |                     })())))))))))
+      |                     ~~~~~       
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:138:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  138 |         __items.push_back(l.l_extendedprice);
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:145:20:   required from here
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:144:45: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  144 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                           ~~^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq171355886087/001/prog.cpp:144:56: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  144 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                      ~~^~~
