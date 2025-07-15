@@ -46,3 +46,7 @@
 - Regenerated TPC-DS TS outputs with error logging
 - Failing queries now produce .error files (e.g., q1, q3)
 
+
+### 2025-07-15 06:33 UTC
+- Re-ran compile_tpcds_ts.go with Deno 2.4.1; generated TypeScript outputs for all queries.
+- Added tpcds_golden_test.go to verify generated code and outputs.
