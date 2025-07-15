@@ -1,0 +1,48 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector partkey)
+    (selector partkey
+      (selector key (selector g))
+    )
+  )
+  (entry
+    (selector suppkey)
+    (selector suppkey
+      (selector key (selector g))
+    )
+  )
+  (entry
+    (selector qty)
+    (call sum
+      (query x
+        (source (selector g))
+        (select
+          (selector l_quantity (selector x))
+        )
+      )
+    )
+  )
+))
+  Group(g by (map
+  (entry
+    (selector partkey)
+    (selector l_partkey (selector l))
+  )
+  (entry
+    (selector suppkey)
+    (selector l_suppkey (selector l))
+  )
+))
+    Where((binary <
+  (binary &&
+    (binary >=
+      (selector l_shipdate (selector l))
+      (string 1994-01-01)
+    )
+    (selector l_shipdate (selector l))
+  )
+  (string 1995-01-01)
+))
+      Scan(alias=l, src=(selector lineitem))

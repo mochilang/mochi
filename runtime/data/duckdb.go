@@ -22,7 +22,7 @@ type tableInfo struct {
 // ExecPlanDuckDB executes the logical plan by translating it to SQL and running it in DuckDB.
 // For plans containing grouping, it falls back to the in-memory execution.
 func ExecPlanDuckDB(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) ([]any, error) {
-	sp, ok := plan.(*selectPlan)
+	sp, ok := plan.(*SelectPlan)
 	if !ok {
 		return ExecPlan(plan, env, eval)
 	}
@@ -38,7 +38,7 @@ func ExecPlanDuckDB(plan Plan, env *types.Env, eval func(*parser.Expr) (any, err
 	}
 	defer db.Close()
 
-	tables := map[*scanPlan]*tableInfo{}
+	tables := map[*ScanPlan]*tableInfo{}
 	for idx, sc := range scans {
 		tbl := fmt.Sprintf("t%d", idx)
 		rows, colsTypes, err := materializeSource(env, eval, sc.Src)
@@ -158,20 +158,20 @@ func materializeSource(env *types.Env, eval func(*parser.Expr) (any, error), src
 	return rows, colsMap, nil
 }
 
-// containsGroup reports whether the plan tree has a groupPlan node.
+// containsGroup reports whether the plan tree has a Group node.
 func containsGroup(pl Plan) bool {
 	switch p := pl.(type) {
-	case *groupPlan:
+	case *GroupPlan:
 		return true
-	case *selectPlan:
+	case *SelectPlan:
 		return containsGroup(p.Input)
-	case *wherePlan:
+	case *WherePlan:
 		return containsGroup(p.Input)
-	case *sortPlan:
+	case *SortPlan:
 		return containsGroup(p.Input)
-	case *limitPlan:
+	case *LimitPlan:
 		return containsGroup(p.Input)
-	case *joinPlan:
+	case *JoinPlan:
 		return containsGroup(p.Left) || containsGroup(p.Right)
 	default:
 		return false
@@ -194,9 +194,9 @@ func mergeAliasMaps(a, b map[string][]string) map[string][]string {
 	return out
 }
 
-func buildSQL(pl Plan, tables map[*scanPlan]*tableInfo, eval func(*parser.Expr) (any, error)) (sqlPlan, error) {
+func buildSQL(pl Plan, tables map[*ScanPlan]*tableInfo, eval func(*parser.Expr) (any, error)) (sqlPlan, error) {
 	switch p := pl.(type) {
-	case *scanPlan:
+	case *ScanPlan:
 		info := tables[p]
 		cols := make([]string, len(info.columns))
 		for i, c := range info.columns {
@@ -204,7 +204,7 @@ func buildSQL(pl Plan, tables map[*scanPlan]*tableInfo, eval func(*parser.Expr) 
 		}
 		q := fmt.Sprintf("SELECT %s FROM %s", strings.Join(cols, ","), info.name)
 		return sqlPlan{q, map[string][]string{p.Alias: info.columns}}, nil
-	case *wherePlan:
+	case *WherePlan:
 		child, err := buildSQL(p.Input, tables, eval)
 		if err != nil {
 			return sqlPlan{}, err
@@ -218,7 +218,7 @@ func buildSQL(pl Plan, tables map[*scanPlan]*tableInfo, eval func(*parser.Expr) 
 		}
 		q := fmt.Sprintf("SELECT * FROM (%s) WHERE %s", child.query, cond)
 		return sqlPlan{q, child.aliases}, nil
-	case *sortPlan:
+	case *SortPlan:
 		child, err := buildSQL(p.Input, tables, eval)
 		if err != nil {
 			return sqlPlan{}, err
@@ -232,7 +232,7 @@ func buildSQL(pl Plan, tables map[*scanPlan]*tableInfo, eval func(*parser.Expr) 
 		}
 		q := fmt.Sprintf("SELECT * FROM (%s) ORDER BY %s", child.query, key)
 		return sqlPlan{q, child.aliases}, nil
-	case *limitPlan:
+	case *LimitPlan:
 		child, err := buildSQL(p.Input, tables, eval)
 		if err != nil {
 			return sqlPlan{}, err
@@ -257,7 +257,7 @@ func buildSQL(pl Plan, tables map[*scanPlan]*tableInfo, eval func(*parser.Expr) 
 			}
 		}
 		return sqlPlan{q, child.aliases}, nil
-	case *joinPlan:
+	case *JoinPlan:
 		left, err := buildSQL(p.Left, tables, eval)
 		if err != nil {
 			return sqlPlan{}, err
@@ -371,21 +371,21 @@ func literalToSQL(l *parser.Literal) string {
 	}
 }
 
-func gatherScans(plan Plan) []*scanPlan {
-	var scans []*scanPlan
+func gatherScans(plan Plan) []*ScanPlan {
+	var scans []*ScanPlan
 	switch p := plan.(type) {
-	case *selectPlan:
+	case *SelectPlan:
 		scans = append(scans, gatherScans(p.Input)...)
-	case *wherePlan:
+	case *WherePlan:
 		scans = append(scans, gatherScans(p.Input)...)
-	case *sortPlan:
+	case *SortPlan:
 		scans = append(scans, gatherScans(p.Input)...)
-	case *limitPlan:
+	case *LimitPlan:
 		scans = append(scans, gatherScans(p.Input)...)
-	case *joinPlan:
+	case *JoinPlan:
 		scans = append(scans, gatherScans(p.Left)...)
 		scans = append(scans, gatherScans(p.Right)...)
-	case *scanPlan:
+	case *ScanPlan:
 		scans = append(scans, p)
 	}
 	return scans

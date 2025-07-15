@@ -7,7 +7,6 @@ import (
 
 	"mochi/golden"
 	"mochi/parser"
-	"mochi/runtime/data"
 	"mochi/types"
 	planpkg "mochi/types/plan"
 )
@@ -71,7 +70,7 @@ func TestTypedPlanValid(t *testing.T) {
 			return nil, err
 		}
 		var b bytes.Buffer
-		fmt.Fprintf(&b, "type: %s\nplan:\n%s", typ.String(), data.PlanString(pl))
+		fmt.Fprintf(&b, "type: %s\nplan:\n%s", typ.String(), planpkg.String(pl))
 		return b.Bytes(), nil
 	})
 }

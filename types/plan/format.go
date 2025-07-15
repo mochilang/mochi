@@ -1,4 +1,4 @@
-package data
+package plan
 
 import (
 	"bytes"
@@ -7,10 +7,11 @@ import (
 
 	"mochi/ast"
 	"mochi/parser"
+	"mochi/runtime/data"
 )
 
-// PlanString returns a human readable representation of the plan tree.
-func PlanString(pl Plan) string {
+// String returns a human readable representation of the plan tree.
+func String(pl data.Plan) string {
 	var buf bytes.Buffer
 	exprStr := func(e *parser.Expr) string {
 		if e == nil {
@@ -18,18 +19,18 @@ func PlanString(pl Plan) string {
 		}
 		return strings.TrimSpace(ast.FromExpr(e).String())
 	}
-	var walk func(Plan, string)
-	walk = func(p Plan, indent string) {
+	var walk func(data.Plan, string)
+	walk = func(p data.Plan, indent string) {
 		switch n := p.(type) {
-		case *scanPlan:
+		case *data.ScanPlan:
 			fmt.Fprintf(&buf, "%sScan(alias=%s, src=%s)\n", indent, n.Alias, exprStr(n.Src))
-		case *selectPlan:
+		case *data.SelectPlan:
 			fmt.Fprintf(&buf, "%sSelect(%s)\n", indent, exprStr(n.Expr))
 			walk(n.Input, indent+"  ")
-		case *wherePlan:
+		case *data.WherePlan:
 			fmt.Fprintf(&buf, "%sWhere(%s)\n", indent, exprStr(n.Cond))
 			walk(n.Input, indent+"  ")
-		case *joinPlan:
+		case *data.JoinPlan:
 			on := exprStr(n.On)
 			if on == "" {
 				fmt.Fprintf(&buf, "%sJoin(%s)\n", indent, n.JoinType)
@@ -38,17 +39,17 @@ func PlanString(pl Plan) string {
 			}
 			walk(n.Left, indent+"  ")
 			walk(n.Right, indent+"  ")
-		case *groupPlan:
+		case *data.GroupPlan:
 			exprs := make([]string, len(n.By))
 			for i, e := range n.By {
 				exprs[i] = exprStr(e)
 			}
 			fmt.Fprintf(&buf, "%sGroup(%s by %s)\n", indent, n.Name, strings.Join(exprs, ", "))
 			walk(n.Input, indent+"  ")
-		case *sortPlan:
+		case *data.SortPlan:
 			fmt.Fprintf(&buf, "%sSort(%s)\n", indent, exprStr(n.Key))
 			walk(n.Input, indent+"  ")
-		case *limitPlan:
+		case *data.LimitPlan:
 			skip := exprStr(n.Skip)
 			take := exprStr(n.Take)
 			switch {

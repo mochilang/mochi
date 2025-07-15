@@ -1,0 +1,39 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector supplier_no)
+    (selector key (selector g))
+  )
+  (entry
+    (selector total_revenue)
+    (call sum
+      (query x
+        (source (selector g))
+        (select
+          (binary *
+            (selector l_extendedprice (selector x))
+            (group
+              (binary -
+                (int 1)
+                (selector l_discount (selector x))
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+))
+  Group(g by (selector l_suppkey (selector l)))
+    Where((binary <
+  (binary &&
+    (binary >=
+      (selector l_shipdate (selector l))
+      (selector start_date)
+    )
+    (selector l_shipdate (selector l))
+  )
+  (selector end_date)
+))
+      Scan(alias=l, src=(selector lineitem))

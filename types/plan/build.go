@@ -31,6 +31,3 @@ func Build(q *parser.QueryExpr, env *types.Env) (data.Plan, types.Type, error) {
 }
 
 // String returns a human readable representation of the plan tree.
-func String(pl data.Plan) string {
-	return data.PlanString(pl)
-}

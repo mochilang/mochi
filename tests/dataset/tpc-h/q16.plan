@@ -1,0 +1,27 @@
+type: [int]
+plan:
+Select((selector ps_suppkey (selector ps)))
+  Join(inner on (binary ==
+  (selector p_partkey (selector p))
+  (selector ps_partkey (selector ps))
+))
+    Scan(alias=ps, src=(selector partsupp))
+    Where((binary ==
+  (binary &&
+    (binary &&
+      (binary ==
+        (selector p_brand (selector p))
+        (string "Brand#12")
+      )
+      (call
+        (selector contains
+          (selector p_type (selector p))
+        )
+        (string SMALL)
+      )
+    )
+    (selector p_size (selector p))
+  )
+  (int 5)
+))
+      Scan(alias=p, src=(selector part))

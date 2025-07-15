@@ -1,0 +1,30 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector ps_partkey)
+    (selector ps_partkey (selector ps))
+  )
+  (entry
+    (selector value)
+    (binary *
+      (selector ps_supplycost (selector ps))
+      (selector ps_availqty (selector ps))
+    )
+  )
+))
+  Where((binary ==
+  (selector n_name (selector n))
+  (selector target_nation)
+))
+    Join(inner on (binary ==
+  (selector n_nationkey (selector n))
+  (selector s_nationkey (selector s))
+))
+      Join(inner on (binary ==
+  (selector s_suppkey (selector s))
+  (selector ps_suppkey (selector ps))
+))
+        Scan(alias=ps, src=(selector partsupp))
+        Scan(alias=s, src=(selector supplier))
+      Scan(alias=n, src=(selector nation))

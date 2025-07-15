@@ -1,0 +1,8 @@
+type: [{string: any}]
+plan:
+Select((selector c))
+  Where((binary ==
+  (selector c_mktsegment (selector c))
+  (selector segment)
+))
+    Scan(alias=c, src=(selector customer))
