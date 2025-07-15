@@ -1,6 +1,8 @@
 # Zig Backend Progress
 
 ## Recent Enhancements
+- 2025-07-15 05:45 - Golden test captures build errors and verifies TPCDS outputs.
+- 2025-07-15 05:00 - Added TPCDS golden test running q1-q99 for zig backend.
 - 2025-07-13 05:12 - Added `ensureGroupSlice` helper to avoid repeated `.Items.items` chains when iterating grouped data.
 - 2025-07-13 17:48 - Expanded TPCH golden tests to compile and run q1-q22 with output verification.
 
