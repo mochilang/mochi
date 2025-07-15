@@ -107,3 +107,4 @@ should compile and run successfully.
 - 2025-07-15 06:31 – Attempted full TPC-DS compilation using compile_tpcds_c.go and individual runs for q1,q2. All queries fail with C compiler errors; no new code generated.
 - 2025-07-15 07:31 – Ran tpcds\_golden\_test with update to regenerate all C outputs; compile errors persist across queries.
 - 2025-07-15 08:18 - Added compile_tpch_c.go script to generate C outputs for TPCH queries 1-22. Script compiles each query and records .error logs on failure.
+- 2025-07-15 08:34 - Fixed join result length calculation to use array length variables so TPCH queries with arrays compile.

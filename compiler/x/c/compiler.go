@@ -3579,9 +3579,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) string {
 
 		res := c.newTemp()
 		idx := c.newTemp()
-		lenExpr := sources[0].expr + ".len"
+		lenExpr := c.listLenExpr(sources[0].expr)
 		for i := 1; i < len(sources); i++ {
-			lenExpr = fmt.Sprintf("%s * %s.len", lenExpr, sources[i].expr)
+			lenExpr = fmt.Sprintf("%s * %s", lenExpr, c.listLenExpr(sources[i].expr))
 		}
 		c.writeln(fmt.Sprintf("%s %s = %s_create(%s);", listC, res, listC, lenExpr))
 		c.writeln(fmt.Sprintf("int %s = 0;", idx))
