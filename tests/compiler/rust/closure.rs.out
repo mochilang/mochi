@@ -1,8 +1,0 @@
-fn makeAdder(n: i64) -> Box<dyn Fn(i64) -> i64> {
-    return Box::new(move |x: i64| x + n);
-}
-
-fn main() {
-    let mut add10 = makeAdder(10);
-    println!("{}", add10(7));
-}

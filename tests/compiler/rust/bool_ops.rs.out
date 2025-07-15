@@ -1,5 +1,0 @@
-fn main() {
-    println!("{}", true && false);
-    println!("{}", true || false);
-    println!("{}", !false);
-}

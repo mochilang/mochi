@@ -1,7 +1,0 @@
-fn main() {
-    println!("{}", _count(&vec![1, 2, 3]));
-}
-
-fn _count<T>(v: &[T]) -> i32 {
-    v.len() as i32
-}
