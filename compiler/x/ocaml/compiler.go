@@ -22,6 +22,9 @@ type Compiler struct {
 	// inferred struct types for let-bound variables
 	varStructs map[string]types.StructType
 
+	// local variable types inside functions
+	localTypes map[string]types.Type
+
 	// generated anonymous struct types
 	structNames   map[string]string
 	anonStructs   []types.StructType
@@ -59,6 +62,7 @@ func New(env *types.Env) *Compiler {
 	return &Compiler{
 		vars:        make(map[string]bool),
 		varStructs:  make(map[string]types.StructType),
+		localTypes:  make(map[string]types.Type),
 		env:         env,
 		structNames: make(map[string]string),
 		imports:     make(map[string]importInfo),
@@ -264,16 +268,21 @@ func (c *Compiler) compileGlobalVar(v *parser.VarStmt) error {
 	c.vars[v.Name] = true
 	typ, _ := c.env.GetVar(v.Name)
 	typStr := c.ocamlType(typ)
-	if typStr == "" || typStr == "Obj.t" {
+	if typStr == "" || strings.Contains(typStr, "Obj.t") {
 		if v.Value != nil {
 			t := types.ExprType(v.Value, c.env)
 			guess := c.ocamlType(t)
-			if guess != "" && guess != "Obj.t" {
+			if guess != "" && !strings.Contains(guess, "Obj.t") {
 				typStr = guess
 			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
 				typStr = c.ocamlType(st)
+			} else {
+				typStr = ""
 			}
 		}
+	}
+	if strings.Contains(typStr, "Obj.t") {
+		typStr = ""
 	}
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s", v.Name, typStr, val))
@@ -298,11 +307,14 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 	} else if l.Value != nil {
 		t := types.ExprType(l.Value, c.env)
 		guess := c.ocamlType(t)
-		if guess != "" && guess != "Obj.t" {
+		if guess != "" && !strings.Contains(guess, "Obj.t") {
 			typ = guess
 		} else if st, ok := c.structTypeFromExpr(l.Value); ok {
 			typ = c.ocamlType(st)
 		}
+	}
+	if strings.Contains(typ, "Obj.t") {
+		typ = ""
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let %s : %s = %s in", l.Name, typ, val))
@@ -313,6 +325,7 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 		if st, ok := c.typeRefStruct(l.Type); ok {
 			c.varStructs[l.Name] = st
 		}
+		c.localTypes[l.Name] = types.ResolveTypeRef(l.Type, c.env)
 	} else if l.Value != nil {
 		if st, ok := c.structTypeFromExpr(l.Value); ok {
 			if s, ok2 := st.(types.ListType); ok2 {
@@ -323,6 +336,7 @@ func (c *Compiler) compileLocalLet(l *parser.LetStmt) error {
 				c.varStructs[l.Name] = elem
 			}
 		}
+		c.localTypes[l.Name] = types.ExprType(l.Value, c.env)
 	}
 	return nil
 }
@@ -339,21 +353,31 @@ func (c *Compiler) compileLocalVar(v *parser.VarStmt) error {
 	c.vars[v.Name] = true
 	typ, _ := c.env.GetVar(v.Name)
 	typStr := c.ocamlType(typ)
-	if typStr == "" || typStr == "Obj.t" {
+	if typStr == "" || strings.Contains(typStr, "Obj.t") {
 		if v.Value != nil {
 			t := types.ExprType(v.Value, c.env)
 			guess := c.ocamlType(t)
-			if guess != "" && guess != "Obj.t" {
+			if guess != "" && !strings.Contains(guess, "Obj.t") {
 				typStr = guess
 			} else if st, ok := c.structTypeFromExpr(v.Value); ok {
 				typStr = c.ocamlType(st)
+			} else {
+				typStr = ""
 			}
 		}
+	}
+	if strings.Contains(typStr, "Obj.t") {
+		typStr = ""
 	}
 	if typStr != "" {
 		c.writeln(fmt.Sprintf("let %s : %s ref = ref %s in", v.Name, typStr, val))
 	} else {
 		c.writeln(fmt.Sprintf("let %s = ref %s in", v.Name, val))
+	}
+	if v.Type != nil {
+		c.localTypes[v.Name] = types.ResolveTypeRef(v.Type, c.env)
+	} else if v.Value != nil {
+		c.localTypes[v.Name] = types.ExprType(v.Value, c.env)
 	}
 	return nil
 }
@@ -1623,7 +1647,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 			continue
 		}
 		if opStr == "+" || opStr == "-" || opStr == "*" || opStr == "/" {
-			if isFloatUnary(b.Left, c.env) || isFloatPostfix(op.Right, c.env) {
+			if c.isFloatUnary(b.Left) || c.isFloatPostfix(op.Right) {
 				switch opStr {
 				case "+":
 					opStr = "+."
@@ -1749,20 +1773,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 			}
 		case op.Cast != nil:
-			if op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-				switch *op.Cast.Type.Simple {
-				case "int":
-					val = fmt.Sprintf("int_of_string %s", val)
-				default:
-					if p.Target.Map != nil {
-						rec, err := c.recordLiteral(p.Target.Map)
-						if err != nil {
-							return "", err
+			if op.Cast.Type != nil {
+				if op.Cast.Type.Simple != nil {
+					switch *op.Cast.Type.Simple {
+					case "int":
+						val = fmt.Sprintf("int_of_string %s", val)
+					case "float":
+						val = fmt.Sprintf("float_of_int %s", val)
+					default:
+						if p.Target.Map != nil {
+							rec, err := c.recordLiteral(p.Target.Map)
+							if err != nil {
+								return "", err
+							}
+							val = rec
+						} else {
+							return "", fmt.Errorf("unsupported cast")
 						}
-						val = rec
-					} else {
-						return "", fmt.Errorf("unsupported cast")
 					}
+				} else if op.Cast.Type.Generic != nil && op.Cast.Type.Generic.Name == "list" {
+					// no-op for list casts
+				} else {
+					return "", fmt.Errorf("unsupported cast")
 				}
 			} else {
 				return "", fmt.Errorf("unsupported cast")
@@ -2158,6 +2190,9 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	prevLocals := c.localTypes
+	c.localTypes = make(map[string]types.Type)
+	defer func() { c.localTypes = prevLocals }()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		if p.Type != nil {
@@ -2217,6 +2252,9 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 }
 
 func (c *Compiler) compileLocalFun(fn *parser.FunStmt) error {
+	prevLocals := c.localTypes
+	c.localTypes = make(map[string]types.Type)
+	defer func() { c.localTypes = prevLocals }()
 	params := make([]string, len(fn.Params))
 	for i, p := range fn.Params {
 		if p.Type != nil {
@@ -2307,6 +2345,17 @@ func (c *Compiler) typeRef(t *parser.TypeRef) string {
 			return strings.ToLower(*t.Simple)
 		}
 	}
+	if t.Struct != nil {
+		fields := map[string]types.Type{}
+		order := make([]string, len(t.Struct.Fields))
+		for i, f := range t.Struct.Fields {
+			fields[f.Name] = types.ResolveTypeRef(f.Type, c.env)
+			order[i] = f.Name
+		}
+		st := types.StructType{Name: "", Fields: fields, Order: order}
+		name := c.ensureStructName(st)
+		return strings.ToLower(name)
+	}
 	if t.Generic != nil {
 		if t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 			return c.typeRef(t.Generic.Args[0]) + " list"
@@ -2327,6 +2376,16 @@ func (c *Compiler) typeRefStruct(t *parser.TypeRef) (types.StructType, bool) {
 		if st, ok := c.env.GetStruct(*t.Simple); ok {
 			return st, true
 		}
+	}
+	if t.Struct != nil {
+		fields := map[string]types.Type{}
+		order := make([]string, len(t.Struct.Fields))
+		for i, f := range t.Struct.Fields {
+			fields[f.Name] = types.ResolveTypeRef(f.Type, c.env)
+			order[i] = f.Name
+		}
+		st := types.StructType{Name: "", Fields: fields, Order: order}
+		return st, true
 	}
 	if t.Generic != nil && t.Generic.Name == "list" && len(t.Generic.Args) == 1 {
 		return c.typeRefStruct(t.Generic.Args[0])
@@ -2523,20 +2582,36 @@ func isStringUnary(u *parser.Unary) bool {
 	return false
 }
 
-func isFloatUnary(u *parser.Unary, env *types.Env) bool {
+func (c *Compiler) isFloatUnary(u *parser.Unary) bool {
 	if u == nil {
 		return false
 	}
-	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: u}}, env)
+	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: u}}, c.env)
+	if t == (types.AnyType{}) {
+		if name, ok := identName(&parser.Expr{Binary: &parser.BinaryExpr{Left: u}}); ok {
+			if lt, ok2 := c.localTypes[name]; ok2 {
+				_, ok3 := lt.(types.FloatType)
+				return ok3
+			}
+		}
+	}
 	_, ok := t.(types.FloatType)
 	return ok
 }
 
-func isFloatPostfix(p *parser.PostfixExpr, env *types.Env) bool {
+func (c *Compiler) isFloatPostfix(p *parser.PostfixExpr) bool {
 	if p == nil {
 		return false
 	}
-	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, env)
+	t := types.ExprType(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}, c.env)
+	if t == (types.AnyType{}) {
+		if name, ok := identName(&parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: p}}}); ok {
+			if lt, ok2 := c.localTypes[name]; ok2 {
+				_, ok3 := lt.(types.FloatType)
+				return ok3
+			}
+		}
+	}
 	_, ok := t.(types.FloatType)
 	return ok
 }
@@ -2699,6 +2774,34 @@ func isUnderscoreExpr(e *parser.Expr) bool {
 		return true
 	}
 	return false
+}
+
+func (c *Compiler) scanTypeRef(t *parser.TypeRef) {
+	if t == nil {
+		return
+	}
+	typ := types.ResolveTypeRef(t, c.env)
+	switch tt := typ.(type) {
+	case types.StructType:
+		c.ensureStructName(tt)
+	case types.ListType:
+		if elem, ok := tt.Elem.(types.StructType); ok {
+			c.ensureStructName(elem)
+		}
+	case types.OptionType:
+		if elem, ok := tt.Elem.(types.StructType); ok {
+			c.ensureStructName(elem)
+		}
+	case types.MapType:
+		if elem, ok := tt.Value.(types.StructType); ok {
+			c.ensureStructName(elem)
+		}
+	}
+	if t.Generic != nil {
+		for _, a := range t.Generic.Args {
+			c.scanTypeRef(a)
+		}
+	}
 }
 
 func callPattern(e *parser.Expr) (*parser.CallExpr, bool) {
@@ -3061,6 +3164,9 @@ func (c *Compiler) scanPostfix(p *parser.PostfixExpr) {
 					c.needSlice = true
 				}
 			}
+		}
+		if op.Cast != nil {
+			c.scanTypeRef(op.Cast.Type)
 		}
 	}
 }
