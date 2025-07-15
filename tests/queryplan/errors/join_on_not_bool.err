@@ -1,0 +1,8 @@
+error[T035]: `on` condition must be boolean
+  --> tests/queryplan/errors/join_on_not_bool.mochi:4:29
+
+  4 |         join from y in b on x.id
+    |                             ^
+
+help:
+  Ensure the condition evaluates to true or false.
