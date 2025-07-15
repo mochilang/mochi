@@ -2261,8 +2261,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				switch tt := typ.(type) {
 				case types.GroupType:
 					if field == "key" {
-						base = fmt.Sprintf("%s.Key", base)
-						typ = types.AnyType{}
+						kgo := goType(tt.Key)
+						if kgo == "" {
+							base = fmt.Sprintf("%s.Key", base)
+						} else {
+							base = fmt.Sprintf("%s.Key.(%s)", base, kgo)
+						}
+						typ = tt.Key
 					} else if field == "items" {
 						base = fmt.Sprintf("%s.Items", base)
 						typ = types.ListType{Elem: tt.Elem}
@@ -2741,6 +2746,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	if lt, ok := srcType.(types.ListType); ok {
 		elemType = lt.Elem
 		directRange = true
+	} else if gt, ok := srcType.(types.GroupType); ok {
+		elemType = gt.Elem
 	}
 	elemIsMap := isStringMapLike(elemType)
 	original := c.env
@@ -2775,7 +2782,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 
 	var groupKey string
 	if q.Group != nil {
-		gtype := types.GroupType{Elem: elemType}
+		keyType := c.inferExprType(q.Group.Exprs[0])
+		gtype := types.GroupType{Key: keyType, Elem: elemType}
 		keyEnv := child
 		c.env = keyEnv
 		var err error
@@ -3053,40 +3061,44 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		buf.WriteString(indent + "\tgroups[ks] = g\n")
 		buf.WriteString(indent + "\torder = append(order, ks)\n")
 		buf.WriteString(indent + "}\n")
-		itemVar := "_item"
-		buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
-		if elemIsMap {
-			buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
-		} else if st, ok := elemType.(types.StructType); ok {
-			c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
+		if len(q.Froms) == 0 && len(q.Joins) == 0 {
+			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", sanitizeName(q.Var)))
 		} else {
-			c.use("_copyToMap")
-			buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(q.Var)))
-		}
-		buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
-		for i, f := range q.Froms {
-			if fromIsMap[i] {
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
-			} else if st, ok := fromElemType[i].(types.StructType); ok {
-				c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
+			itemVar := "_item"
+			buf.WriteString(fmt.Sprintf(indent+"%s := map[string]any{}\n", itemVar))
+			if elemIsMap {
+				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(q.Var), itemVar))
+			} else if st, ok := elemType.(types.StructType); ok {
+				c.assignStructFields(&buf, indent, itemVar, sanitizeName(q.Var), st)
 			} else {
 				c.use("_copyToMap")
-				buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(f.Var)))
+				buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(q.Var)))
 			}
-			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
-		}
-		for i, j := range q.Joins {
-			if joinIsMap[i] {
-				buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
-			} else if st, ok := joinElemType[i].(types.StructType); ok {
-				c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
-			} else {
-				c.use("_copyToMap")
-				buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(j.Var)))
+			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(q.Var), sanitizeName(q.Var)))
+			for i, f := range q.Froms {
+				if fromIsMap[i] {
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(f.Var), itemVar))
+				} else if st, ok := fromElemType[i].(types.StructType); ok {
+					c.assignStructFields(&buf, indent, itemVar, sanitizeName(f.Var), st)
+				} else {
+					c.use("_copyToMap")
+					buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(f.Var)))
+				}
+				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(f.Var), sanitizeName(f.Var)))
 			}
-			buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
+			for i, j := range q.Joins {
+				if joinIsMap[i] {
+					buf.WriteString(fmt.Sprintf(indent+"for k, v := range %s { %s[k] = v }\n", sanitizeName(j.Var), itemVar))
+				} else if st, ok := joinElemType[i].(types.StructType); ok {
+					c.assignStructFields(&buf, indent, itemVar, sanitizeName(j.Var), st)
+				} else {
+					c.use("_copyToMap")
+					buf.WriteString(fmt.Sprintf(indent+"_copyToMap(%s, %s)\n", itemVar, sanitizeName(j.Var)))
+				}
+				buf.WriteString(fmt.Sprintf(indent+"%s[\"%s\"] = %s\n", itemVar, sanitizeName(j.Var), sanitizeName(j.Var)))
+			}
+			buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
 		}
-		buf.WriteString(fmt.Sprintf(indent+"g.Items = append(g.Items, %s)\n", itemVar))
 		if cond != "" {
 			indent = indent[:len(indent)-1]
 			buf.WriteString(indent + "}\n")
@@ -3472,8 +3484,17 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	if vname == "_" {
 		loopVar = "v"
 	}
-	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", loopVar, src))
+	iterVar := loopVar
+	if elemGo != "any" {
+		iterVar = loopVar + "Raw"
+	}
+	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", iterVar, src))
 	indent += "\t"
+	if elemGo != "any" {
+		buf.WriteString(fmt.Sprintf(indent+"%s := %s.(%s)\n", loopVar, iterVar, elemGo))
+	} else if iterVar != loopVar {
+		buf.WriteString(fmt.Sprintf(indent+"%s := %s\n", loopVar, iterVar))
+	}
 	if cond != "" && condStep == step {
 		buf.WriteString(fmt.Sprintf(indent+"if %s {\n", cond))
 		indent += "\t"
