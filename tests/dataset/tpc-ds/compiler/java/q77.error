@@ -1,0 +1,31 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:651: error: cannot find symbol
+    Object per_channel = concat((new java.util.function.Supplier<List<ChannelIdSalesReturnsProfit>>(){public List<ChannelIdSalesReturnsProfit> get(){
+                         ^
+  symbol:   method concat(List<ChannelIdSalesReturnsProfit>,List<ChannelIdSalesReturnsProfit>,List<ChannelIdSalesReturnsProfit>)
+  location: class Q77
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:694: error: for-each not applicable to expression type
+    for (var p : per_channel) {
+                 ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:704: error: incompatible types: Object cannot be converted to String
+        res49.add(new ChannelIdSalesReturnsProfit(g.key.channel, g.key.id, (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+                                                       ^
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:719: error: cannot find symbol
+        res56.add(x.p.profit);
+                   ^
+  symbol:   variable p
+  location: variable x of type Object
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:713: error: cannot find symbol
+        res55.add(x.p.returns);
+                   ^
+  symbol:   variable p
+  location: variable x of type Object
+/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:707: error: cannot find symbol
+        res54.add(x.p.sales);
+                   ^
+  symbol:   variable p
+  location: variable x of type Object
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

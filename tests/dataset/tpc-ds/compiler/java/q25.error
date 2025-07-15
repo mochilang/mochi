@@ -1,0 +1,24 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq251246693733/001/Q25.java:420: error: cannot find symbol
+        res5.add(x.ss_net_profit);
+                  ^
+  symbol:   variable ss_net_profit
+  location: variable x of type SsSrCsD1D2D3SI
+/tmp/TestJavaCompiler_TPCDSQueriesq251246693733/001/Q25.java:426: error: cannot find symbol
+        res6.add(x.sr_net_loss);
+                  ^
+  symbol:   variable sr_net_loss
+  location: variable x of type SsSrCsD1D2D3SI
+/tmp/TestJavaCompiler_TPCDSQueriesq251246693733/001/Q25.java:432: error: cannot find symbol
+        res7.add(x.cs_net_profit);
+                  ^
+  symbol:   variable cs_net_profit
+  location: variable x of type SsSrCsD1D2D3SI
+/tmp/TestJavaCompiler_TPCDSQueriesq251246693733/001/Q25.java:440: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IItemIdIItemDescSStoreIdSStoreNameStoreSalesProfitStoreReturnsLossCatalogSalesProfit("ITEM1", "Desc1", "S1", "Store1", 50.000000, 10.000000, 30.000000), new IItemIdIItemDescSStoreIdSStoreNameStoreSalesProfitStoreReturnsLossCatalogSalesProfit("ITEM2", "Desc2", "S1", "Store1", 20.000000, 5.000000, 15.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                          ^
+/tmp/TestJavaCompiler_TPCDSQueriesq251246693733/001/Q25.java:440: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IItemIdIItemDescSStoreIdSStoreNameStoreSalesProfitStoreReturnsLossCatalogSalesProfit("ITEM1", "Desc1", "S1", "Store1", 50.000000, 10.000000, 30.000000), new IItemIdIItemDescSStoreIdSStoreNameStoreSalesProfitStoreReturnsLossCatalogSalesProfit("ITEM2", "Desc2", "S1", "Store1", 20.000000, 5.000000, 15.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                                                                                                                                                                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

@@ -1,0 +1,7 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq57409025231/001/Q57.java:278: error: cannot find symbol
+        res5.add(x.price);
+                  ^
+  symbol:   variable price
+  location: variable x of type CsIDCc
+1 error

@@ -1,0 +1,15 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq1598251508/001/Q15.java:264: error: cannot find symbol
+                    if (!((Arrays.asList("85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792").contains(substr(ca.ca_zip, 0, 5)) || Arrays.asList("CA", "WA", "GA").contains(ca.ca_state) || cs.cs_sales_price > 500) && d.d_qoy == 1 && d.d_year == 2000)) continue;
+                                                                                                                                   ^
+  symbol: method substr(String,int,int)
+/tmp/TestJavaCompiler_TPCDSQueriesq1598251508/001/Q15.java:280: error: cannot find symbol
+        res5.add(x.cs_sales_price);
+                  ^
+  symbol:   variable cs_sales_price
+  location: variable x of type CsCCaD
+/tmp/TestJavaCompiler_TPCDSQueriesq1598251508/001/Q15.java:288: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(filtered, Arrays.asList(new CaZipSumSales("85669", 600.000000))))) throw new AssertionError("expect failed");
+                                                                            ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

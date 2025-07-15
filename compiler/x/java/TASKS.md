@@ -9,6 +9,8 @@
 - 2025-07-13 16:50 - generated Java code for TPCH queries 11-13.
 - 2025-07-13 17:27 - generated Java code for TPCH queries 14-15 and extended tests.
 - 2025-07-13 17:40 - generated Java code for TPCH queries 16-22.
+- 2025-07-15 04:46 - added TPC-DS golden tests and generated outputs for queries 50-99.
+- 2025-07-15 05:05 - generated outputs for remaining TPC-DS queries with error tracking.
 
 ## Remaining work
 - [ ] Improve query loop readability

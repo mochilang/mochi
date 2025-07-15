@@ -1,0 +1,17 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq94840654435/001/Q94.java:206: error: cannot find symbol
+    static List<any> distinct(List<any> xs) {
+                                   ^
+  symbol:   class any
+  location: class Q94
+/tmp/TestJavaCompiler_TPCDSQueriesq94840654435/001/Q94.java:206: error: cannot find symbol
+    static List<any> distinct(List<any> xs) {
+                ^
+  symbol:   class any
+  location: class Q94
+/tmp/TestJavaCompiler_TPCDSQueriesq94840654435/001/Q94.java:208: error: cannot find symbol
+        for (any x : xs) {
+             ^
+  symbol:   class any
+  location: class Q94
+3 errors

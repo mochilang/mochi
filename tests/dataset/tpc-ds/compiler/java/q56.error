@@ -1,0 +1,24 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq564202883907/001/Q56.java:176: error: cannot find symbol
+    Object union = concat(ss, cs, ws);
+                   ^
+  symbol:   method concat(List<ItemTotal>,List<ItemTotal>,List<ItemTotal>)
+  location: class Q56
+/tmp/TestJavaCompiler_TPCDSQueriesq564202883907/001/Q56.java:180: error: for-each not applicable to expression type
+    for (var u : union) {
+                 ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq564202883907/001/Q56.java:190: error: incompatible types: Object cannot be converted to int
+        res18.add(new IItemIdTotalSales(g.key, (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+                                         ^
+/tmp/TestJavaCompiler_TPCDSQueriesq564202883907/001/Q56.java:193: error: cannot find symbol
+        res23.add(x.total);
+                   ^
+  symbol:   variable total
+  location: variable x of type Object
+/tmp/TestJavaCompiler_TPCDSQueriesq564202883907/001/Q56.java:201: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IItemIdTotalSales(1, 60.000000))))) throw new AssertionError("expect failed");
+                                                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

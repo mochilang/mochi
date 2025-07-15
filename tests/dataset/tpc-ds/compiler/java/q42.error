@@ -1,0 +1,4 @@
+java run error: exit status 1
+[{"d_year":2020,"i_category_id":100,"i_category":"CatA","sum_ss_ext_sales_price":10.0},{"d_year":2020,"i_category_id":200,"i_category":"CatB","sum_ss_ext_sales_price":20.0}]
+Exception in thread "main" java.lang.AssertionError: expect failed
+	at Q42.main(Q42.java:224)

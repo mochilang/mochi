@@ -1,0 +1,27 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:213: error: cannot find symbol
+    Object union_sales = concat((new java.util.function.Supplier<List<ManuPrice>>(){public List<ManuPrice> get(){
+                         ^
+  symbol:   method concat(List<ManuPrice>,List<ManuPrice>,List<ManuPrice>)
+  location: class Q33
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:265: error: for-each not applicable to expression type
+    for (var s : union_sales) {
+                 ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:275: error: incompatible types: Object cannot be converted to int
+        res3.add(new IManufactIdTotalSales(g.key, (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+                                            ^
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:278: error: cannot find symbol
+        res8.add(x.price);
+                  ^
+  symbol:   variable price
+  location: variable x of type Object
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:286: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IManufactIdTotalSales(1, 150.000000), new IManufactIdTotalSales(2, 50.000000))))) throw new AssertionError("expect failed");
+                                                                            ^
+/tmp/TestJavaCompiler_TPCDSQueriesq331951951853/001/Q33.java:286: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IManufactIdTotalSales(1, 150.000000), new IManufactIdTotalSales(2, 50.000000))))) throw new AssertionError("expect failed");
+                                                                                                                      ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+6 errors

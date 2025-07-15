@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq5245963723/001/Q52.java:194: error: cannot find symbol
+        res5.add(x.price);
+                  ^
+  symbol:   variable price
+  location: variable x of type SsID
+/tmp/TestJavaCompiler_TPCDSQueriesq5245963723/001/Q52.java:209: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new DYearBrandIdExtPrice(2001, 1, 30.000000), new DYearBrandIdExtPrice(2001, 2, 22.000000))))) throw new AssertionError("expect failed");
+                                                                                 ^
+/tmp/TestJavaCompiler_TPCDSQueriesq5245963723/001/Q52.java:209: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new DYearBrandIdExtPrice(2001, 1, 30.000000), new DYearBrandIdExtPrice(2001, 2, 22.000000))))) throw new AssertionError("expect failed");
+                                                                                                                               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

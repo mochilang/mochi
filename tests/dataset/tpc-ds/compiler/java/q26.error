@@ -1,0 +1,22 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq261670097120/001/Q26.java:334: error: cannot find symbol
+        res5.add(x.cs_quantity);
+                  ^
+  symbol:   variable cs_quantity
+  location: variable x of type CsCdDIP
+/tmp/TestJavaCompiler_TPCDSQueriesq261670097120/001/Q26.java:340: error: cannot find symbol
+        res6.add(x.cs_list_price);
+                  ^
+  symbol:   variable cs_list_price
+  location: variable x of type CsCdDIP
+/tmp/TestJavaCompiler_TPCDSQueriesq261670097120/001/Q26.java:346: error: cannot find symbol
+        res7.add(x.cs_coupon_amt);
+                  ^
+  symbol:   variable cs_coupon_amt
+  location: variable x of type CsCdDIP
+/tmp/TestJavaCompiler_TPCDSQueriesq261670097120/001/Q26.java:352: error: cannot find symbol
+        res8.add(x.cs_sales_price);
+                  ^
+  symbol:   variable cs_sales_price
+  location: variable x of type CsCdDIP
+4 errors

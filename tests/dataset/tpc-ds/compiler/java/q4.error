@@ -1,0 +1,92 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:323: error: cannot find symbol
+        res5.add(((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2);
+                    ^
+  symbol:   variable ss_ext_list_price
+  location: variable x of type CSD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:323: error: cannot find symbol
+        res5.add(((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2);
+                                          ^
+  symbol:   variable ss_ext_wholesale_cost
+  location: variable x of type CSD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:323: error: cannot find symbol
+        res5.add(((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2);
+                                                                    ^
+  symbol:   variable ss_ext_discount_amt
+  location: variable x of type CSD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:323: error: cannot find symbol
+        res5.add(((x.ss_ext_list_price - x.ss_ext_wholesale_cost - x.ss_ext_discount_amt) + x.ss_ext_sales_price) / 2);
+                                                                                             ^
+  symbol:   variable ss_ext_sales_price
+  location: variable x of type CSD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:351: error: cannot find symbol
+        res11.add(((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2);
+                     ^
+  symbol:   variable cs_ext_list_price
+  location: variable x of type CCsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:351: error: cannot find symbol
+        res11.add(((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2);
+                                           ^
+  symbol:   variable cs_ext_wholesale_cost
+  location: variable x of type CCsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:351: error: cannot find symbol
+        res11.add(((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2);
+                                                                     ^
+  symbol:   variable cs_ext_discount_amt
+  location: variable x of type CCsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:351: error: cannot find symbol
+        res11.add(((x.cs_ext_list_price - x.cs_ext_wholesale_cost - x.cs_ext_discount_amt) + x.cs_ext_sales_price) / 2);
+                                                                                              ^
+  symbol:   variable cs_ext_sales_price
+  location: variable x of type CCsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:379: error: cannot find symbol
+        res17.add(((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2);
+                     ^
+  symbol:   variable ws_ext_list_price
+  location: variable x of type CWsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:379: error: cannot find symbol
+        res17.add(((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2);
+                                           ^
+  symbol:   variable ws_ext_wholesale_cost
+  location: variable x of type CWsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:379: error: cannot find symbol
+        res17.add(((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2);
+                                                                     ^
+  symbol:   variable ws_ext_discount_amt
+  location: variable x of type CWsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:379: error: cannot find symbol
+        res17.add(((x.ws_ext_list_price - x.ws_ext_wholesale_cost - x.ws_ext_discount_amt) + x.ws_ext_sales_price) / 2);
+                                                                                              ^
+  symbol:   variable ws_ext_sales_price
+  location: variable x of type CWsD
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:388: error: for-each not applicable to expression type
+    for (var s1 : year_total) {
+                  ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:389: error: for-each not applicable to expression type
+        for (var s2 : year_total) {
+                      ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:391: error: for-each not applicable to expression type
+            for (var c1 : year_total) {
+                          ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:393: error: for-each not applicable to expression type
+                for (var c2 : year_total) {
+                              ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:395: error: for-each not applicable to expression type
+                    for (var w1 : year_total) {
+                                  ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq43585525144/001/Q4.java:397: error: for-each not applicable to expression type
+                        for (var w2 : year_total) {
+                                      ^
+  required: array or java.lang.Iterable
+  found:    Object
+18 errors

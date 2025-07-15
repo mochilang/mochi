@@ -1,0 +1,5 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq691032470310/001/Q69.java:69: error: incompatible types: possible lossy conversion from double to int
+}}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue() + ((Number)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
+                                                                              ^
+1 error
