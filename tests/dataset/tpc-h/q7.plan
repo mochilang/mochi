@@ -1,0 +1,156 @@
+(select
+  (map
+    (entry
+      (selector supp_nation)
+      (selector supp_nation
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector cust_nation)
+      (selector cust_nation
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector l_year)
+      (selector l_year
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector revenue)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (binary *
+              (selector l_extendedprice
+                (selector l (selector x))
+              )
+              (group
+                (binary -
+                  (int 1)
+                  (selector l_discount
+                    (selector l (selector x))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (sort
+    (list (selector supp_nation) (selector cust_nation) (selector l_year))
+    (group g
+      (map
+        (entry
+          (selector supp_nation)
+          (selector n_name (selector n1))
+        )
+        (entry
+          (selector cust_nation)
+          (selector n_name (selector n2))
+        )
+        (entry
+          (selector l_year)
+          (call substring
+            (selector l_shipdate (selector l))
+            (int 0)
+            (int 4)
+          )
+        )
+      )
+      (where
+        (group
+          (binary ||
+            (binary &&
+              (binary <=
+                (binary &&
+                  (binary >=
+                    (selector l_shipdate (selector l))
+                    (selector start_date)
+                  )
+                  (selector l_shipdate (selector l))
+                )
+                (selector end_date)
+              )
+              (group
+                (binary ==
+                  (binary &&
+                    (binary ==
+                      (selector n_name (selector n1))
+                      (selector nation1)
+                    )
+                    (selector n_name (selector n2))
+                  )
+                  (selector nation2)
+                )
+              )
+            )
+            (group
+              (binary ==
+                (binary &&
+                  (binary ==
+                    (selector n_name (selector n1))
+                    (selector nation2)
+                  )
+                  (selector n_name (selector n2))
+                )
+                (selector nation1)
+              )
+            )
+          )
+        )
+        (join
+          (join
+            (join
+              (join
+                (join
+                  (scan l (selector lineitem))
+                  (scan o (selector orders))
+                  (on
+                    (binary ==
+                      (selector o_orderkey (selector o))
+                      (selector l_orderkey (selector l))
+                    )
+                  )
+                )
+                (scan c (selector customer))
+                (on
+                  (binary ==
+                    (selector c_custkey (selector c))
+                    (selector o_custkey (selector o))
+                  )
+                )
+              )
+              (scan s (selector supplier))
+              (on
+                (binary ==
+                  (selector s_suppkey (selector s))
+                  (selector l_suppkey (selector l))
+                )
+              )
+            )
+            (scan n1 (selector nation))
+            (on
+              (binary ==
+                (selector n_nationkey (selector n1))
+                (selector s_nationkey (selector s))
+              )
+            )
+          )
+          (scan n2 (selector nation))
+          (on
+            (binary ==
+              (selector n_nationkey (selector n2))
+              (selector c_nationkey (selector c))
+            )
+          )
+        )
+      )
+    )
+  )
+)

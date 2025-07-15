@@ -1,0 +1,52 @@
+(select
+  (map
+    (entry
+      (selector partkey)
+      (selector partkey
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector suppkey)
+      (selector suppkey
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector qty)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (selector l_quantity (selector x))
+          )
+        )
+      )
+    )
+  )
+  (group g
+    (map
+      (entry
+        (selector partkey)
+        (selector l_partkey (selector l))
+      )
+      (entry
+        (selector suppkey)
+        (selector l_suppkey (selector l))
+      )
+    )
+    (where
+      (binary <
+        (binary &&
+          (binary >=
+            (selector l_shipdate (selector l))
+            (string 1994-01-01)
+          )
+          (selector l_shipdate (selector l))
+        )
+        (string 1995-01-01)
+      )
+      (scan l (selector lineitem))
+    )
+  )
+)

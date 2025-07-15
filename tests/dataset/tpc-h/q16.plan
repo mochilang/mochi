@@ -1,0 +1,33 @@
+(select
+  (selector ps_suppkey (selector ps))
+  (join
+    (scan ps (selector partsupp))
+    (where
+      (binary ==
+        (binary &&
+          (binary &&
+            (binary ==
+              (selector p_brand (selector p))
+              (string "Brand#12")
+            )
+            (call
+              (selector contains
+                (selector p_type (selector p))
+              )
+              (string SMALL)
+            )
+          )
+          (selector p_size (selector p))
+        )
+        (int 5)
+      )
+      (scan p (selector part))
+    )
+    (on
+      (binary ==
+        (selector p_partkey (selector p))
+        (selector ps_partkey (selector ps))
+      )
+    )
+  )
+)

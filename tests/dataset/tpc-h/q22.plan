@@ -1,0 +1,51 @@
+(select
+  (map
+    (entry
+      (selector cntrycode)
+      (call substring
+        (selector c_phone (selector c))
+        (int 0)
+        (int 2)
+      )
+    )
+    (entry
+      (selector c_acctbal)
+      (selector c_acctbal (selector c))
+    )
+  )
+  (where
+    (binary &&
+      (binary >
+        (binary &&
+          (binary in
+            (call substring
+              (selector c_phone (selector c))
+              (int 0)
+              (int 2)
+            )
+            (selector valid_codes)
+          )
+          (selector c_acctbal (selector c))
+        )
+        (selector avg_balance)
+      )
+      (group
+        (unary !
+          (call exists
+            (query o
+              (source (selector orders))
+              (where
+                (binary ==
+                  (selector o_custkey (selector o))
+                  (selector c_custkey (selector c))
+                )
+              )
+              (select (selector o))
+            )
+          )
+        )
+      )
+    )
+    (scan c (selector customer))
+  )
+)

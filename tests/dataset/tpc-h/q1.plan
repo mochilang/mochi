@@ -1,0 +1,140 @@
+(select
+  (map
+    (entry
+      (selector returnflag)
+      (selector returnflag
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector linestatus)
+      (selector linestatus
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector sum_qty)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (selector l_quantity (selector x))
+          )
+        )
+      )
+    )
+    (entry
+      (selector sum_base_price)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (selector l_extendedprice (selector x))
+          )
+        )
+      )
+    )
+    (entry
+      (selector sum_disc_price)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (binary *
+              (selector l_extendedprice (selector x))
+              (group
+                (binary -
+                  (int 1)
+                  (selector l_discount (selector x))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    (entry
+      (selector sum_charge)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (binary *
+              (binary *
+                (selector l_extendedprice (selector x))
+                (group
+                  (binary -
+                    (int 1)
+                    (selector l_discount (selector x))
+                  )
+                )
+              )
+              (group
+                (binary +
+                  (int 1)
+                  (selector l_tax (selector x))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    (entry
+      (selector avg_qty)
+      (call avg
+        (query x
+          (source (selector g))
+          (select
+            (selector l_quantity (selector x))
+          )
+        )
+      )
+    )
+    (entry
+      (selector avg_price)
+      (call avg
+        (query x
+          (source (selector g))
+          (select
+            (selector l_extendedprice (selector x))
+          )
+        )
+      )
+    )
+    (entry
+      (selector avg_disc)
+      (call avg
+        (query x
+          (source (selector g))
+          (select
+            (selector l_discount (selector x))
+          )
+        )
+      )
+    )
+    (entry
+      (selector count_order)
+      (call count (selector g))
+    )
+  )
+  (group g
+    (map
+      (entry
+        (selector returnflag)
+        (selector l_returnflag (selector row))
+      )
+      (entry
+        (selector linestatus)
+        (selector l_linestatus (selector row))
+      )
+    )
+    (where
+      (binary <=
+        (selector l_shipdate (selector row))
+        (string 1998-09-02)
+      )
+      (scan row (selector lineitem))
+    )
+  )
+)

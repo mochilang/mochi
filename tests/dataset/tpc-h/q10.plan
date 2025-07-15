@@ -1,0 +1,171 @@
+(select
+  (map
+    (entry
+      (selector c_custkey)
+      (selector c_custkey
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector c_name)
+      (selector c_name
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector revenue)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (binary *
+              (selector l_extendedprice
+                (selector l (selector x))
+              )
+              (group
+                (binary -
+                  (int 1)
+                  (selector l_discount
+                    (selector l (selector x))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    (entry
+      (selector c_acctbal)
+      (selector c_acctbal
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector n_name)
+      (selector n_name
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector c_address)
+      (selector c_address
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector c_phone)
+      (selector c_phone
+        (selector key (selector g))
+      )
+    )
+    (entry
+      (selector c_comment)
+      (selector c_comment
+        (selector key (selector g))
+      )
+    )
+  )
+  (sort
+    (unary -
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (binary *
+              (selector l_extendedprice
+                (selector l (selector x))
+              )
+              (group
+                (binary -
+                  (int 1)
+                  (selector l_discount
+                    (selector l (selector x))
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+    (group g
+      (map
+        (entry
+          (selector c_custkey)
+          (selector c_custkey (selector c))
+        )
+        (entry
+          (selector c_name)
+          (selector c_name (selector c))
+        )
+        (entry
+          (selector c_acctbal)
+          (selector c_acctbal (selector c))
+        )
+        (entry
+          (selector c_address)
+          (selector c_address (selector c))
+        )
+        (entry
+          (selector c_phone)
+          (selector c_phone (selector c))
+        )
+        (entry
+          (selector c_comment)
+          (selector c_comment (selector c))
+        )
+        (entry
+          (selector n_name)
+          (selector n_name (selector n))
+        )
+      )
+      (where
+        (binary ==
+          (binary &&
+            (binary <
+              (binary &&
+                (binary >=
+                  (selector o_orderdate (selector o))
+                  (selector start_date)
+                )
+                (selector o_orderdate (selector o))
+              )
+              (selector end_date)
+            )
+            (selector l_returnflag (selector l))
+          )
+          (string R)
+        )
+        (join
+          (join
+            (join
+              (scan c (selector customer))
+              (scan o (selector orders))
+              (on
+                (binary ==
+                  (selector o_custkey (selector o))
+                  (selector c_custkey (selector c))
+                )
+              )
+            )
+            (scan l (selector lineitem))
+            (on
+              (binary ==
+                (selector l_orderkey (selector l))
+                (selector o_orderkey (selector o))
+              )
+            )
+          )
+          (scan n (selector nation))
+          (on
+            (binary ==
+              (selector n_nationkey (selector n))
+              (selector c_nationkey (selector c))
+            )
+          )
+        )
+      )
+    )
+  )
+)

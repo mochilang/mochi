@@ -1,0 +1,19 @@
+(select
+  (selector n)
+  (join
+    (where
+      (binary ==
+        (selector r_name (selector r))
+        (string EUROPE)
+      )
+      (scan r (selector region))
+    )
+    (scan n (selector nation))
+    (on
+      (binary ==
+        (selector n_regionkey (selector n))
+        (selector r_regionkey (selector r))
+      )
+    )
+  )
+)

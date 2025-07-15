@@ -1,0 +1,16 @@
+(select
+  (selector o)
+  (where
+    (binary <
+      (binary &&
+        (binary >=
+          (selector o_orderdate (selector o))
+          (selector start_date)
+        )
+        (selector o_orderdate (selector o))
+      )
+      (selector end_date)
+    )
+    (scan o (selector orders))
+  )
+)

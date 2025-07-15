@@ -1,0 +1,49 @@
+(select
+  (call sum
+    (binary *
+      (selector l_extendedprice (selector l))
+      (selector l_discount (selector l))
+    )
+  )
+  (where
+    (binary &&
+      (binary &&
+        (binary &&
+          (binary &&
+            (group
+              (binary >=
+                (selector l_shipdate (selector l))
+                (string 1994-01-01)
+              )
+            )
+            (group
+              (binary <
+                (selector l_shipdate (selector l))
+                (string 1995-01-01)
+              )
+            )
+          )
+          (group
+            (binary >=
+              (selector l_discount (selector l))
+              (float 0.05)
+            )
+          )
+        )
+        (group
+          (binary <=
+            (selector l_discount (selector l))
+            (float 0.07)
+          )
+        )
+      )
+      (group
+        (binary <
+          (selector l_quantity (selector l))
+          (int 24)
+        )
+      )
+    )
+    (scan l (selector lineitem))
+  )
+)
