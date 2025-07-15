@@ -1,0 +1,12 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq723622109949/001/Q72.java:315: error: cannot find symbol
+        if (!(Objects.equals(x.cs_promo_sk, null))) continue;
+                              ^
+  symbol:   variable cs_promo_sk
+  location: variable x of type CsInvWICdHdD1D2D3
+/tmp/TestJavaCompiler_TPCDSQueriesq723622109949/001/Q72.java:322: error: cannot find symbol
+        if (!(!Objects.equals(x.cs_promo_sk, null))) continue;
+                               ^
+  symbol:   variable cs_promo_sk
+  location: variable x of type CsInvWICdHdD1D2D3
+2 errors

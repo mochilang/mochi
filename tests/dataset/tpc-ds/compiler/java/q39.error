@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:307: error: illegal start of expression
+    for (? g : new ArrayList<>(grouped.values())) {
+         ^
+/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:307: error: ';' expected
+    for (? g : new ArrayList<>(grouped.values())) {
+                                                ^
+/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:310: error: illegal start of expression
+        for (? q : g.qtys) {
+             ^
+/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:310: error: ';' expected
+        for (? q : g.qtys) {
+                         ^
+4 errors

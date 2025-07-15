@@ -1,0 +1,15 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq173282850566/001/Q17.java:427: error: unnamed variables are a preview feature and are disabled by default.
+    for (var _ : g) {
+             ^
+  (use --enable-preview to enable unnamed variables)
+/tmp/TestJavaCompiler_TPCDSQueriesq173282850566/001/Q17.java:428: error: as of release 9, '_' is a keyword, and may not be used as an identifier
+        res6.add(_);
+                 ^
+/tmp/TestJavaCompiler_TPCDSQueriesq173282850566/001/Q17.java:440: error: as of release 9, '_' is a keyword, and may not be used as an identifier
+        res8.add(_);
+                 ^
+/tmp/TestJavaCompiler_TPCDSQueriesq173282850566/001/Q17.java:452: error: as of release 9, '_' is a keyword, and may not be used as an identifier
+        res10.add(_);
+                  ^
+4 errors

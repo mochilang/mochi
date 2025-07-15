@@ -1,0 +1,11 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:132: error: illegal start of type
+    ? sd;
+    ^
+/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:132: error: <identifier> expected
+    ? sd;
+        ^
+/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:134: error: illegal start of type
+    SdI(? sd, IItemSkIBrandIdIClassIdICategoryIdIManufactIdICategory i) {
+        ^
+3 errors

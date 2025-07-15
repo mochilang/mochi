@@ -1,0 +1,7 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq801133719059/001/Q80.java:72: error: bad operand types for binary operator '+'
+}}).get().stream().mapToDouble(n -> ((Number)n).doubleValue()).sum()).doubleValue() + ((Number)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
+                                                                                    ^
+  first type:  Number
+  second type: double
+1 error

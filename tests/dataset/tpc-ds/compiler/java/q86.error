@@ -1,0 +1,35 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:7: error: <identifier> expected
+    String class;
+          ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:7: error: <identifier> expected
+    String class;
+                ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:9: error: <identifier> expected
+    CatClassNet(String cat, String class, double net) {
+                                  ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:9: error: <identifier> expected
+    CatClassNet(String cat, String class, double net) {
+                                        ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:9: error: ';' expected
+    CatClassNet(String cat, String class, double net) {
+                                                    ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:11: error: <identifier> expected
+        this.class = class;
+             ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:11: error: illegal start of expression
+        this.class = class;
+                     ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:11: error: <identifier> expected
+        this.class = class;
+                          ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:17: error: <identifier> expected
+        return Objects.equals(this.cat, other.cat) && Objects.equals(this.class, other.class) && Objects.equals(this.net, other.net);
+                                                                          ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:20: error: illegal start of expression
+        return Objects.hash(cat, class, net);
+                                 ^
+/tmp/TestJavaCompiler_TPCDSQueriesq863912219038/001/Q86.java:20: error: <identifier> expected
+        return Objects.hash(cat, class, net);
+                                      ^
+11 errors

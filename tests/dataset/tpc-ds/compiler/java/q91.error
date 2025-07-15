@@ -1,0 +1,16 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq914045069103/001/Q91.java:390: error: cannot find symbol
+    Object result = first((new java.util.function.Supplier<List<CallCenterCallCenterNameManagerReturnsLoss>>(){public List<CallCenterCallCenterNameManagerReturnsLoss> get(){
+                    ^
+  symbol:   method first(List<CallCenterCallCenterNameManagerReturnsLoss>)
+  location: class Q91
+/tmp/TestJavaCompiler_TPCDSQueriesq914045069103/001/Q91.java:425: error: cannot find symbol
+        res5.add(x.cr_net_loss);
+                  ^
+  symbol:   variable cr_net_loss
+  location: variable x of type CcCrDCCdHdCa
+/tmp/TestJavaCompiler_TPCDSQueriesq914045069103/001/Q91.java:433: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, new CallCenterCallCenterNameManagerReturnsLoss("CC1", "Main", "Alice", 10.000000)))) throw new AssertionError("expect failed");
+                                                                                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

@@ -1,0 +1,6 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq4567318546/001/Q45.java:205: error: cannot find symbol
+                        if (!((zip_list.contains(substr(ca.ca_zip, 0, 5)) || item_ids.contains(i.i_item_id)) && d.d_qoy == qoy && d.d_year == year)) continue;
+                                                 ^
+  symbol: method substr(String,int,int)
+1 error

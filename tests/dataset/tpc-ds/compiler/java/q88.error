@@ -1,0 +1,22 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq881779889211/001/Q88.java:82: error: cannot find symbol
+    static double count_range(List<any> ssales, List<any> tdim, int hour, int start_min, int end_min) {
+                                   ^
+  symbol:   class any
+  location: class Q88
+/tmp/TestJavaCompiler_TPCDSQueriesq881779889211/001/Q88.java:82: error: cannot find symbol
+    static double count_range(List<any> ssales, List<any> tdim, int hour, int start_min, int end_min) {
+                                                     ^
+  symbol:   class any
+  location: class Q88
+/tmp/TestJavaCompiler_TPCDSQueriesq881779889211/001/Q88.java:84: error: cannot find symbol
+        for (any ss : ssales) {
+             ^
+  symbol:   class any
+  location: class Q88
+/tmp/TestJavaCompiler_TPCDSQueriesq881779889211/001/Q88.java:85: error: cannot find symbol
+            for (any t : tdim) {
+                 ^
+  symbol:   class any
+  location: class Q88
+4 errors

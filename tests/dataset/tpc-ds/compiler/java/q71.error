@@ -1,0 +1,11 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:150: error: illegal start of type
+    ? s;
+    ^
+/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:150: error: <identifier> expected
+    ? s;
+       ^
+/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:152: error: illegal start of type
+    IST(IItemSkIBrandIdIBrandIManagerId i, ? s, TTimeSkTHourTMinuteTMealTime t) {
+                                           ^
+3 errors

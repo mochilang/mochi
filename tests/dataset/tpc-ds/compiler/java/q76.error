@@ -1,0 +1,30 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:274: error: cannot find symbol
+    Object all_rows = concat(store_part, web_part, catalog_part);
+                      ^
+  symbol:   method concat(List<ChannelColNameDYearDQoyICategoryExtSalesPrice>,List<ChannelColNameDYearDQoyICategoryExtSalesPrice>,List<ChannelColNameDYearDQoyICategoryExtSalesPrice>)
+  location: class Q76
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:278: error: for-each not applicable to expression type
+    for (var r : all_rows) {
+                 ^
+  required: array or java.lang.Iterable
+  found:    Object
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:288: error: incompatible types: Object cannot be converted to String
+        res3.add(new ChannelColNameDYearDQoyICategorySalesCntSalesAmt(g.key.channel, g.key.col_name, g.key.d_year, g.key.d_qoy, g.key.i_category, g.size(), (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
+                                                                           ^
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:291: error: cannot find symbol
+        res8.add(x.r.ext_sales_price);
+                  ^
+  symbol:   variable r
+  location: variable x of type Object
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:299: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("store", null, 1998, 1, "CatA", 1, 10.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("web", null, 1998, 1, "CatB", 1, 15.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("catalog", null, 1998, 1, "CatC", 1, 20.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                       ^
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:299: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("store", null, 1998, 1, "CatA", 1, 10.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("web", null, 1998, 1, "CatB", 1, 15.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("catalog", null, 1998, 1, "CatC", 1, 20.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                                                                         ^
+/tmp/TestJavaCompiler_TPCDSQueriesq762867876916/001/Q76.java:299: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("store", null, 1998, 1, "CatA", 1, 10.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("web", null, 1998, 1, "CatB", 1, 15.000000), new ChannelColNameDYearDQoyICategorySalesCntSalesAmt("catalog", null, 1998, 1, "CatC", 1, 20.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                                                                                                                                                                               ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

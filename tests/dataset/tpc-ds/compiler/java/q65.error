@@ -1,0 +1,9 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq65427643181/001/Q65.java:65: error: incompatible types: int cannot be converted to String
+        return sum / (Double.parseDouble(xs.size()));
+                                                ^
+/tmp/TestJavaCompiler_TPCDSQueriesq65427643181/001/Q65.java:144: error: incompatible types: List<Integer> cannot be converted to List<Double>
+}}).get());
+       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

@@ -1,0 +1,4 @@
+java run error: exit status 1
+[]
+Exception in thread "main" java.lang.AssertionError: expect failed
+	at Q34.main(Q34.java:282)

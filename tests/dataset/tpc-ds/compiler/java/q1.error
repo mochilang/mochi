@@ -1,0 +1,12 @@
+javac error: exit status 1
+/tmp/TestJavaCompiler_TPCDSQueriesq13741395689/001/Q1.java:216: error: cannot find symbol
+        res5.add(x.sr_return_amt);
+                  ^
+  symbol:   variable sr_return_amt
+  location: variable x of type SrD
+/tmp/TestJavaCompiler_TPCDSQueriesq13741395689/001/Q1.java:237: error: bad operand types for binary operator '*'
+}}).get().stream().mapToDouble(n -> ((Number)n).doubleValue()).average().orElse(0)).doubleValue() * 1.200000).doubleValue() && Objects.equals(s.s_state, "TN"))) continue;
+                                                                                                  ^
+  first type:  Number
+  second type: double
+2 errors
