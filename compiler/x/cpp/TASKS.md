@@ -16,6 +16,9 @@
 - Fixed struct field type replacement for grouped query key structs
   (2025-07-14 04:56 UTC).
 
+## Recent Enhancements (2025-07-15 04:45 UTC)
+- Generated missing TPC-DS outputs (q10-q49) with new `tpcds_golden_test.go`.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Support TPCH q1 and q5 compilation and execution.
