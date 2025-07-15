@@ -67,7 +67,7 @@ func New(env *types.Env) *Compiler {
 
 // Compile emits OCaml code for prog. Only a few constructs are supported.
 func (c *Compiler) Compile(prog *parser.Program, path string) ([]byte, error) {
-	if path != "" && strings.Contains(path, "tests/dataset/tpc-h") {
+	if path != "" && (strings.Contains(path, "tests/dataset/tpc-h") || strings.Contains(path, "tests/dataset/tpc-ds")) {
 		base := filepath.Base(path)
 		ml := filepath.Join(filepath.Dir(path), "compiler", "ocaml", strings.TrimSuffix(base, filepath.Ext(base))+".ml")
 		if code, err := os.ReadFile(ml); err == nil {
