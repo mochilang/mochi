@@ -1,0 +1,36 @@
+rustc: exit status 1
+warning: type `Catalog_return` should have an upper camel case name
+ --> /tmp/q81.rs:3:8
+  |
+3 | struct Catalog_return {
+  |        ^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogReturn`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q81.rs:33:21
+   |
+33 |     let avg_state = first({ let mut tmp4 = Vec::new();for a in &avg_list { if !(a.state == "CA") { continue; } tmp4.push(a.clone()); } tm...
+   |                     ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[Result]`
+   |
+33 -     let avg_state = first({ let mut tmp4 = Vec::new();for a in &avg_list { if !(a.state == "CA") { continue; } tmp4.push(a.clone()); } tmp4 });
+33 +     let avg_state = { let mut tmp4 = Vec::new();for a in &avg_list { if !(a.state == "CA") { continue; } tmp4.push(a.clone()); } tmp4 }.first();
+   |
+
+error[E0425]: cannot find function `first` in this scope
+  --> /tmp/q81.rs:35:18
+   |
+35 |     let result = first(result_list);
+   |                  ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `first` on `&[f64]`
+   |
+35 -     let result = first(result_list);
+35 +     let result = result_list.first();
+   |
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0425`.

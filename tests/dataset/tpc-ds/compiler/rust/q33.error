@@ -1,0 +1,47 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q33.rs:10:8
+   |
+10 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q33.rs:17:8
+   |
+17 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q33.rs:23:8
+   |
+23 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q33.rs:31:8
+   |
+31 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q33.rs:39:8
+   |
+39 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+error[E0423]: expected function, found macro `concat`
+  --> /tmp/q33.rs:93:23
+   |
+93 |     let union_sales = concat({ let mut tmp1 = Vec::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_dat...
+   |                       ^^^^^^ not a function
+   |
+help: use `!` to invoke the macro
+   |
+93 |     let union_sales = concat!({ let mut tmp1 = Vec::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ss.ss_addr_sk == ca.ca_address_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } if !(i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)) { continue; } tmp1.push(Result { manu: i.i_manufact_id, price: ss.ss_ext_sales_price }); } } } } tmp1 }, { let mut tmp2 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(cs.cs_bill_addr_sk == ca.ca_address_sk) { continue; } for i in &item { if !(cs.cs_item_sk == i.i_item_sk) { continue; } if !(i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)) { continue; } tmp2.push(Result1 { manu: i.i_manufact_id, price: cs.cs_ext_sales_price }); } } } } tmp2 }, { let mut tmp3 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_sold_date_sk == d.d_date_sk) { continue; } for ca in &customer_address { if !(ws.ws_bill_addr_sk == ca.ca_address_sk) { continue; } for i in &item { if !(ws.ws_item_sk == i.i_item_sk) { continue; } if !(i.i_category == "Books" && d.d_year == year && d.d_moy == month && ca.ca_gmt_offset == (-5)) { continue; } tmp3.push(Result2 { manu: i.i_manufact_id, price: ws.ws_ext_sales_price }); } } } } tmp3 });
+   |                             +
+
+error: aborting due to 1 previous error; 5 warnings emitted
+
+For more information about this error, try `rustc --explain E0423`.

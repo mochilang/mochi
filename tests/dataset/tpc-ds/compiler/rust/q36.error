@@ -1,0 +1,64 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q36.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q36.rs:25:8
+   |
+25 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0609]: no field `cateaory` on type `Key`
+  --> /tmp/q36.rs:70:744
+   |
+70 | ...rtial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()...
+   |                                                            ^^^^^^^^ unknown field
+   |
+help: a field with a similar name exists
+   |
+70 -     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+70 +     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.category, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |
+
+error[E0609]: no field `catebory` on type `Key`
+  --> /tmp/q36.rs:70:789
+   |
+70 | ...b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2...
+   |                                                            ^^^^^^^^ unknown field
+   |
+help: a field with a similar name exists
+   |
+70 -     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+70 +     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.category, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |
+
+error[E0609]: no field `ss_net_profit` on type `&Item1`
+  --> /tmp/q36.rs:70:1028
+   |
+70 | ...= Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone()....
+   |                                                         ^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+70 |     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    +++
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item1`
+  --> /tmp/q36.rs:70:1129
+   |
+70 | ...Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+70 |     let result = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } if !(d.d_year == 2000 && (s.s_state == "A" || s.s_state == "B")) { continue; } let key = Key { category: i.i_category, class: i.i_class }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {ss: ss.clone(), d: d.clone(), i: i.clone(), s: s.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.cateaory, a.key.class)).partial_cmp(&((b.key.catebory, b.key.class))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_category: g.key.category, i_class: g.key.class, gross_margin: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss_net_profit); } tmp3 }) / sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         +++
+
+error: aborting due to 4 previous errors; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0609`.

@@ -1,0 +1,5 @@
+run: exit status 101
+
+thread 'main' panicked at /tmp/q6.rs:78:1301:
+range end index 100 out of range for slice of length 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

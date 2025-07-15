@@ -1,0 +1,32 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q87.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_sale` should have an upper camel case name
+ --> /tmp/q87.rs:9:8
+  |
+9 | struct Catalog_sale {
+  |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+error[E0282]: type annotations needed for `Vec<_>`
+  --> /tmp/q87.rs:24:9
+   |
+24 |     let web_sales = vec![];
+   |         ^^^^^^^^^
+...
+27 |     let web_customers = { let mut tmp3 = Vec::new();for &s in &web_sales { tmp3.push(s.cust); } tmp3 };
+   |                                                                                      - type must be known at this point
+   |
+help: consider giving `web_sales` an explicit type, where the placeholders `_` are specified
+   |
+24 |     let web_sales: Vec<_> = vec![];
+   |                  ++++++++
+
+error: aborting due to 1 previous error; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0282`.

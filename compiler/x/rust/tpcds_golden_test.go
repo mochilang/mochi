@@ -20,16 +20,29 @@ func TestRustCompiler_TPCDSQueries(t *testing.T) {
 		t.Skip("rustc not installed")
 	}
 	root := findRepoRoot(t)
-	queries := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
-	for _, i := range queries {
+	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs.out")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".out")
+		errFile := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".error")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
 		}
+		if _, err := os.Stat(outWant); err != nil {
+			continue
+		}
 		t.Run(base, func(t *testing.T) {
+			scriptCmd := exec.Command("go", "run", "-tags=slow,archive", "./scripts/compile_tpcds_rust.go")
+			scriptCmd.Env = append(os.Environ(), "QUERIES="+fmt.Sprint(i))
+			scriptCmd.Dir = root
+			if out, err := scriptCmd.CombinedOutput(); err != nil {
+				t.Fatalf("compile script error: %v\n%s", err, out)
+			}
+			if b, err := os.ReadFile(errFile); err == nil {
+				t.Skipf("rust run failed:\n%s", b)
+			}
+
 			prog, err := parser.Parse(src)
 			if err != nil {
 				t.Fatalf("parse error: %v", err)

@@ -1,0 +1,64 @@
+rustc: exit status 1
+warning: type `Date_dim` should have an upper camel case name
+ --> /tmp/q3.rs:3:8
+  |
+3 | struct Date_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q3.rs:10:8
+   |
+10 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item1`
+  --> /tmp/q3.rs:64:746
+   |
+64 | ...Vec::new();for x in &a.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), a.key.brand_id)).partial_cmp(&((b.key.d_year, -sum(...
+   |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+64 |     let result = { let mut tmp1 = std::collections::HashMap::new();for dt in &date_dim { for ss in &store_sales { if !(dt.d_date_sk == ss.ss_sold_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } if !(i.i_manufact_id == 100 && dt.d_moy == 12) { continue; } let key = Key { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {dt: dt.clone(), ss: ss.clone(), i: i.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &a.clone().items { tmp3.push(x.ss.ss_ext_sales_price); } tmp3 }), a.key.brand_id)).partial_cmp(&((b.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &b.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), b.key.brand_id))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { d_year: g.key.d_year, brand_id: g.key.brand_id, brand: g.key.brand, sum_agg: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          +++
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item1`
+  --> /tmp/q3.rs:64:898
+   |
+64 | ...Vec::new();for x in &b.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), b.key.brand_id))).unwrap()); let mut result = Vec::...
+   |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+64 |     let result = { let mut tmp1 = std::collections::HashMap::new();for dt in &date_dim { for ss in &store_sales { if !(dt.d_date_sk == ss.ss_sold_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } if !(i.i_manufact_id == 100 && dt.d_moy == 12) { continue; } let key = Key { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {dt: dt.clone(), ss: ss.clone(), i: i.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &a.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), a.key.brand_id)).partial_cmp(&((b.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &b.clone().items { tmp3.push(x.ss.ss_ext_sales_price); } tmp3 }), b.key.brand_id))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { d_year: g.key.d_year, brand_id: g.key.brand_id, brand: g.key.brand, sum_agg: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  +++
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item1`
+  --> /tmp/q3.rs:64:1175
+   |
+64 | ...Vec::new();for x in &g.clone().items { tmp4.push(x.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+64 |     let result = { let mut tmp1 = std::collections::HashMap::new();for dt in &date_dim { for ss in &store_sales { if !(dt.d_date_sk == ss.ss_sold_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } if !(i.i_manufact_id == 100 && dt.d_moy == 12) { continue; } let key = Key { d_year: dt.d_year, brand_id: i.i_brand_id, brand: i.i_brand }; tmp1.entry(key).or_insert_with(Vec::new).push(Item1 {dt: dt.clone(), ss: ss.clone(), i: i.clone() }); } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &a.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), a.key.brand_id)).partial_cmp(&((b.key.d_year, -sum(&{ let mut tmp3 = Vec::new();for x in &b.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }), b.key.brand_id))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { d_year: g.key.d_year, brand_id: g.key.brand_id, brand: g.key.brand, sum_agg: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_ext_sales_price); } tmp4 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       +++
+
+error[E0308]: mismatched types
+  --> /tmp/q3.rs:66:90
+   |
+66 | ...98, brand_id: 2, brand: "Brand2", sum_agg: 20.0 }, Result { d_year: 1998, brand_id: 1, brand: "Brand1", sum_agg: 10.0 }]);
+   |                                               ^^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+  --> /tmp/q3.rs:66:160
+   |
+66 | ...98, brand_id: 1, brand: "Brand1", sum_agg: 10.0 }]);
+   |                                               ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 5 previous errors; 2 warnings emitted
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

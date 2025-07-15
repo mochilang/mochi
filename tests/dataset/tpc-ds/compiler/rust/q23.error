@@ -1,0 +1,166 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q23.rs:42:8
+   |
+42 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q23.rs:51:8
+   |
+51 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q23.rs:63:8
+   |
+63 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q23.rs:72:8
+   |
+72 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+error[E0277]: cannot multiply `i32` by `f64`
+   --> /tmp/q23.rs:130:518
+    |
+130 | ... x in &g.clone().items { tmp6.push(x.ss_quantity * x.ss_sales_price); } tmp6 }) }); } result };
+    |                                                     ^ no implementation for `i32 * f64`
+    |
+    = help: the trait `Mul<f64>` is not implemented for `i32`
+    = help: the following other types implement trait `Mul<Rhs>`:
+              `&i32` implements `Mul<i32>`
+              `&i32` implements `Mul`
+              `i32` implements `Mul<&i32>`
+              `i32` implements `Mul`
+
+error[E0277]: can't compare `&i32` with `{integer}`
+   --> /tmp/q23.rs:133:218
+    |
+133 | ...ontains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9....
+    |                                                 ^^ no implementation for `&i32 == {integer}`
+    |
+    = help: the trait `PartialEq<{integer}>` is not implemented for `&i32`
+help: consider removing the borrow
+    |
+133 -     let catalog = { let mut tmp9 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_quantity as f64) * cs.cs_list_price); } } tmp9 };
+133 +     let catalog = { let mut tmp9 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_quantity as f64) * cs.cs_list_price); } } tmp9 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:133:245
+    |
+133 | ...t_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_...
+    |                           ---------------------------------    ^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+    |                           |
+    |                           expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:133:208
+    |
+133 | ...&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs...
+    |                      -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |                      |
+    |                      arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:133:181
+    |
+133 | ...ontains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9....
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+    |
+help: consider removing the borrow
+    |
+133 -     let catalog = { let mut tmp9 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_quantity as f64) * cs.cs_list_price); } } tmp9 };
+133 +     let catalog = { let mut tmp9 = Vec::new();for cs in &catalog_sales { for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_quantity as f64) * cs.cs_list_price); } } tmp9 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:133:272
+    |
+133 | ...&& d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continue; } tmp9.push((cs.cs_quantity as f64) * cs.cs_list_price); } }...
+    |                                                  ^^^^^^^^^^^^^ expected `bool`, found `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:133:181
+    |
+133 | ...ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && cs.cs_bill_customer_sk) && cs.cs_item_sk)) { continu...
+    |             -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |             |
+    |             arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0277]: can't compare `&i32` with `{integer}`
+   --> /tmp/q23.rs:134:211
+    |
+134 | ...ontains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10...
+    |                                                 ^^ no implementation for `&i32 == {integer}`
+    |
+    = help: the trait `PartialEq<{integer}>` is not implemented for `&i32`
+help: consider removing the borrow
+    |
+134 -     let web = { let mut tmp10 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws_quantity as f64) * ws.ws_list_price); } } tmp10 };
+134 +     let web = { let mut tmp10 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws_quantity as f64) * ws.ws_list_price); } } tmp10 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:134:238
+    |
+134 | ...t_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws...
+    |                           ---------------------------------    ^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `i32`
+    |                           |
+    |                           expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:134:201
+    |
+134 | ...&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((w...
+    |                      -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |                      |
+    |                      arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:134:174
+    |
+134 | ...ontains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10...
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+    |
+help: consider removing the borrow
+    |
+134 -     let web = { let mut tmp10 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws_quantity as f64) * ws.ws_list_price); } } tmp10 };
+134 +     let web = { let mut tmp10 = Vec::new();for ws in &web_sales { for d in &date_dim { if !(ws.ws_sold_date_sk == d.d_date_sk) { continue; } if !(frequent_ss_items.contains(best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws_quantity as f64) * ws.ws_list_price); } } tmp10 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:134:265
+    |
+134 | ...&& d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continue; } tmp10.push((ws.ws_quantity as f64) * ws.ws_list_price); } ...
+    |                                                  ^^^^^^^^^^^^^ expected `bool`, found `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q23.rs:134:174
+    |
+134 | ...ss_items.contains(&best_ss_customer.contains(&d.d_year == 2000 && d.d_moy == 1 && ws.ws_bill_customer_sk) && ws.ws_item_sk)) { continu...
+    |             -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&i32`, found `bool`
+    |             |
+    |             arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 13 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

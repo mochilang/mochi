@@ -1,0 +1,90 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+ --> /tmp/q46.rs:3:8
+  |
+3 | struct Store_sale {
+  |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q46.rs:15:8
+   |
+15 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q46.rs:28:8
+   |
+28 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q46.rs:35:8
+   |
+35 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:447
+    |
+109 | ...&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { con...
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+    |
+help: consider removing the borrow
+    |
+109 -     let dn = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for hd in &household_demographics { if !(ss.ss_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(ss.ss_addr_sk == ca.ca_address_sk) { continue; } if !(cities.contains(&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continue; } let key = Key { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {ss: ss.clone(), d: d.clone(), s: s.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ss_ticket_number: g.key.ss_ticket_number, ss_customer_sk: g.key.ss_customer_sk, bought_city: g.key.ca_city, amt: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_coupon_amt); } tmp3 }), profit: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_net_profit); } tmp4 }) }); } result };
+109 +     let dn = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for hd in &household_demographics { if !(ss.ss_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(ss.ss_addr_sk == ca.ca_address_sk) { continue; } if !(cities.contains(&vec![6, 0].contains((hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continue; } let key = Key { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {ss: ss.clone(), d: d.clone(), s: s.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ss_ticket_number: g.key.ss_ticket_number, ss_customer_sk: g.key.ss_customer_sk, bought_city: g.key.ca_city, amt: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_coupon_amt); } tmp3 }), profit: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_net_profit); } tmp4 }) }); } result };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:512
+    |
+109 | ...t == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continue; } let key = Key { ss_ticket_nu...
+    |                                                     ^^^^^^^ expected `bool`, found `i32`
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:447
+    |
+109 | ...![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continu...
+    |            -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&{integer}`, found `bool`
+    |            |
+    |            arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:426
+    |
+109 | ...ins(&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) {...
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+    |
+help: consider removing the borrow
+    |
+109 -     let dn = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for hd in &household_demographics { if !(ss.ss_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(ss.ss_addr_sk == ca.ca_address_sk) { continue; } if !(cities.contains(&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continue; } let key = Key { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {ss: ss.clone(), d: d.clone(), s: s.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ss_ticket_number: g.key.ss_ticket_number, ss_customer_sk: g.key.ss_customer_sk, bought_city: g.key.ca_city, amt: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_coupon_amt); } tmp3 }), profit: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_net_profit); } tmp4 }) }); } result };
+109 +     let dn = { let mut tmp1 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for hd in &household_demographics { if !(ss.ss_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(ss.ss_addr_sk == ca.ca_address_sk) { continue; } if !(cities.contains(vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { continue; } let key = Key { ss_ticket_number: ss.ss_ticket_number, ss_customer_sk: ss.ss_customer_sk, ca_city: ca.ca_city }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {ss: ss.clone(), d: d.clone(), s: s.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ss_ticket_number: g.key.ss_ticket_number, ss_customer_sk: g.key.ss_customer_sk, bought_city: g.key.ca_city, amt: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_coupon_amt); } tmp3 }), profit: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_net_profit); } tmp4 }) }); } result };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:544
+    |
+109 | ...ns(&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) { ...
+    |       ------------------------------------------------------------------------------------------------------------------    ^^^^^^^^ expected `bool`, found `&str`
+    |       |
+    |       expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q46.rs:109:426
+    |
+109 | ...es.contains(&vec![6, 0].contains(&(hd.hd_dep_count == depcnt || hd.hd_vehicle_count == vehcnt) && d.d_dow) && d.d_year == year && s.s_city)) ...
+    |       -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&&str`, found `bool`
+    |       |
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 6 previous errors; 4 warnings emitted
+
+For more information about this error, try `rustc --explain E0308`.

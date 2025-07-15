@@ -1,0 +1,36 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q97.rs:15:8
+   |
+15 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q97.rs:21:8
+   |
+21 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+error[E0609]: no field `store_only` on type `BTreeMap<&str, i32>`
+  --> /tmp/q97.rs:76:20
+   |
+76 |     assert!(result.store_only == 1 && result.catalog_only == 1 && result.store_and_catalog == 1);
+   |                    ^^^^^^^^^^ unknown field
+
+error[E0609]: no field `catalog_only` on type `BTreeMap<&str, i32>`
+  --> /tmp/q97.rs:76:46
+   |
+76 |     assert!(result.store_only == 1 && result.catalog_only == 1 && result.store_and_catalog == 1);
+   |                                              ^^^^^^^^^^^^ unknown field
+
+error[E0609]: no field `store_and_catalog` on type `BTreeMap<&str, i32>`
+  --> /tmp/q97.rs:76:74
+   |
+76 |     assert!(result.store_only == 1 && result.catalog_only == 1 && result.store_and_catalog == 1);
+   |                                                                          ^^^^^^^^^^^^^^^^^ unknown field
+
+error: aborting due to 3 previous errors; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0609`.

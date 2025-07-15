@@ -1,0 +1,63 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q29.rs:51:8
+   |
+51 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_return` should have an upper camel case name
+  --> /tmp/q29.rs:61:8
+   |
+61 | struct Store_return {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreReturn`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q29.rs:70:8
+   |
+70 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q29.rs:78:8
+   |
+78 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0277]: can't compare `&i32` with `{integer}`
+   --> /tmp/q29.rs:149:735
+    |
+149 | ... !(vec![1999, 2000, 2001].contains(&d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year)) { continue; } ...
+    |                                                 ^^ no implementation for `&i32 == {integer}`
+    |
+    = help: the trait `PartialEq<{integer}>` is not implemented for `&i32`
+help: consider removing the borrow
+    |
+149 -     let base = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(d1.d_date_sk == ss.ss_sold_date_sk) { continue; } for d2 in &date_dim { if !(d2.d_date_sk == sr.sr_returned_date_sk) { continue; } for d3 in &date_dim { if !(d3.d_date_sk == cs.cs_sold_date_sk) { continue; } for s in &store { if !(s.s_store_sk == ss.ss_store_sk) { continue; } for i in &item { if !(i.i_item_sk == ss.ss_item_sk) { continue; } if !(vec![1999, 2000, 2001].contains(&d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year)) { continue; } tmp1.push(Result { ss_quantity: ss.ss_quantity, sr_return_quantity: sr.sr_return_quantity, cs_quantity: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name }); } } } } } } } } tmp1 };
+149 +     let base = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_ticket_number == sr.sr_ticket_number && ss.ss_item_sk == sr.sr_item_sk) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(d1.d_date_sk == ss.ss_sold_date_sk) { continue; } for d2 in &date_dim { if !(d2.d_date_sk == sr.sr_returned_date_sk) { continue; } for d3 in &date_dim { if !(d3.d_date_sk == cs.cs_sold_date_sk) { continue; } for s in &store { if !(s.s_store_sk == ss.ss_store_sk) { continue; } for i in &item { if !(i.i_item_sk == ss.ss_item_sk) { continue; } if !(vec![1999, 2000, 2001].contains(d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year)) { continue; } tmp1.push(Result { ss_quantity: ss.ss_quantity, sr_return_quantity: sr.sr_return_quantity, cs_quantity: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_store_id: s.s_store_id, s_store_name: s.s_store_name }); } } } } } } } } tmp1 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q29.rs:149:798
+    |
+149 | ...].contains(&d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year)) { continue; } tmp1.push(Result { ss_qu...
+    |               ---------------------------------------------------------------------    ^^^^^^^^^ expected `bool`, found `i32`
+    |               |
+    |               expected because this is `bool`
+
+error[E0308]: mismatched types
+   --> /tmp/q29.rs:149:725
+    |
+149 | ...1].contains(&d1.d_moy == 4 && d1.d_year == 1999 && d2.d_moy >= 4 && d2.d_moy <= 7 && d3.d_year)) { continue; } tmp1.push(Result { ss_q...
+    |       -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&{integer}`, found `bool`
+    |       |
+    |       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 3 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

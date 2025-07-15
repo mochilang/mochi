@@ -1,0 +1,46 @@
+rustc: exit status 1
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q88.rs:39:32
+   |
+39 |     fn count_range(ssales: Vec<any>, tdim: Vec<any>, hour: i32, start_min: i32, end_min: i32) -> f64 {
+   |                                ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+39 |     fn count_range<any>(ssales: Vec<any>, tdim: Vec<any>, hour: i32, start_min: i32, end_min: i32) -> f64 {
+   |                   +++++
+
+error[E0412]: cannot find type `any` in this scope
+  --> /tmp/q88.rs:39:48
+   |
+39 |     fn count_range(ssales: Vec<any>, tdim: Vec<any>, hour: i32, start_min: i32, end_min: i32) -> f64 {
+   |                                                ^^^ not found in this scope
+   |
+help: you might be missing a type parameter
+   |
+39 |     fn count_range<any>(ssales: Vec<any>, tdim: Vec<any>, hour: i32, start_min: i32, end_min: i32) -> f64 {
+   |                   +++++
+
+warning: type `Time_dim` should have an upper camel case name
+ --> /tmp/q88.rs:3:8
+  |
+3 | struct Time_dim {
+  |        ^^^^^^^^ help: convert the identifier to upper camel case: `TimeDim`
+  |
+  = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q88.rs:10:8
+   |
+10 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q88.rs:23:8
+   |
+23 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+error: aborting due to 2 previous errors; 3 warnings emitted
+
+For more information about this error, try `rustc --explain E0412`.

@@ -1,0 +1,72 @@
+rustc: exit status 1
+warning: type `Call_center` should have an upper camel case name
+  --> /tmp/q91.rs:53:8
+   |
+53 | struct Call_center {
+   |        ^^^^^^^^^^^ help: convert the identifier to upper camel case: `CallCenter`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_return` should have an upper camel case name
+  --> /tmp/q91.rs:61:8
+   |
+61 | struct Catalog_return {
+   |        ^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogReturn`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q91.rs:69:8
+   |
+69 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_demographic` should have an upper camel case name
+  --> /tmp/q91.rs:84:8
+   |
+84 | struct Customer_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerDemographic`
+
+warning: type `Household_demographic` should have an upper camel case name
+  --> /tmp/q91.rs:91:8
+   |
+91 | struct Household_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `HouseholdDemographic`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q91.rs:97:8
+   |
+97 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0609]: no field `cr_net_loss` on type `&Item`
+   --> /tmp/q91.rs:150:1464
+    |
+150 | ... = Vec::new();for x in &g.clone().items { tmp3.push(x.cr_net_loss); } tmp3 }) }); } result });
+    |                                                          ^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+150 |     let result = first({ let mut tmp1 = std::collections::HashMap::new();for cc in &call_center { for cr in &catalog_returns { if !(cc.cc_call_center_sk == cr.cr_call_center_sk) { continue; } for d in &date_dim { if !(cr.cr_returned_date_sk == d.d_date_sk) { continue; } for c in &customer { if !(cr.cr_returning_customer_sk == c.c_customer_sk) { continue; } for cd in &customer_demographics { if !(c.c_current_cdemo_sk == cd.cd_demo_sk) { continue; } for hd in &household_demographics { if !(c.c_current_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } if !(d.d_year == 2001 && d.d_moy == 5 && cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" && hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)) { continue; } let key = Key { id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cc: cc.clone(), cr: cr.clone(), d: d.clone(), c: c.clone(), cd: cd.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { Call_Center: g.key.id, Call_Center_Name: g.key.name, Manager: g.key.mgr, Returns_Loss: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cr.cr_net_loss); } tmp3 }) }); } result });
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        +++
+
+error[E0425]: cannot find function `first` in this scope
+   --> /tmp/q91.rs:150:18
+    |
+150 |     let result = first({ let mut tmp1 = std::collections::HashMap::new();for cc in &call_center { for cr in &catalog_returns { if !(cc.cc...
+    |                  ^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `first` on `&[Result]`
+    |
+150 -     let result = first({ let mut tmp1 = std::collections::HashMap::new();for cc in &call_center { for cr in &catalog_returns { if !(cc.cc_call_center_sk == cr.cr_call_center_sk) { continue; } for d in &date_dim { if !(cr.cr_returned_date_sk == d.d_date_sk) { continue; } for c in &customer { if !(cr.cr_returning_customer_sk == c.c_customer_sk) { continue; } for cd in &customer_demographics { if !(c.c_current_cdemo_sk == cd.cd_demo_sk) { continue; } for hd in &household_demographics { if !(c.c_current_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } if !(d.d_year == 2001 && d.d_moy == 5 && cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" && hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)) { continue; } let key = Key { id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cc: cc.clone(), cr: cr.clone(), d: d.clone(), c: c.clone(), cd: cd.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { Call_Center: g.key.id, Call_Center_Name: g.key.name, Manager: g.key.mgr, Returns_Loss: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cr_net_loss); } tmp3 }) }); } result });
+150 +     let result = { let mut tmp1 = std::collections::HashMap::new();for cc in &call_center { for cr in &catalog_returns { if !(cc.cc_call_center_sk == cr.cr_call_center_sk) { continue; } for d in &date_dim { if !(cr.cr_returned_date_sk == d.d_date_sk) { continue; } for c in &customer { if !(cr.cr_returning_customer_sk == c.c_customer_sk) { continue; } for cd in &customer_demographics { if !(c.c_current_cdemo_sk == cd.cd_demo_sk) { continue; } for hd in &household_demographics { if !(c.c_current_hdemo_sk == hd.hd_demo_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } if !(d.d_year == 2001 && d.d_moy == 5 && cd.cd_marital_status == "M" && cd.cd_education_status == "Unknown" && hd.hd_buy_potential == "1001-5000" && ca.ca_gmt_offset == (-6)) { continue; } let key = Key { id: cc.cc_call_center_id, name: cc.cc_name, mgr: cc.cc_manager }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cc: cc.clone(), cr: cr.clone(), d: d.clone(), c: c.clone(), cd: cd.clone(), hd: hd.clone(), ca: ca.clone() }); } } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { Call_Center: g.key.id, Call_Center_Name: g.key.name, Manager: g.key.mgr, Returns_Loss: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cr_net_loss); } tmp3 }) }); } result }.first();
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q91.rs:152:118
+    |
+152 |     assert!(result.clone() == Result { Call_Center: "CC1", Call_Center_Name: "Main", Manager: "Alice", Returns_Loss: 10.0 });
+    |                                                                                                                      ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 3 previous errors; 6 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425, E0609.
+For more information about an error, try `rustc --explain E0308`.
