@@ -1,0 +1,9 @@
+# command-line-arguments
+/tmp/q32.go:83:3: Link_type (type) is not an expression
+/tmp/q32.go:84:3: undefined: First_movie
+/tmp/q32.go:85:3: undefined: Second_movie
+/tmp/q32.go:149:9: invalid operation: kRaw (variable of struct type Keyword) is not an interface
+/tmp/q32.go:185:11: cannot use Joined{…} (value of struct type Joined) as v value in assignment
+/tmp/q32.go:189:10: invalid operation: rRaw (variable of struct type Joined) is not an interface
+/tmp/q32.go:197:10: invalid operation: rRaw (variable of struct type Joined) is not an interface
+/tmp/q32.go:205:10: invalid operation: rRaw (variable of struct type Joined) is not an interface

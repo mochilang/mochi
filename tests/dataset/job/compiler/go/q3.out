@@ -1,4 +1,2 @@
-[{"movie_title":"Alpha"}]
-   test Q3 returns lexicographically smallest sequel title ... fail expect failed (6.0µs)
-
-[FAIL] 1 test(s) failed.
+# command-line-arguments
+/tmp/q3.go:150:9: invalid operation: kRaw (variable of struct type Keyword) is not an interface

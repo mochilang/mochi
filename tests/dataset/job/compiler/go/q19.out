@@ -1,0 +1,4 @@
+# command-line-arguments
+/tmp/q19.go:223:10: invalid operation: anRaw (variable of struct type Aka_name) is not an interface
+/tmp/q19.go:294:10: invalid operation: rRaw (variable of struct type Matche) is not an interface
+/tmp/q19.go:302:10: invalid operation: rRaw (variable of struct type Matche) is not an interface

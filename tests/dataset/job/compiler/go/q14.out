@@ -1,0 +1,6 @@
+# command-line-arguments
+/tmp/q14.go:96:3: undefined: Rating
+/tmp/q14.go:97:3: undefined: Northern_dark_movie
+/tmp/q14.go:208:11: invalid operation: it1Raw (variable of struct type Info_type) is not an interface
+/tmp/q14.go:235:3: undefined: Rating
+/tmp/q14.go:243:3: undefined: Northern_dark_movie

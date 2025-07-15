@@ -1,4 +1,4 @@
-[{"rating":"6.2","movie_title":"Alpha Movie"}]
-   test Q4 returns minimum rating and title for sequels ... fail expect failed (4.0µs)
-
-[FAIL] 1 test(s) failed.
+# command-line-arguments
+/tmp/q4.go:156:10: invalid operation: itRaw (variable of struct type Info_type) is not an interface
+/tmp/q4.go:192:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q4.go:200:10: invalid operation: rRaw (variable of struct type Row) is not an interface

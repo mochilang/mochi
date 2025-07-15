@@ -1,4 +1,5 @@
-[{"alternative_name":"A. N. G.","character_name":"Angel","movie":"Famous Film"}]
-   test Q9 selects minimal alternative name, character and movie ... fail expect failed (4.0µs)
-
-[FAIL] 1 test(s) failed.
+# command-line-arguments
+/tmp/q9.go:200:10: invalid operation: anRaw (variable of struct type Aka_name) is not an interface
+/tmp/q9.go:262:10: invalid operation: xRaw (variable of struct type Matche) is not an interface
+/tmp/q9.go:270:10: invalid operation: xRaw (variable of struct type Matche) is not an interface
+/tmp/q9.go:278:10: invalid operation: xRaw (variable of struct type Matche) is not an interface

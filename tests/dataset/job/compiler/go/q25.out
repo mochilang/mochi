@@ -1,0 +1,6 @@
+# command-line-arguments
+/tmp/q25.go:212:10: invalid operation: ciRaw (variable of struct type Cast_info) is not an interface
+/tmp/q25.go:246:10: invalid operation: xRaw (variable of struct type Matche) is not an interface
+/tmp/q25.go:254:10: invalid operation: xRaw (variable of struct type Matche) is not an interface
+/tmp/q25.go:262:10: invalid operation: xRaw (variable of struct type Matche) is not an interface
+/tmp/q25.go:270:10: invalid operation: xRaw (variable of struct type Matche) is not an interface

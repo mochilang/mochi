@@ -1,2 +1,2 @@
-[{"actor_name":"Downey Robert Jr.","marvel_movie":"Iron Man 3","movie_keyword":"marvel-cinematic-universe"}]
-   test Q6 finds marvel movie with Robert Downey ... ok (66.0µs)
+# command-line-arguments
+/tmp/q6.go:136:10: invalid operation: ciRaw (variable of struct type Cast_info) is not an interface

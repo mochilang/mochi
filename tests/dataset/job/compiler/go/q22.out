@@ -1,0 +1,5 @@
+# command-line-arguments
+/tmp/q22.go:225:10: invalid operation: cnRaw (variable of struct type Company_name) is not an interface
+/tmp/q22.go:292:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q22.go:300:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q22.go:308:10: invalid operation: rRaw (variable of struct type Row) is not an interface

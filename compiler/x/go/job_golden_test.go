@@ -145,7 +145,7 @@ func TestGoCompiler_JOB(t *testing.T) {
 	if _, err := exec.LookPath("go"); err != nil {
 		t.Skip("go toolchain not installed")
 	}
-	for i := 1; i <= 10; i++ {
+       for i := 1; i <= 33; i++ {
 		base := fmt.Sprintf("q%d", i)
 		if _, err := os.Stat(filepath.Join(repoRootJob(t), "tests", "dataset", "job", base+".mochi")); err != nil {
 			continue

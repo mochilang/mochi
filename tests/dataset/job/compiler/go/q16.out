@@ -1,0 +1,4 @@
+# command-line-arguments
+/tmp/q16.go:173:10: invalid operation: anRaw (variable of struct type Aka_name) is not an interface
+/tmp/q16.go:224:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q16.go:232:10: invalid operation: rRaw (variable of struct type Row) is not an interface

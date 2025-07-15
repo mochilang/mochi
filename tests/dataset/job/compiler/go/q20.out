@@ -1,0 +1,2 @@
+# command-line-arguments
+/tmp/q20.go:192:10: invalid operation: ccRaw (variable of struct type Complete_cast) is not an interface

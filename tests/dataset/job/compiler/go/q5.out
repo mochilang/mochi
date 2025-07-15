@@ -1,4 +1,2 @@
-[{"typical_european_movie":"A Film"}]
-   test Q5 finds the lexicographically first qualifying title ... fail expect failed (5.0µs)
-
-[FAIL] 1 test(s) failed.
+# command-line-arguments
+/tmp/q5.go:149:10: invalid operation: ctRaw (variable of struct type Company_type) is not an interface

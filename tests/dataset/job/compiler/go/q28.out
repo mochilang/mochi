@@ -1,0 +1,8 @@
+# command-line-arguments
+/tmp/q28.go:126:3: undefined: Movie_company
+/tmp/q28.go:127:3: undefined: Rating
+/tmp/q28.go:128:3: undefined: Complete_euro_dark_movie
+/tmp/q28.go:268:10: invalid operation: ccRaw (variable of struct type Complete_cast) is not an interface
+/tmp/q28.go:347:3: undefined: Movie_company
+/tmp/q28.go:355:3: undefined: Rating
+/tmp/q28.go:363:3: undefined: Complete_euro_dark_movie
