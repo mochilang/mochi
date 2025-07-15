@@ -136,6 +136,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	// Temporary alias used when inferred struct names default to "v"
 	if _, ok := c.env.GetStruct("Result"); ok {
 		c.writeln("type v = Result")
+	} else if _, ok := c.env.GetStruct("Row"); ok {
+		c.writeln("type v = Row")
 	} else {
 		c.writeln("type v map[string]any")
 	}
