@@ -151,6 +151,9 @@ const (
 		"  }\n" +
 		"  return false;\n" +
 		"}\n"
+	helperStartsWith = "function _starts_with(str: any, prefix: any): boolean {\n" +
+		"  return String(str).startsWith(String(prefix));\n" +
+		"}\n"
 
 	helperValues = "function _values<T>(m: { [key: string]: T }): T[] {\n" +
 		"  if (m && typeof m === 'object' && !Array.isArray(m)) {\n" +
@@ -533,6 +536,7 @@ var helperMap = map[string]string{
 	"_max":         helperMax,
 	"_exists":      helperExists,
 	"_contains":    helperContains,
+	"_starts_with": helperStartsWith,
 	"_values":      helperValues,
 	"_input":       helperInput,
 	"_iter":        helperIter,

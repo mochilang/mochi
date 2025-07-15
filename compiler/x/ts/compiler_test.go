@@ -4,6 +4,7 @@ package tscode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -297,12 +298,13 @@ func TestTSCompiler_JOBQueries(t *testing.T) {
 		t.Skipf("deno not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 33; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "job", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", base+".ts")
 		outWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "ts", base+".out")
-		if _, err := os.Stat(codeWant); err != nil {
+		updating := flag.Lookup("update") != nil && flag.Lookup("update").Value.String() == "true"
+		if _, err := os.Stat(codeWant); err != nil && !updating {
 			continue
 		}
 		t.Run(base, func(t *testing.T) {
@@ -321,6 +323,11 @@ func TestTSCompiler_JOBQueries(t *testing.T) {
 			code, err := tscode.New(env, modRoot).Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
+			}
+			if _, err := os.Stat(codeWant); err != nil && updating {
+				if err := os.WriteFile(codeWant, code, 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
 			}
 			wantCode, err := os.ReadFile(codeWant)
 			if err != nil {
@@ -343,6 +350,11 @@ func TestTSCompiler_JOBQueries(t *testing.T) {
 				t.Fatalf("deno run error: %v\n%s", err, out)
 			}
 			gotOut := bytes.TrimSpace(out)
+			if _, err := os.Stat(outWant); err != nil && updating {
+				if err := os.WriteFile(outWant, gotOut, 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+			}
 			wantOut, err := os.ReadFile(outWant)
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
