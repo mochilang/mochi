@@ -1,0 +1,71 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q14.rs:42:8
+   |
+42 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q14.rs:50:8
+   |
+50 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Web_sale` should have an upper camel case name
+  --> /tmp/q14.rs:58:8
+   |
+58 | struct Web_sale {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `WebSale`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q14.rs:74:8
+   |
+74 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Cross_item` should have an upper camel case name
+  --> /tmp/q14.rs:81:8
+   |
+81 | struct Cross_item {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `CrossItem`
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q14.rs:142:938
+    |
+142 | ...tmp5 = Vec::new();for _ in &g.clone().items { tmp5.push(_.clone()); } tmp5 }.len() as i32 }); } result };
+    |                                                            ^ `_` not allowed here
+
+error[E0609]: no field `ss_quantity` on type `&Item2`
+   --> /tmp/q14.rs:142:815
+    |
+142 | ... = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_quantity * x.ss_list_price); } tmp4 }), number_sales: { let mut tmp5 = Vec::n...
+    |                                                          ^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+142 |     let store_filtered = { let mut tmp2 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11) { continue; } if !(({ let mut tmp1 = Vec::new();for ci in &cross_items { tmp1.push(ci.ss_item_sk); } tmp1 }).contains(&ss.ss_item_sk)) { continue; } let key = Key { brand_id: 1, class_id: 1, category_id: 1 }; tmp2.entry(key).or_insert_with(Vec::new).push(Item2 {ss: ss.clone(), d: d.clone() }); } } let mut tmp3 = Vec::<Group>::new(); for (k,v) in tmp2 { tmp3.push(Group { key: k, items: v }); } tmp3.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp3 { result.push(Result { channel: "store", sales: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss.ss_quantity * x.ss_list_price); } tmp4 }), number_sales: { let mut tmp5 = Vec::new();for _ in &g.clone().items { tmp5.push(_.clone()); } tmp5 }.len() as i32 }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               +++
+
+error[E0609]: no field `ss_list_price` on type `&Item2`
+   --> /tmp/q14.rs:142:831
+    |
+142 | ... x in &g.clone().items { tmp4.push(x.ss_quantity * x.ss_list_price); } tmp4 }), number_sales: { let mut tmp5 = Vec::new();for _ in &g....
+    |                                                         ^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+142 |     let store_filtered = { let mut tmp2 = std::collections::HashMap::new();for ss in &store_sales { for d in &date_dim { if !(ss.ss_sold_date_sk == d.d_date_sk && d.d_year == 2002 && d.d_moy == 11) { continue; } if !(({ let mut tmp1 = Vec::new();for ci in &cross_items { tmp1.push(ci.ss_item_sk); } tmp1 }).contains(&ss.ss_item_sk)) { continue; } let key = Key { brand_id: 1, class_id: 1, category_id: 1 }; tmp2.entry(key).or_insert_with(Vec::new).push(Item2 {ss: ss.clone(), d: d.clone() }); } } let mut tmp3 = Vec::<Group>::new(); for (k,v) in tmp2 { tmp3.push(Group { key: k, items: v }); } tmp3.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp3 { result.push(Result { channel: "store", sales: sum(&{ let mut tmp4 = Vec::new();for x in &g.clone().items { tmp4.push(x.ss_quantity * x.ss.ss_list_price); } tmp4 }), number_sales: { let mut tmp5 = Vec::new();for _ in &g.clone().items { tmp5.push(_.clone()); } tmp5 }.len() as i32 }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               +++
+
+error[E0308]: mismatched types
+   --> /tmp/q14.rs:145:111
+    |
+145 |     assert!(result == vec![Result3 { channel: "store", i_brand_id: 1, i_class_id: 1, i_category_id: 1, sales: 60.0, number_sales: 1 }]);
+    |                                                                                                               ^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 4 previous errors; 5 warnings emitted
+
+Some errors have detailed explanations: E0308, E0609.
+For more information about an error, try `rustc --explain E0308`.

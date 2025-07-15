@@ -1,0 +1,54 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q19.rs:47:8
+   |
+47 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q19.rs:56:8
+   |
+56 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q19.rs:79:8
+   |
+79 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+error[E0425]: cannot find function `substr` in this scope
+   --> /tmp/q19.rs:138:483
+    |
+138 | ... in &store { if !(ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5)) { continue; } if !(d.d_moy == 11...
+    |                                                        ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `substr` in this scope
+   --> /tmp/q19.rs:138:510
+    |
+138 | ...re_sk == s.s_store_sk && substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5)) { continue; } if !(d.d_moy == 11 && d.d_year == 1999) { con...
+    |                                                        ^^^^^^ not found in this scope
+
+error[E0609]: no field `ss_ext_sales_price` on type `&Item4`
+   --> /tmp/q19.rs:138:1342
+    |
+138 | ...Vec::new();for x in &g.clone().items { tmp3.push(x.ss_ext_sales_price); } tmp3 }) }); } result };
+    |                                                       ^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+138 |     let result = { let mut tmp1 = std::collections::HashMap::new();for d in &date_dim { for ss in &store_sales { if !(ss.ss_sold_date_sk == d.d_date_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk && i.i_manager_id == 10) { continue; } for c in &customer { if !(ss.ss_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5)) { continue; } if !(d.d_moy == 11 && d.d_year == 1999) { continue; } let key = Key { brand: i.i_brand, brand_id: i.i_brand_id, man_id: i.i_manufact_id, man: i.i_manufact }; tmp1.entry(key).or_insert_with(Vec::new).push(Item4 {d: d.clone(), ss: ss.clone(), i: i.clone(), c: c.clone(), ca: ca.clone(), s: s.clone() }); } } } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| ((a.key.brand)).partial_cmp(&((b.key.brand))).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { i_brand: g.key.brand, i_brand_id: g.key.brand_id, i_manufact_id: g.key.man_id, i_manufact: g.key.man, ext_price: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.ss.ss_ext_sales_price); } tmp3 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              +++
+
+error[E0308]: mismatched types
+   --> /tmp/q19.rs:140:114
+    |
+140 |     assert!(result == vec![Result { i_brand: "B1", i_brand_id: 1, i_manufact_id: 1, i_manufact: "M1", ext_price: 100.0 }]);
+    |                                                                                                                  ^^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 4 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425, E0609.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,0 +1,77 @@
+rustc: exit status 1
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q15.rs:30:8
+   |
+30 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q15.rs:43:8
+   |
+43 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q15.rs:50:8
+   |
+50 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/q15.rs:94:480
+   |
+94 | ...475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) || cs.cs_sales_price > 500 as f64) && d.d...
+   |                                                        ^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/q15.rs:94:383
+   |
+94 | ...ains(&vec!["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.c...
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `&bool`
+   |
+help: consider removing the borrow
+   |
+94 -     let filtered = { let mut tmp1 = std::collections::HashMap::new();for cs in &catalog_sales { for c in &customer { if !(cs.cs_bill_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !((vec!["CA", "WA", "GA"].contains(&vec!["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) || cs.cs_sales_price > 500 as f64) && d.d_qoy == 1 && d.d_year == 2000) { continue; } let key = Key { zip: ca.ca_zip }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cs: cs.clone(), c: c.clone(), ca: ca.clone(), d: d.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| (a.key.zip).partial_cmp(&(b.key.zip)).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ca_zip: g.key.zip, sum_sales: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cs_sales_price); } tmp3 }) }); } result };
+94 +     let filtered = { let mut tmp1 = std::collections::HashMap::new();for cs in &catalog_sales { for c in &customer { if !(cs.cs_bill_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !((vec!["CA", "WA", "GA"].contains(vec!["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) || cs.cs_sales_price > 500 as f64) && d.d_qoy == 1 && d.d_year == 2000) { continue; } let key = Key { zip: ca.ca_zip }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cs: cs.clone(), c: c.clone(), ca: ca.clone(), d: d.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| (a.key.zip).partial_cmp(&(b.key.zip)).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ca_zip: g.key.zip, sum_sales: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cs_sales_price); } tmp3 }) }); } result };
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/q15.rs:94:508
+   |
+94 | ...81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) || cs.cs_sales_price > 500 as f64) && d.d_qoy == 1 && d.d_year == 2000) { c...
+   |                                                  ^^^^^^^^^^^ expected `bool`, found `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/q15.rs:94:383
+   |
+94 | ..."].contains(&vec!["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) |...
+   |       -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&&str`, found `bool`
+   |       |
+   |       arguments to this method are incorrect
+   |
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0609]: no field `cs_sales_price` on type `&Item`
+  --> /tmp/q15.rs:94:1154
+   |
+94 | ...= Vec::new();for x in &g.clone().items { tmp3.push(x.cs_sales_price); } tmp3 }) }); } result };
+   |                                                         ^^^^^^^^^^^^^^ unknown field
+   |
+help: one of the expressions' fields has a field of the same name
+   |
+94 |     let filtered = { let mut tmp1 = std::collections::HashMap::new();for cs in &catalog_sales { for c in &customer { if !(cs.cs_bill_customer_sk == c.c_customer_sk) { continue; } for ca in &customer_address { if !(c.c_current_addr_sk == ca.ca_address_sk) { continue; } for d in &date_dim { if !(cs.cs_sold_date_sk == d.d_date_sk) { continue; } if !((vec!["CA", "WA", "GA"].contains(&vec!["85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792"].contains(&substr(ca.ca_zip, 0, 5)) || ca.ca_state) || cs.cs_sales_price > 500 as f64) && d.d_qoy == 1 && d.d_year == 2000) { continue; } let key = Key { zip: ca.ca_zip }; tmp1.entry(key).or_insert_with(Vec::new).push(Item {cs: cs.clone(), c: c.clone(), ca: ca.clone(), d: d.clone() }); } } } } let mut tmp2 = Vec::<Group>::new(); for (k,v) in tmp1 { tmp2.push(Group { key: k, items: v }); } tmp2.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); tmp2.sort_by(|a,b| (a.key.zip).partial_cmp(&(b.key.zip)).unwrap()); let mut result = Vec::new(); for g in tmp2 { result.push(Result { ca_zip: g.key.zip, sum_sales: sum(&{ let mut tmp3 = Vec::new();for x in &g.clone().items { tmp3.push(x.cs.cs_sales_price); } tmp3 }) }); } result };
+   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  +++
+
+error[E0308]: mismatched types
+  --> /tmp/q15.rs:96:67
+   |
+96 |     assert!(filtered == vec![Result { ca_zip: "85669", sum_sales: 600.0 }]);
+   |                                                                   ^^^^^ expected `i32`, found floating-point number
+
+error: aborting due to 6 previous errors; 3 warnings emitted
+
+Some errors have detailed explanations: E0308, E0425, E0609.
+For more information about an error, try `rustc --explain E0308`.

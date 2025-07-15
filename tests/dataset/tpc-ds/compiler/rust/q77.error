@@ -191,34 +191,22 @@ error[E0609]: no field `p` on type `&Result18`
     = note: available fields are: `channel`, `id`, `sales`, `returns`, `profit`
 
 error[E0308]: mismatched types
-   --> /tmp/q77.rs:243:81
-    |
-243 |     assert!(result == vec![Result20 { channel: "catalog channel", id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: ...
-    |                                                                                 ^^^^^ expected `i32`, found floating-point number
-
-error[E0308]: mismatched types
    --> /tmp/q77.rs:243:97
     |
 243 | ...og channel", id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0...
     |                                               ^^^ expected `i32`, found floating-point number
 
 error[E0308]: mismatched types
-   --> /tmp/q77.rs:243:110
-    |
-243 | ...id: 1, sales: 150.0, returns: 7.0, profit: 12.0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0...
-    |                                               ^^^^ expected `i32`, found floating-point number
-
-error[E0308]: mismatched types
    --> /tmp/q77.rs:243:185
     |
-243 | ...re channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result16 { channel: "web channel", id: 1, sales: 200.0, returns: 10.0, ...
+243 | ...re channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result18 { channel: "web channel", id: 1, sales: 200.0, returns: 10.0, ...
     |                                               ^^^ expected `i32`, found floating-point number
 
 error[E0308]: mismatched types
    --> /tmp/q77.rs:243:118
     |
-243 | ...0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result16 { channel: "web channel", id: 1, ...
-    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result20`, found `Result18`
+243 | ...0 }, Result18 { channel: "store channel", id: 1, sales: 100.0, returns: 5.0, profit: 9.0 }, Result18 { channel: "web channel", id: 1, ...
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result16`, found `Result18`
 
 error[E0308]: mismatched types
    --> /tmp/q77.rs:243:270
@@ -226,7 +214,7 @@ error[E0308]: mismatched types
 243 | ...eb channel", id: 1, sales: 200.0, returns: 10.0, profit: 18.0 }]);
     |                                               ^^^^ expected `i32`, found floating-point number
 
-error: aborting due to 26 previous errors; 7 warnings emitted
+error: aborting due to 24 previous errors; 7 warnings emitted
 
 Some errors have detailed explanations: E0308, E0423, E0609.
 For more information about an error, try `rustc --explain E0308`.
