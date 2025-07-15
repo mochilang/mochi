@@ -6,6 +6,9 @@
 - 2025-07-13 16:29 - Added generated code and tests for TPCH queries q3 and q4
 - 2025-07-13 17:00 - Generated code and tests for TPCH queries q5 and q6
 - 2025-07-13 17:28 - Generated code and tests for TPCH queries q7 and q8
+- 2025-07-15 05:01 - Added script to compile TPC-DS queries and golden tests
+- 2025-07-15 05:02 - Attempted to compile all TPC-DS queries; current compiler fails on q1 and others
+- 2025-07-15 05:44 - Archive script now captures `.error` files when `scalac` or runtime fails
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements
