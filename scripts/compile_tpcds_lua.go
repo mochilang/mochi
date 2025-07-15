@@ -57,7 +57,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "compile", q, err)
 			continue
 		}
-		codePath := filepath.Join(outDir, q+".lua.out")
+		codePath := filepath.Join(outDir, q+".lua")
 		if err := os.WriteFile(codePath, code, 0o644); err != nil {
 			fmt.Fprintln(os.Stderr, "write code", q, err)
 			continue

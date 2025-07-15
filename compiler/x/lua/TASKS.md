@@ -21,3 +21,8 @@
 ## Progress (2025-07-15 06:41)
 - Regenerated Lua code and outputs for all TPC-DS queries using `compile_tpcds_lua.go`.
 - Updated golden dataset to version v0.10.26; several queries still raise runtime errors.
+
+## Progress (2025-07-15 07:02)
+- Added `compile_tpcds_lua.go` support for `.lua` output files.
+- Regenerated TPC-DS Lua code and outputs after Lua installation.
+- Extended `tpcds_dataset_golden_test.go` to run all queries using `.lua` goldens.
