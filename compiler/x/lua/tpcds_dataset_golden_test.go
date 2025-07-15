@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"sort"
+	"strings"
 	"testing"
 
 	luacode "mochi/compiler/x/lua"
@@ -33,9 +35,20 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 		t.Skipf("lua not installed: %v", err)
 	}
 	root := testutil.FindRepoRoot(t)
-	queries := []string{"q39", "q40", "q44", "q47", "q93", "q97", "q99"}
+	dirEntries, err := os.ReadDir(filepath.Join(root, "tests", "dataset", "tpc-ds"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var queries []string
+	for _, e := range dirEntries {
+		name := e.Name()
+		if strings.HasPrefix(name, "q") && strings.HasSuffix(name, ".mochi") {
+			queries = append(queries, strings.TrimSuffix(name, ".mochi"))
+		}
+	}
+	sort.Strings(queries)
 	for _, q := range queries {
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".lua.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".lua")
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".out")
 		if _, err := os.Stat(codeWant); err != nil {
 			continue
@@ -61,7 +74,7 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.lua.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
+				t.Errorf("generated code mismatch for %s.lua\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
