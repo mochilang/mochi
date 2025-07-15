@@ -12,6 +12,7 @@
 - 2025-07-15 04:46 - added TPC-DS golden tests and generated outputs for queries 50-99.
 - 2025-07-15 05:05 - generated outputs for remaining TPC-DS queries with error tracking.
 - 2025-07-15 06:32 - added concat builtin and regenerated TPC-DS outputs.
+- 2025-07-15 07:20 - improved casting for doubles and underscore variable handling for TPC-DS queries.
 
 ## Remaining work
 - [ ] Improve query loop readability

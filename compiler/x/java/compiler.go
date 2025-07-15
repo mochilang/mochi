@@ -38,6 +38,7 @@ type Compiler struct {
 	className         string
 	globalVars        map[string]bool
 	globalUsed        map[string]bool
+	renamed           map[string]string
 }
 
 type dataClass struct {
@@ -73,6 +74,7 @@ func New() *Compiler {
 		globalVars:        make(map[string]bool),
 		globalUsed:        make(map[string]bool),
 		groupItems:        make(map[string]string),
+		renamed:           make(map[string]string),
 	}
 }
 
@@ -87,6 +89,20 @@ func (c *Compiler) writeln(s string) {
 func (c *Compiler) tmpName(prefix string) string {
 	name := fmt.Sprintf("%s%d", prefix, c.tmpCount)
 	c.tmpCount++
+	return name
+}
+
+func (c *Compiler) sanitize(name string) string {
+	if name == "_" {
+		return c.tmpName("unused")
+	}
+	return name
+}
+
+func (c *Compiler) rename(name string) string {
+	if n, ok := c.renamed[name]; ok {
+		return n
+	}
 	return name
 }
 
@@ -797,6 +813,8 @@ func (c *Compiler) maybeNumber(expr string) string {
 	}
 	if t := c.exprType(expr); t == "int" || t == "double" {
 		return expr
+	} else if t == "Number" {
+		return fmt.Sprintf("((Number)%s).doubleValue()", expr)
 	}
 	if strings.Contains(expr, ".get(") {
 		return fmt.Sprintf("((Number)%s).doubleValue()", expr)
@@ -1760,6 +1778,20 @@ func (c *Compiler) compileIfExpr(e *parser.IfExpr) (string, error) {
 func (c *Compiler) compileVar(v *parser.VarStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
+	sanitized := c.sanitize(v.Name)
+	oldRename := c.renamed[v.Name]
+	if sanitized != v.Name {
+		c.renamed[v.Name] = sanitized
+	}
+	defer func() {
+		if sanitized != v.Name {
+			if oldRename == "" {
+				delete(c.renamed, v.Name)
+			} else {
+				c.renamed[v.Name] = oldRename
+			}
+		}
+	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -1791,9 +1823,9 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		}
 	}
 	if v.Value == nil {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, c.defaultValue(typ)))
 	} else {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, expr))
 	}
 	c.vars[v.Name] = typ
 	return nil
@@ -1802,6 +1834,20 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 func (c *Compiler) compileLet(v *parser.LetStmt) error {
 	typ := c.typeName(v.Type)
 	orig := c.curVar
+	sanitized := c.sanitize(v.Name)
+	oldRename := c.renamed[v.Name]
+	if sanitized != v.Name {
+		c.renamed[v.Name] = sanitized
+	}
+	defer func() {
+		if sanitized != v.Name {
+			if oldRename == "" {
+				delete(c.renamed, v.Name)
+			} else {
+				c.renamed[v.Name] = oldRename
+			}
+		}
+	}()
 	c.curVar = v.Name
 	if v.Type != nil {
 		c.vars[v.Name] = typ
@@ -1833,9 +1879,9 @@ func (c *Compiler) compileLet(v *parser.LetStmt) error {
 		}
 	}
 	if v.Value == nil {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, c.defaultValue(typ)))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, c.defaultValue(typ)))
 	} else {
-		c.writeln(fmt.Sprintf("%s %s = %s;", typ, v.Name, expr))
+		c.writeln(fmt.Sprintf("%s %s = %s;", typ, sanitized, expr))
 	}
 	c.vars[v.Name] = typ
 	return nil
@@ -1961,12 +2007,26 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		varName := c.sanitize(f.Name)
+		oldRename := c.renamed[f.Name]
+		if varName != f.Name {
+			c.renamed[f.Name] = varName
+		}
+		defer func() {
+			if varName != f.Name {
+				if oldRename == "" {
+					delete(c.renamed, f.Name)
+				} else {
+					c.renamed[f.Name] = oldRename
+				}
+			}
+		}()
 		if c.exprIsMap(f.Source) {
 			keyType := mapKeyType(c.inferType(f.Source))
 			if keyType == "var" {
 				keyType = "Object"
 			}
-			c.writeln(fmt.Sprintf("for (%s %s : %s.keySet()) {", wrapperType(keyType), f.Name, src))
+			c.writeln(fmt.Sprintf("for (%s %s : %s.keySet()) {", wrapperType(keyType), varName, src))
 			c.indent++
 			prev := c.vars[f.Name]
 			c.vars[f.Name] = keyType
@@ -1988,9 +2048,12 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			for _, k := range dc.fields {
 				keys = append(keys, fmt.Sprintf("\"%s\"", k))
 			}
-			c.writeln(fmt.Sprintf("for (String %s : Arrays.asList(%s)) {", f.Name, strings.Join(keys, ", ")))
+			c.writeln(fmt.Sprintf("for (String %s : Arrays.asList(%s)) {", varName, strings.Join(keys, ", ")))
 		} else {
 			elemType := listElemType(c.inferType(f.Source))
+			if strings.HasPrefix(elemType, "?") {
+				elemType = "Number"
+			}
 			if strings.Contains(src, ".get(") {
 				if elemType == "" {
 					src = fmt.Sprintf("(List)%s", src)
@@ -2001,7 +2064,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			if elemType == "" {
 				elemType = "var"
 			}
-			c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, f.Name, src))
+			c.writeln(fmt.Sprintf("for (%s %s : %s) {", elemType, varName, src))
 		}
 		c.indent++
 		prev := c.vars[f.Name]
@@ -2030,7 +2093,21 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", f.Name, start, f.Name, end, f.Name))
+	varName := c.sanitize(f.Name)
+	oldRename := c.renamed[f.Name]
+	if varName != f.Name {
+		c.renamed[f.Name] = varName
+	}
+	defer func() {
+		if varName != f.Name {
+			if oldRename == "" {
+				delete(c.renamed, f.Name)
+			} else {
+				c.renamed[f.Name] = oldRename
+			}
+		}
+	}()
+	c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", varName, start, varName, end, varName))
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -2082,16 +2159,27 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	if f.Return == nil {
 		ret = "void"
 	}
+	origVars := c.vars
+	origRename := copyMap(c.renamed)
+	c.vars = copyMap(origVars)
+	c.renamed = copyMap(c.renamed)
 	var params []string
 	for _, p := range f.Params {
-		params = append(params, fmt.Sprintf("%s %s", c.typeName(p.Type), p.Name))
+		name := c.sanitize(p.Name)
+		if name != p.Name {
+			c.renamed[p.Name] = name
+		}
+		pType := c.typeName(p.Type)
+		if p.Type != nil && p.Type.Generic != nil && p.Type.Generic.Name == "list" && len(p.Type.Generic.Args) == 1 {
+			et := c.typeName(p.Type.Generic.Args[0])
+			if et == "double" {
+				pType = "List<? extends Number>"
+			}
+		}
+		params = append(params, fmt.Sprintf("%s %s", pType, name))
+		c.vars[p.Name] = pType
 	}
 	c.writeln(fmt.Sprintf("static %s %s(%s) {", ret, f.Name, strings.Join(params, ", ")))
-	origVars := c.vars
-	c.vars = copyMap(origVars)
-	for _, p := range f.Params {
-		c.vars[p.Name] = c.typeName(p.Type)
-	}
 	c.indent++
 	for _, s := range f.Body {
 		if err := c.compileStmt(s); err != nil {
@@ -2101,6 +2189,7 @@ func (c *Compiler) compileFun(f *parser.FunStmt) error {
 	c.indent--
 	c.writeln("}")
 	c.vars = origVars
+	c.renamed = origRename
 	return nil
 }
 
@@ -2337,7 +2426,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "int":
 					val = fmt.Sprintf("Integer.parseInt(%s)", val)
 				case "double":
-					val = fmt.Sprintf("Double.parseDouble(%s)", val)
+					val = fmt.Sprintf("Double.parseDouble(String.valueOf(%s))", val)
 				case "String":
 					val = fmt.Sprintf("String.valueOf(%s)", val)
 				case "boolean":
@@ -2466,7 +2555,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			return "null", nil
 		}
 	case p.Selector != nil:
-		s := p.Selector.Root
+		s := c.rename(p.Selector.Root)
 		typ := c.vars[p.Selector.Root]
 		if parent, ok := c.variantOf[p.Selector.Root]; ok && len(p.Selector.Tail) == 0 {
 			if len(c.variantFields[p.Selector.Root]) == 0 {
@@ -2475,7 +2564,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if keyVar, ok := c.groupKeys[p.Selector.Root]; ok {
 			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "key" {
-				s = fmt.Sprintf("%s.key", p.Selector.Root)
+				s = fmt.Sprintf("%s.key", c.rename(p.Selector.Root))
 				typ = c.vars[keyVar]
 				if len(p.Selector.Tail) == 1 {
 					return s, nil
@@ -2496,7 +2585,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if itemType, ok := c.groupItems[p.Selector.Root]; ok {
 			if len(p.Selector.Tail) > 0 && p.Selector.Tail[0] == "items" {
-				s = fmt.Sprintf("%s.items", p.Selector.Root)
+				s = fmt.Sprintf("%s.items", c.rename(p.Selector.Root))
 				typ = fmt.Sprintf("List<%s>", wrapperType(itemType))
 				if len(p.Selector.Tail) == 1 {
 					return s, nil
