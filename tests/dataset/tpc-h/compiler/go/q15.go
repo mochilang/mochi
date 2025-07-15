@@ -153,8 +153,7 @@ func main() {
 				Supplier_no: g.Key.(any),
 				Total_revenue: _sumOrdered[float64](func() []float64 {
 					results := []float64{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, (x.L_extendedprice * (float64(1) - x.L_discount)))
 					}
 					return results

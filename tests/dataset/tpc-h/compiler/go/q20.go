@@ -187,8 +187,7 @@ func main() {
 				Suppkey: any(g.Key.(GKey).Suppkey),
 				Qty: _sumOrdered[int](func() []int {
 					results := []int{}
-					for _, xRaw := range g.Items {
-						x := xRaw.(Lineitem)
+					for _, x := range g.Items {
 						results = append(results, x.L_quantity)
 					}
 					return results
