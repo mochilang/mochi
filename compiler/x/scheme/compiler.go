@@ -266,7 +266,9 @@ const groupHelpers = `(import (scheme base))
               src)
     (map (lambda (k) (cdr (assoc k groups))) order))))`
 
-const jsonHelper = `(define (_json v)
+const jsonHelper = `(import (chibi json))
+
+(define (_json v)
   (cond
     ;; list of objects
     ((and (list? v) (pair? v) (pair? (car v)) (pair? (caar v)))
