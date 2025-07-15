@@ -1,0 +1,24 @@
+(select
+  (map
+    (entry
+      (selector orderId)
+      (selector id (selector o))
+    )
+    (entry
+      (selector orderCustomerId)
+      (selector customerId (selector o))
+    )
+    (entry
+      (selector pairedCustomerName)
+      (selector name (selector c))
+    )
+    (entry
+      (selector orderTotal)
+      (selector total (selector o))
+    )
+  )
+  (join
+    (scan o (selector orders))
+    (scan c (selector customers))
+  )
+)
