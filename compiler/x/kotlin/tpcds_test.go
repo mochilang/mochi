@@ -3,16 +3,15 @@
 package kotlin_test
 
 import (
-	"bytes"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"testing"
+       "bytes"
+       "os"
+       "os/exec"
+       "path/filepath"
+       "testing"
 
-	kotlin "mochi/compiler/x/kotlin"
-	"mochi/parser"
-	"mochi/types"
+       kotlin "mochi/compiler/x/kotlin"
+       "mochi/parser"
+       "mochi/types"
 )
 
 func runTPCDSQuery(t *testing.T, base string) {
@@ -79,8 +78,8 @@ func TestKotlinCompiler_TPCDS(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	for _, i := range []int{1, 2, 3, 4, 5} {
-		base := fmt.Sprintf("q%d", i)
-		t.Run(base, func(t *testing.T) { runTPCDSQuery(t, base) })
-	}
+       queries := []string{"q1", "q2", "q3", "q4", "q5", "q35", "q43", "q58", "q59", "q61", "q62"}
+       for _, base := range queries {
+               t.Run(base, func(t *testing.T) { runTPCDSQuery(t, base) })
+       }
 }

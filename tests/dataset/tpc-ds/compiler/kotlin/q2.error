@@ -1,5 +1,5 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/TestKotlinCompiler_TPCDSq22619328932/001/Main.kt:183:17: error: type mismatch: inferred type is Int but Boolean was expected
+/tmp/TestKotlinCompiler_TPCDSq22137631708/001/Main.kt:183:17: error: type mismatch: inferred type is Int but Boolean was expected
             if (toInt((y as MutableMap<String, Any?>)["d_week_seq"] == (z as MutableMap<String, Any?>)["d_week_seq"]) - 53) {
                 ^
