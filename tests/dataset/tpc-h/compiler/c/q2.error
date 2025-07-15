@@ -1,0 +1,82 @@
+/tmp/q2.c: In function ‘test_Q2_returns_only_supplier_with_min_cost_in_Europe_for_brass_part’:
+/tmp/q2.c:302:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  302 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/q2.c:312:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  312 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q2.c: In function ‘main’:
+/tmp/q2.c:362:24: warning: implicit declaration of function ‘nation_list_t_create’ [-Wimplicit-function-declaration]
+  362 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                        ^~~~~~~~~~~~~~~~~~~~
+/tmp/q2.c:362:51: error: ‘(region_t *)&region’ is a pointer; did you mean to use ‘->’?
+  362 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                                                   ^
+      |                                                   ->
+/tmp/q2.c:362:64: error: ‘(nation_t *)&nation’ is a pointer; did you mean to use ‘->’?
+  362 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                                                                ^
+      |                                                                ->
+/tmp/q2.c:381:7: warning: implicit declaration of function ‘europe_suppliers_item_list_t_create’ [-Wimplicit-function-declaration]
+  381 |       europe_suppliers_item_list_t_create(supplier.len * europe_nations.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q2.c:381:51: error: ‘(supplier_t *)&supplier’ is a pointer; did you mean to use ‘->’?
+  381 |       europe_suppliers_item_list_t_create(supplier.len * europe_nations.len);
+      |                                                   ^
+      |                                                   ->
+/tmp/q2.c:396:23: warning: implicit declaration of function ‘part_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  396 |   part_list_t tmp12 = part_list_t_create(part_len);
+      |                       ^~~~~~~~~~~~~~~~~~
+      |                       list_list_int_create
+/tmp/q2.c:396:23: error: invalid initializer
+/tmp/q2.c:408:39: warning: implicit declaration of function ‘target_partsupp_item_list_t_create’ [-Wimplicit-function-declaration]
+  408 |   target_partsupp_item_list_t tmp15 = target_partsupp_item_list_t_create(
+      |                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q2.c:409:15: error: ‘(partsupp_t *)&partsupp’ is a pointer; did you mean to use ‘->’?
+  409 |       partsupp.len * target_parts.len * europe_suppliers.len);
+      |               ^
+      |               ->
+/tmp/q2.c:450:7: error: invalid initializer
+  450 |       target_partsupp_item_list_t_create(target_partsupp.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q2.c:488:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  488 |     _json_string(it.s_name);
+      |                  ~~^~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:492:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  492 |     _json_string(it.n_name);
+      |                  ~~^~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:500:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  500 |     _json_string(it.p_mfgr);
+      |                  ~~^~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:504:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  504 |     _json_string(it.s_address);
+      |                  ~~^~~~~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:508:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  508 |     _json_string(it.s_phone);
+      |                  ~~^~~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:512:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  512 |     _json_string(it.s_comment);
+      |                  ~~^~~~~~~~~~
+/tmp/q2.c:74:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   74 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q2.c:521:7: error: incompatible types when assigning to type ‘list_int’ from type ‘target_partsupp_item_list_t’
+  521 |       result;
+      |       ^~~~~~

@@ -1,0 +1,13 @@
+/tmp/q7.c: In function ‘test_Q7_computes_revenue_between_FRANCE_and_GERMANY_by_year’:
+/tmp/q7.c:257:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  257 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q7.c:265:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  265 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q7.c: In function ‘main’:
+/tmp/q7.c:323:72: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  323 |   test_Q7_computes_revenue_between_FRANCE_and_GERMANY_by_year_result = result;
+      |                                                                        ^~~~~~

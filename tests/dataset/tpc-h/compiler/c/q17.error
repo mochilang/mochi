@@ -1,0 +1,16 @@
+/tmp/q17.c: In function ‘main’:
+/tmp/q17.c:188:26: error: ‘p’ undeclared (first use in this function)
+  188 |     if (!(x.l_partkey == p.p_partkey)) {
+      |                          ^
+/tmp/q17.c:188:26: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q17.c:195:47: error: ‘(lineitem_t *)&lineitem’ is a pointer; did you mean to use ‘->’?
+  195 |   list_float tmp4 = list_float_create(lineitem.len * part.len);
+      |                                               ^
+      |                                               ->
+/tmp/q17.c:195:58: error: ‘(part_t *)&part’ is a pointer; did you mean to use ‘->’?
+  195 |   list_float tmp4 = list_float_create(lineitem.len * part.len);
+      |                                                          ^
+      |                                                          ->
+/tmp/q17.c:218:7: error: ‘expected’ undeclared (first use in this function)
+  218 |       expected;
+      |       ^~~~~~~~

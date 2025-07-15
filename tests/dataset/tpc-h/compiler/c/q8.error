@@ -1,0 +1,29 @@
+/tmp/q8.c: In function ‘test_Q8_returns_correct_market_share_for_BRAZIL_in_1995’:
+/tmp/q8.c:301:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  301 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q8.c:309:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  309 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q8.c: In function ‘main’:
+/tmp/q8.c:363:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  363 |     _json_string(it.o_year);
+      |                  ~~^~~~~~~
+/tmp/q8.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q8.c:372:7: error: ‘denominator’ undeclared (first use in this function)
+  372 |       denominator;
+      |       ^~~~~~~~~~~
+/tmp/q8.c:372:7: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q8.c:373:71: error: ‘numerator’ undeclared (first use in this function)
+  373 |   test_Q8_returns_correct_market_share_for_BRAZIL_in_1995_numerator = numerator;
+      |                                                                       ^~~~~~~~~
+/tmp/q8.c:374:68: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  374 |   test_Q8_returns_correct_market_share_for_BRAZIL_in_1995_result = result;
+      |                                                                    ^~~~~~
+/tmp/q8.c:375:67: error: ‘share’ undeclared (first use in this function)
+  375 |   test_Q8_returns_correct_market_share_for_BRAZIL_in_1995_share = share;
+      |                                                                   ^~~~~

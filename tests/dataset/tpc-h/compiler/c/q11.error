@@ -1,0 +1,41 @@
+/tmp/q11.c: In function ‘test_Q11_returns_high_value_partkeys_from_GERMANY’:
+/tmp/q11.c:286:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  286 |                    (tmp_item_t){.ps_partkey = 2000, .value = 50.0}};
+      |                    ^
+/tmp/q11.c:290:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  290 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q11.c:297:15: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  297 |           tmp1.data[i3]) {
+      |               ^
+      |               ->
+/tmp/q11.c: In function ‘main’:
+/tmp/q11.c:335:7: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
+  335 |       filtered_item_list_t_create(partsupp.len * supplier.len * nation.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q11.c:335:43: error: ‘(partsupp_t *)&partsupp’ is a pointer; did you mean to use ‘->’?
+  335 |       filtered_item_list_t_create(partsupp.len * supplier.len * nation.len);
+      |                                           ^
+      |                                           ->
+/tmp/q11.c:335:58: error: ‘(supplier_t *)&supplier’ is a pointer; did you mean to use ‘->’?
+  335 |       filtered_item_list_t_create(partsupp.len * supplier.len * nation.len);
+      |                                                          ^
+      |                                                          ->
+/tmp/q11.c:335:71: error: ‘(nation_t *)&nation’ is a pointer; did you mean to use ‘->’?
+  335 |       filtered_item_list_t_create(partsupp.len * supplier.len * nation.len);
+      |                                                                       ^
+      |                                                                       ->
+/tmp/q11.c:374:31: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
+  374 |   grouped_item_list_t tmp14 = grouped_item_list_t_create(tmp13.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q11.c:374:31: error: invalid initializer
+/tmp/q11.c:378:34: error: invalid initializer
+  378 |     filtered_item_list_t tmp16 = filtered_item_list_t_create(_gp.items.len);
+      |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q11.c:411:31: error: invalid initializer
+  411 |   grouped_item_list_t tmp24 = grouped_item_list_t_create(grouped.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q11.c:453:62: error: incompatible types when assigning to type ‘list_int’ from type ‘grouped_item_list_t’
+  453 |   test_Q11_returns_high_value_partkeys_from_GERMANY_result = result;
+      |                                                              ^~~~~~

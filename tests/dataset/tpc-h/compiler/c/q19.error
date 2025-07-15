@@ -1,0 +1,83 @@
+/tmp/q19.c: In function ‘main’:
+/tmp/q19.c:206:15: error: redefinition of ‘revenues’
+  206 |   list_string revenues = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/q19.c:201:15: note: previous definition of ‘revenues’ with type ‘list_string’
+  201 |   list_string revenues = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/q19.c:211:15: error: redefinition of ‘revenues’
+  211 |   list_string revenues = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/q19.c:206:15: note: previous definition of ‘revenues’ with type ‘list_string’
+  206 |   list_string revenues = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/q19.c:216:15: error: redefinition of ‘revenues’
+  216 |   list_string revenues = list_string_create(2);
+      |               ^~~~~~~~
+/tmp/q19.c:211:15: note: previous definition of ‘revenues’ with type ‘list_string’
+  211 |   list_string revenues = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/q19.c:219:47: error: ‘(lineitem_t *)&lineitem’ is a pointer; did you mean to use ‘->’?
+  219 |   list_float tmp1 = list_float_create(lineitem.len * part.len);
+      |                                               ^
+      |                                               ->
+/tmp/q19.c:219:58: error: ‘(part_t *)&part’ is a pointer; did you mean to use ‘->’?
+  219 |   list_float tmp1 = list_float_create(lineitem.len * part.len);
+      |                                                          ^
+      |                                                          ->
+/tmp/q19.c:230:62: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  230 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                                                             ~^~~~~~~~~~~~
+/tmp/q19.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q19.c:234:62: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  234 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                                                             ~^~~~~~~~~~~~
+/tmp/q19.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q19.c:238:62: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  238 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                                                             ~^~~~~~~~~~~~
+/tmp/q19.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q19.c:240:65: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
+  229 |                 revenues, ((((strcmp(p.p_brand, "Brand#12") == 0)) &&
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  230 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  231 |                             (l.l_quantity >= 1 && l.l_quantity <= 11) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  232 |                             (p.p_size >= 1 && p.p_size <= 5)) ||
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+  233 |                            (((strcmp(p.p_brand, "Brand#23") == 0)) &&
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  234 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  235 |                             (l.l_quantity >= 10 && l.l_quantity <= 20) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  236 |                             (p.p_size >= 1 && p.p_size <= 10)) ||
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  237 |                            (((strcmp(p.p_brand, "Brand#34") == 0)) &&
+      |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  238 |                             (contains_list_string(revenues, p.p_container)) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  239 |                             (l.l_quantity >= 20 && l.l_quantity <= 30) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  240 |                             (p.p_size >= 1 && p.p_size <= 15))) &&
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
+      |                                                                 |
+      |                                                                 int
+  241 |                               l.l_shipmode) &&
+      |                               ~~~~~~~~~~~~                       
+/tmp/q19.c:69:54: note: expected ‘char *’ but argument is of type ‘int’
+   69 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q19.c:250:14: error: conflicting types for ‘revenues’; have ‘list_float’
+  250 |   list_float revenues = tmp1;
+      |              ^~~~~~~~
+/tmp/q19.c:216:15: note: previous definition of ‘revenues’ with type ‘list_string’
+  216 |   list_string revenues = list_string_create(2);
+      |               ^~~~~~~~

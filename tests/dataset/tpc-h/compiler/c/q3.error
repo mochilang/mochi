@@ -1,0 +1,30 @@
+/tmp/q3.c: In function ‘test_Q3_returns_revenue_per_order_with_correct_priority’:
+/tmp/q3.c:218:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  218 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/q3.c:227:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  227 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q3.c: In function ‘main’:
+/tmp/q3.c:266:26: warning: implicit declaration of function ‘customer_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  266 |   customer_list_t tmp4 = customer_list_t_create(customer_len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_list_int_create
+/tmp/q3.c:266:26: error: invalid initializer
+/tmp/q3.c:278:23: warning: implicit declaration of function ‘order_list_t_create’ [-Wimplicit-function-declaration]
+  278 |   order_list_t tmp7 = order_list_t_create(orders.len * building_customers.len);
+      |                       ^~~~~~~~~~~~~~~~~~~
+/tmp/q3.c:278:49: error: ‘(order_t *)&orders’ is a pointer; did you mean to use ‘->’?
+  278 |   order_list_t tmp7 = order_list_t_create(orders.len * building_customers.len);
+      |                                                 ^
+      |                                                 ->
+/tmp/q3.c:296:27: warning: implicit declaration of function ‘lineitem_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  296 |   lineitem_list_t tmp11 = lineitem_list_t_create(lineitem_len);
+      |                           ^~~~~~~~~~~~~~~~~~~~~~
+      |                           list_list_int_create
+/tmp/q3.c:296:27: error: invalid initializer
+/tmp/q3.c:335:7: error: incompatible types when assigning to type ‘list_int’ from type ‘order_line_join_item_list_t’
+  335 |       order_line_join;
+      |       ^~~~~~~~~~~~~~~

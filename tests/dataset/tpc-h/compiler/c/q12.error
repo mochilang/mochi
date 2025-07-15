@@ -1,0 +1,19 @@
+/tmp/q12.c: In function ‘test_Q12_counts_lineitems_by_ship_mode_and_priority’:
+/tmp/q12.c:190:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  190 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q12.c:197:15: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  197 |           tmp1.data[i3]) {
+      |               ^
+      |               ->
+/tmp/q12.c: In function ‘main’:
+/tmp/q12.c:234:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  234 |     _json_string(it.l_shipmode);
+      |                  ~~^~~~~~~~~~~
+/tmp/q12.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q12.c:246:64: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  246 |   test_Q12_counts_lineitems_by_ship_mode_and_priority_result = result;
+      |                                                                ^~~~~~

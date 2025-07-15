@@ -1,0 +1,19 @@
+/tmp/q21.c: In function ‘test_Q21_returns_Saudi_suppliers_who_caused_unique_delivery_delays’:
+/tmp/q21.c:227:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  227 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/q21.c:237:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  237 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q21.c: In function ‘main’:
+/tmp/q21.c:283:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  283 |     _json_string(it.s_name);
+      |                  ~~^~~~~~~
+/tmp/q21.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q21.c:292:7: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  292 |       result;
+      |       ^~~~~~

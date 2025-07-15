@@ -1,0 +1,50 @@
+/tmp/q20.c: In function ‘test_Q20_returns_suppliers_from_CANADA_with_forest_part_stock___50__of_1994_shipments’:
+/tmp/q20.c:294:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  294 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/q20.c:304:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  304 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q20.c: In function ‘main’:
+/tmp/q20.c:346:43: error: ‘(partsupp_t *)&partsupp’ is a pointer; did you mean to use ‘->’?
+  346 |   list_int tmp4 = list_int_create(partsupp.len * part.len * shipped_94.len);
+      |                                           ^
+      |                                           ->
+/tmp/q20.c:346:54: error: ‘(part_t *)&part’ is a pointer; did you mean to use ‘->’?
+  346 |   list_int tmp4 = list_int_create(partsupp.len * part.len * shipped_94.len);
+      |                                                      ^
+      |                                                      ->
+/tmp/q20.c:360:29: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  360 |         if (!(slice_string(p.p_name, 0, strlen(prefix)) == prefix &&
+      |                            ~^~~~~~~
+/tmp/q20.c:108:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  108 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/q20.c:372:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  372 |       result_item_list_t_create(supplier.len * nation.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q20.c:372:41: error: ‘(supplier_t *)&supplier’ is a pointer; did you mean to use ‘->’?
+  372 |       result_item_list_t_create(supplier.len * nation.len);
+      |                                         ^
+      |                                         ->
+/tmp/q20.c:372:54: error: ‘(nation_t *)&nation’ is a pointer; did you mean to use ‘->’?
+  372 |       result_item_list_t_create(supplier.len * nation.len);
+      |                                                      ^
+      |                                                      ->
+/tmp/q20.c:400:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  400 |     _json_string(it.s_name);
+      |                  ~~^~~~~~~
+/tmp/q20.c:71:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q20.c:404:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  404 |     _json_string(it.s_address);
+      |                  ~~^~~~~~~~~~
+/tmp/q20.c:71:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q20.c:409:7: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  409 |       result;
+      |       ^~~~~~
