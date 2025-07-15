@@ -1,4 +1,26 @@
 # 📦 CHANGELOG.md
+## [0.10.26] – 2025-07-14T19:44:27+07:00
+
+### Added
+
+* JOB dataset queries compiled across languages with golden tests
+* `starts_with` builtin supported across Python, Prolog, PHP and Lua
+
+### Changed
+
+* Python dataclasses unify field types and provide iteration helpers
+* Go compiler prints typed lists and infers structs for query selects
+* TypeScript simplifies group-by logic with spread-based appends
+* C backend tracks stack arrays and emits static arrays for struct lists
+* C++ and Java refine struct references and dataclass types
+
+### Fixed
+
+* Numeric casts corrected for TPCH query 1 in Go
+* Cross join output and helper comments fixed in the C backend
+* Query loop formatting improved for TypeScript
+* Dataclass float handling updated for Python
+
 ## [0.10.25] – 2025-07-13T09:42:07+07:00
 
 ### Added
