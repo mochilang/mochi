@@ -74,3 +74,4 @@ TPC-H progress:
 - 2025-07-15 05:06 - Added TPCDS golden tests and refined typed loop handling
 
 - 2025-07-15 05:53 - Captured compiler errors in TPCDS golden tests
+- 2025-07-15 08:19 - Regenerated TPCH Go files for q14, q16, q17 and q19 after tweaking default alias logic
