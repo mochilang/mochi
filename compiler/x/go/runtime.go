@@ -68,66 +68,14 @@ const (
 		"    return false\n" +
 		"}\n"
 
-	helperAvg = "func _avg(v any) float64 {\n" +
-		"    var items []any\n" +
-		"    if g, ok := v.(*data.Group); ok { items = g.Items } else {\n" +
-		"        switch s := v.(type) {\n" +
-		"        case []any:\n" +
-		"            items = s\n" +
-		"        case []int:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        case []float64:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        case []string:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        case []bool:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        default:\n" +
-		"            panic(\"avg() expects list or group\")\n" +
-		"        }\n" +
-		"    }\n" +
-		"    if len(items) == 0 { return 0 }\n" +
-		"    var sum float64\n" +
-		"    for _, it := range items {\n" +
-		"        switch n := it.(type) {\n" +
-		"        case int: sum += float64(n)\n" +
-		"        case int64: sum += float64(n)\n" +
-		"        case float64: sum += n\n" +
-		"        default: panic(\"avg() expects numbers\") }\n" +
-		"    }\n" +
-		"    return sum / float64(len(items))\n" +
+	helperAvg = "func _avg[T constraints.Integer | constraints.Float](v []T) float64 {\n" +
+		"    if len(v) == 0 { return 0 }\n" +
+		"    return _sum(v) / float64(len(v))\n" +
 		"}\n"
 
-	helperSum = "func _sum(v any) float64 {\n" +
-		"    var items []any\n" +
-		"    if g, ok := v.(*data.Group); ok { items = g.Items } else {\n" +
-		"        switch s := v.(type) {\n" +
-		"        case []any:\n" +
-		"            items = s\n" +
-		"        case []int:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        case []float64:\n" +
-		"            items = []any{}\n" +
-		"            for _, v := range s { items = append(items, v) }\n" +
-		"        case []string, []bool:\n" +
-		"            panic(\"sum() expects numbers\")\n" +
-		"        default:\n" +
-		"            panic(\"sum() expects list or group\")\n" +
-		"        }\n" +
-		"    }\n" +
+	helperSum = "func _sum[T constraints.Integer | constraints.Float](v []T) float64 {\n" +
 		"    var sum float64\n" +
-		"    for _, it := range items {\n" +
-		"        switch n := it.(type) {\n" +
-		"        case int: sum += float64(n)\n" +
-		"        case int64: sum += float64(n)\n" +
-		"        case float64: sum += n\n" +
-		"        default: panic(\"sum() expects numbers\") }\n" +
-		"    }\n" +
+		"    for _, n := range v { sum += float64(n) }\n" +
 		"    return sum\n" +
 		"}\n"
 
