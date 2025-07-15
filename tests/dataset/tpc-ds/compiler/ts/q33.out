@@ -1,1 +1,10 @@
-[{"i_manufact_id":1,"total_sales":150},{"i_manufact_id":2,"total_sales":50}]
+[
+  {
+    "i_manufact_id": 1,
+    "total_sales": 150
+  },
+  {
+    "i_manufact_id": 2,
+    "total_sales": 50
+  }
+]
