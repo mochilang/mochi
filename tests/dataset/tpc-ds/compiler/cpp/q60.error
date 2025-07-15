@@ -1,0 +1,122 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:92:26: error: ‘s’ was not declared in this scope
+   92 |     std::vector<decltype(s.price)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:92:34: error: template argument 1 is invalid
+   92 |     std::vector<decltype(s.price)> __items;
+      |                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:92:34: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:94:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   94 |       __items.push_back(s.price);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:5)> [with auto:5 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:91:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:90:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   90 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:90:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   90 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:71,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:2:
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Iter_equal_to_iter::operator()(_Iterator1, _Iterator2) const [with _Iterator1 = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >; _Iterator2 = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >]’:
+/usr/include/c++/13/bits/stl_algo.h:917:20:   required from ‘_ForwardIterator std::__unique(_ForwardIterator, _ForwardIterator, _BinaryPredicate) [with _ForwardIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _BinaryPredicate = __gnu_cxx::__ops::_Iter_equal_to_iter]’
+/usr/include/c++/13/bits/stl_algo.h:948:27:   required from ‘_FIter std::unique(_FIter, _FIter) [with _FIter = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:85:27:   required from ‘main()::<lambda(auto:3, auto:4)> [with auto:3 = std::vector<StoreSale>; auto:4 = std::vector<StoreSale>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:87:8:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:117:23: error: no match for ‘operator==’ (operand types are ‘StoreSale’ and ‘StoreSale’)
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67:
+/usr/include/c++/13/bits/stl_iterator.h:1217:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator==(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1217 |     operator==(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1217:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:117:23: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1225:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator==(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1225 |     operator==(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1225:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:117:23: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘constexpr bool __gnu_cxx::__ops::_Iter_less_iter::operator()(_Iterator1, _Iterator2) const [with _Iterator1 = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >; _Iterator2 = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >]’:
+/usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:84:17:   required from ‘main()::<lambda(auto:3, auto:4)> [with auto:3 = std::vector<StoreSale>; auto:4 = std::vector<StoreSale>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:87:8:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘StoreSale’ and ‘StoreSale’)
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:45:23: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:45:23: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Val_less_iter::operator()(_Value&, _Iterator) const [with _Value = StoreSale; _Iterator = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >]’:
+/usr/include/c++/13/bits/stl_algo.h:1799:20:   required from ‘void std::__unguarded_linear_insert(_RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Val_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1827:36:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:84:17:   required from ‘main()::<lambda(auto:3, auto:4)> [with auto:3 = std::vector<StoreSale>; auto:4 = std::vector<StoreSale>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:87:8:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘StoreSale’ and ‘StoreSale’)
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:98:22: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:98:22: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Iter_less_val::operator()(_Iterator, _Value&) const [with _Iterator = __gnu_cxx::__normal_iterator<StoreSale*, std::vector<StoreSale> >; _Value = StoreSale]’:
+/usr/include/c++/13/bits/stl_heap.h:140:48:   required from ‘void std::__push_heap(_RandomAccessIterator, _Distance, _Distance, _Tp, _Compare&) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Distance = long int; _Tp = StoreSale; _Compare = __gnu_cxx::__ops::_Iter_less_val]’
+/usr/include/c++/13/bits/stl_heap.h:247:23:   required from ‘void std::__adjust_heap(_RandomAccessIterator, _Distance, _Distance, _Tp, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Distance = long int; _Tp = StoreSale; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_heap.h:356:22:   required from ‘void std::__make_heap(_RandomAccessIterator, _RandomAccessIterator, _Compare&) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1635:23:   required from ‘void std::__heap_select(_RandomAccessIterator, _RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1910:25:   required from ‘void std::__partial_sort(_RandomAccessIterator, _RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1926:27:   required from ‘void std::__introsort_loop(_RandomAccessIterator, _RandomAccessIterator, _Size, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Size = long int; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1947:25:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<StoreSale*, vector<StoreSale> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:84:17:   required from ‘main()::<lambda(auto:3, auto:4)> [with auto:3 = std::vector<StoreSale>; auto:4 = std::vector<StoreSale>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq602280930360/001/prog.cpp:87:8:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:69:22: error: no match for ‘operator<’ (operand types are ‘StoreSale’ and ‘StoreSale’)
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:69:22: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:69:22: note:   ‘StoreSale’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~

@@ -1,0 +1,212 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:91:8: error: redefinition of ‘struct StoreSale’
+   91 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:55:8: note: previous definition of ‘struct StoreSale’
+   55 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:99:8: error: redefinition of ‘struct StoreReturn’
+   99 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:63:8: note: previous definition of ‘struct StoreReturn’
+   63 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:106:8: error: redefinition of ‘struct CatalogSale’
+  106 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:70:8: note: previous definition of ‘struct CatalogSale’
+   70 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:112:8: error: redefinition of ‘struct DateDim’
+  112 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:76:8: note: previous definition of ‘struct DateDim’
+   76 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:117:8: error: redefinition of ‘struct Store’
+  117 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:81:8: note: previous definition of ‘struct Store’
+   81 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:122:8: error: redefinition of ‘struct Item’
+  122 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:86:8: note: previous definition of ‘struct Item’
+   86 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:128:12: error: ‘ss’ was not declared in this scope
+  128 |   decltype(ss.ss_quantity) ss_quantity;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:128:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:129:12: error: ‘sr’ was not declared in this scope
+  129 |   decltype(sr.sr_return_quantity) sr_return_quantity;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:129:12: error: ‘sr’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:130:12: error: ‘cs’ was not declared in this scope
+  130 |   decltype(cs.cs_quantity) cs_quantity;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:130:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:131:12: error: ‘i’ was not declared in this scope
+  131 |   decltype(i.i_item_id) i_item_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:131:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:132:12: error: ‘i’ was not declared in this scope
+  132 |   decltype(i.i_item_desc) i_item_desc;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:132:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:133:12: error: ‘s’ was not declared in this scope
+  133 |   decltype(s.s_store_id) s_store_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:133:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:134:12: error: ‘s’ was not declared in this scope
+  134 |   decltype(s.s_store_name) s_store_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:134:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:305:13: error: redefinition of ‘void __json(const CatalogSale&)’
+  305 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:155:13: note: ‘void __json(const CatalogSale&)’ previously defined here
+  155 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:330:13: error: redefinition of ‘void __json(const DateDim&)’
+  330 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:180:13: note: ‘void __json(const DateDim&)’ previously defined here
+  180 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:390:13: error: redefinition of ‘void __json(const Item&)’
+  390 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:200:13: note: ‘void __json(const Item&)’ previously defined here
+  200 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:435:13: error: redefinition of ‘void __json(const Store&)’
+  435 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:220:13: note: ‘void __json(const Store&)’ previously defined here
+  220 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:455:13: error: redefinition of ‘void __json(const StoreReturn&)’
+  455 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:240:13: note: ‘void __json(const StoreReturn&)’ previously defined here
+  240 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:525:13: error: redefinition of ‘void __json(const StoreSale&)’
+  525 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:270:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  270 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:607:48: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  607 |                              cs.cs_quantity, i.i_item_id, i.i_item_desc,
+      |                                              ~~^~~~~~~~~
+      |                                                |
+      |                                                std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:626:21: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+  626 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 Result Result
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq293081803124/001/prog.cpp:667:5: error: conversion from ‘vector<__struct10>’ to non-scalar type ‘vector<Base>’ requested
+  619 |   std::vector<Base> result = ([&]() {
+      |                              ~~~~~~~~
+  620 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  621 |     for (auto b : base) {
+      |     ~~~~~~~~~~~~~~~~~~~~~
+  622 |       auto __key =
+      |       ~~~~~~~~~~~~
+  623 |           Result{b.i_item_id, b.i_item_desc, b.s_store_id, b.s_store_name};
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  624 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  625 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  626 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  627 |           __g.items.push_back(Base{b});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  628 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  629 |           break;
+      |           ~~~~~~
+  630 |         }
+      |         ~
+  631 |       }
+      |       ~
+  632 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  633 |         __groups.push_back(__struct9{__key, std::vector<Base>{Base{b}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  634 |       }
+      |       ~
+  635 |     }
+      |     ~
+  636 |     std::vector<__struct10> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  637 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  638 |       __items.push_back(__struct10{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  639 |           g.key.item_id, g.key.item_desc, g.key.s_store_id, g.key.s_store_name,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  640 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  641 |               ([&]() {
+      |               ~~~~~~~~
+  642 |                 std::vector<decltype(std::declval<Base>().ss_quantity)> __items;
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  643 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  644 |                   __items.push_back(x.ss_quantity);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  645 |                 }
+      |                 ~
+  646 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  647 |               })()),
+      |               ~~~~~~
+  648 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  649 |               ([&]() {
+      |               ~~~~~~~~
+  650 |                 std::vector<decltype(std::declval<Base>().sr_return_quantity)>
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  651 |                     __items;
+      |                     ~~~~~~~~
+  652 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  653 |                   __items.push_back(x.sr_return_quantity);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  654 |                 }
+      |                 ~
+  655 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  656 |               })()),
+      |               ~~~~~~
+  657 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  658 |               ([&]() {
+      |               ~~~~~~~~
+  659 |                 std::vector<decltype(std::declval<Base>().cs_quantity)> __items;
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  660 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  661 |                   __items.push_back(x.cs_quantity);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  662 |                 }
+      |                 ~
+  663 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  664 |               })())});
+      |               ~~~~~~~~
+  665 |     }
+      |     ~
+  666 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  667 |   })();
+      |   ~~^~

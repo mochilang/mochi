@@ -1,0 +1,182 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:78:12: error: ‘c’ was not declared in this scope
+   78 |   decltype(c.c_customer_sk) customer;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:78:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:79:12: error: ‘ss’ was not declared in this scope
+   79 |   decltype(ss.price) amt;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:79:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:91:63: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+   91 |            std::string, decltype(int((std::declval<Revenue>().revenue / 50)))>{
+      |                                                               ^~~~~~~
+      |                                                               Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:91:63: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+   91 |            std::string, decltype(int((std::declval<Revenue>().revenue / 50)))>{
+      |                                                               ^~~~~~~
+      |                                                               Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:91:78: error: template argument 2 is invalid
+   91 |            std::string, decltype(int((std::declval<Revenue>().revenue / 50)))>{
+      |                                                                              ^
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:91:78: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:92:57: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+   92 |       {std::string("seg"), int((std::declval<Revenue>().revenue / 50))}}) key;
+      |                                                         ^~~~~~~
+      |                                                         Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:92:57: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+   92 |       {std::string("seg"), int((std::declval<Revenue>().revenue / 50))}}) key;
+      |                                                         ^~~~~~~
+      |                                                         Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:96:42: error: request for member ‘seg’ in ‘std::declval<__struct9>().__struct9::key’, which is of non-class type ‘int’
+   96 |   decltype(std::declval<__struct9>().key.seg) segment;
+      |                                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:96:42: error: request for member ‘seg’ in ‘std::declval<__struct9>().__struct9::key’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:98:43: error: request for member ‘seg’ in ‘std::declval<__struct9>().__struct9::key’, which is of non-class type ‘int’
+   98 |   decltype((std::declval<__struct9>().key.seg * 50)) segment_base;
+      |                                           ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:98:43: error: request for member ‘seg’ in ‘std::declval<__struct9>().__struct9::key’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:247:9: error: expected unqualified-id before ‘float’
+  247 | int int(float x) { return std::stoi(x); }
+      |         ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:247:9: error: expected ‘)’ before ‘float’
+  247 | int int(float x) { return std::stoi(x); }
+      |        ~^~~~~
+      |         )
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:306:5: error: conversion from ‘vector<ByCustomer>’ to non-scalar type ‘vector<Revenue>’ requested
+  276 |   std::vector<Revenue> by_customer = ([&]() {
+      |                                      ~~~~~~~~
+  277 |     std::vector<__struct7> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  278 |     for (auto r : revenue) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~
+  279 |       auto __key = r.customer;
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~
+  280 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  281 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  282 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  283 |           __g.items.push_back(Revenue{r});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  284 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  285 |           break;
+      |           ~~~~~~
+  286 |         }
+      |         ~
+  287 |       }
+      |       ~
+  288 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  289 |         __groups.push_back(__struct7{__key, std::vector<Revenue>{Revenue{r}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  290 |       }
+      |       ~
+  291 |     }
+      |     ~
+  292 |     std::vector<ByCustomer> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  293 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  294 |       __items.push_back(ByCustomer{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  295 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  296 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  297 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  298 |             std::vector<decltype(std::declval<Revenue>().amt)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  299 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  300 |               __items.push_back(x.amt);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+  301 |             }
+      |             ~
+  302 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  303 |           })())});
+      |           ~~~~~~~~
+  304 |     }
+      |     ~
+  305 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  306 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:311:59: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+  311 |           std::unordered_map<std::string, decltype(int((r.revenue / 50)))>{
+      |                                                           ^~~~~~~
+      |                                                           Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:311:59: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+  311 |           std::unordered_map<std::string, decltype(int((r.revenue / 50)))>{
+      |                                                           ^~~~~~~
+      |                                                           Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:311:74: error: template argument 2 is invalid
+  311 |           std::unordered_map<std::string, decltype(int((r.revenue / 50)))>{
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:311:74: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:312:43: error: ‘struct Revenue’ has no member named ‘revenue’; did you mean ‘Revenue’?
+  312 |               {std::string("seg"), int((r.revenue / 50))}};
+      |                                           ^~~~~~~
+      |                                           Revenue
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:328:25: error: request for member ‘seg’ in ‘g.__struct9::key’, which is of non-class type ‘int’
+  328 |           Segment{g.key.seg, ((int)g.items.size()), (g.key.seg * 50)});
+      |                         ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:328:60: error: request for member ‘seg’ in ‘g.__struct9::key’, which is of non-class type ‘int’
+  328 |           Segment{g.key.seg, ((int)g.items.size()), (g.key.seg * 50)});
+      |                                                            ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq541723684716/001/prog.cpp:331:5: error: conversion from ‘vector<Segment>’ to non-scalar type ‘vector<Revenue>’ requested
+  307 |   std::vector<Revenue> segments = ([&]() {
+      |                                   ~~~~~~~~
+  308 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  309 |     for (auto r : by_customer) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  310 |       auto __key =
+      |       ~~~~~~~~~~~~
+  311 |           std::unordered_map<std::string, decltype(int((r.revenue / 50)))>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  312 |               {std::string("seg"), int((r.revenue / 50))}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  313 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  314 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  315 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  316 |           __g.items.push_back(Revenue{r});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  317 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  318 |           break;
+      |           ~~~~~~
+  319 |         }
+      |         ~
+  320 |       }
+      |       ~
+  321 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  322 |         __groups.push_back(__struct9{__key, std::vector<Revenue>{Revenue{r}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  323 |       }
+      |       ~
+  324 |     }
+      |     ~
+  325 |     std::vector<Segment> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  326 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  327 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  328 |           Segment{g.key.seg, ((int)g.items.size()), (g.key.seg * 50)});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  329 |     }
+      |     ~
+  330 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  331 |   })();
+      |   ~~^~

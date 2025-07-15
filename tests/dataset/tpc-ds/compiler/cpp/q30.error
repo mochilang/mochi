@@ -1,0 +1,363 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:76:12: error: ‘wr’ was not declared in this scope
+   76 |   decltype(wr.wr_returning_customer_sk) cust;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:76:12: error: ‘wr’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:77:12: error: ‘ca’ was not declared in this scope
+   77 |   decltype(ca.ca_state) state;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:77:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:80:12: error: ‘wr’ was not declared in this scope
+   80 |   decltype(wr) wr;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:80:12: error: ‘wr’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:81:12: error: ‘d’ was not declared in this scope
+   81 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:81:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:82:12: error: ‘ca’ was not declared in this scope
+   82 |   decltype(ca) ca;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:82:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:94:38: error: ‘struct __struct6’ has no member named ‘ctr_state’
+   94 |   decltype(std::declval<__struct6>().ctr_state) key;
+      |                                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:94:38: error: ‘struct __struct6’ has no member named ‘ctr_state’
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:110:12: error: ‘c’ was not declared in this scope
+  110 |   decltype(c.c_customer_id) c_customer_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:110:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:111:12: error: ‘c’ was not declared in this scope
+  111 |   decltype(c.c_first_name) c_first_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:111:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:112:12: error: ‘c’ was not declared in this scope
+  112 |   decltype(c.c_last_name) c_last_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:112:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:113:38: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+  113 |   decltype(std::declval<__struct6>().ctr_total_return) ctr_total_return;
+      |                                      ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:113:38: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:319:67: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  319 |               CustomerTotalReturn{wr.wr_returning_customer_sk, ca.ca_state};
+      |                                                                ~~~^~~~~~~~
+      |                                                                   |
+      |                                                                   std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:323:45: error: cannot convert ‘WebReturn’ to ‘int’ in initialization
+  323 |               __g.items.push_back(__struct6{wr, d, ca});
+      |                                             ^~
+      |                                             |
+      |                                             WebReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:330:67: error: cannot convert ‘WebReturn’ to ‘int’ in initialization
+  330 |                 __struct7{__key, std::vector<__struct6>{__struct6{wr, d, ca}}});
+      |                                                                   ^~
+      |                                                                   |
+      |                                                                   WebReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:330:77: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
+  330 |                 __struct7{__key, std::vector<__struct6>{__struct6{wr, d, ca}}});
+      |                                                                             ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:7:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; value_type = std::vector<__struct6>::value_type; allocator_type = std::allocator<__struct6>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; allocator_type = std::allocator<__struct6>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:341:60: error: ‘struct __struct6’ has no member named ‘wr_return_amt’
+  341 |             std::vector<decltype(std::declval<__struct6>().wr_return_amt)>
+      |                                                            ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:341:60: error: ‘struct __struct6’ has no member named ‘wr_return_amt’
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:341:74: error: template argument 1 is invalid
+  341 |             std::vector<decltype(std::declval<__struct6>().wr_return_amt)>
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:341:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:344:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  344 |               __items.push_back(x.wr_return_amt);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:344:35: error: ‘struct __struct6’ has no member named ‘wr_return_amt’
+  344 |               __items.push_back(x.wr_return_amt);
+      |                                   ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:340:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:339:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  339 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:339:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  339 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:350:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
+  307 |   std::vector<__struct6> customer_total_return = ([&]() {
+      |                                                  ~~~~~~~~
+  308 |     std::vector<__struct7> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  309 |     for (auto wr : web_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  310 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  311 |         if (!((wr.wr_returned_date_sk == d.d_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  312 |           continue;
+      |           ~~~~~~~~~
+  313 |         for (auto ca : customer_address) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  314 |           if (!((wr.wr_returning_addr_sk == ca.ca_address_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  315 |             continue;
+      |             ~~~~~~~~~
+  316 |           if (!(((d.d_year == 2000) && (ca.ca_state == std::string("CA")))))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  317 |             continue;
+      |             ~~~~~~~~~
+  318 |           auto __key =
+      |           ~~~~~~~~~~~~
+  319 |               CustomerTotalReturn{wr.wr_returning_customer_sk, ca.ca_state};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  320 |           bool __found = false;
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  321 |           for (auto &__g : __groups) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  322 |             if (__g.key == __key) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~
+  323 |               __g.items.push_back(__struct6{wr, d, ca});
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  324 |               __found = true;
+      |               ~~~~~~~~~~~~~~~
+  325 |               break;
+      |               ~~~~~~
+  326 |             }
+      |             ~
+  327 |           }
+      |           ~
+  328 |           if (!__found) {
+      |           ~~~~~~~~~~~~~~~
+  329 |             __groups.push_back(
+      |             ~~~~~~~~~~~~~~~~~~~
+  330 |                 __struct7{__key, std::vector<__struct6>{__struct6{wr, d, ca}}});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  331 |           }
+      |           ~
+  332 |         }
+      |         ~
+  333 |       }
+      |       ~
+  334 |     }
+      |     ~
+  335 |     std::vector<__struct8> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  336 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  337 |       __items.push_back(__struct8{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  338 |           g.key.cust, g.key.state, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  339 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  340 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  341 |             std::vector<decltype(std::declval<__struct6>().wr_return_amt)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  342 |                 __items;
+      |                 ~~~~~~~~
+  343 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  344 |               __items.push_back(x.wr_return_amt);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  345 |             }
+      |             ~
+  346 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  347 |           })())});
+      |           ~~~~~~~~
+  348 |     }
+      |     ~
+  349 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  350 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:354:24: error: ‘struct __struct6’ has no member named ‘ctr_state’
+  354 |       auto __key = ctr.ctr_state;
+      |                        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:372:60: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+  372 |             std::vector<decltype(std::declval<__struct6>().ctr_total_return)>
+      |                                                            ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:372:60: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:372:77: error: template argument 1 is invalid
+  372 |             std::vector<decltype(std::declval<__struct6>().ctr_total_return)>
+      |                                                                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:372:77: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:375:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  375 |               __items.push_back(x.ctr_total_return);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:375:35: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+  375 |               __items.push_back(x.ctr_total_return);
+      |                                   ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:371:23: error: no matching function for call to ‘__avg(int)’
+  371 |           g.key, __avg(([&]() {
+      |                  ~~~~~^~~~~~~~~
+  372 |             std::vector<decltype(std::declval<__struct6>().ctr_total_return)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |                 __items;
+      |                 ~~~~~~~~
+  374 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |               __items.push_back(x.ctr_total_return);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |             }
+      |             ~          
+  377 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  378 |           })())});
+      |           ~~~~~        
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:97:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   97 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:97:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:371:23: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  371 |           g.key, __avg(([&]() {
+      |                  ~~~~~^~~~~~~~~
+  372 |             std::vector<decltype(std::declval<__struct6>().ctr_total_return)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |                 __items;
+      |                 ~~~~~~~~
+  374 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |               __items.push_back(x.ctr_total_return);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |             }
+      |             ~          
+  377 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  378 |           })())});
+      |           ~~~~~        
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:381:5: error: conversion from ‘vector<AvgByState>’ to non-scalar type ‘vector<__struct6>’ requested
+  351 |   std::vector<__struct6> avg_by_state = ([&]() {
+      |                                         ~~~~~~~~
+  352 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  353 |     for (auto ctr : customer_total_return) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  354 |       auto __key = ctr.ctr_state;
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  355 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  356 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  357 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  358 |           __g.items.push_back(__struct6{ctr});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  359 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  360 |           break;
+      |           ~~~~~~
+  361 |         }
+      |         ~
+  362 |       }
+      |       ~
+  363 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  364 |         __groups.push_back(
+      |         ~~~~~~~~~~~~~~~~~~~
+  365 |             __struct9{__key, std::vector<__struct6>{__struct6{ctr}}});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |       }
+      |       ~
+  367 |     }
+      |     ~
+  368 |     std::vector<AvgByState> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  370 |       __items.push_back(AvgByState{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |           g.key, __avg(([&]() {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  372 |             std::vector<decltype(std::declval<__struct6>().ctr_total_return)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |                 __items;
+      |                 ~~~~~~~~
+  374 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |               __items.push_back(x.ctr_total_return);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |             }
+      |             ~
+  377 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  378 |           })())});
+      |           ~~~~~~~~
+  379 |     }
+      |     ~
+  380 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  381 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:386:20: error: ‘struct __struct6’ has no member named ‘ctr_state’
+  386 |         if (!((ctr.ctr_state == avg.state)))
+      |                    ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:386:37: error: ‘struct __struct6’ has no member named ‘state’
+  386 |         if (!((ctr.ctr_state == avg.state)))
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:389:22: error: ‘struct __struct6’ has no member named ‘ctr_customer_sk’
+  389 |           if (!((ctr.ctr_customer_sk == c.c_customer_sk)))
+      |                      ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:391:22: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+  391 |           if (!((ctr.ctr_total_return > (avg.avg_return * 1.2))))
+      |                      ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:391:46: error: ‘struct __struct6’ has no member named ‘avg_return’
+  391 |           if (!((ctr.ctr_total_return > (avg.avg_return * 1.2))))
+      |                                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq301515924810/001/prog.cpp:394:55: error: ‘struct __struct6’ has no member named ‘ctr_total_return’
+  394 |                                    c.c_last_name, ctr.ctr_total_return});
+      |                                                       ^~~~~~~~~~~~~~~~

@@ -1,0 +1,88 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:59:8: error: redefinition of ‘struct WebSale’
+   59 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:54:8: note: previous definition of ‘struct WebSale’
+   54 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:130:13: error: redefinition of ‘void __json(const WebSale&)’
+  130 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:80:13: note: ‘void __json(const WebSale&)’ previously defined here
+   80 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:158:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  158 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |                          ^~
+      |                          std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:2:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:158:49: error: template argument 1 is invalid
+  158 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:158:49: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:160:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  160 |       __items.push_back(ws.ws_ext_discount_amt);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:157:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:156:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  156 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:156:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  156 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:165:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  165 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |                          ^~
+      |                          std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:165:49: error: template argument 1 is invalid
+  165 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:165:49: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:167:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  167 |       __items.push_back(ws.ws_ext_discount_amt);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:164:23: error: no matching function for call to ‘__avg(int)’
+  164 |   auto avg_amt = __avg(([&]() {
+      |                  ~~~~~^~~~~~~~~
+  165 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  166 |     for (auto ws : web_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  167 |       __items.push_back(ws.ws_ext_discount_amt);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  168 |     }
+      |     ~                  
+  169 |     return __items;
+      |     ~~~~~~~~~~~~~~~    
+  170 |   })());
+      |   ~~~~~                
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:72:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   72 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:72:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq921163161566/001/prog.cpp:164:23: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  164 |   auto avg_amt = __avg(([&]() {
+      |                  ~~~~~^~~~~~~~~
+  165 |     std::vector<decltype(ws.ws_ext_discount_amt)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  166 |     for (auto ws : web_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  167 |       __items.push_back(ws.ws_ext_discount_amt);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  168 |     }
+      |     ~                  
+  169 |     return __items;
+      |     ~~~~~~~~~~~~~~~    
+  170 |   })());
+      |   ~~~~~                

@@ -1,0 +1,26 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq622811188022/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq622811188022/001/prog.cpp:55:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   55 |       std::vector<decltype(std::unordered_map<std::string, decltype(10)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   56 |           {std::string("days"), 10}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   57 |           std::unordered_map<std::string, decltype(10)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   58 |               {std::string("days"), 10}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   59 |           std::unordered_map<std::string, decltype(40)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   60 |               {std::string("days"), 40}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   61 |           std::unordered_map<std::string, decltype(70)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   62 |               {std::string("days"), 70}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   63 |           std::unordered_map<std::string, decltype(100)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   64 |               {std::string("days"), 100}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   65 |           std::unordered_map<std::string, decltype(130)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   66 |               {std::string("days"), 130}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

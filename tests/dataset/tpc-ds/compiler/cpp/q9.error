@@ -1,0 +1,665 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:67:12: error: ‘bucket1’ was not declared in this scope
+   67 |   decltype(bucket1) bucket1;
+      |            ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:67:12: error: ‘bucket1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:68:12: error: ‘bucket2’ was not declared in this scope; did you mean ‘bucket1’?
+   68 |   decltype(bucket2) bucket2;
+      |            ^~~~~~~
+      |            bucket1
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:68:12: error: ‘bucket2’ was not declared in this scope; did you mean ‘bucket1’?
+   68 |   decltype(bucket2) bucket2;
+      |            ^~~~~~~
+      |            bucket1
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:69:12: error: ‘bucket3’ was not declared in this scope; did you mean ‘bucket2’?
+   69 |   decltype(bucket3) bucket3;
+      |            ^~~~~~~
+      |            bucket2
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:69:12: error: ‘bucket3’ was not declared in this scope; did you mean ‘bucket2’?
+   69 |   decltype(bucket3) bucket3;
+      |            ^~~~~~~
+      |            bucket2
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:70:12: error: ‘bucket4’ was not declared in this scope; did you mean ‘bucket3’?
+   70 |   decltype(bucket4) bucket4;
+      |            ^~~~~~~
+      |            bucket3
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:70:12: error: ‘bucket4’ was not declared in this scope; did you mean ‘bucket3’?
+   70 |   decltype(bucket4) bucket4;
+      |            ^~~~~~~
+      |            bucket3
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:71:12: error: ‘bucket5’ was not declared in this scope; did you mean ‘bucket4’?
+   71 |   decltype(bucket5) bucket5;
+      |            ^~~~~~~
+      |            bucket4
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:71:12: error: ‘bucket5’ was not declared in this scope; did you mean ‘bucket4’?
+   71 |   decltype(bucket5) bucket5;
+      |            ^~~~~~~
+      |            bucket4
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:128:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+  128 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  129 |           {std::string("r_reason_sk"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  130 |           std::unordered_map<std::string, decltype(1)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  131 |               {std::string("r_reason_sk"), 1}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:134:33: error: ‘s’ was not declared in this scope
+  134 |            std::vector<decltype(s)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:134:35: error: template argument 1 is invalid
+  134 |            std::vector<decltype(s)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:134:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:138:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  138 |              __items.push_back(s);
+      |                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:142:15: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales}.main()::<lambda()>()’, which is of non-class type ‘int’
+  142 |              .size()) > 10)
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:144:37: error: ‘s’ was not declared in this scope
+  144 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:144:59: error: template argument 1 is invalid
+  144 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:144:59: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:148:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  148 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:143:19: error: no matching function for call to ‘__avg(int)’
+  143 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  144 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  145 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  146 |                  if (!(((s.ss_quantity >= 1) && (s.ss_quantity <= 20))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  147 |                    continue;
+      |                    ~~~~~~~~~
+  148 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  149 |                }
+      |                ~   
+  150 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  151 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:143:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  143 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  144 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  145 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  146 |                  if (!(((s.ss_quantity >= 1) && (s.ss_quantity <= 20))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  147 |                    continue;
+      |                    ~~~~~~~~~
+  148 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  149 |                }
+      |                ~   
+  150 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  151 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:153:37: error: ‘s’ was not declared in this scope
+  153 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:153:51: error: template argument 1 is invalid
+  153 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:153:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:157:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  157 |                  __items.push_back(s.ss_net_paid);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:152:19: error: no matching function for call to ‘__avg(int)’
+  152 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  153 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  154 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  155 |                  if (!(((s.ss_quantity >= 1) && (s.ss_quantity <= 20))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  156 |                    continue;
+      |                    ~~~~~~~~~
+  157 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  158 |                }
+      |                ~   
+  159 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  160 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:152:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  152 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  153 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  154 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  155 |                  if (!(((s.ss_quantity >= 1) && (s.ss_quantity <= 20))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  156 |                    continue;
+      |                    ~~~~~~~~~
+  157 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  158 |                }
+      |                ~   
+  159 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  160 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:163:33: error: ‘s’ was not declared in this scope
+  163 |            std::vector<decltype(s)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:163:35: error: template argument 1 is invalid
+  163 |            std::vector<decltype(s)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:163:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:167:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  167 |              __items.push_back(s);
+      |                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:171:15: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales}.main()::<lambda()>()’, which is of non-class type ‘int’
+  171 |              .size()) > 20)
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:173:37: error: ‘s’ was not declared in this scope
+  173 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:173:59: error: template argument 1 is invalid
+  173 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:173:59: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:177:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  177 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:172:19: error: no matching function for call to ‘__avg(int)’
+  172 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  173 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  174 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |                  if (!(((s.ss_quantity >= 21) && (s.ss_quantity <= 40))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  176 |                    continue;
+      |                    ~~~~~~~~~
+  177 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  178 |                }
+      |                ~   
+  179 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  180 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:172:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  172 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  173 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  174 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |                  if (!(((s.ss_quantity >= 21) && (s.ss_quantity <= 40))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  176 |                    continue;
+      |                    ~~~~~~~~~
+  177 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  178 |                }
+      |                ~   
+  179 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  180 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:182:37: error: ‘s’ was not declared in this scope
+  182 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:182:51: error: template argument 1 is invalid
+  182 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:182:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:186:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  186 |                  __items.push_back(s.ss_net_paid);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:181:19: error: no matching function for call to ‘__avg(int)’
+  181 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  182 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  183 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  184 |                  if (!(((s.ss_quantity >= 21) && (s.ss_quantity <= 40))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  185 |                    continue;
+      |                    ~~~~~~~~~
+  186 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  187 |                }
+      |                ~   
+  188 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  189 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:181:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  181 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  182 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  183 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  184 |                  if (!(((s.ss_quantity >= 21) && (s.ss_quantity <= 40))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  185 |                    continue;
+      |                    ~~~~~~~~~
+  186 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  187 |                }
+      |                ~   
+  188 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  189 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:192:33: error: ‘s’ was not declared in this scope
+  192 |            std::vector<decltype(s)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:192:35: error: template argument 1 is invalid
+  192 |            std::vector<decltype(s)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:192:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:196:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  196 |              __items.push_back(s);
+      |                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:200:15: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales}.main()::<lambda()>()’, which is of non-class type ‘int’
+  200 |              .size()) > 30)
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:202:37: error: ‘s’ was not declared in this scope
+  202 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:202:59: error: template argument 1 is invalid
+  202 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:202:59: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:206:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  206 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:201:19: error: no matching function for call to ‘__avg(int)’
+  201 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  202 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  204 |                  if (!(((s.ss_quantity >= 41) && (s.ss_quantity <= 60))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |                    continue;
+      |                    ~~~~~~~~~
+  206 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |                }
+      |                ~   
+  208 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  209 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:201:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  201 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  202 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  204 |                  if (!(((s.ss_quantity >= 41) && (s.ss_quantity <= 60))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  205 |                    continue;
+      |                    ~~~~~~~~~
+  206 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |                }
+      |                ~   
+  208 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  209 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:211:37: error: ‘s’ was not declared in this scope
+  211 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:211:51: error: template argument 1 is invalid
+  211 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:211:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:215:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  215 |                  __items.push_back(s.ss_net_paid);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:210:19: error: no matching function for call to ‘__avg(int)’
+  210 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  211 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  212 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  213 |                  if (!(((s.ss_quantity >= 41) && (s.ss_quantity <= 60))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  214 |                    continue;
+      |                    ~~~~~~~~~
+  215 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  216 |                }
+      |                ~   
+  217 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  218 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:210:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  210 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  211 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  212 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  213 |                  if (!(((s.ss_quantity >= 41) && (s.ss_quantity <= 60))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  214 |                    continue;
+      |                    ~~~~~~~~~
+  215 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  216 |                }
+      |                ~   
+  217 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  218 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:221:33: error: ‘s’ was not declared in this scope
+  221 |            std::vector<decltype(s)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:221:35: error: template argument 1 is invalid
+  221 |            std::vector<decltype(s)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:221:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:225:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  225 |              __items.push_back(s);
+      |                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:229:15: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales}.main()::<lambda()>()’, which is of non-class type ‘int’
+  229 |              .size()) > 40)
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:231:37: error: ‘s’ was not declared in this scope
+  231 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:231:59: error: template argument 1 is invalid
+  231 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:231:59: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:235:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  235 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:230:19: error: no matching function for call to ‘__avg(int)’
+  230 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  231 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  232 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  233 |                  if (!(((s.ss_quantity >= 61) && (s.ss_quantity <= 80))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  234 |                    continue;
+      |                    ~~~~~~~~~
+  235 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  236 |                }
+      |                ~   
+  237 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  238 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:230:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  230 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  231 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  232 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  233 |                  if (!(((s.ss_quantity >= 61) && (s.ss_quantity <= 80))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  234 |                    continue;
+      |                    ~~~~~~~~~
+  235 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  236 |                }
+      |                ~   
+  237 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  238 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:240:37: error: ‘s’ was not declared in this scope
+  240 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:240:51: error: template argument 1 is invalid
+  240 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:240:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:244:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  244 |                  __items.push_back(s.ss_net_paid);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:239:19: error: no matching function for call to ‘__avg(int)’
+  239 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  240 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  241 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  242 |                  if (!(((s.ss_quantity >= 61) && (s.ss_quantity <= 80))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  243 |                    continue;
+      |                    ~~~~~~~~~
+  244 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  245 |                }
+      |                ~   
+  246 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  247 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:239:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  239 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  240 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  241 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  242 |                  if (!(((s.ss_quantity >= 61) && (s.ss_quantity <= 80))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  243 |                    continue;
+      |                    ~~~~~~~~~
+  244 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  245 |                }
+      |                ~   
+  246 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  247 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:250:33: error: ‘s’ was not declared in this scope
+  250 |            std::vector<decltype(s)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:250:35: error: template argument 1 is invalid
+  250 |            std::vector<decltype(s)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:250:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:254:22: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  254 |              __items.push_back(s);
+      |                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:258:15: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales}.main()::<lambda()>()’, which is of non-class type ‘int’
+  258 |              .size()) > 50)
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:260:37: error: ‘s’ was not declared in this scope
+  260 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:260:59: error: template argument 1 is invalid
+  260 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:260:59: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:264:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  264 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:259:19: error: no matching function for call to ‘__avg(int)’
+  259 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  260 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  261 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  262 |                  if (!(((s.ss_quantity >= 81) && (s.ss_quantity <= 100))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  263 |                    continue;
+      |                    ~~~~~~~~~
+  264 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  265 |                }
+      |                ~   
+  266 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  267 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:259:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  259 |            ? __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  260 |                std::vector<decltype(s.ss_ext_discount_amt)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  261 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  262 |                  if (!(((s.ss_quantity >= 81) && (s.ss_quantity <= 100))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  263 |                    continue;
+      |                    ~~~~~~~~~
+  264 |                  __items.push_back(s.ss_ext_discount_amt);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  265 |                }
+      |                ~   
+  266 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  267 |              })())
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:269:37: error: ‘s’ was not declared in this scope
+  269 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:269:51: error: template argument 1 is invalid
+  269 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:269:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:273:26: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  273 |                  __items.push_back(s.ss_net_paid);
+      |                          ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:268:19: error: no matching function for call to ‘__avg(int)’
+  268 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  269 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  270 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  271 |                  if (!(((s.ss_quantity >= 81) && (s.ss_quantity <= 100))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  272 |                    continue;
+      |                    ~~~~~~~~~
+  273 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  274 |                }
+      |                ~   
+  275 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  276 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   58 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:58:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:268:19: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  268 |            : __avg(([&]() {
+      |              ~~~~~^~~~~~~~~
+  269 |                std::vector<decltype(s.ss_net_paid)> __items;
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  270 |                for (auto s : store_sales) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  271 |                  if (!(((s.ss_quantity >= 81) && (s.ss_quantity <= 100))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  272 |                    continue;
+      |                    ~~~~~~~~~
+  273 |                  __items.push_back(s.ss_net_paid);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  274 |                }
+      |                ~   
+  275 |                return __items;
+      |                ~~~~~~~~~~~~~~~
+  276 |              })()));
+      |              ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq9779437260/001/prog.cpp:280:16: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘r_reason_sk’
+  280 |       if (!((r.r_reason_sk == 1)))
+      |                ^~~~~~~~~~~

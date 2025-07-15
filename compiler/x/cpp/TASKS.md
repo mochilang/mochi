@@ -21,6 +21,9 @@
 - Added deterministic timestamp via `SOURCE_DATE_EPOCH` for TPC-DS golden tests (2025-07-15 06:39 UTC).
 - Enhanced TPC-DS golden tests to emit `.cpp` files and capture compilation errors (2025-07-15 06:57 UTC).
 
+## Recent Enhancements (2025-07-15 07:14 UTC)
+- Captured compilation failures for all TPC-DS queries via `tpcds_golden_test.go`.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Support TPCH q1 and q5 compilation and execution.

@@ -1,0 +1,47 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:173:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+  173 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  174 |           {std::string("cd_demo_sk"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |           std::unordered_map<std::string, decltype(1)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  176 |               {std::string("cd_demo_sk"), 1}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  177 |           std::unordered_map<std::string, decltype(2)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  178 |               {std::string("cd_demo_sk"), 2}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  179 |           std::unordered_map<std::string, decltype(3)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  180 |               {std::string("cd_demo_sk"), 3}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  181 |           std::unordered_map<std::string, decltype(4)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  182 |               {std::string("cd_demo_sk"), 4}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:192:26: error: ‘sr’ was not declared in this scope
+  192 |     std::vector<decltype(sr.amt)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:192:33: error: template argument 1 is invalid
+  192 |     std::vector<decltype(sr.amt)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:192:33: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:199:32: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘cd_demo_sk’
+  199 |           if (!((c.cdemo == cd.cd_demo_sk)))
+      |                                ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:202:23: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘cd_demo_sk’
+  202 |             if (!((cd.cd_demo_sk == sr.sr_cdemo_sk)))
+      |                       ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:210:25: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  210 |                 __items.push_back(sr.amt);
+      |                         ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:191:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:190:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  190 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq842311390743/001/prog.cpp:190:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  190 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~

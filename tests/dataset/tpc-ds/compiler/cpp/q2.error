@@ -1,0 +1,916 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:72:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   72 |   decltype(ws.ws_sold_date_sk) sold_date_sk;
+      |            ^~
+      |            std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:3:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:72:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   72 |   decltype(ws.ws_sold_date_sk) sold_date_sk;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:73:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   73 |   decltype(ws.ws_ext_sales_price) sales_price;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:73:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   73 |   decltype(ws.ws_ext_sales_price) sales_price;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:74:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   74 |   decltype(ws.ws_sold_date_name) day;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:74:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   74 |   decltype(ws.ws_sold_date_name) day;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:78:12: error: ‘d’ was not declared in this scope
+   78 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:78:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:81:53: error: ‘d’ was not declared in this scope
+   81 |   decltype(std::unordered_map<std::string, decltype(d.d_week_seq)>{
+      |                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:81:53: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:81:66: error: template argument 2 is invalid
+   81 |   decltype(std::unordered_map<std::string, decltype(d.d_week_seq)>{
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:81:66: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:82:33: error: ‘d’ was not declared in this scope
+   82 |       {std::string("week_seq"), d.d_week_seq}}) key;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:82:33: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:86:42: error: request for member ‘week_seq’ in ‘std::declval<__struct6>().__struct6::key’, which is of non-class type ‘int’
+   86 |   decltype(std::declval<__struct6>().key.week_seq) d_week_seq;
+      |                                          ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:86:42: error: request for member ‘week_seq’ in ‘std::declval<__struct6>().__struct6::key’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:96:34: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+   96 |   decltype(std::declval<Wswsc>().d_week_seq) d_week_seq1;
+      |                                  ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:96:34: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:97:35: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+   97 |   decltype((std::declval<Wswsc>().sun_sales /
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:98:35: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+   98 |             std::declval<Wswsc>().sun_sales)) sun_ratio;
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:97:35: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+   97 |   decltype((std::declval<Wswsc>().sun_sales /
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:98:35: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+   98 |             std::declval<Wswsc>().sun_sales)) sun_ratio;
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:99:35: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+   99 |   decltype((std::declval<Wswsc>().mon_sales /
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:100:35: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+  100 |             std::declval<Wswsc>().mon_sales)) mon_ratio;
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:99:35: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+   99 |   decltype((std::declval<Wswsc>().mon_sales /
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:100:35: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+  100 |             std::declval<Wswsc>().mon_sales)) mon_ratio;
+      |                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:290:35: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  290 |                                ws.ws_sold_date_name});
+      |                                ~~~^~~~~~~~~~~~~~~~~
+      |                                   |
+      |                                   std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:298:35: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  298 |                                cs.cs_sold_date_name});
+      |                                ~~~^~~~~~~~~~~~~~~~~
+      |                                   |
+      |                                   std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:23: error: no match for ‘operator==’ (operand types are ‘int’ and ‘std::unordered_map<std::__cxx11::basic_string<char>, int>’)
+  312 |           if (__g.key == __key) {
+      |               ~~~~~~~ ^~ ~~~~~
+      |                   |      |
+      |                   int    std::unordered_map<std::__cxx11::basic_string<char>, int>
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> bool std::operator==(const __new_allocator<pair<const __cxx11::basic_string<char>, int> >&, const __new_allocator<_Tp>&)’
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, int>’ is not derived from ‘const std::__new_allocator<_Tp>’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> bool std::operator==(const __new_allocator<char>&, const __new_allocator<_Tp>&)’
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, int>’ is not derived from ‘const std::__new_allocator<_Tp>’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/algorithm:60,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:2:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:67:
+/usr/include/c++/13/bits/stl_iterator.h:448:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  448 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:448:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:493:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  493 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:493:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/string_view:642:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  642 |     operator==(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:642:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, int>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3774:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3774 |     operator==(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3774:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const _CharT*’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/map:63,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:4:
+/usr/include/c++/13/bits/stl_map.h:1513:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1513 |     operator==(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1513:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/map:64:
+/usr/include/c++/13/bits/stl_multimap.h:1134:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1134 |     operator==(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1134:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/unordered_map:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:7:
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2143 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2143:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note: candidate: ‘template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)’
+ 2157 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/unordered_map.h:2157:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:312:26: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  312 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘bool std::operator==(const allocator<pair<const __cxx11::basic_string<char>, int> >&, const allocator<pair<const __cxx11::basic_string<char>, int> >&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘int’ to ‘const std::allocator<std::pair<const std::__cxx11::basic_string<char>, int> >&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘bool std::operator==(const allocator<char>&, const allocator<char>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘int’ to ‘const std::allocator<char>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:517:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_code&)’
+  517 |   operator==(const error_condition& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:517:37: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  517 |   operator==(const error_condition& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:313:42: error: cannot convert ‘DateDim’ to ‘int’ in initialization
+  313 |             __g.items.push_back(Wswsc{w, d});
+      |                                          ^
+      |                                          |
+      |                                          DateDim
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:319:75: error: cannot convert ‘DateDim’ to ‘int’ in initialization
+  319 |           __groups.push_back(__struct6{__key, std::vector<Wswsc>{Wswsc{w, d}}});
+      |                                                                           ^
+      |                                                                           |
+      |                                                                           DateDim
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:319:77: error: no matching function for call to ‘std::vector<Wswsc>::vector(<brace-enclosed initializer list>)’
+  319 |           __groups.push_back(__struct6{__key, std::vector<Wswsc>{Wswsc{w, d}}});
+      |                                                                             ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Wswsc; _Alloc = std::allocator<Wswsc>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; allocator_type = std::allocator<Wswsc>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; std::__type_identity_t<_Alloc> = std::allocator<Wswsc>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; allocator_type = std::allocator<Wswsc>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; allocator_type = std::allocator<Wswsc>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; std::__type_identity_t<_Alloc> = std::allocator<Wswsc>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; size_type = long unsigned int; value_type = Wswsc; allocator_type = std::allocator<Wswsc>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; size_type = long unsigned int; allocator_type = std::allocator<Wswsc>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>; allocator_type = std::allocator<Wswsc>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Wswsc; _Alloc = std::allocator<Wswsc>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:326:17: error: request for member ‘week_seq’ in ‘g.__struct6::key’, which is of non-class type ‘int’
+  326 |           g.key.week_seq, ([&](auto v) {
+      |                 ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:329:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  329 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:329:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:329:68: error: template argument 1 is invalid
+  329 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:329:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:331:24: error: ‘struct Wswsc’ has no member named ‘day’
+  331 |               if (!((x.day == std::string("Sunday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:333:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  333 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:333:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  333 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:328:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:327:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  327 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:327:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  327 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:340:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  340 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:340:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:340:68: error: template argument 1 is invalid
+  340 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:340:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:342:24: error: ‘struct Wswsc’ has no member named ‘day’
+  342 |               if (!((x.day == std::string("Monday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:344:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  344 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:344:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  344 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:4)> [with auto:4 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:339:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:338:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  338 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:338:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  338 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:351:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  351 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:351:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:351:68: error: template argument 1 is invalid
+  351 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:351:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:353:24: error: ‘struct Wswsc’ has no member named ‘day’
+  353 |               if (!((x.day == std::string("Tuesday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:355:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  355 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:355:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  355 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:5)> [with auto:5 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:350:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:349:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  349 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:349:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  349 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:362:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  362 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:362:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:362:68: error: template argument 1 is invalid
+  362 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:362:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:364:24: error: ‘struct Wswsc’ has no member named ‘day’
+  364 |               if (!((x.day == std::string("Wednesday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:366:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  366 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:366:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  366 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:6)> [with auto:6 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:361:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:360:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  360 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:360:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  360 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:373:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  373 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:373:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:373:68: error: template argument 1 is invalid
+  373 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:373:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:375:24: error: ‘struct Wswsc’ has no member named ‘day’
+  375 |               if (!((x.day == std::string("Thursday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:377:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  377 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:377:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  377 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:7)> [with auto:7 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:372:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:371:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  371 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:371:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  371 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:384:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  384 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:384:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:384:68: error: template argument 1 is invalid
+  384 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:384:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:386:24: error: ‘struct Wswsc’ has no member named ‘day’
+  386 |               if (!((x.day == std::string("Friday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:388:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  388 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:388:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  388 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:8)> [with auto:8 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:383:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:382:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  382 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:382:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  382 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:395:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  395 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:395:56: error: ‘struct Wswsc’ has no member named ‘sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:395:68: error: template argument 1 is invalid
+  395 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:395:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:397:24: error: ‘struct Wswsc’ has no member named ‘day’
+  397 |               if (!((x.day == std::string("Saturday"))))
+      |                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:399:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  399 |               __items.push_back(x.sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:399:35: error: ‘struct Wswsc’ has no member named ‘sales_price’
+  399 |               __items.push_back(x.sales_price);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:9)> [with auto:9 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:394:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:393:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  393 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:393:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  393 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:405:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<Wswsc>’ requested
+  302 |   std::vector<Wswsc> wswscs = ([&]() {
+      |                               ~~~~~~~~
+  303 |     std::vector<__struct6> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  304 |     for (auto w : wscs) {
+      |     ~~~~~~~~~~~~~~~~~~~~~
+  305 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  306 |         if (!((w.sold_date_sk == d.d_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  307 |           continue;
+      |           ~~~~~~~~~
+  308 |         auto __key = std::unordered_map<std::string, decltype(d.d_week_seq)>{
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  309 |             {std::string("week_seq"), d.d_week_seq}};
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  310 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  311 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  312 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  313 |             __g.items.push_back(Wswsc{w, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  314 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  315 |             break;
+      |             ~~~~~~
+  316 |           }
+      |           ~
+  317 |         }
+      |         ~
+  318 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  319 |           __groups.push_back(__struct6{__key, std::vector<Wswsc>{Wswsc{w, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  320 |         }
+      |         ~
+  321 |       }
+      |       ~
+  322 |     }
+      |     ~
+  323 |     std::vector<__struct7> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  324 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  325 |       __items.push_back(__struct7{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  326 |           g.key.week_seq, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  327 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  328 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  329 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  330 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  331 |               if (!((x.day == std::string("Sunday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  332 |                 continue;
+      |                 ~~~~~~~~~
+  333 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  334 |             }
+      |             ~
+  335 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  336 |           })()),
+      |           ~~~~~~
+  337 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  338 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  339 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  340 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  341 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  342 |               if (!((x.day == std::string("Monday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  343 |                 continue;
+      |                 ~~~~~~~~~
+  344 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  345 |             }
+      |             ~
+  346 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  347 |           })()),
+      |           ~~~~~~
+  348 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  349 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  350 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  351 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  352 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  353 |               if (!((x.day == std::string("Tuesday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  354 |                 continue;
+      |                 ~~~~~~~~~
+  355 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  356 |             }
+      |             ~
+  357 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  358 |           })()),
+      |           ~~~~~~
+  359 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  360 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  362 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  363 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  364 |               if (!((x.day == std::string("Wednesday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  365 |                 continue;
+      |                 ~~~~~~~~~
+  366 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |             }
+      |             ~
+  368 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  369 |           })()),
+      |           ~~~~~~
+  370 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  371 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  372 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  373 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  374 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |               if (!((x.day == std::string("Thursday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |                 continue;
+      |                 ~~~~~~~~~
+  377 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  378 |             }
+      |             ~
+  379 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  380 |           })()),
+      |           ~~~~~~
+  381 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  382 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  383 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  384 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  385 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  386 |               if (!((x.day == std::string("Friday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  387 |                 continue;
+      |                 ~~~~~~~~~
+  388 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |             }
+      |             ~
+  390 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  391 |           })()),
+      |           ~~~~~~
+  392 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  393 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  394 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  395 |             std::vector<decltype(std::declval<Wswsc>().sales_price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  396 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  397 |               if (!((x.day == std::string("Saturday"))))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  398 |                 continue;
+      |                 ~~~~~~~~~
+  399 |               __items.push_back(x.sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  400 |             }
+      |             ~
+  401 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  402 |           })())});
+      |           ~~~~~~~~
+  403 |     }
+      |     ~
+  404 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  405 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:409:16: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+  409 |       if (!((w.d_week_seq == 1)))
+      |                ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:418:16: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+  418 |       if (!((w.d_week_seq == 54)))
+      |                ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:428:18: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+  428 |         if (!((y.d_week_seq == (z.d_week_seq - 53))))
+      |                  ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:428:35: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+  428 |         if (!((y.d_week_seq == (z.d_week_seq - 53))))
+      |                                   ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:430:36: error: ‘struct Wswsc’ has no member named ‘d_week_seq’
+  430 |         __items.push_back(Result{y.d_week_seq, (y.sun_sales / z.sun_sales),
+      |                                    ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:430:51: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+  430 |         __items.push_back(Result{y.d_week_seq, (y.sun_sales / z.sun_sales),
+      |                                                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:430:65: error: ‘struct Wswsc’ has no member named ‘sun_sales’
+  430 |         __items.push_back(Result{y.d_week_seq, (y.sun_sales / z.sun_sales),
+      |                                                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:431:37: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+  431 |                                  (y.mon_sales / z.mon_sales)});
+      |                                     ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:431:51: error: ‘struct Wswsc’ has no member named ‘mon_sales’
+  431 |                                  (y.mon_sales / z.mon_sales)});
+      |                                                   ^~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:71:
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Iter_equal_to_iter::operator()(_Iterator1, _Iterator2) const [with _Iterator1 = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >; _Iterator2 = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >]’:
+/usr/include/c++/13/bits/stl_algo.h:917:20:   required from ‘_ForwardIterator std::__unique(_ForwardIterator, _ForwardIterator, _BinaryPredicate) [with _ForwardIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _BinaryPredicate = __gnu_cxx::__ops::_Iter_equal_to_iter]’
+/usr/include/c++/13/bits/stl_algo.h:948:27:   required from ‘_FIter std::unique(_FIter, _FIter) [with _FIter = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:284:24:   required from ‘main()::<lambda(auto:1, auto:2)> [with auto:1 = std::vector<Wsc>; auto:2 = std::vector<Wsc>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:286:5:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:117:23: error: no match for ‘operator==’ (operand types are ‘Wsc’ and ‘Wsc’)
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1217:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator==(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1217 |     operator==(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1217:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:117:23: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1225:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator==(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1225 |     operator==(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1225:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:117:23: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+  117 |       { return *__it1 == *__it2; }
+      |                ~~~~~~~^~~~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘constexpr bool __gnu_cxx::__ops::_Iter_less_iter::operator()(_Iterator1, _Iterator2) const [with _Iterator1 = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >; _Iterator2 = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >]’:
+/usr/include/c++/13/bits/stl_algo.h:1819:14:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:283:14:   required from ‘main()::<lambda(auto:1, auto:2)> [with auto:1 = std::vector<Wsc>; auto:2 = std::vector<Wsc>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:286:5:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:45:23: error: no match for ‘operator<’ (operand types are ‘Wsc’ and ‘Wsc’)
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:45:23: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:45:23: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   45 |       { return *__it1 < *__it2; }
+      |                ~~~~~~~^~~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Val_less_iter::operator()(_Value&, _Iterator) const [with _Value = Wsc; _Iterator = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >]’:
+/usr/include/c++/13/bits/stl_algo.h:1799:20:   required from ‘void std::__unguarded_linear_insert(_RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Val_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1827:36:   required from ‘void std::__insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1859:25:   required from ‘void std::__final_insertion_sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1950:31:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:283:14:   required from ‘main()::<lambda(auto:1, auto:2)> [with auto:1 = std::vector<Wsc>; auto:2 = std::vector<Wsc>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:286:5:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:98:22: error: no match for ‘operator<’ (operand types are ‘Wsc’ and ‘Wsc’)
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:98:22: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:98:22: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   98 |       { return __val < *__it; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/predefined_ops.h: In instantiation of ‘bool __gnu_cxx::__ops::_Iter_less_val::operator()(_Iterator, _Value&) const [with _Iterator = __gnu_cxx::__normal_iterator<Wsc*, std::vector<Wsc> >; _Value = Wsc]’:
+/usr/include/c++/13/bits/stl_heap.h:140:48:   required from ‘void std::__push_heap(_RandomAccessIterator, _Distance, _Distance, _Tp, _Compare&) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Distance = long int; _Tp = Wsc; _Compare = __gnu_cxx::__ops::_Iter_less_val]’
+/usr/include/c++/13/bits/stl_heap.h:247:23:   required from ‘void std::__adjust_heap(_RandomAccessIterator, _Distance, _Distance, _Tp, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Distance = long int; _Tp = Wsc; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_heap.h:356:22:   required from ‘void std::__make_heap(_RandomAccessIterator, _RandomAccessIterator, _Compare&) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1635:23:   required from ‘void std::__heap_select(_RandomAccessIterator, _RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1910:25:   required from ‘void std::__partial_sort(_RandomAccessIterator, _RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1926:27:   required from ‘void std::__introsort_loop(_RandomAccessIterator, _RandomAccessIterator, _Size, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Size = long int; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:1947:25:   required from ‘void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >; _Compare = __gnu_cxx::__ops::_Iter_less_iter]’
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from ‘void std::sort(_RAIter, _RAIter) [with _RAIter = __gnu_cxx::__normal_iterator<Wsc*, vector<Wsc> >]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:283:14:   required from ‘main()::<lambda(auto:1, auto:2)> [with auto:1 = std::vector<Wsc>; auto:2 = std::vector<Wsc>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq23652354825/001/prog.cpp:286:5:   required from here
+/usr/include/c++/13/bits/predefined_ops.h:69:22: error: no match for ‘operator<’ (operand types are ‘Wsc’ and ‘Wsc’)
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note: candidate: ‘template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_IteratorL, _Container>&, const __normal_iterator<_IteratorR, _Container>&)’
+ 1250 |     operator<(const __normal_iterator<_IteratorL, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1250:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:69:22: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note: candidate: ‘template<class _Iterator, class _Container> bool __gnu_cxx::operator<(const __normal_iterator<_Iterator, _Container>&, const __normal_iterator<_Iterator, _Container>&)’
+ 1258 |     operator<(const __normal_iterator<_Iterator, _Container>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1258:5: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/predefined_ops.h:69:22: note:   ‘Wsc’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+   69 |       { return *__it < __val; }
+      |                ~~~~~~^~~~~~~

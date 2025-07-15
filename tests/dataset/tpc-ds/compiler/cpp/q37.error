@@ -1,0 +1,211 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:77:12: error: ‘i’ was not declared in this scope
+   77 |   decltype(i.i_item_id) id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:77:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:78:12: error: ‘i’ was not declared in this scope; did you mean ‘id’?
+   78 |   decltype(i.i_item_desc) desc;
+      |            ^
+      |            id
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:78:12: error: ‘i’ was not declared in this scope; did you mean ‘id’?
+   78 |   decltype(i.i_item_desc) desc;
+      |            ^
+      |            id
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:79:12: error: ‘i’ was not declared in this scope; did you mean ‘id’?
+   79 |   decltype(i.i_current_price) price;
+      |            ^
+      |            id
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:79:12: error: ‘i’ was not declared in this scope; did you mean ‘id’?
+   79 |   decltype(i.i_current_price) price;
+      |            ^
+      |            id
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:82:12: error: ‘i’ was not declared in this scope
+   82 |   decltype(i) i;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:82:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:83:12: error: ‘inv’ was not declared in this scope; did you mean ‘int’?
+   83 |   decltype(inv) inv;
+      |            ^~~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:83:12: error: ‘inv’ was not declared in this scope; did you mean ‘int’?
+   83 |   decltype(inv) inv;
+      |            ^~~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:84:12: error: ‘d’ was not declared in this scope
+   84 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:84:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:85:12: error: ‘cs’ was not declared in this scope
+   85 |   decltype(cs) cs;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:85:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:273:35: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  273 |             auto __key = Result{i.i_item_id, i.i_item_desc, i.i_current_price};
+      |                                 ~~^~~~~~~~~
+      |                                   |
+      |                                   std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:277:47: error: cannot convert ‘Item’ to ‘int’ in initialization
+  277 |                 __g.items.push_back(__struct6{i, inv, d, cs});
+      |                                               ^
+      |                                               |
+      |                                               Item
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:284:59: error: cannot convert ‘Item’ to ‘int’ in initialization
+  284 |                   __key, std::vector<__struct6>{__struct6{i, inv, d, cs}}});
+      |                                                           ^
+      |                                                           |
+      |                                                           Item
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:284:73: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
+  284 |                   __key, std::vector<__struct6>{__struct6{i, inv, d, cs}}});
+      |                                                                         ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; value_type = std::vector<__struct6>::value_type; allocator_type = std::allocator<__struct6>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; allocator_type = std::allocator<__struct6>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq371356632478/001/prog.cpp:303:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
+  254 |   std::vector<__struct6> result = ([&]() {
+      |                                   ~~~~~~~~
+  255 |     std::vector<__struct7> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  256 |     for (auto i : item) {
+      |     ~~~~~~~~~~~~~~~~~~~~~
+  257 |       for (auto inv : inventory) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  258 |         if (!((i.i_item_sk == inv.inv_item_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  259 |           continue;
+      |           ~~~~~~~~~
+  260 |         for (auto d : date_dim) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+  261 |           if (!((inv.inv_date_sk == d.d_date_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  262 |             continue;
+      |             ~~~~~~~~~
+  263 |           for (auto cs : catalog_sales) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  264 |             if (!((cs.cs_item_sk == i.i_item_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  265 |               continue;
+      |               ~~~~~~~~~
+  266 |             if (!(((((((i.i_current_price >= 20) &&
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  267 |                        (i.i_current_price <= 50)) &&
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  268 |                       (i.i_manufact_id >= 800)) &&
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  269 |                      (i.i_manufact_id <= 803)) &&
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  270 |                     (inv.inv_quantity_on_hand >= 100)) &&
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  271 |                    (inv.inv_quantity_on_hand <= 500))))
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  272 |               continue;
+      |               ~~~~~~~~~
+  273 |             auto __key = Result{i.i_item_id, i.i_item_desc, i.i_current_price};
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  274 |             bool __found = false;
+      |             ~~~~~~~~~~~~~~~~~~~~~
+  275 |             for (auto &__g : __groups) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  276 |               if (__g.key == __key) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~
+  277 |                 __g.items.push_back(__struct6{i, inv, d, cs});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  278 |                 __found = true;
+      |                 ~~~~~~~~~~~~~~~
+  279 |                 break;
+      |                 ~~~~~~
+  280 |               }
+      |               ~
+  281 |             }
+      |             ~
+  282 |             if (!__found) {
+      |             ~~~~~~~~~~~~~~~
+  283 |               __groups.push_back(__struct7{
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  284 |                   __key, std::vector<__struct6>{__struct6{i, inv, d, cs}}});
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  285 |             }
+      |             ~
+  286 |           }
+      |           ~
+  287 |         }
+      |         ~
+  288 |       }
+      |       ~
+  289 |     }
+      |     ~
+  290 |     std::vector<
+      |     ~~~~~~~~~~~~
+  291 |         std::pair<decltype(std::declval<__struct7>().key.id), __struct8>>
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  292 |         __items;
+      |         ~~~~~~~~
+  293 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  294 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  295 |           {g.key.id, __struct8{g.key.id, g.key.desc, g.key.price}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  296 |     }
+      |     ~
+  297 |     std::sort(__items.begin(), __items.end(),
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  298 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  299 |     std::vector<__struct8> __res;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  300 |     for (auto &p : __items)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  301 |       __res.push_back(p.second);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  302 |     return __res;
+      |     ~~~~~~~~~~~~~
+  303 |   })();
+      |   ~~^~

@@ -1,0 +1,28 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq821024191759/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq821024191759/001/prog.cpp:74:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   74 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   75 |           {std::string("id"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   76 |           std::unordered_map<std::string, decltype(1)>{{std::string("id"), 1}},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   77 |           std::unordered_map<std::string, decltype(2)>{{std::string("id"), 2}},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   78 |           std::unordered_map<std::string, decltype(3)>{{std::string("id"), 3}}};
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq821024191759/001/prog.cpp:83:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   83 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   84 |           {std::string("item"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   85 |           std::unordered_map<std::string, decltype(1)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   86 |               {std::string("item"), 1}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   87 |           std::unordered_map<std::string, decltype(2)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   88 |               {std::string("item"), 2}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq821024191759/001/prog.cpp:92:26: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘item’
+   92 |       if ((inv.item == s.item)) {
+      |                          ^~~~

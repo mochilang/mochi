@@ -1,0 +1,82 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:56:35: error: expected identifier before ‘;’ token
+   56 |   decltype(std::string("B")) class;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:56:3: error: multiple types in one declaration
+   56 |   decltype(std::string("B")) class;
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp: In function ‘void __json(const WebSale&)’:
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:71:12: error: expected unqualified-id before ‘class’
+   71 |   __json(v.class);
+      |            ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:81:53: error: too many initializers for ‘WebSale’
+   81 |       WebSale{std::string("A"), std::string("B"), 40},
+      |                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:82:53: error: too many initializers for ‘WebSale’
+   82 |       WebSale{std::string("A"), std::string("B"), 46},
+      |                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:83:53: error: too many initializers for ‘WebSale’
+   83 |       WebSale{std::string("A"), std::string("C"), 10},
+      |                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:84:53: error: too many initializers for ‘WebSale’
+   84 |       WebSale{std::string("B"), std::string("B"), 20}};
+      |                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:84:54: error: could not convert ‘{<expression error>, <expression error>, <expression error>, <expression error>}’ from ‘<brace-enclosed initializer list>’ to ‘std::vector<WebSale>’
+   84 |       WebSale{std::string("B"), std::string("B"), 20}};
+      |                                                      ^
+      |                                                      |
+      |                                                      <brace-enclosed initializer list>
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:88:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+   88 |     std::vector<decltype(ws.net)> __items;
+      |                          ^~
+      |                          std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:2:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:88:33: error: template argument 1 is invalid
+   88 |     std::vector<decltype(ws.net)> __items;
+      |                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:88:33: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:90:50: error: expected unqualified-id before ‘class’
+   90 |       if (!(((ws.cat == std::string("A")) && (ws.class == std::string("B")))))
+      |                                                  ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:90:50: error: expected ‘)’ before ‘class’
+   90 |       if (!(((ws.cat == std::string("A")) && (ws.class == std::string("B")))))
+      |                                              ~   ^~~~~
+      |                                                  )
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:91:17: error: expected ‘)’ before ‘;’ token
+   91 |         continue;
+      |                 ^
+      |                 )
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:90:13: note: to match this ‘(’
+   90 |       if (!(((ws.cat == std::string("A")) && (ws.class == std::string("B")))))
+      |             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:91:17: error: expected ‘)’ before ‘;’ token
+   91 |         continue;
+      |                 ^
+      |                 )
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:90:12: note: to match this ‘(’
+   90 |       if (!(((ws.cat == std::string("A")) && (ws.class == std::string("B")))))
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:91:17: error: expected ‘)’ before ‘;’ token
+   91 |         continue;
+      |                 ^
+      |                 )
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:90:10: note: to match this ‘(’
+   90 |       if (!(((ws.cat == std::string("A")) && (ws.class == std::string("B")))))
+      |          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:92:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   92 |       __items.push_back(ws.net);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:87:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:86:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   86 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq86904573061/001/prog.cpp:86:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   86 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~

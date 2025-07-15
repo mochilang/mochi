@@ -1,0 +1,125 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:70:8: error: redefinition of ‘struct Customer’
+   70 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:54:8: note: previous definition of ‘struct Customer’
+   54 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:76:8: error: redefinition of ‘struct StoreSale’
+   76 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:60:8: note: previous definition of ‘struct StoreSale’
+   60 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:81:8: error: redefinition of ‘struct WebSale’
+   81 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:65:8: note: previous definition of ‘struct WebSale’
+   65 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:156:13: error: redefinition of ‘void __json(const Customer&)’
+  156 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:91:13: note: ‘void __json(const Customer&)’ previously defined here
+   91 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:201:13: error: redefinition of ‘void __json(const StoreSale&)’
+  201 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:116:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  116 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:221:13: error: redefinition of ‘void __json(const WebSale&)’
+  221 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:136:13: note: ‘void __json(const WebSale&)’ previously defined here
+  136 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:251:26: error: ‘ss’ was not declared in this scope; did you mean ‘ss98’?
+  251 |     std::vector<decltype(ss.ss_ext_list_price)> __items;
+      |                          ^~
+      |                          ss98
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:251:47: error: template argument 1 is invalid
+  251 |     std::vector<decltype(ss.ss_ext_list_price)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:251:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:255:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  255 |       __items.push_back(ss.ss_ext_list_price);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:250:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:249:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  249 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:249:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  249 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:262:26: error: ‘ss’ was not declared in this scope; did you mean ‘ss99’?
+  262 |     std::vector<decltype(ss.ss_ext_list_price)> __items;
+      |                          ^~
+      |                          ss99
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:262:47: error: template argument 1 is invalid
+  262 |     std::vector<decltype(ss.ss_ext_list_price)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:262:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:266:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  266 |       __items.push_back(ss.ss_ext_list_price);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:261:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:260:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  260 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:260:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  260 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:273:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  273 |     std::vector<decltype(ws.ws_ext_list_price)> __items;
+      |                          ^~
+      |                          std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:2:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:273:47: error: template argument 1 is invalid
+  273 |     std::vector<decltype(ws.ws_ext_list_price)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:273:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:277:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  277 |       __items.push_back(ws.ws_ext_list_price);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:3)> [with auto:3 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:272:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:271:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  271 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:271:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  271 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:284:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  284 |     std::vector<decltype(ws.ws_ext_list_price)> __items;
+      |                          ^~
+      |                          std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:284:47: error: template argument 1 is invalid
+  284 |     std::vector<decltype(ws.ws_ext_list_price)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:284:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:288:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  288 |       __items.push_back(ws.ws_ext_list_price);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:4)> [with auto:4 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:283:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:282:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  282 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq113309808398/001/prog.cpp:282:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  282 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~

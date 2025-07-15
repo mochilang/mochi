@@ -1,0 +1,1583 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:97:12: error: ‘ss’ was not declared in this scope
+   97 |   decltype(ss) ss;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:97:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:98:12: error: ‘d’ was not declared in this scope
+   98 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:98:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:101:30: error: ‘struct S’ has no member named ‘s_store_sk’
+  101 |   decltype(std::declval<S>().s_store_sk) key;
+      |                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:101:30: error: ‘struct S’ has no member named ‘s_store_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:110:12: error: ‘sr’ was not declared in this scope; did you mean ‘Sr’?
+  110 |   decltype(sr) sr;
+      |            ^~
+      |            Sr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:110:12: error: ‘sr’ was not declared in this scope; did you mean ‘Sr’?
+  110 |   decltype(sr) sr;
+      |            ^~
+      |            Sr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:111:12: error: ‘d’ was not declared in this scope
+  111 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:111:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:114:31: error: ‘struct Sr’ has no member named ‘s_store_sk’
+  114 |   decltype(std::declval<Sr>().s_store_sk) key;
+      |                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:114:31: error: ‘struct Sr’ has no member named ‘s_store_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:123:12: error: ‘cs’ was not declared in this scope
+  123 |   decltype(cs) cs;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:123:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:124:12: error: ‘d’ was not declared in this scope
+  124 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:124:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:127:30: error: ‘struct C’ has no member named ‘cs_call_center_sk’
+  127 |   decltype(std::declval<C>().cs_call_center_sk) key;
+      |                              ^~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:127:30: error: ‘struct C’ has no member named ‘cs_call_center_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:136:12: error: ‘cr’ was not declared in this scope; did you mean ‘Cr’?
+  136 |   decltype(cr) cr;
+      |            ^~
+      |            Cr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:136:12: error: ‘cr’ was not declared in this scope; did you mean ‘Cr’?
+  136 |   decltype(cr) cr;
+      |            ^~
+      |            Cr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:137:12: error: ‘d’ was not declared in this scope
+  137 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:137:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:140:31: error: ‘struct Cr’ has no member named ‘cr_call_center_sk’
+  140 |   decltype(std::declval<Cr>().cr_call_center_sk) key;
+      |                               ^~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:140:31: error: ‘struct Cr’ has no member named ‘cr_call_center_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:149:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  149 |   decltype(ws) ws;
+      |            ^~
+      |            std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:3:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:149:12: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  149 |   decltype(ws) ws;
+      |            ^~
+      |            std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:150:12: error: ‘d’ was not declared in this scope
+  150 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:150:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:153:30: error: ‘struct W’ has no member named ‘ws_web_page_sk’
+  153 |   decltype(std::declval<W>().ws_web_page_sk) key;
+      |                              ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:153:30: error: ‘struct W’ has no member named ‘ws_web_page_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:162:12: error: ‘wr’ was not declared in this scope; did you mean ‘Wr’?
+  162 |   decltype(wr) wr;
+      |            ^~
+      |            Wr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:162:12: error: ‘wr’ was not declared in this scope; did you mean ‘Wr’?
+  162 |   decltype(wr) wr;
+      |            ^~
+      |            Wr
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:163:12: error: ‘d’ was not declared in this scope
+  163 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:163:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:166:31: error: ‘struct Wr’ has no member named ‘wr_web_page_sk’
+  166 |   decltype(std::declval<Wr>().wr_web_page_sk) key;
+      |                               ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:166:31: error: ‘struct Wr’ has no member named ‘wr_web_page_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:176:30: error: ‘struct S’ has no member named ‘s_store_sk’
+  176 |   decltype(std::declval<S>().s_store_sk) id;
+      |                              ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:176:30: error: ‘struct S’ has no member named ‘s_store_sk’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:177:30: error: ‘struct S’ has no member named ‘sales’
+  177 |   decltype(std::declval<S>().sales) sales;
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:177:30: error: ‘struct S’ has no member named ‘sales’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:627:35: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  627 |             __g.items.push_back(S{ss, d});
+      |                                   ^~
+      |                                   |
+      |                                   StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:633:64: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  633 |           __groups.push_back(__struct9{__key, std::vector<S>{S{ss, d}}});
+      |                                                                ^~
+      |                                                                |
+      |                                                                StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:633:70: error: no matching function for call to ‘std::vector<S>::vector(<brace-enclosed initializer list>)’
+  633 |           __groups.push_back(__struct9{__key, std::vector<S>{S{ss, d}}});
+      |                                                                      ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:9:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = S; _Alloc = std::allocator<S>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = S; _Alloc = std::allocator<S>; allocator_type = std::allocator<S>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = S; _Alloc = std::allocator<S>; std::__type_identity_t<_Alloc> = std::allocator<S>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = S; _Alloc = std::allocator<S>; allocator_type = std::allocator<S>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = S; _Alloc = std::allocator<S>; allocator_type = std::allocator<S>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = S; _Alloc = std::allocator<S>; std::__type_identity_t<_Alloc> = std::allocator<S>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = S; _Alloc = std::allocator<S>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = S; _Alloc = std::allocator<S>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = S; _Alloc = std::allocator<S>; size_type = long unsigned int; value_type = S; allocator_type = std::allocator<S>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = S; _Alloc = std::allocator<S>; size_type = long unsigned int; allocator_type = std::allocator<S>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = S; _Alloc = std::allocator<S>; allocator_type = std::allocator<S>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = S; _Alloc = std::allocator<S>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:643:55: error: request for member ‘ss_ext_sales_price’ in ‘std::declval<S>().S::ss’, which is of non-class type ‘int’
+  643 |             std::vector<decltype(std::declval<S>().ss.ss_ext_sales_price)>
+      |                                                       ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:643:55: error: request for member ‘ss_ext_sales_price’ in ‘std::declval<S>().S::ss’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:643:74: error: template argument 1 is invalid
+  643 |             std::vector<decltype(std::declval<S>().ss.ss_ext_sales_price)>
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:643:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:646:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  646 |               __items.push_back(x.ss.ss_ext_sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:646:38: error: request for member ‘ss_ext_sales_price’ in ‘x.S::ss’, which is of non-class type ‘int’
+  646 |               __items.push_back(x.ss.ss_ext_sales_price);
+      |                                      ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:642:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:641:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  641 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:641:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  641 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:653:55: error: request for member ‘ss_net_profit’ in ‘std::declval<S>().S::ss’, which is of non-class type ‘int’
+  653 |             std::vector<decltype(std::declval<S>().ss.ss_net_profit)> __items;
+      |                                                       ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:653:55: error: request for member ‘ss_net_profit’ in ‘std::declval<S>().S::ss’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:653:69: error: template argument 1 is invalid
+  653 |             std::vector<decltype(std::declval<S>().ss.ss_net_profit)> __items;
+      |                                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:653:69: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:655:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  655 |               __items.push_back(x.ss.ss_net_profit);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:655:38: error: request for member ‘ss_net_profit’ in ‘x.S::ss’, which is of non-class type ‘int’
+  655 |               __items.push_back(x.ss.ss_net_profit);
+      |                                      ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:652:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:651:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  651 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:651:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  651 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:661:5: error: conversion from ‘vector<__struct10>’ to non-scalar type ‘vector<S>’ requested
+  617 |   std::vector<S> ss = ([&]() {
+      |                       ~~~~~~~~
+  618 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  619 |     for (auto ss : store_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  620 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  621 |         if (!((d.d_date_sk == ss.ss_sold_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  622 |           continue;
+      |           ~~~~~~~~~
+  623 |         auto __key = ss.s_store_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  624 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  625 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  626 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  627 |             __g.items.push_back(S{ss, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  628 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  629 |             break;
+      |             ~~~~~~
+  630 |           }
+      |           ~
+  631 |         }
+      |         ~
+  632 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  633 |           __groups.push_back(__struct9{__key, std::vector<S>{S{ss, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  634 |         }
+      |         ~
+  635 |       }
+      |       ~
+  636 |     }
+      |     ~
+  637 |     std::vector<__struct10> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  638 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  639 |       __items.push_back(__struct10{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  640 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  641 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  642 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  643 |             std::vector<decltype(std::declval<S>().ss.ss_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  644 |                 __items;
+      |                 ~~~~~~~~
+  645 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  646 |               __items.push_back(x.ss.ss_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  647 |             }
+      |             ~
+  648 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  649 |           })()),
+      |           ~~~~~~
+  650 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  651 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  652 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  653 |             std::vector<decltype(std::declval<S>().ss.ss_net_profit)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  654 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  655 |               __items.push_back(x.ss.ss_net_profit);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  656 |             }
+      |             ~
+  657 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  658 |           })())});
+      |           ~~~~~~~~
+  659 |     }
+      |     ~
+  660 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  661 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:672:36: error: cannot convert ‘StoreReturn’ to ‘int’ in initialization
+  672 |             __g.items.push_back(Sr{sr, d});
+      |                                    ^~
+      |                                    |
+      |                                    StoreReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:678:67: error: cannot convert ‘StoreReturn’ to ‘int’ in initialization
+  678 |           __groups.push_back(__struct12{__key, std::vector<Sr>{Sr{sr, d}}});
+      |                                                                   ^~
+      |                                                                   |
+      |                                                                   StoreReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:678:73: error: no matching function for call to ‘std::vector<Sr>::vector(<brace-enclosed initializer list>)’
+  678 |           __groups.push_back(__struct12{__key, std::vector<Sr>{Sr{sr, d}}});
+      |                                                                         ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Sr; _Alloc = std::allocator<Sr>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; allocator_type = std::allocator<Sr>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; std::__type_identity_t<_Alloc> = std::allocator<Sr>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Sr; _Alloc = std::allocator<Sr>; allocator_type = std::allocator<Sr>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Sr; _Alloc = std::allocator<Sr>; allocator_type = std::allocator<Sr>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; std::__type_identity_t<_Alloc> = std::allocator<Sr>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Sr; _Alloc = std::allocator<Sr>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Sr; _Alloc = std::allocator<Sr>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; size_type = long unsigned int; value_type = Sr; allocator_type = std::allocator<Sr>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; size_type = long unsigned int; allocator_type = std::allocator<Sr>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Sr; _Alloc = std::allocator<Sr>; allocator_type = std::allocator<Sr>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Sr; _Alloc = std::allocator<Sr>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:688:56: error: request for member ‘sr_return_amt’ in ‘std::declval<Sr>().Sr::sr’, which is of non-class type ‘int’
+  688 |             std::vector<decltype(std::declval<Sr>().sr.sr_return_amt)> __items;
+      |                                                        ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:688:56: error: request for member ‘sr_return_amt’ in ‘std::declval<Sr>().Sr::sr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:688:70: error: template argument 1 is invalid
+  688 |             std::vector<decltype(std::declval<Sr>().sr.sr_return_amt)> __items;
+      |                                                                      ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:688:70: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:690:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  690 |               __items.push_back(x.sr.sr_return_amt);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:690:38: error: request for member ‘sr_return_amt’ in ‘x.Sr::sr’, which is of non-class type ‘int’
+  690 |               __items.push_back(x.sr.sr_return_amt);
+      |                                      ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:687:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:686:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  686 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:686:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  686 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:697:56: error: request for member ‘sr_net_loss’ in ‘std::declval<Sr>().Sr::sr’, which is of non-class type ‘int’
+  697 |             std::vector<decltype(std::declval<Sr>().sr.sr_net_loss)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:697:56: error: request for member ‘sr_net_loss’ in ‘std::declval<Sr>().Sr::sr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:697:68: error: template argument 1 is invalid
+  697 |             std::vector<decltype(std::declval<Sr>().sr.sr_net_loss)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:697:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:699:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  699 |               __items.push_back(x.sr.sr_net_loss);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:699:38: error: request for member ‘sr_net_loss’ in ‘x.Sr::sr’, which is of non-class type ‘int’
+  699 |               __items.push_back(x.sr.sr_net_loss);
+      |                                      ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:4)> [with auto:4 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:696:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:695:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  695 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:695:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  695 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:705:5: error: conversion from ‘vector<__struct13>’ to non-scalar type ‘vector<Sr>’ requested
+  662 |   std::vector<Sr> sr = ([&]() {
+      |                        ~~~~~~~~
+  663 |     std::vector<__struct12> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  664 |     for (auto sr : store_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  665 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  666 |         if (!((d.d_date_sk == sr.sr_returned_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  667 |           continue;
+      |           ~~~~~~~~~
+  668 |         auto __key = sr.s_store_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  669 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  670 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  671 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  672 |             __g.items.push_back(Sr{sr, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  673 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  674 |             break;
+      |             ~~~~~~
+  675 |           }
+      |           ~
+  676 |         }
+      |         ~
+  677 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  678 |           __groups.push_back(__struct12{__key, std::vector<Sr>{Sr{sr, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  679 |         }
+      |         ~
+  680 |       }
+      |       ~
+  681 |     }
+      |     ~
+  682 |     std::vector<__struct13> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  683 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  684 |       __items.push_back(__struct13{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  685 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  686 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  687 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  688 |             std::vector<decltype(std::declval<Sr>().sr.sr_return_amt)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  689 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  690 |               __items.push_back(x.sr.sr_return_amt);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  691 |             }
+      |             ~
+  692 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  693 |           })()),
+      |           ~~~~~~
+  694 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  695 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  696 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  697 |             std::vector<decltype(std::declval<Sr>().sr.sr_net_loss)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  698 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  699 |               __items.push_back(x.sr.sr_net_loss);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  700 |             }
+      |             ~
+  701 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  702 |           })())});
+      |           ~~~~~~~~
+  703 |     }
+      |     ~
+  704 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  705 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:716:35: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  716 |             __g.items.push_back(C{cs, d});
+      |                                   ^~
+      |                                   |
+      |                                   CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:722:65: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  722 |           __groups.push_back(__struct15{__key, std::vector<C>{C{cs, d}}});
+      |                                                                 ^~
+      |                                                                 |
+      |                                                                 CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:722:71: error: no matching function for call to ‘std::vector<C>::vector(<brace-enclosed initializer list>)’
+  722 |           __groups.push_back(__struct15{__key, std::vector<C>{C{cs, d}}});
+      |                                                                       ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = C; _Alloc = std::allocator<C>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = C; _Alloc = std::allocator<C>; allocator_type = std::allocator<C>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = C; _Alloc = std::allocator<C>; std::__type_identity_t<_Alloc> = std::allocator<C>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = C; _Alloc = std::allocator<C>; allocator_type = std::allocator<C>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = C; _Alloc = std::allocator<C>; allocator_type = std::allocator<C>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = C; _Alloc = std::allocator<C>; std::__type_identity_t<_Alloc> = std::allocator<C>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = C; _Alloc = std::allocator<C>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = C; _Alloc = std::allocator<C>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = C; _Alloc = std::allocator<C>; size_type = long unsigned int; value_type = C; allocator_type = std::allocator<C>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = C; _Alloc = std::allocator<C>; size_type = long unsigned int; allocator_type = std::allocator<C>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = C; _Alloc = std::allocator<C>; allocator_type = std::allocator<C>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = C; _Alloc = std::allocator<C>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:732:55: error: request for member ‘cs_ext_sales_price’ in ‘std::declval<C>().C::cs’, which is of non-class type ‘int’
+  732 |             std::vector<decltype(std::declval<C>().cs.cs_ext_sales_price)>
+      |                                                       ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:732:55: error: request for member ‘cs_ext_sales_price’ in ‘std::declval<C>().C::cs’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:732:74: error: template argument 1 is invalid
+  732 |             std::vector<decltype(std::declval<C>().cs.cs_ext_sales_price)>
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:732:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:735:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  735 |               __items.push_back(x.cs.cs_ext_sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:735:38: error: request for member ‘cs_ext_sales_price’ in ‘x.C::cs’, which is of non-class type ‘int’
+  735 |               __items.push_back(x.cs.cs_ext_sales_price);
+      |                                      ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:5)> [with auto:5 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:731:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:730:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  730 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:730:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  730 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:742:55: error: request for member ‘cs_net_profit’ in ‘std::declval<C>().C::cs’, which is of non-class type ‘int’
+  742 |             std::vector<decltype(std::declval<C>().cs.cs_net_profit)> __items;
+      |                                                       ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:742:55: error: request for member ‘cs_net_profit’ in ‘std::declval<C>().C::cs’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:742:69: error: template argument 1 is invalid
+  742 |             std::vector<decltype(std::declval<C>().cs.cs_net_profit)> __items;
+      |                                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:742:69: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:744:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  744 |               __items.push_back(x.cs.cs_net_profit);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:744:38: error: request for member ‘cs_net_profit’ in ‘x.C::cs’, which is of non-class type ‘int’
+  744 |               __items.push_back(x.cs.cs_net_profit);
+      |                                      ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:6)> [with auto:6 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:741:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:740:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  740 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:740:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  740 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:750:5: error: conversion from ‘vector<__struct16>’ to non-scalar type ‘vector<C>’ requested
+  706 |   std::vector<C> cs = ([&]() {
+      |                       ~~~~~~~~
+  707 |     std::vector<__struct15> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  708 |     for (auto cs : catalog_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  709 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  710 |         if (!((d.d_date_sk == cs.cs_sold_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  711 |           continue;
+      |           ~~~~~~~~~
+  712 |         auto __key = cs.cs_call_center_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  713 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  714 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  715 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  716 |             __g.items.push_back(C{cs, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  717 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  718 |             break;
+      |             ~~~~~~
+  719 |           }
+      |           ~
+  720 |         }
+      |         ~
+  721 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  722 |           __groups.push_back(__struct15{__key, std::vector<C>{C{cs, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  723 |         }
+      |         ~
+  724 |       }
+      |       ~
+  725 |     }
+      |     ~
+  726 |     std::vector<__struct16> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  727 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  728 |       __items.push_back(__struct16{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  729 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  730 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  731 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  732 |             std::vector<decltype(std::declval<C>().cs.cs_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  733 |                 __items;
+      |                 ~~~~~~~~
+  734 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  735 |               __items.push_back(x.cs.cs_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  736 |             }
+      |             ~
+  737 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  738 |           })()),
+      |           ~~~~~~
+  739 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  740 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  741 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  742 |             std::vector<decltype(std::declval<C>().cs.cs_net_profit)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  743 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  744 |               __items.push_back(x.cs.cs_net_profit);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  745 |             }
+      |             ~
+  746 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  747 |           })())});
+      |           ~~~~~~~~
+  748 |     }
+      |     ~
+  749 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  750 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:761:36: error: cannot convert ‘CatalogReturn’ to ‘int’ in initialization
+  761 |             __g.items.push_back(Cr{cr, d});
+      |                                    ^~
+      |                                    |
+      |                                    CatalogReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:767:67: error: cannot convert ‘CatalogReturn’ to ‘int’ in initialization
+  767 |           __groups.push_back(__struct18{__key, std::vector<Cr>{Cr{cr, d}}});
+      |                                                                   ^~
+      |                                                                   |
+      |                                                                   CatalogReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:767:73: error: no matching function for call to ‘std::vector<Cr>::vector(<brace-enclosed initializer list>)’
+  767 |           __groups.push_back(__struct18{__key, std::vector<Cr>{Cr{cr, d}}});
+      |                                                                         ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Cr; _Alloc = std::allocator<Cr>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; allocator_type = std::allocator<Cr>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; std::__type_identity_t<_Alloc> = std::allocator<Cr>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Cr; _Alloc = std::allocator<Cr>; allocator_type = std::allocator<Cr>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Cr; _Alloc = std::allocator<Cr>; allocator_type = std::allocator<Cr>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; std::__type_identity_t<_Alloc> = std::allocator<Cr>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Cr; _Alloc = std::allocator<Cr>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Cr; _Alloc = std::allocator<Cr>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; size_type = long unsigned int; value_type = Cr; allocator_type = std::allocator<Cr>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; size_type = long unsigned int; allocator_type = std::allocator<Cr>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Cr; _Alloc = std::allocator<Cr>; allocator_type = std::allocator<Cr>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Cr; _Alloc = std::allocator<Cr>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:777:56: error: request for member ‘cr_return_amount’ in ‘std::declval<Cr>().Cr::cr’, which is of non-class type ‘int’
+  777 |             std::vector<decltype(std::declval<Cr>().cr.cr_return_amount)>
+      |                                                        ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:777:56: error: request for member ‘cr_return_amount’ in ‘std::declval<Cr>().Cr::cr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:777:73: error: template argument 1 is invalid
+  777 |             std::vector<decltype(std::declval<Cr>().cr.cr_return_amount)>
+      |                                                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:777:73: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:780:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  780 |               __items.push_back(x.cr.cr_return_amount);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:780:38: error: request for member ‘cr_return_amount’ in ‘x.Cr::cr’, which is of non-class type ‘int’
+  780 |               __items.push_back(x.cr.cr_return_amount);
+      |                                      ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:7)> [with auto:7 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:776:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:775:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  775 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:775:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  775 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:787:56: error: request for member ‘cr_net_loss’ in ‘std::declval<Cr>().Cr::cr’, which is of non-class type ‘int’
+  787 |             std::vector<decltype(std::declval<Cr>().cr.cr_net_loss)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:787:56: error: request for member ‘cr_net_loss’ in ‘std::declval<Cr>().Cr::cr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:787:68: error: template argument 1 is invalid
+  787 |             std::vector<decltype(std::declval<Cr>().cr.cr_net_loss)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:787:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:789:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  789 |               __items.push_back(x.cr.cr_net_loss);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:789:38: error: request for member ‘cr_net_loss’ in ‘x.Cr::cr’, which is of non-class type ‘int’
+  789 |               __items.push_back(x.cr.cr_net_loss);
+      |                                      ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:8)> [with auto:8 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:786:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:785:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  785 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:785:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  785 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:795:5: error: conversion from ‘vector<__struct19>’ to non-scalar type ‘vector<Cr>’ requested
+  751 |   std::vector<Cr> cr = ([&]() {
+      |                        ~~~~~~~~
+  752 |     std::vector<__struct18> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  753 |     for (auto cr : catalog_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  754 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  755 |         if (!((d.d_date_sk == cr.cr_returned_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  756 |           continue;
+      |           ~~~~~~~~~
+  757 |         auto __key = cr.cr_call_center_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  758 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  759 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  760 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  761 |             __g.items.push_back(Cr{cr, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  762 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  763 |             break;
+      |             ~~~~~~
+  764 |           }
+      |           ~
+  765 |         }
+      |         ~
+  766 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  767 |           __groups.push_back(__struct18{__key, std::vector<Cr>{Cr{cr, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  768 |         }
+      |         ~
+  769 |       }
+      |       ~
+  770 |     }
+      |     ~
+  771 |     std::vector<__struct19> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  772 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  773 |       __items.push_back(__struct19{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  774 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  775 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  776 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  777 |             std::vector<decltype(std::declval<Cr>().cr.cr_return_amount)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  778 |                 __items;
+      |                 ~~~~~~~~
+  779 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  780 |               __items.push_back(x.cr.cr_return_amount);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  781 |             }
+      |             ~
+  782 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  783 |           })()),
+      |           ~~~~~~
+  784 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  785 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  786 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  787 |             std::vector<decltype(std::declval<Cr>().cr.cr_net_loss)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  788 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  789 |               __items.push_back(x.cr.cr_net_loss);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  790 |             }
+      |             ~
+  791 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  792 |           })())});
+      |           ~~~~~~~~
+  793 |     }
+      |     ~
+  794 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  795 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:806:35: error: cannot convert ‘WebSale’ to ‘int’ in initialization
+  806 |             __g.items.push_back(W{ws, d});
+      |                                   ^~
+      |                                   |
+      |                                   WebSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:812:65: error: cannot convert ‘WebSale’ to ‘int’ in initialization
+  812 |           __groups.push_back(__struct21{__key, std::vector<W>{W{ws, d}}});
+      |                                                                 ^~
+      |                                                                 |
+      |                                                                 WebSale
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:812:71: error: no matching function for call to ‘std::vector<W>::vector(<brace-enclosed initializer list>)’
+  812 |           __groups.push_back(__struct21{__key, std::vector<W>{W{ws, d}}});
+      |                                                                       ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = W; _Alloc = std::allocator<W>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = W; _Alloc = std::allocator<W>; allocator_type = std::allocator<W>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = W; _Alloc = std::allocator<W>; std::__type_identity_t<_Alloc> = std::allocator<W>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = W; _Alloc = std::allocator<W>; allocator_type = std::allocator<W>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = W; _Alloc = std::allocator<W>; allocator_type = std::allocator<W>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = W; _Alloc = std::allocator<W>; std::__type_identity_t<_Alloc> = std::allocator<W>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = W; _Alloc = std::allocator<W>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = W; _Alloc = std::allocator<W>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = W; _Alloc = std::allocator<W>; size_type = long unsigned int; value_type = W; allocator_type = std::allocator<W>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = W; _Alloc = std::allocator<W>; size_type = long unsigned int; allocator_type = std::allocator<W>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = W; _Alloc = std::allocator<W>; allocator_type = std::allocator<W>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = W; _Alloc = std::allocator<W>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:822:55: error: request for member ‘ws_ext_sales_price’ in ‘std::declval<W>().W::ws’, which is of non-class type ‘int’
+  822 |             std::vector<decltype(std::declval<W>().ws.ws_ext_sales_price)>
+      |                                                       ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:822:55: error: request for member ‘ws_ext_sales_price’ in ‘std::declval<W>().W::ws’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:822:74: error: template argument 1 is invalid
+  822 |             std::vector<decltype(std::declval<W>().ws.ws_ext_sales_price)>
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:822:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:825:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  825 |               __items.push_back(x.ws.ws_ext_sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:825:38: error: request for member ‘ws_ext_sales_price’ in ‘x.W::ws’, which is of non-class type ‘int’
+  825 |               __items.push_back(x.ws.ws_ext_sales_price);
+      |                                      ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:9)> [with auto:9 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:821:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:820:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  820 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:820:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  820 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:832:55: error: request for member ‘ws_net_profit’ in ‘std::declval<W>().W::ws’, which is of non-class type ‘int’
+  832 |             std::vector<decltype(std::declval<W>().ws.ws_net_profit)> __items;
+      |                                                       ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:832:55: error: request for member ‘ws_net_profit’ in ‘std::declval<W>().W::ws’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:832:69: error: template argument 1 is invalid
+  832 |             std::vector<decltype(std::declval<W>().ws.ws_net_profit)> __items;
+      |                                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:832:69: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:834:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  834 |               __items.push_back(x.ws.ws_net_profit);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:834:38: error: request for member ‘ws_net_profit’ in ‘x.W::ws’, which is of non-class type ‘int’
+  834 |               __items.push_back(x.ws.ws_net_profit);
+      |                                      ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:10)> [with auto:10 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:831:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:830:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  830 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:830:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  830 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:840:5: error: conversion from ‘vector<__struct22>’ to non-scalar type ‘vector<W>’ requested
+  796 |   std::vector<W> ws = ([&]() {
+      |                       ~~~~~~~~
+  797 |     std::vector<__struct21> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  798 |     for (auto ws : web_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  799 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  800 |         if (!((d.d_date_sk == ws.ws_sold_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  801 |           continue;
+      |           ~~~~~~~~~
+  802 |         auto __key = ws.ws_web_page_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  803 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  804 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  805 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  806 |             __g.items.push_back(W{ws, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  807 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  808 |             break;
+      |             ~~~~~~
+  809 |           }
+      |           ~
+  810 |         }
+      |         ~
+  811 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  812 |           __groups.push_back(__struct21{__key, std::vector<W>{W{ws, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  813 |         }
+      |         ~
+  814 |       }
+      |       ~
+  815 |     }
+      |     ~
+  816 |     std::vector<__struct22> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  817 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  818 |       __items.push_back(__struct22{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  819 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  820 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  821 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  822 |             std::vector<decltype(std::declval<W>().ws.ws_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  823 |                 __items;
+      |                 ~~~~~~~~
+  824 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  825 |               __items.push_back(x.ws.ws_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  826 |             }
+      |             ~
+  827 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  828 |           })()),
+      |           ~~~~~~
+  829 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  830 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  831 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  832 |             std::vector<decltype(std::declval<W>().ws.ws_net_profit)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  833 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  834 |               __items.push_back(x.ws.ws_net_profit);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  835 |             }
+      |             ~
+  836 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  837 |           })())});
+      |           ~~~~~~~~
+  838 |     }
+      |     ~
+  839 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  840 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:851:36: error: cannot convert ‘WebReturn’ to ‘int’ in initialization
+  851 |             __g.items.push_back(Wr{wr, d});
+      |                                    ^~
+      |                                    |
+      |                                    WebReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:857:67: error: cannot convert ‘WebReturn’ to ‘int’ in initialization
+  857 |           __groups.push_back(__struct24{__key, std::vector<Wr>{Wr{wr, d}}});
+      |                                                                   ^~
+      |                                                                   |
+      |                                                                   WebReturn
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:857:73: error: no matching function for call to ‘std::vector<Wr>::vector(<brace-enclosed initializer list>)’
+  857 |           __groups.push_back(__struct24{__key, std::vector<Wr>{Wr{wr, d}}});
+      |                                                                         ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Wr; _Alloc = std::allocator<Wr>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; allocator_type = std::allocator<Wr>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; std::__type_identity_t<_Alloc> = std::allocator<Wr>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Wr; _Alloc = std::allocator<Wr>; allocator_type = std::allocator<Wr>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Wr; _Alloc = std::allocator<Wr>; allocator_type = std::allocator<Wr>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; std::__type_identity_t<_Alloc> = std::allocator<Wr>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Wr; _Alloc = std::allocator<Wr>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Wr; _Alloc = std::allocator<Wr>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; size_type = long unsigned int; value_type = Wr; allocator_type = std::allocator<Wr>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; size_type = long unsigned int; allocator_type = std::allocator<Wr>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Wr; _Alloc = std::allocator<Wr>; allocator_type = std::allocator<Wr>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Wr; _Alloc = std::allocator<Wr>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:867:56: error: request for member ‘wr_return_amt’ in ‘std::declval<Wr>().Wr::wr’, which is of non-class type ‘int’
+  867 |             std::vector<decltype(std::declval<Wr>().wr.wr_return_amt)> __items;
+      |                                                        ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:867:56: error: request for member ‘wr_return_amt’ in ‘std::declval<Wr>().Wr::wr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:867:70: error: template argument 1 is invalid
+  867 |             std::vector<decltype(std::declval<Wr>().wr.wr_return_amt)> __items;
+      |                                                                      ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:867:70: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:869:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  869 |               __items.push_back(x.wr.wr_return_amt);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:869:38: error: request for member ‘wr_return_amt’ in ‘x.Wr::wr’, which is of non-class type ‘int’
+  869 |               __items.push_back(x.wr.wr_return_amt);
+      |                                      ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:11)> [with auto:11 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:866:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:865:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  865 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:865:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  865 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:876:56: error: request for member ‘wr_net_loss’ in ‘std::declval<Wr>().Wr::wr’, which is of non-class type ‘int’
+  876 |             std::vector<decltype(std::declval<Wr>().wr.wr_net_loss)> __items;
+      |                                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:876:56: error: request for member ‘wr_net_loss’ in ‘std::declval<Wr>().Wr::wr’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:876:68: error: template argument 1 is invalid
+  876 |             std::vector<decltype(std::declval<Wr>().wr.wr_net_loss)> __items;
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:876:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:878:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  878 |               __items.push_back(x.wr.wr_net_loss);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:878:38: error: request for member ‘wr_net_loss’ in ‘x.Wr::wr’, which is of non-class type ‘int’
+  878 |               __items.push_back(x.wr.wr_net_loss);
+      |                                      ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:12)> [with auto:12 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:875:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:874:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  874 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:874:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  874 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:884:5: error: conversion from ‘vector<__struct25>’ to non-scalar type ‘vector<Wr>’ requested
+  841 |   std::vector<Wr> wr = ([&]() {
+      |                        ~~~~~~~~
+  842 |     std::vector<__struct24> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  843 |     for (auto wr : web_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  844 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  845 |         if (!((d.d_date_sk == wr.wr_returned_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  846 |           continue;
+      |           ~~~~~~~~~
+  847 |         auto __key = wr.wr_web_page_sk;
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  848 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+  849 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  850 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+  851 |             __g.items.push_back(Wr{wr, d});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  852 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+  853 |             break;
+      |             ~~~~~~
+  854 |           }
+      |           ~
+  855 |         }
+      |         ~
+  856 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+  857 |           __groups.push_back(__struct24{__key, std::vector<Wr>{Wr{wr, d}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  858 |         }
+      |         ~
+  859 |       }
+      |       ~
+  860 |     }
+      |     ~
+  861 |     std::vector<__struct25> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  862 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  863 |       __items.push_back(__struct25{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  864 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  865 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  866 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  867 |             std::vector<decltype(std::declval<Wr>().wr.wr_return_amt)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  868 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  869 |               __items.push_back(x.wr.wr_return_amt);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  870 |             }
+      |             ~
+  871 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  872 |           })()),
+      |           ~~~~~~
+  873 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  874 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  875 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  876 |             std::vector<decltype(std::declval<Wr>().wr.wr_net_loss)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  877 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  878 |               __items.push_back(x.wr.wr_net_loss);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  879 |             }
+      |             ~
+  880 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  881 |           })())});
+      |           ~~~~~~~~
+  882 |     }
+      |     ~
+  883 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  884 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:892:31: error: ‘struct S’ has no member named ‘s_store_sk’
+  892 |                      if (!((s.s_store_sk == r.s_store_sk)))
+      |                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:892:47: error: ‘struct Sr’ has no member named ‘s_store_sk’
+  892 |                      if (!((s.s_store_sk == r.s_store_sk)))
+      |                                               ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:896:58: error: ‘struct S’ has no member named ‘s_store_sk’
+  896 |                          std::string("store channel"), s.s_store_sk, s.sales,
+      |                                                          ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:896:72: error: ‘struct S’ has no member named ‘sales’
+  896 |                          std::string("store channel"), s.s_store_sk, s.sales,
+      |                                                                        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:897:30: error: no match for ‘operator==’ (operand types are ‘Sr’ and ‘std::nullptr_t’)
+  897 |                          ((r == nullptr) ? 0 : r.returns),
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:897:50: error: ‘struct Sr’ has no member named ‘returns’
+  897 |                          ((r == nullptr) ? 0 : r.returns),
+      |                                                  ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:898:29: error: ‘struct S’ has no member named ‘profit’
+  898 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:898:43: error: no match for ‘operator==’ (operand types are ‘Sr’ and ‘std::nullptr_t’)
+  898 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                         ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:898:63: error: ‘struct Sr’ has no member named ‘profit_loss’
+  898 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                                               ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:903:58: error: ‘struct S’ has no member named ‘s_store_sk’
+  903 |                          std::string("store channel"), s.s_store_sk, s.sales,
+      |                                                          ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:903:72: error: ‘struct S’ has no member named ‘sales’
+  903 |                          std::string("store channel"), s.s_store_sk, s.sales,
+      |                                                                        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:904:30: error: no match for ‘operator==’ (operand types are ‘Sr’ and ‘std::nullptr_t’)
+  904 |                          ((r == nullptr) ? 0 : r.returns),
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:904:50: error: ‘struct Sr’ has no member named ‘returns’
+  904 |                          ((r == nullptr) ? 0 : r.returns),
+      |                                                  ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:905:29: error: ‘struct S’ has no member named ‘profit’
+  905 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:905:43: error: no match for ‘operator==’ (operand types are ‘Sr’ and ‘std::nullptr_t’)
+  905 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                         ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:905:63: error: ‘struct Sr’ has no member named ‘profit_loss’
+  905 |                          (s.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                                               ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:915:29: error: ‘struct C’ has no member named ‘cs_call_center_sk’
+  915 |                    if (!((c.cs_call_center_sk == r.cr_call_center_sk)))
+      |                             ^~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:915:52: error: ‘struct Cr’ has no member named ‘cr_call_center_sk’
+  915 |                    if (!((c.cs_call_center_sk == r.cr_call_center_sk)))
+      |                                                    ^~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:918:58: error: ‘struct C’ has no member named ‘cs_call_center_sk’
+  918 |                        std::string("catalog channel"), c.cs_call_center_sk,
+      |                                                          ^~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:919:26: error: ‘struct C’ has no member named ‘sales’
+  919 |                        c.sales, r.returns, (c.profit - r.profit_loss)});
+      |                          ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:919:35: error: ‘struct Cr’ has no member named ‘returns’
+  919 |                        c.sales, r.returns, (c.profit - r.profit_loss)});
+      |                                   ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:919:47: error: ‘struct C’ has no member named ‘profit’
+  919 |                        c.sales, r.returns, (c.profit - r.profit_loss)});
+      |                                               ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:919:58: error: ‘struct Cr’ has no member named ‘profit_loss’
+  919 |                        c.sales, r.returns, (c.profit - r.profit_loss)});
+      |                                                          ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:930:31: error: ‘struct W’ has no member named ‘wp_web_page_sk’
+  930 |                      if (!((w.wp_web_page_sk == r.wp_web_page_sk)))
+      |                               ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:930:51: error: ‘struct Wr’ has no member named ‘wp_web_page_sk’
+  930 |                      if (!((w.wp_web_page_sk == r.wp_web_page_sk)))
+      |                                                   ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:934:56: error: ‘struct W’ has no member named ‘wp_web_page_sk’
+  934 |                          std::string("web channel"), w.wp_web_page_sk, w.sales,
+      |                                                        ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:934:74: error: ‘struct W’ has no member named ‘sales’
+  934 |                          std::string("web channel"), w.wp_web_page_sk, w.sales,
+      |                                                                          ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:935:30: error: no match for ‘operator==’ (operand types are ‘Wr’ and ‘std::nullptr_t’)
+  935 |                          ((r == nullptr) ? 0 : r.returns),
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:935:50: error: ‘struct Wr’ has no member named ‘returns’
+  935 |                          ((r == nullptr) ? 0 : r.returns),
+      |                                                  ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:936:29: error: ‘struct W’ has no member named ‘profit’
+  936 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:936:43: error: no match for ‘operator==’ (operand types are ‘Wr’ and ‘std::nullptr_t’)
+  936 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                         ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:936:63: error: ‘struct Wr’ has no member named ‘profit_loss’
+  936 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                                               ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:941:56: error: ‘struct W’ has no member named ‘wp_web_page_sk’
+  941 |                          std::string("web channel"), w.wp_web_page_sk, w.sales,
+      |                                                        ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:941:74: error: ‘struct W’ has no member named ‘sales’
+  941 |                          std::string("web channel"), w.wp_web_page_sk, w.sales,
+      |                                                                          ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:942:30: error: no match for ‘operator==’ (operand types are ‘Wr’ and ‘std::nullptr_t’)
+  942 |                          ((r == nullptr) ? 0 : r.returns),
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:942:50: error: ‘struct Wr’ has no member named ‘returns’
+  942 |                          ((r == nullptr) ? 0 : r.returns),
+      |                                                  ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:943:29: error: ‘struct W’ has no member named ‘profit’
+  943 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:943:43: error: no match for ‘operator==’ (operand types are ‘Wr’ and ‘std::nullptr_t’)
+  943 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                         ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:943:63: error: ‘struct Wr’ has no member named ‘profit_loss’
+  943 |                          (w.profit - (((r == nullptr) ? 0 : r.profit_loss)))});
+      |                                                               ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:886:7: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  886 |       concat(([&]() {
+      |       ^~~~~~
+      |       wcsncat
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:955:21: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+  955 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 Result Result
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:976:66: error: ‘struct PerChannel’ has no member named ‘p’
+  976 |                  std::vector<decltype(std::declval<PerChannel>().p.sales)>
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:976:66: error: ‘struct PerChannel’ has no member named ‘p’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:976:74: error: template argument 1 is invalid
+  976 |                  std::vector<decltype(std::declval<PerChannel>().p.sales)>
+      |                                                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:976:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:979:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  979 |                    __items.push_back(x.p.sales);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:979:40: error: ‘struct PerChannel’ has no member named ‘p’
+  979 |                    __items.push_back(x.p.sales);
+      |                                        ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:13)> [with auto:13 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:975:18:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:974:43: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  974 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                         ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:974:54: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  974 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                    ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:986:66: error: ‘struct PerChannel’ has no member named ‘p’
+  986 |                  std::vector<decltype(std::declval<PerChannel>().p.returns)>
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:986:66: error: ‘struct PerChannel’ has no member named ‘p’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:986:76: error: template argument 1 is invalid
+  986 |                  std::vector<decltype(std::declval<PerChannel>().p.returns)>
+      |                                                                            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:986:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:989:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  989 |                    __items.push_back(x.p.returns);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:989:40: error: ‘struct PerChannel’ has no member named ‘p’
+  989 |                    __items.push_back(x.p.returns);
+      |                                        ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:14)> [with auto:14 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:985:18:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:984:43: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  984 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                         ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:984:54: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  984 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                    ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:996:66: error: ‘struct PerChannel’ has no member named ‘p’
+  996 |                  std::vector<decltype(std::declval<PerChannel>().p.profit)>
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:996:66: error: ‘struct PerChannel’ has no member named ‘p’
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:996:75: error: template argument 1 is invalid
+  996 |                  std::vector<decltype(std::declval<PerChannel>().p.profit)>
+      |                                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:996:75: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:999:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  999 |                    __items.push_back(x.p.profit);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:999:40: error: ‘struct PerChannel’ has no member named ‘p’
+  999 |                    __items.push_back(x.p.profit);
+      |                                        ^
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:15)> [with auto:15 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:995:18:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:994:43: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  994 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                         ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:994:54: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  994 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                    ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq772109394433/001/prog.cpp:970:24: error: no matching function for call to ‘std::vector<std::pair<std::__cxx11::basic_string<char>, PerChannel> >::push_back(<brace-enclosed initializer list>)’
+  970 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~^
+  971 |           {g.key.channel,
+      |           ~~~~~~~~~~~~~~~
+  972 |            PerChannel{
+      |            ~~~~~~~~~~~  
+  973 |                g.key.channel, g.key.id, ([&](auto v) {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  974 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  975 |                })(([&]() {
+      |                ~~~~~~~~~~~
+  976 |                  std::vector<decltype(std::declval<PerChannel>().p.sales)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  977 |                      __items;
+      |                      ~~~~~~~~
+  978 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  979 |                    __items.push_back(x.p.sales);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  980 |                  }
+      |                  ~      
+  981 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  982 |                })()),
+      |                ~~~~~~   
+  983 |                ([&](auto v) {
+      |                ~~~~~~~~~~~~~~
+  984 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  985 |                })(([&]() {
+      |                ~~~~~~~~~~~
+  986 |                  std::vector<decltype(std::declval<PerChannel>().p.returns)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  987 |                      __items;
+      |                      ~~~~~~~~
+  988 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  989 |                    __items.push_back(x.p.returns);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  990 |                  }
+      |                  ~      
+  991 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  992 |                })()),
+      |                ~~~~~~   
+  993 |                ([&](auto v) {
+      |                ~~~~~~~~~~~~~~
+  994 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  995 |                })(([&]() {
+      |                ~~~~~~~~~~~
+  996 |                  std::vector<decltype(std::declval<PerChannel>().p.profit)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  997 |                      __items;
+      |                      ~~~~~~~~
+  998 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  999 |                    __items.push_back(x.p.profit);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 1000 |                  }
+      |                  ~      
+ 1001 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+ 1002 |                })())}});
+      |                ~~~~~~~~ 
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<std::__cxx11::basic_string<char>, PerChannel>; _Alloc = std::allocator<std::pair<std::__cxx11::basic_string<char>, PerChannel> >; value_type = std::pair<std::__cxx11::basic_string<char>, PerChannel>]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::vector<std::pair<std::__cxx11::basic_string<char>, PerChannel> >::value_type&’ {aka ‘const std::pair<std::__cxx11::basic_string<char>, PerChannel>&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = std::pair<std::__cxx11::basic_string<char>, PerChannel>; _Alloc = std::allocator<std::pair<std::__cxx11::basic_string<char>, PerChannel> >; value_type = std::pair<std::__cxx11::basic_string<char>, PerChannel>]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<std::__cxx11::basic_string<char>, PerChannel> >::value_type&&’ {aka ‘std::pair<std::__cxx11::basic_string<char>, PerChannel>&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~

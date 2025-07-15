@@ -1,0 +1,474 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:95:8: error: redefinition of ‘struct StoreSale’
+   95 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:56:8: note: previous definition of ‘struct StoreSale’
+   56 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:102:8: error: redefinition of ‘struct StoreReturn’
+  102 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:63:8: note: previous definition of ‘struct StoreReturn’
+   63 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:106:8: error: redefinition of ‘struct Store’
+  106 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:67:8: note: previous definition of ‘struct Store’
+   67 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:113:8: error: redefinition of ‘struct Item’
+  113 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:74:8: note: previous definition of ‘struct Item’
+   74 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:121:8: error: redefinition of ‘struct Customer’
+  121 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:82:8: note: previous definition of ‘struct Customer’
+   82 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:135:12: error: ‘c’ was not declared in this scope
+  135 |   decltype(c.c_last_name) last;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:135:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:136:12: error: ‘c’ was not declared in this scope
+  136 |   decltype(c.c_first_name) first;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:136:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:137:12: error: ‘s’ was not declared in this scope
+  137 |   decltype(s.s_store_name) store_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:137:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:138:12: error: ‘i’ was not declared in this scope
+  138 |   decltype(i.i_color) color;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:138:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:141:12: error: ‘ss’ was not declared in this scope
+  141 |   decltype(ss) ss;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:141:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:142:12: error: ‘sr’ was not declared in this scope; did you mean ‘ss’?
+  142 |   decltype(sr) sr;
+      |            ^~
+      |            ss
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:142:12: error: ‘sr’ was not declared in this scope; did you mean ‘ss’?
+  142 |   decltype(sr) sr;
+      |            ^~
+      |            ss
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:143:12: error: ‘s’ was not declared in this scope; did you mean ‘sr’?
+  143 |   decltype(s) s;
+      |            ^
+      |            sr
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:143:12: error: ‘s’ was not declared in this scope; did you mean ‘sr’?
+  143 |   decltype(s) s;
+      |            ^
+      |            sr
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:144:12: error: ‘i’ was not declared in this scope
+  144 |   decltype(i) i;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:144:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:145:12: error: ‘c’ was not declared in this scope
+  145 |   decltype(c) c;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:145:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:146:12: error: ‘ca’ was not declared in this scope; did you mean ‘c’?
+  146 |   decltype(ca) ca;
+      |            ^~
+      |            c
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:146:12: error: ‘ca’ was not declared in this scope; did you mean ‘c’?
+  146 |   decltype(ca) ca;
+      |            ^~
+      |            c
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:168:38: error: ‘struct __struct8’ has no member named ‘c_last_name’
+  168 |   decltype(std::declval<__struct8>().c_last_name) c_last_name;
+      |                                      ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:168:38: error: ‘struct __struct8’ has no member named ‘c_last_name’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:169:38: error: ‘struct __struct8’ has no member named ‘c_first_name’
+  169 |   decltype(std::declval<__struct8>().c_first_name) c_first_name;
+      |                                      ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:169:38: error: ‘struct __struct8’ has no member named ‘c_first_name’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:170:38: error: ‘struct __struct8’ has no member named ‘s_store_name’
+  170 |   decltype(std::declval<__struct8>().s_store_name) s_store_name;
+      |                                      ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:170:38: error: ‘struct __struct8’ has no member named ‘s_store_name’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:171:38: error: ‘struct __struct8’ has no member named ‘netpaid’
+  171 |   decltype(std::declval<__struct8>().netpaid) paid;
+      |                                      ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:171:38: error: ‘struct __struct8’ has no member named ‘netpaid’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:338:13: error: redefinition of ‘void __json(const Customer&)’
+  338 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:173:13: note: ‘void __json(const Customer&)’ previously defined here
+  173 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:448:13: error: redefinition of ‘void __json(const Item&)’
+  448 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:228:13: note: ‘void __json(const Item&)’ previously defined here
+  228 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:508:13: error: redefinition of ‘void __json(const Store&)’
+  508 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:263:13: note: ‘void __json(const Store&)’ previously defined here
+  263 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:538:13: error: redefinition of ‘void __json(const StoreReturn&)’
+  538 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:293:13: note: ‘void __json(const StoreReturn&)’ previously defined here
+  293 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:553:13: error: redefinition of ‘void __json(const StoreSale&)’
+  553 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:308:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  308 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:658:26: error: ‘strings’ has not been declared
+  658 |                          strings::ToUpper(ca.ca_country)) &&
+      |                          ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:662:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  662 |                 auto __key = Ssale{c.c_last_name, c.c_first_name,
+      |                                    ~~^~~~~~~~~~~
+      |                                      |
+      |                                      std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:667:51: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  667 |                     __g.items.push_back(__struct8{ss, sr, s, i, c, ca});
+      |                                                   ^~
+      |                                                   |
+      |                                                   StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:675:56: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  675 |                       std::vector<__struct8>{__struct8{ss, sr, s, i, c, ca}}});
+      |                                                        ^~
+      |                                                        |
+      |                                                        StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:675:76: error: no matching function for call to ‘std::vector<__struct8>::vector(<brace-enclosed initializer list>)’
+  675 |                       std::vector<__struct8>{__struct8{ss, sr, s, i, c, ca}}});
+      |                                                                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:9:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct8; _Alloc = std::allocator<__struct8>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; allocator_type = std::allocator<__struct8>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; std::__type_identity_t<_Alloc> = std::allocator<__struct8>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; allocator_type = std::allocator<__struct8>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; allocator_type = std::allocator<__struct8>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; std::__type_identity_t<_Alloc> = std::allocator<__struct8>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; size_type = long unsigned int; value_type = std::vector<__struct8>::value_type; allocator_type = std::allocator<__struct8>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; size_type = long unsigned int; allocator_type = std::allocator<__struct8>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct8; _Alloc = std::allocator<__struct8>; allocator_type = std::allocator<__struct8>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct8; _Alloc = std::allocator<__struct8>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:689:60: error: ‘struct __struct8’ has no member named ‘ss_net_paid’
+  689 |             std::vector<decltype(std::declval<__struct8>().ss_net_paid)>
+      |                                                            ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:689:60: error: ‘struct __struct8’ has no member named ‘ss_net_paid’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:689:72: error: template argument 1 is invalid
+  689 |             std::vector<decltype(std::declval<__struct8>().ss_net_paid)>
+      |                                                                        ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:689:72: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:692:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  692 |               __items.push_back(x.ss_net_paid);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:692:35: error: ‘struct __struct8’ has no member named ‘ss_net_paid’
+  692 |               __items.push_back(x.ss_net_paid);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:688:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:687:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  687 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:687:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  687 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:698:5: error: conversion from ‘vector<__struct10>’ to non-scalar type ‘vector<__struct8>’ requested
+  638 |   std::vector<__struct8> ssales = ([&]() {
+      |                                   ~~~~~~~~
+  639 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  640 |     for (auto ss : store_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  641 |       for (auto sr : store_returns) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  642 |         if (!(((ss.ss_ticket_number == sr.sr_ticket_number) &&
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  643 |                (ss.ss_item_sk == sr.sr_item_sk))))
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  644 |           continue;
+      |           ~~~~~~~~~
+  645 |         for (auto s : store) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~
+  646 |           if (!((ss.ss_store_sk == s.s_store_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  647 |             continue;
+      |             ~~~~~~~~~
+  648 |           for (auto i : item) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  649 |             if (!((ss.ss_item_sk == i.i_item_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  650 |               continue;
+      |               ~~~~~~~~~
+  651 |             for (auto c : customer) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~
+  652 |               if (!((ss.ss_customer_sk == c.c_customer_sk)))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  653 |                 continue;
+      |                 ~~~~~~~~~
+  654 |               for (auto ca : customer_address) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  655 |                 if (!((c.c_current_addr_sk == ca.ca_address_sk)))
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  656 |                   continue;
+      |                   ~~~~~~~~~
+  657 |                 if (!((((c.c_birth_country !=
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  658 |                          strings::ToUpper(ca.ca_country)) &&
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  659 |                         (s.s_zip == ca.ca_zip)) &&
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  660 |                        (s.s_market_id == 5))))
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~
+  661 |                   continue;
+      |                   ~~~~~~~~~
+  662 |                 auto __key = Ssale{c.c_last_name, c.c_first_name,
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  663 |                                    s.s_store_name, i.i_color};
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  664 |                 bool __found = false;
+      |                 ~~~~~~~~~~~~~~~~~~~~~
+  665 |                 for (auto &__g : __groups) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  666 |                   if (__g.key == __key) {
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~
+  667 |                     __g.items.push_back(__struct8{ss, sr, s, i, c, ca});
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  668 |                     __found = true;
+      |                     ~~~~~~~~~~~~~~~
+  669 |                     break;
+      |                     ~~~~~~
+  670 |                   }
+      |                   ~
+  671 |                 }
+      |                 ~
+  672 |                 if (!__found) {
+      |                 ~~~~~~~~~~~~~~~
+  673 |                   __groups.push_back(__struct9{
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  674 |                       __key,
+      |                       ~~~~~~
+  675 |                       std::vector<__struct8>{__struct8{ss, sr, s, i, c, ca}}});
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  676 |                 }
+      |                 ~
+  677 |               }
+      |               ~
+  678 |             }
+      |             ~
+  679 |           }
+      |           ~
+  680 |         }
+      |         ~
+  681 |       }
+      |       ~
+  682 |     }
+      |     ~
+  683 |     std::vector<__struct10> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  684 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  685 |       __items.push_back(__struct10{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  686 |           g.key.last, g.key.first, g.key.store_name, g.key.color, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  687 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  688 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  689 |             std::vector<decltype(std::declval<__struct8>().ss_net_paid)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  690 |                 __items;
+      |                 ~~~~~~~~
+  691 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  692 |               __items.push_back(x.ss_net_paid);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  693 |             }
+      |             ~
+  694 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  695 |           })())});
+      |           ~~~~~~~~
+  696 |     }
+      |     ~
+  697 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  698 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:700:52: error: ‘struct __struct8’ has no member named ‘netpaid’
+  700 |     std::vector<decltype(std::declval<__struct8>().netpaid)> __items;
+      |                                                    ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:700:52: error: ‘struct __struct8’ has no member named ‘netpaid’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:700:60: error: template argument 1 is invalid
+  700 |     std::vector<decltype(std::declval<__struct8>().netpaid)> __items;
+      |                                                            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:700:60: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:702:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  702 |       __items.push_back(x.netpaid);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:702:27: error: ‘struct __struct8’ has no member named ‘netpaid’
+  702 |       __items.push_back(x.netpaid);
+      |                           ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:699:24: error: no matching function for call to ‘__avg(int)’
+  699 |   auto avg_paid = __avg(([&]() {
+      |                   ~~~~~^~~~~~~~~
+  700 |     std::vector<decltype(std::declval<__struct8>().netpaid)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  701 |     for (auto x : ssales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  702 |       __items.push_back(x.netpaid);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  703 |     }
+      |     ~                   
+  704 |     return __items;
+      |     ~~~~~~~~~~~~~~~     
+  705 |   })());
+      |   ~~~~~                 
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:159:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  159 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:159:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:699:24: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  699 |   auto avg_paid = __avg(([&]() {
+      |                   ~~~~~^~~~~~~~~
+  700 |     std::vector<decltype(std::declval<__struct8>().netpaid)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  701 |     for (auto x : ssales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  702 |       __items.push_back(x.netpaid);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  703 |     }
+      |     ~                   
+  704 |     return __items;
+      |     ~~~~~~~~~~~~~~~     
+  705 |   })());
+      |   ~~~~~                 
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:708:54: error: ‘struct __struct8’ has no member named ‘c_last_name’
+  708 |         std::pair<decltype(std::declval<__struct8>().c_last_name), Result>>
+      |                                                      ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:708:54: error: ‘struct __struct8’ has no member named ‘c_last_name’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:708:68: error: template argument 1 is invalid
+  708 |         std::pair<decltype(std::declval<__struct8>().c_last_name), Result>>
+      |                                                                    ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:708:74: error: template argument 1 is invalid
+  708 |         std::pair<decltype(std::declval<__struct8>().c_last_name), Result>>
+      |                                                                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:708:74: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:711:17: error: ‘struct __struct8’ has no member named ‘color’
+  711 |       if (!(((x.color == std::string("RED")) &&
+      |                 ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:712:17: error: ‘struct __struct8’ has no member named ‘netpaid’
+  712 |              (x.netpaid > (0.05 * avg_paid)))))
+      |                 ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:714:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  714 |       __items.push_back(
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:35: error: ‘struct __struct8’ has no member named ‘c_last_name’
+  715 |           {std::vector<decltype(x.c_last_name)>{x.c_last_name, x.c_first_name,
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:35: error: ‘struct __struct8’ has no member named ‘c_last_name’
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:47: error: template argument 1 is invalid
+  715 |           {std::vector<decltype(x.c_last_name)>{x.c_last_name, x.c_first_name,
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:51: error: ‘struct __struct8’ has no member named ‘c_last_name’
+  715 |           {std::vector<decltype(x.c_last_name)>{x.c_last_name, x.c_first_name,
+      |                                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:715:66: error: ‘struct __struct8’ has no member named ‘c_first_name’
+  715 |           {std::vector<decltype(x.c_last_name)>{x.c_last_name, x.c_first_name,
+      |                                                                  ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:716:51: error: ‘struct __struct8’ has no member named ‘s_store_name’
+  716 |                                                 x.s_store_name},
+      |                                                   ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:717:21: error: ‘struct __struct8’ has no member named ‘c_last_name’
+  717 |            Result{x.c_last_name, x.c_first_name, x.s_store_name, x.netpaid}});
+      |                     ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:717:36: error: ‘struct __struct8’ has no member named ‘c_first_name’
+  717 |            Result{x.c_last_name, x.c_first_name, x.s_store_name, x.netpaid}});
+      |                                    ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:717:52: error: ‘struct __struct8’ has no member named ‘s_store_name’
+  717 |            Result{x.c_last_name, x.c_first_name, x.s_store_name, x.netpaid}});
+      |                                                    ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:717:68: error: ‘struct __struct8’ has no member named ‘netpaid’
+  717 |            Result{x.c_last_name, x.c_first_name, x.s_store_name, x.netpaid}});
+      |                                                                    ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:719:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  719 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:719:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  719 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:722:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  722 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq243444485236/001/prog.cpp:722:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  722 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

@@ -1,0 +1,63 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:56:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   56 |       std::vector<decltype(std::unordered_map<std::string, decltype(30)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   57 |           {std::string("net"), 30}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   58 |           std::unordered_map<std::string, decltype(30)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   59 |               {std::string("net"), 30}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:61:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   61 |       std::vector<decltype(std::unordered_map<std::string, decltype(36)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   62 |           {std::string("net"), 36}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   63 |           std::unordered_map<std::string, decltype(36)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   64 |               {std::string("net"), 36}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:68:41: error: ‘w’ was not declared in this scope
+   68 |                    std::vector<decltype(w.net)> __items;
+      |                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:68:47: error: template argument 1 is invalid
+   68 |                    std::vector<decltype(w.net)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:68:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:70:30: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   70 |                      __items.push_back(w.net);
+      |                              ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:70:42: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘net’
+   70 |                      __items.push_back(w.net);
+      |                                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:67:20:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:66:45: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   66 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                           ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:66:56: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   66 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                      ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:77:41: error: ‘c’ was not declared in this scope
+   77 |                    std::vector<decltype(c.net)> __items;
+      |                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:77:47: error: template argument 1 is invalid
+   77 |                    std::vector<decltype(c.net)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:77:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:79:30: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   79 |                      __items.push_back(c.net);
+      |                              ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:79:42: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘net’
+   79 |                      __items.push_back(c.net);
+      |                                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:76:20:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:75:45: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   75 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                           ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq662116732538/001/prog.cpp:75:56: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   75 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                      ~~^~~

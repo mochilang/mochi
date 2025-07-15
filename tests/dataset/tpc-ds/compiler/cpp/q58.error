@@ -1,0 +1,12 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq58330515589/001/prog.cpp:65:12: error: ‘ss_items’ was not declared in this scope; did you mean ‘SsItem’?
+   65 |   decltype(ss_items.item_id) item_id;
+      |            ^~~~~~~~
+      |            SsItem
+/tmp/TestCPPCompiler_TPCDSQueriesq58330515589/001/prog.cpp:65:12: error: ‘ss_items’ was not declared in this scope; did you mean ‘SsItem’?
+   65 |   decltype(ss_items.item_id) item_id;
+      |            ^~~~~~~~
+      |            SsItem
+/tmp/TestCPPCompiler_TPCDSQueriesq58330515589/001/prog.cpp:66:12: error: ‘avg’ was not declared in this scope
+   66 |   decltype(avg) average;
+      |            ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq58330515589/001/prog.cpp:66:12: error: ‘avg’ was not declared in this scope

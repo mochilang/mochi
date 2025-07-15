@@ -1,0 +1,145 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:77:12: error: ‘s’ was not declared in this scope
+   77 |   decltype(s.ss_sold_year) ss_sold_year;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:77:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:78:12: error: ‘s’ was not declared in this scope
+   78 |   decltype(s.ss_item_sk) ss_item_sk;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:78:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:79:12: error: ‘s’ was not declared in this scope
+   79 |   decltype(s.ss_customer_sk) ss_customer_sk;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:79:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:81:12: error: ‘s’ was not declared in this scope
+   81 |   decltype(s.ss_qty) store_qty;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:81:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:82:12: error: ‘s’ was not declared in this scope
+   82 |   decltype(s.ss_wc) store_wholesale_cost;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:82:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:83:12: error: ‘s’ was not declared in this scope
+   83 |   decltype(s.ss_sp) store_sales_price;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:83:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:271:30: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  271 |               if (!((((((((w == nullptr) ? 0 : w.ws_qty)) > 0) ||
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:272:30: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  272 |                        ((((c == nullptr) ? 0 : c.cs_qty)) > 0))) &&
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:277:45: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  277 |                          (s.ss_qty / (((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:278:45: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  278 |                                        (((c == nullptr) ? 0 : c.cs_qty))))),
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:280:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  280 |                          ((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:281:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  281 |                           (((c == nullptr) ? 0 : c.cs_qty))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:282:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  282 |                          ((((w == nullptr) ? 0 : w.ws_wc)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:283:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  283 |                           (((c == nullptr) ? 0 : c.cs_wc))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:284:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  284 |                          ((((w == nullptr) ? 0 : w.ws_sp)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:285:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  285 |                           (((c == nullptr) ? 0 : c.cs_sp)))});
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:289:30: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  289 |               if (!((((((((w == nullptr) ? 0 : w.ws_qty)) > 0) ||
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:290:30: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  290 |                        ((((c == nullptr) ? 0 : c.cs_qty)) > 0))) &&
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:295:45: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  295 |                          (s.ss_qty / (((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:296:45: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  296 |                                        (((c == nullptr) ? 0 : c.cs_qty))))),
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:298:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  298 |                          ((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:299:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  299 |                           (((c == nullptr) ? 0 : c.cs_qty))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:300:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  300 |                          ((((w == nullptr) ? 0 : w.ws_wc)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:301:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  301 |                           (((c == nullptr) ? 0 : c.cs_wc))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:302:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  302 |                          ((((w == nullptr) ? 0 : w.ws_sp)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:303:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  303 |                           (((c == nullptr) ? 0 : c.cs_sp)))});
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:317:30: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  317 |               if (!((((((((w == nullptr) ? 0 : w.ws_qty)) > 0) ||
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:318:30: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  318 |                        ((((c == nullptr) ? 0 : c.cs_qty)) > 0))) &&
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:323:45: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  323 |                          (s.ss_qty / (((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:324:45: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  324 |                                        (((c == nullptr) ? 0 : c.cs_qty))))),
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:326:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  326 |                          ((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:327:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  327 |                           (((c == nullptr) ? 0 : c.cs_qty))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:328:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  328 |                          ((((w == nullptr) ? 0 : w.ws_wc)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:329:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  329 |                           (((c == nullptr) ? 0 : c.cs_wc))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:330:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  330 |                          ((((w == nullptr) ? 0 : w.ws_sp)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:331:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  331 |                           (((c == nullptr) ? 0 : c.cs_sp)))});
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:335:30: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  335 |               if (!((((((((w == nullptr) ? 0 : w.ws_qty)) > 0) ||
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:336:30: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  336 |                        ((((c == nullptr) ? 0 : c.cs_qty)) > 0))) &&
+      |                            ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:341:45: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  341 |                          (s.ss_qty / (((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:342:45: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  342 |                                        (((c == nullptr) ? 0 : c.cs_qty))))),
+      |                                           ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:344:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  344 |                          ((((w == nullptr) ? 0 : w.ws_qty)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:345:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  345 |                           (((c == nullptr) ? 0 : c.cs_qty))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:346:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  346 |                          ((((w == nullptr) ? 0 : w.ws_wc)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:347:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  347 |                           (((c == nullptr) ? 0 : c.cs_wc))),
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:348:32: error: no match for ‘operator==’ (operand types are ‘W’ and ‘std::nullptr_t’)
+  348 |                          ((((w == nullptr) ? 0 : w.ws_sp)) +
+      |                              ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq78761924668/001/prog.cpp:349:32: error: no match for ‘operator==’ (operand types are ‘C’ and ‘std::nullptr_t’)
+  349 |                           (((c == nullptr) ? 0 : c.cs_sp)))});
+      |                              ~~^~~~~~~~~~
