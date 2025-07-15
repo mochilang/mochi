@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q50.kt:99:74: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toInt((x as MutableMap<String, Any?>)["diff"]) > 30 && (x as MutableMap<String, Any?>)["diff"]) <= 60) {
+                                                                         ^
+/tmp/q50.kt:107:74: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toInt((x as MutableMap<String, Any?>)["diff"]) > 60 && (x as MutableMap<String, Any?>)["diff"]) <= 90) {
+                                                                         ^
+/tmp/q50.kt:115:74: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toInt((x as MutableMap<String, Any?>)["diff"]) > 90 && (x as MutableMap<String, Any?>)["diff"]) <= 120) {
+                                                                         ^

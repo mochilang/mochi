@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q25.kt:46:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_store_id: String, var s_store_name: String)
+           ^
+/tmp/q25.kt:48:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String, var i_item_desc: String)
+           ^
+/tmp/q25.kt:54:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String, var i_item_desc: String)
+           ^
+/tmp/q25.kt:56:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_store_id: String, var s_store_name: String)
+           ^

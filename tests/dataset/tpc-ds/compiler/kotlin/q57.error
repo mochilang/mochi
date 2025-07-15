@@ -1,0 +1,8 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q57.kt:140:100: error: type mismatch: inferred type is Any? but Boolean was expected
+                if (toDouble(div(toDouble(toInt((g as MutableMap<String, Any?>)["year"] == 2001 && (a as MutableMap<String, Any?>)["avg_sales"]) > 0 && abs(toDouble((g as MutableMap<String, Any?>)["sum_sales"]) - toDouble((a as MutableMap<String, Any?>)["avg_sales"]))), toDouble((a as MutableMap<String, Any?>)["avg_sales"]))) > toDouble(0.1)) {
+                                                                                                   ^
+/tmp/q57.kt:140:153: error: type mismatch: inferred type is Double but Boolean was expected
+                if (toDouble(div(toDouble(toInt((g as MutableMap<String, Any?>)["year"] == 2001 && (a as MutableMap<String, Any?>)["avg_sales"]) > 0 && abs(toDouble((g as MutableMap<String, Any?>)["sum_sales"]) - toDouble((a as MutableMap<String, Any?>)["avg_sales"]))), toDouble((a as MutableMap<String, Any?>)["avg_sales"]))) > toDouble(0.1)) {
+                                                                                                                                                        ^

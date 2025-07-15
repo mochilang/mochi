@@ -1,0 +1,13 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q13.kt:40:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_state: String)
+           ^
+/tmp/q13.kt:58:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_state: String)
+           ^
+/tmp/q13.kt:106:20: error: type inference failed: Not enough information to infer parameter K in inline fun <K, V> mutableMapOf(): MutableMap<K, V>
+Please specify it explicitly.
+
+        val __k = (mutableMapOf() as MutableMap<Any?, Any?>)
+                   ^

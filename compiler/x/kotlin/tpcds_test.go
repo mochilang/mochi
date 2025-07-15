@@ -78,7 +78,7 @@ func TestKotlinCompiler_TPCDS(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-       queries := []string{"q1", "q2", "q3", "q4", "q5", "q35", "q43", "q58", "q59", "q61", "q62"}
+    queries := []string{"q5", "q9", "q35", "q43", "q58", "q59", "q61", "q62", "q63", "q64", "q66", "q67", "q68", "q69", "q72", "q78", "q80", "q82", "q83", "q84", "q85", "q86", "q89", "q97"}
        for _, base := range queries {
                t.Run(base, func(t *testing.T) { runTPCDSQuery(t, base) })
        }

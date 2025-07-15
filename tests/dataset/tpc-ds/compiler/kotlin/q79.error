@@ -1,0 +1,8 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q79.kt:115:31: error: unresolved reference: c_last_name
+}.sortedBy { mutableListOf(it.c_last_name, it.c_first_name, ((it as MutableMap<String, Any?>)["key"] as MutableMap<*, *>)["city"], (it as MutableMap<String, Any?>)["profit"]) as Comparable<Any> }
+                              ^
+/tmp/q79.kt:115:47: error: unresolved reference: c_first_name
+}.sortedBy { mutableListOf(it.c_last_name, it.c_first_name, ((it as MutableMap<String, Any?>)["key"] as MutableMap<*, *>)["city"], (it as MutableMap<String, Any?>)["profit"]) as Comparable<Any> }
+                                              ^

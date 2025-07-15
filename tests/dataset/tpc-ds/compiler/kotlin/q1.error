@@ -1,8 +1,8 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/TestKotlinCompiler_TPCDSq12729455011/001/Main.kt:92:29: error: type mismatch: inferred type is Double but Boolean was expected
+/tmp/q1.kt:92:29: error: type mismatch: inferred type is Double but Boolean was expected
                         if (toDouble(toDouble((ctr1 as MutableMap<String, Any?>)["ctr_total_return"]) > toDouble(run { val r = run {
                             ^
-/tmp/TestKotlinCompiler_TPCDSq12729455011/001/Main.kt:109:17: error: unresolved reference: c_customer_id
+/tmp/q1.kt:109:17: error: unresolved reference: c_customer_id
 }.sortedBy { it.c_customer_id as Comparable<Any> }
                 ^

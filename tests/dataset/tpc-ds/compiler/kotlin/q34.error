@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q34.kt:57:143: error: type mismatch: inferred type is Double but Boolean was expected
+                                if (toDouble((d.d_dom >= 1 && d.d_dom <= 3) && hd.hd_buy_potential == ">10000" && hd.hd_vehicle_count > 0 && ((hd.hd_dep_count).toDouble() / (hd.hd_vehicle_count).toDouble())) > toDouble(1.2) && d.d_year == 2000 && s.s_county == "A") {
+                                                                                                                                              ^
+/tmp/q34.kt:87:61: error: operator call corresponds to a dot-qualified call '(dn1 as MutableMap<String, Int>)["cnt"].compareTo(15)' which is not allowed on a nullable receiver '(dn1 as MutableMap<String, Int>)["cnt"]'.
+                if ((dn1 as MutableMap<String, Int>)["cnt"] >= 15 && (dn1 as MutableMap<String, Int>)["cnt"] <= 20) {
+                                                            ^
+/tmp/q34.kt:87:110: error: operator call corresponds to a dot-qualified call '(dn1 as MutableMap<String, Int>)["cnt"].compareTo(20)' which is not allowed on a nullable receiver '(dn1 as MutableMap<String, Int>)["cnt"]'.
+                if ((dn1 as MutableMap<String, Int>)["cnt"] >= 15 && (dn1 as MutableMap<String, Int>)["cnt"] <= 20) {
+                                                                                                             ^
+/tmp/q34.kt:94:17: error: unresolved reference: c_last_name
+}.sortedBy { it.c_last_name as Comparable<Any> }
+                ^

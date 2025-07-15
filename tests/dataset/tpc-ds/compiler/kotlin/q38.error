@@ -1,0 +1,19 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q38.kt:40:26: error: type inference failed. Expected type mismatch: inferred type is MutableList<Int> but MutableList<Any> was expected
+val store_ids = distinct(run {
+                         ^
+/tmp/q38.kt:50:28: error: type inference failed. Expected type mismatch: inferred type is MutableList<Int> but MutableList<Any> was expected
+val catalog_ids = distinct(run {
+                           ^
+/tmp/q38.kt:60:24: error: type inference failed. Expected type mismatch: inferred type is MutableList<Int> but MutableList<Any> was expected
+val web_ids = distinct(run {
+                       ^
+/tmp/q38.kt:80:15: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+    var out = mutableListOf()
+              ^
+/tmp/q38.kt:82:14: error: unresolved reference: contains
+        if (!contains(out, x)) {
+             ^

@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q30.kt:125:29: error: type mismatch: inferred type is Double but Boolean was expected
+                        if (toDouble(toDouble((ctr as MutableMap<String, Any?>)["ctr_total_return"]) > toDouble((avg as MutableMap<String, Any?>)["avg_return"])) * toDouble(1.2)) {
+                            ^

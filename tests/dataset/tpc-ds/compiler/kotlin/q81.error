@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q81.kt:58:17: error: unresolved reference: first
+val avg_state = first(run {
+                ^
+/tmp/q81.kt:71:13: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble(r.state == "CA" && r.amt) > toDouble((avg_state as MutableMap<String, Any?>)["avg_amt"])) * toDouble(1.2)) {
+            ^
+/tmp/q81.kt:71:50: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble(r.state == "CA" && r.amt) > toDouble((avg_state as MutableMap<String, Any?>)["avg_amt"])) * toDouble(1.2)) {
+                                                 ^
+/tmp/q81.kt:78:14: error: unresolved reference: first
+val result = first(result_list)
+             ^

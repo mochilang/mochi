@@ -1,0 +1,8 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q65.kt:69:23: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any?> but MutableList<Double> was expected
+val avg_rev = average(run {
+                      ^
+/tmp/q65.kt:80:13: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble((ir as MutableMap<String, Any?>)["revenue"]) <= toDouble(0.1)) * toDouble(avg_rev)) {
+            ^

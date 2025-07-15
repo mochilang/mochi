@@ -1,0 +1,20 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q47.kt:36:73: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble(toDouble(toDouble(v.d_year >= year - 1 && v.avg_monthly_sales) > 0 && v.sum_sales) > toDouble(v.avg_monthly_sales) && abs(toDouble(v.sum_sales) - toDouble(v.avg_monthly_sales))) / toDouble(v.avg_monthly_sales)) > toDouble(0.1)) {
+                                                                        ^
+/tmp/q47.kt:36:101: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble(toDouble(toDouble(v.d_year >= year - 1 && v.avg_monthly_sales) > 0 && v.sum_sales) > toDouble(v.avg_monthly_sales) && abs(toDouble(v.sum_sales) - toDouble(v.avg_monthly_sales))) / toDouble(v.avg_monthly_sales)) > toDouble(0.1)) {
+                                                                                                    ^
+/tmp/q47.kt:36:149: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble(toDouble(toDouble(v.d_year >= year - 1 && v.avg_monthly_sales) > 0 && v.sum_sales) > toDouble(v.avg_monthly_sales) && abs(toDouble(v.sum_sales) - toDouble(v.avg_monthly_sales))) / toDouble(v.avg_monthly_sales)) > toDouble(0.1)) {
+                                                                                                                                                    ^
+/tmp/q47.kt:41:40: error: unresolved reference: sum_sales
+}.sortedBy { mutableListOf(toDouble(it.sum_sales) - toDouble(it.avg_monthly_sales), it.item) as Comparable<Any> }
+                                       ^
+/tmp/q47.kt:41:65: error: unresolved reference: avg_monthly_sales
+}.sortedBy { mutableListOf(toDouble(it.sum_sales) - toDouble(it.avg_monthly_sales), it.item) as Comparable<Any> }
+                                                                ^
+/tmp/q47.kt:41:88: error: unresolved reference: item
+}.sortedBy { mutableListOf(toDouble(it.sum_sales) - toDouble(it.avg_monthly_sales), it.item) as Comparable<Any> }
+                                                                                       ^

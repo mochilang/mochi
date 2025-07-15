@@ -1,0 +1,41 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q17.kt:35:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_state: String)
+           ^
+/tmp/q17.kt:37:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String, var i_item_desc: String)
+           ^
+/tmp/q17.kt:43:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String, var i_item_desc: String)
+           ^
+/tmp/q17.kt:45:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_state: String)
+           ^
+/tmp/q17.kt:117:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q17.kt:118:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Int>))
+                   ^
+/tmp/q17.kt:124:19: error: type mismatch: inferred type is Int? but Int was expected
+        __res.add((x as MutableMap<String, Int>)["qty"])
+                  ^
+/tmp/q17.kt:129:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q17.kt:130:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Int>))
+                   ^
+/tmp/q17.kt:136:19: error: type mismatch: inferred type is Int? but Int was expected
+        __res.add((x as MutableMap<String, Int>)["ret"])
+                  ^
+/tmp/q17.kt:141:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q17.kt:142:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Int>))
+                   ^
+/tmp/q17.kt:148:19: error: type mismatch: inferred type is Int? but Int was expected
+        __res.add((x as MutableMap<String, Int>)["csq"])
+                  ^

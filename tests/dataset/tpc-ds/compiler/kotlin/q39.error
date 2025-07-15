@@ -1,0 +1,127 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q39.kt:106:15: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+var summary = mutableListOf()
+              ^
+/tmp/q39.kt:113:13: error: type inference failed: Cannot infer type parameter V in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<String, MutableMap<String, Any>>  arguments: (String,MutableMap<String, Any>)
+receiver: MutableMap<String, MutableMap<String, Any?>>  arguments: (String,MutableMap<String, Any?>)
+can be applied to
+receiver: MutableMap<String, MutableMap<String, Any>>  arguments: (String,MutableMap<String, Any?>)
+
+            grouped[key] = mutableMapOf("w" to (g as MutableMap<String, Any?>)["w"], "i" to (g as MutableMap<String, Any?>)["i"], "qtys" to (g as MutableMap<String, Any?>)["qtys"] + (m as MutableMap<String, Any?>)["qty"])
+            ^
+/tmp/q39.kt:113:181: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.plus(other: BigDecimal): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.plus(other: BigInteger): BigInteger defined in kotlin
+public operator fun <T> Array<???>.plus(elements: Array<out ???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<???>.plus(elements: Collection<???>): Array<???> defined in kotlin.collections
+public operator fun <T> Array<Any?>.plus(element: Any?): Array<Any?> defined in kotlin.collections
+public operator fun BooleanArray.plus(element: Boolean): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: BooleanArray): BooleanArray defined in kotlin.collections
+public operator fun BooleanArray.plus(elements: Collection<Boolean>): BooleanArray defined in kotlin.collections
+public operator fun ByteArray.plus(element: Byte): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: ByteArray): ByteArray defined in kotlin.collections
+public operator fun ByteArray.plus(elements: Collection<Byte>): ByteArray defined in kotlin.collections
+@InlineOnly public inline operator fun Char.plus(other: String): String defined in kotlin.text
+public operator fun CharArray.plus(element: Char): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: CharArray): CharArray defined in kotlin.collections
+public operator fun CharArray.plus(elements: Collection<Char>): CharArray defined in kotlin.collections
+public operator fun DoubleArray.plus(element: Double): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: DoubleArray): DoubleArray defined in kotlin.collections
+public operator fun DoubleArray.plus(elements: Collection<Double>): DoubleArray defined in kotlin.collections
+public operator fun FloatArray.plus(element: Float): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: FloatArray): FloatArray defined in kotlin.collections
+public operator fun FloatArray.plus(elements: Collection<Float>): FloatArray defined in kotlin.collections
+public operator fun IntArray.plus(element: Int): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: IntArray): IntArray defined in kotlin.collections
+public operator fun IntArray.plus(elements: Collection<Int>): IntArray defined in kotlin.collections
+public operator fun LongArray.plus(element: Long): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: LongArray): LongArray defined in kotlin.collections
+public operator fun LongArray.plus(elements: Collection<Long>): LongArray defined in kotlin.collections
+public operator fun ShortArray.plus(element: Short): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: ShortArray): ShortArray defined in kotlin.collections
+public operator fun ShortArray.plus(elements: Collection<Short>): ShortArray defined in kotlin.collections
+public operator fun String?.plus(other: Any?): String defined in kotlin
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(element: UByte): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UByteArray.plus(elements: UByteArray): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UByteArray.plus(elements: Collection<UByte>): UByteArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(element: UInt): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UIntArray.plus(elements: UIntArray): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UIntArray.plus(elements: Collection<UInt>): UIntArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(element: ULong): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun ULongArray.plus(elements: ULongArray): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun ULongArray.plus(elements: Collection<ULong>): ULongArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(element: UShort): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline operator fun UShortArray.plus(elements: UShortArray): UShortArray defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes public operator fun UShortArray.plus(elements: Collection<UShort>): UShortArray defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Collection<Any?>.plus(element: Any?): List<Any?> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Array<out ???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Iterable<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<???>.plus(elements: Sequence<???>): List<???> defined in kotlin.collections
+public operator fun <T> Iterable<Any?>.plus(element: Any?): List<Any?> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Array<out Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pair: Pair<???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Iterable<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(map: Map<out ???, ???>): Map<???, ???> defined in kotlin.collections
+public operator fun <K, V> Map<out ???, ???>.plus(pairs: Sequence<Pair<???, ???>>): Map<???, ???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Array<out ???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Iterable<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<???>.plus(elements: Sequence<???>): Set<???> defined in kotlin.collections
+public operator fun <T> Set<Any?>.plus(element: Any?): Set<Any?> defined in kotlin.collections
+public operator fun <T> Sequence<???>.plus(elements: Array<out ???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Iterable<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<???>.plus(elements: Sequence<???>): Sequence<???> defined in kotlin.sequences
+public operator fun <T> Sequence<Any?>.plus(element: Any?): Sequence<Any?> defined in kotlin.sequences
+            grouped[key] = mutableMapOf("w" to (g as MutableMap<String, Any?>)["w"], "i" to (g as MutableMap<String, Any?>)["i"], "qtys" to (g as MutableMap<String, Any?>)["qtys"] + (m as MutableMap<String, Any?>)["qty"])
+                                                                                                                                                                                    ^
+/tmp/q39.kt:116:13: error: type inference failed: Cannot infer type parameter V in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<String, MutableMap<String, Any>>  arguments: (String,MutableMap<String, Any>)
+receiver: MutableMap<String, MutableMap<String, Any?>>  arguments: (String,MutableMap<String, Any?>)
+can be applied to
+receiver: MutableMap<String, MutableMap<String, Any>>  arguments: (String,MutableMap<String, Any?>)
+
+            grouped[key] = mutableMapOf("w" to (m as MutableMap<String, Any?>)["w"], "i" to (m as MutableMap<String, Any?>)["i"], "qtys" to mutableListOf((m as MutableMap<String, Any?>)["qty"]))
+            ^
+/tmp/q39.kt:120:20: error: type inference failed: Not enough information to infer parameter R in inline fun <R> run(block: () -> R): R
+Please specify it explicitly.
+
+        val mean = run { val r = (g as MutableMap<*, *>)["qtys"].map{ toDouble(it) }.average(); if (r % 1.0 == 0.0) r.toInt() else r }
+                   ^
+/tmp/q39.kt:120:66: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public inline fun <T, R> Array<out ???>.map(transform: (???) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> BooleanArray.map(transform: (Boolean) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> ByteArray.map(transform: (Byte) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> CharArray.map(transform: (Char) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> CharSequence.map(transform: (Char) -> ???): List<???> defined in kotlin.text
+public inline fun <R> DoubleArray.map(transform: (Double) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> FloatArray.map(transform: (Float) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> IntArray.map(transform: (Int) -> ???): List<???> defined in kotlin.collections
+public inline fun <R> LongArray.map(transform: (Long) -> ???): List<???> defined in kotlin.collections
+@InlineOnly @SinceKotlin public inline fun <R, T> Result<???>.map(transform: (???) -> ???): Result<???> defined in kotlin
+public inline fun <R> ShortArray.map(transform: (Short) -> ???): List<???> defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun <R> UByteArray.map(transform: (UByte) -> ???): List<???> defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun <R> UIntArray.map(transform: (UInt) -> ???): List<???> defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun <R> ULongArray.map(transform: (ULong) -> ???): List<???> defined in kotlin.collections
+@SinceKotlin @ExperimentalUnsignedTypes @InlineOnly public inline fun <R> UShortArray.map(transform: (UShort) -> ???): List<???> defined in kotlin.collections
+public inline fun <T, R> Iterable<???>.map(transform: (???) -> ???): List<???> defined in kotlin.collections
+public inline fun <K, V, R> Map<out ???, ???>.map(transform: (Map.Entry<???, ???>) -> ???): List<???> defined in kotlin.collections
+public fun <T, R> Sequence<???>.map(transform: (???) -> ???): Sequence<???> defined in kotlin.sequences
+        val mean = run { val r = (g as MutableMap<*, *>)["qtys"].map{ toDouble(it) }.average(); if (r % 1.0 == 0.0) r.toInt() else r }
+                                                                 ^
+/tmp/q39.kt:120:80: error: unresolved reference: it
+        val mean = run { val r = (g as MutableMap<*, *>)["qtys"].map{ toDouble(it) }.average(); if (r % 1.0 == 0.0) r.toInt() else r }
+                                                                               ^
+/tmp/q39.kt:122:19: error: for-loop range must have an 'iterator()' method
+        for (q in (g as MutableMap<*, *>)["qtys"]) {
+                  ^
+/tmp/q39.kt:125:76: error: unresolved reference: size
+        val variance = toDouble(sumsq) / (((g as MutableMap<*, *>)["qtys"].size - 1)).toDouble()
+                                                                           ^
