@@ -1,0 +1,12 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR: exception handler returned
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+  called from error on line 100 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 241 of file /tmp/q93.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+{}
+   test TPCDS Q93 active sales ... fail #<Exception 140156514989088>

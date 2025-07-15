@@ -1,0 +1,6 @@
+ERROR in "json-write": unable to encode element: 5/4
+  called from loop on line 15 of file /usr/share/chibi/scheme/misc-macros.scm
+  called from _json on line 146 of file /tmp/q78.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+[

@@ -89,10 +89,13 @@ func main() {
 			cmd.Stdin = bytes.NewReader(data)
 		}
 		out, err := cmd.CombinedOutput()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "run %s: %v\n%s\n", q, err, out)
-		}
 		cleaned := append(bytes.TrimSpace(out), '\n')
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, q+".error"), cleaned, 0o644)
+			fmt.Fprintf(os.Stderr, "run %s: %v\n", q, err)
+			continue
+		}
+		_ = os.Remove(filepath.Join(outDir, q+".error"))
 		if err := os.WriteFile(filepath.Join(outDir, q+".out"), cleaned, 0o644); err != nil {
 			fmt.Fprintln(os.Stderr, "write out", q, err)
 		}
