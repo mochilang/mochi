@@ -1,0 +1,5 @@
+[{"channel":"catalog","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatC","sales_amt":0,"sales_cnt":1},{"channel":"store","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatA","sales_amt":0,"sales_cnt":1},{"channel":"web","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatB","sales_amt":0,"sales_cnt":1}]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-ds/q76.mochi:63
+    expect result == [

@@ -21,3 +21,4 @@
 
 
 - 2025-07-15 06:37 - Implemented tuple-based sort key generation in `compileQuery` to allow sorting before dropping query variables. F# code for TPC-DS queries still fails to compile due to other type issues.
+- 2025-07-15 07:18 - Added `compile_tpcds_fs.go` to regenerate F# code and outputs for all TPC-DS queries. Compilation still fails during tests despite dotnet runtime installation.

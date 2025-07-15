@@ -1,0 +1,5 @@
+[]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-ds/q73.mochi:52
+    expect result == [
