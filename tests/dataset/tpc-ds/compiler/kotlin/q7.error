@@ -1,0 +1,4 @@
+run: exit status 1
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.ClassCastException: class Store_sale cannot be cast to class java.util.Map (Store_sale is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
+	at Q7Kt.<clinit>(q7.kt:88)

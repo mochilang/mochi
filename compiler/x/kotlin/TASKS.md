@@ -9,6 +9,9 @@
   selector handling for map-backed structs.
 - 2025-07-13 17:27 UTC: Generated Kotlin code for `q12` and `q13`, enabled tests
   for `q2`, `q3`, `q12`, and `q13`.
+- 2025-07-15 04:53 UTC: Added basic TPC-DS compile test and generation script;
+  first three queries fail due to numeric comparison issues.
+- 2025-07-15 05:08 UTC: Updated TPC-DS Kotlin generator to capture run errors and added golden tests comparing generated code and output.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
