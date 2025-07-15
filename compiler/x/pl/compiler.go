@@ -737,6 +737,9 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 		c.writeln(fmt.Sprintf("%s_sin(X, R) :- R is sin(X).", aliasAtom))
 		c.writeln(fmt.Sprintf("%s_log(X, R) :- R is log(X).", aliasAtom))
 		c.writeln("")
+	case "go:strings":
+		c.writeln(fmt.Sprintf("%s_to_upper(S, R) :- string_upper(S, R).", aliasAtom))
+		c.writeln("")
 	}
 	return nil
 }
@@ -1482,6 +1485,8 @@ func (c *Compiler) compileLiteral(l *parser.Literal) (string, bool, error) {
 			return "true", false, nil
 		}
 		return "false", false, nil
+	case l.Null:
+		return "null", false, nil
 	default:
 		return "", false, fmt.Errorf("unsupported literal")
 	}
@@ -2098,6 +2103,16 @@ func (c *Compiler) compileMethodCall(container, method string, call *parser.Call
 				tmp := c.newTmp()
 				c.writeln(fmt.Sprintf("%s_log(%s, %s),", container, a1, tmp))
 				return tmp, true, nil
+			}
+		case "go:strings":
+			if method == "ToUpper" && len(call.Args) == 1 {
+				a1, _, err := c.compileExpr(call.Args[0])
+				if err != nil {
+					return "", false, err
+				}
+				tmp := c.newTmp()
+				c.writeln(fmt.Sprintf("%s_to_upper(%s, %s),", container, a1, tmp))
+				return tmp, false, nil
 			}
 		}
 	}

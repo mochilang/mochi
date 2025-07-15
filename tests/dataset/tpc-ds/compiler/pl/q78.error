@@ -1,1 +1,5 @@
-compile: unsupported literal
+run: exit status 2
+[
+  {
+    "other_chan_qty":
+ERROR: /tmp/q78.pl:24: user:main Type error: `json_term' expected, found `5+3' (a compound)

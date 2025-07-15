@@ -1,1 +1,3 @@
-compile: unsupported method
+run: exit status 2
+[]
+ERROR: /tmp/q24.pl:60: user:main Unknown message: error('expect failed')

@@ -1,1 +1,3 @@
-compile: unsupported literal
+run: exit status 2
+[]
+ERROR: /tmp/q4.pl:58: user:main Unknown message: error('expect failed')

@@ -1,1 +1,2 @@
-compile: unsupported literal
+run: exit status 2
+ERROR: /tmp/q40.pl:58: user:main Type error: `integer' expected, found `refunded' (an atom)
