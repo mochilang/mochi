@@ -1,14 +1,14 @@
 run: exit status 127
 /tmp/q75.erl:11:20: function concat/3 undefined
-%   11|     Sales_detail = concat([#{d_year => maps:get(d_year, D), i_item_sk => maps:get(ss_item_sk, Ss), quantity => maps:get(ss_quantity, Ss), amount => maps:get(ss_sales_price, Ss)} || Ss <- Store_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(ss_sold_date_sk, Ss))], [#{d_year => maps:get(d_year, D), i_item_sk => maps:get(ws_item_sk, Ws), quantity => maps:get(ws_quantity, Ws), amount => maps:get(ws_sales_price, Ws)} || Ws <- Web_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(ws_sold_date_sk, Ws))], [#{d_year => maps:get(d_year, D), i_item_sk => maps:get(cs_item_sk, Cs), quantity => maps:get(cs_quantity, Cs), amount => maps:get(cs_sales_price, Cs)} || Cs <- Catalog_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(cs_sold_date_sk, Cs))]),
+%   11|     Sales_detail = concat([#{d_year => mochi_get(d_year, D), i_item_sk => mochi_get(ss_item_sk, Ss), quantity => mochi_get(ss_quantity, Ss), amount => mochi_get(ss_sales_price, Ss)} || Ss <- Store_sales, D <- Date_dim, (mochi_get(d_date_sk, D) == mochi_get(ss_sold_date_sk, Ss))], [#{d_year => mochi_get(d_year, D), i_item_sk => mochi_get(ws_item_sk, Ws), quantity => mochi_get(ws_quantity, Ws), amount => mochi_get(ws_sales_price, Ws)} || Ws <- Web_sales, D <- Date_dim, (mochi_get(d_date_sk, D) == mochi_get(ws_sold_date_sk, Ws))], [#{d_year => mochi_get(d_year, D), i_item_sk => mochi_get(cs_item_sk, Cs), quantity => mochi_get(cs_quantity, Cs), amount => mochi_get(cs_sales_price, Cs)} || Cs <- Catalog_sales, D <- Date_dim, (mochi_get(d_date_sk, D) == mochi_get(cs_sold_date_sk, Cs))]),
 %     |                    ^
 
 /tmp/q75.erl:13:15: function first/1 undefined
-%   13|     Prev_yr = first([A || A <- All_sales, (maps:get(d_year, A) == 2000)]),
+%   13|     Prev_yr = first([A || A <- All_sales, (mochi_get(d_year, A) == 2000)]),
 %     |               ^
 
 /tmp/q75.erl:14:15: function first/1 undefined
-%   14|     Curr_yr = first([A || A <- All_sales, (maps:get(d_year, A) == 2001)]),
+%   14|     Curr_yr = first([A || A <- All_sales, (mochi_get(d_year, A) == 2001)]),
 %     |               ^
 
 escript: There were compilation errors.

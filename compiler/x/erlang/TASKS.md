@@ -18,6 +18,8 @@
   after updating the compiler to v0.10.26.
 - [2025-07-15 07:16] Added smart map access fallback via `mochi_get` and
   regenerated failing TPC-DS outputs.
+- [2025-07-15 07:25] Tweaked `mochi_get` to return `undefined` for missing
+  keys and regenerated TPC-DS outputs, reducing `.error` count.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.

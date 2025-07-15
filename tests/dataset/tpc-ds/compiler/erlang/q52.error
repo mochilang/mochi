@@ -1,16 +1,10 @@
 run: exit status 127
-escript: exception error: bad key: price
-  in function  map_get/2
-     called as map_get(price,
-                       #{i =>
-                             #{i_item_sk => 1,i_brand_id => 1,i_brand => "B1",
-                               i_manager_id => 1},
-                         ss => #{item => 1,sold_date => 1,price => 20},
-                         d => #{d_date_sk => 1,d_year => 2001,d_moy => 11}})
-     *** argument 1: not present in map
-  in call from q52_erl__escript__1752__561096__632374__3:'-main/1-lc$^5/1-1-'/1 (/tmp/q52.erl, line 9)
-  in call from q52_erl__escript__1752__561096__632374__3:'-main/1-lc$^4/1-0-'/1 (/tmp/q52.erl, line 9)
-  in call from q52_erl__escript__1752__561096__632374__3:main/1 (/tmp/q52.erl, line 9)
+escript: exception error: an error occurred when evaluating an arithmetic expression
+  in operator  +/2
+     called as 0 + undefined
+  in call from lists:sum/2 (lists.erl, line 488)
+  in call from q52_erl__escript__1752__564357__129665__8962:'-main/1-lc$^4/1-0-'/1 (/tmp/q52.erl, line 9)
+  in call from q52_erl__escript__1752__564357__129665__8962:main/1 (/tmp/q52.erl, line 9)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

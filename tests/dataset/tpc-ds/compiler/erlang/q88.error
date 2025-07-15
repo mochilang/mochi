@@ -3,9 +3,9 @@ run: exit status 127
 %    8|     Total1.
 %     |     ^
 
-/tmp/q88.erl:7:249: Warning: variable 'Total1' is unused
-%    7|     lists:foreach(fun(Ss) -> lists:foreach(fun(T) -> (case ((((maps:get(sold_time_sk, Ss) == maps:get(time_sk, T)) andalso (maps:get(hour, T) == Hour)) andalso (maps:get(minute, T) >= Start_min)) andalso (maps:get(minute, T) < End_min)) of true -> Total1 = (Total0 + maps:get(qty, Ss)); _ -> ok end) end, Tdim) end, Ssales),
-%     |                                                                                                                                                                                                                                                         ^
+/tmp/q88.erl:7:254: Warning: variable 'Total1' is unused
+%    7|     lists:foreach(fun(Ss) -> lists:foreach(fun(T) -> (case ((((mochi_get(sold_time_sk, Ss) == mochi_get(time_sk, T)) andalso (mochi_get(hour, T) == Hour)) andalso (mochi_get(minute, T) >= Start_min)) andalso (mochi_get(minute, T) < End_min)) of true -> Total1 = (Total0 + mochi_get(qty, Ss)); _ -> ok end) end, Tdim) end, Ssales),
+%     |                                                                                                                                                                                                                                                              ^
 
 /tmp/q88.erl:12:5: Warning: variable 'Household_demographics' is unused
 %   12|     Household_demographics = [#{hd_demo_sk => 1, hd_dep_count => 1, hd_vehicle_count => 1}],

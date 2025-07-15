@@ -2139,12 +2139,12 @@ func (c *Compiler) writeRuntime() {
 		c.writeln("P = list_to_atom(Pref),")
 		c.writeln("case maps:find(P, M) of")
 		c.indent++
-		c.writeln("{ok, Sub} when is_map(Sub) -> maps:get(K, Sub);")
-		c.writeln("_ -> erlang:error({badkey, K})")
+		c.writeln("{ok, Sub} when is_map(Sub) -> maps:get(K, Sub, undefined);")
+		c.writeln("_ -> undefined")
 		c.indent--
 		c.writeln("end;")
 		c.indent--
-		c.writeln("_ -> erlang:error({badkey, K})")
+		c.writeln("_ -> undefined")
 		c.indent--
 		c.writeln("end")
 		c.indent--
