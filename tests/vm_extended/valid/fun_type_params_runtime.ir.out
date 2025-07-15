@@ -8,6 +8,6 @@ func main (regs=2)
   Return       r0
 
   // fun id<T>(x: T): T { return x }
-func id (regs=1)
+func id<T> (regs=1)
   // fun id<T>(x: T): T { return x }
   Return       r0
