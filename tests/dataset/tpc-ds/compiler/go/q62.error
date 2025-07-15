@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq621949104317/001/main.go:67:2: syntax error: unexpected name sult after top level declaration

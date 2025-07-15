@@ -1,0 +1,4 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq812939312692/001/main.go:216:2: syntax error: unexpected { after top level declaration
+/tmp/TestGoCompiler_TPCDSq812939312692/001/main.go:219:3: syntax error: non-declaration statement outside function body

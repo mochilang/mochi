@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq183754735145/001/main.go:406:2: syntax error: unexpected name TypeOf after top level declaration

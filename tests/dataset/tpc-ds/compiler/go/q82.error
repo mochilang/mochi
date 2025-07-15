@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq82454870319/001/main.go:106:2: syntax error: unexpected name l after top level declaration
