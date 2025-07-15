@@ -1,28 +1,96 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    release_date: str
+    internet_movie: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    movie_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    country_code: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    movie_id: int
+    company_id: int
+    company_type_id: int
+    note: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    movie_id: int
+    info_type_id: int
+    note: str
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto8:
+    movie_id: int
+    keyword_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto9:
+    id: int
+    title: str
+    production_year: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
 K = TypeVar("K")
-
-
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if name == "items" and hasattr(obj, "Items"):
-        return getattr(obj, "Items")
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
 
 
 def _min(v):
@@ -116,37 +184,31 @@ def _query(src, joins, opts):
 
 def test_Q15_finds_the_earliest_US_internet_movie_release_after_2000():
     assert result == [
-        {"release_date": "USA: March 2005", "internet_movie": "Example Movie"}
+        Auto1(release_date="USA: March 2005", internet_movie="Example Movie")
     ]
 
 
-aka_title = [{"movie_id": 1}, {"movie_id": 2}]
-company_name = [{"id": 1, "country_code": "[us]"}, {"id": 2, "country_code": "[gb]"}]
-company_type = [{"id": 10}, {"id": 20}]
-info_type = [{"id": 5, "info": "release dates"}, {"id": 6, "info": "other"}]
-keyword = [{"id": 100}, {"id": 200}]
+aka_title = [Auto2(movie_id=1), Auto2(movie_id=2)]
+company_name = [Auto3(id=1, country_code="[us]"), Auto3(id=2, country_code="[gb]")]
+company_type = [Auto4(id=10), Auto4(id=20)]
+info_type = [Auto5(id=5, info="release dates"), Auto5(id=6, info="other")]
+keyword = [Auto4(id=100), Auto4(id=200)]
 movie_companies = [
-    {
-        "movie_id": 1,
-        "company_id": 1,
-        "company_type_id": 10,
-        "note": "release (2005) (worldwide)",
-    },
-    {
-        "movie_id": 2,
-        "company_id": 2,
-        "company_type_id": 20,
-        "note": "release (1999) (worldwide)",
-    },
+    Auto6(
+        movie_id=1, company_id=1, company_type_id=10, note="release (2005) (worldwide)"
+    ),
+    Auto6(
+        movie_id=2, company_id=2, company_type_id=20, note="release (1999) (worldwide)"
+    ),
 ]
 movie_info = [
-    {"movie_id": 1, "info_type_id": 5, "note": "internet", "info": "USA: March 2005"},
-    {"movie_id": 2, "info_type_id": 5, "note": "theater", "info": "USA: May 1999"},
+    Auto7(movie_id=1, info_type_id=5, note="internet", info="USA: March 2005"),
+    Auto7(movie_id=2, info_type_id=5, note="theater", info="USA: May 1999"),
 ]
-movie_keyword = [{"movie_id": 1, "keyword_id": 100}, {"movie_id": 2, "keyword_id": 200}]
+movie_keyword = [Auto8(movie_id=1, keyword_id=100), Auto8(movie_id=2, keyword_id=200)]
 title = [
-    {"id": 1, "title": "Example Movie", "production_year": 2005},
-    {"id": 2, "title": "Old Movie", "production_year": 1999},
+    Auto9(id=1, title="Example Movie", production_year=2005),
+    Auto9(id=2, title="Old Movie", production_year=1999),
 ]
 rows = _query(
     title,
@@ -177,10 +239,9 @@ rows = _query(
         },
     ],
     {
-        "select": lambda t, at, mi, mk, mc, k, it1, cn, ct: {
-            "release_date": mi["info"],
-            "internet_movie": t["title"],
-        },
+        "select": lambda t, at, mi, mk, mc, k, it1, cn, ct: Auto1(
+            release_date=mi["info"], internet_movie=t["title"]
+        ),
         "where": lambda t, at, mi, mk, mc, k, it1, cn, ct: (
             (
                 (
@@ -204,10 +265,10 @@ rows = _query(
     },
 )
 result = [
-    {
-        "release_date": _min([r["release_date"] for r in rows]),
-        "internet_movie": _min([r["internet_movie"] for r in rows]),
-    }
+    Auto1(
+        release_date=_min([r.release_date for r in rows]),
+        internet_movie=_min([r.internet_movie for r in rows]),
+    )
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q15_finds_the_earliest_US_internet_movie_release_after_2000()

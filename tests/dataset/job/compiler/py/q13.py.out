@@ -1,5 +1,75 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    release_date: str
+    rating: str
+    german_movie: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    id: int
+    country_code: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    kind: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    id: int
+    kind_id: int
+    title: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    movie_id: int
+    company_id: int
+    company_type_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    movie_id: int
+    info_type_id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
@@ -85,45 +155,45 @@ def _query(src, joins, opts):
 
 
 def _sort_key(k):
+    if hasattr(k, "__dataclass_fields__"):
+        return str(k)
     if isinstance(k, (list, tuple, dict)):
         return str(k)
     return k
 
 
 def test_Q13_finds_earliest_German_movie_info():
-    assert result == {
-        "release_date": "1997-05-10",
-        "rating": "6.0",
-        "german_movie": "Alpha",
-    }
+    assert result == Auto1(
+        release_date="1997-05-10", rating="6.0", german_movie="Alpha"
+    )
 
 
-company_name = [{"id": 1, "country_code": "[de]"}, {"id": 2, "country_code": "[us]"}]
+company_name = [Auto2(id=1, country_code="[de]"), Auto2(id=2, country_code="[us]")]
 company_type = [
-    {"id": 1, "kind": "production companies"},
-    {"id": 2, "kind": "distributors"},
+    Auto3(id=1, kind="production companies"),
+    Auto3(id=2, kind="distributors"),
 ]
-info_type = [{"id": 1, "info": "rating"}, {"id": 2, "info": "release dates"}]
-kind_type = [{"id": 1, "kind": "movie"}, {"id": 2, "kind": "video"}]
+info_type = [Auto4(id=1, info="rating"), Auto4(id=2, info="release dates")]
+kind_type = [Auto3(id=1, kind="movie"), Auto3(id=2, kind="video")]
 title = [
-    {"id": 10, "kind_id": 1, "title": "Alpha"},
-    {"id": 20, "kind_id": 1, "title": "Beta"},
-    {"id": 30, "kind_id": 2, "title": "Gamma"},
+    Auto5(id=10, kind_id=1, title="Alpha"),
+    Auto5(id=20, kind_id=1, title="Beta"),
+    Auto5(id=30, kind_id=2, title="Gamma"),
 ]
 movie_companies = [
-    {"movie_id": 10, "company_id": 1, "company_type_id": 1},
-    {"movie_id": 20, "company_id": 1, "company_type_id": 1},
-    {"movie_id": 30, "company_id": 2, "company_type_id": 1},
+    Auto6(movie_id=10, company_id=1, company_type_id=1),
+    Auto6(movie_id=20, company_id=1, company_type_id=1),
+    Auto6(movie_id=30, company_id=2, company_type_id=1),
 ]
 movie_info = [
-    {"movie_id": 10, "info_type_id": 2, "info": "1997-05-10"},
-    {"movie_id": 20, "info_type_id": 2, "info": "1998-03-20"},
-    {"movie_id": 30, "info_type_id": 2, "info": "1999-07-30"},
+    Auto7(movie_id=10, info_type_id=2, info="1997-05-10"),
+    Auto7(movie_id=20, info_type_id=2, info="1998-03-20"),
+    Auto7(movie_id=30, info_type_id=2, info="1999-07-30"),
 ]
 movie_info_idx = [
-    {"movie_id": 10, "info_type_id": 1, "info": "6.0"},
-    {"movie_id": 20, "info_type_id": 1, "info": "7.5"},
-    {"movie_id": 30, "info_type_id": 1, "info": "5.5"},
+    Auto7(movie_id=10, info_type_id=1, info="6.0"),
+    Auto7(movie_id=20, info_type_id=1, info="7.5"),
+    Auto7(movie_id=30, info_type_id=1, info="5.5"),
 ]
 candidates = _query(
     company_name,
@@ -155,11 +225,9 @@ candidates = _query(
         },
     ],
     {
-        "select": lambda cn, mc, ct, t, kt, mi, it2, miidx, it: {
-            "release_date": mi["info"],
-            "rating": miidx["info"],
-            "german_movie": t["title"],
-        },
+        "select": lambda cn, mc, ct, t, kt, mi, it2, miidx, it: Auto1(
+            release_date=mi["info"], rating=miidx["info"], german_movie=t["title"]
+        ),
         "where": lambda cn, mc, ct, t, kt, mi, it2, miidx, it: (
             (
                 (cn["country_code"] == "[de]" and ct["kind"] == "production companies")
@@ -170,23 +238,23 @@ candidates = _query(
         and kt["kind"] == "movie",
     },
 )
-result = {
-    "release_date": [
-        x["release_date"]
+result = Auto1(
+    release_date=[
+        x.release_date
         for x in sorted(
-            [x for x in candidates], key=lambda x: _sort_key(x["release_date"])
+            [x for x in candidates], key=lambda x: _sort_key(x.release_date)
         )
     ][0],
-    "rating": [
-        x["rating"]
-        for x in sorted([x for x in candidates], key=lambda x: _sort_key(x["rating"]))
+    rating=[
+        x.rating
+        for x in sorted([x for x in candidates], key=lambda x: _sort_key(x.rating))
     ][0],
-    "german_movie": [
-        x["german_movie"]
+    german_movie=[
+        x.german_movie
         for x in sorted(
-            [x for x in candidates], key=lambda x: _sort_key(x["german_movie"])
+            [x for x in candidates], key=lambda x: _sort_key(x.german_movie)
         )
     ][0],
-}
+)
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q13_finds_earliest_German_movie_info()

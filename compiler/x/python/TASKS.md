@@ -1,3 +1,5 @@
+## Recent Enhancements (2025-07-15 03:26)
+- JOB dataset tests now cover q1-q33 with struct literals preserved as dataclasses.
 ## Recent Enhancements (2025-07-15 02:40)
 - Selector inference uses stored element types; `_get` helper removed.
 ## Recent Enhancements (2025-07-14 12:16)

@@ -1186,6 +1186,16 @@ func (c *Compiler) compileExprHint(e *parser.Expr, hint types.Type) (string, err
 				}
 				return typStr, nil
 			}
+			allIdent := true
+			for _, it := range ml.Items {
+				if _, ok := identName(it.Key); !ok {
+					allIdent = false
+					break
+				}
+			}
+			if allIdent {
+				return c.compileMapLiteral(ml)
+			}
 			items := make([]string, len(ml.Items))
 			for i, it := range ml.Items {
 				k, err := c.compileExprHint(it.Key, mt.Key)
