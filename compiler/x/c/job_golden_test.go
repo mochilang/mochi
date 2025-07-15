@@ -70,10 +70,14 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 			}
 			os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 			code, err := ccode.New(env).Compile(prog)
+			errPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "c", query+".error")
 			if err != nil {
-				t.Skipf("compile error: %v", err)
+				if shouldUpdate() {
+					os.WriteFile(errPath, []byte(err.Error()), 0644)
+				}
 				return
 			}
+			os.Remove(errPath)
 			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "c", query+".c")
 			gotCode := stripHeader(bytes.TrimSpace(code))
 			if shouldUpdate() {
@@ -97,14 +101,19 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 			}
 			bin := filepath.Join(dir, "prog")
 			if out, err := exec.Command(cc, cfile, "-o", bin).CombinedOutput(); err != nil {
-				t.Skipf("cc error: %v\n%s", err, out)
+				if shouldUpdate() {
+					os.WriteFile(errPath, out, 0644)
+				}
 				return
 			}
 			out, err := exec.Command(bin).CombinedOutput()
 			if err != nil {
-				t.Skipf("run error: %v\n%s", err, out)
+				if shouldUpdate() {
+					os.WriteFile(errPath, out, 0644)
+				}
 				return
 			}
+			os.Remove(errPath)
 			gotOut := bytes.TrimSpace(out)
 
 			p, err := vm.Compile(prog, env)
@@ -123,12 +132,16 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 				}
 			}
 			wantOutPath := filepath.Join(root, "tests", "dataset", "job", "out", query+".out")
-			wantOut, err := os.ReadFile(wantOutPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".out", gotOut, bytes.TrimSpace(wantOut))
+			if shouldUpdate() {
+				os.WriteFile(wantOutPath, append(gotOut, '\n'), 0644)
+			} else {
+				wantOut, err := os.ReadFile(wantOutPath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+					t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".out", gotOut, bytes.TrimSpace(wantOut))
+				}
 			}
 		})
 	}

@@ -1,0 +1,66 @@
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c: In function ‘test_Q6_finds_marvel_movie_with_Robert_Downey’:
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:247:71: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  247 |   if (test_Q6_finds_marvel_movie_with_Robert_Downey_result.len != tmp1.len) {
+      |                                                                       ^
+      |                                                                       ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:253:15: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  253 |           tmp1.data[i3]) {
+      |               ^
+      |               ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:284:29: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  284 |   result_item_list_t tmp4 = result_item_list_t_create(
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:285:16: error: ‘(cast_info_t *)&cast_info’ is a pointer; did you mean to use ‘->’?
+  285 |       cast_info.len * movie_keyword.len * keyword.len * name.len * title.len);
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:285:36: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  285 |       cast_info.len * movie_keyword.len * keyword.len * name.len * title.len);
+      |                                    ^
+      |                                    ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:285:50: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  285 |       cast_info.len * movie_keyword.len * keyword.len * name.len * title.len);
+      |                                                  ^
+      |                                                  ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:285:61: error: ‘(name_t *)&name’ is a pointer; did you mean to use ‘->’?
+  285 |       cast_info.len * movie_keyword.len * keyword.len * name.len * title.len);
+      |                                                             ^
+      |                                                             ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:285:73: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  285 |       cast_info.len * movie_keyword.len * keyword.len * name.len * title.len);
+      |                                                                         ^
+      |                                                                         ->
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:310:36: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  310 |                   contains_string(n.name, "Downey") &&
+      |                                   ~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:62:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   62 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:311:36: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  311 |                   contains_string(n.name, "Robert") &&
+      |                                   ~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:62:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   62 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:334:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  334 |     _json_string(it.movie_keyword);
+      |                  ~~^~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:67:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   67 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:338:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  338 |     _json_string(it.actor_name);
+      |                  ~~^~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:67:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   67 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:342:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  342 |     _json_string(it.marvel_movie);
+      |                  ~~^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:67:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   67 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq63840949441/001/prog.c:346:58: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  346 |   test_Q6_finds_marvel_movie_with_Robert_Downey_result = result;
+      |                                                          ^~~~~~

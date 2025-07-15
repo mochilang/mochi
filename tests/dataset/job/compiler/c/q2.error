@@ -1,0 +1,43 @@
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c: In function ‘test_Q2_finds_earliest_title_for_German_companies_with_character_keyword’:
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:209:90: warning: comparison between pointer and integer
+  209 |   if (!((test_Q2_finds_earliest_title_for_German_companies_with_character_keyword_result ==
+      |                                                                                          ^~
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:237:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  237 |   int tmp1 = int_create(company_name.len * movie_companies.len * title.len *
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:237:37: error: ‘(company_name_t *)&company_name’ is a pointer; did you mean to use ‘->’?
+  237 |   int tmp1 = int_create(company_name.len * movie_companies.len * title.len *
+      |                                     ^
+      |                                     ->
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:237:59: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  237 |   int tmp1 = int_create(company_name.len * movie_companies.len * title.len *
+      |                                                           ^
+      |                                                           ->
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:237:71: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  237 |   int tmp1 = int_create(company_name.len * movie_companies.len * title.len *
+      |                                                                       ^
+      |                                                                       ->
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:238:38: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  238 |                         movie_keyword.len * keyword.len);
+      |                                      ^
+      |                                      ->
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:238:52: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  238 |                         movie_keyword.len * keyword.len);
+      |                                                    ^
+      |                                                    ->
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:267:17: error: request for member ‘data’ in something not a structure or union
+  267 |             tmp1.data[tmp2] = t.title;
+      |                 ^
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:274:7: error: request for member ‘len’ in something not a structure or union
+  274 |   tmp1.len = tmp2;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:276:28: error: incompatible type for argument 1 of ‘_min_string’
+  276 |   int result = _min_string(titles);
+      |                            ^~~~~~
+      |                            |
+      |                            int
+/tmp/TestCCompiler_JOB_Goldenq2837580288/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^

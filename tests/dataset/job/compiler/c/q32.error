@@ -1,0 +1,96 @@
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c: In function ‘test_Q32_finds_movie_link_for_10_000_mile_club’:
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:268:63: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  268 |   if (!(test_Q32_finds_movie_link_for_10_000_mile_club_result ==
+      |                                                               ^~
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:301:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  301 |       joined_item_list_t_create(keyword.len * movie_keyword.len * title.len *
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:301:40: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  301 |       joined_item_list_t_create(keyword.len * movie_keyword.len * title.len *
+      |                                        ^
+      |                                        ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:301:60: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  301 |       joined_item_list_t_create(keyword.len * movie_keyword.len * title.len *
+      |                                                            ^
+      |                                                            ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:301:72: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  301 |       joined_item_list_t_create(keyword.len * movie_keyword.len * title.len *
+      |                                                                        ^
+      |                                                                        ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:302:43: error: ‘(movie_link_t *)&movie_link’ is a pointer; did you mean to use ‘->’?
+  302 |                                 movie_link.len * title.len * link_type.len);
+      |                                           ^
+      |                                           ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:302:55: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  302 |                                 movie_link.len * title.len * link_type.len);
+      |                                                       ^
+      |                                                       ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:302:71: error: ‘(link_type_t *)&link_type’ is a pointer; did you mean to use ‘->’?
+  302 |                                 movie_link.len * title.len * link_type.len);
+      |                                                                       ^
+      |                                                                       ->
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:346:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  346 |   int tmp9 = int_create(joined.len);
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:350:9: error: request for member ‘data’ in something not a structure or union
+  350 |     tmp9.data[tmp10] = r.link_type;
+      |         ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:353:7: error: request for member ‘len’ in something not a structure or union
+  353 |   tmp9.len = tmp10;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:358:10: error: request for member ‘data’ in something not a structure or union
+  358 |     tmp12.data[tmp13] = r.first_movie;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:361:8: error: request for member ‘len’ in something not a structure or union
+  361 |   tmp12.len = tmp13;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:366:10: error: request for member ‘data’ in something not a structure or union
+  366 |     tmp15.data[tmp16] = r.second_movie;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:369:8: error: request for member ‘len’ in something not a structure or union
+  369 |   tmp15.len = tmp16;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:370:67: error: incompatible type for argument 1 of ‘_min_string’
+  370 |   result_item_t result = (result_item_t){.link_type = _min_string(tmp9),
+      |                                                                   ^~~~
+      |                                                                   |
+      |                                                                   int
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:371:69: error: incompatible type for argument 1 of ‘_min_string’
+  371 |                                          .first_movie = _min_string(tmp12),
+      |                                                                     ^~~~~
+      |                                                                     |
+      |                                                                     int
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:372:70: error: incompatible type for argument 1 of ‘_min_string’
+  372 |                                          .second_movie = _min_string(tmp15)};
+      |                                                                      ^~~~~
+      |                                                                      |
+      |                                                                      int
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:374:19: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  374 |   tmp18.data[0] = result;
+      |                   ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:379:24: error: invalid initializer
+  379 |     result_item_t it = tmp18.data[i19];
+      |                        ^~~~~
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:395:59: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  395 |   test_Q32_finds_movie_link_for_10_000_mile_club_result = result;
+      |                                                           ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:397:12: error: request for member ‘data’ in something not a structure or union
+  397 |   free(tmp9.data);
+      |            ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:398:13: error: request for member ‘data’ in something not a structure or union
+  398 |   free(tmp12.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq322081034714/001/prog.c:399:13: error: request for member ‘data’ in something not a structure or union
+  399 |   free(tmp15.data);
+      |             ^

@@ -1,0 +1,160 @@
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c: In function ‘test_Q31_finds_minimal_budget__votes__writer_and_title’:
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:391:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  391 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:398:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  398 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:461:15: error: redefinition of ‘matches’
+  461 |   list_string matches = list_string_create(7);
+      |               ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:455:15: note: previous definition of ‘matches’ with type ‘list_string’
+  455 |   list_string matches = list_string_create(5);
+      |               ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:469:15: error: redefinition of ‘matches’
+  469 |   list_string matches = list_string_create(2);
+      |               ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:461:15: note: previous definition of ‘matches’ with type ‘list_string’
+  461 |   list_string matches = list_string_create(7);
+      |               ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:472:30: warning: implicit declaration of function ‘matches_item_list_t_create’ [-Wimplicit-function-declaration]
+  472 |   matches_item_list_t tmp4 = matches_item_list_t_create(
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:473:16: error: ‘(cast_info_t *)&cast_info’ is a pointer; did you mean to use ‘->’?
+  473 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                ^
+      |                ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:473:27: error: ‘(name_t *)&name’ is a pointer; did you mean to use ‘->’?
+  473 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                           ^
+      |                           ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:473:39: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  473 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                                       ^
+      |                                       ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:473:56: error: ‘(movie_info_t *)&movie_info’ is a pointer; did you mean to use ‘->’?
+  473 |       cast_info.len * name.len * title.len * movie_info.len *
+      |                                                        ^
+      |                                                        ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:474:21: error: ‘(movie_info_idx_t *)&movie_info_idx’ is a pointer; did you mean to use ‘->’?
+  474 |       movie_info_idx.len * movie_keyword.len * keyword.len *
+      |                     ^
+      |                     ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:474:41: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  474 |       movie_info_idx.len * movie_keyword.len * keyword.len *
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:474:55: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  474 |       movie_info_idx.len * movie_keyword.len * keyword.len *
+      |                                                       ^
+      |                                                       ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:475:22: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  475 |       movie_companies.len * company_name.len * info_type.len * info_type.len);
+      |                      ^
+      |                      ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:475:41: error: ‘(company_name_t *)&company_name’ is a pointer; did you mean to use ‘->’?
+  475 |       movie_companies.len * company_name.len * info_type.len * info_type.len);
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:475:57: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  475 |       movie_companies.len * company_name.len * info_type.len * info_type.len);
+      |                                                         ^
+      |                                                         ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:475:73: error: ‘(info_type_t *)&info_type’ is a pointer; did you mean to use ‘->’?
+  475 |       movie_companies.len * company_name.len * info_type.len * info_type.len);
+      |                                                                         ^
+      |                                                                         ->
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:533:71: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  533 |                                       contains_list_string(matches, ci.note) &&
+      |                                                                     ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:534:50: error: request for member ‘starts_with’ in something not a structure or union
+  534 |                                           cn.name.starts_with("Lionsgate") &&
+      |                                                  ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:559:23: error: conflicting types for ‘matches’; have ‘matches_item_list_t’
+  559 |   matches_item_list_t matches = tmp4;
+      |                       ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:469:15: note: previous definition of ‘matches’ with type ‘list_string’
+  469 |   list_string matches = list_string_create(2);
+      |               ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:560:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  560 |   int tmp17 = int_create(matches.len);
+      |               ^~~~~~~~~~
+      |               list_int_create
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:564:10: error: request for member ‘data’ in something not a structure or union
+  564 |     tmp17.data[tmp18] = r.movie_budget;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:567:8: error: request for member ‘len’ in something not a structure or union
+  567 |   tmp17.len = tmp18;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:580:10: error: request for member ‘data’ in something not a structure or union
+  580 |     tmp23.data[tmp24] = r.writer;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:583:8: error: request for member ‘len’ in something not a structure or union
+  583 |   tmp23.len = tmp24;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:588:10: error: request for member ‘data’ in something not a structure or union
+  588 |     tmp26.data[tmp27] = r.violent_liongate_movie;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:591:8: error: request for member ‘len’ in something not a structure or union
+  591 |   tmp26.len = tmp27;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:593:46: error: incompatible type for argument 1 of ‘_min_string’
+  593 |       (result_t){.movie_budget = _min_string(tmp17),
+      |                                              ^~~~~
+      |                                              |
+      |                                              int
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:595:40: error: incompatible type for argument 1 of ‘_min_string’
+  595 |                  .writer = _min_string(tmp23),
+      |                                        ^~~~~
+      |                                        |
+      |                                        int
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:596:56: error: incompatible type for argument 1 of ‘_min_string’
+  596 |                  .violent_liongate_movie = _min_string(tmp26)}};
+      |                                                        ^~~~~
+      |                                                        |
+      |                                                        int
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:606:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  606 |     _json_string(it.movie_budget);
+      |                  ~~^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:614:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  614 |     _json_string(it.writer);
+      |                  ~~^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:618:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  618 |     _json_string(it.violent_liongate_movie);
+      |                  ~~^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:622:67: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  622 |   test_Q31_finds_minimal_budget__votes__writer_and_title_result = result;
+      |                                                                   ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:624:13: error: request for member ‘data’ in something not a structure or union
+  624 |   free(tmp17.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:626:13: error: request for member ‘data’ in something not a structure or union
+  626 |   free(tmp23.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq312657623653/001/prog.c:627:13: error: request for member ‘data’ in something not a structure or union
+  627 |   free(tmp26.data);
+      |             ^

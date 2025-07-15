@@ -1,0 +1,70 @@
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c: In function ‘test_Q17_finds_US_character_name_movie_with_actor_starting_with_B’:
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:290:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  290 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:300:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  300 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:340:7: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  340 |       int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+      |       ^~~~~~~~~~
+      |       list_int_create
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:340:22: error: ‘(name_t *)&name’ is a pointer; did you mean to use ‘->’?
+  340 |       int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+      |                      ^
+      |                      ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:340:38: error: ‘(cast_info_t *)&cast_info’ is a pointer; did you mean to use ‘->’?
+  340 |       int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+      |                                      ^
+      |                                      ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:340:50: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  340 |       int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+      |                                                  ^
+      |                                                  ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:340:70: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  340 |       int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+      |                                                                      ^
+      |                                                                      ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:341:25: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  341 |                  keyword.len * movie_companies.len * company_name.len);
+      |                         ^
+      |                         ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:341:47: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  341 |                  keyword.len * movie_companies.len * company_name.len);
+      |                                               ^
+      |                                               ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:341:66: error: ‘(company_name_t *)&company_name’ is a pointer; did you mean to use ‘->’?
+  341 |                  keyword.len * movie_companies.len * company_name.len);
+      |                                                                  ^
+      |                                                                  ->
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:377:29: error: request for member ‘starts_with’ in something not a structure or union
+  377 |                       n.name.starts_with("B") && ci.movie_id == mk.movie_id &&
+      |                             ^
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:382:21: error: request for member ‘data’ in something not a structure or union
+  382 |                 tmp4.data[tmp5] = n.name;
+      |                     ^
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:391:7: error: request for member ‘len’ in something not a structure or union
+  391 |   tmp4.len = tmp5;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:394:65: error: incompatible type for argument 1 of ‘_min_int’
+  394 |       (result_t){.member_in_charnamed_american_movie = _min_int(matches),
+      |                                                                 ^~~~~~~
+      |                                                                 |
+      |                                                                 int
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:62:30: note: expected ‘list_int’ but argument is of type ‘int’
+   62 | static int _min_int(list_int v) {
+      |                     ~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:395:33: error: incompatible type for argument 1 of ‘_min_int’
+  395 |                  .a1 = _min_int(matches)}};
+      |                                 ^~~~~~~
+      |                                 |
+      |                                 int
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:62:30: note: expected ‘list_int’ but argument is of type ‘int’
+   62 | static int _min_int(list_int v) {
+      |                     ~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq173814554275/001/prog.c:412:7: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  412 |       result;
+      |       ^~~~~~

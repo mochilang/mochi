@@ -1,0 +1,110 @@
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c: In function ‘test_Q25_finds_male_horror_writer_with_violent_keywords’:
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:353:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  353 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:361:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  361 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:408:7: error: conflicting types for ‘allowed_notes’; have ‘int’
+  408 |   int allowed_notes = allowed_notes;
+      |       ^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:402:15: note: previous definition of ‘allowed_notes’ with type ‘list_string’
+  402 |   list_string allowed_notes = list_string_create(5);
+      |               ^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:415:7: error: conflicting types for ‘allowed_keywords’; have ‘int’
+  415 |   int allowed_keywords = allowed_keywords;
+      |       ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:409:15: note: previous definition of ‘allowed_keywords’ with type ‘list_string’
+  409 |   list_string allowed_keywords = list_string_create(5);
+      |               ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:440:67: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  440 |                     if (!(((contains_list_string(allowed_notes, ci.note)) &&
+      |                                                                 ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:443:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  443 |                                                  k.keyword)) &&
+      |                                                  ~^~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:474:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  474 |   int tmp6 = int_create(matches.len);
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:478:9: error: request for member ‘data’ in something not a structure or union
+  478 |     tmp6.data[tmp7] = x.budget;
+      |         ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:481:7: error: request for member ‘len’ in something not a structure or union
+  481 |   tmp6.len = tmp7;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:494:10: error: request for member ‘data’ in something not a structure or union
+  494 |     tmp12.data[tmp13] = x.writer;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:497:8: error: request for member ‘len’ in something not a structure or union
+  497 |   tmp12.len = tmp13;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:502:10: error: request for member ‘data’ in something not a structure or union
+  502 |     tmp15.data[tmp16] = x.title;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:505:8: error: request for member ‘len’ in something not a structure or union
+  505 |   tmp15.len = tmp16;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:506:63: error: incompatible type for argument 1 of ‘_min_string’
+  506 |   result_t result[] = {(result_t){.movie_budget = _min_string(tmp6),
+      |                                                               ^~~~
+      |                                                               |
+      |                                                               int
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:508:62: error: incompatible type for argument 1 of ‘_min_string’
+  508 |                                   .male_writer = _min_string(tmp12),
+      |                                                              ^~~~~
+      |                                                              |
+      |                                                              int
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:509:70: error: incompatible type for argument 1 of ‘_min_string’
+  509 |                                   .violent_movie_title = _min_string(tmp15)}};
+      |                                                                      ^~~~~
+      |                                                                      |
+      |                                                                      int
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:519:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  519 |     _json_string(it.movie_budget);
+      |                  ~~^~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:527:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  527 |     _json_string(it.male_writer);
+      |                  ~~^~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:531:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  531 |     _json_string(it.violent_movie_title);
+      |                  ~~^~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:88:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   88 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:535:68: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  535 |   test_Q25_finds_male_horror_writer_with_violent_keywords_result = result;
+      |                                                                    ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:538:12: error: request for member ‘data’ in something not a structure or union
+  538 |   free(tmp6.data);
+      |            ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:540:13: error: request for member ‘data’ in something not a structure or union
+  540 |   free(tmp12.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq252505025950/001/prog.c:541:13: error: request for member ‘data’ in something not a structure or union
+  541 |   free(tmp15.data);
+      |             ^

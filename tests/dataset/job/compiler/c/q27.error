@@ -1,0 +1,136 @@
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c: In function ‘test_Q27_selects_minimal_company__link_and_title’:
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:389:65: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  389 |   if (!(test_Q27_selects_minimal_company__link_and_title_result ==
+      |                                                                 ^~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:428:34: warning: initialization of ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  428 |                          .note = "extra"}};
+      |                                  ^~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:428:34: note: (near initialization for ‘(anonymous).note’)
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:446:30: warning: implicit declaration of function ‘matches_item_list_t_create’ [-Wimplicit-function-declaration]
+  446 |   matches_item_list_t tmp1 = matches_item_list_t_create(
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:447:20: error: ‘(complete_cast_t *)&complete_cast’ is a pointer; did you mean to use ‘->’?
+  447 |       complete_cast.len * comp_cast_type.len * comp_cast_type.len * title.len *
+      |                    ^
+      |                    ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:447:41: error: ‘(comp_cast_type_t *)&comp_cast_type’ is a pointer; did you mean to use ‘->’?
+  447 |       complete_cast.len * comp_cast_type.len * comp_cast_type.len * title.len *
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:447:62: error: ‘(comp_cast_type_t *)&comp_cast_type’ is a pointer; did you mean to use ‘->’?
+  447 |       complete_cast.len * comp_cast_type.len * comp_cast_type.len * title.len *
+      |                                                              ^
+      |                                                              ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:447:74: error: ‘(title_t *)&title’ is a pointer; did you mean to use ‘->’?
+  447 |       complete_cast.len * comp_cast_type.len * comp_cast_type.len * title.len *
+      |                                                                          ^
+      |                                                                          ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:448:17: error: ‘(movie_link_t *)&movie_link’ is a pointer; did you mean to use ‘->’?
+  448 |       movie_link.len * link_type.len * movie_keyword.len * keyword.len *
+      |                 ^
+      |                 ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:448:33: error: ‘(link_type_t *)&link_type’ is a pointer; did you mean to use ‘->’?
+  448 |       movie_link.len * link_type.len * movie_keyword.len * keyword.len *
+      |                                 ^
+      |                                 ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:448:53: error: ‘(movie_keyword_t *)&movie_keyword’ is a pointer; did you mean to use ‘->’?
+  448 |       movie_link.len * link_type.len * movie_keyword.len * keyword.len *
+      |                                                     ^
+      |                                                     ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:448:67: error: ‘(keyword_t *)&keyword’ is a pointer; did you mean to use ‘->’?
+  448 |       movie_link.len * link_type.len * movie_keyword.len * keyword.len *
+      |                                                                   ^
+      |                                                                   ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:449:22: error: ‘(movie_companie_t *)&movie_companies’ is a pointer; did you mean to use ‘->’?
+  449 |       movie_companies.len * company_type.len * company_name.len *
+      |                      ^
+      |                      ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:449:41: error: ‘(company_type_t *)&company_type’ is a pointer; did you mean to use ‘->’?
+  449 |       movie_companies.len * company_type.len * company_name.len *
+      |                                         ^
+      |                                         ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:449:60: error: ‘(company_name_t *)&company_name’ is a pointer; did you mean to use ‘->’?
+  449 |       movie_companies.len * company_type.len * company_name.len *
+      |                                                            ^
+      |                                                            ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:450:17: error: ‘(movie_info_t *)&movie_info’ is a pointer; did you mean to use ‘->’?
+  450 |       movie_info.len);
+      |                 ^
+      |                 ->
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:513:53: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  513 |                                  (contains_string(cn.name, "Film") ||
+      |                                                   ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:71:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:514:53: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  514 |                                   contains_string(cn.name, "Warner")) &&
+      |                                                   ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:71:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:517:52: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  517 |                                  contains_string(lt.link, "follow") &&
+      |                                                  ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:71:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:555:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  555 |   int tmp15 = int_create(matches.len);
+      |               ^~~~~~~~~~
+      |               list_int_create
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:559:10: error: request for member ‘data’ in something not a structure or union
+  559 |     tmp15.data[tmp16] = x.company;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:562:8: error: request for member ‘len’ in something not a structure or union
+  562 |   tmp15.len = tmp16;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:567:10: error: request for member ‘data’ in something not a structure or union
+  567 |     tmp18.data[tmp19] = x.link;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:570:8: error: request for member ‘len’ in something not a structure or union
+  570 |   tmp18.len = tmp19;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:575:10: error: request for member ‘data’ in something not a structure or union
+  575 |     tmp21.data[tmp22] = x.title;
+      |          ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:578:8: error: request for member ‘len’ in something not a structure or union
+  578 |   tmp21.len = tmp22;
+      |        ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:580:56: error: incompatible type for argument 1 of ‘_min_string’
+  580 |       (result_item_t){.producing_company = _min_string(tmp15),
+      |                                                        ^~~~~
+      |                                                        |
+      |                                                        int
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:581:48: error: incompatible type for argument 1 of ‘_min_string’
+  581 |                       .link_type = _min_string(tmp18),
+      |                                                ^~~~~
+      |                                                |
+      |                                                int
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:582:62: error: incompatible type for argument 1 of ‘_min_string’
+  582 |                       .complete_western_sequel = _min_string(tmp21)};
+      |                                                              ^~~~~
+      |                                                              |
+      |                                                              int
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:62:38: note: expected ‘list_string’ but argument is of type ‘int’
+   62 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:596:61: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  596 |   test_Q27_selects_minimal_company__link_and_title_result = result;
+      |                                                             ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:598:13: error: request for member ‘data’ in something not a structure or union
+  598 |   free(tmp15.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:599:13: error: request for member ‘data’ in something not a structure or union
+  599 |   free(tmp18.data);
+      |             ^
+/tmp/TestCCompiler_JOB_Goldenq273881164585/001/prog.c:600:13: error: request for member ‘data’ in something not a structure or union
+  600 |   free(tmp21.data);
+      |             ^

@@ -1,0 +1,53 @@
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c: In function ‘test_Q14_selects_minimal_rating_and_title_for_dark_movies’:
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:321:74: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  321 |   if (!(test_Q14_selects_minimal_rating_and_title_for_dark_movies_result ==
+      |                                                                          ^~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:370:7: error: conflicting types for ‘allowed_keywords’; have ‘int’
+  370 |   int allowed_keywords = allowed_keywords;
+      |       ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:365:15: note: previous definition of ‘allowed_keywords’ with type ‘list_string’
+  365 |   list_string allowed_keywords = list_string_create(4);
+      |               ^~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:382:7: error: conflicting types for ‘allowed_countries’; have ‘int’
+  382 |   int allowed_countries = allowed_countries;
+      |       ^~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:371:15: note: previous definition of ‘allowed_countries’ with type ‘list_string’
+  371 |   list_string allowed_countries = list_string_create(10);
+      |               ^~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:406:67: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  406 |                          (contains_list_string(allowed_keywords, k.keyword)) &&
+      |                                                                  ~^~~~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:408:69: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  408 |                          (contains_list_string(allowed_countries, mi.info)) &&
+      |                                                                   ~~^~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:80:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:440:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  440 |   int tmp6 = int_create(matches.len);
+      |              ^~~~~~~~~~
+      |              list_int_create
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:444:9: error: request for member ‘data’ in something not a structure or union
+  444 |     tmp6.data[tmp7] = x.title;
+      |         ^
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:447:7: error: request for member ‘len’ in something not a structure or union
+  447 |   tmp6.len = tmp7;
+      |       ^
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:449:70: error: incompatible type for argument 1 of ‘_min_string’
+  449 |       .rating = _min_float(tmp3), .northern_dark_movie = _min_string(tmp6)};
+      |                                                                      ^~~~
+      |                                                                      |
+      |                                                                      int
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:71:38: note: expected ‘list_string’ but argument is of type ‘int’
+   71 | static char *_min_string(list_string v) {
+      |                          ~~~~~~~~~~~~^
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:459:70: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  459 |   test_Q14_selects_minimal_rating_and_title_for_dark_movies_result = result;
+      |                                                                      ^~~~~~
+/tmp/TestCCompiler_JOB_Goldenq144118064268/001/prog.c:463:12: error: request for member ‘data’ in something not a structure or union
+  463 |   free(tmp6.data);
+      |            ^
