@@ -14,6 +14,7 @@
 - 2025-07-15 05:08 UTC: Updated TPC-DS Kotlin generator to capture run errors and added golden tests comparing generated code and output.
 - 2025-07-15 06:38 UTC: Generated Kotlin code for TPC-DS `q35`, `q43`, `q58`, `q59`, `q61`, and `q62`; updated tests to run these queries.
 - 2025-07-15 07:18 UTC: Generated Kotlin code for additional TPC-DS queries (`q63`-`q69`, `q72`, `q78`, `q80`, `q82`-`q86`, `q89`, `q97`) and added golden test.
+- 2025-07-15 07:48 UTC: Began implementing operator precedence handling in Kotlin compiler; initial attempt compiles but `q1` still fails due to type casting issues.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
