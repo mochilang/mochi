@@ -7,7 +7,10 @@
   with complex expressions are wrapped. Initial work on compiling TPCH `q11`.
 - 2025-07-13 17:00 - Added golden output for TPCH `q11` and updated tests to
   exercise queries 1-4.
+- 2025-07-15 06:30 - Added TPC-DS golden tests for Smalltalk compiler covering
+  available queries.
 
 ## Remaining Work
 - [ ] Verify TPC-H `q1.mochi` output matches reference when compiled.
 - [ ] Improve generated code formatting for nested expressions.
+
