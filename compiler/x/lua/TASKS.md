@@ -26,3 +26,8 @@
 - Added `compile_tpcds_lua.go` support for `.lua` output files.
 - Regenerated TPC-DS Lua code and outputs after Lua installation.
 - Extended `tpcds_dataset_golden_test.go` to run all queries using `.lua` goldens.
+
+## Progress (2025-07-15 07:21)
+- Fixed sorting comparator to handle complex keys without runtime errors.
+- Regenerated Lua code and outputs for queries q21,q24,q41,q42,q44,q47,q49,q51,q52,q55.
+- Removed old `.lua.out` files from dataset.

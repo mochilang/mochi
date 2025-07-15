@@ -940,7 +940,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 	if sortExpr != "" || skipExpr != "" || takeExpr != "" {
 		b.WriteString("\tlocal items = _res\n")
 		if sortExpr != "" {
-			b.WriteString("\ttable.sort(items, function(a,b) return a.__key < b.__key end)\n")
+			b.WriteString("\ttable.sort(items, function(a,b)\n")
+			b.WriteString("\t    local ak, bk = a.__key, b.__key\n")
+			b.WriteString("\t    if type(ak)=='number' and type(bk)=='number' then return ak < bk end\n")
+			b.WriteString("\t    if type(ak)=='string' and type(bk)=='string' then return ak < bk end\n")
+			b.WriteString("\t    return tostring(ak) < tostring(bk)\n")
+			b.WriteString("\tend)\n")
 			b.WriteString("\tlocal tmp = {}\n")
 			b.WriteString("\tfor _, it in ipairs(items) do tmp[#tmp+1] = it.__val end\n")
 			b.WriteString("\titems = tmp\n")
