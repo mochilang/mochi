@@ -19,10 +19,10 @@ import (
 	"mochi/types"
 )
 
-var updateTPCDS = flag.Bool("update", false, "update golden files")
+var updateTPCDS = flag.Bool("update-tpcds", false, "update TPC-DS golden files")
 
 func shouldUpdateTPCDS() bool {
-	f := flag.Lookup("update")
+	f := flag.Lookup("update-tpcds")
 	return f != nil && f.Value.String() == "true"
 }
 

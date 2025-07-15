@@ -136,6 +136,15 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.writeImports()
 	// Temporary alias used when inferred struct names default to "v"
+	if c.defaultAlias == "" && c.env != nil {
+		if _, ok := c.env.GetStruct("Result"); ok {
+			c.defaultAlias = "Result"
+		} else if len(c.env.Structs()) == 1 {
+			for name := range c.env.Structs() {
+				c.defaultAlias = name
+			}
+		}
+	}
 	if c.defaultAlias != "" {
 		c.writeln("type v = " + c.defaultAlias)
 	} else {
