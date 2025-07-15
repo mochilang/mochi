@@ -1,0 +1,8 @@
+error[T034]: join source must be a list
+  --> tests/queryplan/errors/join_source_not_list.mochi:3:14
+
+  3 |              join from y in m on true
+    |              ^
+
+help:
+  Use a list value after `in`.

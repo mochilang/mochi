@@ -1,0 +1,4 @@
+let m = { a: 1 }
+let result = from x in [1]
+             join from y in m on true
+             select y
