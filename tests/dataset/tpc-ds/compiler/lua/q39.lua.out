@@ -33,18 +33,45 @@ function __group_by_rows(rows, keyfn, valfn)
     end
     return res
 end
-function __count(v)
-    if type(v) == 'table' then
-        if v.items ~= nil then return #v.items end
-        if v[1] ~= nil or #v > 0 then return #v end
-        local n = 0
-        for _ in pairs(v) do n = n + 1 end
-        return n
-    elseif type(v) == 'string' then
-        return #v
+function __add(a, b)
+    if type(a) == 'table' and type(b) == 'table' then
+        local out = {}
+        for i = 1, #a do out[#out+1] = a[i] end
+        for i = 1, #b do out[#out+1] = b[i] end
+        return out
+    elseif type(a) == 'string' or type(b) == 'string' then
+        return tostring(a) .. tostring(b)
     else
-        error('count() expects list or group')
+        return a + b
     end
+end
+function __append(lst, v)
+    local out = {}
+    if lst then for i = 1, #lst do out[#out+1] = lst[i] end end
+    out[#out+1] = v
+    return out
+end
+function __avg(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
+    else
+        error('avg() expects list or group')
+    end
+    if #items == 0 then return 0 end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    local res = sum / #items
+    if res == math.floor(res) then return math.floor(res) end
+    return res
+end
+function __div(a, b)
+    if math.type and math.type(a) == 'integer' and math.type(b) == 'integer' then
+        return a // b
+    end
+    return a / b
 end
 function __eq(a, b)
     if type(a) ~= type(b) then return false end
@@ -58,6 +85,29 @@ function __eq(a, b)
     for k, v in pairs(a) do if not __eq(v, b[k]) then return false end end
     for k, _ in pairs(b) do if a[k] == nil then return false end end
     return true
+end
+function __iter(obj)
+    if type(obj) == 'table' then
+        if obj[1] ~= nil or #obj > 0 then
+            local i = 0
+            local n = #obj
+            return function()
+                i = i + 1
+                if i <= n then return i, obj[i] end
+            end
+        else
+            return pairs(obj)
+        end
+    elseif type(obj) == 'string' then
+        local i = 0
+        local n = #obj
+        return function()
+            i = i + 1
+            if i <= n then return i, string.sub(obj, i, i) end
+        end
+    else
+        return function() return nil end
+    end
 end
 function __json(v)
     if type(v) == 'table' and next(v) == nil then print('[]'); return end
@@ -280,127 +330,81 @@ function __run_tests(tests)
         io.write('\n[FAIL] ' .. failures .. ' test(s) failed.\n')
     end
 end
-function __slice(obj, i, j)
-    if i == nil then i = 0 end
-    if type(obj) == 'string' then
-        local len = #obj
-        if j == nil then j = len end
-        if i < 0 then i = len + i end
-        if j < 0 then j = len + j end
-        if i < 0 then i = 0 end
-        if j > len then j = len end
-        return string.sub(obj, i+1, j)
-    elseif type(obj) == 'table' then
-        local len = #obj
-        if j == nil then j = len end
-        if i < 0 then i = len + i end
-        if j < 0 then j = len + j end
-        if i < 0 then i = 0 end
-        if j > len then j = len end
-        local out = {}
-        for k = i+1, j do
-            out[#out+1] = obj[k]
-        end
-        return out
+function __sum(v)
+    local items
+    if type(v) == 'table' and v.items ~= nil then
+        items = v.items
+    elseif type(v) == 'table' then
+        items = v
     else
-        return {}
+        error('sum() expects list or group')
     end
+    local sum = 0
+    for _, it in ipairs(items) do sum = sum + it end
+    return sum
 end
-CatalogSale = {}
-CatalogSale.__index = CatalogSale
-function CatalogSale.new(o)
-    o = o or {}
-    setmetatable(o, CatalogSale)
-    return o
+function __values(m)
+    if type(m) ~= 'table' then error('values() expects map') end
+    local keys = {}
+    for k in pairs(m) do keys[#keys+1] = k end
+    table.sort(keys, function(a,b) return tostring(a)<tostring(b) end)
+    local out = {}
+    for _, k in ipairs(keys) do out[#out+1] = m[k] end
+    return out
 end
-
-Warehouse = {}
-Warehouse.__index = Warehouse
-function Warehouse.new(o)
-    o = o or {}
-    setmetatable(o, Warehouse)
-    return o
-end
-
-ShipMode = {}
-ShipMode.__index = ShipMode
-function ShipMode.new(o)
-    o = o or {}
-    setmetatable(o, ShipMode)
-    return o
+function test_TPCDS_Q39_simplified()
+    if not (__eq(summary, {{["w_warehouse_sk"]=1, ["i_item_sk"]=1, ["cov"]=1.539600717839002}})) then error('expect failed') end
 end
 
-CallCenter = {}
-CallCenter.__index = CallCenter
-function CallCenter.new(o)
-    o = o or {}
-    setmetatable(o, CallCenter)
-    return o
-end
-
-function test_TPCDS_Q99_buckets()
-    if not (__eq(grouped, {{["warehouse"]="Warehouse1", ["sm_type"]="EXP", ["cc_name"]="CC1", ["d30"]=1, ["d60"]=1, ["d90"]=1, ["d120"]=1, ["dmore"]=1}})) then error('expect failed') end
-end
-
-catalog_sales = {{["cs_ship_date_sk"]=31, ["cs_sold_date_sk"]=1, ["cs_warehouse_sk"]=1, ["cs_ship_mode_sk"]=1, ["cs_call_center_sk"]=1}, {["cs_ship_date_sk"]=51, ["cs_sold_date_sk"]=1, ["cs_warehouse_sk"]=1, ["cs_ship_mode_sk"]=1, ["cs_call_center_sk"]=1}, {["cs_ship_date_sk"]=71, ["cs_sold_date_sk"]=1, ["cs_warehouse_sk"]=1, ["cs_ship_mode_sk"]=1, ["cs_call_center_sk"]=1}, {["cs_ship_date_sk"]=101, ["cs_sold_date_sk"]=1, ["cs_warehouse_sk"]=1, ["cs_ship_mode_sk"]=1, ["cs_call_center_sk"]=1}, {["cs_ship_date_sk"]=131, ["cs_sold_date_sk"]=1, ["cs_warehouse_sk"]=1, ["cs_ship_mode_sk"]=1, ["cs_call_center_sk"]=1}}
-warehouse = {{["w_warehouse_sk"]=1, ["w_warehouse_name"]="Warehouse1"}}
-ship_mode = {{["sm_ship_mode_sk"]=1, ["sm_type"]="EXP"}}
-call_center = {{["cc_call_center_sk"]=1, ["cc_name"]="CC1"}}
-grouped = (function()
-    local _src = catalog_sales
+local math = { sqrt = math.sqrt, pow = math.pow, sin = math.sin, log = math.log, pi = math.pi, e = math.exp(1) }
+inventory = {{["inv_item_sk"]=1, ["inv_warehouse_sk"]=1, ["inv_date_sk"]=1, ["inv_quantity_on_hand"]=10}, {["inv_item_sk"]=1, ["inv_warehouse_sk"]=1, ["inv_date_sk"]=2, ["inv_quantity_on_hand"]=10}, {["inv_item_sk"]=1, ["inv_warehouse_sk"]=1, ["inv_date_sk"]=3, ["inv_quantity_on_hand"]=250}}
+item = {{["i_item_sk"]=1}}
+warehouse = {{["w_warehouse_sk"]=1, ["w_warehouse_name"]="W1"}}
+date_dim = {{["d_date_sk"]=1, ["d_year"]=2000, ["d_moy"]=1}, {["d_date_sk"]=2, ["d_year"]=2000, ["d_moy"]=2}, {["d_date_sk"]=3, ["d_year"]=2000, ["d_moy"]=3}}
+monthly = (function()
+    local _src = inventory
     local _rows = __query(_src, {
-        { items = warehouse, on = function(cs, w) return __eq(cs.cs_warehouse_sk, w.w_warehouse_sk) end },
-        { items = ship_mode, on = function(cs, w, sm) return __eq(cs.cs_ship_mode_sk, sm.sm_ship_mode_sk) end },
-        { items = call_center, on = function(cs, w, sm, cc) return __eq(cs.cs_call_center_sk, cc.cc_call_center_sk) end }
-    }, { selectFn = function(cs, w, sm, cc) return {cs, w, sm, cc} end })
-    local _groups = __group_by_rows(_rows, function(cs, w, sm, cc) return {["warehouse"]=__slice(w.w_warehouse_name, 0, 20), ["sm_type"]=sm.sm_type, ["cc_name"]=cc.cc_name} end, function(cs, w, sm, cc) local _row = __merge(cs, w, sm, cc); _row.cs = cs; _row.w = w; _row.sm = sm; _row.cc = cc; return _row end)
+        { items = date_dim, on = function(inv, d) return __eq(inv.inv_date_sk, d.d_date_sk) end },
+        { items = item, on = function(inv, d, i) return __eq(inv.inv_item_sk, i.i_item_sk) end },
+        { items = warehouse, on = function(inv, d, i, w) return __eq(inv.inv_warehouse_sk, w.w_warehouse_sk) end }
+    }, { selectFn = function(inv, d, i, w) return {inv, d, i, w} end, where = function(inv, d, i, w) return ((d.d_year == 2000)) end })
+    local _groups = __group_by_rows(_rows, function(inv, d, i, w) return {["w"]=w.w_warehouse_sk, ["i"]=i.i_item_sk, ["month"]=d.d_moy} end, function(inv, d, i, w) local _row = __merge(inv, d, i, w); _row.inv = inv; _row.d = d; _row.i = i; _row.w = w; return _row end)
     local _res = {}
     for _, g in ipairs(_groups) do
-        _res[#_res+1] = {["warehouse"]=g.key.warehouse, ["sm_type"]=g.key.sm_type, ["cc_name"]=g.key.cc_name, ["d30"]=__count((function()
+        _res[#_res+1] = {["w"]=g.key.w, ["i"]=g.key.i, ["qty"]=__sum((function()
     local _res = {}
     for _, x in ipairs(g.items) do
-        if ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 30) then
-            _res[#_res+1] = x
-        end
-    end
-    return _res
-end)()), ["d60"]=__count((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        if (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 30) and ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 60)) then
-            _res[#_res+1] = x
-        end
-    end
-    return _res
-end)()), ["d90"]=__count((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        if (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 60) and ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 90)) then
-            _res[#_res+1] = x
-        end
-    end
-    return _res
-end)()), ["d120"]=__count((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        if (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 90) and ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 120)) then
-            _res[#_res+1] = x
-        end
-    end
-    return _res
-end)()), ["dmore"]=__count((function()
-    local _res = {}
-    for _, x in ipairs(g.items) do
-        if ((x.cs_ship_date_sk - x.cs_sold_date_sk) > 120) then
-            _res[#_res+1] = x
-        end
+        _res[#_res+1] = x.inv_quantity_on_hand
     end
     return _res
 end)())}
     end
     return _res
 end)()
-__json(grouped)
+grouped = {}
+for _, m in ipairs(monthly) do
+    local key = tostring({["w"]=m.w, ["i"]=m.i})
+    if (grouped[key] ~= nil) then
+        local g = grouped[key]
+        grouped[key] = {["w"]=g.w, ["i"]=g.i, ["qtys"]=__append(g.qtys, m.qty)}
+    else
+        grouped[key] = {["w"]=m.w, ["i"]=m.i, ["qtys"]={m.qty}}
+    end
+end
+summary = {}
+for _, g in ipairs(__values(grouped)) do
+    local mean = __avg(g.qtys)
+    local sumsq = 0.0
+    for _, q in __iter(g.qtys) do
+        sumsq = __add(sumsq, (((q - mean)) * ((q - mean))))
+    end
+    local variance = __div(sumsq, ((#g.qtys - 1)))
+    local cov = __div(math.sqrt(variance), mean)
+    if (cov > 1.5) then
+        summary = __append(summary, {["w_warehouse_sk"]=g.w, ["i_item_sk"]=g.i, ["cov"]=cov})
+    end
+end
+__json(summary)
 local __tests = {
-    {name="TPCDS Q99 buckets", fn=test_TPCDS_Q99_buckets},
+    {name="TPCDS Q39 simplified", fn=test_TPCDS_Q39_simplified},
 }
