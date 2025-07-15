@@ -1523,7 +1523,7 @@ func (c *Compiler) compileBinaryOp(left string, leftType types.Type, op string, 
 		}
 		return fmt.Sprintf("(%s %s %s)", left, op, right), leftType, nil
 	case "==", "!=":
-		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) || isAny(leftType) || isAny(rightType) {
+		if isList(leftType) || isList(rightType) || isMap(leftType) || isMap(rightType) || isStruct(leftType) || isStruct(rightType) {
 			c.use("_equal")
 			if op == "==" {
 				return fmt.Sprintf("_equal(%s, %s)", left, right), types.BoolType{}, nil
@@ -3487,6 +3487,9 @@ func (c *Compiler) compileGroupByJoinSpecial(prog *parser.Program) ([]byte, erro
 }
 
 func formatTS(src []byte) []byte {
+	if os.Getenv("MOCHI_NO_FORMAT") != "" {
+		return src
+	}
 	// Prefer official formatters when available
 	if err := EnsureFormatter(); err == nil {
 		if path, err := exec.LookPath("deno"); err == nil {
