@@ -37,6 +37,8 @@ type Compiler struct {
 
 	needStructCast bool
 
+	needSmartGet bool
+
 	aliases   map[string]string
 	groupKeys map[string]string
 
@@ -55,6 +57,7 @@ func New(srcPath string) *Compiler {
 		needOuterJoin:  false,
 		needJSON:       false,
 		needStructCast: false,
+		needSmartGet:   false,
 		aliases:        make(map[string]string),
 		groupKeys:      make(map[string]string),
 		globals:        make(map[string]string),
@@ -144,6 +147,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needOuterJoin = false
 	c.needJSON = false
 	c.needStructCast = false
+	c.needSmartGet = false
 	c.aliases = make(map[string]string)
 	c.groupKeys = make(map[string]string)
 	c.globals = make(map[string]string)
@@ -286,7 +290,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
 		typ := c.types[a.Name]
 		if typ == "map" || (!isIntLiteral(a0.Start)) {
 			c.types[a.Name] = "map"
-			return fmt.Sprintf("%s = maps:get(%s, %s), %s = maps:put(%s, %s, %s), %s = %s#{%s => %s}", inner, idx0, prev, updated, idx1, val, inner, name, prev, idx0, updated), nil
+			return fmt.Sprintf("%s = %s, %s = maps:put(%s, %s, %s), %s = %s#{%s => %s}", inner, c.smartGet(idx0, prev), updated, idx1, val, inner, name, prev, idx0, updated), nil
 		}
 		// list of lists
 		return fmt.Sprintf("%s = lists:nth((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s), %s = lists:sublist(%s, %s) ++ [%s] ++ lists:nthtail((%s)+1, %s)", inner, idx0, prev, updated, inner, idx1, val, idx1, inner, name, prev, idx0, updated, idx0, prev), nil
@@ -519,7 +523,7 @@ func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		aliases[k] = fmt.Sprintf("maps:get(%s, %s)", k, item)
+		aliases[k] = c.smartGet(k, item)
 	}
 	for k, v := range aliases {
 		c.aliases[k] = v
@@ -999,7 +1003,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		if len(q.Group.Exprs) > 0 {
 			fields := groupKeyFields(q.Group.Exprs[0])
 			for _, f := range fields {
-				c.groupKeys[f] = fmt.Sprintf("maps:get(%s, %s)", f, kvar)
+				c.groupKeys[f] = c.smartGet(f, kvar)
 			}
 		}
 		c.groupKeys[q.Group.Name] = kvar
@@ -1314,7 +1318,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return "", err
 				}
 				if typ == "map" || (typ == "" && !isIntLiteral(idxOp.Start)) {
-					val = fmt.Sprintf("maps:get(%s, %s)", idx, val)
+					val = c.smartGet(idx, val)
 				} else {
 					val = fmt.Sprintf("lists:nth((%s)+1, %s)", idx, val)
 				}
@@ -1350,7 +1354,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				}
 				typ = "bool"
 			} else {
-				val = fmt.Sprintf("maps:get(%s, %s)", name, val)
+				val = c.smartGet(name, val)
 			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
@@ -1367,7 +1371,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					base = v
 				}
 				for _, f := range p.Target.Selector.Tail[:len(p.Target.Selector.Tail)-1] {
-					base = fmt.Sprintf("maps:get(%s, %s)", f, base)
+					base = c.smartGet(f, base)
 				}
 				method := p.Target.Selector.Tail[len(p.Target.Selector.Tail)-1]
 				if method == "contains" {
@@ -1414,7 +1418,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if k, ok := c.groupKeys[root]; ok {
 			expr := k
 			tail := p.Selector.Tail
-			if len(tail) == 0 && strings.HasPrefix(expr, "maps:get(") {
+			if len(tail) == 0 && (strings.HasPrefix(expr, "maps:get(") || strings.HasPrefix(expr, "mochi_get(")) {
 				return expr, nil
 			}
 			if len(tail) > 0 && tail[0] == "key" {
@@ -1423,13 +1427,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				expr = c.refVar(root)
 			}
 			for _, f := range tail {
-				expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
+				expr = c.smartGet(f, expr)
 			}
 			return expr, nil
 		}
 		expr := c.refVar(root)
 		for _, f := range p.Selector.Tail {
-			expr = fmt.Sprintf("maps:get(%s, %s)", f, expr)
+			expr = c.smartGet(f, expr)
 		}
 		return expr, nil
 	case p.Query != nil:
@@ -1854,6 +1858,11 @@ func isIntLiteral(e *parser.Expr) bool {
 	return lit != nil && lit.Int != nil
 }
 
+func (c *Compiler) smartGet(key, expr string) string {
+	c.needSmartGet = true
+	return fmt.Sprintf("mochi_get(%s, %s)", key, expr)
+}
+
 func isMapLiteralExpr(e *parser.Expr) bool {
 	if e == nil || e.Binary == nil || len(e.Binary.Right) > 0 {
 		return false
@@ -2111,6 +2120,35 @@ func (c *Compiler) writeRuntime() {
 		c.writeln("Left = mochi_left_join(L, R, Fun),")
 		c.writeln("Right = [ P || P = {undefined, _} <- mochi_right_join(L, R, Fun) ],")
 		c.writeln("Left ++ Right.")
+		c.indent--
+	}
+	if c.needSmartGet {
+		c.writeln("")
+		c.writeln("mochi_get(K, M) ->")
+		c.indent++
+		c.writeln("case maps:find(K, M) of")
+		c.indent++
+		c.writeln("{ok, V} -> V;")
+		c.writeln("error ->")
+		c.indent++
+		c.writeln("Name = atom_to_list(K),")
+		c.writeln("case string:tokens(Name, \"_\") of")
+		c.indent++
+		c.writeln("[Pref|_] ->")
+		c.indent++
+		c.writeln("P = list_to_atom(Pref),")
+		c.writeln("case maps:find(P, M) of")
+		c.indent++
+		c.writeln("{ok, Sub} when is_map(Sub) -> maps:get(K, Sub);")
+		c.writeln("_ -> erlang:error({badkey, K})")
+		c.indent--
+		c.writeln("end;")
+		c.indent--
+		c.writeln("_ -> erlang:error({badkey, K})")
+		c.indent--
+		c.writeln("end")
+		c.indent--
+		c.writeln("end.")
 		c.indent--
 	}
 	if c.needStructCast {
