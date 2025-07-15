@@ -8,6 +8,8 @@
 - 2025-07-13 17:46 - Attempted to generate Rust code for q8, q9 and q11 but compilation failed due to numeric type mismatches.
 - 2025-07-13 17:56 - Generated Rust code for TPC-H query q8 and added golden outputs.
 - 2025-07-13 18:18 - Generated Rust code for TPC-H query q17 and added golden outputs.
+- 2025-07-15 04:50 - Added golden tests for TPC-DS queries q1 through q19 and script to regenerate outputs.
+- 2025-07-15 05:45 - Improved TPC-DS Rust updater to capture errors and write `.rs.out` files
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time

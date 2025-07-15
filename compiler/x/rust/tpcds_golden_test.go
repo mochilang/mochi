@@ -1,0 +1,77 @@
+//go:build slow
+
+package rustcode_test
+
+import (
+	"bytes"
+	"fmt"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"testing"
+
+	rustcode "mochi/compiler/x/rust"
+	"mochi/parser"
+	"mochi/types"
+)
+
+func TestRustCompiler_TPCDSQueries(t *testing.T) {
+	if _, err := exec.LookPath("rustc"); err != nil {
+		t.Skip("rustc not installed")
+	}
+	root := findRepoRoot(t)
+	queries := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}
+	for _, i := range queries {
+		base := fmt.Sprintf("q%d", i)
+		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs.out")
+		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".out")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		t.Run(base, func(t *testing.T) {
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := rustcode.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			got := stripHeader(bytes.TrimSpace(code))
+			want := stripHeader(bytes.TrimSpace(wantCode))
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s.rs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "main.rs")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			bin := filepath.Join(dir, "prog")
+			if out, err := exec.Command("rustc", file, "-O", "-o", bin).CombinedOutput(); err != nil {
+				t.Fatalf("rustc error: %v\n%s", err, out)
+			}
+			outBytes, err := exec.Command(bin).CombinedOutput()
+			if err != nil {
+				t.Fatalf("run error: %v\n%s", err, outBytes)
+			}
+			gotOut := bytes.TrimSpace(outBytes)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
