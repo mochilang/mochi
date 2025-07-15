@@ -1,7 +1,7 @@
 run: exit status 127
 [{"segment":0.8,"num_customers":1,"segment_base":40.0},{"segment":1.2,"num_customers":1,"segment_base":60.0}]
 escript: exception error: test_failed
-  in function  q54_erl__escript__1752__555518__207557__8964:main/1 (/tmp/q54.erl, line 19)
+  in function  q54_erl__escript__1752__561098__276557__8965:main/1 (/tmp/q54.erl, line 19)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

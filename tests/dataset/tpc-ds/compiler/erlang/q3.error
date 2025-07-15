@@ -10,9 +10,9 @@ escript: exception error: bad key: ss_ext_sales_price
                              #{ss_sold_date_sk => 1,ss_item_sk => 1,
                                ss_ext_sales_price => 10}})
      *** argument 1: not present in map
-  in call from q3_erl__escript__1752__555493__382812__8965:'-main/1-lc$^6/1-2-'/1 (/tmp/q3.erl, line 9)
-  in call from q3_erl__escript__1752__555493__382812__8965:'-main/1-lc$^4/1-1-'/1 (/tmp/q3.erl, line 9)
-  in call from q3_erl__escript__1752__555493__382812__8965:main/1 (/tmp/q3.erl, line 9)
+  in call from q3_erl__escript__1752__561055__81042__8963:'-main/1-lc$^6/1-2-'/1 (/tmp/q3.erl, line 9)
+  in call from q3_erl__escript__1752__561055__81042__8963:'-main/1-lc$^4/1-1-'/1 (/tmp/q3.erl, line 9)
+  in call from q3_erl__escript__1752__561055__81042__8963:main/1 (/tmp/q3.erl, line 9)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

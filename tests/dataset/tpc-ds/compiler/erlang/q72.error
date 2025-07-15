@@ -27,9 +27,9 @@ escript: exception error: bad key: cs_promo_sk
                              #{d_date_sk => 3,d_week_seq => 10,d_date => 7,
                                d_year => 2000}})
      *** argument 1: not present in map
-  in call from q72_erl__escript__1752__555528__82651__8965:'-main/1-lc$^11/1-1-'/1 (/tmp/q72.erl, line 13)
-  in call from q72_erl__escript__1752__555528__82651__8965:'-main/1-lc$^10/1-0-'/1 (/tmp/q72.erl, line 13)
-  in call from q72_erl__escript__1752__555528__82651__8965:main/1 (/tmp/q72.erl, line 13)
+  in call from q72_erl__escript__1752__561114__145430__8965:'-main/1-lc$^11/1-1-'/1 (/tmp/q72.erl, line 13)
+  in call from q72_erl__escript__1752__561114__145430__8965:'-main/1-lc$^10/1-0-'/1 (/tmp/q72.erl, line 13)
+  in call from q72_erl__escript__1752__561114__145430__8965:main/1 (/tmp/q72.erl, line 13)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 
