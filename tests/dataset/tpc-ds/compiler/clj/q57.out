@@ -1,0 +1,2 @@
+WARNING: abs already refers to: #'clojure.core/abs in namespace: main, being replaced by: #'main/abs
+[]
