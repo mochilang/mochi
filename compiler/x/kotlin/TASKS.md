@@ -12,6 +12,7 @@
 - 2025-07-15 04:53 UTC: Added basic TPC-DS compile test and generation script;
   first three queries fail due to numeric comparison issues.
 - 2025-07-15 05:08 UTC: Updated TPC-DS Kotlin generator to capture run errors and added golden tests comparing generated code and output.
+- 2025-07-15 06:38 UTC: Generated Kotlin code for TPC-DS `q35`, `q43`, `q58`, `q59`, `q61`, and `q62`; updated tests to run these queries.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
