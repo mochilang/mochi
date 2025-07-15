@@ -1,6 +1,8 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-14 12:16 UTC
+- Regenerated outputs without _order slice.
 ### 2025-07-14 09:34 UTC
 - Removed `_order` slice; grouped queries now use `Map` insertion order.
 ### 2025-07-14 06:16 UTC
