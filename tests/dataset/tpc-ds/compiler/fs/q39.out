@@ -1,0 +1,5 @@
+[]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-ds/q39.mochi:63
+    expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
