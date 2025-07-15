@@ -1,0 +1,10 @@
+/tmp/q12.rb:203:in `block (2 levels) in <main>': undefined method `ws_ext_sales_price' for [#<OpenStruct ws_item_sk=1, ws_sold_date_sk=1, ws_ext_sales_price=100.0>, #<OpenStruct i_item_sk=1, i_item_id="ITEM1", i_item_desc="Item One", i_category="A", i_class="C1", i_current_price=10.0>, #<OpenStruct d_date_sk=1, d_date="2001-01-20">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_item_id: g.key.id, i_item_desc: g.key.desc, i_category: g.key.cat, i_class: g.key._class, i_current_price: g.key.price, itemrevenue: _sum(((g)).map { |x| x.ws_ext_sales_price }))
+		                                                                                                                                                                                    ^^^^^^^^^^^^^^^^^^^
+	from /tmp/q12.rb:18:in `each'
+	from /tmp/q12.rb:18:in `each'
+	from /tmp/q12.rb:203:in `map'
+	from /tmp/q12.rb:203:in `block in <main>'
+	from /tmp/q12.rb:202:in `each'
+	from /tmp/q12.rb:202:in `<main>'

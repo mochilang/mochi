@@ -1,0 +1,10 @@
+/tmp/q72.rb:193:in `block (2 levels) in <main>': undefined method `cs_promo_sk' for [#<OpenStruct cs_item_sk=1, cs_order_number=1, cs_quantity=1, cs_sold_date_sk=1, cs_ship_date_sk=3, cs_bill_cdemo_sk=1, cs_bill_hdemo_sk=1, cs_promo_sk=nil>, #<OpenStruct inv_item_sk=1, inv_warehouse_sk=1, inv_date_sk=2, inv_quantity_on_hand=0>, #<OpenStruct w_warehouse_sk=1, w_warehouse_name="Main">, #<OpenStruct i_item_sk=1, i_item_desc="ItemA">, #<OpenStruct cd_demo_sk=1, cd_marital_status="M">, #<OpenStruct hd_demo_sk=1, hd_buy_potential="5001-10000">, #<OpenStruct d_date_sk=1, d_week_seq=10, d_date=1, d_year=2000>, #<OpenStruct d_date_sk=2, d_week_seq=10, d_date=1, d_year=2000>, #<OpenStruct d_date_sk=3, d_week_seq=10, d_date=7, d_year=2000>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_item_desc: g.key.item_desc, w_warehouse_name: g.key.warehouse, d_week_seq: g.key.week_seq, no_promo: ((((g)).select { |x| (x.cs_promo_sk == nil) }).map { |x| x }).length, promo: ((((g)).select { |x| (x.cs_promo_sk != nil) }).map { |x| x }).length, total_cnt: (g).length)
+		                                                                                                                                                     ^^^^^^^^^^^^
+	from /tmp/q72.rb:18:in `each'
+	from /tmp/q72.rb:18:in `each'
+	from /tmp/q72.rb:193:in `select'
+	from /tmp/q72.rb:193:in `block in <main>'
+	from /tmp/q72.rb:192:in `each'
+	from /tmp/q72.rb:192:in `<main>'

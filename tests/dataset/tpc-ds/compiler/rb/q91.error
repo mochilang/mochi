@@ -1,0 +1,10 @@
+/tmp/q91.rb:231:in `block (2 levels) in <main>': undefined method `cr_net_loss' for [#<OpenStruct cc_call_center_sk=1, cc_call_center_id="CC1", cc_name="Main", cc_manager="Alice">, #<OpenStruct cr_call_center_sk=1, cr_returned_date_sk=1, cr_returning_customer_sk=1, cr_net_loss=10.0>, #<OpenStruct d_date_sk=1, d_year=2001, d_moy=5>, #<OpenStruct c_customer_sk=1, c_current_cdemo_sk=1, c_current_hdemo_sk=1, c_current_addr_sk=1>, #<OpenStruct cd_demo_sk=1, cd_marital_status="M", cd_education_status="Unknown">, #<OpenStruct hd_demo_sk=1, hd_buy_potential="1001-5000">, #<OpenStruct ca_address_sk=1, ca_gmt_offset=-6>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(Call_Center: g.key.id, Call_Center_Name: g.key.name, Manager: g.key.mgr, Returns_Loss: _sum(((g)).map { |x| x.cr_net_loss }))
+		                                                                                                                                    ^^^^^^^^^^^^
+	from /tmp/q91.rb:30:in `each'
+	from /tmp/q91.rb:30:in `each'
+	from /tmp/q91.rb:231:in `map'
+	from /tmp/q91.rb:231:in `block in <main>'
+	from /tmp/q91.rb:230:in `each'
+	from /tmp/q91.rb:230:in `<main>'

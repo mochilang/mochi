@@ -1,0 +1,10 @@
+/tmp/q16.rb:220:in `block (2 levels) in <main>': undefined method `cs_order_number' for [#<OpenStruct cs_order_number=1, cs_ship_date_sk=1, cs_ship_addr_sk=1, cs_call_center_sk=1, cs_warehouse_sk=1, cs_ext_ship_cost=5.0, cs_net_profit=20.0>, #<OpenStruct d_date_sk=1, d_date="2000-03-01">, #<OpenStruct ca_address_sk=1, ca_state="CA">, #<OpenStruct cc_call_center_sk=1, cc_county="CountyA">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(order_count: (distinct(((g)).map { |x| x.cs_order_number })).length, total_shipping_cost: _sum(((g)).map { |x| x.cs_ext_ship_cost }), total_net_profit: _sum(((g)).map { |x| x.cs_net_profit }))
+		                                                               ^^^^^^^^^^^^^^^^
+	from /tmp/q16.rb:18:in `each'
+	from /tmp/q16.rb:18:in `each'
+	from /tmp/q16.rb:220:in `map'
+	from /tmp/q16.rb:220:in `block in <main>'
+	from /tmp/q16.rb:219:in `each'
+	from /tmp/q16.rb:219:in `<main>'

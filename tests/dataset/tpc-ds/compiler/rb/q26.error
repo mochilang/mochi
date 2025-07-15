@@ -1,0 +1,10 @@
+/tmp/q26.rb:209:in `block (2 levels) in <main>': undefined method `cs_quantity' for [#<OpenStruct cs_sold_date_sk=1, cs_item_sk=1, cs_bill_cdemo_sk=1, cs_promo_sk=1, cs_quantity=10, cs_list_price=100.0, cs_coupon_amt=5.0, cs_sales_price=95.0>, #<OpenStruct cd_demo_sk=1, cd_gender="M", cd_marital_status="S", cd_education_status="College">, #<OpenStruct d_date_sk=1, d_year=2000>, #<OpenStruct i_item_sk=1, i_item_id="ITEM1">, #<OpenStruct p_promo_sk=1, p_channel_email="N", p_channel_event="Y">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_item_id: g.key, agg1: _avg(((g)).map { |x| x.cs_quantity }), agg2: _avg(((g)).map { |x| x.cs_list_price }), agg3: _avg(((g)).map { |x| x.cs_coupon_amt }), agg4: _avg(((g)).map { |x| x.cs_sales_price }))
+		                                                                     ^^^^^^^^^^^^
+	from /tmp/q26.rb:30:in `each'
+	from /tmp/q26.rb:30:in `each'
+	from /tmp/q26.rb:209:in `map'
+	from /tmp/q26.rb:209:in `block in <main>'
+	from /tmp/q26.rb:208:in `each'
+	from /tmp/q26.rb:208:in `<main>'

@@ -1,0 +1,7 @@
+/tmp/q95.rb:42:in `block in distinct': undefined local variable or method `contains' for main:Object (NameError)
+
+		if (!contains.call(out, x))
+		     ^^^^^^^^
+	from /tmp/q95.rb:41:in `each'
+	from /tmp/q95.rb:41:in `distinct'
+	from /tmp/q95.rb:86:in `<main>'

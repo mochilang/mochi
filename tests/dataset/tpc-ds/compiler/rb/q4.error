@@ -1,0 +1,10 @@
+/tmp/q4.rb:199:in `block (2 levels) in <main>': undefined method `ss_ext_list_price' for [#<OpenStruct c_customer_sk=1, c_customer_id="C1", c_first_name="Alice", c_last_name="A", c_login="alice">, #<OpenStruct ss_customer_sk=1, ss_sold_date_sk=1, ss_ext_list_price=10.0, ss_ext_wholesale_cost=5.0, ss_ext_discount_amt=0.0, ss_ext_sales_price=10.0>, #<OpenStruct d_date_sk=1, d_year=2001>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(customer_id: g.key.id, customer_first_name: g.key.first, customer_last_name: g.key.last, customer_login: g.key.login, dyear: g.key.year, year_total: _sum(((g)).map { |x| ((((((x.ss_ext_list_price - x.ss_ext_wholesale_cost) - x.ss_ext_discount_amt)) + x.ss_ext_sales_price)) / 2) }), sale_type: "s")
+		                                                                                                                                                                                                        ^^^^^^^^^^^^^^^^^^
+	from /tmp/q4.rb:18:in `each'
+	from /tmp/q4.rb:18:in `each'
+	from /tmp/q4.rb:199:in `map'
+	from /tmp/q4.rb:199:in `block in <main>'
+	from /tmp/q4.rb:198:in `each'
+	from /tmp/q4.rb:198:in `<main>'

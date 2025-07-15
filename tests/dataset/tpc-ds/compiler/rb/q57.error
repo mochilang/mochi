@@ -1,0 +1,10 @@
+/tmp/q57.rb:218:in `block (2 levels) in <main>': undefined method `price' for [#<OpenStruct item=1, call=1, date=1, price=20.0>, #<OpenStruct i_item_sk=1, i_category="A", i_brand="B">, #<OpenStruct d_date_sk=1, d_year=2000, d_moy=11>, #<OpenStruct cc_call_center_sk=1, cc_name="C1">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(cat: g.key.cat, call: g.key.call, year: g.key.year, sum_sales: _sum(((g)).map { |x| x.price }))
+		                                                                                                            ^^^^^^
+	from /tmp/q57.rb:30:in `each'
+	from /tmp/q57.rb:30:in `each'
+	from /tmp/q57.rb:218:in `map'
+	from /tmp/q57.rb:218:in `block in <main>'
+	from /tmp/q57.rb:217:in `each'
+	from /tmp/q57.rb:217:in `<main>'

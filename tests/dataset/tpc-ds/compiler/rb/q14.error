@@ -1,0 +1,10 @@
+/tmp/q14.rb:222:in `block (2 levels) in <main>': undefined method `ss_quantity' for [#<OpenStruct ss_item_sk=1, ss_list_price=20.0, ss_quantity=3, ss_sold_date_sk=2>, #<OpenStruct d_date_sk=2, d_year=2002, d_moy=11>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(channel: "store", sales: _sum(((g)).map { |x| (x.ss_quantity * x.ss_list_price) }), number_sales: (((g)).map { |_| _ }).length)
+		                                                                       ^^^^^^^^^^^^
+	from /tmp/q14.rb:30:in `each'
+	from /tmp/q14.rb:30:in `each'
+	from /tmp/q14.rb:222:in `map'
+	from /tmp/q14.rb:222:in `block in <main>'
+	from /tmp/q14.rb:221:in `each'
+	from /tmp/q14.rb:221:in `<main>'
