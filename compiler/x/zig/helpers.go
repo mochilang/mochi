@@ -37,10 +37,14 @@ func zigTypeOf(t types.Type) string {
 			for i, f := range tt.Order {
 				fields[i] = fmt.Sprintf("%s: %s,", sanitizeName(f), zigTypeOf(tt.Fields[f]))
 			}
-			if len(fields) > 1 {
+			switch len(fields) {
+			case 0:
+				return "struct {}"
+			case 1:
+				return fmt.Sprintf("struct { %s }", fields[0])
+			default:
 				return "struct {\n    " + strings.Join(fields, "\n    ") + "\n}"
 			}
-			return fmt.Sprintf("struct { %s }", fields[0])
 		}
 		return sanitizeName(tt.Name)
 	case types.UnionType:
