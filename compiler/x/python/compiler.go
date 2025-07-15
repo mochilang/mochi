@@ -1527,6 +1527,61 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}
 		keyType := c.inferExprType(q.Group.Exprs[0])
 
+		// Fast path: no additional sources or options, so we can emit
+		// a simple grouping loop instead of using _query/_group_by.
+		if len(q.Froms) == 0 && len(q.Joins) == 0 && q.Sort == nil &&
+			q.Skip == nil && q.Take == nil && q.Group.Having == nil {
+			var whereExpr string
+			if q.Where != nil {
+				whereExpr, err = c.compileExpr(q.Where)
+				if err != nil {
+					c.env = orig
+					return "", err
+				}
+			}
+			c.env = types.NewEnv(child)
+			c.env.SetVar(q.Group.Name, types.GroupType{Key: keyType, Elem: elemType}, true)
+			valExpr, err := c.compileExpr(q.Select)
+			if err != nil {
+				c.env = orig
+				return "", err
+			}
+			c.env = orig
+
+			fn := fmt.Sprintf("_q%d", c.tmpCount)
+			c.tmpCount++
+			c.writeln(fmt.Sprintf("def %s():", fn))
+			c.indent++
+			c.writeln("_groups = {}")
+			c.writeln("_order = []")
+			c.writeln(fmt.Sprintf("for %s in %s:", sanitizeName(q.Var), src))
+			c.indent++
+			if whereExpr != "" {
+				c.writeln(fmt.Sprintf("if not (%s):", whereExpr))
+				c.indent++
+				c.writeln("continue")
+				c.indent--
+			}
+			c.writeln(fmt.Sprintf("_k = %s", keyExpr))
+			c.writeln("_ks = str(_k)")
+			c.writeln("g = _groups.get(_ks)")
+			c.writeln("if not g:")
+			c.indent++
+			c.writeln("g = _Group(_k)")
+			c.writeln("_groups[_ks] = g")
+			c.writeln("_order.append(_ks)")
+			c.indent--
+			c.writeln(fmt.Sprintf("g.Items.append(%s)", sanitizeName(q.Var)))
+			c.indent--
+			c.writeln("_items1 = [ _groups[k] for k in _order ]")
+			c.writeln(fmt.Sprintf("return [ %s for %s in _items1 ]", valExpr, sanitizeName(q.Group.Name)))
+			c.indent--
+			c.writeln("")
+
+			c.use("_group")
+			return fn + "()", nil
+		}
+
 		fromSrcs := make([]string, len(q.Froms))
 		varNames := []string{sanitizeName(q.Var)}
 		for i, f := range q.Froms {
