@@ -1,3 +1,5 @@
+## Recent Enhancements (2025-07-15 02:49)
+- Dataclass `__iter__` now uses `dataclasses.astuple` for brevity.
 ## Recent Enhancements (2025-07-14 12:16)
 - Recompiled all programs and restored dataset checklist.
 ## Recent Enhancements (2025-07-14 07:13)
