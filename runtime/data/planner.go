@@ -22,21 +22,21 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 		}
 	}
 
-	var root Plan = &scanPlan{Src: q.Source, Alias: q.Var}
+	var root Plan = &ScanPlan{Src: q.Source, Alias: q.Var}
 	if pushAlias == q.Var {
-		root = &wherePlan{Cond: cond, Input: root}
+		root = &WherePlan{Cond: cond, Input: root}
 		cond = nil
 	}
 
 	// additional FROM clauses become cross joins
 	for _, f := range q.Froms {
-		var rhs Plan = &scanPlan{Src: f.Src, Alias: f.Var}
+		var rhs Plan = &ScanPlan{Src: f.Src, Alias: f.Var}
 		if pushAlias == f.Var {
-			rhs = &wherePlan{Cond: cond, Input: rhs}
+			rhs = &WherePlan{Cond: cond, Input: rhs}
 			cond = nil
 			pushAlias = ""
 		}
-		root = &joinPlan{Left: root, Right: rhs, JoinType: "inner"}
+		root = &JoinPlan{Left: root, Right: rhs, JoinType: "inner"}
 	}
 
 	// explicit JOIN clauses
@@ -45,34 +45,34 @@ func BuildPlan(q *parser.QueryExpr) (Plan, error) {
 		if j.Side != nil {
 			joinType = *j.Side
 		}
-		var rhs Plan = &scanPlan{Src: j.Src, Alias: j.Var}
+		var rhs Plan = &ScanPlan{Src: j.Src, Alias: j.Var}
 		if joinType == "inner" && pushAlias == j.Var {
-			rhs = &wherePlan{Cond: cond, Input: rhs}
+			rhs = &WherePlan{Cond: cond, Input: rhs}
 			cond = nil
 			pushAlias = ""
 		}
-		root = &joinPlan{Left: root, Right: rhs, On: j.On, JoinType: joinType}
+		root = &JoinPlan{Left: root, Right: rhs, On: j.On, JoinType: joinType}
 	}
 
 	if cond != nil {
-		root = &wherePlan{Cond: cond, Input: root}
+		root = &WherePlan{Cond: cond, Input: root}
 	}
 
 	if q.Group != nil {
-		root = &groupPlan{By: q.Group.Exprs, Name: q.Group.Name, Input: root}
+		root = &GroupPlan{By: q.Group.Exprs, Name: q.Group.Name, Input: root}
 	}
 
 	if q.Sort != nil {
-		root = &sortPlan{Key: q.Sort, Input: root}
+		root = &SortPlan{Key: q.Sort, Input: root}
 	}
 
 	if q.Skip != nil || q.Take != nil {
-		root = &limitPlan{Skip: q.Skip, Take: q.Take, Input: root}
+		root = &LimitPlan{Skip: q.Skip, Take: q.Take, Input: root}
 	}
 
 	// final projection
 	if q.Select != nil {
-		root = &selectPlan{Expr: q.Select, Input: root}
+		root = &SelectPlan{Expr: q.Select, Input: root}
 	}
 
 	return root, nil

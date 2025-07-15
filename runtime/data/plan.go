@@ -5,62 +5,62 @@ import "mochi/parser"
 // Plan represents a step in a query execution tree.
 type Plan interface{ isPlan() }
 
-// scanPlan is the root for FROM <src> AS <alias>.
-type scanPlan struct {
+// ScanPlan is the root for FROM <src> AS <alias>.
+type ScanPlan struct {
 	Src   *parser.Expr
 	Alias string
 }
 
-func (*scanPlan) isPlan() {}
+func (*ScanPlan) isPlan() {}
 
-// selectPlan represents SELECT <expr> FROM <input>.
-type selectPlan struct {
+// Select represents SELECT <expr> FROM <input>.
+type SelectPlan struct {
 	Expr  *parser.Expr
 	Input Plan
 }
 
-func (*selectPlan) isPlan() {}
+func (*SelectPlan) isPlan() {}
 
-// wherePlan filters rows using a boolean expression.
-type wherePlan struct {
+// Where filters rows using a boolean expression.
+type WherePlan struct {
 	Cond  *parser.Expr
 	Input Plan
 }
 
-func (*wherePlan) isPlan() {}
+func (*WherePlan) isPlan() {}
 
-// joinPlan joins two datasets with an optional ON expression.
-type joinPlan struct {
+// Join combines two datasets with an optional ON expression.
+type JoinPlan struct {
 	Left     Plan
 	Right    Plan
 	On       *parser.Expr
 	JoinType string // "inner", "left", "right", "outer"
 }
 
-func (*joinPlan) isPlan() {}
+func (*JoinPlan) isPlan() {}
 
-// groupPlan groups rows by an expression and exposes the group via Name.
-type groupPlan struct {
+// Group groups rows by an expression and exposes the group via Name.
+type GroupPlan struct {
 	By    []*parser.Expr
 	Name  string
 	Input Plan
 }
 
-func (*groupPlan) isPlan() {}
+func (*GroupPlan) isPlan() {}
 
-// sortPlan orders rows using a key expression.
-type sortPlan struct {
+// Sort orders rows using a key expression.
+type SortPlan struct {
 	Key   *parser.Expr
 	Input Plan
 }
 
-func (*sortPlan) isPlan() {}
+func (*SortPlan) isPlan() {}
 
-// limitPlan handles skip/take semantics.
-type limitPlan struct {
+// Limit handles skip/take semantics.
+type LimitPlan struct {
 	Skip  *parser.Expr
 	Take  *parser.Expr
 	Input Plan
 }
 
-func (*limitPlan) isPlan() {}
+func (*LimitPlan) isPlan() {}
