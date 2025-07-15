@@ -7,8 +7,8 @@ run: exit status 127
 %    6|     Item = [#{id => 1}, #{id => 2}, #{id => 3}],
 %     |     ^
 
-/tmp/q82.erl:10:115: Warning: variable 'Result1' is unused
-%   10|     lists:foreach(fun(Inv) -> lists:foreach(fun(S) -> (case (maps:get(item, Inv) == maps:get(item, S)) of true -> Result1 = (Result0 + maps:get(qty, Inv)); _ -> ok end) end, Store_sales) end, Inventory),
-%     |                                                                                                                   ^
+/tmp/q82.erl:10:117: Warning: variable 'Result1' is unused
+%   10|     lists:foreach(fun(Inv) -> lists:foreach(fun(S) -> (case (mochi_get(item, Inv) == mochi_get(item, S)) of true -> Result1 = (Result0 + mochi_get(qty, Inv)); _ -> ok end) end, Store_sales) end, Inventory),
+%     |                                                                                                                     ^
 
 escript: There were compilation errors.

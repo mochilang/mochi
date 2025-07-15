@@ -1,22 +1,22 @@
 run: exit status 127
 /tmp/q74.erl:10:18: function concat/2 undefined
-%   10|     Year_total = concat([#{customer_id => maps:get(id, Key0), customer_first_name => maps:get(first, Key0), customer_last_name => maps:get(last, Key0), year => maps:get(year, Key0), year_total => lists:sum([maps:get(ss_net_paid, maps:get(ss, X)) || X <- Val0]), sale_type => "s"} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{id => maps:get(c_customer_id, C), first => maps:get(c_first_name, C), last => maps:get(c_last_name, C), year => maps:get(d_year, D)}, #{c => C, ss => Ss, d => D}} || C <- Customer, Ss <- Store_sales, D <- Date_dim, (maps:get(c_customer_sk, C) == maps:get(ss_customer_sk, Ss)), (maps:get(d_date_sk, D) == maps:get(ss_sold_date_sk, Ss)), ((maps:get(d_year, D) == 1998) orelse (maps:get(d_year, D) == 1999))]))], [#{customer_id => maps:get(id, Key1), customer_first_name => maps:get(first, Key1), customer_last_name => maps:get(last, Key1), year => maps:get(year, Key1), year_total => lists:sum([maps:get(ws_net_paid, maps:get(ws, X)) || X <- Val1]), sale_type => "w"} || {Key1, Val1} <- maps:to_list(lists:foldl(fun({Key1, Val1}, Acc1) -> L = maps:get(Key1, Acc1, []), maps:put(Key1, [Val1 | L], Acc1) end, #{}, [{#{id => maps:get(c_customer_id, C), first => maps:get(c_first_name, C), last => maps:get(c_last_name, C), year => maps:get(d_year, D)}, #{c => C, ws => Ws, d => D}} || C <- Customer, Ws <- Web_sales, D <- Date_dim, (maps:get(c_customer_sk, C) == maps:get(ws_bill_customer_sk, Ws)), (maps:get(d_date_sk, D) == maps:get(ws_sold_date_sk, Ws)), ((maps:get(d_year, D) == 1998) orelse (maps:get(d_year, D) == 1999))]))]),
+%   10|     Year_total = concat([#{customer_id => mochi_get(id, Key0), customer_first_name => mochi_get(first, Key0), customer_last_name => mochi_get(last, Key0), year => mochi_get(year, Key0), year_total => lists:sum([mochi_get(ss_net_paid, mochi_get(ss, X)) || X <- Val0]), sale_type => "s"} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{id => mochi_get(c_customer_id, C), first => mochi_get(c_first_name, C), last => mochi_get(c_last_name, C), year => mochi_get(d_year, D)}, #{c => C, ss => Ss, d => D}} || C <- Customer, Ss <- Store_sales, D <- Date_dim, (mochi_get(c_customer_sk, C) == mochi_get(ss_customer_sk, Ss)), (mochi_get(d_date_sk, D) == mochi_get(ss_sold_date_sk, Ss)), ((mochi_get(d_year, D) == 1998) orelse (mochi_get(d_year, D) == 1999))]))], [#{customer_id => mochi_get(id, Key1), customer_first_name => mochi_get(first, Key1), customer_last_name => mochi_get(last, Key1), year => mochi_get(year, Key1), year_total => lists:sum([mochi_get(ws_net_paid, mochi_get(ws, X)) || X <- Val1]), sale_type => "w"} || {Key1, Val1} <- maps:to_list(lists:foldl(fun({Key1, Val1}, Acc1) -> L = maps:get(Key1, Acc1, []), maps:put(Key1, [Val1 | L], Acc1) end, #{}, [{#{id => mochi_get(c_customer_id, C), first => mochi_get(c_first_name, C), last => mochi_get(c_last_name, C), year => mochi_get(d_year, D)}, #{c => C, ws => Ws, d => D}} || C <- Customer, Ws <- Web_sales, D <- Date_dim, (mochi_get(c_customer_sk, C) == mochi_get(ws_bill_customer_sk, Ws)), (mochi_get(d_date_sk, D) == mochi_get(ws_sold_date_sk, Ws)), ((mochi_get(d_year, D) == 1998) orelse (mochi_get(d_year, D) == 1999))]))]),
 %     |                  ^
 
 /tmp/q74.erl:11:19: function first/1 undefined
-%   11|     S_firstyear = first([Y || Y <- Year_total, ((maps:get(sale_type, Y) == "s") andalso (maps:get(year, Y) == 1998))]),
+%   11|     S_firstyear = first([Y || Y <- Year_total, ((mochi_get(sale_type, Y) == "s") andalso (mochi_get(year, Y) == 1998))]),
 %     |                   ^
 
 /tmp/q74.erl:12:17: function first/1 undefined
-%   12|     S_secyear = first([Y || Y <- Year_total, ((maps:get(sale_type, Y) == "s") andalso (maps:get(year, Y) == 1999))]),
+%   12|     S_secyear = first([Y || Y <- Year_total, ((mochi_get(sale_type, Y) == "s") andalso (mochi_get(year, Y) == 1999))]),
 %     |                 ^
 
 /tmp/q74.erl:13:19: function first/1 undefined
-%   13|     W_firstyear = first([Y || Y <- Year_total, ((maps:get(sale_type, Y) == "w") andalso (maps:get(year, Y) == 1998))]),
+%   13|     W_firstyear = first([Y || Y <- Year_total, ((mochi_get(sale_type, Y) == "w") andalso (mochi_get(year, Y) == 1998))]),
 %     |                   ^
 
 /tmp/q74.erl:14:17: function first/1 undefined
-%   14|     W_secyear = first([Y || Y <- Year_total, ((maps:get(sale_type, Y) == "w") andalso (maps:get(year, Y) == 1999))]),
+%   14|     W_secyear = first([Y || Y <- Year_total, ((mochi_get(sale_type, Y) == "w") andalso (mochi_get(year, Y) == 1999))]),
 %     |                 ^
 
 escript: There were compilation errors.

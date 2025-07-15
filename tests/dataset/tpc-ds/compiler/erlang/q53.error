@@ -1,7 +1,7 @@
 run: exit status 127
-/tmp/q53.erl:13:147: ambiguous call of overridden pre Erlang/OTP R14 auto-imported BIF abs/1 --
+/tmp/q53.erl:13:150: ambiguous call of overridden pre Erlang/OTP R14 auto-imported BIF abs/1 --
 use erlang:abs/1 or \"-compile({no_auto_import,[abs/1]}).\" to resolve name clash
-%   13|     Result = [#{i_manufact_id => maps:get(manu, G), sum_sales => maps:get(sum_sales, G)} || G <- Grouped, ((maps:get(avg_sales, G) > 0) andalso ((abs((maps:get(sum_sales, G) - maps:get(avg_sales, G))) / maps:get(avg_sales, G)) > 0.1))],
-%     |                                                                                                                                                   ^
+%   13|     Result = [#{i_manufact_id => mochi_get(manu, G), sum_sales => mochi_get(sum_sales, G)} || G <- Grouped, ((mochi_get(avg_sales, G) > 0) andalso ((abs((mochi_get(sum_sales, G) - mochi_get(avg_sales, G))) / mochi_get(avg_sales, G)) > 0.1))],
+%     |                                                                                                                                                      ^
 
 escript: There were compilation errors.
