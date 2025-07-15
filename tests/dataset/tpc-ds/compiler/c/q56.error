@@ -1,0 +1,41 @@
+/tmp/q56.c: In function ‘test_TPCDS_Q56_simplified’:
+/tmp/q56.c:303:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  303 |   if (test_TPCDS_Q56_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q56.c:307:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  307 |       if (test_TPCDS_Q56_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q56.c: In function ‘main’:
+/tmp/q56.c:339:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
+  339 |   ss_item_list_t tmp9 = ss_item_list_t_create(tmp8.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:339:25: error: invalid initializer
+/tmp/q56.c:343:31: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  343 |     store_sale_list_t tmp11 = store_sale_list_t_create(_gp.items.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:343:31: error: invalid initializer
+/tmp/q56.c:378:26: warning: implicit declaration of function ‘cs_item_list_t_create’ [-Wimplicit-function-declaration]
+  378 |   cs_item_list_t tmp21 = cs_item_list_t_create(tmp20.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:378:26: error: invalid initializer
+/tmp/q56.c:382:33: warning: implicit declaration of function ‘catalog_sale_list_t_create’ [-Wimplicit-function-declaration]
+  382 |     catalog_sale_list_t tmp23 = catalog_sale_list_t_create(_gp.items.len);
+      |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:382:33: error: invalid initializer
+/tmp/q56.c:417:26: warning: implicit declaration of function ‘ws_item_list_t_create’ [-Wimplicit-function-declaration]
+  417 |   ws_item_list_t tmp33 = ws_item_list_t_create(tmp32.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:417:26: error: invalid initializer
+/tmp/q56.c:421:29: warning: implicit declaration of function ‘web_sale_list_t_create’ [-Wimplicit-function-declaration]
+  421 |     web_sale_list_t tmp35 = web_sale_list_t_create(_gp.items.len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~
+/tmp/q56.c:421:29: error: invalid initializer
+/tmp/q56.c:443:21: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  443 |   list_int _union = concat(ss, cs, ws);
+      |                     ^~~~~~
+/tmp/q56.c:443:21: error: invalid initializer
+/tmp/q56.c:460:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  460 |   test_TPCDS_Q56_simplified_result = result;
+      |                                      ^~~~~~

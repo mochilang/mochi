@@ -1,0 +1,23 @@
+/tmp/q53.c:237:8: error: conflicting types for ‘abs’; have ‘double(double)’
+  237 | double abs(double x) {
+      |        ^~~
+In file included from /tmp/q53.c:4:
+/usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
+  980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+      |            ^~~
+/tmp/q53.c: In function ‘test_TPCDS_Q53_simplified’:
+/tmp/q53.c:247:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  247 |                    (tmp_item_t){.i_manufact_id = 2, .sum_sales = 53.0}};
+      |                    ^
+/tmp/q53.c:250:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  250 |   if (test_TPCDS_Q53_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q53.c:254:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  254 |       if (test_TPCDS_Q53_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q53.c: In function ‘main’:
+/tmp/q53.c:310:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  310 |   test_TPCDS_Q53_simplified_result = result;
+      |                                      ^~~~~~

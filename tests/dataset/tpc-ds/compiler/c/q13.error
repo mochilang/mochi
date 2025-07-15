@@ -1,0 +1,67 @@
+/tmp/q13.c:286:3: error: unknown type name ‘customer_demographics_t’
+  286 |   customer_demographics_t *data;
+      |   ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q13.c: In function ‘create_customer_demographics_list’:
+/tmp/q13.c:291:31: error: ‘customer_demographics_t’ undeclared (first use in this function); did you mean ‘customer_demographic_t’?
+  291 |   l.data = calloc(len, sizeof(customer_demographics_t));
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~
+      |                               customer_demographic_t
+/tmp/q13.c:291:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q13.c: At top level:
+/tmp/q13.c:305:3: error: unknown type name ‘household_demographics_t’
+  305 |   household_demographics_t *data;
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q13.c: In function ‘create_household_demographics_list’:
+/tmp/q13.c:310:31: error: ‘household_demographics_t’ undeclared (first use in this function); did you mean ‘household_demographic_t’?
+  310 |   l.data = calloc(len, sizeof(household_demographics_t));
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                               household_demographic_t
+/tmp/q13.c: At top level:
+/tmp/q13.c:325:3: error: unknown type name ‘customer_address_t’
+  325 |   customer_address_t *data;
+      |   ^~~~~~~~~~~~~~~~~~
+/tmp/q13.c: In function ‘create_customer_address_list’:
+/tmp/q13.c:330:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  330 |   l.data = calloc(len, sizeof(customer_address_t));
+      |                               ^~~~~~~~~~~~~~~~~~
+      |                               customer_addres_t
+/tmp/q13.c: In function ‘test_TPCDS_Q13_averages’:
+/tmp/q13.c:365:49: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  365 |   if (test_TPCDS_Q13_averages_result.len != tmp1.len) {
+      |                                                 ^
+      |                                                 ->
+/tmp/q13.c:369:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  369 |       if (test_TPCDS_Q13_averages_result.data[i3] != tmp1.data[i3]) {
+      |                                                          ^
+      |                                                          ->
+/tmp/q13.c: In function ‘main’:
+/tmp/q13.c:411:28: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  411 |   store_sale_list_t tmp4 = store_sale_list_t_create(
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q13.c:412:18: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  412 |       store_sales.len * store.len * customer_demographics.len *
+      |                  ^
+      |                  ->
+/tmp/q13.c:412:30: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  412 |       store_sales.len * store.len * customer_demographics.len *
+      |                              ^
+      |                              ->
+/tmp/q13.c:412:58: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
+  412 |       store_sales.len * store.len * customer_demographics.len *
+      |                                                          ^
+      |                                                          ->
+/tmp/q13.c:413:29: error: ‘(household_demographic_t *)&household_demographics’ is a pointer; did you mean to use ‘->’?
+  413 |       household_demographics.len * customer_address.len * date_dim.len);
+      |                             ^
+      |                             ->
+/tmp/q13.c:413:52: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  413 |       household_demographics.len * customer_address.len * date_dim.len);
+      |                                                    ^
+      |                                                    ->
+/tmp/q13.c:413:67: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  413 |       household_demographics.len * customer_address.len * date_dim.len);
+      |                                                                   ^
+      |                                                                   ->
+/tmp/q13.c:479:36: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  479 |   test_TPCDS_Q13_averages_result = result;
+      |                                    ^~~~~~

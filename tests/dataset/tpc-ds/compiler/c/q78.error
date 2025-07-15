@@ -1,0 +1,148 @@
+/tmp/q78.c: In function ‘test_TPCDS_Q78_simplified’:
+/tmp/q78.c:239:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  239 |   if (test_TPCDS_Q78_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q78.c:243:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  243 |       if (test_TPCDS_Q78_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q78.c: In function ‘main’:
+/tmp/q78.c:277:29: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  277 |   result_item_list_t tmp4 = result_item_list_t_create(ss.len * ws.len * cs.len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q78.c:277:57: error: ‘(s_t *)&ss’ is a pointer; did you mean to use ‘->’?
+  277 |   result_item_list_t tmp4 = result_item_list_t_create(ss.len * ws.len * cs.len);
+      |                                                         ^
+      |                                                         ->
+/tmp/q78.c:277:66: error: ‘(w_t *)&ws’ is a pointer; did you mean to use ‘->’?
+  277 |   result_item_list_t tmp4 = result_item_list_t_create(ss.len * ws.len * cs.len);
+      |                                                                  ^
+      |                                                                  ->
+/tmp/q78.c:277:75: error: ‘(c_t *)&cs’ is a pointer; did you mean to use ‘->’?
+  277 |   result_item_list_t tmp4 = result_item_list_t_create(ss.len * ws.len * cs.len);
+      |                                                                           ^
+      |                                                                           ->
+/tmp/q78.c:298:21: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  298 |         if (!(((((w == 0) ? 0 : w.ws_qty)) > 0 ||
+      |                     ^~
+/tmp/q78.c:299:21: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  299 |                (((c == 0) ? 0 : c.cs_qty)) > 0) &&
+      |                     ^~
+/tmp/q78.c:308:53: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  308 |                 ((double)s.ss_qty) / ((double)((((w == 0) ? 0 : w.ws_qty)) +
+      |                                                     ^~
+/tmp/q78.c:309:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  309 |                                                (((c == 0) ? 0 : c.cs_qty)))),
+      |                                                     ^~
+/tmp/q78.c:314:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  314 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                      ^~
+/tmp/q78.c:314:52: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  314 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                                                    ^~
+/tmp/q78.c:316:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  316 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                      ^~
+/tmp/q78.c:316:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  316 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                                                     ^~
+/tmp/q78.c:318:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  318 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                      ^~
+/tmp/q78.c:318:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  318 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                                                     ^~
+/tmp/q78.c:323:21: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  323 |         if (!(((((w == 0) ? 0 : w.ws_qty)) > 0 ||
+      |                     ^~
+/tmp/q78.c:324:21: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  324 |                (((c == 0) ? 0 : c.cs_qty)) > 0) &&
+      |                     ^~
+/tmp/q78.c:333:53: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  333 |                 ((double)s.ss_qty) / ((double)((((w == 0) ? 0 : w.ws_qty)) +
+      |                                                     ^~
+/tmp/q78.c:334:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  334 |                                                (((c == 0) ? 0 : c.cs_qty)))),
+      |                                                     ^~
+/tmp/q78.c:339:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  339 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                      ^~
+/tmp/q78.c:339:52: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  339 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                                                    ^~
+/tmp/q78.c:341:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  341 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                      ^~
+/tmp/q78.c:341:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  341 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                                                     ^~
+/tmp/q78.c:343:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  343 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                      ^~
+/tmp/q78.c:343:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  343 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                                                     ^~
+/tmp/q78.c:358:21: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  358 |         if (!(((((w == 0) ? 0 : w.ws_qty)) > 0 ||
+      |                     ^~
+/tmp/q78.c:359:21: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  359 |                (((c == 0) ? 0 : c.cs_qty)) > 0) &&
+      |                     ^~
+/tmp/q78.c:368:53: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  368 |                 ((double)s.ss_qty) / ((double)((((w == 0) ? 0 : w.ws_qty)) +
+      |                                                     ^~
+/tmp/q78.c:369:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  369 |                                                (((c == 0) ? 0 : c.cs_qty)))),
+      |                                                     ^~
+/tmp/q78.c:374:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  374 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                      ^~
+/tmp/q78.c:374:52: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  374 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                                                    ^~
+/tmp/q78.c:376:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  376 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                      ^~
+/tmp/q78.c:376:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  376 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                                                     ^~
+/tmp/q78.c:378:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  378 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                      ^~
+/tmp/q78.c:378:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  378 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                                                     ^~
+/tmp/q78.c:383:21: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  383 |         if (!(((((w == 0) ? 0 : w.ws_qty)) > 0 ||
+      |                     ^~
+/tmp/q78.c:384:21: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  384 |                (((c == 0) ? 0 : c.cs_qty)) > 0) &&
+      |                     ^~
+/tmp/q78.c:393:53: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  393 |                 ((double)s.ss_qty) / ((double)((((w == 0) ? 0 : w.ws_qty)) +
+      |                                                     ^~
+/tmp/q78.c:394:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  394 |                                                (((c == 0) ? 0 : c.cs_qty)))),
+      |                                                     ^~
+/tmp/q78.c:399:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  399 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                      ^~
+/tmp/q78.c:399:52: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  399 |                 (((w == 0) ? 0 : w.ws_qty)) + (((c == 0) ? 0 : c.cs_qty)),
+      |                                                    ^~
+/tmp/q78.c:401:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  401 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                      ^~
+/tmp/q78.c:401:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  401 |                 (((w == 0) ? 0.0 : w.ws_wc)) + (((c == 0) ? 0.0 : c.cs_wc)),
+      |                                                     ^~
+/tmp/q78.c:403:22: error: invalid operands to binary == (have ‘w_t’ and ‘int’)
+  403 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                      ^~
+/tmp/q78.c:403:53: error: invalid operands to binary == (have ‘c_t’ and ‘int’)
+  403 |                 (((w == 0) ? 0.0 : w.ws_sp)) + (((c == 0) ? 0.0 : c.cs_sp))};
+      |                                                     ^~
+/tmp/q78.c:458:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  458 |   test_TPCDS_Q78_simplified_result = result;
+      |                                      ^~~~~~

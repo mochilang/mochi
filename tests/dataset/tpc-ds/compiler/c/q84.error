@@ -1,0 +1,25 @@
+/tmp/q84.c: In function ‘main’:
+/tmp/q84.c:265:15: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  265 |       customer.len * customer_address.len * customer_demographics.len *
+      |               ^
+      |               ->
+/tmp/q84.c:265:38: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  265 |       customer.len * customer_address.len * customer_demographics.len *
+      |                                      ^
+      |                                      ->
+/tmp/q84.c:265:66: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
+  265 |       customer.len * customer_address.len * customer_demographics.len *
+      |                                                                  ^
+      |                                                                  ->
+/tmp/q84.c:266:20: error: ‘(store_return_t *)&store_returns’ is a pointer; did you mean to use ‘->’?
+  266 |       store_returns.len * household_demographics.len * income_band.len);
+      |                    ^
+      |                    ->
+/tmp/q84.c:266:49: error: ‘(household_demographic_t *)&household_demographics’ is a pointer; did you mean to use ‘->’?
+  266 |       store_returns.len * household_demographics.len * income_band.len);
+      |                                                 ^
+      |                                                 ->
+/tmp/q84.c:266:67: error: ‘(income_band_t *)&income_band’ is a pointer; did you mean to use ‘->’?
+  266 |       store_returns.len * household_demographics.len * income_band.len);
+      |                                                                   ^
+      |                                                                   ->

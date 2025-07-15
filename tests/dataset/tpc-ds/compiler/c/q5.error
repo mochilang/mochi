@@ -1,16 +1,16 @@
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c: In function ‘main’:
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c:156:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  156 |     _json_string(it.channel);
+/tmp/q5.c: In function ‘main’:
+/tmp/q5.c:157:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  157 |     _json_string(it.channel);
       |                  ~~^~~~~~~~
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
-   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+/tmp/q5.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
       |                          ~~~~~~^
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c:160:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  160 |     _json_string(it.id);
+/tmp/q5.c:161:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  161 |     _json_string(it.id);
       |                  ~~^~~
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
-   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+/tmp/q5.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
       |                          ~~~~~~^
-/tmp/TestCCompiler_TPCDS_Goldenq51838602042/001/prog.c:176:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
-  176 |   test_TPCDS_Q5_result_result = result;
+/tmp/q5.c:177:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  177 |   test_TPCDS_Q5_result_result = result;
       |                                 ^~~~~~

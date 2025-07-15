@@ -1,0 +1,28 @@
+/tmp/q26.c:233:3: error: unknown type name ‘customer_demo_t’
+  233 |   customer_demo_t *data;
+      |   ^~~~~~~~~~~~~~~
+/tmp/q26.c: In function ‘create_customer_demo_list’:
+/tmp/q26.c:238:31: error: ‘customer_demo_t’ undeclared (first use in this function); did you mean ‘CustomerDemo’?
+  238 |   l.data = calloc(len, sizeof(customer_demo_t));
+      |                               ^~~~~~~~~~~~~~~
+      |                               CustomerDemo
+/tmp/q26.c:238:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q26.c: In function ‘test_TPCDS_Q26_demographic_averages’:
+/tmp/q26.c:313:61: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  313 |   if (test_TPCDS_Q26_demographic_averages_result.len != tmp1.len) {
+      |                                                             ^
+      |                                                             ->
+/tmp/q26.c:319:15: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  319 |           tmp1.data[i3]) {
+      |               ^
+      |               ->
+/tmp/q26.c: In function ‘main’:
+/tmp/q26.c:380:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  380 |     _json_string(it.i_item_id);
+      |                  ~~^~~~~~~~~~
+/tmp/q26.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q26.c:400:48: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  400 |   test_TPCDS_Q26_demographic_averages_result = result;
+      |                                                ^~~~~~

@@ -1,0 +1,36 @@
+/tmp/q90.c: In function ‘main’:
+/tmp/q90.c:214:26: warning: implicit declaration of function ‘web_sale_list_t_create’ [-Wimplicit-function-declaration]
+  214 |   web_sale_list_t tmp1 = web_sale_list_t_create(
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+/tmp/q90.c:215:16: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  215 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                ^
+      |                ->
+/tmp/q90.c:215:45: error: ‘(household_demographic_t *)&household_demographics’ is a pointer; did you mean to use ‘->’?
+  215 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                             ^
+      |                                             ->
+/tmp/q90.c:215:60: error: ‘(time_dim_t *)&time_dim’ is a pointer; did you mean to use ‘->’?
+  215 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                                            ^
+      |                                                            ->
+/tmp/q90.c:215:75: error: ‘(web_page_t *)&web_page’ is a pointer; did you mean to use ‘->’?
+  215 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                                                           ^
+      |                                                                           ->
+/tmp/q90.c:247:16: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  247 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                ^
+      |                ->
+/tmp/q90.c:247:45: error: ‘(household_demographic_t *)&household_demographics’ is a pointer; did you mean to use ‘->’?
+  247 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                             ^
+      |                                             ->
+/tmp/q90.c:247:60: error: ‘(time_dim_t *)&time_dim’ is a pointer; did you mean to use ‘->’?
+  247 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                                            ^
+      |                                                            ->
+/tmp/q90.c:247:75: error: ‘(web_page_t *)&web_page’ is a pointer; did you mean to use ‘->’?
+  247 |       web_sales.len * household_demographics.len * time_dim.len * web_page.len);
+      |                                                                           ^
+      |                                                                           ->

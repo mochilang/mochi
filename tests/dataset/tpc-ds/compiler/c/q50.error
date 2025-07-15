@@ -1,0 +1,36 @@
+/tmp/q50.c: In function ‘test_TPCDS_Q50_simplified’:
+/tmp/q50.c:271:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  271 |   if (test_TPCDS_Q50_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q50.c:275:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  275 |       if (test_TPCDS_Q50_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q50.c: In function ‘main’:
+/tmp/q50.c:330:7: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  330 |       joined_item_list_t_create(store_sales.len * store_returns.len *
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q50.c:330:44: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  330 |       joined_item_list_t_create(store_sales.len * store_returns.len *
+      |                                            ^
+      |                                            ->
+/tmp/q50.c:330:64: error: ‘(store_return_t *)&store_returns’ is a pointer; did you mean to use ‘->’?
+  330 |       joined_item_list_t_create(store_sales.len * store_returns.len *
+      |                                                                ^
+      |                                                                ->
+/tmp/q50.c:331:41: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  331 |                                 date_dim.len * date_dim.len * store.len);
+      |                                         ^
+      |                                         ->
+/tmp/q50.c:331:56: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  331 |                                 date_dim.len * date_dim.len * store.len);
+      |                                                        ^
+      |                                                        ->
+/tmp/q50.c:331:68: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  331 |                                 date_dim.len * date_dim.len * store.len);
+      |                                                                    ^
+      |                                                                    ->
+/tmp/q50.c:400:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  400 |   test_TPCDS_Q50_simplified_result = result;
+      |                                      ^~~~~~

@@ -1,0 +1,15 @@
+/tmp/q57.c:242:8: error: conflicting types for ‘abs’; have ‘double(double)’
+  242 | double abs(double x) {
+      |        ^~~
+In file included from /tmp/q57.c:4:
+/usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
+  980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+      |            ^~~
+/tmp/q57.c: In function ‘main’:
+/tmp/q57.c:288:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  288 |       result_item_list_t_create(grouped.len * avg_by_year.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q57.c:288:7: error: invalid initializer
+/tmp/q57.c:324:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  324 |   test_TPCDS_Q57_simplified_result = result;
+      |                                      ^~~~~~

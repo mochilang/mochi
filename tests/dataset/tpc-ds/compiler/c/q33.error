@@ -1,0 +1,77 @@
+/tmp/q33.c: In function ‘test_TPCDS_Q33_simplified’:
+/tmp/q33.c:344:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  344 |                    (tmp_item_t){.i_manufact_id = 2, .total_sales = 50.0}};
+      |                    ^
+/tmp/q33.c:347:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  347 |   if (test_TPCDS_Q33_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q33.c:351:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  351 |       if (test_TPCDS_Q33_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q33.c: In function ‘main’:
+/tmp/q33.c:395:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
+  395 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len *
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q33.c:395:58: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  395 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len *
+      |                                                          ^
+      |                                                          ->
+/tmp/q33.c:395:73: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  395 |   ss_item_list_t tmp4 = ss_item_list_t_create(store_sales.len * date_dim.len *
+      |                                                                         ^
+      |                                                                         ->
+/tmp/q33.c:396:63: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  396 |                                               customer_address.len * item.len);
+      |                                                               ^
+      |                                                               ->
+/tmp/q33.c:396:74: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  396 |                                               customer_address.len * item.len);
+      |                                                                          ^
+      |                                                                          ->
+/tmp/q33.c:427:26: warning: implicit declaration of function ‘cs_item_list_t_create’ [-Wimplicit-function-declaration]
+  427 |   cs_item_list_t tmp10 = cs_item_list_t_create(
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q33.c:428:20: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  428 |       catalog_sales.len * date_dim.len * customer_address.len * item.len);
+      |                    ^
+      |                    ->
+/tmp/q33.c:428:35: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  428 |       catalog_sales.len * date_dim.len * customer_address.len * item.len);
+      |                                   ^
+      |                                   ->
+/tmp/q33.c:428:58: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  428 |       catalog_sales.len * date_dim.len * customer_address.len * item.len);
+      |                                                          ^
+      |                                                          ->
+/tmp/q33.c:428:69: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  428 |       catalog_sales.len * date_dim.len * customer_address.len * item.len);
+      |                                                                     ^
+      |                                                                     ->
+/tmp/q33.c:459:26: warning: implicit declaration of function ‘ws_item_list_t_create’ [-Wimplicit-function-declaration]
+  459 |   ws_item_list_t tmp16 = ws_item_list_t_create(web_sales.len * date_dim.len *
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q33.c:459:57: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  459 |   ws_item_list_t tmp16 = ws_item_list_t_create(web_sales.len * date_dim.len *
+      |                                                         ^
+      |                                                         ->
+/tmp/q33.c:459:72: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  459 |   ws_item_list_t tmp16 = ws_item_list_t_create(web_sales.len * date_dim.len *
+      |                                                                        ^
+      |                                                                        ->
+/tmp/q33.c:460:64: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  460 |                                                customer_address.len * item.len);
+      |                                                                ^
+      |                                                                ->
+/tmp/q33.c:460:75: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  460 |                                                customer_address.len * item.len);
+      |                                                                           ^
+      |                                                                           ->
+/tmp/q33.c:491:26: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  491 |   list_int union_sales = concat(tmp4, tmp10, tmp16);
+      |                          ^~~~~~
+/tmp/q33.c:491:26: error: invalid initializer
+/tmp/q33.c:508:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  508 |   test_TPCDS_Q33_simplified_result = result;
+      |                                      ^~~~~~

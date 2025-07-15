@@ -1,0 +1,71 @@
+/tmp/q93.c: In function ‘test_TPCDS_Q93_active_sales’:
+/tmp/q93.c:311:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  311 |                    (tmp_item_t){.ss_customer_sk = 2, .sumsales = 60.0}};
+      |                    ^
+/tmp/q93.c:314:53: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  314 |   if (test_TPCDS_Q93_active_sales_result.len != tmp1.len) {
+      |                                                     ^
+      |                                                     ->
+/tmp/q93.c:318:62: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  318 |       if (test_TPCDS_Q93_active_sales_result.data[i3] != tmp1.data[i3]) {
+      |                                                              ^
+      |                                                              ->
+/tmp/q93.c: In function ‘main’:
+/tmp/q93.c:351:7: warning: implicit declaration of function ‘t_item_list_t_create’ [-Wimplicit-function-declaration]
+  351 |       t_item_list_t_create(store_sales.len * store_returns.len * reason.len);
+      |       ^~~~~~~~~~~~~~~~~~~~
+/tmp/q93.c:351:39: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  351 |       t_item_list_t_create(store_sales.len * store_returns.len * reason.len);
+      |                                       ^
+      |                                       ->
+/tmp/q93.c:351:59: error: ‘(store_return_t *)&store_returns’ is a pointer; did you mean to use ‘->’?
+  351 |       t_item_list_t_create(store_sales.len * store_returns.len * reason.len);
+      |                                                           ^
+      |                                                           ->
+/tmp/q93.c:351:72: error: ‘(reason_t *)&reason’ is a pointer; did you mean to use ‘->’?
+  351 |       t_item_list_t_create(store_sales.len * store_returns.len * reason.len);
+      |                                                                        ^
+      |                                                                        ->
+/tmp/q93.c:366:18: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  366 |         if (!(sr != 0 && sr.sr_reason_sk == r.r_reason_sk)) {
+      |                  ^~
+/tmp/q93.c:370:17: error: invalid operands to binary == (have ‘reason_t’ and ‘int’)
+  370 |         if (!(r == 0 || r.r_reason_desc == "ReasonA")) {
+      |                 ^~
+/tmp/q93.c:375:31: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  375 |             .act_sales = ((sr != 0) ? (ss.ss_quantity - sr.sr_return_quantity) *
+      |                               ^~
+/tmp/q93.c:382:17: error: invalid operands to binary == (have ‘reason_t’ and ‘int’)
+  382 |         if (!(r == 0 || r.r_reason_desc == "ReasonA")) {
+      |                 ^~
+/tmp/q93.c:387:31: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  387 |             .act_sales = ((sr != 0) ? (ss.ss_quantity - sr.sr_return_quantity) *
+      |                               ^~
+/tmp/q93.c:398:18: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  398 |         if (!(sr != 0 && sr.sr_reason_sk == r.r_reason_sk)) {
+      |                  ^~
+/tmp/q93.c:402:17: error: invalid operands to binary == (have ‘reason_t’ and ‘int’)
+  402 |         if (!(r == 0 || r.r_reason_desc == "ReasonA")) {
+      |                 ^~
+/tmp/q93.c:407:31: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  407 |             .act_sales = ((sr != 0) ? (ss.ss_quantity - sr.sr_return_quantity) *
+      |                               ^~
+/tmp/q93.c:414:17: error: invalid operands to binary == (have ‘reason_t’ and ‘int’)
+  414 |         if (!(r == 0 || r.r_reason_desc == "ReasonA")) {
+      |                 ^~
+/tmp/q93.c:419:31: error: invalid operands to binary != (have ‘store_return_t’ and ‘int’)
+  419 |             .act_sales = ((sr != 0) ? (ss.ss_quantity - sr.sr_return_quantity) *
+      |                               ^~
+/tmp/q93.c:441:30: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  441 |   result_item_list_t tmp18 = result_item_list_t_create(tmp17.len);
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q93.c:441:30: error: invalid initializer
+/tmp/q93.c:446:27: error: invalid initializer
+  446 |     t_item_list_t tmp21 = t_item_list_t_create(_gp.items.len);
+      |                           ^~~~~~~~~~~~~~~~~~~~
+/tmp/q93.c:476:20: error: incompatible types when assigning to type ‘int’ from type ‘list_float’
+  476 |     tmp20[tmp19] = result;
+      |                    ^~~~~~
+/tmp/q93.c:509:40: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  509 |   test_TPCDS_Q93_active_sales_result = result;
+      |                                        ^~~~~~

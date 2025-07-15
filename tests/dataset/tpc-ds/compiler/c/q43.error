@@ -1,0 +1,28 @@
+/tmp/q43.c: In function ‘test_TPCDS_Q43_simplified’:
+/tmp/q43.c:252:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  252 |   if (test_TPCDS_Q43_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q43.c:256:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  256 |       if (test_TPCDS_Q43_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q43.c: In function ‘main’:
+/tmp/q43.c:291:7: warning: implicit declaration of function ‘records_item_list_t_create’ [-Wimplicit-function-declaration]
+  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q43.c:291:42: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+      |                                          ^
+      |                                          ->
+/tmp/q43.c:291:60: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+      |                                                            ^
+      |                                                            ->
+/tmp/q43.c:291:72: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  291 |       records_item_list_t_create(date_dim.len * store_sales.len * store.len);
+      |                                                                        ^
+      |                                                                        ->
+/tmp/q43.c:364:38: error: incompatible types when assigning to type ‘list_int’ from type ‘base_item_list_t’
+  364 |   test_TPCDS_Q43_simplified_result = result;
+      |                                      ^~~~~~

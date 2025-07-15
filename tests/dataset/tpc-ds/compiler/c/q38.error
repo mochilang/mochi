@@ -1,0 +1,8 @@
+/tmp/q38.c: In function ‘distinct’:
+/tmp/q38.c:192:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  192 |     if (((!contains(tmp2, x)))) {
+      |            ^~~~~~~~
+/tmp/q38.c: In function ‘main’:
+/tmp/q38.c:266:28: error: expected ‘,’ or ‘;’ before ‘intersect’
+  266 |   list_int hot = store_ids intersect catalog_ids intersect web_ids;
+      |                            ^~~~~~~~~

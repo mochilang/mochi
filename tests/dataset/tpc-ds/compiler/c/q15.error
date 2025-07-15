@@ -1,0 +1,22 @@
+/tmp/q15.c:228:3: error: unknown type name ‘customer_address_t’
+  228 |   customer_address_t *data;
+      |   ^~~~~~~~~~~~~~~~~~
+/tmp/q15.c: In function ‘create_customer_address_list’:
+/tmp/q15.c:233:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  233 |   l.data = calloc(len, sizeof(customer_address_t));
+      |                               ^~~~~~~~~~~~~~~~~~
+      |                               customer_addres_t
+/tmp/q15.c:233:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q15.c: In function ‘test_TPCDS_Q15_zip’:
+/tmp/q15.c:266:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  266 |   if (test_TPCDS_Q15_zip_filtered.len != tmp1.len) {
+      |                                              ^
+      |                                              ->
+/tmp/q15.c:270:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  270 |       if (test_TPCDS_Q15_zip_filtered.data[i3] != tmp1.data[i3]) {
+      |                                                       ^
+      |                                                       ->
+/tmp/q15.c: In function ‘main’:
+/tmp/q15.c:313:33: error: incompatible types when assigning to type ‘list_int’ from type ‘filtered_item_list_t’
+  313 |   test_TPCDS_Q15_zip_filtered = filtered;
+      |                                 ^~~~~~~~
