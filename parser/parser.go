@@ -194,13 +194,14 @@ type AssignStmt struct {
 }
 
 type FunStmt struct {
-	Pos    lexer.Position
-	Export bool   `parser:"[ @'export' ]"`
-	Name   string `parser:"'fun' @Ident"`
-	Doc    string
-	Params []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
-	Return *TypeRef     `parser:"[ ':' @@ ]"`
-	Body   []*Statement `parser:"'{' @@* '}'"`
+	Pos        lexer.Position
+	Export     bool     `parser:"[ @'export' ]"`
+	Name       string   `parser:"'fun' @Ident"`
+	TypeParams []string `parser:"[ '<' @Ident { ',' @Ident } '>' ]"`
+	Doc        string
+	Params     []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return     *TypeRef     `parser:"[ ':' @@ ]"`
+	Body       []*Statement `parser:"'{' @@* '}'"`
 }
 
 type ReturnStmt struct {
@@ -512,11 +513,12 @@ type Primary struct {
 }
 
 type FunExpr struct {
-	Pos       lexer.Position
-	Params    []*Param     `parser:"'fun' '(' [ @@ { ',' @@ } ] ')'"`
-	Return    *TypeRef     `parser:"[ ':' @@ ]"`
-	ExprBody  *Expr        `parser:"'=>' @@"`
-	BlockBody []*Statement `parser:"| '{' @@* '}'"`
+	Pos        lexer.Position
+	TypeParams []string     `parser:"'fun' [ '<' @Ident { ',' @Ident } '>' ]"`
+	Params     []*Param     `parser:"'(' [ @@ { ',' @@ } ] ')'"`
+	Return     *TypeRef     `parser:"[ ':' @@ ]"`
+	ExprBody   *Expr        `parser:"'=>' @@"`
+	BlockBody  []*Statement `parser:"| '{' @@* '}'"`
 }
 
 // --- Atoms ---

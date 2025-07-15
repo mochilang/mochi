@@ -1,0 +1,13 @@
+(program
+  (let id
+    (funexpr
+      (typeparam T)
+      (param x (type T))
+      (type T)
+      (selector x)
+    )
+  )
+  (call print
+    (call id (int 5))
+  )
+)

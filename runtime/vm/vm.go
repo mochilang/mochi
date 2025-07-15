@@ -335,11 +335,12 @@ type Instr struct {
 }
 
 type Function struct {
-	Code      []Instr
-	NumRegs   int
-	NumParams int
-	Name      string
-	Line      int // source line of function definition
+	Code       []Instr
+	NumRegs    int
+	NumParams  int
+	Name       string
+	TypeParams []string
+	Line       int // source line of function definition
 }
 
 type Program struct {
@@ -358,14 +359,15 @@ func (p *Program) funcName(idx int) string {
 	if idx < 0 || idx >= len(p.Funcs) {
 		return fmt.Sprintf("%d", idx)
 	}
-	name := p.Funcs[idx].Name
+	fn := p.Funcs[idx]
+	name := fn.Name
 	if name == "" {
 		if idx == 0 {
 			return "main"
 		}
 		return fmt.Sprintf("fn%d", idx)
 	}
-	return name
+	return name + formatTypeParams(fn.TypeParams)
 }
 
 // Disassemble returns a human-readable listing of the program instructions.
@@ -408,7 +410,7 @@ func (p *Program) Disassemble(src string) string {
 		if fn.Line > 0 && fn.Line <= len(lines) {
 			fmt.Fprintf(&b, "  // %s\n", strings.TrimSpace(lines[fn.Line-1]))
 		}
-		fmt.Fprintf(&b, "func %s (regs=%d)\n", name, fn.NumRegs)
+		fmt.Fprintf(&b, "func %s%s (regs=%d)\n", name, formatTypeParams(fn.TypeParams), fn.NumRegs)
 		lastLine := 0
 		for pc, ins := range fn.Code {
 			if lbl, ok := labels[pc]; ok {
@@ -2181,6 +2183,7 @@ func compileProgram(p *parser.Program, env *types.Env) (*Program, error) {
 func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
 	fc.fn.Name = fn.Name
+	fc.fn.TypeParams = append([]string(nil), fn.TypeParams...)
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(fn.Params)
 	for i, p := range fn.Params {
@@ -2205,6 +2208,7 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Function, error) {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
 	fc.fn.Name = st.Name + "." + fn.Name
+	fc.fn.TypeParams = append([]string(nil), fn.TypeParams...)
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(st.Order) + len(fn.Params)
 	// struct fields as parameters
@@ -2258,6 +2262,7 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
+	fc.fn.TypeParams = append([]string(nil), fn.TypeParams...)
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -2301,6 +2306,7 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 
 	fc := &funcCompiler{comp: c, vars: map[string]int{}, tags: map[int]regTag{}, scopes: nil, groupVar: "", constRegs: map[string]int{}}
 	fc.fn.Name = name
+	fc.fn.TypeParams = append([]string(nil), fn.TypeParams...)
 	fc.fn.Line = fn.Pos.Line
 	fc.fn.NumParams = len(captures) + len(fn.Params)
 	for i, name := range captures {
@@ -7378,6 +7384,13 @@ func formatRegs(start, n int) string {
 		regs[i] = formatReg(start + i)
 	}
 	return strings.Join(regs, ", ")
+}
+
+func formatTypeParams(tps []string) string {
+	if len(tps) == 0 {
+		return ""
+	}
+	return "<" + strings.Join(tps, ", ") + ">"
 }
 
 func clampSlice(n, start, end int) (int, int) {
