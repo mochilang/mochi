@@ -1,7 +1,0 @@
-lua: /tmp/q52.lua:315: attempt to compare two table values
-stack traceback:
-	/tmp/q52.lua:315: in function </tmp/q52.lua:315>
-	[C]: in function 'table.sort'
-	/tmp/q52.lua:315: in function </tmp/q52.lua:309>
-	/tmp/q52.lua:309: in main chunk
-	[C]: in ?
