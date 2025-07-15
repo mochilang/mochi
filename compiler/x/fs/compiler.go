@@ -1601,19 +1601,34 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		b.WriteString(cond)
 	}
 	b.WriteString("yield ")
-	b.WriteString(sel)
-	b.WriteString(" ]")
-	expr := b.String()
+	var sortKey string
 	if q.Sort != nil {
-		s, err := c.compileExpr(q.Sort)
+		var err error
+		sortKey, err = c.compileExpr(q.Sort)
 		if err != nil {
 			return "", err
 		}
-		if strings.HasPrefix(s, "-") {
-			s = strings.TrimPrefix(s, "-")
-			expr = fmt.Sprintf("%s |> List.sortByDescending (fun %s -> %s)", expr, q.Var, s)
+		b.WriteString("(")
+		b.WriteString(sortKey)
+		b.WriteString(", ")
+		b.WriteString(sel)
+		b.WriteString(")")
+	} else {
+		b.WriteString(sel)
+	}
+	b.WriteString(" ]")
+	expr := b.String()
+	if q.Sort != nil {
+		asc := true
+		sk := sortKey
+		if strings.HasPrefix(sk, "-") {
+			asc = false
+			sk = strings.TrimPrefix(sk, "-")
+		}
+		if asc {
+			expr = fmt.Sprintf("%s |> List.sortBy fst |> List.map snd", expr)
 		} else {
-			expr = fmt.Sprintf("%s |> List.sortBy (fun %s -> %s)", expr, q.Var, s)
+			expr = fmt.Sprintf("%s |> List.sortByDescending fst |> List.map snd", expr)
 		}
 	}
 	if q.Skip != nil {
