@@ -1,0 +1,14 @@
+/tmp/q24.rb:222:in `block in <main>': undefined local variable or method `strings' for main:Object (NameError)
+
+	], { 'select' => ->(ss, sr, s, i, c, ca){ [ss, sr, s, i, c, ca] }, 'where' => ->(ss, sr, s, i, c, ca){ (((c.c_birth_country != strings.ToUpper.call(ca.ca_country)) && (s.s_zip == ca.ca_zip)) && (s.s_market_id == 5)) } })
+	                                                                                                                               ^^^^^^^
+Did you mean?  String
+	from /tmp/q24.rb:147:in `block (3 levels) in _query'
+	from /tmp/q24.rb:141:in `each'
+	from /tmp/q24.rb:141:in `block (2 levels) in _query'
+	from /tmp/q24.rb:139:in `each'
+	from /tmp/q24.rb:139:in `block in _query'
+	from /tmp/q24.rb:74:in `each'
+	from /tmp/q24.rb:74:in `each_with_index'
+	from /tmp/q24.rb:74:in `_query'
+	from /tmp/q24.rb:216:in `<main>'

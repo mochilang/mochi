@@ -10,6 +10,8 @@
 - Recompiled `tpc-h` queries `q4`-`q22` using the updated compiler.
 - Confirmed `tpch_golden_test.go` generates code and matches expected output.
 - Verified all TPC-DS queries compile and run successfully via `tpcds_golden_test.go`.
+- 2025-07-15 06:31 - Added script `compile_tpcds_rb.go` to regenerate Ruby TPC-DS outputs and updated all golden files.
+- 2025-07-15 06:42 - Enhanced `tpcds_golden_test.go` to generate `.rb` files, capture `.error`, and compare outputs.
 
 ## Remaining Enhancements
 - [ ] Format output closer to the examples in `tests/human/x/rb`.

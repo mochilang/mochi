@@ -1,0 +1,10 @@
+/tmp/q22.rb:201:in `block (2 levels) in <main>': undefined method `inv_quantity_on_hand' for [#<OpenStruct inv_item_sk=1, inv_date_sk=1, inv_quantity_on_hand=10>, #<OpenStruct d_date_sk=1, d_month_seq=0>, #<OpenStruct i_item_sk=1, i_product_name="Prod1", i_brand="Brand1", i_class="Class1", i_category="Cat1">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_product_name: g.key.product_name, i_brand: g.key.brand, i_class: g.key._class, i_category: g.key.category, qoh: _avg(((g)).map { |x| x.inv_quantity_on_hand }))
+		                                                                                                                                                               ^^^^^^^^^^^^^^^^^^^^^
+	from /tmp/q22.rb:30:in `each'
+	from /tmp/q22.rb:30:in `each'
+	from /tmp/q22.rb:201:in `map'
+	from /tmp/q22.rb:201:in `block in <main>'
+	from /tmp/q22.rb:200:in `each'
+	from /tmp/q22.rb:200:in `<main>'

@@ -1,0 +1,11 @@
+/tmp/q3.rb:195:in `block (2 levels) in <main>': undefined method `ss_ext_sales_price' for [#<OpenStruct d_date_sk=1, d_year=1998, d_moy=12>, #<OpenStruct ss_sold_date_sk=1, ss_item_sk=1, ss_ext_sales_price=10.0>, #<OpenStruct i_item_sk=1, i_manufact_id=100, i_brand_id=1, i_brand="Brand1">]:Array (NoMethodError)
+
+	_items0 = _items0.sort_by { |g| [g.key.d_year, (-_sum(((g)).map { |x| x.ss_ext_sales_price })), g.key.brand_id] }
+	                                                                       ^^^^^^^^^^^^^^^^^^^
+	from /tmp/q3.rb:18:in `each'
+	from /tmp/q3.rb:18:in `each'
+	from /tmp/q3.rb:195:in `map'
+	from /tmp/q3.rb:195:in `block in <main>'
+	from /tmp/q3.rb:195:in `each'
+	from /tmp/q3.rb:195:in `sort_by'
+	from /tmp/q3.rb:195:in `<main>'

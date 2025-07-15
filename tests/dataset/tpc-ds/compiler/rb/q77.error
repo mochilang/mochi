@@ -1,0 +1,13 @@
+/tmp/q77.rb:194:in `block in <main>': undefined method `ss_sold_date_sk' for nil:NilClass (NoMethodError)
+
+		{ 'items' => $date_dim, 'on' => ->(ss, d){ (d.d_date_sk == $ss.ss_sold_date_sk) } }
+		                                                              ^^^^^^^^^^^^^^^^
+	from /tmp/q77.rb:131:in `block (3 levels) in _query'
+	from /tmp/q77.rb:129:in `each'
+	from /tmp/q77.rb:129:in `block (2 levels) in _query'
+	from /tmp/q77.rb:127:in `each'
+	from /tmp/q77.rb:127:in `block in _query'
+	from /tmp/q77.rb:62:in `each'
+	from /tmp/q77.rb:62:in `each_with_index'
+	from /tmp/q77.rb:62:in `_query'
+	from /tmp/q77.rb:193:in `<main>'

@@ -1,0 +1,10 @@
+/tmp/q39.rb:213:in `block (2 levels) in <main>': undefined method `inv_quantity_on_hand' for [#<OpenStruct inv_item_sk=1, inv_warehouse_sk=1, inv_date_sk=1, inv_quantity_on_hand=10>, #<OpenStruct d_date_sk=1, d_year=2000, d_moy=1>, #<OpenStruct i_item_sk=1>, #<OpenStruct w_warehouse_sk=1, w_warehouse_name="W1">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(w: g.key.w, i: g.key.i, qty: _sum(((g)).map { |x| x.inv_quantity_on_hand }))
+		                                                                          ^^^^^^^^^^^^^^^^^^^^^
+	from /tmp/q39.rb:30:in `each'
+	from /tmp/q39.rb:30:in `each'
+	from /tmp/q39.rb:213:in `map'
+	from /tmp/q39.rb:213:in `block in <main>'
+	from /tmp/q39.rb:212:in `each'
+	from /tmp/q39.rb:212:in `<main>'

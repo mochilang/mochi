@@ -1,0 +1,10 @@
+/tmp/q25.rb:217:in `block (2 levels) in <main>': undefined method `ss_net_profit' for [#<OpenStruct ss_sold_date_sk=1, ss_item_sk=1, ss_store_sk=1, ss_customer_sk=1, ss_net_profit=50.0, ss_ticket_number=1>, #<OpenStruct sr_returned_date_sk=2, sr_item_sk=1, sr_customer_sk=1, sr_ticket_number=1, sr_net_loss=10.0>, #<OpenStruct cs_sold_date_sk=3, cs_item_sk=1, cs_bill_customer_sk=1, cs_net_profit=30.0>, #<OpenStruct d_date_sk=1, d_moy=4, d_year=2000>, #<OpenStruct d_date_sk=2, d_moy=5, d_year=2000>, #<OpenStruct d_date_sk=3, d_moy=6, d_year=2000>, #<OpenStruct s_store_sk=1, s_store_id="S1", s_store_name="Store1">, #<OpenStruct i_item_sk=1, i_item_id="ITEM1", i_item_desc="Desc1">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_item_id: g.key.item_id, i_item_desc: g.key.item_desc, s_store_id: g.key.s_store_id, s_store_name: g.key.s_store_name, store_sales_profit: _sum(((g)).map { |x| x.ss_net_profit }), store_returns_loss: _sum(((g)).map { |x| x.sr_net_loss }), catalog_sales_profit: _sum(((g)).map { |x| x.cs_net_profit }))
+		                                                                                                                                                                                         ^^^^^^^^^^^^^^
+	from /tmp/q25.rb:18:in `each'
+	from /tmp/q25.rb:18:in `each'
+	from /tmp/q25.rb:217:in `map'
+	from /tmp/q25.rb:217:in `block in <main>'
+	from /tmp/q25.rb:216:in `each'
+	from /tmp/q25.rb:216:in `<main>'

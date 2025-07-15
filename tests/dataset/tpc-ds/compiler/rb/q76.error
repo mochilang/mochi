@@ -1,0 +1,12 @@
+/root/.rbenv/versions/3.2.3/lib/ruby/3.2.0/ostruct.rb:292:in `[]': undefined method `to_sym' for 0:Integer (NoMethodError)
+
+    @table[name.to_sym]
+               ^^^^^^^
+Did you mean?  to_s
+	from /tmp/q76.rb:250:in `block (2 levels) in <main>'
+	from /tmp/q76.rb:18:in `each'
+	from /tmp/q76.rb:18:in `each'
+	from /tmp/q76.rb:250:in `map'
+	from /tmp/q76.rb:250:in `block in <main>'
+	from /tmp/q76.rb:249:in `each'
+	from /tmp/q76.rb:249:in `<main>'

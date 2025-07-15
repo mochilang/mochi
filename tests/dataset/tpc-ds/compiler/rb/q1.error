@@ -1,0 +1,10 @@
+/tmp/q1.rb:209:in `block (2 levels) in <main>': undefined method `sr_return_amt' for [#<OpenStruct sr_returned_date_sk=1, sr_customer_sk=1, sr_store_sk=10, sr_return_amt=20.0>, #<OpenStruct d_date_sk=1, d_year=1998>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(ctr_customer_sk: g.key.customer_sk, ctr_store_sk: g.key.store_sk, ctr_total_return: _sum(((g)).map { |x| x.sr_return_amt }))
+		                                                                                                                                 ^^^^^^^^^^^^^^
+	from /tmp/q1.rb:30:in `each'
+	from /tmp/q1.rb:30:in `each'
+	from /tmp/q1.rb:209:in `map'
+	from /tmp/q1.rb:209:in `block in <main>'
+	from /tmp/q1.rb:208:in `each'
+	from /tmp/q1.rb:208:in `<main>'

@@ -1,0 +1,10 @@
+/tmp/q2.rb:197:in `block (2 levels) in <main>': undefined method `day' for [#<OpenStruct sold_date_sk=1, sales_price=5.0, day="Sunday">, #<OpenStruct d_date_sk=1, d_week_seq=1, d_day_name="Sunday", d_year=1998>]:Array (NoMethodError)
+
+		_res << OpenStruct.new(d_week_seq: g.key.week_seq, sun_sales: _sum((((g)).select { |x| (x.day == "Sunday") }).map { |x| x.sales_price }), mon_sales: _sum((((g)).select { |x| (x.day == "Monday") }).map { |x| x.sales_price }), tue_sales: _sum((((g)).select { |x| (x.day == "Tuesday") }).map { |x| x.sales_price }), wed_sales: _sum((((g)).select { |x| (x.day == "Wednesday") }).map { |x| x.sales_price }), thu_sales: _sum((((g)).select { |x| (x.day == "Thursday") }).map { |x| x.sales_price }), fri_sales: _sum((((g)).select { |x| (x.day == "Friday") }).map { |x| x.sales_price }), sat_sales: _sum((((g)).select { |x| (x.day == "Saturday") }).map { |x| x.sales_price }))
+		                                                                                         ^^^^
+	from /tmp/q2.rb:18:in `each'
+	from /tmp/q2.rb:18:in `each'
+	from /tmp/q2.rb:197:in `select'
+	from /tmp/q2.rb:197:in `block in <main>'
+	from /tmp/q2.rb:196:in `each'
+	from /tmp/q2.rb:196:in `<main>'

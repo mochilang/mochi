@@ -1,0 +1,10 @@
+/tmp/q99.rb:205:in `block (2 levels) in <main>': undefined method `cs_ship_date_sk' for [#<OpenStruct cs_ship_date_sk=31, cs_sold_date_sk=1, cs_warehouse_sk=1, cs_ship_mode_sk=1, cs_call_center_sk=1>, #<OpenStruct w_warehouse_sk=1, w_warehouse_name="Warehouse1">, #<OpenStruct sm_ship_mode_sk=1, sm_type="EXP">, #<OpenStruct cc_call_center_sk=1, cc_name="CC1">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(warehouse: g.key.warehouse, sm_type: g.key.sm_type, cc_name: g.key.cc_name, d30: ((((g)).select { |x| ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 30) }).map { |x| x }).length, d60: ((((g)).select { |x| (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 30) && ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 60)) }).map { |x| x }).length, d90: ((((g)).select { |x| (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 60) && ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 90)) }).map { |x| x }).length, d120: ((((g)).select { |x| (((x.cs_ship_date_sk - x.cs_sold_date_sk) > 90) && ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 120)) }).map { |x| x }).length, dmore: ((((g)).select { |x| ((x.cs_ship_date_sk - x.cs_sold_date_sk) > 120) }).map { |x| x }).length)
+		                                                                                                                                ^^^^^^^^^^^^^^^^
+	from /tmp/q99.rb:18:in `each'
+	from /tmp/q99.rb:18:in `each'
+	from /tmp/q99.rb:205:in `select'
+	from /tmp/q99.rb:205:in `block in <main>'
+	from /tmp/q99.rb:204:in `each'
+	from /tmp/q99.rb:204:in `<main>'

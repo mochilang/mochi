@@ -1,0 +1,10 @@
+/tmp/q36.rb:200:in `block (2 levels) in <main>': undefined method `ss_net_profit' for [#<OpenStruct ss_item_sk=1, ss_store_sk=1, ss_sold_date_sk=1, ss_ext_sales_price=100.0, ss_net_profit=20.0>, #<OpenStruct d_date_sk=1, d_year=2000>, #<OpenStruct i_item_sk=1, i_category="Books", i_class="C1">, #<OpenStruct s_store_sk=1, s_state="A">]:Array (NoMethodError)
+
+		_res << OpenStruct.new(i_category: g.key.category, i_class: g.key._class, gross_margin: (_sum(((g)).map { |x| x.ss_net_profit }) / _sum(((g)).map { |x| x.ss_ext_sales_price })))
+		                                                                                                               ^^^^^^^^^^^^^^
+	from /tmp/q36.rb:18:in `each'
+	from /tmp/q36.rb:18:in `each'
+	from /tmp/q36.rb:200:in `map'
+	from /tmp/q36.rb:200:in `block in <main>'
+	from /tmp/q36.rb:199:in `each'
+	from /tmp/q36.rb:199:in `<main>'
