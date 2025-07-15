@@ -1,26 +1,4 @@
 rustc: exit status 1
-error[E0412]: cannot find type `any` in this scope
-   --> /tmp/q16.rs:109:25
-    |
-109 |     fn distinct(xs: Vec<any>) -> Vec<any> {
-    |                         ^^^ not found in this scope
-    |
-help: you might be missing a type parameter
-    |
-109 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
-    |                +++++
-
-error[E0412]: cannot find type `any` in this scope
-   --> /tmp/q16.rs:109:38
-    |
-109 |     fn distinct(xs: Vec<any>) -> Vec<any> {
-    |                                      ^^^ not found in this scope
-    |
-help: you might be missing a type parameter
-    |
-109 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
-    |                +++++
-
 warning: type `Catalog_sale` should have an upper camel case name
   --> /tmp/q16.rs:37:8
    |
@@ -118,7 +96,7 @@ help: use the `.` operator to call the method `contains` on `&[_]`
 112 +             if !out.contains(x) {
     |
 
-error: aborting due to 9 previous errors; 4 warnings emitted
+error: aborting due to 7 previous errors; 4 warnings emitted
 
-Some errors have detailed explanations: E0282, E0308, E0412, E0425, E0609.
+Some errors have detailed explanations: E0282, E0308, E0425, E0609.
 For more information about an error, try `rustc --explain E0282`.

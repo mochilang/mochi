@@ -3859,6 +3859,8 @@ func rustType(t *parser.TypeRef) string {
 			return "f64"
 		case "string":
 			return "&'static str"
+		case "any":
+			return "i32"
 		default:
 			return *t.Simple
 		}

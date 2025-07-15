@@ -1,7 +1,0 @@
-fn main() {
-    println!("{}", _in_string("hello", "lo"));
-}
-
-fn _in_string(s: &str, sub: &str) -> bool {
-    s.contains(sub)
-}

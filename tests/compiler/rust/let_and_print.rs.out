@@ -1,5 +1,0 @@
-fn main() {
-    let mut a = 10;
-    let mut b: i64 = 20;
-    println!("{}", a + b);
-}

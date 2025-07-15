@@ -1,4 +1,0 @@
-fn main() {
-    let mut scores = std::collections::HashMap::from([("Alice".to_string(), 10), ("Bob".to_string(), 15)]);
-    println!("{}", scores["Bob"]);
-}

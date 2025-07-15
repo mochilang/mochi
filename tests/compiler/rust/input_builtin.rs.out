@@ -1,7 +1,0 @@
-fn main() {
-    println!("{}", "Enter first input:");
-    let mut input1 = { use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() };
-    println!("{}", "Enter second input:");
-    let mut input2 = { use std::io::Read; let mut s = String::new(); std::io::stdin().read_line(&mut s).unwrap(); s.trim().to_string() };
-    println!("{} {} {} {}", "You entered:", input1, ",", input2);
-}

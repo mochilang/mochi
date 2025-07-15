@@ -1,15 +1,10 @@
 rustc: exit status 1
-error[E0277]: can't compare `Result` with `V2`
-  --> /tmp/q47.rs:35:20
+error[E0308]: mismatched types
+  --> /tmp/q47.rs:35:106
    |
-35 |     assert!(result == vec![V2 { d_year: 2019, item: "C", avg_monthly_sales: 50.0, sum_sales: 60.0 }, V2 { d_year: 2020, item: "A", avg_mo...
-   |                    ^^ no implementation for `Result == V2`
-   |
-   = help: the trait `PartialEq<V2>` is not implemented for `Result`
-           but trait `PartialEq<Result>` is implemented for it
-   = help: for that trait implementation, expected `Result`, found `V2`
-   = note: required for `Vec<Result>` to implement `PartialEq<Vec<V2>>`
+35 | ...sales: 60.0 }, V2 { d_year: 2020, item: "A", avg_monthly_sales: 100.0, sum_sales: 120.0 }]);
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result`, found `V2`
 
 error: aborting due to 1 previous error
 
-For more information about this error, try `rustc --explain E0277`.
+For more information about this error, try `rustc --explain E0308`.

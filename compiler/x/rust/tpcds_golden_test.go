@@ -24,9 +24,6 @@ func TestRustCompiler_TPCDSQueries(t *testing.T) {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
 		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs")
-		if _, err := os.Stat(codeWant); err != nil {
-			codeWant = filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs.out")
-		}
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".out")
 		errFile := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".error")
 		if _, err := os.Stat(codeWant); err != nil {

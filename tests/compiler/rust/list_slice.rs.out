@@ -1,3 +1,0 @@
-fn main() {
-    println!("[{}]", vec![1, 2, 3, 4][(1) as usize..(3) as usize].to_vec().iter().map(|v| format!("{}", v)).collect::<Vec<_>>().join(" "));
-}
