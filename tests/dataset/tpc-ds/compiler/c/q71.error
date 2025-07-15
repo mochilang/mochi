@@ -1,0 +1,53 @@
+/tmp/q71.c: In function ‘test_TPCDS_Q71_simplified’:
+/tmp/q71.c:385:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  385 |                    (tmp_item_t){.i_brand_id = 20,
+      |                    ^
+/tmp/q71.c:397:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  397 |   if (test_TPCDS_Q71_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q71.c:401:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  401 |       if (test_TPCDS_Q71_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q71.c: In function ‘main’:
+/tmp/q71.c:452:25: warning: implicit declaration of function ‘ws_item_list_t_create’ [-Wimplicit-function-declaration]
+  452 |   ws_item_list_t tmp4 = ws_item_list_t_create(web_sales.len * date_dim.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q71.c:452:56: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  452 |   ws_item_list_t tmp4 = ws_item_list_t_create(web_sales.len * date_dim.len);
+      |                                                        ^
+      |                                                        ->
+/tmp/q71.c:452:71: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  452 |   ws_item_list_t tmp4 = ws_item_list_t_create(web_sales.len * date_dim.len);
+      |                                                                       ^
+      |                                                                       ->
+/tmp/q71.c:471:25: warning: implicit declaration of function ‘cs_item_list_t_create’ [-Wimplicit-function-declaration]
+  471 |   cs_item_list_t tmp8 = cs_item_list_t_create(catalog_sales.len * date_dim.len);
+      |                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q71.c:471:60: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  471 |   cs_item_list_t tmp8 = cs_item_list_t_create(catalog_sales.len * date_dim.len);
+      |                                                            ^
+      |                                                            ->
+/tmp/q71.c:471:75: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  471 |   cs_item_list_t tmp8 = cs_item_list_t_create(catalog_sales.len * date_dim.len);
+      |                                                                           ^
+      |                                                                           ->
+/tmp/q71.c:490:26: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
+  490 |   ss_item_list_t tmp12 = ss_item_list_t_create(store_sales.len * date_dim.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~
+/tmp/q71.c:490:59: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  490 |   ss_item_list_t tmp12 = ss_item_list_t_create(store_sales.len * date_dim.len);
+      |                                                           ^
+      |                                                           ->
+/tmp/q71.c:490:74: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  490 |   ss_item_list_t tmp12 = ss_item_list_t_create(store_sales.len * date_dim.len);
+      |                                                                          ^
+      |                                                                          ->
+/tmp/q71.c:509:26: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  509 |   list_int union_sales = concat(tmp4, tmp8, tmp12);
+      |                          ^~~~~~
+/tmp/q71.c:509:26: error: invalid initializer
+/tmp/q71.c:539:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  539 |   test_TPCDS_Q71_simplified_result = result;
+      |                                      ^~~~~~

@@ -1,0 +1,23 @@
+/tmp/q52.c: In function ‘test_TPCDS_Q52_simplified’:
+/tmp/q52.c:227:7: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  227 |       (tmp_item_t){.d_year = 2001, .brand_id = 2, .ext_price = 22.0}};
+      |       ^
+/tmp/q52.c:230:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  230 |   if (test_TPCDS_Q52_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q52.c:234:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  234 |       if (test_TPCDS_Q52_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q52.c: In function ‘main’:
+/tmp/q52.c:262:31: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
+  262 |   filtered_item_list_t tmp4 = filtered_item_list_t_create(filtered.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q52.c:262:31: error: invalid initializer
+/tmp/q52.c:272:18: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  272 |     tmp7[tmp5] = result;
+      |                  ^~~~~~
+/tmp/q52.c:309:38: error: incompatible types when assigning to type ‘list_int’ from type ‘filtered_item_list_t’
+  309 |   test_TPCDS_Q52_simplified_result = result;
+      |                                      ^~~~~~

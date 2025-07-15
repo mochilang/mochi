@@ -1,0 +1,16 @@
+/tmp/q22.c: In function ‘test_TPCDS_Q22_average_inventory’:
+/tmp/q22.c:259:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  259 |                    (tmp_item_t){.i_product_name = "Prod2",
+      |                    ^
+/tmp/q22.c:266:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  266 |   if (test_TPCDS_Q22_average_inventory_qoh.len != tmp1.len) {
+      |                                                       ^
+      |                                                       ->
+/tmp/q22.c:270:64: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  270 |       if (test_TPCDS_Q22_average_inventory_qoh.data[i3] != tmp1.data[i3]) {
+      |                                                                ^
+      |                                                                ->
+/tmp/q22.c: In function ‘main’:
+/tmp/q22.c:340:42: error: incompatible types when assigning to type ‘list_int’ from type ‘qoh_item_list_t’
+  340 |   test_TPCDS_Q22_average_inventory_qoh = qoh;
+      |                                          ^~~

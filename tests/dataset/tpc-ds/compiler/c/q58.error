@@ -1,0 +1,13 @@
+/tmp/q58.c: In function ‘test_TPCDS_Q58_simplified’:
+/tmp/q58.c:202:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  202 |   if (test_TPCDS_Q58_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q58.c:206:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  206 |       if (test_TPCDS_Q58_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q58.c: In function ‘main’:
+/tmp/q58.c:246:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_t *’
+  246 |   test_TPCDS_Q58_simplified_result = result;
+      |                                      ^~~~~~

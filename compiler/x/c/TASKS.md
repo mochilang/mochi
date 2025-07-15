@@ -104,3 +104,4 @@ should compile and run successfully.
 - 2025-07-15 04:55 – Retried TPC-DS compilation with golden test capturing errors. Compilation still fails for most queries.
 - 2025-07-15 05:43 – Generated C code for TPC-DS queries q1–q10 using compile_tpcds_c.go. Compilation failed, .error logs stored.
 
+- 2025-07-15 06:31 – Attempted full TPC-DS compilation using compile_tpcds_c.go and individual runs for q1,q2. All queries fail with C compiler errors; no new code generated.

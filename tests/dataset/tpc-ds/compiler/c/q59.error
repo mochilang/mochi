@@ -1,0 +1,35 @@
+/tmp/q59.c: In function ‘test_TPCDS_Q59_simplified’:
+/tmp/q59.c:185:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  185 |   if (test_TPCDS_Q59_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q59.c:189:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  189 |       if (test_TPCDS_Q59_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q59.c: In function ‘main’:
+/tmp/q59.c:209:7: warning: implicit declaration of function ‘join_item_list_t_create’ [-Wimplicit-function-declaration]
+  209 |       join_item_list_t_create(sales_year1.len * sales_year2.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q59.c:209:42: error: ‘(sales_year1_t *)&sales_year1’ is a pointer; did you mean to use ‘->’?
+  209 |       join_item_list_t_create(sales_year1.len * sales_year2.len);
+      |                                          ^
+      |                                          ->
+/tmp/q59.c:209:60: error: ‘(sales_year2_t *)&sales_year2’ is a pointer; did you mean to use ‘->’?
+  209 |       join_item_list_t_create(sales_year1.len * sales_year2.len);
+      |                                                            ^
+      |                                                            ->
+/tmp/q59.c:225:46: error: incompatible types when initializing type ‘const char * (*)(int,  const char *)’ using type ‘join_item_list_t’
+  225 |   const char *(*result)(int, const char *) = join;
+      |                                              ^~~~
+/tmp/q59.c:226:13: warning: passing argument 1 of ‘_json_int’ makes integer from pointer without a cast [-Wint-conversion]
+  226 |   _json_int(result);
+      |             ^~~~~~
+      |             |
+      |             const char * (*)(int,  const char *)
+/tmp/q59.c:63:27: note: expected ‘int’ but argument is of type ‘const char * (*)(int,  const char *)’
+   63 | static void _json_int(int v) { printf("%d", v); }
+      |                       ~~~~^
+/tmp/q59.c:227:38: error: incompatible types when assigning to type ‘list_int’ from type ‘const char * (*)(int,  const char *)’
+  227 |   test_TPCDS_Q59_simplified_result = result;
+      |                                      ^~~~~~

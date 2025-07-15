@@ -1,0 +1,52 @@
+/tmp/q14.c: In function ‘test_TPCDS_Q14_cross_channel’:
+/tmp/q14.c:368:54: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  368 |   if (test_TPCDS_Q14_cross_channel_result.len != tmp1.len) {
+      |                                                      ^
+      |                                                      ->
+/tmp/q14.c:372:63: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  372 |       if (test_TPCDS_Q14_cross_channel_result.data[i3] != tmp1.data[i3]) {
+      |                                                               ^
+      |                                                               ->
+/tmp/q14.c: In function ‘main’:
+/tmp/q14.c:417:10: error: conflicting types for ‘avg_sales’; have ‘double’
+  417 |   double avg_sales = _avg_float(avg_sales);
+      |          ^~~~~~~~~
+/tmp/q14.c:413:14: note: previous definition of ‘avg_sales’ with type ‘list_float’
+  413 |   list_float avg_sales = list_float_create(3);
+      |              ^~~~~~~~~
+/tmp/q14.c:436:26: error: expected ‘)’ before ‘in’
+  436 |       if (!(ss.ss_item_sk in(tmp4))) {
+      |            ~             ^~~
+      |                          )
+/tmp/q14.c:441:39: error: ‘store_filtered_item_t’ has no member named ‘name’
+  441 |         if (strcmp(store_filtered[i10].name,
+      |                                       ^
+/tmp/q14.c:442:32: error: incompatible type for argument 2 of ‘strcmp’
+  442 |                    (tmp_item_t){
+      |                                ^
+      |                                |
+      |                                tmp_item_t
+  443 |                        .brand_id = 1, .class_id = 1, .category_id = 1}) == 0) {
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /tmp/q14.c:5:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘tmp_item_t’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/q14.c:449:43: error: ‘store_filtered_item_t’ has no member named ‘name’
+  449 |         store_filtered[store_filtered_len].name =
+      |                                           ^
+/tmp/q14.c:451:43: error: ‘store_filtered_item_t’ has no member named ‘count’
+  451 |         store_filtered[store_filtered_len].count = 1;
+      |                                           ^
+/tmp/q14.c:455:29: error: ‘store_filtered_item_t’ has no member named ‘count’
+  455 |         store_filtered[tmp9].count++;
+      |                             ^
+/tmp/q14.c:484:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  484 |     _json_string(it.channel);
+      |                  ~~^~~~~~~~
+/tmp/q14.c:73:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   73 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q14.c:508:41: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  508 |   test_TPCDS_Q14_cross_channel_result = result;
+      |                                         ^~~~~~

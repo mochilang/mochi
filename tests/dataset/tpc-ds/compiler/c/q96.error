@@ -1,0 +1,29 @@
+/tmp/q96.c:169:3: error: unknown type name ‘household_demographics_t’
+  169 |   household_demographics_t *data;
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q96.c: In function ‘create_household_demographics_list’:
+/tmp/q96.c:174:31: error: ‘household_demographics_t’ undeclared (first use in this function); did you mean ‘household_demographic_t’?
+  174 |   l.data = calloc(len, sizeof(household_demographics_t));
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~
+      |                               household_demographic_t
+/tmp/q96.c:174:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q96.c: In function ‘main’:
+/tmp/q96.c:245:28: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  245 |   store_sale_list_t tmp1 = store_sale_list_t_create(
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q96.c:246:18: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  246 |       store_sales.len * household_demographics.len * time_dim.len * store.len);
+      |                  ^
+      |                  ->
+/tmp/q96.c:246:47: error: ‘(household_demographic_t *)&household_demographics’ is a pointer; did you mean to use ‘->’?
+  246 |       store_sales.len * household_demographics.len * time_dim.len * store.len);
+      |                                               ^
+      |                                               ->
+/tmp/q96.c:246:62: error: ‘(time_dim_t *)&time_dim’ is a pointer; did you mean to use ‘->’?
+  246 |       store_sales.len * household_demographics.len * time_dim.len * store.len);
+      |                                                              ^
+      |                                                              ->
+/tmp/q96.c:246:74: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  246 |       store_sales.len * household_demographics.len * time_dim.len * store.len);
+      |                                                                          ^
+      |                                                                          ->

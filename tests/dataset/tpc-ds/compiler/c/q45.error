@@ -1,0 +1,34 @@
+/tmp/q45.c: In function ‘test_TPCDS_Q45_simplified’:
+/tmp/q45.c:263:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  263 |                    (tmp_item_t){.ca_zip = "99999", .sum_ws_sales_price = 30.0}};
+      |                    ^
+/tmp/q45.c:266:52: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  266 |   if (test_TPCDS_Q45_simplified_records.len != tmp1.len) {
+      |                                                    ^
+      |                                                    ->
+/tmp/q45.c:270:61: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  270 |       if (test_TPCDS_Q45_simplified_records.data[i3] != tmp1.data[i3]) {
+      |                                                             ^
+      |                                                             ->
+/tmp/q45.c: In function ‘main’:
+/tmp/q45.c:317:7: error: conflicting types for ‘zip_list’; have ‘int’
+  317 |   int zip_list = zip_list;
+      |       ^~~~~~~~
+/tmp/q45.c:307:15: note: previous definition of ‘zip_list’ with type ‘list_string’
+  307 |   list_string zip_list = list_string_create(9);
+      |               ^~~~~~~~
+/tmp/q45.c:320:7: error: conflicting types for ‘item_ids’; have ‘int’
+  320 |   int item_ids = item_ids;
+      |       ^~~~~~~~
+/tmp/q45.c:318:15: note: previous definition of ‘item_ids’ with type ‘list_string’
+  318 |   list_string item_ids = list_string_create(1);
+      |               ^~~~~~~~
+/tmp/q45.c:331:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  331 |     _json_string(it.ca_zip);
+      |                  ~~^~~~~~~
+/tmp/q45.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q45.c:339:39: error: incompatible types when assigning to type ‘list_int’ from type ‘base_item_list_t’
+  339 |   test_TPCDS_Q45_simplified_records = records;
+      |                                       ^~~~~~~

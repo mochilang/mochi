@@ -1,31 +1,31 @@
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c: In function ‘test_TPCDS_Q4_result’:
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:333:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  333 |   if (test_TPCDS_Q4_result_result.len != tmp1.len) {
+/tmp/q4.c: In function ‘test_TPCDS_Q4_result’:
+/tmp/q4.c:334:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  334 |   if (test_TPCDS_Q4_result_result.len != tmp1.len) {
       |                                              ^
       |                                              ->
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:337:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  337 |       if (test_TPCDS_Q4_result_result.data[i3] != tmp1.data[i3]) {
+/tmp/q4.c:338:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  338 |       if (test_TPCDS_Q4_result_result.data[i3] != tmp1.data[i3]) {
       |                                                       ^
       |                                                       ->
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c: In function ‘main’:
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:399:20: error: incompatible types when initializing type ‘int’ using type ‘c_item_list_t’
-  399 |   int year_total = ((c_item_list_t){0, NULL}) union(
+/tmp/q4.c: In function ‘main’:
+/tmp/q4.c:400:20: error: incompatible types when initializing type ‘int’ using type ‘c_item_list_t’
+  400 |   int year_total = ((c_item_list_t){0, NULL}) union(
       |                    ^
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:399:47: error: expected ‘,’ or ‘;’ before ‘union’
-  399 |   int year_total = ((c_item_list_t){0, NULL}) union(
+/tmp/q4.c:400:47: error: expected ‘,’ or ‘;’ before ‘union’
+  400 |   int year_total = ((c_item_list_t){0, NULL}) union(
       |                                               ^~~~~
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:400:32: error: expected statement before ‘)’ token
-  400 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
+/tmp/q4.c:401:32: error: expected statement before ‘)’ token
+  401 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
       |                                ^
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:400:39: error: expected ‘{’ before ‘(’ token
-  400 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
+/tmp/q4.c:401:39: error: expected ‘{’ before ‘(’ token
+  401 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
       |                                       ^
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:400:65: error: expected statement before ‘)’ token
-  400 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
+/tmp/q4.c:401:65: error: expected statement before ‘)’ token
+  401 |       (c_item1_list_t){0, NULL}) union((c_item2_list_t){0, NULL});
       |                                                                 ^
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:401:31: error: invalid initializer
-  401 |   result_item_list_t result = 0;
+/tmp/q4.c:402:31: error: invalid initializer
+  402 |   result_item_list_t result = 0;
       |                               ^
-/tmp/TestCCompiler_TPCDS_Goldenq41264947622/001/prog.c:426:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  426 |   test_TPCDS_Q4_result_result = result;
+/tmp/q4.c:427:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  427 |   test_TPCDS_Q4_result_result = result;
       |                                 ^~~~~~

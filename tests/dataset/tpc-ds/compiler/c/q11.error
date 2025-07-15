@@ -1,0 +1,33 @@
+/tmp/q11.c:108:35: error: unknown type name ‘list_map_string’; did you mean ‘list_string’?
+  108 | static void _json_list_map_string(list_map_string v) {
+      |                                   ^~~~~~~~~~~~~~~
+      |                                   list_string
+/tmp/q11.c: In function ‘test_TPCDS_Q11_growth’:
+/tmp/q11.c:252:35: error: request for member ‘len’ in something not a structure or union
+  252 |   if (test_TPCDS_Q11_growth_result.len != tmp1.len) {
+      |                                   ^
+/tmp/q11.c:252:47: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  252 |   if (test_TPCDS_Q11_growth_result.len != tmp1.len) {
+      |                                               ^
+      |                                               ->
+/tmp/q11.c:255:55: error: request for member ‘len’ in something not a structure or union
+  255 |     for (int i3 = 0; i3 < test_TPCDS_Q11_growth_result.len; i3++) {
+      |                                                       ^
+/tmp/q11.c:256:39: error: request for member ‘data’ in something not a structure or union
+  256 |       if (test_TPCDS_Q11_growth_result.data[i3] != tmp1.data[i3]) {
+      |                                       ^
+/tmp/q11.c:256:56: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  256 |       if (test_TPCDS_Q11_growth_result.data[i3] != tmp1.data[i3]) {
+      |                                                        ^
+      |                                                        ->
+/tmp/q11.c: In function ‘main’:
+/tmp/q11.c:342:7: error: conflicting types for ‘result’; have ‘int’
+  342 |   int result = (growth_ok ? result : tmp16);
+      |       ^~~~~~
+/tmp/q11.c:337:12: note: previous definition of ‘result’ with type ‘result_t[1]’
+  337 |   result_t result[] = {(result_t){.customer_id = "C1",
+      |            ^~~~~~
+/tmp/q11.c:343:3: warning: implicit declaration of function ‘_json_list_map_string’; did you mean ‘_json_list_string’? [-Wimplicit-function-declaration]
+  343 |   _json_list_map_string(result);
+      |   ^~~~~~~~~~~~~~~~~~~~~
+      |   _json_list_string

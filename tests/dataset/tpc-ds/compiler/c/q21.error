@@ -1,0 +1,101 @@
+/tmp/q21.c: In function ‘test_TPCDS_Q21_inventory_ratio’:
+/tmp/q21.c:357:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  357 |                    (tmp_item_t){.w_warehouse_name = "Main",
+      |                    ^
+/tmp/q21.c:363:56: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  363 |   if (test_TPCDS_Q21_inventory_ratio_result.len != tmp1.len) {
+      |                                                        ^
+      |                                                        ->
+/tmp/q21.c:367:65: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  367 |       if (test_TPCDS_Q21_inventory_ratio_result.data[i3] != tmp1.data[i3]) {
+      |                                                                 ^
+      |                                                                 ->
+/tmp/q21.c: In function ‘main’:
+/tmp/q21.c:422:30: error: ‘before_item_t’ has no member named ‘name’
+  422 |         if (strcmp(before[i7].name, (tmp_item1_t){.w = inv.inv_warehouse_sk,
+      |                              ^
+/tmp/q21.c:422:50: error: incompatible type for argument 2 of ‘strcmp’
+  422 |         if (strcmp(before[i7].name, (tmp_item1_t){.w = inv.inv_warehouse_sk,
+      |                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                  |
+      |                                                  tmp_item1_t
+  423 |                                                   .i = inv.inv_item_sk}) == 0) {
+      |                                                   ~~~~~~~~~~~~~~~~~~~~~
+In file included from /tmp/q21.c:5:
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘tmp_item1_t’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/q21.c:429:27: error: ‘before_item_t’ has no member named ‘name’
+  429 |         before[before_len].name =
+      |                           ^
+/tmp/q21.c:431:27: error: ‘before_item_t’ has no member named ‘count’
+  431 |         before[before_len].count = 1;
+      |                           ^
+/tmp/q21.c:435:21: error: ‘before_item_t’ has no member named ‘count’
+  435 |         before[tmp6].count++;
+      |                     ^
+/tmp/q21.c:453:30: error: ‘after_item_t’ has no member named ‘name’
+  453 |         if (strcmp(after[i11].name, (tmp_item1_t){.w = inv.inv_warehouse_sk,
+      |                              ^
+/tmp/q21.c:453:50: error: incompatible type for argument 2 of ‘strcmp’
+  453 |         if (strcmp(after[i11].name, (tmp_item1_t){.w = inv.inv_warehouse_sk,
+      |                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                  |
+      |                                                  tmp_item1_t
+  454 |                                                   .i = inv.inv_item_sk}) == 0) {
+      |                                                   ~~~~~~~~~~~~~~~~~~~~~
+/usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘tmp_item1_t’
+  156 | extern int strcmp (const char *__s1, const char *__s2)
+      |                                      ~~~~~~~~~~~~^~~~
+/tmp/q21.c:460:25: error: ‘after_item_t’ has no member named ‘name’
+  460 |         after[after_len].name =
+      |                         ^
+/tmp/q21.c:462:25: error: ‘after_item_t’ has no member named ‘count’
+  462 |         after[after_len].count = 1;
+      |                         ^
+/tmp/q21.c:466:21: error: ‘after_item_t’ has no member named ‘count’
+  466 |         after[tmp10].count++;
+      |                     ^
+/tmp/q21.c:470:30: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  470 |   joined_item_list_t tmp12 = joined_item_list_t_create(
+      |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q21.c:471:13: error: ‘(before_item_t *)&before’ is a pointer; did you mean to use ‘->’?
+  471 |       before.len * after.len * warehouse.len * item.len);
+      |             ^
+      |             ->
+/tmp/q21.c:471:25: error: ‘(after_item_t *)&after’ is a pointer; did you mean to use ‘->’?
+  471 |       before.len * after.len * warehouse.len * item.len);
+      |                         ^
+      |                         ->
+/tmp/q21.c:471:41: error: ‘(warehouse_t *)&warehouse’ is a pointer; did you mean to use ‘->’?
+  471 |       before.len * after.len * warehouse.len * item.len);
+      |                                         ^
+      |                                         ->
+/tmp/q21.c:471:52: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  471 |       before.len * after.len * warehouse.len * item.len);
+      |                                                    ^
+      |                                                    ->
+/tmp/q21.c:515:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  515 |     result.data[0] = r.w_name;
+      |                    ^
+/tmp/q21.c:516:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  516 |     result.data[1] = r.i_id;
+      |                    ^
+/tmp/q21.c:517:20: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  517 |     tmp21[tmp19] = result;
+      |                    ^~~~~~
+/tmp/q21.c:542:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  542 |     _json_string(it.w_warehouse_name);
+      |                  ~~^~~~~~~~~~~~~~~~~
+/tmp/q21.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q21.c:546:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  546 |     _json_string(it.i_item_id);
+      |                  ~~^~~~~~~~~~
+/tmp/q21.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q21.c:558:43: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  558 |   test_TPCDS_Q21_inventory_ratio_result = result;
+      |                                           ^~~~~~

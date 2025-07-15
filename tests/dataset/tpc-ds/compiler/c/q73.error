@@ -1,0 +1,53 @@
+/tmp/q73.c:230:3: error: unknown type name ‘map_string_int’
+  230 |   map_string_int key;
+      |   ^~~~~~~~~~~~~~
+/tmp/q73.c: In function ‘test_TPCDS_Q73_simplified’:
+/tmp/q73.c:281:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  281 |   if (test_TPCDS_Q73_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q73.c:285:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  285 |       if (test_TPCDS_Q73_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q73.c: In function ‘main’:
+/tmp/q73.c:324:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  324 |       result_item_list_t_create(groups.len * customer.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q73.c:324:54: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  324 |       result_item_list_t_create(groups.len * customer.len);
+      |                                                      ^
+      |                                                      ->
+/tmp/q73.c:330:37: error: request for member ‘cust’ in something not a structure or union
+  330 |       if (!(c.c_customer_sk == g.key.cust)) {
+      |                                     ^
+/tmp/q73.c:341:52: error: request for member ‘ticket’ in something not a structure or union
+  341 |                           .ss_ticket_number = g.key.ticket,
+      |                                                    ^
+/tmp/q73.c:356:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  356 |     _json_string(it.c_last_name);
+      |                  ~~^~~~~~~~~~~~
+/tmp/q73.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q73.c:360:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  360 |     _json_string(it.c_first_name);
+      |                  ~~^~~~~~~~~~~~~
+/tmp/q73.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q73.c:364:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  364 |     _json_string(it.c_salutation);
+      |                  ~~^~~~~~~~~~~~~
+/tmp/q73.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q73.c:368:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  368 |     _json_string(it.c_preferred_cust_flag);
+      |                  ~~^~~~~~~~~~~~~~~~~~~~~~
+/tmp/q73.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q73.c:380:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  380 |   test_TPCDS_Q73_simplified_result = result;
+      |                                      ^~~~~~

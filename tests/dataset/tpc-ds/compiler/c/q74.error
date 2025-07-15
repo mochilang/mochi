@@ -1,0 +1,49 @@
+/tmp/q74.c: In function ‘test_TPCDS_Q74_simplified’:
+/tmp/q74.c:275:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  275 |   if (test_TPCDS_Q74_simplified_result.len != tmp1.len) {
+      |                                                   ^
+      |                                                   ->
+/tmp/q74.c:279:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  279 |       if (test_TPCDS_Q74_simplified_result.data[i3] != tmp1.data[i3]) {
+      |                                                            ^
+      |                                                            ->
+/tmp/q74.c: In function ‘main’:
+/tmp/q74.c:312:20: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  312 |   int year_total = concat((c_item_list_t){0, NULL}, (c_item1_list_t){0, NULL});
+      |                    ^~~~~~
+/tmp/q74.c:313:21: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  313 |   int s_firstyear = first(0);
+      |                     ^~~~~
+/tmp/q74.c:318:42: error: request for member ‘customer_id’ in something not a structure or union
+  318 |       (result_t){.customer_id = s_secyear.customer_id,
+      |                                          ^
+/tmp/q74.c:319:50: error: request for member ‘customer_first_name’ in something not a structure or union
+  319 |                  .customer_first_name = s_secyear.customer_first_name,
+      |                                                  ^
+/tmp/q74.c:320:49: error: request for member ‘customer_last_name’ in something not a structure or union
+  320 |                  .customer_last_name = s_secyear.customer_last_name}};
+      |                                                 ^
+/tmp/q74.c:323:12: error: conflicting types for ‘result’; have ‘list_int’
+  323 |   list_int result =
+      |            ^~~~~~
+/tmp/q74.c:317:12: note: previous definition of ‘result’ with type ‘result_t[1]’
+  317 |   result_t result[] = {
+      |            ^~~~~~
+/tmp/q74.c:324:20: error: request for member ‘year_total’ in something not a structure or union
+  324 |       ((s_firstyear.year_total > 0 && w_firstyear.year_total > 0 &&
+      |                    ^
+/tmp/q74.c:324:50: error: request for member ‘year_total’ in something not a structure or union
+  324 |       ((s_firstyear.year_total > 0 && w_firstyear.year_total > 0 &&
+      |                                                  ^
+/tmp/q74.c:325:19: error: request for member ‘year_total’ in something not a structure or union
+  325 |         (w_secyear.year_total / w_firstyear.year_total) >
+      |                   ^
+/tmp/q74.c:325:44: error: request for member ‘year_total’ in something not a structure or union
+  325 |         (w_secyear.year_total / w_firstyear.year_total) >
+      |                                            ^
+/tmp/q74.c:326:23: error: request for member ‘year_total’ in something not a structure or union
+  326 |             (s_secyear.year_total / s_firstyear.year_total))
+      |                       ^
+/tmp/q74.c:326:48: error: request for member ‘year_total’ in something not a structure or union
+  326 |             (s_secyear.year_total / s_firstyear.year_total))
+      |                                                ^

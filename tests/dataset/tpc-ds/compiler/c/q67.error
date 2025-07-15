@@ -1,0 +1,21 @@
+/tmp/q67.c: In function ‘main’:
+/tmp/q67.c:170:46: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  170 |   list_int tmp1 = list_int_create(store_sales.len * reason.len);
+      |                                              ^
+      |                                              ->
+/tmp/q67.c:170:59: error: ‘(reason_t *)&reason’ is a pointer; did you mean to use ‘->’?
+  170 |   list_int tmp1 = list_int_create(store_sales.len * reason.len);
+      |                                                           ^
+      |                                                           ->
+/tmp/q67.c:179:43: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  179 |       if (!(contains_list_string(result, r.name))) {
+      |                                          ~^~~~~
+/tmp/q67.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q67.c:187:10: error: conflicting types for ‘result’; have ‘double’
+  187 |   double result = _sum_int(tmp1);
+      |          ^~~~~~
+/tmp/q67.c:167:15: note: previous definition of ‘result’ with type ‘list_string’
+  167 |   list_string result = list_string_create(2);
+      |               ^~~~~~
