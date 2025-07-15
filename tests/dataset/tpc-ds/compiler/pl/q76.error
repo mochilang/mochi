@@ -1,1 +1,2 @@
-compile: unsupported literal
+run: exit status 2
+ERROR: /tmp/q76.pl:58: user:main main/0: Unknown procedure: concat/4

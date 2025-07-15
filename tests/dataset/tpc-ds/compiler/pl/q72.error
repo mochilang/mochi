@@ -1,1 +1,12 @@
-compile: unsupported literal
+run: exit status 2
+[
+  {
+    "d_week_seq":10,
+    "i_item_desc":"ItemA",
+    "no_promo":0,
+    "promo":0,
+    "total_cnt":1,
+    "w_warehouse_name":"Main"
+  }
+]
+ERROR: /tmp/q72.pl:58: user:main Unknown message: error('expect failed')
