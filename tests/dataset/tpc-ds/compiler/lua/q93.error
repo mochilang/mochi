@@ -1,7 +1,0 @@
-lua: /tmp/q93.lua:318: attempt to index a nil value (local 'r')
-stack traceback:
-	/tmp/q93.lua:318: in field 'on'
-	/tmp/q93.lua:192: in function '__query'
-	(...tail calls...)
-	/tmp/q93.lua:314: in main chunk
-	[C]: in ?

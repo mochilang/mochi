@@ -659,7 +659,7 @@ const (
 		"    local groups = {}\n" +
 		"    local order = {}\n" +
 		"    for _, r in ipairs(rows) do\n" +
-		"        local key = keyfn(table.unpack(r))\n" +
+		"        local key = keyfn(table.unpack(r,1,r.n or #r))\n" +
 		"        local ks\n" +
 		"        if type(key) == 'table' then\n" +
 		"            local fields = {}\n" +
@@ -677,7 +677,7 @@ const (
 		"            groups[ks] = g\n" +
 		"            order[#order+1] = ks\n" +
 		"        end\n" +
-		"        table.insert(g.items, valfn(table.unpack(r)))\n" +
+		"        table.insert(g.items, valfn(table.unpack(r,1,r.n or #r)))\n" +
 		"    end\n" +
 		"    local res = {}\n" +
 		"    for _, ks in ipairs(order) do\n" +
@@ -701,9 +701,9 @@ const (
 		"    local whereFn = opts.where\n" +
 		"    local items = {}\n" +
 		"    if #joins == 0 and whereFn then\n" +
-		"        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v} end end\n" +
+		"        for _, v in ipairs(src) do if whereFn(v) then items[#items+1] = {v, n=1} end end\n" +
 		"    else\n" +
-		"        for _, v in ipairs(src) do items[#items+1] = {v} end\n" +
+		"        for _, v in ipairs(src) do items[#items+1] = {v, n=1} end\n" +
 		"    end\n" +
 		"    for ji, j in ipairs(joins) do\n" +
 		"        local joined = {}\n" +
@@ -713,26 +713,30 @@ const (
 		"            for _, left in ipairs(items) do\n" +
 		"                local m = false\n" +
 		"                for ri, right in ipairs(jitems) do\n" +
+		"                    local leftLen = left.n or #left\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
-		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        local args = {table.unpack(left,1,leftLen)}\n" +
+		"                        args[leftLen+1] = right\n" +
+		"                        keep = j.on(table.unpack(args,1,leftLen+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true; matched[ri] = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
-		"                        row[#row+1] = right\n" +
-		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        local row = {table.unpack(left,1,leftLen)}\n" +
+		"                        row[leftLen+1] = right\n" +
+		"                        row.n = leftLen + 1\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                        else\n" +
 		"                            joined[#joined+1] = row\n" +
 		"                        end\n" +
 		"                    end\n" +
 		"                end\n" +
 		"                if not m then\n" +
-		"                    local row = {table.unpack(left)}\n" +
-		"                    row[#row+1] = nil\n" +
-		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    local leftLen = left.n or #left\n" +
+		"                    local row = {table.unpack(left,1,leftLen)}\n" +
+		"                    row[leftLen+1] = nil\n" +
+		"                    row.n = leftLen + 1\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                    else\n" +
 		"                        joined[#joined+1] = row\n" +
 		"                    end\n" +
@@ -743,7 +747,7 @@ const (
 		"                    local row = {}\n" +
 		"                    for _=1,ji do row[#row+1] = nil end\n" +
 		"                    row[#row+1] = right\n" +
-		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                    else\n" +
 		"                        joined[#joined+1] = row\n" +
 		"                    end\n" +
@@ -753,17 +757,19 @@ const (
 		"            for _, right in ipairs(jitems) do\n" +
 		"                local m = false\n" +
 		"                for _, left in ipairs(items) do\n" +
+		"                    local leftLen = left.n or #left\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
-		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        local args = {table.unpack(left,1,leftLen)}\n" +
+		"                        args[leftLen+1] = right\n" +
+		"                        keep = j.on(table.unpack(args,1,leftLen+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
-		"                        row[#row+1] = right\n" +
-		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        local row = {table.unpack(left,1,leftLen)}\n" +
+		"                        row[leftLen+1] = right\n" +
+		"                        row.n = leftLen + 1\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                        else\n" +
 		"                            joined[#joined+1] = row\n" +
 		"                        end\n" +
@@ -773,7 +779,8 @@ const (
 		"                    local row = {}\n" +
 		"                    for _=1,ji do row[#row+1] = nil end\n" +
 		"                    row[#row+1] = right\n" +
-		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    row.n = ji + 1\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                    else\n" +
 		"                        joined[#joined+1] = row\n" +
 		"                    end\n" +
@@ -783,26 +790,30 @@ const (
 		"            for _, left in ipairs(items) do\n" +
 		"                local m = false\n" +
 		"                for _, right in ipairs(jitems) do\n" +
+		"                    local leftLen = left.n or #left\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
-		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        local args = {table.unpack(left,1,leftLen)}\n" +
+		"                        args[leftLen+1] = right\n" +
+		"                        keep = j.on(table.unpack(args,1,leftLen+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
-		"                        row[#row+1] = right\n" +
-		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                        local row = {table.unpack(left,1,leftLen)}\n" +
+		"                        row[leftLen+1] = right\n" +
+		"                        row.n = leftLen + 1\n" +
+		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                        else\n" +
 		"                            joined[#joined+1] = row\n" +
 		"                        end\n" +
 		"                    end\n" +
 		"                end\n" +
 		"                if j.left and not m then\n" +
-		"                    local row = {table.unpack(left)}\n" +
-		"                    row[#row+1] = nil\n" +
-		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
+		"                    local leftLen = left.n or #left\n" +
+		"                    local row = {table.unpack(left,1,leftLen)}\n" +
+		"                    row[leftLen+1] = nil\n" +
+		"                    row.n = leftLen + 1\n" +
+		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row,1,row.n or #row)) then\n" +
 		"                    else\n" +
 		"                        joined[#joined+1] = row\n" +
 		"                    end\n" +
@@ -813,7 +824,7 @@ const (
 		"    end\n" +
 		"    if opts.sortKey then\n" +
 		"        local pairs = {}\n" +
-		"        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it))} end\n" +
+		"        for _, it in ipairs(items) do pairs[#pairs+1] = {item=it, key=opts.sortKey(table.unpack(it,1,it.n or #it))} end\n" +
 		"        table.sort(pairs, function(a,b)\n" +
 		"            local ak, bk = a.key, b.key\n" +
 		"            if type(ak)=='number' and type(bk)=='number' then return ak < bk end\n" +
@@ -838,7 +849,7 @@ const (
 		"        end\n" +
 		"    end\n" +
 		"    local res = {}\n" +
-		"    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r)) end\n" +
+		"    for _, r in ipairs(items) do res[#res+1] = opts.selectFn(table.unpack(r,1,r.n or #r)) end\n" +
 		"    return res\n" +
 		"end\n"
 )
