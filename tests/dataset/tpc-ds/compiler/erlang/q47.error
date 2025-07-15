@@ -1,0 +1,7 @@
+run: exit status 127
+/tmp/q47.erl:10:454: ambiguous call of overridden pre Erlang/OTP R14 auto-imported BIF abs/1 --
+use erlang:abs/1 or \"-compile({no_auto_import,[abs/1]}).\" to resolve name clash
+%   10|     Result = [V || {_, V} <- lists:keysort(1, [{[(maps:get(sum_sales, V) - maps:get(avg_monthly_sales, V)), maps:get(item, V)], #{d_year => maps:get(d_year, V), item => maps:get(item, V), avg_monthly_sales => maps:get(avg_monthly_sales, V), sum_sales => maps:get(sum_sales, V)}} || V <- V2, ((((maps:get(d_year, V) >= (2020 - 1)) andalso (maps:get(avg_monthly_sales, V) > 0)) andalso (maps:get(sum_sales, V) > maps:get(avg_monthly_sales, V))) andalso ((abs((maps:get(sum_sales, V) - maps:get(avg_monthly_sales, V))) / maps:get(avg_monthly_sales, V)) > 0.1))])],
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+escript: There were compilation errors.

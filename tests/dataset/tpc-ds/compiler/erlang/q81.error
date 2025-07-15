@@ -1,0 +1,10 @@
+run: exit status 127
+/tmp/q81.erl:8:17: function first/1 undefined
+%    8|     Avg_state = first([A || A <- Avg_list, (maps:get(state, A) == "CA")]),
+%     |                 ^
+
+/tmp/q81.erl:10:14: function first/1 undefined
+%   10|     Result = first(Result_list),
+%     |              ^
+
+escript: There were compilation errors.

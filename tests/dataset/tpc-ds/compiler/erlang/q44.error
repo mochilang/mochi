@@ -1,0 +1,18 @@
+run: exit status 127
+/tmp/q44.erl:10:12: function first/1 undefined
+%   10|     Best = first([V || {_, V} <- lists:keysort(1, [{-maps:get(avg_profit, X), X} || X <- Grouped])]),
+%     |            ^
+
+/tmp/q44.erl:11:13: function first/1 undefined
+%   11|     Worst = first([V || {_, V} <- lists:keysort(1, [{maps:get(avg_profit, X), X} || X <- Grouped])]),
+%     |             ^
+
+/tmp/q44.erl:12:17: function first/1 undefined
+%   12|     Best_name = first([maps:get(i_product_name, I) || I <- Item, (maps:get(i_item_sk, I) == maps:get(item_sk, Best))]),
+%     |                 ^
+
+/tmp/q44.erl:13:18: function first/1 undefined
+%   13|     Worst_name = first([maps:get(i_product_name, I) || I <- Item, (maps:get(i_item_sk, I) == maps:get(item_sk, Worst))]),
+%     |                  ^
+
+escript: There were compilation errors.

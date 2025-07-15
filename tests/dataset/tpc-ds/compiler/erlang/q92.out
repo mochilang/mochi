@@ -1,0 +1,5 @@
+%    7|     Item = [#{i_item_sk => 1, i_manufact_id => 1}],
+%     |     ^
+%    8|     Date_dim = [#{d_date_sk => 1, d_date => "2000-01-02"}],
+%     |     ^
+4

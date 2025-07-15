@@ -1,0 +1,21 @@
+run: exit status 127
+escript: exception error: bad key: ss_net_profit
+  in function  map_get/2
+     called as map_get(ss_net_profit,
+                       #{i =>
+                             #{i_item_sk => 1,i_category => "Books",
+                               i_class => "C1"},
+                         s => #{s_store_sk => 1,s_state => "A"},
+                         ss =>
+                             #{ss_item_sk => 1,ss_store_sk => 1,
+                               ss_sold_date_sk => 1,ss_ext_sales_price => 100,
+                               ss_net_profit => 20},
+                         d => #{d_date_sk => 1,d_year => 2000}})
+     *** argument 1: not present in map
+  in call from q36_erl__escript__1752__555509__805078__8964:'-main/1-lc$^7/1-2-'/1 (/tmp/q36.erl, line 10)
+  in call from q36_erl__escript__1752__555509__805078__8964:'-main/1-lc$^5/1-1-'/1 (/tmp/q36.erl, line 10)
+  in call from q36_erl__escript__1752__555509__805078__8964:main/1 (/tmp/q36.erl, line 10)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 

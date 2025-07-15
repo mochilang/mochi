@@ -1,0 +1,16 @@
+run: exit status 127
+escript: exception error: bad key: inv_quantity_on_hand
+  in function  map_get/2
+     called as map_get(inv_quantity_on_hand,
+                       #{inv =>
+                             #{inv_item_sk => 1,inv_warehouse_sk => 1,
+                               inv_date_sk => 1,inv_quantity_on_hand => 30},
+                         d => #{d_date_sk => 1,d_date => "2000-03-01"}})
+     *** argument 1: not present in map
+  in call from q21_erl__escript__1752__555501__874655__8963:'-main/1-lc$^4/1-1-'/1 (/tmp/q21.erl, line 10)
+  in call from q21_erl__escript__1752__555501__874655__8963:'-main/1-lc$^3/1-0-'/1 (/tmp/q21.erl, line 10)
+  in call from q21_erl__escript__1752__555501__874655__8963:main/1 (/tmp/q21.erl, line 10)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 

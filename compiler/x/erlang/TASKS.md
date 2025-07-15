@@ -10,6 +10,10 @@
 - [2025-07-13 17:40] Extended `tpch_golden_test` to run TPCH queries q1 through q22.
 - [2025-07-13 05:02] Added support for `MOCHI_HEADER_TIME` and `MOCHI_HEADER_VERSION` environment variables in `meta.Header`.
 - [2025-07-13 05:02] Inline constants when calling `contains` to avoid unbound variable errors.
+- [2025-07-15 04:53] Generated Erlang code for TPC-DS queries q1-q99 using
+  `compile_tpcds_erlang.go`. Runtime results are stored under
+  `tests/dataset/tpc-ds/compiler/erlang` with `.error` files capturing
+  failures.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.

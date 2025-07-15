@@ -1,0 +1,6 @@
+run: exit status 127
+/tmp/q71.erl:12:19: function concat/3 undefined
+%   12|     Union_sales = concat([#{ext_price => maps:get(ws_ext_sales_price, Ws), item_sk => maps:get(ws_item_sk, Ws), time_sk => maps:get(ws_sold_time_sk, Ws)} || Ws <- Web_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(ws_sold_date_sk, Ws)), ((maps:get(d_moy, D) == 12) andalso (maps:get(d_year, D) == 1998))], [#{ext_price => maps:get(cs_ext_sales_price, Cs), item_sk => maps:get(cs_item_sk, Cs), time_sk => maps:get(cs_sold_time_sk, Cs)} || Cs <- Catalog_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(cs_sold_date_sk, Cs)), ((maps:get(d_moy, D) == 12) andalso (maps:get(d_year, D) == 1998))], [#{ext_price => maps:get(ss_ext_sales_price, Ss), item_sk => maps:get(ss_item_sk, Ss), time_sk => maps:get(ss_sold_time_sk, Ss)} || Ss <- Store_sales, D <- Date_dim, (maps:get(d_date_sk, D) == maps:get(ss_sold_date_sk, Ss)), ((maps:get(d_moy, D) == 12) andalso (maps:get(d_year, D) == 1998))]),
+%     |                   ^
+
+escript: There were compilation errors.

@@ -1,0 +1,13 @@
+run: exit status 127
+/tmp/q51.erl:8:6: Warning: variable 'Acc1' is unused
+%    8|     {Acc1, Out1} = lists:foldl(fun(X, {Acc, Out}) -> Acc1 = (Acc + maps:get(price, X)), Out1 = Out ++ [#{date => maps:get(date, X), cum => Acc}], {Acc1, Out1} end, {Acc0, Out0}, Xs),
+%     |      ^
+
+[{"item_sk":1,"d_date":2}]
+escript: exception error: test_failed
+  in function  q51_erl__escript__1752__555516__751283__8964:main/1 (/tmp/q51.erl, line 19)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 
+  in call from init:do_boot/3 
