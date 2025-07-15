@@ -1,0 +1,131 @@
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:85:12: error: ‘s’ was not declared in this scope
+   85 |   decltype(s) s;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:85:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:86:12: error: ‘n’ was not declared in this scope
+   86 |   decltype(n) n;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:86:12: error: ‘n’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:90:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+   90 |                .std::declval<EuropeSupplier>()
+      |                 ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:90:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:92:43: error: ‘std::declval<EuropeSupplier>’ is not a class member
+   92 |   decltype(std::declval<EuropeSupplier>().std::declval<EuropeSupplier>().s_name)
+      |                                           ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:92:43: error: ‘std::declval<EuropeSupplier>’ is not a class member
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:94:45: error: request for member ‘n_name’ in ‘std::declval<EuropeSupplier>().EuropeSupplier::n’, which is of non-class type ‘int’
+   94 |   decltype(std::declval<EuropeSupplier>().n.n_name) n_name;
+      |                                             ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:94:45: error: request for member ‘n_name’ in ‘std::declval<EuropeSupplier>().EuropeSupplier::n’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:95:12: error: ‘p’ was not declared in this scope
+   95 |   decltype(p.p_partkey) p_partkey;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:95:12: error: ‘p’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:96:12: error: ‘p’ was not declared in this scope
+   96 |   decltype(p.p_mfgr) p_mfgr;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:96:12: error: ‘p’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:98:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+   98 |                .std::declval<EuropeSupplier>()
+      |                 ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:98:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:101:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+  101 |                .std::declval<EuropeSupplier>()
+      |                 ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:101:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:104:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+  104 |                .std::declval<EuropeSupplier>()
+      |                 ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:104:17: error: ‘std::declval<EuropeSupplier>’ is not a class member
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:106:12: error: ‘pstd’ was not declared in this scope; did you mean ‘std’?
+  106 |   decltype(pstd::declval<EuropeSupplier>().ps_supplycost) ps_supplycost;
+      |            ^~~~
+      |            std
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:106:12: error: ‘pstd’ has not been declared
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:106:40: error: expected primary-expression before ‘>’ token
+  106 |   decltype(pstd::declval<EuropeSupplier>().ps_supplycost) ps_supplycost;
+      |                                        ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:106:42: error: expected primary-expression before ‘)’ token
+  106 |   decltype(pstd::declval<EuropeSupplier>().ps_supplycost) ps_supplycost;
+      |                                          ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:309:26: error: ‘n’ was not declared in this scope
+  309 |     std::vector<decltype(n)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:309:28: error: template argument 1 is invalid
+  309 |     std::vector<decltype(n)> __items;
+      |                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:309:28: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:316:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  316 |         __items.push_back(n);
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:324:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  324 |       for (auto n : europe_nations) {
+      |                     ^~~~~~~~~~~~~~
+      |                     std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:324:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  324 |       for (auto n : europe_nations) {
+      |                     ^~~~~~~~~~~~~~
+      |                     std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:333:26: error: ‘p’ was not declared in this scope
+  333 |     std::vector<decltype(p)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:333:28: error: template argument 1 is invalid
+  333 |     std::vector<decltype(p)> __items;
+      |                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:333:28: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:337:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  337 |       __items.push_back(p);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:344:21: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  344 |       for (auto p : target_parts) {
+      |                     ^~~~~~~~~~~~
+      |                     std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:344:21: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  344 |       for (auto p : target_parts) {
+      |                     ^~~~~~~~~~~~
+      |                     std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:348:39: error: request for member ‘s_suppkey’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  348 |           if (!((ps.ps_suppkey == s.s.s_suppkey)))
+      |                                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:351:19: error: request for member ‘s_acctbal’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  351 |               s.s.s_acctbal, s.s.s_name, s.n.n_name, p.p_partkey, p.p_mfgr,
+      |                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:351:34: error: request for member ‘s_name’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  351 |               s.s.s_acctbal, s.s.s_name, s.n.n_name, p.p_partkey, p.p_mfgr,
+      |                                  ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:351:46: error: request for member ‘n_name’ in ‘s.EuropeSupplier::n’, which is of non-class type ‘int’
+  351 |               s.s.s_acctbal, s.s.s_name, s.n.n_name, p.p_partkey, p.p_mfgr,
+      |                                              ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:352:19: error: request for member ‘s_address’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  352 |               s.s.s_address, s.s.s_phone, s.s.s_comment, ps.ps_supplycost});
+      |                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:352:34: error: request for member ‘s_phone’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  352 |               s.s.s_address, s.s.s_phone, s.s.s_comment, ps.ps_supplycost});
+      |                                  ^~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq23513324450/001/prog.cpp:352:47: error: request for member ‘s_comment’ in ‘s.EuropeSupplier::s’, which is of non-class type ‘int’
+  352 |               s.s.s_address, s.s.s_phone, s.s.s_comment, ps.ps_supplycost});
+      |                                               ^~~~~~~~~

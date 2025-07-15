@@ -24,7 +24,10 @@
 ## Recent Enhancements (2025-07-15 07:14 UTC)
 - Captured compilation failures for all TPC-DS queries via `tpcds_golden_test.go`.
 
+## Recent Enhancements (2025-07-15 08:14 UTC)
+- Extended TPCH golden tests to compile q1-q22 and capture build errors.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
-- [ ] Support TPCH q1 and q5 compilation and execution.
+- [ ] Implement additional TPCH optimizations.
 

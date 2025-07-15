@@ -1,0 +1,74 @@
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:72:12: error: ‘s’ was not declared in this scope
+   72 |   decltype(s.s_name) s_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:72:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:73:12: error: ‘s’ was not declared in this scope
+   73 |   decltype(s.s_address) s_address;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:73:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:166:26: error: ‘ps’ was not declared in this scope
+  166 |     std::vector<decltype(ps.ps_suppkey)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:166:40: error: template argument 1 is invalid
+  166 |     std::vector<decltype(ps.ps_suppkey)> __items;
+      |                                        ^
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:166:40: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:175:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  175 |         __items.push_back(ps.ps_suppkey);
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:181:36: error: ‘s’ was not declared in this scope
+  181 |     std::vector<std::pair<decltype(s.s_name), Result>> __items;
+      |                                    ^
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:181:47: error: template argument 1 is invalid
+  181 |     std::vector<std::pair<decltype(s.s_name), Result>> __items;
+      |                                               ^~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:181:53: error: template argument 1 is invalid
+  181 |     std::vector<std::pair<decltype(s.s_name), Result>> __items;
+      |                                                     ^~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:181:53: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:183:48: error: request for member ‘begin’ in ‘excluded_suppliers’, which is of non-class type ‘int’
+  183 |       if (!((((!((std::find(excluded_suppliers.begin(),
+      |                                                ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:184:48: error: request for member ‘end’ in ‘excluded_suppliers’, which is of non-class type ‘int’
+  184 |                             excluded_suppliers.end(),
+      |                                                ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:185:64: error: request for member ‘end’ in ‘excluded_suppliers’, which is of non-class type ‘int’
+  185 |                             s.s_suppkey) != excluded_suppliers.end()))) &&
+      |                                                                ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:191:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  191 |       __items.push_back({s.s_name, Result{s.s_name, s.s_address}});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:191:45: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  191 |       __items.push_back({s.s_name, Result{s.s_name, s.s_address}});
+      |                                           ~~^~~~~~
+      |                                             |
+      |                                             std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:193:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  193 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:193:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  193 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:196:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  196 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq162597417488/001/prog.cpp:196:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  196 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

@@ -1,0 +1,179 @@
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:74:24: error: ‘c’ was not declared in this scope
+   74 |   decltype(std::string(c.c_phone).substr(0, (2) - (0))) cntrycode;
+      |                        ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:74:24: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:75:12: error: ‘c’ was not declared in this scope
+   75 |   decltype(c.c_acctbal) c_acctbal;
+      |            ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:75:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:82:45: error: ‘struct EligibleCustomer’ has no member named ‘key’
+   82 |   decltype(std::declval<EligibleCustomer>().key) cntrycode;
+      |                                             ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:82:45: error: ‘struct EligibleCustomer’ has no member named ‘key’
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:84:12: error: ‘total’ was not declared in this scope
+   84 |   decltype(total) totacctbal;
+      |            ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:84:12: error: ‘total’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:167:26: error: ‘c’ was not declared in this scope
+  167 |     std::vector<decltype(c.c_acctbal)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:167:38: error: template argument 1 is invalid
+  167 |     std::vector<decltype(c.c_acctbal)> __items;
+      |                                      ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:167:38: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:174:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  174 |       __items.push_back(c.c_acctbal);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:166:27: error: no matching function for call to ‘__avg(int)’
+  166 |   auto avg_balance = __avg(([&]() {
+      |                      ~~~~~^~~~~~~~~
+  167 |     std::vector<decltype(c.c_acctbal)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  168 |     for (auto c : customer) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
+  169 |       if (!(((c.c_acctbal > 0) &&
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  170 |              (std::find(valid_codes.begin(), valid_codes.end(),
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  171 |                         std::string(c.c_phone).substr(0, (2) - (0))) !=
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  172 |               valid_codes.end()))))
+      |               ~~~~~~~~~~~~~~~~~~~~~
+  173 |         continue;
+      |         ~~~~~~~~~          
+  174 |       __items.push_back(c.c_acctbal);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |     }
+      |     ~                      
+  176 |     return __items;
+      |     ~~~~~~~~~~~~~~~        
+  177 |   })());
+      |   ~~~~~                    
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:65:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   65 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:65:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:166:27: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  166 |   auto avg_balance = __avg(([&]() {
+      |                      ~~~~~^~~~~~~~~
+  167 |     std::vector<decltype(c.c_acctbal)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  168 |     for (auto c : customer) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
+  169 |       if (!(((c.c_acctbal > 0) &&
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  170 |              (std::find(valid_codes.begin(), valid_codes.end(),
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  171 |                         std::string(c.c_phone).substr(0, (2) - (0))) !=
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  172 |               valid_codes.end()))))
+      |               ~~~~~~~~~~~~~~~~~~~~~
+  173 |         continue;
+      |         ~~~~~~~~~          
+  174 |       __items.push_back(c.c_acctbal);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |     }
+      |     ~                      
+  176 |     return __items;
+      |     ~~~~~~~~~~~~~~~        
+  177 |   })());
+      |   ~~~~~                    
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:190:40: error: cannot convert ‘std::__cxx11::basic_string<char>’ to ‘int’ in initialization
+  190 |           std::string(c.c_phone).substr(0, (2) - (0)), c.c_acctbal});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+      |                                        |
+      |                                        std::__cxx11::basic_string<char>
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:206:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<EligibleCustomer>’ requested
+  194 |   std::vector<EligibleCustomer> groups = ([&]() {
+      |                                          ~~~~~~~~
+  195 |     std::map<decltype(std::declval<EligibleCustomer>().cntrycode),
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  196 |              std::vector<EligibleCustomer>>
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  197 |         __groups;
+      |         ~~~~~~~~~
+  198 |     for (auto c : eligible_customers) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  199 |       __groups[c.cntrycode].push_back(EligibleCustomer{c});
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  200 |     }
+      |     ~
+  201 |     std::vector<__struct4> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  202 |     for (auto &kv : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |       __items.push_back(__struct4{kv.first, kv.second});
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  204 |     }
+      |     ~
+  205 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  206 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:213:23: error: ‘struct EligibleCustomer’ has no member named ‘items’
+  213 |       for (auto x : g.items) {
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:218:22: error: ‘struct EligibleCustomer’ has no member named ‘key’
+  218 |     auto row = Row{g.key, ((int)g.size()), total};
+      |                      ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:218:35: error: ‘struct EligibleCustomer’ has no member named ‘size’
+  218 |     auto row = Row{g.key, ((int)g.size()), total};
+      |                                   ^~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:222:36: error: ‘r’ was not declared in this scope
+  222 |     std::vector<std::pair<decltype(r.cntrycode), decltype(r)>> __items;
+      |                                    ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:222:50: error: template argument 1 is invalid
+  222 |     std::vector<std::pair<decltype(r.cntrycode), decltype(r)>> __items;
+      |                                                  ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:222:50: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:222:61: error: template argument 1 is invalid
+  222 |     std::vector<std::pair<decltype(r.cntrycode), decltype(r)>> __items;
+      |                                                             ^~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:222:61: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:224:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  224 |       __items.push_back({r.cntrycode, r});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:224:28: error: request for member ‘cntrycode’ in ‘r’, which is of non-class type ‘int’
+  224 |       __items.push_back({r.cntrycode, r});
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:226:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  226 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:226:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  226 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:228:28: error: template argument 1 is invalid
+  228 |     std::vector<decltype(r)> __res;
+      |                            ^
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:228:28: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:229:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  229 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:229:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  229 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCHQueriesq222123533644/001/prog.cpp:230:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
+  230 |       __res.push_back(p.second);
+      |             ^~~~~~~~~
