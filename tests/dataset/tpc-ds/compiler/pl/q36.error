@@ -1,0 +1,4 @@
+run: exit status 2
+[
+  {"gross_margin":
+ERROR: /tmp/q36.pl:58: user:main Type error: `json_term' expected, found `0/0' (a compound)

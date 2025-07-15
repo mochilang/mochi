@@ -1,0 +1,18 @@
+run: exit status 2
+[
+  {
+    "i_brand":"Brand2",
+    "i_category":"Cat2",
+    "i_class":"Class2",
+    "i_product_name":"Prod2",
+    "qoh":0
+  },
+  {
+    "i_brand":"Brand1",
+    "i_category":"Cat1",
+    "i_class":"Class1",
+    "i_product_name":"Prod1",
+    "qoh":0
+  }
+]
+ERROR: /tmp/q22.pl:58: user:main Unknown message: error('expect failed')

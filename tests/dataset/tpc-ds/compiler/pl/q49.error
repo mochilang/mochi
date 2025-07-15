@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q49.pl:24: user:main main/0: Unknown procedure: concat/4

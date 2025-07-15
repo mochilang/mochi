@@ -1,0 +1,6 @@
+run: exit status 2
+[
+  {"s_county":"Travis", "s_state":"TX", "total_sum":0},
+  {"s_county":"Orange", "s_state":"CA", "total_sum":0}
+]
+ERROR: /tmp/q70.pl:58: user:main Unknown message: error('expect failed')

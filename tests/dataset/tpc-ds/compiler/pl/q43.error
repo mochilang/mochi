@@ -1,0 +1,15 @@
+run: exit status 2
+[
+  {
+    "fri_sales":0,
+    "mon_sales":0,
+    "s_store_id":"S1",
+    "s_store_name":"Main",
+    "sat_sales":0,
+    "sun_sales":0,
+    "thu_sales":0,
+    "tue_sales":0,
+    "wed_sales":0
+  }
+]
+ERROR: /tmp/q43.pl:58: user:main Unknown message: error('expect failed')

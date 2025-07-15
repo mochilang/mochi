@@ -1,0 +1,12 @@
+run: exit status 2
+[
+  {
+    "amt":0,
+    "c_first_name":"Alice",
+    "c_last_name":"Smith",
+    "profit":0,
+    "s_city":"CityA",
+    "ss_ticket_number":1
+  }
+]
+ERROR: /tmp/q79.pl:58: user:main Unknown message: error('expect failed')

@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q38.pl:65: user:main '<meta-call>'/1: Unknown procedure: contains/3

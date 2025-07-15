@@ -1,0 +1,5 @@
+ERROR: /tmp/q47.pl:26:15: Syntax error: Operator expected
+ERROR: /tmp/q47.pl:27:
+ERROR:    No permission to modify static procedure `(;)/2'
+ERROR:    Defined at /usr/lib/swi-prolog/boot/init.pl:398
+ERROR: /tmp/q47.pl:31:3: Syntax error: Illegal start of term

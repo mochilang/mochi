@@ -1,0 +1,16 @@
+run: exit status 2
+[
+  {
+    "d_year":2020,
+    "i_category":"CatB",
+    "i_category_id":200,
+    "sum_ss_ext_sales_price":0
+  },
+  {
+    "d_year":2020,
+    "i_category":"CatA",
+    "i_category_id":100,
+    "sum_ss_ext_sales_price":0
+  }
+]
+ERROR: /tmp/q42.pl:58: user:main Unknown message: error('expect failed')

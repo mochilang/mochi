@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q45.pl:64: user:main '<meta-call>'/1: Unknown procedure: substr/4

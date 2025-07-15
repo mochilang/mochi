@@ -1,0 +1,21 @@
+run: exit status 2
+[
+  {
+    "catalog_sales_quantityave":0,
+    "catalog_sales_quantitycount":0,
+    "catalog_sales_quantitycov":0,
+    "catalog_sales_quantitystdev":0,
+    "i_item_desc":"Item 1",
+    "i_item_id":"I1",
+    "s_state":"CA",
+    "store_returns_quantityave":0,
+    "store_returns_quantitycount":0,
+    "store_returns_quantitycov":0,
+    "store_returns_quantitystdev":0,
+    "store_sales_quantityave":0,
+    "store_sales_quantitycount":0,
+    "store_sales_quantitycov":0,
+    "store_sales_quantitystdev":0
+  }
+]
+ERROR: /tmp/q17.pl:64: user:main Unknown message: error('expect failed')

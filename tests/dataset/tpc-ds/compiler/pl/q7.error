@@ -1,0 +1,3 @@
+run: exit status 2
+[ {"agg1":0, "agg2":0, "agg3":0, "agg4":0, "i_item_id":"I1"} ]
+ERROR: /tmp/q7.pl:58: user:main Unknown message: error('expect failed')

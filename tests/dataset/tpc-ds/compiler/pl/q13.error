@@ -1,0 +1,10 @@
+run: exit status 2
+[
+  {
+    "avg_ss_ext_sales_price":0,
+    "avg_ss_ext_wholesale_cost":0,
+    "avg_ss_quantity":0,
+    "sum_ss_ext_wholesale_cost":0
+  }
+]
+ERROR: /tmp/q13.pl:58: user:main Unknown message: error('expect failed')

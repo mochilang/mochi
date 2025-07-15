@@ -1,0 +1,11 @@
+run: exit status 2
+[
+  {
+    "i_category":"CatB",
+    "i_class":"Class1",
+    "i_current_price":200,
+    "i_item_desc":"desc2",
+    "i_item_id":"I2",
+    "itemrevenue":0,
+    "revenueratio":
+ERROR: /tmp/q98.pl:58: user:main Type error: `json_term' expected, found `0*100/0' (a compound)
