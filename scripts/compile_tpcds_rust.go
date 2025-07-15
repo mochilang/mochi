@@ -73,11 +73,12 @@ func main() {
 			writeError(outDir, q, fmt.Sprintf("compile error: %v", err))
 			continue
 		}
-		codeOut := filepath.Join(outDir, q+".rs.out")
+		codeOut := filepath.Join(outDir, q+".rs")
 		if err := os.WriteFile(codeOut, code, 0o644); err != nil {
 			fmt.Fprintln(os.Stderr, "write code", q, err)
 			continue
 		}
+		_ = os.WriteFile(filepath.Join(outDir, q+".rs.out"), code, 0o644)
 		tmp := filepath.Join(os.TempDir(), q+".rs")
 		if err := os.WriteFile(tmp, code, 0o644); err != nil {
 			fmt.Fprintln(os.Stderr, "tmp write", q, err)

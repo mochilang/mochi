@@ -1,0 +1,124 @@
+rustc: exit status 1
+error[E0412]: cannot find type `any` in this scope
+   --> /tmp/q16.rs:109:25
+    |
+109 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+    |                         ^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+109 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+    |                +++++
+
+error[E0412]: cannot find type `any` in this scope
+   --> /tmp/q16.rs:109:38
+    |
+109 |     fn distinct(xs: Vec<any>) -> Vec<any> {
+    |                                      ^^^ not found in this scope
+    |
+help: you might be missing a type parameter
+    |
+109 |     fn distinct<any>(xs: Vec<any>) -> Vec<any> {
+    |                +++++
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q16.rs:37:8
+   |
+37 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q16.rs:48:8
+   |
+48 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q16.rs:54:8
+   |
+54 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+
+warning: type `Call_center` should have an upper camel case name
+  --> /tmp/q16.rs:60:8
+   |
+60 | struct Call_center {
+   |        ^^^^^^^^^^^ help: convert the identifier to upper camel case: `CallCenter`
+
+error[E0282]: type annotations needed for `Vec<_>`
+   --> /tmp/q16.rs:108:9
+    |
+108 | ...et catalog_returns = vec![];
+    |       ^^^^^^^^^^^^^^^
+...
+118 | ...et filtered = { let mut tmp3 = std::collections::HashMap::new();for cs1 in &catalog_sales { for d in &date_dim { if !(cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30") { continue; } for ca in &customer_address { if !(cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA") { continue; } for cc in &call_center { if !(cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA") { continue; } if !(({ let mut tmp1 = Vec::new();for cs2 in &catalog_sales { if !(cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk) { continue; } tmp1.push(cs2.clone()); } tmp1 }.len() > 0) && ({ let mut tmp2 = Vec::new();for &cr in &catalog_returns { if !(cs1.cs_order_number == cr.cr...
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              -- type must be known at this point
+    |
+help: consider giving `catalog_returns` an explicit type, where the placeholders `_` are specified
+    |
+108 |     let catalog_returns: Vec<_> = vec![];
+    |                        ++++++++
+
+error[E0609]: no field `cs_order_number` on type `&Item`
+   --> /tmp/q16.rs:118:1317
+    |
+118 | ... Vec::new();for x in &g.clone().items { tmp5.push(x.cs_order_number); } tmp5 }).len() as i32, total_shipping_cost: sum(&{ let mut tmp6...
+    |                                                        ^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+118 |     let filtered = { let mut tmp3 = std::collections::HashMap::new();for cs1 in &catalog_sales { for d in &date_dim { if !(cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30") { continue; } for ca in &customer_address { if !(cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA") { continue; } for cc in &call_center { if !(cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA") { continue; } if !(({ let mut tmp1 = Vec::new();for cs2 in &catalog_sales { if !(cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk) { continue; } tmp1.push(cs2.clone()); } tmp1 }.len() > 0) && ({ let mut tmp2 = Vec::new();for &cr in &catalog_returns { if !(cs1.cs_order_number == cr.cr_order_number) { continue; } tmp2.push(cr); } tmp2 }.len() > 0) == false) { continue; } let key = Key {  }; tmp3.entry(key).or_insert_with(Vec::new).push(Item {cs1: cs1.clone(), d: d.clone(), ca: ca.clone(), cc: cc.clone() }); } } } } let mut tmp4 = Vec::<Group>::new(); for (k,v) in tmp3 { tmp4.push(Group { key: k, items: v }); } tmp4.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp4 { result.push(Result { order_count: distinct({ let mut tmp5 = Vec::new();for x in &g.clone().items { tmp5.push(x.cs1.cs_order_number); } tmp5 }).len() as i32, total_shipping_cost: sum(&{ let mut tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.cs_ext_ship_cost); } tmp6 }), total_net_profit: sum(&{ let mut tmp7 = Vec::new();for x in &g.clone().items { tmp7.push(x.cs_net_profit); } tmp7 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ++++
+
+error[E0609]: no field `cs_ext_ship_cost` on type `&Item`
+   --> /tmp/q16.rs:118:1453
+    |
+118 | ... Vec::new();for x in &g.clone().items { tmp6.push(x.cs_ext_ship_cost); } tmp6 }), total_net_profit: sum(&{ let mut tmp7 = Vec::new();f...
+    |                                                        ^^^^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+118 |     let filtered = { let mut tmp3 = std::collections::HashMap::new();for cs1 in &catalog_sales { for d in &date_dim { if !(cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30") { continue; } for ca in &customer_address { if !(cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA") { continue; } for cc in &call_center { if !(cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA") { continue; } if !(({ let mut tmp1 = Vec::new();for cs2 in &catalog_sales { if !(cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk) { continue; } tmp1.push(cs2.clone()); } tmp1 }.len() > 0) && ({ let mut tmp2 = Vec::new();for &cr in &catalog_returns { if !(cs1.cs_order_number == cr.cr_order_number) { continue; } tmp2.push(cr); } tmp2 }.len() > 0) == false) { continue; } let key = Key {  }; tmp3.entry(key).or_insert_with(Vec::new).push(Item {cs1: cs1.clone(), d: d.clone(), ca: ca.clone(), cc: cc.clone() }); } } } } let mut tmp4 = Vec::<Group>::new(); for (k,v) in tmp3 { tmp4.push(Group { key: k, items: v }); } tmp4.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp4 { result.push(Result { order_count: distinct({ let mut tmp5 = Vec::new();for x in &g.clone().items { tmp5.push(x.cs_order_number); } tmp5 }).len() as i32, total_shipping_cost: sum(&{ let mut tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.cs1.cs_ext_ship_cost); } tmp6 }), total_net_profit: sum(&{ let mut tmp7 = Vec::new();for x in &g.clone().items { tmp7.push(x.cs_net_profit); } tmp7 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ++++
+
+error[E0609]: no field `cs_net_profit` on type `&Item`
+   --> /tmp/q16.rs:118:1574
+    |
+118 | ...= Vec::new();for x in &g.clone().items { tmp7.push(x.cs_net_profit); } tmp7 }) }); } result };
+    |                                                         ^^^^^^^^^^^^^ unknown field
+    |
+help: one of the expressions' fields has a field of the same name
+    |
+118 |     let filtered = { let mut tmp3 = std::collections::HashMap::new();for cs1 in &catalog_sales { for d in &date_dim { if !(cs1.cs_ship_date_sk == d.d_date_sk && d.d_date >= "2000-03-01" && d.d_date <= "2000-04-30") { continue; } for ca in &customer_address { if !(cs1.cs_ship_addr_sk == ca.ca_address_sk && ca.ca_state == "CA") { continue; } for cc in &call_center { if !(cs1.cs_call_center_sk == cc.cc_call_center_sk && cc.cc_county == "CountyA") { continue; } if !(({ let mut tmp1 = Vec::new();for cs2 in &catalog_sales { if !(cs1.cs_order_number == cs2.cs_order_number && cs1.cs_warehouse_sk != cs2.cs_warehouse_sk) { continue; } tmp1.push(cs2.clone()); } tmp1 }.len() > 0) && ({ let mut tmp2 = Vec::new();for &cr in &catalog_returns { if !(cs1.cs_order_number == cr.cr_order_number) { continue; } tmp2.push(cr); } tmp2 }.len() > 0) == false) { continue; } let key = Key {  }; tmp3.entry(key).or_insert_with(Vec::new).push(Item {cs1: cs1.clone(), d: d.clone(), ca: ca.clone(), cc: cc.clone() }); } } } } let mut tmp4 = Vec::<Group>::new(); for (k,v) in tmp3 { tmp4.push(Group { key: k, items: v }); } tmp4.sort_by(|a,b| a.key.partial_cmp(&b.key).unwrap()); let mut result = Vec::new(); for g in tmp4 { result.push(Result { order_count: distinct({ let mut tmp5 = Vec::new();for x in &g.clone().items { tmp5.push(x.cs_order_number); } tmp5 }).len() as i32, total_shipping_cost: sum(&{ let mut tmp6 = Vec::new();for x in &g.clone().items { tmp6.push(x.cs_ext_ship_cost); } tmp6 }), total_net_profit: sum(&{ let mut tmp7 = Vec::new();for x in &g.clone().items { tmp7.push(x.cs1.cs_net_profit); } tmp7 }) }); } result };
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ++++
+
+error[E0308]: mismatched types
+   --> /tmp/q16.rs:120:76
+    |
+120 |     assert!(filtered == vec![Result { order_count: 1, total_shipping_cost: 5.0, total_net_profit: 20.0 }]);
+    |                                                                            ^^^ expected `i32`, found floating-point number
+
+error[E0308]: mismatched types
+   --> /tmp/q16.rs:120:99
+    |
+120 |     assert!(filtered == vec![Result { order_count: 1, total_shipping_cost: 5.0, total_net_profit: 20.0 }]);
+    |                                                                                                   ^^^^ expected `i32`, found floating-point number
+
+error[E0425]: cannot find function `contains` in this scope
+   --> /tmp/q16.rs:112:17
+    |
+112 |             if !contains(out, x) {
+    |                 ^^^^^^^^ not found in this scope
+    |
+help: use the `.` operator to call the method `contains` on `&[_]`
+    |
+112 -             if !contains(out, x) {
+112 +             if !out.contains(x) {
+    |
+
+error: aborting due to 9 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0282, E0308, E0412, E0425, E0609.
+For more information about an error, try `rustc --explain E0282`.

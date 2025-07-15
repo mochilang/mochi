@@ -1,0 +1,65 @@
+rustc: exit status 1
+warning: type `Customer_addres` should have an upper camel case name
+  --> /tmp/q10.rs:49:8
+   |
+49 | struct Customer_addres {
+   |        ^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerAddres`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Customer_demographic` should have an upper camel case name
+  --> /tmp/q10.rs:55:8
+   |
+55 | struct Customer_demographic {
+   |        ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CustomerDemographic`
+
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q10.rs:68:8
+   |
+68 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q10.rs:74:8
+   |
+74 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:786
+    |
+129 | ...tmp5 = Vec::new();for _ in &g.clone().items { tmp5.push(_.clone()); } tmp5 }.len() as i32, cd_purchase_estimate: g.key.purchase, cnt2:...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:931
+    |
+129 | ...tmp6 = Vec::new();for _ in &g.clone().items { tmp6.push(_.clone()); } tmp6 }.len() as i32, cd_credit_rating: g.key.credit, cnt3: { let...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:1070
+    |
+129 | ...tmp7 = Vec::new();for _ in &g.clone().items { tmp7.push(_.clone()); } tmp7 }.len() as i32, cd_dep_count: g.key.dep, cnt4: { let mut tm...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:1202
+    |
+129 | ...tmp8 = Vec::new();for _ in &g.clone().items { tmp8.push(_.clone()); } tmp8 }.len() as i32, cd_dep_employed_count: g.key.depemp, cnt5: ...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:1346
+    |
+129 | ...tmp9 = Vec::new();for _ in &g.clone().items { tmp9.push(_.clone()); } tmp9 }.len() as i32, cd_dep_college_count: g.key.depcol, cnt6: {...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q10.rs:129:1491
+    |
+129 | ...p10 = Vec::new();for _ in &g.clone().items { tmp10.push(_.clone()); } tmp10 }.len() as i32 }); } result };
+    |                                                            ^ `_` not allowed here
+
+error: aborting due to 6 previous errors; 4 warnings emitted
+
