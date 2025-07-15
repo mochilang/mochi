@@ -1,0 +1,11 @@
+run: exit status 1
+Exception in thread "main" java.lang.ExceptionInInitializerError
+Caused by: java.lang.ClassCastException: class java.util.ArrayList cannot be cast to class java.lang.Comparable (java.util.ArrayList and java.lang.Comparable are in module java.base of loader 'bootstrap')
+	at Q70Kt$$special$$inlined$sortBy$1.compare(Comparisons.kt:321)
+	at java.base/java.util.TimSort.countRunAndMakeAscending(TimSort.java:355)
+	at java.base/java.util.TimSort.sort(TimSort.java:220)
+	at java.base/java.util.Arrays.sort(Arrays.java:1308)
+	at java.base/java.util.ArrayList.sort(ArrayList.java:1804)
+	at java.base/java.util.Collections.sort(Collections.java:178)
+	at kotlin.collections.CollectionsKt__MutableCollectionsJVMKt.sortWith(MutableCollectionsJVM.kt:38)
+	at Q70Kt.<clinit>(q70.kt:97)

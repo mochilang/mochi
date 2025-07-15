@@ -1,0 +1,35 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q74.kt:68:18: error: unresolved reference: concat
+val year_total = concat(run {
+                 ^
+/tmp/q74.kt:116:33: error: type inference failed: Cannot infer type parameter V in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<MutableMap<String, Any?>, Group<MutableMap<String, Any?>, MutableMap<String, Any?>>>  arguments: (MutableMap<String, Any?>,Group<MutableMap<String, Any?>, MutableMap<String, Any?>>)
+receiver: MutableMap<MutableMap<String, Any?>, Group<MutableMap<String, Any?>, MutableMap<String, Any?>>?>  arguments: (MutableMap<String, Any?>,Group<MutableMap<String, Any?>, MutableMap<String, Any?>>?)
+can be applied to
+receiver: MutableMap<MutableMap<String, Any?>, Group<MutableMap<String, Any?>, MutableMap<String, Any?>>>  arguments: (MutableMap<String, Any?>,Group<MutableMap<String, Any?>, MutableMap<String, Any?>>?)
+
+                                __groups[__k] = __g
+                                ^
+/tmp/q74.kt:119:29: error: smart cast to 'Group<MutableMap<String, Any?>, MutableMap<String, Any?>>' is impossible, because '__g' is a local variable that is captured by a changing closure
+                            __g.add(mutableMapOf("c" to c, "ws" to ws, "d" to d) as MutableMap<String, Any?>)
+                            ^
+/tmp/q74.kt:140:19: error: unresolved reference: first
+val s_firstyear = first(run {
+                  ^
+/tmp/q74.kt:150:17: error: unresolved reference: first
+val s_secyear = first(run {
+                ^
+/tmp/q74.kt:160:19: error: unresolved reference: first
+val w_firstyear = first(run {
+                  ^
+/tmp/q74.kt:170:17: error: unresolved reference: first
+val w_secyear = first(run {
+                ^
+/tmp/q74.kt:180:95: error: type inference failed. Expected type mismatch: inferred type is Any? but Boolean was expected
+val result = if (toDouble(toInt(toInt((s_firstyear as MutableMap<*, *>)["year_total"]) > 0 && (w_firstyear as MutableMap<*, *>)["year_total"]) > 0 && (div(toDouble((w_secyear as MutableMap<*, *>)["year_total"]), toDouble((w_firstyear as MutableMap<*, *>)["year_total"])))) > toDouble((div(toDouble((s_secyear as MutableMap<*, *>)["year_total"]), toDouble((s_firstyear as MutableMap<*, *>)["year_total"]))))) mutableListOf(mutableMapOf("customer_id" to (s_secyear as MutableMap<*, *>)["customer_id"], "customer_first_name" to (s_secyear as MutableMap<*, *>)["customer_first_name"], "customer_last_name" to (s_secyear as MutableMap<*, *>)["customer_last_name"])) else mutableListOf()
+                                                                                              ^
+/tmp/q74.kt:180:152: error: type mismatch: inferred type is Double but Boolean was expected
+val result = if (toDouble(toInt(toInt((s_firstyear as MutableMap<*, *>)["year_total"]) > 0 && (w_firstyear as MutableMap<*, *>)["year_total"]) > 0 && (div(toDouble((w_secyear as MutableMap<*, *>)["year_total"]), toDouble((w_firstyear as MutableMap<*, *>)["year_total"])))) > toDouble((div(toDouble((s_secyear as MutableMap<*, *>)["year_total"]), toDouble((s_firstyear as MutableMap<*, *>)["year_total"]))))) mutableListOf(mutableMapOf("customer_id" to (s_secyear as MutableMap<*, *>)["customer_id"], "customer_first_name" to (s_secyear as MutableMap<*, *>)["customer_first_name"], "customer_last_name" to (s_secyear as MutableMap<*, *>)["customer_last_name"])) else mutableListOf()
+                                                                                                                                                       ^

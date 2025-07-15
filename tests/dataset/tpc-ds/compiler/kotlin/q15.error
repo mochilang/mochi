@@ -1,0 +1,14 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q15.kt:40:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int)
+           ^
+/tmp/q15.kt:48:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int)
+           ^
+/tmp/q15.kt:72:47: error: unresolved reference: substr
+                                if ((toDouble(substr(ca.ca_zip, 0, 5) in mutableListOf("85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792") || ca.ca_state in mutableListOf("CA", "WA", "GA") || cs.cs_sales_price) > 500) && d.d_qoy == 1 && d.d_year == 2000) {
+                                              ^
+/tmp/q15.kt:72:222: error: type mismatch: inferred type is Double but Boolean was expected
+                                if ((toDouble(substr(ca.ca_zip, 0, 5) in mutableListOf("85669", "86197", "88274", "83405", "86475", "85392", "85460", "80348", "81792") || ca.ca_state in mutableListOf("CA", "WA", "GA") || cs.cs_sales_price) > 500) && d.d_qoy == 1 && d.d_year == 2000) {
+                                                                                                                                                                                                                             ^

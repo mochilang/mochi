@@ -1,0 +1,34 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q51.kt:41:17: error: unresolved reference: date
+}.sortedBy { it.date as Comparable<Any> }) as MutableList<Any>)
+                ^
+/tmp/q51.kt:49:17: error: unresolved reference: date
+}.sortedBy { it.date as Comparable<Any> }) as MutableList<Any>)
+                ^
+/tmp/q51.kt:55:19: error: unresolved reference: date
+            if (w.date == s.date) {
+                  ^
+/tmp/q51.kt:55:29: error: unresolved reference: date
+            if (w.date == s.date) {
+                            ^
+/tmp/q51.kt:56:32: error: unresolved reference: cum
+                if (toDouble(w.cum) > toDouble(s.cum)) {
+                               ^
+/tmp/q51.kt:56:50: error: unresolved reference: cum
+                if (toDouble(w.cum) > toDouble(s.cum)) {
+                                                 ^
+/tmp/q51.kt:57:74: error: unresolved reference: date
+                    __res.add(mutableMapOf("item_sk" to 1, "d_date" to w.date))
+                                                                         ^
+/tmp/q51.kt:73:15: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+    var out = mutableListOf()
+              ^
+/tmp/q51.kt:76:42: error: unresolved reference: price
+        acc = toDouble(acc) + toDouble(x.price)
+                                         ^
+/tmp/q51.kt:77:46: error: unresolved reference: date
+        out = out + mutableMapOf("date" to x.date, "cum" to acc)
+                                             ^

@@ -1,0 +1,32 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q24.kt:42:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_store_name: String, var s_market_id: Int, var s_state: String, var s_zip: String)
+           ^
+/tmp/q24.kt:44:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_color: String, var i_current_price: Double, var i_manager_id: Int, var i_units: String, var i_size: String)
+           ^
+/tmp/q24.kt:46:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_first_name: String, var c_last_name: String, var c_current_addr_sk: Int, var c_birth_country: String)
+           ^
+/tmp/q24.kt:50:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_first_name: String, var c_last_name: String, var c_current_addr_sk: Int, var c_birth_country: String)
+           ^
+/tmp/q24.kt:54:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_color: String, var i_current_price: Double, var i_manager_id: Int, var i_units: String, var i_size: String)
+           ^
+/tmp/q24.kt:56:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_store_name: String, var s_market_id: Int, var s_state: String, var s_zip: String)
+           ^
+/tmp/q24.kt:88:74: error: expression '(strings as MutableMap<*, *>)["ToUpper"]' of type 'Any?' cannot be invoked as a function. The function 'invoke()' is not found
+                                                if (c.c_birth_country != (strings as MutableMap<*, *>)["ToUpper"](ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5) {
+                                                                         ^
+/tmp/q24.kt:88:75: error: unresolved reference: strings
+                                                if (c.c_birth_country != (strings as MutableMap<*, *>)["ToUpper"](ca.ca_country) && s.s_zip == ca.ca_zip && s.s_market_id == 5) {
+                                                                          ^
+/tmp/q24.kt:134:13: error: type mismatch: inferred type is Double but Boolean was expected
+        if (toDouble(toDouble((x as MutableMap<String, Any?>)["color"] == "RED" && (x as MutableMap<String, Any?>)["netpaid"]) > toDouble(0.05)) * toDouble(avg_paid)) {
+            ^
+/tmp/q24.kt:134:84: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toDouble(toDouble((x as MutableMap<String, Any?>)["color"] == "RED" && (x as MutableMap<String, Any?>)["netpaid"]) > toDouble(0.05)) * toDouble(avg_paid)) {
+                                                                                   ^

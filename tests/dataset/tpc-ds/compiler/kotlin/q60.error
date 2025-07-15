@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q60.kt:48:60: error: type mismatch: inferred type is MutableList<Catalog_sale> but Collection<Store_sale> was expected
+val all_sales = store_sales.toMutableList().apply { addAll(catalog_sales) }.toMutableList().apply { addAll(web_sales) }
+                                                           ^
+/tmp/q60.kt:48:108: error: type mismatch: inferred type is MutableList<Web_sale> but Collection<Store_sale> was expected
+val all_sales = store_sales.toMutableList().apply { addAll(catalog_sales) }.toMutableList().apply { addAll(web_sales) }
+                                                                                                           ^
+/tmp/q60.kt:53:19: error: type mismatch: inferred type is Int? but Int was expected
+        __res.add((s as MutableMap<String, Int>)["price"])
+                  ^

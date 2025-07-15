@@ -1,0 +1,13 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q40.kt:71:101: error: type mismatch: inferred type is Double but Boolean was expected
+                                        if (toDouble(toDouble(i.current_price) >= toDouble(0.99) && i.current_price) <= toDouble(1.49)) {
+                                                                                                    ^
+/tmp/q40.kt:105:68: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        __res.add(if ((x as MutableMap<String, Any?>)["sold_date"] < sales_date) (x as MutableMap<String, Any?>)["net"] else 0.0)
+                                                                   ^
+/tmp/q40.kt:111:68: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+public fun String.compareTo(other: String, ignoreCase: Boolean = ...): Int defined in kotlin.text
+        __res.add(if ((x as MutableMap<String, Any?>)["sold_date"] >= sales_date) (x as MutableMap<String, Any?>)["net"] else 0.0)
+                                                                   ^

@@ -1,0 +1,19 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q44.kt:64:12: error: unresolved reference: first
+val best = first(run {
+           ^
+/tmp/q44.kt:72:13: error: unresolved reference: first
+val worst = first(run {
+            ^
+/tmp/q44.kt:80:17: error: unresolved reference: first
+val best_name = first(run {
+                ^
+/tmp/q44.kt:90:18: error: unresolved reference: first
+val worst_name = first(run {
+                 ^
+/tmp/q44.kt:100:14: error: type inference failed: Not enough information to infer parameter V in fun <K, V> mutableMapOf(vararg pairs: Pair<K, V>): MutableMap<K, V>
+Please specify it explicitly.
+
+val result = mutableMapOf("best_performing" to best_name, "worst_performing" to worst_name)
+             ^

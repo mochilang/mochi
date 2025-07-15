@@ -1,0 +1,11 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q75.kt:64:20: error: unresolved reference: concat
+val sales_detail = concat(run {
+                   ^
+/tmp/q75.kt:135:15: error: unresolved reference: first
+val prev_yr = first(run {
+              ^
+/tmp/q75.kt:145:15: error: unresolved reference: first
+val curr_yr = first(run {
+              ^

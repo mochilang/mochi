@@ -1,0 +1,20 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q73.kt:65:180: error: type mismatch: inferred type is Int but Boolean was expected
+                                if (toDouble((d.d_dom >= 1 && d.d_dom <= 2 && (hd.hd_buy_potential == "1001-5000" || hd.hd_buy_potential == "0-500") && hd.hd_vehicle_count > 0 && hd.hd_dep_count).toDouble() / (hd.hd_vehicle_count).toDouble()) > 1 && (d.d_year == 1998 || d.d_year == 1999 || d.d_year == 2000) && s.s_county == "A") {
+                                                                                                                                                                                   ^
+/tmp/q73.kt:65:197: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline fun String.toDouble(): Double defined in kotlin.text
+                                if (toDouble((d.d_dom >= 1 && d.d_dom <= 2 && (hd.hd_buy_potential == "1001-5000" || hd.hd_buy_potential == "0-500") && hd.hd_vehicle_count > 0 && hd.hd_dep_count).toDouble() / (hd.hd_vehicle_count).toDouble()) > 1 && (d.d_year == 1998 || d.d_year == 1999 || d.d_year == 2000) && s.s_county == "A") {
+                                                                                                                                                                                                    ^
+/tmp/q73.kt:95:81: error: type mismatch: inferred type is Any? but Boolean was expected
+                if (toInt(toInt((g as MutableMap<String, Any?>)["cnt"]) >= 1 && (g as MutableMap<String, Any?>)["cnt"]) <= 5) {
+                                                                                ^
+/tmp/q73.kt:102:28: error: unresolved reference. None of the following candidates is applicable because of receiver type mismatch: 
+@InlineOnly public inline operator fun BigDecimal.unaryMinus(): BigDecimal defined in kotlin
+@InlineOnly public inline operator fun BigInteger.unaryMinus(): BigInteger defined in kotlin
+}.sortedBy { mutableListOf(-(it as MutableMap<String, Any?>)["cnt"], it.c_last_name) as Comparable<Any> }
+                           ^
+/tmp/q73.kt:102:73: error: unresolved reference: c_last_name
+}.sortedBy { mutableListOf(-(it as MutableMap<String, Any?>)["cnt"], it.c_last_name) as Comparable<Any> }
+                                                                        ^

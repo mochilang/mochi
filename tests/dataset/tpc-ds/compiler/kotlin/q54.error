@@ -1,0 +1,23 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q54.kt:103:19: error: type inference failed. Expected type mismatch: inferred type is Group<Int?, MutableMap<String, Int>> but Group<Int, MutableMap<String, Int>>? was expected
+            __g = Group(__k, mutableListOf<MutableMap<String, Int>>())
+                  ^
+/tmp/q54.kt:104:13: error: type inference failed: Cannot infer type parameter K in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<Int, Any?>  arguments: (Int,Any?)
+receiver: MutableMap<Int?, Any?>  arguments: (Int?,Any?)
+can be applied to
+receiver: MutableMap<Int, Group<Int, MutableMap<String, Int>>>  arguments: (Int?,Group<Int, MutableMap<String, Int>>?)
+
+            __groups[__k] = __g
+            ^
+/tmp/q54.kt:105:25: error: type mismatch: inferred type is Int? but Int was expected
+            __order.add(__k)
+                        ^
+/tmp/q54.kt:107:12: error: only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type Group<Int, MutableMap<String, Int>>?
+        __g.add(r)
+           ^
+/tmp/q54.kt:115:19: error: type mismatch: inferred type is Int? but Int was expected
+        __res.add((x as MutableMap<String, Int>)["amt"])
+                  ^

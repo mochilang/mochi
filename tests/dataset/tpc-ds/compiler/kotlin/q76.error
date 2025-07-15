@@ -1,0 +1,5 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q76.kt:112:16: error: unresolved reference: concat
+val all_rows = concat(store_part, web_part, catalog_part)
+               ^

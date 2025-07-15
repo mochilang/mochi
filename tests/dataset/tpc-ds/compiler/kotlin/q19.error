@@ -1,0 +1,26 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q19.kt:42:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_brand_id: Int, var i_brand: String, var i_manufact_id: Int, var i_manufact: String, var i_manager_id: Int)
+           ^
+/tmp/q19.kt:44:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int)
+           ^
+/tmp/q19.kt:48:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_zip: String)
+           ^
+/tmp/q19.kt:50:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int)
+           ^
+/tmp/q19.kt:56:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_brand_id: Int, var i_brand: String, var i_manufact_id: Int, var i_manufact: String, var i_manager_id: Int)
+           ^
+/tmp/q19.kt:58:12: error: redeclaration: Store
+data class Store(var s_store_sk: Int, var s_zip: String)
+           ^
+/tmp/q19.kt:87:83: error: unresolved reference: substr
+                                            if (ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5)) {
+                                                                                  ^
+/tmp/q19.kt:87:110: error: unresolved reference: substr
+                                            if (ss.ss_store_sk == s.s_store_sk && substr(ca.ca_zip, 0, 5) != substr(s.s_zip, 0, 5)) {
+                                                                                                             ^

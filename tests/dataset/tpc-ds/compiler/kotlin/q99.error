@@ -1,0 +1,20 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q99.kt:37:12: error: redeclaration: Warehouse
+data class Warehouse(var w_warehouse_sk: Int, var w_warehouse_name: String)
+           ^
+/tmp/q99.kt:49:12: error: redeclaration: Warehouse
+data class Warehouse(var w_warehouse_sk: Int, var w_warehouse_name: String)
+           ^
+/tmp/q99.kt:69:72: error: unresolved reference: substr
+                                val __k = (mutableMapOf("warehouse" to substr(w.w_warehouse_name, 0, 20), "sm_type" to sm.sm_type, "cc_name" to cc.cc_name) as MutableMap<String, Any?>)
+                                                                       ^
+/tmp/q99.kt:98:167: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toDouble(toInt(toDouble((x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) > 30 && (x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) <= 60) {
+                                                                                                                                                                      ^
+/tmp/q99.kt:106:167: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toDouble(toInt(toDouble((x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) > 60 && (x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) <= 90) {
+                                                                                                                                                                      ^
+/tmp/q99.kt:114:167: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toInt(toDouble(toInt(toDouble((x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) > 90 && (x as MutableMap<String, Any?>)["cs_ship_date_sk"]) - toDouble((x as MutableMap<String, Any?>)["cs_sold_date_sk"])) <= 120) {
+                                                                                                                                                                      ^

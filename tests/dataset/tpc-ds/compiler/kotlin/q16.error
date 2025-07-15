@@ -1,0 +1,23 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q16.kt:64:23: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+val catalog_returns = mutableListOf()
+                      ^
+/tmp/q16.kt:93:48: error: type inference failed: Not enough information to infer parameter K in inline fun <K, V> mutableMapOf(): MutableMap<K, V>
+Please specify it explicitly.
+
+                                    val __k = (mutableMapOf() as MutableMap<Any?, Any?>)
+                                               ^
+/tmp/q16.kt:112:58: error: type inference failed. Expected type mismatch: inferred type is MutableList<Any?> but MutableList<Any> was expected
+        __res.add(mutableMapOf("order_count" to distinct(run {
+                                                         ^
+/tmp/q16.kt:141:15: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+    var out = mutableListOf()
+              ^
+/tmp/q16.kt:143:14: error: unresolved reference: contains
+        if (!contains(out, x)) {
+             ^

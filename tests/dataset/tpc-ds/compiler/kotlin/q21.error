@@ -1,0 +1,23 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q21.kt:44:12: error: redeclaration: Inventory
+data class Inventory(var inv_item_sk: Int, var inv_warehouse_sk: Int, var inv_date_sk: Int, var inv_quantity_on_hand: Int)
+           ^
+/tmp/q21.kt:46:12: error: redeclaration: Warehouse
+data class Warehouse(var w_warehouse_sk: Int, var w_warehouse_name: String)
+           ^
+/tmp/q21.kt:48:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String)
+           ^
+/tmp/q21.kt:54:12: error: redeclaration: Inventory
+data class Inventory(var inv_item_sk: Int, var inv_warehouse_sk: Int, var inv_date_sk: Int, var inv_quantity_on_hand: Int)
+           ^
+/tmp/q21.kt:56:12: error: redeclaration: Item
+data class Item(var i_item_sk: Int, var i_item_id: String)
+           ^
+/tmp/q21.kt:58:12: error: redeclaration: Warehouse
+data class Warehouse(var w_warehouse_sk: Int, var w_warehouse_name: String)
+           ^
+/tmp/q21.kt:157:121: error: type mismatch: inferred type is Any? but Boolean was expected
+        if (toDouble(toDouble((r as MutableMap<String, Any?>)["ratio"]) >= toDouble((toDouble(2.0) / toDouble(3.0))) && (r as MutableMap<String, Any?>)["ratio"]) <= toDouble((toDouble(3.0) / toDouble(2.0)))) {
+                                                                                                                        ^

@@ -1,0 +1,32 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q28.kt:36:105: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 0 && ss.ss_quantity <= 5 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                        ^
+/tmp/q28.kt:36:179: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 0 && ss.ss_quantity <= 5 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                                                                                                  ^
+/tmp/q28.kt:36:258: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 0 && ss.ss_quantity <= 5 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                                                                                                                                                                                 ^
+/tmp/q28.kt:46:106: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 6 && ss.ss_quantity <= 10 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                         ^
+/tmp/q28.kt:46:180: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 6 && ss.ss_quantity <= 10 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                                                                                                   ^
+/tmp/q28.kt:46:259: error: type mismatch: inferred type is Double but Boolean was expected
+        if (ss.ss_quantity >= 6 && ss.ss_quantity <= 10 && ((toDouble(toDouble(ss.ss_list_price) >= 0 && ss.ss_list_price) <= 110) || (toDouble(toDouble(ss.ss_coupon_amt) >= 0 && ss.ss_coupon_amt) <= 1000) || (toDouble(toDouble(ss.ss_wholesale_cost) >= 0 && ss.ss_wholesale_cost) <= 50))) {
+                                                                                                                                                                                                                                                                  ^
+/tmp/q28.kt:92:13: error: type inference failed: Cannot infer type parameter V in inline operator fun <K, V> MutableMap<K, V>.set(key: K, value: V): Unit
+None of the following substitutions
+receiver: MutableMap<Double, Group<Double, Store_sale>>  arguments: (Double,Group<Double, Store_sale>)
+receiver: MutableMap<Double, Group<Double, Store_sale>?>  arguments: (Double,Group<Double, Store_sale>?)
+can be applied to
+receiver: MutableMap<Double, Group<Double, Store_sale>>  arguments: (Double,Group<Double, Store_sale>?)
+
+            __groups[__k] = __g
+            ^
+/tmp/q28.kt:95:9: error: smart cast to 'Group<Double, Store_sale>' is impossible, because '__g' is a local variable that is captured by a changing closure
+        __g.add(x)
+        ^
