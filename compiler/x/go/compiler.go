@@ -38,6 +38,8 @@ type Compiler struct {
 	tsAuto        map[string]bool
 	externObjects map[string]bool
 
+	defaultAlias string
+
 	tempVarCount int
 
 	returnType types.Type
@@ -134,10 +136,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("")
 	c.writeImports()
 	// Temporary alias used when inferred struct names default to "v"
-	if _, ok := c.env.GetStruct("Result"); ok {
-		c.writeln("type v = Result")
-	} else if _, ok := c.env.GetStruct("Row"); ok {
-		c.writeln("type v = Row")
+	if c.defaultAlias != "" {
+		c.writeln("type v = " + c.defaultAlias)
 	} else {
 		c.writeln("type v map[string]any")
 	}
@@ -2408,6 +2408,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "[]" + elemType + "{" + joinItems(elems, c.indent, 3) + "}", nil
 	case p.Map != nil:
 		typ := c.inferPrimaryType(p)
+		if c.defaultAlias != "" {
+			if st, ok := c.inferStructFromMapEnv(p.Map, c.defaultAlias, c.env); ok {
+				typ = st
+			}
+		}
 		if st, ok := typ.(types.StructType); ok {
 			parts := make([]string, len(p.Map.Items))
 			for i, item := range p.Map.Items {
@@ -2783,10 +2788,28 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	}
 
 	var groupKey string
+	var keyType types.Type
 	if q.Group != nil {
-		keyType := c.inferExprType(q.Group.Exprs[0])
-		gtype := types.GroupType{Key: keyType, Elem: elemType}
 		keyEnv := child
+		if ml := mapLiteral(q.Group.Exprs[0]); ml != nil {
+			if st, ok := c.inferStructFromMapEnv(ml, q.Group.Name+"Key", keyEnv); ok {
+				if keyEnv != nil {
+					keyEnv.SetStruct(st.Name, st)
+				}
+				if c.env != nil {
+					if _, ok := c.env.GetStruct(st.Name); !ok {
+						c.env.SetStruct(st.Name, st)
+					}
+				}
+				c.compileStructType(st)
+				c.defaultAlias = st.Name
+				keyType = st
+			}
+		}
+		if keyType == nil {
+			keyType = c.inferExprTypeHint(q.Group.Exprs[0], types.StructType{})
+		}
+		gtype := types.GroupType{Key: keyType, Elem: elemType}
 		c.env = keyEnv
 		var err error
 		groupKey, err = c.compileExpr(q.Group.Exprs[0])
@@ -2795,6 +2818,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 			return "", err
 		}
 		child.SetVar(q.Group.Name, gtype, true)
+		c.defaultAlias = ""
 	}
 	c.env = child
 
@@ -3487,12 +3511,16 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		loopVar = "v"
 	}
 	iterVar := loopVar
-	if elemGo != "any" {
+	srcElemGo := goType(elemType)
+	if srcElemGo == "" {
+		srcElemGo = "any"
+	}
+	if srcElemGo == "any" && elemGo != "any" {
 		iterVar = loopVar + "Raw"
 	}
 	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", iterVar, src))
 	indent += "\t"
-	if elemGo != "any" {
+	if srcElemGo == "any" && elemGo != "any" {
 		buf.WriteString(fmt.Sprintf(indent+"%s := %s.(%s)\n", loopVar, iterVar, elemGo))
 	} else if iterVar != loopVar {
 		buf.WriteString(fmt.Sprintf(indent+"%s := %s\n", loopVar, iterVar))

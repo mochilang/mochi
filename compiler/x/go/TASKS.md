@@ -70,3 +70,7 @@ TPC-H progress:
 - 2025-07-15 02:37 - Simplified group item generation and removed reflection from _avg/_sum helpers
 - 2025-07-15 02:54 - Tweaked struct alias detection; prefer `Row` when available to fix TPCH generation
 - 2025-07-15 03:06 - Extended JOB golden tests to run queries q1-q33 and added compile script for Go
+- 2025-07-15 04:53 - Began implementing TPCDS support; added struct inference for group keys
+- 2025-07-15 05:06 - Added TPCDS golden tests and refined typed loop handling
+
+- 2025-07-15 05:53 - Captured compiler errors in TPCDS golden tests
