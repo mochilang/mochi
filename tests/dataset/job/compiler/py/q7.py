@@ -1,28 +1,106 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    of_person: str
+    biography_movie: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto10:
+    person_name: object
+    movie_title: object
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    person_id: int
+    name: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    person_id: int
+    movie_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    id: int
+    link: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    linked_movie_id: int
+    link_type_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    id: int
+    name: str
+    name_pcode_cf: str
+    gender: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto8:
+    person_id: int
+    info_type_id: int
+    note: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto9:
+    id: int
+    title: str
+    production_year: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
 K = TypeVar("K")
-
-
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if name == "items" and hasattr(obj, "Items"):
-        return getattr(obj, "Items")
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
 
 
 def _min(v):
@@ -115,28 +193,28 @@ def _query(src, joins, opts):
 
 
 def test_Q7_finds_movie_features_biography_for_person():
-    assert result == [{"of_person": "Alan Brown", "biography_movie": "Feature Film"}]
+    assert result == [Auto1(of_person="Alan Brown", biography_movie="Feature Film")]
 
 
-aka_name = [{"person_id": 1, "name": "Anna Mae"}, {"person_id": 2, "name": "Chris"}]
-cast_info = [{"person_id": 1, "movie_id": 10}, {"person_id": 2, "movie_id": 20}]
-info_type = [{"id": 1, "info": "mini biography"}, {"id": 2, "info": "trivia"}]
-link_type = [{"id": 1, "link": "features"}, {"id": 2, "link": "references"}]
+aka_name = [Auto2(person_id=1, name="Anna Mae"), Auto2(person_id=2, name="Chris")]
+cast_info = [Auto3(person_id=1, movie_id=10), Auto3(person_id=2, movie_id=20)]
+info_type = [Auto4(id=1, info="mini biography"), Auto4(id=2, info="trivia")]
+link_type = [Auto5(id=1, link="features"), Auto5(id=2, link="references")]
 movie_link = [
-    {"linked_movie_id": 10, "link_type_id": 1},
-    {"linked_movie_id": 20, "link_type_id": 2},
+    Auto6(linked_movie_id=10, link_type_id=1),
+    Auto6(linked_movie_id=20, link_type_id=2),
 ]
 name = [
-    {"id": 1, "name": "Alan Brown", "name_pcode_cf": "B", "gender": "m"},
-    {"id": 2, "name": "Zoe", "name_pcode_cf": "Z", "gender": "f"},
+    Auto7(id=1, name="Alan Brown", name_pcode_cf="B", gender="m"),
+    Auto7(id=2, name="Zoe", name_pcode_cf="Z", gender="f"),
 ]
 person_info = [
-    {"person_id": 1, "info_type_id": 1, "note": "Volker Boehm"},
-    {"person_id": 2, "info_type_id": 1, "note": "Other"},
+    Auto8(person_id=1, info_type_id=1, note="Volker Boehm"),
+    Auto8(person_id=2, info_type_id=1, note="Other"),
 ]
 title = [
-    {"id": 10, "title": "Feature Film", "production_year": 1990},
-    {"id": 20, "title": "Late Film", "production_year": 2000},
+    Auto9(id=10, title="Feature Film", production_year=1990),
+    Auto9(id=20, title="Late Film", production_year=2000),
 ]
 rows = _query(
     aka_name,
@@ -165,10 +243,9 @@ rows = _query(
         },
     ],
     {
-        "select": lambda an, n, pi, it, ci, t, ml, lt: {
-            "person_name": n["name"],
-            "movie_title": t["title"],
-        },
+        "select": lambda an, n, pi, it, ci, t, ml, lt: Auto10(
+            person_name=n["name"], movie_title=t["title"]
+        ),
         "where": lambda an, n, pi, it, ci, t, ml, lt: (
             (
                 (
@@ -213,10 +290,10 @@ rows = _query(
     },
 )
 result = [
-    {
-        "of_person": _min([r["person_name"] for r in rows]),
-        "biography_movie": _min([r["movie_title"] for r in rows]),
-    }
+    Auto1(
+        of_person=_min([r.person_name for r in rows]),
+        biography_movie=_min([r.movie_title for r in rows]),
+    )
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q7_finds_movie_features_biography_for_person()

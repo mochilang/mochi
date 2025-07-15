@@ -1,5 +1,76 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    movie_company: str
+    rating: float
+    drama_horror_movie: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    id: int
+    name: str
+    country_code: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    kind: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    movie_id: int
+    company_id: int
+    company_type_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    movie_id: int
+    info_type_id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    id: int
+    production_year: int
+    title: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
@@ -86,38 +157,36 @@ def _query(src, joins, opts):
 
 def test_Q12_finds_high_rated_US_drama_or_horror_with_company():
     assert result == [
-        {
-            "movie_company": "Best Pictures",
-            "rating": 8.3,
-            "drama_horror_movie": "Great Drama",
-        }
+        Auto1(
+            movie_company="Best Pictures", rating=8.3, drama_horror_movie="Great Drama"
+        )
     ]
 
 
 company_name = [
-    {"id": 1, "name": "Best Pictures", "country_code": "[us]"},
-    {"id": 2, "name": "Foreign Films", "country_code": "[uk]"},
+    Auto2(id=1, name="Best Pictures", country_code="[us]"),
+    Auto2(id=2, name="Foreign Films", country_code="[uk]"),
 ]
 company_type = [
-    {"id": 10, "kind": "production companies"},
-    {"id": 20, "kind": "distributors"},
+    Auto3(id=10, kind="production companies"),
+    Auto3(id=20, kind="distributors"),
 ]
-info_type = [{"id": 100, "info": "genres"}, {"id": 200, "info": "rating"}]
+info_type = [Auto4(id=100, info="genres"), Auto4(id=200, info="rating")]
 movie_companies = [
-    {"movie_id": 1000, "company_id": 1, "company_type_id": 10},
-    {"movie_id": 2000, "company_id": 2, "company_type_id": 10},
+    Auto5(movie_id=1000, company_id=1, company_type_id=10),
+    Auto5(movie_id=2000, company_id=2, company_type_id=10),
 ]
 movie_info = [
-    {"movie_id": 1000, "info_type_id": 100, "info": "Drama"},
-    {"movie_id": 2000, "info_type_id": 100, "info": "Horror"},
+    Auto6(movie_id=1000, info_type_id=100, info="Drama"),
+    Auto6(movie_id=2000, info_type_id=100, info="Horror"),
 ]
 movie_info_idx = [
-    {"movie_id": 1000, "info_type_id": 200, "info": 8.3},
-    {"movie_id": 2000, "info_type_id": 200, "info": 7.5},
+    Auto6(movie_id=1000, info_type_id=200, info=8.3),
+    Auto6(movie_id=2000, info_type_id=200, info=7.5),
 ]
 title = [
-    {"id": 1000, "production_year": 2006, "title": "Great Drama"},
-    {"id": 2000, "production_year": 2007, "title": "Low Rated"},
+    Auto7(id=1000, production_year=2006, title="Great Drama"),
+    Auto7(id=2000, production_year=2007, title="Low Rated"),
 ]
 result = _query(
     company_name,
@@ -147,11 +216,11 @@ result = _query(
         },
     ],
     {
-        "select": lambda cn, mc, ct, t, mi, it1, mi_idx, it2: {
-            "movie_company": cn["name"],
-            "rating": mi_idx["info"],
-            "drama_horror_movie": t["title"],
-        },
+        "select": lambda cn, mc, ct, t, mi, it1, mi_idx, it2: Auto1(
+            movie_company=cn["name"],
+            rating=mi_idx["info"],
+            drama_horror_movie=t["title"],
+        ),
         "where": lambda cn, mc, ct, t, mi, it1, mi_idx, it2: (
             (
                 (

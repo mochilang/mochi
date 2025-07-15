@@ -1,28 +1,127 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    voicing_actress: str
+    voiced_movie: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto10:
+    id: int
+    role: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto11:
+    id: int
+    title: str
+    production_year: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto12:
+    actress: object
+    movie: object
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    person_id: int
+    name: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    name: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    movie_id: int
+    person_role_id: int
+    person_id: int
+    role_id: int
+    note: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    id: int
+    country_code: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    movie_id: int
+    company_id: int
+    note: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto8:
+    movie_id: int
+    info_type_id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto9:
+    id: int
+    name: str
+    gender: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
 K = TypeVar("K")
-
-
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if name == "items" and hasattr(obj, "Items"):
-        return getattr(obj, "Items")
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
 
 
 def _min(v):
@@ -116,40 +215,34 @@ def _query(src, joins, opts):
 
 def test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009():
     assert result == [
-        {"voicing_actress": "Angela Stone", "voiced_movie": "Voiced Movie"}
+        Auto1(voicing_actress="Angela Stone", voiced_movie="Voiced Movie")
     ]
 
 
-aka_name = [{"person_id": 1, "name": "A. Stone"}, {"person_id": 2, "name": "J. Doe"}]
-char_name = [{"id": 1, "name": "Protagonist"}, {"id": 2, "name": "Extra"}]
+aka_name = [Auto2(person_id=1, name="A. Stone"), Auto2(person_id=2, name="J. Doe")]
+char_name = [Auto3(id=1, name="Protagonist"), Auto3(id=2, name="Extra")]
 cast_info = [
-    {
-        "movie_id": 1,
-        "person_role_id": 1,
-        "person_id": 1,
-        "role_id": 1,
-        "note": "(voice)",
-    },
-    {"movie_id": 2, "person_role_id": 2, "person_id": 2, "role_id": 2, "note": "Cameo"},
+    Auto4(movie_id=1, person_role_id=1, person_id=1, role_id=1, note="(voice)"),
+    Auto4(movie_id=2, person_role_id=2, person_id=2, role_id=2, note="Cameo"),
 ]
-company_name = [{"id": 10, "country_code": "[us]"}, {"id": 20, "country_code": "[gb]"}]
-info_type = [{"id": 100, "info": "release dates"}]
+company_name = [Auto5(id=10, country_code="[us]"), Auto5(id=20, country_code="[gb]")]
+info_type = [Auto6(id=100, info="release dates")]
 movie_companies = [
-    {"movie_id": 1, "company_id": 10, "note": "Studio (USA)"},
-    {"movie_id": 2, "company_id": 20, "note": "Other (worldwide)"},
+    Auto7(movie_id=1, company_id=10, note="Studio (USA)"),
+    Auto7(movie_id=2, company_id=20, note="Other (worldwide)"),
 ]
 movie_info = [
-    {"movie_id": 1, "info_type_id": 100, "info": "USA: June 2006"},
-    {"movie_id": 2, "info_type_id": 100, "info": "UK: 1999"},
+    Auto8(movie_id=1, info_type_id=100, info="USA: June 2006"),
+    Auto8(movie_id=2, info_type_id=100, info="UK: 1999"),
 ]
 name = [
-    {"id": 1, "name": "Angela Stone", "gender": "f"},
-    {"id": 2, "name": "Bob Angstrom", "gender": "m"},
+    Auto9(id=1, name="Angela Stone", gender="f"),
+    Auto9(id=2, name="Bob Angstrom", gender="m"),
 ]
-role_type = [{"id": 1, "role": "actress"}, {"id": 2, "role": "actor"}]
+role_type = [Auto10(id=1, role="actress"), Auto10(id=2, role="actor")]
 title = [
-    {"id": 1, "title": "Voiced Movie", "production_year": 2006},
-    {"id": 2, "title": "Other Movie", "production_year": 2010},
+    Auto11(id=1, title="Voiced Movie", production_year=2006),
+    Auto11(id=2, title="Other Movie", production_year=2010),
 ]
 matches = _query(
     aka_name,
@@ -187,10 +280,9 @@ matches = _query(
         },
     ],
     {
-        "select": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: {
-            "actress": n["name"],
-            "movie": t["title"],
-        },
+        "select": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: Auto12(
+            actress=n["name"], movie=t["title"]
+        ),
         "where": lambda an, n, ci, chn, rt, t, mc, cn, mi, it: (
             (
                 (
@@ -239,10 +331,10 @@ matches = _query(
     },
 )
 result = [
-    {
-        "voicing_actress": _min([r["actress"] for r in matches]),
-        "voiced_movie": _min([r["movie"] for r in matches]),
-    }
+    Auto1(
+        voicing_actress=_min([r.actress for r in matches]),
+        voiced_movie=_min([r.movie for r in matches]),
+    )
 ]
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009()

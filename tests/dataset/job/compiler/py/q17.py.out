@@ -1,28 +1,84 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    member_in_charnamed_american_movie: str
+    a1: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    movie_id: int
+    person_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    country_code: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+    keyword: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    movie_id: int
+    company_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    movie_id: int
+    keyword_id: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    id: int
+    name: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto8:
+    id: int
+    title: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
 K = TypeVar("K")
-
-
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if name == "items" and hasattr(obj, "Items"):
-        return getattr(obj, "Items")
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
 
 
 def _min(v):
@@ -116,20 +172,20 @@ def _query(src, joins, opts):
 
 def test_Q17_finds_US_character_name_movie_with_actor_starting_with_B():
     assert result == [
-        {"member_in_charnamed_american_movie": "Bob Smith", "a1": "Bob Smith"}
+        Auto1(member_in_charnamed_american_movie="Bob Smith", a1="Bob Smith")
     ]
 
 
-cast_info = [{"movie_id": 1, "person_id": 1}, {"movie_id": 2, "person_id": 2}]
-company_name = [{"id": 1, "country_code": "[us]"}, {"id": 2, "country_code": "[ca]"}]
+cast_info = [Auto2(movie_id=1, person_id=1), Auto2(movie_id=2, person_id=2)]
+company_name = [Auto3(id=1, country_code="[us]"), Auto3(id=2, country_code="[ca]")]
 keyword = [
-    {"id": 10, "keyword": "character-name-in-title"},
-    {"id": 20, "keyword": "other"},
+    Auto4(id=10, keyword="character-name-in-title"),
+    Auto4(id=20, keyword="other"),
 ]
-movie_companies = [{"movie_id": 1, "company_id": 1}, {"movie_id": 2, "company_id": 2}]
-movie_keyword = [{"movie_id": 1, "keyword_id": 10}, {"movie_id": 2, "keyword_id": 20}]
-name = [{"id": 1, "name": "Bob Smith"}, {"id": 2, "name": "Alice Jones"}]
-title = [{"id": 1, "title": "Bob's Journey"}, {"id": 2, "title": "Foreign Film"}]
+movie_companies = [Auto5(movie_id=1, company_id=1), Auto5(movie_id=2, company_id=2)]
+movie_keyword = [Auto6(movie_id=1, keyword_id=10), Auto6(movie_id=2, keyword_id=20)]
+name = [Auto7(id=1, name="Bob Smith"), Auto7(id=2, name="Alice Jones")]
+title = [Auto8(id=1, title="Bob's Journey"), Auto8(id=2, title="Foreign Film")]
 matches = _query(
     name,
     [
@@ -164,6 +220,6 @@ matches = _query(
         and mc["movie_id"] == mk["movie_id"],
     },
 )
-result = [{"member_in_charnamed_american_movie": _min(matches), "a1": _min(matches)}]
+result = [Auto1(member_in_charnamed_american_movie=_min(matches), a1=_min(matches))]
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q17_finds_US_character_name_movie_with_actor_starting_with_B()

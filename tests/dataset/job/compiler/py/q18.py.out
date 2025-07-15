@@ -1,28 +1,91 @@
 from __future__ import annotations
+import dataclasses
 import json
+
+
+@dataclasses.dataclass
+class Auto1:
+    movie_budget: int
+    movie_votes: int
+    movie_title: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto2:
+    id: int
+    info: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto3:
+    id: int
+    name: str
+    gender: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto4:
+    id: int
+    title: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto5:
+    movie_id: int
+    person_id: int
+    note: str
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto6:
+    movie_id: int
+    info_type_id: int
+    info: int
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
+@dataclasses.dataclass
+class Auto7:
+    budget: int
+    votes: int
+    title: object
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 from typing import Any, TypeVar, Generic, Callable
 
 T = TypeVar("T")
 K = TypeVar("K")
 
 
-def _get(obj, name):
-    if obj is None:
-        return None
-    if isinstance(obj, dict):
-        if name in obj:
-            return obj[name]
-    if hasattr(obj, name):
-        return getattr(obj, name)
-    if name == "items" and hasattr(obj, "Items"):
-        return getattr(obj, "Items")
-    if isinstance(obj, (list, tuple)):
-        for it in obj:
-            try:
-                return _get(it, name)
-            except Exception:
-                pass
-    raise Exception("field not found: " + name)
+def _min(v):
+    if hasattr(v, "Items"):
+        v = v.Items
+    if not isinstance(v, list):
+        raise Exception("min() expects list or group")
+    vals = [it for it in v if it is not None]
+    if not vals:
+        return 0
+    return min(vals)
 
 
 def _query(src, joins, opts):
@@ -104,38 +167,38 @@ def _query(src, joins, opts):
 
 
 def test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions():
-    assert result == {"movie_budget": 90, "movie_votes": 400, "movie_title": "Alpha"}
+    assert result == Auto1(movie_budget=90, movie_votes=400, movie_title="Alpha")
 
 
 info_type = [
-    {"id": 1, "info": "budget"},
-    {"id": 2, "info": "votes"},
-    {"id": 3, "info": "rating"},
+    Auto2(id=1, info="budget"),
+    Auto2(id=2, info="votes"),
+    Auto2(id=3, info="rating"),
 ]
 name = [
-    {"id": 1, "name": "Big Tim", "gender": "m"},
-    {"id": 2, "name": "Slim Tim", "gender": "m"},
-    {"id": 3, "name": "Alice", "gender": "f"},
+    Auto3(id=1, name="Big Tim", gender="m"),
+    Auto3(id=2, name="Slim Tim", gender="m"),
+    Auto3(id=3, name="Alice", gender="f"),
 ]
 title = [
-    {"id": 10, "title": "Alpha"},
-    {"id": 20, "title": "Beta"},
-    {"id": 30, "title": "Gamma"},
+    Auto4(id=10, title="Alpha"),
+    Auto4(id=20, title="Beta"),
+    Auto4(id=30, title="Gamma"),
 ]
 cast_info = [
-    {"movie_id": 10, "person_id": 1, "note": "(producer)"},
-    {"movie_id": 20, "person_id": 2, "note": "(executive producer)"},
-    {"movie_id": 30, "person_id": 3, "note": "(producer)"},
+    Auto5(movie_id=10, person_id=1, note="(producer)"),
+    Auto5(movie_id=20, person_id=2, note="(executive producer)"),
+    Auto5(movie_id=30, person_id=3, note="(producer)"),
 ]
 movie_info = [
-    {"movie_id": 10, "info_type_id": 1, "info": 90},
-    {"movie_id": 20, "info_type_id": 1, "info": 120},
-    {"movie_id": 30, "info_type_id": 1, "info": 110},
+    Auto6(movie_id=10, info_type_id=1, info=90),
+    Auto6(movie_id=20, info_type_id=1, info=120),
+    Auto6(movie_id=30, info_type_id=1, info=110),
 ]
 movie_info_idx = [
-    {"movie_id": 10, "info_type_id": 2, "info": 500},
-    {"movie_id": 20, "info_type_id": 2, "info": 400},
-    {"movie_id": 30, "info_type_id": 2, "info": 800},
+    Auto6(movie_id=10, info_type_id=2, info=500),
+    Auto6(movie_id=20, info_type_id=2, info=400),
+    Auto6(movie_id=30, info_type_id=2, info=800),
 ]
 rows = _query(
     cast_info,
@@ -158,11 +221,9 @@ rows = _query(
         },
     ],
     {
-        "select": lambda ci, n, t, mi, mi_idx, it1, it2: {
-            "budget": mi["info"],
-            "votes": mi_idx["info"],
-            "title": t["title"],
-        },
+        "select": lambda ci, n, t, mi, mi_idx, it1, it2: Auto7(
+            budget=mi["info"], votes=mi_idx["info"], title=t["title"]
+        ),
         "where": lambda ci, n, t, mi, mi_idx, it1, it2: (
             (
                 (
@@ -188,22 +249,18 @@ rows = _query(
         and mi["movie_id"] == mi_idx["movie_id"],
     },
 )
-result = {
-    "movie_budget": (
-        min([it for it in [r["budget"] for r in rows] if it is not None])
-        if [r["budget"] for r in rows]
+result = Auto1(
+    movie_budget=(
+        min([it for it in [r.budget for r in rows] if it is not None])
+        if [r.budget for r in rows]
         else 0
     ),
-    "movie_votes": (
-        min([it for it in [r["votes"] for r in rows] if it is not None])
-        if [r["votes"] for r in rows]
+    movie_votes=(
+        min([it for it in [r.votes for r in rows] if it is not None])
+        if [r.votes for r in rows]
         else 0
     ),
-    "movie_title": (
-        min([it for it in [r["title"] for r in rows] if it is not None])
-        if [r["title"] for r in rows]
-        else 0
-    ),
-}
+    movie_title=_min([r.title for r in rows]),
+)
 print(json.dumps(result, default=lambda o: vars(o)))
 test_Q18_finds_minimal_budget__votes_and_title_for_Tim_productions()

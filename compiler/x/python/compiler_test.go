@@ -262,7 +262,7 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 		t.Skip("python3 not installed")
 	}
 	root := findRepoRoot(t)
-	for i := 1; i <= 20; i++ {
+	for i := 1; i <= 33; i++ {
 		q := fmt.Sprintf("q%d", i)
 		t.Run(q, func(t *testing.T) {
 			src := filepath.Join(root, "tests", "dataset", "job", q+".mochi")
