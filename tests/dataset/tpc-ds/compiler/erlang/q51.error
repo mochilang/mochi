@@ -5,7 +5,7 @@ run: exit status 127
 
 [{"item_sk":1,"d_date":2}]
 escript: exception error: test_failed
-  in function  q51_erl__escript__1752__555516__751283__8964:main/1 (/tmp/q51.erl, line 19)
+  in function  q51_erl__escript__1752__561095__694626__8963:main/1 (/tmp/q51.erl, line 19)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

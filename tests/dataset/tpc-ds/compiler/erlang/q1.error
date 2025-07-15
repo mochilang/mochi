@@ -7,9 +7,9 @@ escript: exception error: bad key: sr_return_amt
                                sr_store_sk => 10,sr_return_amt => 20},
                          d => #{d_date_sk => 1,d_year => 1998}})
      *** argument 1: not present in map
-  in call from q1_erl__escript__1752__555492__218346__3:'-main/1-lc$^4/1-1-'/1 (/tmp/q1.erl, line 10)
-  in call from q1_erl__escript__1752__555492__218346__3:'-main/1-lc$^3/1-0-'/1 (/tmp/q1.erl, line 10)
-  in call from q1_erl__escript__1752__555492__218346__3:main/1 (/tmp/q1.erl, line 10)
+  in call from q1_erl__escript__1752__561053__169149__8965:'-main/1-lc$^4/1-1-'/1 (/tmp/q1.erl, line 10)
+  in call from q1_erl__escript__1752__561053__169149__8965:'-main/1-lc$^3/1-0-'/1 (/tmp/q1.erl, line 10)
+  in call from q1_erl__escript__1752__561053__169149__8965:main/1 (/tmp/q1.erl, line 10)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

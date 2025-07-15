@@ -14,6 +14,8 @@
   `compile_tpcds_erlang.go`. Runtime results are stored under
   `tests/dataset/tpc-ds/compiler/erlang` with `.error` files capturing
   failures.
+- [2025-07-15 06:30] Regenerated TPC-DS Erlang outputs with `compile_tpcds_erlang.go`
+  after updating the compiler to v0.10.26.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.

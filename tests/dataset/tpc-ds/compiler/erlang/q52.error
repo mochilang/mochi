@@ -8,9 +8,9 @@ escript: exception error: bad key: price
                          ss => #{item => 1,sold_date => 1,price => 20},
                          d => #{d_date_sk => 1,d_year => 2001,d_moy => 11}})
      *** argument 1: not present in map
-  in call from q52_erl__escript__1752__555517__396718__8962:'-main/1-lc$^5/1-1-'/1 (/tmp/q52.erl, line 9)
-  in call from q52_erl__escript__1752__555517__396718__8962:'-main/1-lc$^4/1-0-'/1 (/tmp/q52.erl, line 9)
-  in call from q52_erl__escript__1752__555517__396718__8962:main/1 (/tmp/q52.erl, line 9)
+  in call from q52_erl__escript__1752__561096__632374__3:'-main/1-lc$^5/1-1-'/1 (/tmp/q52.erl, line 9)
+  in call from q52_erl__escript__1752__561096__632374__3:'-main/1-lc$^4/1-0-'/1 (/tmp/q52.erl, line 9)
+  in call from q52_erl__escript__1752__561096__632374__3:main/1 (/tmp/q52.erl, line 9)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

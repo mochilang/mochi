@@ -11,9 +11,9 @@ escript: exception error: bad key: ws_ext_sales_price
                                ws_ext_sales_price => 100},
                          d => #{d_date_sk => 2,d_date => "2001-02-05"}})
      *** argument 1: not present in map
-  in call from q12_erl__escript__1752__555498__53604__8962:'-main/1-lc$^5/1-1-'/1 (/tmp/q12.erl, line 9)
-  in call from q12_erl__escript__1752__555498__53604__8962:'-main/1-lc$^4/1-0-'/1 (/tmp/q12.erl, line 9)
-  in call from q12_erl__escript__1752__555498__53604__8962:main/1 (/tmp/q12.erl, line 9)
+  in call from q12_erl__escript__1752__561062__931282__8964:'-main/1-lc$^5/1-1-'/1 (/tmp/q12.erl, line 9)
+  in call from q12_erl__escript__1752__561062__931282__8964:'-main/1-lc$^4/1-0-'/1 (/tmp/q12.erl, line 9)
+  in call from q12_erl__escript__1752__561062__931282__8964:main/1 (/tmp/q12.erl, line 9)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

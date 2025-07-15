@@ -15,9 +15,9 @@ escript: exception error: bad key: ss_quantity
                                ss_coupon_amt => 10,ss_sales_price => 90},
                          d => #{d_date_sk => 1,d_year => 2000}})
      *** argument 1: not present in map
-  in call from q27_erl__escript__1752__555505__382593__8965:'-main/1-lc$^8/1-2-'/1 (/tmp/q27.erl, line 11)
-  in call from q27_erl__escript__1752__555505__382593__8965:'-main/1-lc$^6/1-1-'/1 (/tmp/q27.erl, line 11)
-  in call from q27_erl__escript__1752__555505__382593__8965:main/1 (/tmp/q27.erl, line 11)
+  in call from q27_erl__escript__1752__561075__385480__8962:'-main/1-lc$^8/1-2-'/1 (/tmp/q27.erl, line 11)
+  in call from q27_erl__escript__1752__561075__385480__8962:'-main/1-lc$^6/1-1-'/1 (/tmp/q27.erl, line 11)
+  in call from q27_erl__escript__1752__561075__385480__8962:main/1 (/tmp/q27.erl, line 11)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 

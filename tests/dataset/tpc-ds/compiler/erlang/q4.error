@@ -14,9 +14,9 @@ escript: exception error: bad key: cs_ext_list_price
                                cs_ext_discount_amt => 0,
                                cs_ext_sales_price => 10}})
      *** argument 1: not present in map
-  in call from q4_erl__escript__1752__555493__840439__8964:'-main/1-lc$^11/1-1-'/1 (/tmp/q4.erl, line 11)
-  in call from q4_erl__escript__1752__555493__840439__8964:'-main/1-lc$^10/1-0-'/1 (/tmp/q4.erl, line 11)
-  in call from q4_erl__escript__1752__555493__840439__8964:main/1 (/tmp/q4.erl, line 11)
+  in call from q4_erl__escript__1752__561056__76195__8964:'-main/1-lc$^11/1-1-'/1 (/tmp/q4.erl, line 11)
+  in call from q4_erl__escript__1752__561056__76195__8964:'-main/1-lc$^10/1-0-'/1 (/tmp/q4.erl, line 11)
+  in call from q4_erl__escript__1752__561056__76195__8964:main/1 (/tmp/q4.erl, line 11)
   in call from escript:run/2 (escript.erl, line 904)
   in call from escript:start/1 (escript.erl, line 418)
   in call from init:start_it/1 
