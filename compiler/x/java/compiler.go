@@ -990,6 +990,22 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			return "String"
 		case "substring":
 			return "String"
+		case "concat":
+			if len(p.Call.Args) == 0 {
+				return "List<?>"
+			}
+			elem := listElemType(c.inferType(p.Call.Args[0]))
+			if elem == "" {
+				elem = "Object"
+			}
+			for _, a := range p.Call.Args[1:] {
+				t := listElemType(c.inferType(a))
+				if t == "" || t != elem {
+					elem = "Object"
+					break
+				}
+			}
+			return fmt.Sprintf("List<%s>", wrapperType(elem))
 		case "values":
 			return "List<?>"
 		}
@@ -2613,6 +2629,22 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			c.helpers["append"] = true
 			return fmt.Sprintf("append(%s, %s)", a1, a2), nil
+		case "concat":
+			if len(p.Call.Args) == 0 {
+				return "new ArrayList<>()", nil
+			}
+			expr, err := c.compileExpr(p.Call.Args[0])
+			if err != nil {
+				return "", err
+			}
+			for _, a := range p.Call.Args[1:] {
+				arg, err := c.compileExpr(a)
+				if err != nil {
+					return "", err
+				}
+				expr = fmt.Sprintf("java.util.stream.Stream.concat(%s.stream(), %s.stream()).collect(java.util.stream.Collectors.toList())", expr, arg)
+			}
+			return expr, nil
 		case "count":
 			if len(p.Call.Args) != 1 {
 				return "", fmt.Errorf("count expects 1 argument at line %d", p.Pos.Line)
