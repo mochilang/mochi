@@ -1,6 +1,8 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-15 03:39 UTC
+- Generated missing TPC-DS outputs (q30-q39, q71-q78) with new `compile_tpcds_ts.go`.
 ### 2025-07-15 03:07 UTC
 - Added JOB dataset queries q1-q33 to golden tests and regenerated outputs.
 ### 2025-07-14 09:34 UTC

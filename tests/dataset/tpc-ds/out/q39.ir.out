@@ -1,4 +1,4 @@
-func main (regs=247)
+func main (regs=246)
   // let inventory = [
   Const        r0, [{"inv_date_sk": 1, "inv_item_sk": 1, "inv_quantity_on_hand": 10, "inv_warehouse_sk": 1}, {"inv_date_sk": 2, "inv_item_sk": 1, "inv_quantity_on_hand": 10, "inv_warehouse_sk": 1}, {"inv_date_sk": 3, "inv_item_sk": 1, "inv_quantity_on_hand": 250, "inv_warehouse_sk": 1}]
   // let item = [
@@ -239,7 +239,7 @@ L11:
   Jump         L13
 L10:
   // var grouped: map<string, map<string, any>> = {}
-  Const        r141, {}
+  Const        r141, {"map[i:1 w:1]": {"i": 1, "qtys": [10, 10, 250], "w": 1}}
   Move         r142, r141
   // for m in monthly {
   IterPrep     r143, r4
@@ -370,43 +370,43 @@ L19:
   SubInt       r220, r219, r109
   DivFloat     r221, r204, r220
   // let cov = math.sqrt(variance) / mean
-  Const        r223, "sqrt"
-  Index        r224, r222, r223
-  Move         r225, r221
-  CallV        r226, r224, 1, r225
-  DivFloat     r227, r226, r202
+  Move         r222, r221
+  Const        r224, "math"
+  Const        r225, "sqrt"
+  PyCall       r223, r224, r225, 1, r222
+  DivFloat     r226, r223, r202
   // if cov > 1.5 {
-  Const        r228, 1.5
-  LessFloat    r229, r228, r227
-  JumpIfFalse  r229, L21
+  Const        r227, 1.5
+  LessFloat    r228, r227, r226
+  JumpIfFalse  r228, L21
   // summary = append(summary, {w_warehouse_sk: g.w, i_item_sk: g.i, cov: cov})
-  Const        r230, "w_warehouse_sk"
+  Const        r229, "w_warehouse_sk"
   Const        r5, "w"
-  Index        r231, r115, r5
-  Const        r232, "i_item_sk"
+  Index        r230, r115, r5
+  Const        r231, "i_item_sk"
   Const        r7, "i"
-  Index        r233, r115, r7
-  Const        r234, "cov"
+  Index        r232, r115, r7
+  Const        r233, "cov"
+  Move         r234, r229
   Move         r235, r230
   Move         r236, r231
   Move         r237, r232
   Move         r238, r233
-  Move         r239, r234
-  Move         r240, r227
-  MakeMap      r241, 3, r235
-  Append       r242, r194, r241
-  Move         r194, r242
+  Move         r239, r226
+  MakeMap      r240, 3, r234
+  Append       r241, r194, r240
+  Move         r194, r241
 L21:
   // for g in values(grouped) {
-  Const        r243, 1
-  AddInt       r244, r198, r243
-  Move         r198, r244
+  Const        r242, 1
+  AddInt       r243, r198, r242
+  Move         r198, r243
   Jump         L22
 L18:
   // json(summary)
   JSON         r194
   // expect summary == [{w_warehouse_sk: 1, i_item_sk: 1, cov: 1.5396007178390022}]
-  Const        r245, [{"cov": 1.539600717839002, "i_item_sk": 1, "w_warehouse_sk": 1}]
-  Equal        r246, r194, r245
-  Expect       r246
+  Const        r244, [{"cov": 1.539600717839002, "i_item_sk": 1, "w_warehouse_sk": 1}]
+  Equal        r245, r194, r244
+  Expect       r245
   Return       r0

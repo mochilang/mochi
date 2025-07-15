@@ -1,1 +1,10 @@
-[{"d_week_seq":10,"i_item_desc":"ItemA","no_promo":1,"promo":0,"total_cnt":1,"w_warehouse_name":"Main"}]
+[
+  {
+    "d_week_seq": 10,
+    "i_item_desc": "ItemA",
+    "no_promo": 1,
+    "promo": 0,
+    "total_cnt": 1,
+    "w_warehouse_name": "Main"
+  }
+]

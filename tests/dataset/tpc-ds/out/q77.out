@@ -1,0 +1,5 @@
+[{"channel":"catalog channel","id":1,"profit":0,"returns":0,"sales":0},{"channel":"store channel","id":1,"profit":0,"returns":0,"sales":0},{"channel":"web channel","id":1,"profit":0,"returns":0,"sales":0}]
+call graph: main
+stack trace:
+  main at /workspace/mochi/tests/dataset/tpc-ds/q77.mochi:93
+    expect result == [

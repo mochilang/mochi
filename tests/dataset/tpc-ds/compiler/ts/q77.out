@@ -1,1 +1,23 @@
-[{"channel":"catalog channel","id":1,"profit":12,"returns":7,"sales":150},{"channel":"store channel","id":1,"profit":9,"returns":5,"sales":100},{"channel":"web channel","id":1,"profit":18,"returns":10,"sales":200}]
+[
+  {
+    "channel": "catalog channel",
+    "id": 1,
+    "profit": 12,
+    "returns": 7,
+    "sales": 150
+  },
+  {
+    "channel": "store channel",
+    "id": 1,
+    "profit": 9,
+    "returns": 5,
+    "sales": 100
+  },
+  {
+    "channel": "web channel",
+    "id": 1,
+    "profit": 18,
+    "returns": 10,
+    "sales": 200
+  }
+]

@@ -1,1 +1,35 @@
-[{"channel":"catalog","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatC","sales_amt":20,"sales_cnt":1},{"channel":"store","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatA","sales_amt":10,"sales_cnt":1},{"channel":"web","col_name":null,"d_qoy":1,"d_year":1998,"i_category":"CatB","sales_amt":15,"sales_cnt":1}]
+[
+  {
+    "channel": "catalog",
+    "col_name": null,
+    "d_qoy": 1,
+    "d_year": 1998,
+    "i_category": "CatC",
+    "sales_amt": 20,
+    "sales_cnt": 1
+  },
+  {
+    "channel": "store",
+    "col_name": null,
+    "d_qoy": 1,
+    "d_year": 1998,
+    "i_category": "CatA",
+    "sales_amt": 10,
+    "sales_cnt": 1
+  },
+  {
+    "channel": "web",
+    "col_name": null,
+    "d_qoy": 1,
+    "d_year": 1998,
+    "i_category": "CatB",
+    "sales_amt": 15,
+    "sales_cnt": 1
+  }
+]
+[0m[1m[31merror[0m: Uncaught (in promise) Error: expect failed
+  ) throw new Error("expect failed");
+[0m[31m          ^[0m
+    at [0m[1m[3mtest_TPCDS_Q76_simplified[0m ([0m[36mfile:///tmp/q76.ts[0m:[0m[33m46[0m:[0m[33m11[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q76.ts[0m:[0m[33m215[0m:[0m[33m3[0m)
+    at [0m[36mfile:///tmp/q76.ts[0m:[0m[33m273[0m:[0m[33m1[0m

@@ -1,1 +1,29 @@
-[{"ext_price":100,"i_brand":"BrandA","i_brand_id":10,"t_hour":8,"t_minute":30},{"ext_price":150,"i_brand":"BrandB","i_brand_id":20,"t_hour":8,"t_minute":30},{"ext_price":200,"i_brand":"BrandA","i_brand_id":10,"t_hour":18,"t_minute":0}]
+[
+  {
+    "ext_price": 100,
+    "i_brand": "BrandA",
+    "i_brand_id": 10,
+    "t_hour": 8,
+    "t_minute": 30
+  },
+  {
+    "ext_price": 150,
+    "i_brand": "BrandB",
+    "i_brand_id": 20,
+    "t_hour": 8,
+    "t_minute": 30
+  },
+  {
+    "ext_price": 200,
+    "i_brand": "BrandA",
+    "i_brand_id": 10,
+    "t_hour": 18,
+    "t_minute": 0
+  }
+]
+[0m[1m[31merror[0m: Uncaught (in promise) Error: expect failed
+  ) throw new Error("expect failed");
+[0m[31m          ^[0m
+    at [0m[1m[3mtest_TPCDS_Q71_simplified[0m ([0m[36mfile:///tmp/q71.ts[0m:[0m[33m40[0m:[0m[33m11[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q71.ts[0m:[0m[33m228[0m:[0m[33m3[0m)
+    at [0m[36mfile:///tmp/q71.ts[0m:[0m[33m277[0m:[0m[33m1[0m
