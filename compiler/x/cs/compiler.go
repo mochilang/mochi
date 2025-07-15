@@ -1224,8 +1224,8 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 				}
 			case "<", "<=", ">", ">=":
 				leftStr = false
-				if isStringType(typs[i]) && isStringType(typs[i+1]) {
-					cmp := fmt.Sprintf("string.Compare(%s, %s)", left, right)
+				if isStringType(typs[i]) || isStringType(typs[i+1]) || strs[i] || strs[i+1] {
+					cmp := fmt.Sprintf("string.Compare(Convert.ToString(%s), Convert.ToString(%s))", left, right)
 					switch op {
 					case "<":
 						expr = fmt.Sprintf("%s < 0", cmp)
