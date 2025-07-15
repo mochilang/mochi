@@ -1,0 +1,4 @@
+# command-line-arguments
+/tmp/q15.go:185:9: invalid operation: tRaw (variable of struct type Title) is not an interface
+/tmp/q15.go:239:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q15.go:247:10: invalid operation: rRaw (variable of struct type Row) is not an interface

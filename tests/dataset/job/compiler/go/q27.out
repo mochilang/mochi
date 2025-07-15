@@ -1,0 +1,8 @@
+# command-line-arguments
+/tmp/q27.go:118:3: undefined: Producing_company
+/tmp/q27.go:119:3: Link_type (type) is not an expression
+/tmp/q27.go:120:3: undefined: Complete_western_sequel
+/tmp/q27.go:232:10: invalid operation: ccRaw (variable of struct type Complete_cast) is not an interface
+/tmp/q27.go:301:3: undefined: Producing_company
+/tmp/q27.go:309:3: Link_type (type) is not an expression
+/tmp/q27.go:317:3: undefined: Complete_western_sequel

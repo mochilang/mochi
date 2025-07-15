@@ -1,0 +1,2 @@
+# command-line-arguments
+/tmp/q12.go:173:10: invalid operation: cnRaw (variable of struct type Company_name) is not an interface

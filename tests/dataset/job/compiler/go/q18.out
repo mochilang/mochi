@@ -1,0 +1,12 @@
+# command-line-arguments
+/tmp/q18.go:93:3: unknown field Movie_budget in struct literal of type v
+/tmp/q18.go:94:3: unknown field Movie_votes in struct literal of type v
+/tmp/q18.go:95:3: unknown field Movie_title in struct literal of type v
+/tmp/q18.go:184:10: invalid operation: ciRaw (variable of struct type Cast_info) is not an interface
+/tmp/q18.go:228:3: unknown field Movie_budget in struct literal of type v
+/tmp/q18.go:231:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q18.go:236:3: unknown field Movie_votes in struct literal of type v
+/tmp/q18.go:239:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q18.go:244:3: unknown field Movie_title in struct literal of type v
+/tmp/q18.go:247:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q18.go:247:10: too many errors

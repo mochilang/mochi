@@ -1,0 +1,6 @@
+# command-line-arguments
+/tmp/q13.go:100:3: undefined: Release_date
+/tmp/q13.go:101:3: undefined: Rating
+/tmp/q13.go:102:3: undefined: German_movie
+/tmp/q13.go:201:10: invalid operation: cnRaw (variable of struct type Company_name) is not an interface
+/tmp/q13.go:254:11: cannot use Candidate{…} (value of struct type Candidate) as v value in assignment

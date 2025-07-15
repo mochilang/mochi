@@ -1,0 +1,6 @@
+# command-line-arguments
+/tmp/q26.go:246:10: invalid operation: ccRaw (variable of struct type Complete_cast) is not an interface
+/tmp/q26.go:319:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q26.go:327:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q26.go:335:10: invalid operation: rRaw (variable of struct type Row) is not an interface
+/tmp/q26.go:343:10: invalid operation: rRaw (variable of struct type Row) is not an interface

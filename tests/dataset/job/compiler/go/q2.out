@@ -1,2 +1,2 @@
-"Der Film"
-   test Q2 finds earliest title for German companies with character keyword ... ok (2.0µs)
+# command-line-arguments
+/tmp/q2.go:125:10: invalid operation: cnRaw (variable of struct type Company_name) is not an interface
