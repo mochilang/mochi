@@ -1,2 +1,11 @@
 run: exit status 2
-ERROR: /tmp/q19.pl:58: user:main '<meta-call>'/1: Unknown procedure: substr/4
+[
+  {
+    "ext_price":0,
+    "i_brand":"B1",
+    "i_brand_id":1,
+    "i_manufact":"M1",
+    "i_manufact_id":1
+  }
+]
+ERROR: /tmp/q19.pl:58: user:main Unknown message: error('expect failed')
