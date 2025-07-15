@@ -1,0 +1,51 @@
+/tmp/q15.c: In function ‘test_Q15_returns_top_revenue_supplier_s__for_Q1_1996’:
+/tmp/q15.c:277:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  277 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q15.c:284:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  284 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q15.c: In function ‘main’:
+/tmp/q15.c:335:31: warning: implicit declaration of function ‘revenue0_item_list_t_create’ [-Wimplicit-function-declaration]
+  335 |   revenue0_item_list_t tmp9 = revenue0_item_list_t_create(tmp8.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q15.c:335:31: error: invalid initializer
+/tmp/q15.c:339:29: warning: implicit declaration of function ‘lineitem_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  339 |     lineitem_list_t tmp11 = lineitem_list_t_create(_gp.items.len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~
+      |                             list_list_int_create
+/tmp/q15.c:339:29: error: invalid initializer
+/tmp/q15.c:373:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  373 |       result_item_list_t_create(supplier.len * revenue0.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q15.c:373:41: error: ‘(supplier_t *)&supplier’ is a pointer; did you mean to use ‘->’?
+  373 |       result_item_list_t_create(supplier.len * revenue0.len);
+      |                                         ^
+      |                                         ->
+/tmp/q15.c:407:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  407 |     _json_string(it.s_name);
+      |                  ~~^~~~~~~
+/tmp/q15.c:80:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q15.c:411:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  411 |     _json_string(it.s_address);
+      |                  ~~^~~~~~~~~~
+/tmp/q15.c:80:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q15.c:415:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  415 |     _json_string(it.s_phone);
+      |                  ~~^~~~~~~~
+/tmp/q15.c:80:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   80 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q15.c:423:65: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  423 |   test_Q15_returns_top_revenue_supplier_s__for_Q1_1996_result = result;
+      |                                                                 ^~~~~~
+/tmp/q15.c:424:62: error: ‘rev’ undeclared (first use in this function)
+  424 |   test_Q15_returns_top_revenue_supplier_s__for_Q1_1996_rev = rev;
+      |                                                              ^~~
+/tmp/q15.c:424:62: note: each undeclared identifier is reported only once for each function it appears in

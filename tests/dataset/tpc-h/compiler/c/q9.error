@@ -1,0 +1,26 @@
+/tmp/q9.c: In function ‘test_Q9_computes_profit_for_green_parts_by_nation_and_year’:
+/tmp/q9.c:281:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  281 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q9.c:289:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  289 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q9.c: In function ‘main’:
+/tmp/q9.c:346:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  346 |     _json_string(it.o_year);
+      |                  ~~^~~~~~~
+/tmp/q9.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q9.c:354:69: error: ‘cost’ undeclared (first use in this function)
+  354 |   test_Q9_computes_profit_for_green_parts_by_nation_and_year_cost = cost;
+      |                                                                     ^~~~
+/tmp/q9.c:354:69: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q9.c:355:71: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  355 |   test_Q9_computes_profit_for_green_parts_by_nation_and_year_result = result;
+      |                                                                       ^~~~~~
+/tmp/q9.c:356:72: error: ‘revenue’ undeclared (first use in this function)
+  356 |   test_Q9_computes_profit_for_green_parts_by_nation_and_year_revenue = revenue;
+      |                                                                        ^~~~~~~

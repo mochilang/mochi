@@ -1,0 +1,78 @@
+/tmp/q22.c: In function ‘test_Q22_returns_wealthy_inactive_customers_by_phone_prefix’:
+/tmp/q22.c:330:7: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  330 |       (tmp_item_t){.cntrycode = "30", .numcust = 1, .totacctbal = 700.0}};
+      |       ^
+/tmp/q22.c:334:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  334 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q22.c:342:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  342 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q22.c: In function ‘main’:
+/tmp/q22.c:373:7: error: conflicting types for ‘valid_codes’; have ‘int’
+  373 |   int valid_codes = valid_codes;
+      |       ^~~~~~~~~~~
+/tmp/q22.c:365:15: note: previous definition of ‘valid_codes’ with type ‘list_string’
+  365 |   list_string valid_codes = list_string_create(7);
+      |               ^~~~~~~~~~~
+/tmp/q22.c:379:61: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  379 |             valid_codes, c.c_acctbal > 0.0 && slice_string(c.c_phone, 0, 2)))) {
+      |                                                            ~^~~~~~~~
+/tmp/q22.c:131:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  131 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/q22.c:379:44: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
+  379 |             valid_codes, c.c_acctbal > 0.0 && slice_string(c.c_phone, 0, 2)))) {
+      |                          ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                            |
+      |                                            int
+/tmp/q22.c:86:54: note: expected ‘char *’ but argument is of type ‘int’
+   86 | static int contains_list_string(list_string v, char *item) {
+      |                                                ~~~~~~^~~~
+/tmp/q22.c:387:23: warning: implicit declaration of function ‘order_list_t_create’ [-Wimplicit-function-declaration]
+  387 |   order_list_t tmp7 = order_list_t_create(orders_len);
+      |                       ^~~~~~~~~~~~~~~~~~~
+/tmp/q22.c:387:23: error: invalid initializer
+/tmp/q22.c:391:26: error: ‘c’ undeclared (first use in this function)
+  391 |     if (!(o.o_custkey == c.c_custkey)) {
+      |                          ^
+/tmp/q22.c:391:26: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q22.c:403:59: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  403 |     if (!(contains_list_string(valid_codes, slice_string(c.c_phone, 0, 2)) &&
+      |                                                          ~^~~~~~~~
+/tmp/q22.c:131:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  131 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/q22.c:408:36: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  408 |         .cntrycode = slice_string(c.c_phone, 0, 2), .c_acctbal = c.c_acctbal};
+      |                                   ~^~~~~~~~
+/tmp/q22.c:131:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  131 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/q22.c:420:23: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  420 |     tmp14.data[tmp15] = c.cntrycode;
+      |                       ^
+/tmp/q22.c:432:9: warning: implicit declaration of function ‘eligible_customers_item_list_t_create’ [-Wimplicit-function-declaration]
+  432 |         eligible_customers_item_list_t_create(_gp.items.len);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q22.c:432:9: error: invalid initializer
+/tmp/q22.c:456:47: error: incompatible type for argument 1 of ‘_count’
+  456 |         .cntrycode = g.key, .numcust = _count(g), .totacctbal = total};
+      |                                               ^
+      |                                               |
+      |                                               groupeligible_customers_item_t_t_t
+/tmp/q22.c:71:28: note: expected ‘list_int’ but argument is of type ‘groupeligible_customers_item_t_t_t’
+   71 | static int _count(list_int v) { return v.len; }
+      |                   ~~~~~~~~~^
+/tmp/q22.c:460:21: error: incompatible types when assigning to type ‘int’ from type ‘row_item_t’
+  460 |     tmp27.data[0] = row;
+      |                     ^~~
+/tmp/q22.c:471:21: error: request for member ‘cntrycode’ in something not a structure or union
+  471 |     tmp33[tmp31] = r.cntrycode;
+      |                     ^
+/tmp/q22.c:494:8: error: ‘tmp23’ undeclared (first use in this function); did you mean ‘tmp33’?
+  494 |   free(tmp23.data);
+      |        ^~~~~
+      |        tmp33

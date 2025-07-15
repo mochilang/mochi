@@ -1,0 +1,44 @@
+/tmp/q4.c: In function ‘test_Q4_returns_count_of_orders_with_late_lineitems_in_range’:
+/tmp/q4.c:245:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  245 |                    (tmp_item_t){.o_orderpriority = "2-HIGH", .order_count = 1}};
+      |                    ^
+/tmp/q4.c:249:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  249 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q4.c:258:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  258 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q4.c: In function ‘main’:
+/tmp/q4.c:297:23: warning: implicit declaration of function ‘order_list_t_create’ [-Wimplicit-function-declaration]
+  297 |   order_list_t tmp4 = order_list_t_create(orders_len);
+      |                       ^~~~~~~~~~~~~~~~~~~
+/tmp/q4.c:297:23: error: invalid initializer
+/tmp/q4.c:310:26: warning: implicit declaration of function ‘lineitem_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  310 |   lineitem_list_t tmp7 = lineitem_list_t_create(lineitem_len);
+      |                          ^~~~~~~~~~~~~~~~~~~~~~
+      |                          list_list_int_create
+/tmp/q4.c:310:26: error: invalid initializer
+/tmp/q4.c:314:27: error: ‘o’ undeclared (first use in this function)
+  314 |     if (!(l.l_orderkey == o.o_orderkey && l.l_commitdate < l.l_receiptdate)) {
+      |                           ^
+/tmp/q4.c:314:27: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q4.c:321:24: error: invalid initializer
+  321 |   order_list_t tmp10 = order_list_t_create(date_filtered_orders.len);
+      |                        ^~~~~~~~~~~~~~~~~~~
+/tmp/q4.c:339:23: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  339 |     tmp14.data[tmp15] = o.o_orderpriority;
+      |                       ^
+/tmp/q4.c:350:26: error: invalid initializer
+  350 |     order_list_t tmp21 = order_list_t_create(_gp.items.len);
+      |                          ^~~~~~~~~~~~~~~~~~~
+/tmp/q4.c:386:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  386 |     _json_string(it.o_orderpriority);
+      |                  ~~^~~~~~~~~~~~~~~~
+/tmp/q4.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q4.c:394:73: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  394 |   test_Q4_returns_count_of_orders_with_late_lineitems_in_range_result = result;
+      |                                                                         ^~~~~~

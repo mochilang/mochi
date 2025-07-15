@@ -1,0 +1,59 @@
+/tmp/q5.c: In function ‘test_Q5_returns_revenue_per_nation_in_ASIA_with_local_suppliers’:
+/tmp/q5.c:346:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  346 |                    (tmp_item_t){.n_name = "INDIA", .revenue = 720}};
+      |                    ^
+/tmp/q5.c:350:23: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  350 |           .len != tmp1.len) {
+      |                       ^
+      |                       ->
+/tmp/q5.c:359:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  359 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q5.c: In function ‘main’:
+/tmp/q5.c:407:24: warning: implicit declaration of function ‘nation_list_t_create’ [-Wimplicit-function-declaration]
+  407 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                        ^~~~~~~~~~~~~~~~~~~~
+/tmp/q5.c:407:51: error: ‘(region_t *)&region’ is a pointer; did you mean to use ‘->’?
+  407 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                                                   ^
+      |                                                   ->
+/tmp/q5.c:407:64: error: ‘(nation_t *)&nation’ is a pointer; did you mean to use ‘->’?
+  407 |   nation_list_t tmp4 = nation_list_t_create(region.len * nation.len);
+      |                                                                ^
+      |                                                                ->
+/tmp/q5.c:426:7: warning: implicit declaration of function ‘local_customer_supplier_orders_item_list_t_create’; did you mean ‘create_local_customer_supplier_orders_item_list’? [-Wimplicit-function-declaration]
+  426 |       local_customer_supplier_orders_item_list_t_create(
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |       create_local_customer_supplier_orders_item_list
+/tmp/q5.c:427:19: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  427 |           customer.len * asia_nations.len * orders.len * lineitem.len *
+      |                   ^
+      |                   ->
+/tmp/q5.c:427:51: error: ‘(order_t *)&orders’ is a pointer; did you mean to use ‘->’?
+  427 |           customer.len * asia_nations.len * orders.len * lineitem.len *
+      |                                                   ^
+      |                                                   ->
+/tmp/q5.c:427:66: error: ‘(lineitem_t *)&lineitem’ is a pointer; did you mean to use ‘->’?
+  427 |           customer.len * asia_nations.len * orders.len * lineitem.len *
+      |                                                                  ^
+      |                                                                  ->
+/tmp/q5.c:428:19: error: ‘(supplier_t *)&supplier’ is a pointer; did you mean to use ‘->’?
+  428 |           supplier.len);
+      |                   ^
+      |                   ->
+/tmp/q5.c:478:23: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  478 |     tmp16.data[tmp17] = r.nation;
+      |                       ^
+/tmp/q5.c:490:9: error: invalid initializer
+  490 |         local_customer_supplier_orders_item_list_t_create(_gp.items.len);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q5.c:542:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  542 |     _json_string(it.n_name);
+      |                  ~~^~~~~~~
+/tmp/q5.c:71:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   71 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/q5.c:551:7: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  551 |       result;
+      |       ^~~~~~

@@ -1,0 +1,53 @@
+/tmp/q13.c: In function ‘test_Q13_groups_customers_by_non_special_order_count’:
+/tmp/q13.c:259:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  259 |                    (tmp_item_t){.c_count = 0, .custdist = 2}};
+      |                    ^
+/tmp/q13.c:262:67: error: request for member ‘len’ in something not a structure or union
+  262 |   if (test_Q13_groups_customers_by_non_special_order_count_grouped.len !=
+      |                                                                   ^
+/tmp/q13.c:263:11: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  263 |       tmp1.len) {
+      |           ^
+      |           ->
+/tmp/q13.c:267:75: error: request for member ‘len’ in something not a structure or union
+  267 |          i3 < test_Q13_groups_customers_by_non_special_order_count_grouped.len;
+      |                                                                           ^
+/tmp/q13.c:270:15: error: request for member ‘data’ in something not a structure or union
+  270 |               .data[i3] != tmp1.data[i3]) {
+      |               ^
+/tmp/q13.c:270:32: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  270 |               .data[i3] != tmp1.data[i3]) {
+      |                                ^
+      |                                ->
+/tmp/q13.c: In function ‘main’:
+/tmp/q13.c:295:23: warning: implicit declaration of function ‘order_list_t_create’ [-Wimplicit-function-declaration]
+  295 |   order_list_t tmp4 = order_list_t_create(orders_len);
+      |                       ^~~~~~~~~~~~~~~~~~~
+/tmp/q13.c:295:23: error: invalid initializer
+/tmp/q13.c:299:27: error: ‘c’ undeclared (first use in this function)
+  299 |     if (!((o.o_custkey == c.c_custkey &&
+      |                           ^
+/tmp/q13.c:299:27: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q13.c:300:33: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  300 |            ((!(contains_string(o.o_comment, "special")))) &&
+      |                                ~^~~~~~~~~~
+/tmp/q13.c:63:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   63 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/q13.c:301:33: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  301 |            ((!(contains_string(o.o_comment, "requests"))))))) {
+      |                                ~^~~~~~~~~~
+/tmp/q13.c:63:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   63 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/q13.c:331:31: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
+  331 |   grouped_item_list_t tmp15 = grouped_item_list_t_create(tmp14.len);
+      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q13.c:331:31: error: invalid initializer
+/tmp/q13.c:337:9: warning: implicit declaration of function ‘per_customer_item_list_t_create’ [-Wimplicit-function-declaration]
+  337 |         per_customer_item_list_t_create(_gp.items.len);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q13.c:337:9: error: invalid initializer
+/tmp/q13.c:381:66: error: incompatible types when assigning to type ‘int’ from type ‘grouped_item_list_t’
+  381 |   test_Q13_groups_customers_by_non_special_order_count_grouped = grouped;
+      |                                                                  ^~~~~~~

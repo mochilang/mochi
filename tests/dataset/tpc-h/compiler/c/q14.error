@@ -1,0 +1,28 @@
+/tmp/q14.c: In function ‘main’:
+/tmp/q14.c:208:7: warning: implicit declaration of function ‘filtered_item_list_t_create’ [-Wimplicit-function-declaration]
+  208 |       filtered_item_list_t_create(lineitem.len * part.len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/q14.c:208:43: error: ‘(lineitem_t *)&lineitem’ is a pointer; did you mean to use ‘->’?
+  208 |       filtered_item_list_t_create(lineitem.len * part.len);
+      |                                           ^
+      |                                           ->
+/tmp/q14.c:208:54: error: ‘(part_t *)&part’ is a pointer; did you mean to use ‘->’?
+  208 |       filtered_item_list_t_create(lineitem.len * part.len);
+      |                                                      ^
+      |                                                      ->
+/tmp/q14.c:222:58: warning: passing argument 1 of ‘contains_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  222 |           (filtered_item_t){.is_promo = contains_string(p.p_type, "PROMO"),
+      |                                                         ~^~~~~~~
+/tmp/q14.c:69:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | static int contains_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/q14.c:252:67: error: ‘expected’ undeclared (first use in this function)
+  252 |   test_Q14_calculates_promo_revenue_percent_in_1995_09_expected = expected;
+      |                                                                   ^~~~~~~~
+/tmp/q14.c:252:67: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/q14.c:253:64: error: ‘promo’ undeclared (first use in this function)
+  253 |   test_Q14_calculates_promo_revenue_percent_in_1995_09_promo = promo;
+      |                                                                ^~~~~
+/tmp/q14.c:255:64: error: ‘total’ undeclared (first use in this function)
+  255 |   test_Q14_calculates_promo_revenue_percent_in_1995_09_total = total;
+      |                                                                ^~~~~
