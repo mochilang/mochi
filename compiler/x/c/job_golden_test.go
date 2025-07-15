@@ -4,6 +4,7 @@ package ccode_test
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,6 +16,13 @@ import (
 	"mochi/runtime/vm"
 	"mochi/types"
 )
+
+var update = flag.Bool("update", false, "update golden files")
+
+func shouldUpdate() bool {
+	f := flag.Lookup("update")
+	return f != nil && f.Value.String() == "true"
+}
 
 func repoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
@@ -67,14 +75,20 @@ func TestCCompiler_JOB_Golden(t *testing.T) {
 				return
 			}
 			wantCodePath := filepath.Join(root, "tests", "dataset", "job", "compiler", "c", query+".c")
-			wantCode, err := os.ReadFile(wantCodePath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
 			gotCode := stripHeader(bytes.TrimSpace(code))
-			wantCode = stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(gotCode, wantCode) {
-				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c", gotCode, wantCode)
+			if shouldUpdate() {
+				if err := os.WriteFile(wantCodePath, append(gotCode, '\n'), 0644); err != nil {
+					t.Fatalf("write golden: %v", err)
+				}
+			} else {
+				wantCode, err := os.ReadFile(wantCodePath)
+				if err != nil {
+					t.Fatalf("read golden: %v", err)
+				}
+				wantCode = stripHeader(bytes.TrimSpace(wantCode))
+				if !bytes.Equal(gotCode, wantCode) {
+					t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", query+".c", gotCode, wantCode)
+				}
 			}
 			dir := t.TempDir()
 			cfile := filepath.Join(dir, "prog.c")
