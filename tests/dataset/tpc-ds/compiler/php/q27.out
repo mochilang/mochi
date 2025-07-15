@@ -1,0 +1,8 @@
+Warning: Undefined array key "ss_quantity" in /tmp/q27.php on line 149
+
+Fatal error: Uncaught Exception: avg() expects numbers in /tmp/q27.php:196
+Stack trace:
+#0 /tmp/q27.php(146): _avg(Array)
+#1 /tmp/q27.php(179): {closure:/tmp/q27.php:109}()
+#2 {main}
+  thrown in /tmp/q27.php on line 196

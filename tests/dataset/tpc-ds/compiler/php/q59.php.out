@@ -1,0 +1,32 @@
+<?php
+$sales_year1 = [
+    [
+        "week" => 1,
+        "store" => 1,
+        "amount" => 100
+    ]
+];
+$sales_year2 = [
+    [
+        "week" => 53,
+        "store" => 1,
+        "amount" => 150
+    ]
+];
+$join = (function() use ($sales_year1, $sales_year2) {
+    $result = [];
+    foreach ($sales_year1 as $y1) {
+        foreach ($sales_year2 as $y2) {
+            if ($y1['store'] == $y2['store'] && $y1['week'] == $y2['week'] - 52) {
+                $result[] = [
+    "s_store_id1" => $y1['store'],
+    "ratio" => $y2['amount'] / $y1['amount']
+];
+            }
+        }
+    }
+    return $result;
+})();
+$result = $join;
+echo json_encode($result), PHP_EOL;
+?>

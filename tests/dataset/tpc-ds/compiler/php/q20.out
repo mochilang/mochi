@@ -1,0 +1,15 @@
+Warning: Undefined array key "cs_ext_sales_price" in /tmp/q20.php on line 139
+
+Warning: Undefined array key "cs_ext_sales_price" in /tmp/q20.php on line 139
+
+Warning: Undefined array key "cs_ext_sales_price" in /tmp/q20.php on line 139
+
+Warning: Undefined array key "cs_ext_sales_price" in /tmp/q20.php on line 139
+
+Warning: Undefined array key "cs_ext_sales_price" in /tmp/q20.php on line 139
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q20.php:187
+Stack trace:
+#0 /tmp/q20.php(195): {closure:/tmp/q20.php:170}()
+#1 {main}
+  thrown in /tmp/q20.php on line 187

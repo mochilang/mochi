@@ -1,0 +1,18 @@
+<?php
+$web_sales = [["net" => 30]];
+$catalog_sales = [["net" => 36]];
+$result = array_sum((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $w) {
+        $result[] = $w['net'];
+    }
+    return $result;
+})()) + array_sum((function() use ($catalog_sales) {
+    $result = [];
+    foreach ($catalog_sales as $c) {
+        $result[] = $c['net'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

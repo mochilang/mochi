@@ -1,0 +1,9 @@
+Warning: Undefined array key "ss_net_profit" in /tmp/q36.php on line 83
+
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q36.php on line 89
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q36.php:92
+Stack trace:
+#0 /tmp/q36.php(98): {closure:/tmp/q36.php:47}()
+#1 {main}
+  thrown in /tmp/q36.php on line 92

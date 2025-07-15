@@ -1,0 +1,13 @@
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q21.php on line 119
+
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q21.php on line 119
+
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q21.php on line 152
+
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q21.php on line 152
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q21.php:174
+Stack trace:
+#0 /tmp/q21.php(184): {closure:/tmp/q21.php:160}()
+#1 {main}
+  thrown in /tmp/q21.php on line 174

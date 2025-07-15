@@ -1,0 +1,25 @@
+<?php
+$sr_items = [["qty" => 10], ["qty" => 5]];
+$cr_items = [["qty" => 25], ["qty" => 20]];
+$wr_items = [["qty" => 10], ["qty" => 13]];
+$result = array_sum((function() use ($sr_items) {
+    $result = [];
+    foreach ($sr_items as $x) {
+        $result[] = $x['qty'];
+    }
+    return $result;
+})()) + array_sum((function() use ($cr_items) {
+    $result = [];
+    foreach ($cr_items as $x) {
+        $result[] = $x['qty'];
+    }
+    return $result;
+})()) + array_sum((function() use ($wr_items) {
+    $result = [];
+    foreach ($wr_items as $x) {
+        $result[] = $x['qty'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

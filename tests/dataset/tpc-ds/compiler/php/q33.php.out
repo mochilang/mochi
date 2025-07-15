@@ -1,0 +1,165 @@
+<?php
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_manufact_id" => 1,
+        "i_category" => "Books"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_manufact_id" => 2,
+        "i_category" => "Books"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2000,
+        "d_moy" => 1
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_gmt_offset" => -5
+    ],
+    [
+        "ca_address_sk" => 2,
+        "ca_gmt_offset" => -5
+    ]
+];
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_ext_sales_price" => 100,
+        "ss_sold_date_sk" => 1,
+        "ss_addr_sk" => 1
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_ext_sales_price" => 50,
+        "ss_sold_date_sk" => 1,
+        "ss_addr_sk" => 2
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_ext_sales_price" => 20,
+        "cs_sold_date_sk" => 1,
+        "cs_bill_addr_sk" => 1
+    ]
+];
+$web_sales = [
+    [
+        "ws_item_sk" => 1,
+        "ws_ext_sales_price" => 30,
+        "ws_sold_date_sk" => 1,
+        "ws_bill_addr_sk" => 1
+    ]
+];
+$month = 1;
+$year = 2000;
+$union_sales = $concat((function() use ($customer_address, $date_dim, $item, $month, $store_sales, $year) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($ss['ss_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($ss['ss_addr_sk'] == $ca['ca_address_sk']) {
+                        foreach ($item as $i) {
+                            if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                                if ($i['i_category'] == "Books" && $d['d_year'] == $year && $d['d_moy'] == $month && $ca['ca_gmt_offset'] == (-5)) {
+                                    $result[] = [
+    "manu" => $i['i_manufact_id'],
+    "price" => $ss['ss_ext_sales_price']
+];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($catalog_sales, $customer_address, $date_dim, $item, $month, $year) {
+    $result = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($date_dim as $d) {
+            if ($cs['cs_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($cs['cs_bill_addr_sk'] == $ca['ca_address_sk']) {
+                        foreach ($item as $i) {
+                            if ($cs['cs_item_sk'] == $i['i_item_sk']) {
+                                if ($i['i_category'] == "Books" && $d['d_year'] == $year && $d['d_moy'] == $month && $ca['ca_gmt_offset'] == (-5)) {
+                                    $result[] = [
+    "manu" => $i['i_manufact_id'],
+    "price" => $cs['cs_ext_sales_price']
+];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($customer_address, $date_dim, $item, $month, $web_sales, $year) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($ws['ws_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($ws['ws_bill_addr_sk'] == $ca['ca_address_sk']) {
+                        foreach ($item as $i) {
+                            if ($ws['ws_item_sk'] == $i['i_item_sk']) {
+                                if ($i['i_category'] == "Books" && $d['d_year'] == $year && $d['d_moy'] == $month && $ca['ca_gmt_offset'] == (-5)) {
+                                    $result[] = [
+    "manu" => $i['i_manufact_id'],
+    "price" => $ws['ws_ext_sales_price']
+];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})());
+$result = (function() use ($union_sales) {
+    $groups = [];
+    foreach ($union_sales as $s) {
+        $_k = json_encode($s['manu']);
+        $groups[$_k][] = $s;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [-array_sum((function() use ($g) {
+    $result = [];
+    foreach ($g['items'] as $x) {
+        $result[] = $x['price'];
+    }
+    return $result;
+})()), [
+    "i_manufact_id" => $g['key'],
+    "total_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

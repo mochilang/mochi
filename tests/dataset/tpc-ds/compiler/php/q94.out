@@ -1,0 +1,7 @@
+Warning: Undefined variable $contains in /tmp/q94.php on line 101
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q94.php:101
+Stack trace:
+#0 /tmp/q94.php(145): distinct(Array)
+#1 {main}
+  thrown in /tmp/q94.php on line 101

@@ -1,338 +1,191 @@
 <?php
-function mochi_test_TPCDS_Q9_empty() {
-	global $result;
-	if (!(((is_array($result) ? count($result) : strlen($result)) == 0))) { throw new Exception('expect failed'); }
-}
-
-$store_sales = [];
-$reason = [];
-$bucket1 = (((is_array((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) ? count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) : strlen((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})())) > 10) ? (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) : 0) : (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 1) && ($s['ss_quantity'] <= 20)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) : 0));
-$bucket2 = (((is_array((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) ? count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) : strlen((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})())) > 20) ? (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) : 0) : (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 21) && ($s['ss_quantity'] <= 40)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) : 0));
-$bucket3 = (((is_array((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) ? count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) : strlen((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})())) > 30) ? (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) : 0) : (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 41) && ($s['ss_quantity'] <= 60)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) : 0));
-$bucket4 = (((is_array((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) ? count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) : strlen((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})())) > 40) ? (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) : 0) : (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 61) && ($s['ss_quantity'] <= 80)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) : 0));
-$bucket5 = (((is_array((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) ? count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})()) : strlen((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s;
-	}
-	return $res;
-})())) > 50) ? (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_ext_discount_amt'];
-	}
-	return $res;
-})()) : 0) : (count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) / count((function() use ($store_sales) {
-	$res = [];
-	foreach ((is_string($store_sales) ? str_split($store_sales) : $store_sales) as $s) {
-		if (!((($s['ss_quantity'] >= 81) && ($s['ss_quantity'] <= 100)))) { continue; }
-		$res[] = $s['ss_net_paid'];
-	}
-	return $res;
-})()) : 0));
+$store_sales = [
+    [
+        "ss_quantity" => 5,
+        "ss_ext_discount_amt" => 5,
+        "ss_net_paid" => 7
+    ],
+    [
+        "ss_quantity" => 30,
+        "ss_ext_discount_amt" => 10,
+        "ss_net_paid" => 15
+    ],
+    [
+        "ss_quantity" => 50,
+        "ss_ext_discount_amt" => 20,
+        "ss_net_paid" => 30
+    ],
+    [
+        "ss_quantity" => 70,
+        "ss_ext_discount_amt" => 25,
+        "ss_net_paid" => 35
+    ],
+    [
+        "ss_quantity" => 90,
+        "ss_ext_discount_amt" => 40,
+        "ss_net_paid" => 50
+    ]
+];
+$reason = [["r_reason_sk" => 1]];
+$bucket1 = (count((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 1 && $s['ss_quantity'] <= 20) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 10 ? _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 1 && $s['ss_quantity'] <= 20) {
+            $result[] = $s['ss_ext_discount_amt'];
+        }
+    }
+    return $result;
+})()) : _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 1 && $s['ss_quantity'] <= 20) {
+            $result[] = $s['ss_net_paid'];
+        }
+    }
+    return $result;
+})()));
+$bucket2 = (count((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 21 && $s['ss_quantity'] <= 40) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 20 ? _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 21 && $s['ss_quantity'] <= 40) {
+            $result[] = $s['ss_ext_discount_amt'];
+        }
+    }
+    return $result;
+})()) : _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 21 && $s['ss_quantity'] <= 40) {
+            $result[] = $s['ss_net_paid'];
+        }
+    }
+    return $result;
+})()));
+$bucket3 = (count((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 41 && $s['ss_quantity'] <= 60) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 30 ? _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 41 && $s['ss_quantity'] <= 60) {
+            $result[] = $s['ss_ext_discount_amt'];
+        }
+    }
+    return $result;
+})()) : _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 41 && $s['ss_quantity'] <= 60) {
+            $result[] = $s['ss_net_paid'];
+        }
+    }
+    return $result;
+})()));
+$bucket4 = (count((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 61 && $s['ss_quantity'] <= 80) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 40 ? _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 61 && $s['ss_quantity'] <= 80) {
+            $result[] = $s['ss_ext_discount_amt'];
+        }
+    }
+    return $result;
+})()) : _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 61 && $s['ss_quantity'] <= 80) {
+            $result[] = $s['ss_net_paid'];
+        }
+    }
+    return $result;
+})()));
+$bucket5 = (count((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 81 && $s['ss_quantity'] <= 100) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 50 ? _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 81 && $s['ss_quantity'] <= 100) {
+            $result[] = $s['ss_ext_discount_amt'];
+        }
+    }
+    return $result;
+})()) : _avg((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if ($s['ss_quantity'] >= 81 && $s['ss_quantity'] <= 100) {
+            $result[] = $s['ss_net_paid'];
+        }
+    }
+    return $result;
+})()));
 $result = (function() use ($bucket1, $bucket2, $bucket3, $bucket4, $bucket5, $reason) {
-	$res = [];
-	foreach ((is_string($reason) ? str_split($reason) : $reason) as $r) {
-		if (!(($r['r_reason_sk'] == 1))) { continue; }
-		$res[] = ["bucket1" => $bucket1, "bucket2" => $bucket2, "bucket3" => $bucket3, "bucket4" => $bucket4, "bucket5" => $bucket5];
-	}
-	return $res;
+    $result = [];
+    foreach ($reason as $r) {
+        if ($r['r_reason_sk'] == 1) {
+            $result[] = [
+    "bucket1" => $bucket1,
+    "bucket2" => $bucket2,
+    "bucket3" => $bucket3,
+    "bucket4" => $bucket4,
+    "bucket5" => $bucket5
+];
+        }
+    }
+    return $result;
 })();
 echo json_encode($result), PHP_EOL;
-mochi_test_TPCDS_Q9_empty();
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

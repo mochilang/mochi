@@ -1,0 +1,6 @@
+Warning: Undefined variable $first in /tmp/q91.php on line 124
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q91.php:124
+Stack trace:
+#0 {main}
+  thrown in /tmp/q91.php on line 124

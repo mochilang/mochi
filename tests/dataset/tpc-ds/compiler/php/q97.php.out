@@ -1,0 +1,129 @@
+<?php
+class StoreSale {
+    public $ss_customer_sk;
+    public $ss_item_sk;
+    public function __construct($fields = []) {
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+    }
+}
+class CatalogSale {
+    public $cs_bill_customer_sk;
+    public $cs_item_sk;
+    public function __construct($fields = []) {
+        $this->cs_bill_customer_sk = $fields['cs_bill_customer_sk'] ?? null;
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_customer_sk" => 1,
+        "ss_item_sk" => 1
+    ],
+    [
+        "ss_customer_sk" => 2,
+        "ss_item_sk" => 1
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_bill_customer_sk" => 1,
+        "cs_item_sk" => 1
+    ],
+    [
+        "cs_bill_customer_sk" => 3,
+        "cs_item_sk" => 2
+    ]
+];
+$ssci = (function() use ($store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        $_k = json_encode([
+    "customer_sk" => $ss['ss_customer_sk'],
+    "item_sk" => $ss['ss_item_sk']
+]);
+        $groups[$_k][] = $ss;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "customer_sk" => $g['key']['customer_sk'],
+    "item_sk" => $g['key']['item_sk']
+];
+    }
+    return $result;
+})();
+$csci = (function() use ($catalog_sales) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        $_k = json_encode([
+    "customer_sk" => $cs['cs_bill_customer_sk'],
+    "item_sk" => $cs['cs_item_sk']
+]);
+        $groups[$_k][] = $cs;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "customer_sk" => $g['key']['customer_sk'],
+    "item_sk" => $g['key']['item_sk']
+];
+    }
+    return $result;
+})();
+$both = count((function() use ($csci, $ssci) {
+    $result = [];
+    foreach ($ssci as $s) {
+        foreach ($csci as $c) {
+            if ($s['customer_sk'] == $c['customer_sk'] && $s['item_sk'] == $c['item_sk']) {
+                $result[] = 1;
+            }
+        }
+    }
+    return $result;
+})());
+$store_only = count((function() use ($csci, $ssci) {
+    $result = [];
+    foreach ($ssci as $s) {
+        if (!(count((function() use ($csci, $s) {
+    $result = [];
+    foreach ($csci as $c) {
+        if ($s['customer_sk'] == $c['customer_sk'] && $s['item_sk'] == $c['item_sk']) {
+            $result[] = $c;
+        }
+    }
+    return $result;
+})()) > 0)) {
+            $result[] = 1;
+        }
+    }
+    return $result;
+})());
+$catalog_only = count((function() use ($csci, $ssci) {
+    $result = [];
+    foreach ($csci as $c) {
+        if (!(count((function() use ($c, $ssci) {
+    $result = [];
+    foreach ($ssci as $s) {
+        if ($s['customer_sk'] == $c['customer_sk'] && $s['item_sk'] == $c['item_sk']) {
+            $result[] = $s;
+        }
+    }
+    return $result;
+})()) > 0)) {
+            $result[] = 1;
+        }
+    }
+    return $result;
+})());
+$result = [
+    "store_only" => $store_only,
+    "catalog_only" => $catalog_only,
+    "store_and_catalog" => $both
+];
+echo json_encode($result), PHP_EOL;
+?>

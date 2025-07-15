@@ -1,0 +1,73 @@
+<?php
+$store_sales = [
+    ["cust" => "A", "price" => 5],
+    ["cust" => "B", "price" => 30],
+    ["cust" => "C", "price" => 57]
+];
+$catalog_sales = [["cust" => "A"]];
+$web_sales = [];
+$store_customers = (function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        $result[] = $s['cust'];
+    }
+    return $result;
+})();
+$catalog_customers = (function() use ($catalog_sales) {
+    $result = [];
+    foreach ($catalog_sales as $s) {
+        $result[] = $s['cust'];
+    }
+    return $result;
+})();
+$web_customers = (function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $s) {
+        $result[] = $s['cust'];
+    }
+    return $result;
+})();
+$store_only = (function() use ($catalog_customers, $store_customers, $web_customers) {
+    $result = [];
+    foreach ($store_customers as $c) {
+        if (count((function() use ($c, $catalog_customers) {
+    $result = [];
+    foreach ($catalog_customers as $x) {
+        if ($x == $c) {
+            $result[] = $x;
+        }
+    }
+    return $result;
+})()) == 0 && count((function() use ($c, $web_customers) {
+    $result = [];
+    foreach ($web_customers as $x) {
+        if ($x == $c) {
+            $result[] = $x;
+        }
+    }
+    return $result;
+})()) == 0) {
+            $result[] = $c;
+        }
+    }
+    return $result;
+})();
+$result = array_sum((function() use ($store_only, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        if (count((function() use ($s, $store_only) {
+    $result = [];
+    foreach ($store_only as $x) {
+        if ($x == $s['cust']) {
+            $result[] = $x;
+        }
+    }
+    return $result;
+})()) > 0) {
+            $result[] = $s['price'];
+        }
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

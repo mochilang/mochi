@@ -1,0 +1,17 @@
+<?php
+$store_sales = [
+    ["item" => 1, "price" => 10],
+    ["item" => 1, "price" => 20]
+];
+$catalog_sales = [["item" => 1, "price" => 15]];
+$web_sales = [["item" => 1, "price" => 15]];
+$all_sales = array_merge(array_merge($store_sales, $catalog_sales), $web_sales);
+$result = array_sum((function() use ($all_sales) {
+    $result = [];
+    foreach ($all_sales as $s) {
+        $result[] = $s['price'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

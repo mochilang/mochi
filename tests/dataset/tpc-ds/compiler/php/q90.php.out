@@ -1,0 +1,86 @@
+<?php
+class WebSale {
+    public $ws_sold_time_sk;
+    public $ws_ship_hdemo_sk;
+    public $ws_web_page_sk;
+    public function __construct($fields = []) {
+        $this->ws_sold_time_sk = $fields['ws_sold_time_sk'] ?? null;
+        $this->ws_ship_hdemo_sk = $fields['ws_ship_hdemo_sk'] ?? null;
+        $this->ws_web_page_sk = $fields['ws_web_page_sk'] ?? null;
+    }
+}
+$web_sales = [
+    [
+        "ws_sold_time_sk" => 1,
+        "ws_ship_hdemo_sk" => 1,
+        "ws_web_page_sk" => 10
+    ],
+    [
+        "ws_sold_time_sk" => 1,
+        "ws_ship_hdemo_sk" => 1,
+        "ws_web_page_sk" => 10
+    ],
+    [
+        "ws_sold_time_sk" => 2,
+        "ws_ship_hdemo_sk" => 1,
+        "ws_web_page_sk" => 10
+    ]
+];
+$household_demographics = [
+    ["hd_demo_sk" => 1, "hd_dep_count" => 2]
+];
+$time_dim = [
+    ["t_time_sk" => 1, "t_hour" => 7],
+    ["t_time_sk" => 2, "t_hour" => 14]
+];
+$web_page = [
+    [
+        "wp_web_page_sk" => 10,
+        "wp_char_count" => 5100
+    ]
+];
+$amc = count((function() use ($household_demographics, $time_dim, $web_page, $web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($household_demographics as $hd) {
+            if ($ws['ws_ship_hdemo_sk'] == $hd['hd_demo_sk']) {
+                foreach ($time_dim as $t) {
+                    if ($ws['ws_sold_time_sk'] == $t['t_time_sk']) {
+                        foreach ($web_page as $wp) {
+                            if ($ws['ws_web_page_sk'] == $wp['wp_web_page_sk']) {
+                                if ($t['t_hour'] >= 7 && $t['t_hour'] <= 8 && $hd['hd_dep_count'] == 2 && $wp['wp_char_count'] >= 5000 && $wp['wp_char_count'] <= 5200) {
+                                    $result[] = $ws;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})());
+$pmc = count((function() use ($household_demographics, $time_dim, $web_page, $web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($household_demographics as $hd) {
+            if ($ws['ws_ship_hdemo_sk'] == $hd['hd_demo_sk']) {
+                foreach ($time_dim as $t) {
+                    if ($ws['ws_sold_time_sk'] == $t['t_time_sk']) {
+                        foreach ($web_page as $wp) {
+                            if ($ws['ws_web_page_sk'] == $wp['wp_web_page_sk']) {
+                                if ($t['t_hour'] >= 14 && $t['t_hour'] <= 15 && $hd['hd_dep_count'] == 2 && $wp['wp_char_count'] >= 5000 && $wp['wp_char_count'] <= 5200) {
+                                    $result[] = $ws;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})());
+$result = ((float)($amc)) / ((float)($pmc));
+echo json_encode($result), PHP_EOL;
+?>

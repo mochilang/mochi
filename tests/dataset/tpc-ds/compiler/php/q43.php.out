@@ -1,0 +1,179 @@
+<?php
+$date_dim = [
+    [
+        "date_sk" => 1,
+        "d_day_name" => "Sunday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 2,
+        "d_day_name" => "Monday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 3,
+        "d_day_name" => "Tuesday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 4,
+        "d_day_name" => "Wednesday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 5,
+        "d_day_name" => "Thursday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 6,
+        "d_day_name" => "Friday",
+        "d_year" => 2020
+    ],
+    [
+        "date_sk" => 7,
+        "d_day_name" => "Saturday",
+        "d_year" => 2020
+    ]
+];
+$store = [
+    [
+        "store_sk" => 1,
+        "store_id" => "S1",
+        "store_name" => "Main",
+        "gmt_offset" => 0
+    ]
+];
+$store_sales = [
+    [
+        "sold_date_sk" => 1,
+        "store_sk" => 1,
+        "sales_price" => 10
+    ],
+    [
+        "sold_date_sk" => 2,
+        "store_sk" => 1,
+        "sales_price" => 20
+    ],
+    [
+        "sold_date_sk" => 3,
+        "store_sk" => 1,
+        "sales_price" => 30
+    ],
+    [
+        "sold_date_sk" => 4,
+        "store_sk" => 1,
+        "sales_price" => 40
+    ],
+    [
+        "sold_date_sk" => 5,
+        "store_sk" => 1,
+        "sales_price" => 50
+    ],
+    [
+        "sold_date_sk" => 6,
+        "store_sk" => 1,
+        "sales_price" => 60
+    ],
+    [
+        "sold_date_sk" => 7,
+        "store_sk" => 1,
+        "sales_price" => 70
+    ]
+];
+$year = 2020;
+$gmt = 0;
+$records = (function() use ($date_dim, $gmt, $store, $store_sales, $year) {
+    $result = [];
+    foreach ($date_dim as $d) {
+        foreach ($store_sales as $ss) {
+            if ($ss['sold_date_sk'] == $d['date_sk']) {
+                foreach ($store as $s) {
+                    if ($ss['store_sk'] == $s['store_sk']) {
+                        if ($s['gmt_offset'] == $gmt && $d['d_year'] == $year) {
+                            $result[] = [
+    "d_day_name" => $d['d_day_name'],
+    "s_store_name" => $s['store_name'],
+    "s_store_id" => $s['store_id'],
+    "price" => $ss['sales_price']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$base = (function() use ($records) {
+    $groups = [];
+    foreach ($records as $r) {
+        $_k = json_encode([
+    "name" => $r['s_store_name'],
+    "id" => $r['s_store_id']
+]);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "s_store_name" => $g['key']['name'],
+    "s_store_id" => $g['key']['id'],
+    "sun_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Sunday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "mon_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Monday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "tue_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Tuesday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "wed_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Wednesday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "thu_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Thursday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "fri_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Friday" ? $x['price'] : 0);
+        }
+        return $result;
+    })()),
+    "sat_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['d_day_name'] == "Saturday" ? $x['price'] : 0);
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = $base;
+echo json_encode($result), PHP_EOL;
+?>

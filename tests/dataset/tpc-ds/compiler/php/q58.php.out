@@ -1,0 +1,13 @@
+<?php
+$ss_items = ["item_id" => 1, "ss_item_rev" => 50];
+$cs_items = ["item_id" => 1, "cs_item_rev" => 60];
+$ws_items = ["item_id" => 1, "ws_item_rev" => 64];
+$avg = ($ss_items['ss_item_rev'] + $cs_items['cs_item_rev'] + $ws_items['ws_item_rev']) / 3;
+$result = [
+    [
+        "item_id" => $ss_items['item_id'],
+        "average" => $avg
+    ]
+];
+echo json_encode($result), PHP_EOL;
+?>

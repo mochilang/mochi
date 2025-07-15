@@ -1,0 +1,145 @@
+<?php
+class Inventory {
+    public $inv_item_sk;
+    public $inv_date_sk;
+    public $inv_quantity_on_hand;
+    public function __construct($fields = []) {
+        $this->inv_item_sk = $fields['inv_item_sk'] ?? null;
+        $this->inv_date_sk = $fields['inv_date_sk'] ?? null;
+        $this->inv_quantity_on_hand = $fields['inv_quantity_on_hand'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_month_seq;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_month_seq = $fields['d_month_seq'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_product_name;
+    public $i_brand;
+    public $i_class;
+    public $i_category;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_product_name = $fields['i_product_name'] ?? null;
+        $this->i_brand = $fields['i_brand'] ?? null;
+        $this->i_class = $fields['i_class'] ?? null;
+        $this->i_category = $fields['i_category'] ?? null;
+    }
+}
+$inventory = [
+    [
+        "inv_item_sk" => 1,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 10
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_date_sk" => 2,
+        "inv_quantity_on_hand" => 20
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_date_sk" => 3,
+        "inv_quantity_on_hand" => 10
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_date_sk" => 4,
+        "inv_quantity_on_hand" => 20
+    ],
+    [
+        "inv_item_sk" => 2,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 50
+    ]
+];
+$date_dim = [
+    ["d_date_sk" => 1, "d_month_seq" => 0],
+    ["d_date_sk" => 2, "d_month_seq" => 1],
+    ["d_date_sk" => 3, "d_month_seq" => 2],
+    ["d_date_sk" => 4, "d_month_seq" => 3]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_product_name" => "Prod1",
+        "i_brand" => "Brand1",
+        "i_class" => "Class1",
+        "i_category" => "Cat1"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_product_name" => "Prod2",
+        "i_brand" => "Brand2",
+        "i_class" => "Class2",
+        "i_category" => "Cat2"
+    ]
+];
+$qoh = (function() use ($date_dim, $inventory, $item) {
+    $groups = [];
+    foreach ($inventory as $inv) {
+        foreach ($date_dim as $d) {
+            if ($inv['inv_date_sk'] == $d['d_date_sk']) {
+                foreach ($item as $i) {
+                    if ($inv['inv_item_sk'] == $i['i_item_sk']) {
+                        if ($d['d_month_seq'] >= 0 && $d['d_month_seq'] <= 11) {
+                            $_k = json_encode([
+    "product_name" => $i['i_product_name'],
+    "brand" => $i['i_brand'],
+    "class" => $i['i_class'],
+    "category" => $i['i_category']
+]);
+                            $groups[$_k][] = ["inv" => $inv, "d" => $d, "i" => $i];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_product_name" => $g['key']['product_name'],
+    "i_brand" => $g['key']['brand'],
+    "i_class" => $g['key']['class'],
+    "i_category" => $g['key']['category'],
+    "qoh" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['inv_quantity_on_hand'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($qoh), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

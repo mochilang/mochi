@@ -1,0 +1,223 @@
+<?php
+class StoreSale {
+    public $ss_sold_date_sk;
+    public $ss_item_sk;
+    public $ss_store_sk;
+    public $ss_customer_sk;
+    public $ss_quantity;
+    public $ss_ticket_number;
+    public function __construct($fields = []) {
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_ticket_number = $fields['ss_ticket_number'] ?? null;
+    }
+}
+class StoreReturn {
+    public $sr_returned_date_sk;
+    public $sr_item_sk;
+    public $sr_customer_sk;
+    public $sr_ticket_number;
+    public $sr_return_quantity;
+    public function __construct($fields = []) {
+        $this->sr_returned_date_sk = $fields['sr_returned_date_sk'] ?? null;
+        $this->sr_item_sk = $fields['sr_item_sk'] ?? null;
+        $this->sr_customer_sk = $fields['sr_customer_sk'] ?? null;
+        $this->sr_ticket_number = $fields['sr_ticket_number'] ?? null;
+        $this->sr_return_quantity = $fields['sr_return_quantity'] ?? null;
+    }
+}
+class CatalogSale {
+    public $cs_sold_date_sk;
+    public $cs_item_sk;
+    public $cs_bill_customer_sk;
+    public $cs_quantity;
+    public function __construct($fields = []) {
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_bill_customer_sk = $fields['cs_bill_customer_sk'] ?? null;
+        $this->cs_quantity = $fields['cs_quantity'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_moy;
+    public $d_year;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_moy = $fields['d_moy'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_store_id;
+    public $s_store_name;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_store_id = $fields['s_store_id'] ?? null;
+        $this->s_store_name = $fields['s_store_name'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public $i_item_desc;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+        $this->i_item_desc = $fields['i_item_desc'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_sold_date_sk" => 1,
+        "ss_item_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 10,
+        "ss_ticket_number" => 1
+    ]
+];
+$store_returns = [
+    [
+        "sr_returned_date_sk" => 2,
+        "sr_item_sk" => 1,
+        "sr_customer_sk" => 1,
+        "sr_ticket_number" => 1,
+        "sr_return_quantity" => 2
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_sold_date_sk" => 3,
+        "cs_item_sk" => 1,
+        "cs_bill_customer_sk" => 1,
+        "cs_quantity" => 5
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_moy" => 4,
+        "d_year" => 1999
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_moy" => 5,
+        "d_year" => 1999
+    ],
+    [
+        "d_date_sk" => 3,
+        "d_moy" => 5,
+        "d_year" => 2000
+    ]
+];
+$store = [
+    [
+        "s_store_sk" => 1,
+        "s_store_id" => "S1",
+        "s_store_name" => "Store1"
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "ITEM1",
+        "i_item_desc" => "Desc1"
+    ]
+];
+$base = (function() use ($catalog_sales, $date_dim, $item, $store, $store_returns, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($store_returns as $sr) {
+            if ($ss['ss_ticket_number'] == $sr['sr_ticket_number'] && $ss['ss_item_sk'] == $sr['sr_item_sk']) {
+                foreach ($catalog_sales as $cs) {
+                    if ($sr['sr_customer_sk'] == $cs['cs_bill_customer_sk'] && $sr['sr_item_sk'] == $cs['cs_item_sk']) {
+                        foreach ($date_dim as $d1) {
+                            if ($d1['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                                foreach ($date_dim as $d2) {
+                                    if ($d2['d_date_sk'] == $sr['sr_returned_date_sk']) {
+                                        foreach ($date_dim as $d3) {
+                                            if ($d3['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                                                foreach ($store as $s) {
+                                                    if ($s['s_store_sk'] == $ss['ss_store_sk']) {
+                                                        foreach ($item as $i) {
+                                                            if ($i['i_item_sk'] == $ss['ss_item_sk']) {
+                                                                if (in_array($d1['d_moy'] == 4 && $d1['d_year'] == 1999 && $d2['d_moy'] >= 4 && $d2['d_moy'] <= 7 && $d3['d_year'], [1999, 2000, 2001])) {
+                                                                    $result[] = [
+    "ss_quantity" => $ss['ss_quantity'],
+    "sr_return_quantity" => $sr['sr_return_quantity'],
+    "cs_quantity" => $cs['cs_quantity'],
+    "i_item_id" => $i['i_item_id'],
+    "i_item_desc" => $i['i_item_desc'],
+    "s_store_id" => $s['s_store_id'],
+    "s_store_name" => $s['s_store_name']
+];
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = (function() use ($base) {
+    $groups = [];
+    foreach ($base as $b) {
+        $_k = json_encode([
+    "item_id" => $b['i_item_id'],
+    "item_desc" => $b['i_item_desc'],
+    "s_store_id" => $b['s_store_id'],
+    "s_store_name" => $b['s_store_name']
+]);
+        $groups[$_k][] = $b;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_id" => $g['key']['item_id'],
+    "i_item_desc" => $g['key']['item_desc'],
+    "s_store_id" => $g['key']['s_store_id'],
+    "s_store_name" => $g['key']['s_store_name'],
+    "store_sales_quantity" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_quantity'];
+        }
+        return $result;
+    })()),
+    "store_returns_quantity" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['sr_return_quantity'];
+        }
+        return $result;
+    })()),
+    "catalog_sales_quantity" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_quantity'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

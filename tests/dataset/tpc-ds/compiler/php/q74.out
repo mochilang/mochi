@@ -1,0 +1,6 @@
+Warning: Undefined variable $concat in /tmp/q74.php on line 38
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q74.php:38
+Stack trace:
+#0 {main}
+  thrown in /tmp/q74.php on line 38

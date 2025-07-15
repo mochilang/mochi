@@ -1,0 +1,171 @@
+<?php
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_brand_id" => 10,
+        "i_brand" => "BrandA",
+        "i_manager_id" => 1
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_brand_id" => 20,
+        "i_brand" => "BrandB",
+        "i_manager_id" => 1
+    ]
+];
+$time_dim = [
+    [
+        "t_time_sk" => 1,
+        "t_hour" => 8,
+        "t_minute" => 30,
+        "t_meal_time" => "breakfast"
+    ],
+    [
+        "t_time_sk" => 2,
+        "t_hour" => 18,
+        "t_minute" => 0,
+        "t_meal_time" => "dinner"
+    ],
+    [
+        "t_time_sk" => 3,
+        "t_hour" => 12,
+        "t_minute" => 0,
+        "t_meal_time" => "lunch"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_moy" => 12,
+        "d_year" => 1998
+    ]
+];
+$web_sales = [
+    [
+        "ws_ext_sales_price" => 100,
+        "ws_sold_date_sk" => 1,
+        "ws_item_sk" => 1,
+        "ws_sold_time_sk" => 1
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_ext_sales_price" => 200,
+        "cs_sold_date_sk" => 1,
+        "cs_item_sk" => 1,
+        "cs_sold_time_sk" => 2
+    ]
+];
+$store_sales = [
+    [
+        "ss_ext_sales_price" => 150,
+        "ss_sold_date_sk" => 1,
+        "ss_item_sk" => 2,
+        "ss_sold_time_sk" => 1
+    ]
+];
+$month = 12;
+$year = 1998;
+$union_sales = $concat((function() use ($date_dim, $month, $web_sales, $year) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ws['ws_sold_date_sk']) {
+                if ($d['d_moy'] == $month && $d['d_year'] == $year) {
+                    $result[] = [
+    "ext_price" => $ws['ws_ext_sales_price'],
+    "item_sk" => $ws['ws_item_sk'],
+    "time_sk" => $ws['ws_sold_time_sk']
+];
+                }
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($catalog_sales, $date_dim, $month, $year) {
+    $result = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                if ($d['d_moy'] == $month && $d['d_year'] == $year) {
+                    $result[] = [
+    "ext_price" => $cs['cs_ext_sales_price'],
+    "item_sk" => $cs['cs_item_sk'],
+    "time_sk" => $cs['cs_sold_time_sk']
+];
+                }
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($date_dim, $month, $store_sales, $year) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                if ($d['d_moy'] == $month && $d['d_year'] == $year) {
+                    $result[] = [
+    "ext_price" => $ss['ss_ext_sales_price'],
+    "item_sk" => $ss['ss_item_sk'],
+    "time_sk" => $ss['ss_sold_time_sk']
+];
+                }
+            }
+        }
+    }
+    return $result;
+})());
+$result = (function() use ($item, $time_dim, $union_sales) {
+    $groups = [];
+    foreach ($item as $i) {
+        foreach ($union_sales as $s) {
+            if ($s['item_sk'] == $i['i_item_sk']) {
+                foreach ($time_dim as $t) {
+                    if ($t['t_time_sk'] == $s['time_sk']) {
+                        if ($i['i_manager_id'] == 1 && ($t['t_meal_time'] == "breakfast" || $t['t_meal_time'] == "dinner")) {
+                            $_k = json_encode([
+    "brand_id" => $i['i_brand_id'],
+    "brand" => $i['i_brand'],
+    "t_hour" => $t['t_hour'],
+    "t_minute" => $t['t_minute']
+]);
+                            $groups[$_k][] = ["i" => $i, "s" => $s, "t" => $t];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [[
+    -array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['s']['ext_price'];
+        }
+        return $result;
+    })()),
+    $g['key']['brand_id']
+], [
+    "i_brand_id" => $g['key']['brand_id'],
+    "i_brand" => $g['key']['brand'],
+    "t_hour" => $g['key']['t_hour'],
+    "t_minute" => $g['key']['t_minute'],
+    "ext_price" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['s']['ext_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

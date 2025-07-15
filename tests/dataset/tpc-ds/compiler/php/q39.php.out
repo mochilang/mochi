@@ -1,0 +1,152 @@
+<?php
+$math = [
+    'sqrt' => function($x) { return sqrt($x); },
+    'pow' => function($x, $y) { return pow($x, $y); },
+    'sin' => function($x) { return sin($x); },
+    'log' => function($x) { return log($x); },
+    'pi' => M_PI,
+    'e' => M_E,
+];
+$inventory = [
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 10
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 2,
+        "inv_quantity_on_hand" => 10
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 3,
+        "inv_quantity_on_hand" => 250
+    ]
+];
+$item = [["i_item_sk" => 1]];
+$warehouse = [
+    [
+        "w_warehouse_sk" => 1,
+        "w_warehouse_name" => "W1"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2000,
+        "d_moy" => 1
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_year" => 2000,
+        "d_moy" => 2
+    ],
+    [
+        "d_date_sk" => 3,
+        "d_year" => 2000,
+        "d_moy" => 3
+    ]
+];
+$monthly = (function() use ($date_dim, $inventory, $item, $warehouse) {
+    $groups = [];
+    foreach ($inventory as $inv) {
+        foreach ($date_dim as $d) {
+            if ($inv['inv_date_sk'] == $d['d_date_sk']) {
+                foreach ($item as $i) {
+                    if ($inv['inv_item_sk'] == $i['i_item_sk']) {
+                        foreach ($warehouse as $w) {
+                            if ($inv['inv_warehouse_sk'] == $w['w_warehouse_sk']) {
+                                if ($d['d_year'] == 2000) {
+                                    $_k = json_encode([
+    "w" => $w['w_warehouse_sk'],
+    "i" => $i['i_item_sk'],
+    "month" => $d['d_moy']
+]);
+                                    $groups[$_k][] = ["inv" => $inv, "d" => $d, "i" => $i, "w" => $w];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "w" => $g['key']['w'],
+    "i" => $g['key']['i'],
+    "qty" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['inv_quantity_on_hand'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$grouped = [];
+foreach ($monthly as $m) {
+    $key = strval(["w" => $m['w'], "i" => $m['i']]);
+    if (array_key_exists($key, $grouped)) {
+        $g = $grouped[$key];
+        $grouped[$key] = [
+    "w" => $g['w'],
+    "i" => $g['i'],
+    "qtys" => array_merge($g['qtys'], [$m['qty']])
+];
+    } else {
+        $grouped[$key] = [
+    "w" => $m['w'],
+    "i" => $m['i'],
+    "qtys" => [$m['qty']]
+];
+    }
+}
+$summary = [];
+foreach (array_values($grouped) as $g) {
+    $mean = _avg($g['qtys']);
+    $sumsq = 0;
+    foreach ($g['qtys'] as $q) {
+        $sumsq = $sumsq + ($q - $mean) * ($q - $mean);
+    }
+    $variance = $sumsq / (count($g['qtys']) - 1);
+    $cov = $math['sqrt']($variance) / $mean;
+    if ($cov > 1.5) {
+        $summary = array_merge($summary, [[
+    "w_warehouse_sk" => $g['w'],
+    "i_item_sk" => $g['i'],
+    "cov" => $cov
+]]);
+    }
+}
+echo json_encode($summary), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

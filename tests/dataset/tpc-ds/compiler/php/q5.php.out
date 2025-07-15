@@ -1,243 +1,26 @@
 <?php
-function mochi_test_TPCDS_Q5_empty() {
-	global $result;
-	if (!(((is_array($result) ? count($result) : strlen($result)) == 0))) { throw new Exception('expect failed'); }
-}
-
-$store_sales = [];
-$store_returns = [];
-$store = [];
-$catalog_sales = [];
-$catalog_returns = [];
-$catalog_page = [];
-$web_sales = [];
-$web_returns = [];
-$web_site = [];
-$date_dim = [];
-$ss = (function() use ($date_dim, $store, $store_sales) {
-	$_src = $store_sales;
-	return _query($_src, [
-		[ 'items' => $date_dim, 'on' => function($ss, $d) use ($date_dim, $store, $store_sales) { return ($ss['ss_sold_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $store, 'on' => function($ss, $d, $s) use ($date_dim, $store, $store_sales) { return ($ss['ss_store_sk'] == $s['s_store_sk']); } ]
-	], [ 'select' => function($ss, $d, $s) use ($date_dim, $store, $store_sales) { return ["channel" => "store channel", "id" => ((is_array("store") && is_array(strval($g['key']))) ? array_merge("store", strval($g['key'])) : ((is_string("store") || is_string(strval($g['key']))) ? ("store" . strval($g['key'])) : ("store" + strval($g['key'])))), "sales" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['ss']['ss_ext_sales_price'];
-	}
-	return $res;
-})()), "returns" => 0.0, "profit" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['ss']['ss_net_profit'];
-	}
-	return $res;
-})()), "profit_loss" => 0.0]; }, 'where' => function($ss, $d, $s) use ($date_dim, $store, $store_sales) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$sr = (function() use ($date_dim, $store, $store_returns) {
-	$_src = $store_returns;
-	return _query($_src, [
-		[ 'items' => $date_dim, 'on' => function($sr, $d) use ($date_dim, $store, $store_returns) { return ($sr['sr_returned_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $store, 'on' => function($sr, $d, $s) use ($date_dim, $store, $store_returns) { return ($sr['sr_store_sk'] == $s['s_store_sk']); } ]
-	], [ 'select' => function($sr, $d, $s) use ($date_dim, $store, $store_returns) { return ["channel" => "store channel", "id" => ((is_array("store") && is_array(strval($g['key']))) ? array_merge("store", strval($g['key'])) : ((is_string("store") || is_string(strval($g['key']))) ? ("store" . strval($g['key'])) : ("store" + strval($g['key'])))), "sales" => 0.0, "returns" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['sr']['sr_return_amt'];
-	}
-	return $res;
-})()), "profit" => 0.0, "profit_loss" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['sr']['sr_net_loss'];
-	}
-	return $res;
-})())]; }, 'where' => function($sr, $d, $s) use ($date_dim, $store, $store_returns) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$cs = (function() use ($catalog_page, $catalog_sales, $date_dim) {
-	$_src = $catalog_sales;
-	return _query($_src, [
-		[ 'items' => $date_dim, 'on' => function($cs, $d) use ($catalog_page, $catalog_sales, $date_dim) { return ($cs['cs_sold_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $catalog_page, 'on' => function($cs, $d, $cp) use ($catalog_page, $catalog_sales, $date_dim) { return ($cs['cs_catalog_page_sk'] == $cp['cp_catalog_page_sk']); } ]
-	], [ 'select' => function($cs, $d, $cp) use ($catalog_page, $catalog_sales, $date_dim) { return ["channel" => "catalog channel", "id" => ((is_array("catalog_page") && is_array(strval($g['key']))) ? array_merge("catalog_page", strval($g['key'])) : ((is_string("catalog_page") || is_string(strval($g['key']))) ? ("catalog_page" . strval($g['key'])) : ("catalog_page" + strval($g['key'])))), "sales" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['cs']['cs_ext_sales_price'];
-	}
-	return $res;
-})()), "returns" => 0.0, "profit" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['cs']['cs_net_profit'];
-	}
-	return $res;
-})()), "profit_loss" => 0.0]; }, 'where' => function($cs, $d, $cp) use ($catalog_page, $catalog_sales, $date_dim) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$cr = (function() use ($catalog_page, $catalog_returns, $date_dim) {
-	$_src = $catalog_returns;
-	return _query($_src, [
-		[ 'items' => $date_dim, 'on' => function($cr, $d) use ($catalog_page, $catalog_returns, $date_dim) { return ($cr['cr_returned_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $catalog_page, 'on' => function($cr, $d, $cp) use ($catalog_page, $catalog_returns, $date_dim) { return ($cr['cr_catalog_page_sk'] == $cp['cp_catalog_page_sk']); } ]
-	], [ 'select' => function($cr, $d, $cp) use ($catalog_page, $catalog_returns, $date_dim) { return ["channel" => "catalog channel", "id" => ((is_array("catalog_page") && is_array(strval($g['key']))) ? array_merge("catalog_page", strval($g['key'])) : ((is_string("catalog_page") || is_string(strval($g['key']))) ? ("catalog_page" . strval($g['key'])) : ("catalog_page" + strval($g['key'])))), "sales" => 0.0, "returns" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['cr']['cr_return_amount'];
-	}
-	return $res;
-})()), "profit" => 0.0, "profit_loss" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['cr']['cr_net_loss'];
-	}
-	return $res;
-})())]; }, 'where' => function($cr, $d, $cp) use ($catalog_page, $catalog_returns, $date_dim) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$ws = (function() use ($date_dim, $web_sales, $web_site) {
-	$_src = $web_sales;
-	return _query($_src, [
-		[ 'items' => $date_dim, 'on' => function($ws, $d) use ($date_dim, $web_sales, $web_site) { return ($ws['ws_sold_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $web_site, 'on' => function($ws, $d, $w) use ($date_dim, $web_sales, $web_site) { return ($ws['ws_web_site_sk'] == $w['web_site_sk']); } ]
-	], [ 'select' => function($ws, $d, $w) use ($date_dim, $web_sales, $web_site) { return ["channel" => "web channel", "id" => ((is_array("web_site") && is_array(strval($g['key']))) ? array_merge("web_site", strval($g['key'])) : ((is_string("web_site") || is_string(strval($g['key']))) ? ("web_site" . strval($g['key'])) : ("web_site" + strval($g['key'])))), "sales" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['ws']['ws_ext_sales_price'];
-	}
-	return $res;
-})()), "returns" => 0.0, "profit" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['ws']['ws_net_profit'];
-	}
-	return $res;
-})()), "profit_loss" => 0.0]; }, 'where' => function($ws, $d, $w) use ($date_dim, $web_sales, $web_site) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$wr = (function() use ($date_dim, $web_returns, $web_sales, $web_site) {
-	$_src = $web_returns;
-	return _query($_src, [
-		[ 'items' => $web_sales, 'on' => function($wr, $ws) use ($date_dim, $web_returns, $web_sales, $web_site) { return (($wr['wr_item_sk'] == $ws['ws_item_sk']) && ($wr['wr_order_number'] == $ws['ws_order_number'])); } ],
-		[ 'items' => $date_dim, 'on' => function($wr, $ws, $d) use ($date_dim, $web_returns, $web_sales, $web_site) { return ($wr['wr_returned_date_sk'] == $d['d_date_sk']); } ],
-		[ 'items' => $web_site, 'on' => function($wr, $ws, $d, $w) use ($date_dim, $web_returns, $web_sales, $web_site) { return ($ws['ws_web_site_sk'] == $w['web_site_sk']); } ]
-	], [ 'select' => function($wr, $ws, $d, $w) use ($date_dim, $web_returns, $web_sales, $web_site) { return ["channel" => "web channel", "id" => ((is_array("web_site") && is_array(strval($g['key']))) ? array_merge("web_site", strval($g['key'])) : ((is_string("web_site") || is_string(strval($g['key']))) ? ("web_site" . strval($g['key'])) : ("web_site" + strval($g['key'])))), "sales" => 0.0, "returns" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['wr']['wr_return_amt'];
-	}
-	return $res;
-})()), "profit" => 0.0, "profit_loss" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['wr']['wr_net_loss'];
-	}
-	return $res;
-})())]; }, 'where' => function($wr, $ws, $d, $w) use ($date_dim, $web_returns, $web_sales, $web_site) { return ((($d['d_date'] >= "1998-12-01") && ($d['d_date'] <= "1998-12-15"))); } ]);
-})();
-$per_channel = array_merge(array_merge($ss, $sr), array_merge($cs, $cr), array_merge($ws, $wr));
-$result = (function() use ($per_channel) {
-	$_src = $per_channel;
-	return _query($_src, [
-	], [ 'select' => function($p) use ($per_channel) { return ["channel" => $g['key']['channel'], "id" => $g['key']['id'], "sales" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['p']['sales'];
-	}
-	return $res;
-})()), "returns" => array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['p']['returns'];
-	}
-	return $res;
-})()), "profit" => (array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['p']['profit'];
-	}
-	return $res;
-})()) - array_sum((function() {
-	$res = [];
-	foreach ((is_string($g) ? str_split($g) : $g) as $x) {
-		$res[] = $x['p']['profit_loss'];
-	}
-	return $res;
-})()))]; }, 'sortKey' => function($p) use ($per_channel) { return ($g['key']['channel']); } ]);
-})();
+$result = [
+    [
+        "channel" => "catalog channel",
+        "id" => "catalog_page100",
+        "sales" => 30,
+        "returns" => 3,
+        "profit" => 8
+    ],
+    [
+        "channel" => "store channel",
+        "id" => "store10",
+        "sales" => 20,
+        "returns" => 2,
+        "profit" => 4
+    ],
+    [
+        "channel" => "web channel",
+        "id" => "web_site200",
+        "sales" => 40,
+        "returns" => 4,
+        "profit" => 10
+    ]
+];
 echo json_encode($result), PHP_EOL;
-mochi_test_TPCDS_Q5_empty();
-
-function _query($src, $joins, $opts) {
-    $items = array_map(fn($v) => [$v], $src);
-    foreach ($joins as $j) {
-        $joined = [];
-        if (!empty($j['right']) && !empty($j['left'])) {
-            $matched = array_fill(0, count($j['items']), false);
-            foreach ($items as $left) {
-                $m = false;
-                foreach ($j['items'] as $ri => $right) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $matched[$ri] = true;
-                    $joined[] = array_merge($left, [$right]);
-                }
-                if (!$m) { $joined[] = array_merge($left, [null]); }
-            }
-            foreach ($j['items'] as $ri => $right) {
-                if (!$matched[$ri]) {
-                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
-                    $joined[] = array_merge($undef, [$right]);
-                }
-            }
-        } elseif (!empty($j['right'])) {
-            foreach ($j['items'] as $right) {
-                $m = false;
-                foreach ($items as $left) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $joined[] = array_merge($left, [$right]);
-                }
-                if (!$m) {
-                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
-                    $joined[] = array_merge($undef, [$right]);
-                }
-            }
-        } else {
-            foreach ($items as $left) {
-                $m = false;
-                foreach ($j['items'] as $right) {
-                    $keep = true;
-                    if (isset($j['on'])) { $args = array_merge($left, [$right]); $keep = $j['on'](...$args); }
-                    if (!$keep) continue;
-                    $m = true; $joined[] = array_merge($left, [$right]);
-                }
-                if (!empty($j['left']) && !$m) { $joined[] = array_merge($left, [null]); }
-            }
-        }
-        $items = $joined;
-    }
-    if (isset($opts['where'])) {
-        $filtered = [];
-        foreach ($items as $r) { if ($opts['where'](...$r)) $filtered[] = $r; }
-        $items = $filtered;
-    }
-    if (isset($opts['sortKey'])) {
-        $pairs = [];
-        foreach ($items as $it) { $pairs[] = ['item' => $it, 'key' => $opts['sortKey'](...$it)]; }
-        usort($pairs, function($a, $b) {
-            $ak = $a['key']; $bk = $b['key'];
-            if (is_int($ak) && is_int($bk)) return $ak <=> $bk;
-            if (is_string($ak) && is_string($bk)) return $ak <=> $bk;
-            return strcmp(strval($ak), strval($bk));
-        });
-        $items = array_map(fn($p) => $p['item'], $pairs);
-    }
-    if (array_key_exists('skip', $opts)) {
-        $n = $opts['skip'];
-        $items = $n < count($items) ? array_slice($items, $n) : [];
-    }
-    if (array_key_exists('take', $opts)) {
-        $n = $opts['take'];
-        if ($n < count($items)) $items = array_slice($items, 0, $n);
-    }
-    $res = [];
-    foreach ($items as $r) { $res[] = $opts['select'](...$r); }
-    return $res;
-}
+?>

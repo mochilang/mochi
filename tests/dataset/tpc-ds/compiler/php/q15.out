@@ -1,0 +1,7 @@
+Warning: Undefined variable $substr in /tmp/q15.php on line 76
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q15.php:76
+Stack trace:
+#0 /tmp/q15.php(115): {closure:/tmp/q15.php:67}()
+#1 {main}
+  thrown in /tmp/q15.php on line 76

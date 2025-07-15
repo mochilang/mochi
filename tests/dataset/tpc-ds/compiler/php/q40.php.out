@@ -1,0 +1,163 @@
+<?php
+$catalog_sales = [
+    [
+        "order" => 1,
+        "item_sk" => 1,
+        "warehouse_sk" => 1,
+        "date_sk" => 1,
+        "price" => 100
+    ],
+    [
+        "order" => 2,
+        "item_sk" => 1,
+        "warehouse_sk" => 1,
+        "date_sk" => 2,
+        "price" => 150
+    ]
+];
+$catalog_returns = [
+    [
+        "order" => 2,
+        "item_sk" => 1,
+        "refunded" => 150
+    ]
+];
+$item = [
+    [
+        "item_sk" => 1,
+        "item_id" => "I1",
+        "current_price" => 1.2
+    ]
+];
+$warehouse = [["warehouse_sk" => 1, "state" => "CA"]];
+$date_dim = [
+    ["date_sk" => 1, "date" => "2020-01-10"],
+    ["date_sk" => 2, "date" => "2020-01-20"]
+];
+$sales_date = "2020-01-15";
+$records = _query($catalog_sales, [['items'=>$catalog_returns, 'on'=>function($cs, $cr) use ($catalog_returns, $catalog_sales, $date_dim, $item, $warehouse){return $cs['order'] == $cr['order'] && $cs['item_sk'] == $cr['item_sk'];}, 'left'=>true], ['items'=>$warehouse, 'on'=>function($cs, $cr, $w) use ($catalog_returns, $catalog_sales, $date_dim, $item, $warehouse){return $cs['warehouse_sk'] == $w['warehouse_sk'];}], ['items'=>$item, 'on'=>function($cs, $cr, $w, $i) use ($catalog_returns, $catalog_sales, $date_dim, $item, $warehouse){return $cs['item_sk'] == $i['item_sk'];}], ['items'=>$date_dim, 'on'=>function($cs, $cr, $w, $i, $d) use ($catalog_returns, $catalog_sales, $date_dim, $item, $warehouse){return $cs['date_sk'] == $d['date_sk'];}]], [ 'select' => function($cs, $cr, $w, $i, $d) use ($catalog_returns, $catalog_sales, $date_dim, $item, $warehouse){return [
+    "w_state" => $w['state'],
+    "i_item_id" => $i['item_id'],
+    "sold_date" => $d['date'],
+    "net" => $cs['price'] - (($cr == null ? 0 : $cr['refunded']))
+];} ]);
+$result = (function() use ($records) {
+    $groups = [];
+    foreach ($records as $r) {
+        $_k = json_encode([
+    "w_state" => $r['w_state'],
+    "i_item_id" => $r['i_item_id']
+]);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "w_state" => $g['key']['w_state'],
+    "i_item_id" => $g['key']['i_item_id'],
+    "sales_before" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['sold_date'] < $sales_date ? $x['net'] : 0);
+        }
+        return $result;
+    })()),
+    "sales_after" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = ($x['sold_date'] >= $sales_date ? $x['net'] : 0);
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _query($src, $joins, $opts) {
+    $items = [];
+    foreach ($src as $v) { $items[] = [$v]; }
+    foreach ($joins as $j) {
+        $joined = [];
+        $jitems = $j['items'] ?? [];
+        if (($j['right'] ?? false) && ($j['left'] ?? false)) {
+            $matched = array_fill(0, count($jitems), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $row = $left; $row[] = $right;
+                    $joined[] = $row;
+                }
+                if (!$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+            foreach ($jitems as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $row = $undef; $row[] = $right; $joined[] = $row;
+                }
+            }
+        } elseif (($j['right'] ?? false)) {
+            foreach ($jitems as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (!$m) { $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : []; $row = $undef; $row[] = $right; $joined[] = $row; }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (($j['left'] ?? false) && !$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $fn = $opts['where'];
+        $items = array_values(array_filter($items, fn($r) => $fn(...$r)));
+    }
+    if (isset($opts['sortKey'])) {
+        $sk = $opts['sortKey'];
+        usort($items, function($a,$b) use($sk) {
+            $ak = $sk(...$a); $bk = $sk(...$b);
+            if (is_array($ak) || is_object($ak)) $ak = json_encode($ak);
+            if (is_array($bk) || is_object($bk)) $bk = json_encode($bk);
+            return $ak <=> $bk;
+        });
+    }
+    if (isset($opts['skip'])) {
+        $n = $opts['skip']; if ($n < 0) $n = 0; $items = array_slice($items, $n);
+    }
+    if (isset($opts['take'])) {
+        $n = $opts['take']; if ($n < 0) $n = 0; $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    $sel = $opts['select'];
+    foreach ($items as $r) { $res[] = $sel(...$r); }
+    return $res;
+}
+?>

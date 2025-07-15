@@ -1,0 +1,52 @@
+<?php
+$item = [
+    [
+        "product_name" => "Blue Shirt",
+        "manufact_id" => 100,
+        "manufact" => 1,
+        "category" => "Women",
+        "color" => "blue",
+        "units" => "pack",
+        "size" => "M"
+    ],
+    [
+        "product_name" => "Red Dress",
+        "manufact_id" => 120,
+        "manufact" => 1,
+        "category" => "Women",
+        "color" => "red",
+        "units" => "pack",
+        "size" => "M"
+    ],
+    [
+        "product_name" => "Pants",
+        "manufact_id" => 200,
+        "manufact" => 2,
+        "category" => "Men",
+        "color" => "black",
+        "units" => "pair",
+        "size" => "L"
+    ]
+];
+$lower = 100;
+$result = (function() use ($item, $lower) {
+    $result = [];
+    foreach ($item as $i1) {
+        if ($i1['manufact_id'] >= $lower && $i1['manufact_id'] <= $lower + 40 && count((function() use ($i1, $item) {
+    $result = [];
+    foreach ($item as $i2) {
+        if ($i2['manufact'] == $i1['manufact'] && $i2['category'] == $i1['category']) {
+            $result[] = $i2;
+        }
+    }
+    return $result;
+})()) > 1) {
+            $result[] = [$i1['product_name'], $i1['product_name']];
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,94 @@
+<?php
+$web = [
+    [
+        "item" => "A",
+        "return_ratio" => 0.2,
+        "currency_ratio" => 0.3,
+        "return_rank" => 1,
+        "currency_rank" => 1
+    ],
+    [
+        "item" => "B",
+        "return_ratio" => 0.5,
+        "currency_ratio" => 0.6,
+        "return_rank" => 2,
+        "currency_rank" => 2
+    ]
+];
+$catalog = [
+    [
+        "item" => "A",
+        "return_ratio" => 0.3,
+        "currency_ratio" => 0.4,
+        "return_rank" => 1,
+        "currency_rank" => 1
+    ]
+];
+$store = [
+    [
+        "item" => "A",
+        "return_ratio" => 0.25,
+        "currency_ratio" => 0.35,
+        "return_rank" => 1,
+        "currency_rank" => 1
+    ]
+];
+$tmp = ($concat((function() use ($web) {
+    $result = [];
+    foreach ($web as $w) {
+        if ($w['return_rank'] <= 10 || $w['currency_rank'] <= 10) {
+            $result[] = [
+    "channel" => "web",
+    "item" => $w['item'],
+    "return_ratio" => $w['return_ratio'],
+    "return_rank" => $w['return_rank'],
+    "currency_rank" => $w['currency_rank']
+];
+        }
+    }
+    return $result;
+})(), (function() use ($catalog) {
+    $result = [];
+    foreach ($catalog as $c) {
+        if ($c['return_rank'] <= 10 || $c['currency_rank'] <= 10) {
+            $result[] = [
+    "channel" => "catalog",
+    "item" => $c['item'],
+    "return_ratio" => $c['return_ratio'],
+    "return_rank" => $c['return_rank'],
+    "currency_rank" => $c['currency_rank']
+];
+        }
+    }
+    return $result;
+})(), (function() use ($store) {
+    $result = [];
+    foreach ($store as $s) {
+        if ($s['return_rank'] <= 10 || $s['currency_rank'] <= 10) {
+            $result[] = [
+    "channel" => "store",
+    "item" => $s['item'],
+    "return_ratio" => $s['return_ratio'],
+    "return_rank" => $s['return_rank'],
+    "currency_rank" => $s['currency_rank']
+];
+        }
+    }
+    return $result;
+})()));
+$result = (function() use ($tmp) {
+    $result = [];
+    foreach ($tmp as $r) {
+        $result[] = [[
+    $r['channel'],
+    $r['return_rank'],
+    $r['currency_rank'],
+    $r['item']
+], $r];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

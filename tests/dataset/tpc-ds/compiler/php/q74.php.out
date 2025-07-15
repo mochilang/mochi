@@ -1,0 +1,165 @@
+<?php
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_customer_id" => 1,
+        "c_first_name" => "Alice",
+        "c_last_name" => "Smith"
+    ]
+];
+$date_dim = [
+    ["d_date_sk" => 1, "d_year" => 1998],
+    ["d_date_sk" => 2, "d_year" => 1999]
+];
+$store_sales = [
+    [
+        "ss_customer_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_net_paid" => 100
+    ],
+    [
+        "ss_customer_sk" => 1,
+        "ss_sold_date_sk" => 2,
+        "ss_net_paid" => 110
+    ]
+];
+$web_sales = [
+    [
+        "ws_bill_customer_sk" => 1,
+        "ws_sold_date_sk" => 1,
+        "ws_net_paid" => 40
+    ],
+    [
+        "ws_bill_customer_sk" => 1,
+        "ws_sold_date_sk" => 2,
+        "ws_net_paid" => 80
+    ]
+];
+$year_total = $concat((function() use ($customer, $date_dim, $store_sales) {
+    $groups = [];
+    foreach ($customer as $c) {
+        foreach ($store_sales as $ss) {
+            if ($c['c_customer_sk'] == $ss['ss_customer_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($d['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                        if ($d['d_year'] == 1998 || $d['d_year'] == 1999) {
+                            $_k = json_encode([
+    "id" => $c['c_customer_id'],
+    "first" => $c['c_first_name'],
+    "last" => $c['c_last_name'],
+    "year" => $d['d_year']
+]);
+                            $groups[$_k][] = ["c" => $c, "ss" => $ss, "d" => $d];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "customer_id" => $g['key']['id'],
+    "customer_first_name" => $g['key']['first'],
+    "customer_last_name" => $g['key']['last'],
+    "year" => $g['key']['year'],
+    "year_total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss']['ss_net_paid'];
+        }
+        return $result;
+    })()),
+    "sale_type" => "s"
+];
+    }
+    return $result;
+})(), (function() use ($customer, $date_dim, $web_sales) {
+    $groups = [];
+    foreach ($customer as $c) {
+        foreach ($web_sales as $ws) {
+            if ($c['c_customer_sk'] == $ws['ws_bill_customer_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($d['d_date_sk'] == $ws['ws_sold_date_sk']) {
+                        if ($d['d_year'] == 1998 || $d['d_year'] == 1999) {
+                            $_k = json_encode([
+    "id" => $c['c_customer_id'],
+    "first" => $c['c_first_name'],
+    "last" => $c['c_last_name'],
+    "year" => $d['d_year']
+]);
+                            $groups[$_k][] = ["c" => $c, "ws" => $ws, "d" => $d];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "customer_id" => $g['key']['id'],
+    "customer_first_name" => $g['key']['first'],
+    "customer_last_name" => $g['key']['last'],
+    "year" => $g['key']['year'],
+    "year_total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ws']['ws_net_paid'];
+        }
+        return $result;
+    })()),
+    "sale_type" => "w"
+];
+    }
+    return $result;
+})());
+$s_firstyear = $first((function() use ($year_total) {
+    $result = [];
+    foreach ($year_total as $y) {
+        if ($y['sale_type'] == "s" && $y['year'] == 1998) {
+            $result[] = $y;
+        }
+    }
+    return $result;
+})());
+$s_secyear = $first((function() use ($year_total) {
+    $result = [];
+    foreach ($year_total as $y) {
+        if ($y['sale_type'] == "s" && $y['year'] == 1999) {
+            $result[] = $y;
+        }
+    }
+    return $result;
+})());
+$w_firstyear = $first((function() use ($year_total) {
+    $result = [];
+    foreach ($year_total as $y) {
+        if ($y['sale_type'] == "w" && $y['year'] == 1998) {
+            $result[] = $y;
+        }
+    }
+    return $result;
+})());
+$w_secyear = $first((function() use ($year_total) {
+    $result = [];
+    foreach ($year_total as $y) {
+        if ($y['sale_type'] == "w" && $y['year'] == 1999) {
+            $result[] = $y;
+        }
+    }
+    return $result;
+})());
+$result = ($s_firstyear['year_total'] > 0 && $w_firstyear['year_total'] > 0 && ($w_secyear['year_total'] / $w_firstyear['year_total']) > ($s_secyear['year_total'] / $s_firstyear['year_total']) ? [
+    [
+        "customer_id" => $s_secyear['customer_id'],
+        "customer_first_name" => $s_secyear['customer_first_name'],
+        "customer_last_name" => $s_secyear['customer_last_name']
+    ]
+] : []);
+echo json_encode($result), PHP_EOL;
+?>

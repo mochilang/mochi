@@ -1,0 +1,9 @@
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q98.php on line 105
+
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q98.php on line 105
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q98.php:152
+Stack trace:
+#0 /tmp/q98.php(160): {closure:/tmp/q98.php:136}()
+#1 {main}
+  thrown in /tmp/q98.php on line 152

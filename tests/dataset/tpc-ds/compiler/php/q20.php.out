@@ -1,0 +1,197 @@
+<?php
+class CatalogSale {
+    public $cs_item_sk;
+    public $cs_sold_date_sk;
+    public $cs_ext_sales_price;
+    public function __construct($fields = []) {
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+        $this->cs_ext_sales_price = $fields['cs_ext_sales_price'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public $i_item_desc;
+    public $i_category;
+    public $i_class;
+    public $i_current_price;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+        $this->i_item_desc = $fields['i_item_desc'] ?? null;
+        $this->i_category = $fields['i_category'] ?? null;
+        $this->i_class = $fields['i_class'] ?? null;
+        $this->i_current_price = $fields['i_current_price'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_date;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_date = $fields['d_date'] ?? null;
+    }
+}
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_sold_date_sk" => 1,
+        "cs_ext_sales_price" => 100
+    ],
+    [
+        "cs_item_sk" => 1,
+        "cs_sold_date_sk" => 1,
+        "cs_ext_sales_price" => 200
+    ],
+    [
+        "cs_item_sk" => 2,
+        "cs_sold_date_sk" => 1,
+        "cs_ext_sales_price" => 150
+    ],
+    [
+        "cs_item_sk" => 1,
+        "cs_sold_date_sk" => 2,
+        "cs_ext_sales_price" => 300
+    ],
+    [
+        "cs_item_sk" => 2,
+        "cs_sold_date_sk" => 2,
+        "cs_ext_sales_price" => 150
+    ],
+    [
+        "cs_item_sk" => 3,
+        "cs_sold_date_sk" => 1,
+        "cs_ext_sales_price" => 50
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "ITEM1",
+        "i_item_desc" => "Item One",
+        "i_category" => "A",
+        "i_class" => "X",
+        "i_current_price" => 10
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_item_id" => "ITEM2",
+        "i_item_desc" => "Item Two",
+        "i_category" => "A",
+        "i_class" => "X",
+        "i_current_price" => 20
+    ],
+    [
+        "i_item_sk" => 3,
+        "i_item_id" => "ITEM3",
+        "i_item_desc" => "Item Three",
+        "i_category" => "D",
+        "i_class" => "Y",
+        "i_current_price" => 15
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2000-02-10"
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_date" => "2000-02-20"
+    ]
+];
+$filtered = (function() use ($catalog_sales, $date_dim, $item) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($item as $i) {
+            if ($cs['cs_item_sk'] == $i['i_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($cs['cs_sold_date_sk'] == $d['d_date_sk']) {
+                        if (in_array($i['i_category'], ["A", "B", "C"]) && $d['d_date'] >= "2000-02-01" && $d['d_date'] <= "2000-03-02") {
+                            $_k = json_encode([
+    "id" => $i['i_item_id'],
+    "desc" => $i['i_item_desc'],
+    "cat" => $i['i_category'],
+    "class" => $i['i_class'],
+    "price" => $i['i_current_price']
+]);
+                            $groups[$_k][] = ["cs" => $cs, "i" => $i, "d" => $d];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_id" => $g['key']['id'],
+    "i_item_desc" => $g['key']['desc'],
+    "i_category" => $g['key']['cat'],
+    "i_class" => $g['key']['class'],
+    "i_current_price" => $g['key']['price'],
+    "itemrevenue" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_ext_sales_price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$class_totals = (function() use ($filtered) {
+    $groups = [];
+    foreach ($filtered as $f) {
+        $_k = json_encode($f['i_class']);
+        $groups[$_k][] = $f;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "class" => $g['key'],
+    "total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['itemrevenue'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = (function() use ($class_totals, $filtered) {
+    $result = [];
+    foreach ($filtered as $f) {
+        foreach ($class_totals as $t) {
+            if ($f['i_class'] == $t['class']) {
+                $result[] = [[
+    $f['i_category'],
+    $f['i_class'],
+    $f['i_item_id'],
+    $f['i_item_desc']
+], [
+    "i_item_id" => $f['i_item_id'],
+    "i_item_desc" => $f['i_item_desc'],
+    "i_category" => $f['i_category'],
+    "i_class" => $f['i_class'],
+    "i_current_price" => $f['i_current_price'],
+    "itemrevenue" => $f['itemrevenue'],
+    "revenueratio" => ($f['itemrevenue'] * 100) / $t['total']
+]];
+            }
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,15 @@
+<?php
+$store_sales = [
+    ["price" => 40],
+    ["price" => 30],
+    ["price" => 19]
+];
+$result = array_sum((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        $result[] = $s['price'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

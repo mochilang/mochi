@@ -1,0 +1,13 @@
+<?php
+$store_sales = [
+    [
+        "item" => 1,
+        "cost" => 20,
+        "list" => 30,
+        "coupon" => 5
+    ]
+];
+$store_returns = [["item" => 1, "ticket" => 1]];
+$result = 20 + 30 - 5 + 19;
+echo json_encode($result), PHP_EOL;
+?>

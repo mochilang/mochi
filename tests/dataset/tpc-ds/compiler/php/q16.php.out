@@ -1,0 +1,165 @@
+<?php
+class CatalogSale {
+    public $cs_order_number;
+    public $cs_ship_date_sk;
+    public $cs_ship_addr_sk;
+    public $cs_call_center_sk;
+    public $cs_warehouse_sk;
+    public $cs_ext_ship_cost;
+    public $cs_net_profit;
+    public function __construct($fields = []) {
+        $this->cs_order_number = $fields['cs_order_number'] ?? null;
+        $this->cs_ship_date_sk = $fields['cs_ship_date_sk'] ?? null;
+        $this->cs_ship_addr_sk = $fields['cs_ship_addr_sk'] ?? null;
+        $this->cs_call_center_sk = $fields['cs_call_center_sk'] ?? null;
+        $this->cs_warehouse_sk = $fields['cs_warehouse_sk'] ?? null;
+        $this->cs_ext_ship_cost = $fields['cs_ext_ship_cost'] ?? null;
+        $this->cs_net_profit = $fields['cs_net_profit'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_date;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_date = $fields['d_date'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_state;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_state = $fields['ca_state'] ?? null;
+    }
+}
+class CallCenter {
+    public $cc_call_center_sk;
+    public $cc_county;
+    public function __construct($fields = []) {
+        $this->cc_call_center_sk = $fields['cc_call_center_sk'] ?? null;
+        $this->cc_county = $fields['cc_county'] ?? null;
+    }
+}
+class CatalogReturn {
+    public $cr_order_number;
+    public function __construct($fields = []) {
+        $this->cr_order_number = $fields['cr_order_number'] ?? null;
+    }
+}
+$catalog_sales = [
+    [
+        "cs_order_number" => 1,
+        "cs_ship_date_sk" => 1,
+        "cs_ship_addr_sk" => 1,
+        "cs_call_center_sk" => 1,
+        "cs_warehouse_sk" => 1,
+        "cs_ext_ship_cost" => 5,
+        "cs_net_profit" => 20
+    ],
+    [
+        "cs_order_number" => 1,
+        "cs_ship_date_sk" => 1,
+        "cs_ship_addr_sk" => 1,
+        "cs_call_center_sk" => 1,
+        "cs_warehouse_sk" => 2,
+        "cs_ext_ship_cost" => 0,
+        "cs_net_profit" => 0
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2000-03-01"
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_state" => "CA"
+    ]
+];
+$call_center = [
+    [
+        "cc_call_center_sk" => 1,
+        "cc_county" => "CountyA"
+    ]
+];
+$catalog_returns = [];
+function distinct($xs) {
+    $out = [];
+    foreach ($xs as $x) {
+        if (!$contains($out, $x)) {
+            $out = array_merge($out, [$x]);
+        }
+    }
+    return $out;
+}
+$filtered = (function() use ($call_center, $catalog_returns, $catalog_sales, $customer_address, $date_dim) {
+    $groups = [];
+    foreach ($catalog_sales as $cs1) {
+        foreach ($date_dim as $d) {
+            if ($cs1['cs_ship_date_sk'] == $d['d_date_sk'] && $d['d_date'] >= "2000-03-01" && $d['d_date'] <= "2000-04-30") {
+                foreach ($customer_address as $ca) {
+                    if ($cs1['cs_ship_addr_sk'] == $ca['ca_address_sk'] && $ca['ca_state'] == "CA") {
+                        foreach ($call_center as $cc) {
+                            if ($cs1['cs_call_center_sk'] == $cc['cc_call_center_sk'] && $cc['cc_county'] == "CountyA") {
+                                if (!(count((function() use ($catalog_sales, $cs1) {
+    $result = [];
+    foreach ($catalog_sales as $cs2) {
+        if ($cs1['cs_order_number'] == $cs2['cs_order_number'] && $cs1['cs_warehouse_sk'] != $cs2['cs_warehouse_sk']) {
+            $result[] = $cs2;
+        }
+    }
+    return $result;
+})()) > 0 && count((function() use ($catalog_returns, $cs1) {
+    $result = [];
+    foreach ($catalog_returns as $cr) {
+        if ($cs1['cs_order_number'] == $cr['cr_order_number']) {
+            $result[] = $cr;
+        }
+    }
+    return $result;
+})()) > 0)) {
+                                    $_k = json_encode([]);
+                                    $groups[$_k][] = ["cs1" => $cs1, "d" => $d, "ca" => $ca, "cc" => $cc];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "order_count" => count(distinct((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_order_number'];
+        }
+        return $result;
+    })())),
+    "total_shipping_cost" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_ext_ship_cost'];
+        }
+        return $result;
+    })()),
+    "total_net_profit" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_net_profit'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($filtered), PHP_EOL;
+?>

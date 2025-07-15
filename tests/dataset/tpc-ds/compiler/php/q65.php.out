@@ -1,0 +1,70 @@
+<?php
+$store_sales = [
+    [
+        "store" => 1,
+        "item" => 1,
+        "price" => 1
+    ],
+    [
+        "store" => 1,
+        "item" => 1,
+        "price" => 1
+    ],
+    [
+        "store" => 1,
+        "item" => 2,
+        "price" => 60
+    ]
+];
+function average($xs) {
+    if (count($xs) == 0) {
+        return 0;
+    }
+    $sum = 0;
+    foreach ($xs as $x) {
+        $sum = $sum + $x;
+    }
+    return $sum / ((float)(count($xs)));
+}
+$item_revenue = (function() use ($store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        $_k = json_encode(["item" => $ss['item']]);
+        $groups[$_k][] = $ss;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "item" => $g['key']['item'],
+    "revenue" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$avg_rev = average((function() use ($item_revenue) {
+    $result = [];
+    foreach ($item_revenue as $ir) {
+        $result[] = $ir['revenue'];
+    }
+    return $result;
+})());
+$low_rev = (function() use ($avg_rev, $item_revenue) {
+    $result = [];
+    foreach ($item_revenue as $ir) {
+        if ($ir['revenue'] <= 0.1 * $avg_rev) {
+            $result[] = $ir['revenue'];
+        }
+    }
+    return $result;
+})();
+$result = array_sum($low_rev) + 63;
+echo json_encode($result), PHP_EOL;
+?>

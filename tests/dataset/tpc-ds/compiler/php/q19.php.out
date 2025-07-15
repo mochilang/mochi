@@ -1,0 +1,163 @@
+<?php
+class StoreSale {
+    public $ss_sold_date_sk;
+    public $ss_item_sk;
+    public $ss_customer_sk;
+    public $ss_store_sk;
+    public $ss_ext_sales_price;
+    public function __construct($fields = []) {
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+        $this->ss_ext_sales_price = $fields['ss_ext_sales_price'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public $d_moy;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+        $this->d_moy = $fields['d_moy'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_brand_id;
+    public $i_brand;
+    public $i_manufact_id;
+    public $i_manufact;
+    public $i_manager_id;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_brand_id = $fields['i_brand_id'] ?? null;
+        $this->i_brand = $fields['i_brand'] ?? null;
+        $this->i_manufact_id = $fields['i_manufact_id'] ?? null;
+        $this->i_manufact = $fields['i_manufact'] ?? null;
+        $this->i_manager_id = $fields['i_manager_id'] ?? null;
+    }
+}
+class Customer {
+    public $c_customer_sk;
+    public $c_current_addr_sk;
+    public function __construct($fields = []) {
+        $this->c_customer_sk = $fields['c_customer_sk'] ?? null;
+        $this->c_current_addr_sk = $fields['c_current_addr_sk'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_zip;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_zip = $fields['ca_zip'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_zip;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_zip = $fields['s_zip'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_sold_date_sk" => 1,
+        "ss_item_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_ext_sales_price" => 100
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 1999,
+        "d_moy" => 11
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_brand_id" => 1,
+        "i_brand" => "B1",
+        "i_manufact_id" => 1,
+        "i_manufact" => "M1",
+        "i_manager_id" => 10
+    ]
+];
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_current_addr_sk" => 1
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_zip" => "11111"
+    ]
+];
+$store = [
+    ["s_store_sk" => 1, "s_zip" => "99999"]
+];
+$result = (function() use ($customer, $customer_address, $date_dim, $item, $store, $store_sales) {
+    $groups = [];
+    foreach ($date_dim as $d) {
+        foreach ($store_sales as $ss) {
+            if ($ss['ss_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($item as $i) {
+                    if ($ss['ss_item_sk'] == $i['i_item_sk'] && $i['i_manager_id'] == 10) {
+                        foreach ($customer as $c) {
+                            if ($ss['ss_customer_sk'] == $c['c_customer_sk']) {
+                                foreach ($customer_address as $ca) {
+                                    if ($c['c_current_addr_sk'] == $ca['ca_address_sk']) {
+                                        foreach ($store as $s) {
+                                            if ($ss['ss_store_sk'] == $s['s_store_sk'] && $substr($ca['ca_zip'], 0, 5) != $substr($s['s_zip'], 0, 5)) {
+                                                if ($d['d_moy'] == 11 && $d['d_year'] == 1999) {
+                                                    $_k = json_encode([
+    "brand" => $i['i_brand'],
+    "brand_id" => $i['i_brand_id'],
+    "man_id" => $i['i_manufact_id'],
+    "man" => $i['i_manufact']
+]);
+                                                    $groups[$_k][] = ["d" => $d, "ss" => $ss, "i" => $i, "c" => $c, "ca" => $ca, "s" => $s];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [[$g['key']['brand']], [
+    "i_brand" => $g['key']['brand'],
+    "i_brand_id" => $g['key']['brand_id'],
+    "i_manufact_id" => $g['key']['man_id'],
+    "i_manufact" => $g['key']['man'],
+    "ext_price" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_ext_sales_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

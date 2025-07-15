@@ -1,0 +1,152 @@
+<?php
+$web_returns = [
+    [
+        "wr_returning_customer_sk" => 1,
+        "wr_returned_date_sk" => 1,
+        "wr_return_amt" => 100,
+        "wr_returning_addr_sk" => 1
+    ],
+    [
+        "wr_returning_customer_sk" => 2,
+        "wr_returned_date_sk" => 1,
+        "wr_return_amt" => 30,
+        "wr_returning_addr_sk" => 2
+    ],
+    [
+        "wr_returning_customer_sk" => 1,
+        "wr_returned_date_sk" => 1,
+        "wr_return_amt" => 50,
+        "wr_returning_addr_sk" => 1
+    ]
+];
+$date_dim = [["d_date_sk" => 1, "d_year" => 2000]];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_state" => "CA"
+    ],
+    [
+        "ca_address_sk" => 2,
+        "ca_state" => "CA"
+    ]
+];
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_customer_id" => "C1",
+        "c_first_name" => "John",
+        "c_last_name" => "Doe",
+        "c_current_addr_sk" => 1
+    ],
+    [
+        "c_customer_sk" => 2,
+        "c_customer_id" => "C2",
+        "c_first_name" => "Jane",
+        "c_last_name" => "Smith",
+        "c_current_addr_sk" => 2
+    ]
+];
+$customer_total_return = (function() use ($customer_address, $date_dim, $web_returns) {
+    $groups = [];
+    foreach ($web_returns as $wr) {
+        foreach ($date_dim as $d) {
+            if ($wr['wr_returned_date_sk'] == $d['d_date_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($wr['wr_returning_addr_sk'] == $ca['ca_address_sk']) {
+                        if ($d['d_year'] == 2000 && $ca['ca_state'] == "CA") {
+                            $_k = json_encode([
+    "cust" => $wr['wr_returning_customer_sk'],
+    "state" => $ca['ca_state']
+]);
+                            $groups[$_k][] = ["wr" => $wr, "d" => $d, "ca" => $ca];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "ctr_customer_sk" => $g['key']['cust'],
+    "ctr_state" => $g['key']['state'],
+    "ctr_total_return" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['wr_return_amt'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$avg_by_state = (function() use ($customer_total_return) {
+    $groups = [];
+    foreach ($customer_total_return as $ctr) {
+        $_k = json_encode($ctr['ctr_state']);
+        $groups[$_k][] = $ctr;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "state" => $g['key'],
+    "avg_return" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ctr_total_return'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = (function() use ($avg_by_state, $customer, $customer_total_return) {
+    $result = [];
+    foreach ($customer_total_return as $ctr) {
+        foreach ($avg_by_state as $avg) {
+            if ($ctr['ctr_state'] == $avg['state']) {
+                foreach ($customer as $c) {
+                    if ($ctr['ctr_customer_sk'] == $c['c_customer_sk']) {
+                        if ($ctr['ctr_total_return'] > $avg['avg_return'] * 1.2) {
+                            $result[] = [
+    "c_customer_id" => $c['c_customer_id'],
+    "c_first_name" => $c['c_first_name'],
+    "c_last_name" => $c['c_last_name'],
+    "ctr_total_return" => $ctr['ctr_total_return']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

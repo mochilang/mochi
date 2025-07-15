@@ -1,1 +1,117 @@
-[]
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 112
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 121
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 130
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 139
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 148
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 157
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Warning: Undefined array key "day" in /tmp/q2.php on line 166
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q2.php:201
+Stack trace:
+#0 /tmp/q2.php(208): {closure:/tmp/q2.php:194}()
+#1 {main}
+  thrown in /tmp/q2.php on line 201

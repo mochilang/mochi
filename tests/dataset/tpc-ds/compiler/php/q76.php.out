@@ -1,0 +1,157 @@
+<?php
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 1998,
+        "d_qoy" => 1
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_category" => "CatA"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_category" => "CatB"
+    ],
+    [
+        "i_item_sk" => 3,
+        "i_category" => "CatC"
+    ]
+];
+$store_sales = [
+    [
+        "ss_customer_sk" => null,
+        "ss_item_sk" => 1,
+        "ss_ext_sales_price" => 10,
+        "ss_sold_date_sk" => 1
+    ]
+];
+$web_sales = [
+    [
+        "ws_bill_customer_sk" => null,
+        "ws_item_sk" => 2,
+        "ws_ext_sales_price" => 15,
+        "ws_sold_date_sk" => 1
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_bill_customer_sk" => null,
+        "cs_item_sk" => 3,
+        "cs_ext_sales_price" => 20,
+        "cs_sold_date_sk" => 1
+    ]
+];
+$store_part = (function() use ($date_dim, $item, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($item as $i) {
+            if ($i['i_item_sk'] == $ss['ss_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($d['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                        if ($ss['ss_customer_sk'] == null) {
+                            $result[] = [
+    "channel" => "store",
+    "col_name" => $ss['ss_customer_sk'],
+    "d_year" => $d['d_year'],
+    "d_qoy" => $d['d_qoy'],
+    "i_category" => $i['i_category'],
+    "ext_sales_price" => $ss['ss_ext_sales_price']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$web_part = (function() use ($date_dim, $item, $web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($item as $i) {
+            if ($i['i_item_sk'] == $ws['ws_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($d['d_date_sk'] == $ws['ws_sold_date_sk']) {
+                        if ($ws['ws_bill_customer_sk'] == null) {
+                            $result[] = [
+    "channel" => "web",
+    "col_name" => $ws['ws_bill_customer_sk'],
+    "d_year" => $d['d_year'],
+    "d_qoy" => $d['d_qoy'],
+    "i_category" => $i['i_category'],
+    "ext_sales_price" => $ws['ws_ext_sales_price']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$catalog_part = (function() use ($catalog_sales, $date_dim, $item) {
+    $result = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($item as $i) {
+            if ($i['i_item_sk'] == $cs['cs_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($d['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                        if ($cs['cs_bill_customer_sk'] == null) {
+                            $result[] = [
+    "channel" => "catalog",
+    "col_name" => $cs['cs_bill_customer_sk'],
+    "d_year" => $d['d_year'],
+    "d_qoy" => $d['d_qoy'],
+    "i_category" => $i['i_category'],
+    "ext_sales_price" => $cs['cs_ext_sales_price']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$all_rows = $concat($store_part, $web_part, $catalog_part);
+$result = (function() use ($all_rows) {
+    $groups = [];
+    foreach ($all_rows as $r) {
+        $_k = json_encode([
+    "channel" => $r['channel'],
+    "col_name" => $r['col_name'],
+    "d_year" => $r['d_year'],
+    "d_qoy" => $r['d_qoy'],
+    "i_category" => $r['i_category']
+]);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [$g['key']['channel'], [
+    "channel" => $g['key']['channel'],
+    "col_name" => $g['key']['col_name'],
+    "d_year" => $g['key']['d_year'],
+    "d_qoy" => $g['key']['d_qoy'],
+    "i_category" => $g['key']['i_category'],
+    "sales_cnt" => count($g['items']),
+    "sales_amt" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['r']['ext_sales_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,180 @@
+<?php
+class CallCenter {
+    public $cc_call_center_sk;
+    public $cc_call_center_id;
+    public $cc_name;
+    public $cc_manager;
+    public function __construct($fields = []) {
+        $this->cc_call_center_sk = $fields['cc_call_center_sk'] ?? null;
+        $this->cc_call_center_id = $fields['cc_call_center_id'] ?? null;
+        $this->cc_name = $fields['cc_name'] ?? null;
+        $this->cc_manager = $fields['cc_manager'] ?? null;
+    }
+}
+class CatalogReturn {
+    public $cr_call_center_sk;
+    public $cr_returned_date_sk;
+    public $cr_returning_customer_sk;
+    public $cr_net_loss;
+    public function __construct($fields = []) {
+        $this->cr_call_center_sk = $fields['cr_call_center_sk'] ?? null;
+        $this->cr_returned_date_sk = $fields['cr_returned_date_sk'] ?? null;
+        $this->cr_returning_customer_sk = $fields['cr_returning_customer_sk'] ?? null;
+        $this->cr_net_loss = $fields['cr_net_loss'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public $d_moy;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+        $this->d_moy = $fields['d_moy'] ?? null;
+    }
+}
+class Customer {
+    public $c_customer_sk;
+    public $c_current_cdemo_sk;
+    public $c_current_hdemo_sk;
+    public $c_current_addr_sk;
+    public function __construct($fields = []) {
+        $this->c_customer_sk = $fields['c_customer_sk'] ?? null;
+        $this->c_current_cdemo_sk = $fields['c_current_cdemo_sk'] ?? null;
+        $this->c_current_hdemo_sk = $fields['c_current_hdemo_sk'] ?? null;
+        $this->c_current_addr_sk = $fields['c_current_addr_sk'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_gmt_offset;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_gmt_offset = $fields['ca_gmt_offset'] ?? null;
+    }
+}
+class CustomerDemographics {
+    public $cd_demo_sk;
+    public $cd_marital_status;
+    public $cd_education_status;
+    public function __construct($fields = []) {
+        $this->cd_demo_sk = $fields['cd_demo_sk'] ?? null;
+        $this->cd_marital_status = $fields['cd_marital_status'] ?? null;
+        $this->cd_education_status = $fields['cd_education_status'] ?? null;
+    }
+}
+class HouseholdDemographics {
+    public $hd_demo_sk;
+    public $hd_buy_potential;
+    public function __construct($fields = []) {
+        $this->hd_demo_sk = $fields['hd_demo_sk'] ?? null;
+        $this->hd_buy_potential = $fields['hd_buy_potential'] ?? null;
+    }
+}
+$call_center = [
+    [
+        "cc_call_center_sk" => 1,
+        "cc_call_center_id" => "CC1",
+        "cc_name" => "Main",
+        "cc_manager" => "Alice"
+    ]
+];
+$catalog_returns = [
+    [
+        "cr_call_center_sk" => 1,
+        "cr_returned_date_sk" => 1,
+        "cr_returning_customer_sk" => 1,
+        "cr_net_loss" => 10
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2001,
+        "d_moy" => 5
+    ]
+];
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_current_cdemo_sk" => 1,
+        "c_current_hdemo_sk" => 1,
+        "c_current_addr_sk" => 1
+    ]
+];
+$customer_demographics = [
+    [
+        "cd_demo_sk" => 1,
+        "cd_marital_status" => "M",
+        "cd_education_status" => "Unknown"
+    ]
+];
+$household_demographics = [
+    [
+        "hd_demo_sk" => 1,
+        "hd_buy_potential" => "1001-5000"
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_gmt_offset" => -6
+    ]
+];
+$result = $first((function() use ($call_center, $catalog_returns, $customer, $customer_address, $customer_demographics, $date_dim, $household_demographics) {
+    $groups = [];
+    foreach ($call_center as $cc) {
+        foreach ($catalog_returns as $cr) {
+            if ($cc['cc_call_center_sk'] == $cr['cr_call_center_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($cr['cr_returned_date_sk'] == $d['d_date_sk']) {
+                        foreach ($customer as $c) {
+                            if ($cr['cr_returning_customer_sk'] == $c['c_customer_sk']) {
+                                foreach ($customer_demographics as $cd) {
+                                    if ($c['c_current_cdemo_sk'] == $cd['cd_demo_sk']) {
+                                        foreach ($household_demographics as $hd) {
+                                            if ($c['c_current_hdemo_sk'] == $hd['hd_demo_sk']) {
+                                                foreach ($customer_address as $ca) {
+                                                    if ($c['c_current_addr_sk'] == $ca['ca_address_sk']) {
+                                                        if ($d['d_year'] == 2001 && $d['d_moy'] == 5 && $cd['cd_marital_status'] == "M" && $cd['cd_education_status'] == "Unknown" && $hd['hd_buy_potential'] == "1001-5000" && $ca['ca_gmt_offset'] == (-6)) {
+                                                            $_k = json_encode([
+    "id" => $cc['cc_call_center_id'],
+    "name" => $cc['cc_name'],
+    "mgr" => $cc['cc_manager']
+]);
+                                                            $groups[$_k][] = ["cc" => $cc, "cr" => $cr, "d" => $d, "c" => $c, "cd" => $cd, "hd" => $hd, "ca" => $ca];
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "Call_Center" => $g['key']['id'],
+    "Call_Center_Name" => $g['key']['name'],
+    "Manager" => $g['key']['mgr'],
+    "Returns_Loss" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cr_net_loss'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

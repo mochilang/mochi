@@ -1,0 +1,91 @@
+<?php
+$customer = [
+    [
+        "id" => 1,
+        "current_addr" => 1,
+        "cdemo" => 1,
+        "hdemo" => 1
+    ],
+    [
+        "id" => 2,
+        "current_addr" => 1,
+        "cdemo" => 2,
+        "hdemo" => 2
+    ],
+    [
+        "id" => 3,
+        "current_addr" => 1,
+        "cdemo" => 3,
+        "hdemo" => 1
+    ],
+    [
+        "id" => 4,
+        "current_addr" => 1,
+        "cdemo" => 4,
+        "hdemo" => 2
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_city" => "Springfield"
+    ]
+];
+$customer_demographics = [
+    ["cd_demo_sk" => 1],
+    ["cd_demo_sk" => 2],
+    ["cd_demo_sk" => 3],
+    ["cd_demo_sk" => 4]
+];
+$household_demographics = [
+    [
+        "hd_demo_sk" => 1,
+        "income_band_sk" => 1
+    ],
+    [
+        "hd_demo_sk" => 2,
+        "income_band_sk" => 1
+    ]
+];
+$income_band = [
+    [
+        "ib_income_band_sk" => 1,
+        "ib_lower_bound" => 0,
+        "ib_upper_bound" => 50000
+    ]
+];
+$store_returns = [
+    ["sr_cdemo_sk" => 1, "amt" => 10],
+    ["sr_cdemo_sk" => 2, "amt" => 20],
+    ["sr_cdemo_sk" => 3, "amt" => 30],
+    ["sr_cdemo_sk" => 4, "amt" => 24]
+];
+$result = array_sum((function() use ($customer, $customer_address, $customer_demographics, $household_demographics, $income_band, $store_returns) {
+    $result = [];
+    foreach ($customer as $c) {
+        foreach ($customer_address as $ca) {
+            if ($c['current_addr'] == $ca['ca_address_sk'] && $ca['ca_city'] == "Springfield") {
+                foreach ($customer_demographics as $cd) {
+                    if ($c['cdemo'] == $cd['cd_demo_sk']) {
+                        foreach ($store_returns as $sr) {
+                            if ($cd['cd_demo_sk'] == $sr['sr_cdemo_sk']) {
+                                foreach ($household_demographics as $hd) {
+                                    if ($c['hdemo'] == $hd['hd_demo_sk']) {
+                                        foreach ($income_band as $ib) {
+                                            if ($hd['income_band_sk'] == $ib['ib_income_band_sk']) {
+                                                $result[] = $sr['amt'];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

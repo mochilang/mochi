@@ -1,0 +1,202 @@
+<?php
+class CatalogSale {
+    public $cs_sold_date_sk;
+    public $cs_item_sk;
+    public $cs_bill_cdemo_sk;
+    public $cs_promo_sk;
+    public $cs_quantity;
+    public $cs_list_price;
+    public $cs_coupon_amt;
+    public $cs_sales_price;
+    public function __construct($fields = []) {
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_bill_cdemo_sk = $fields['cs_bill_cdemo_sk'] ?? null;
+        $this->cs_promo_sk = $fields['cs_promo_sk'] ?? null;
+        $this->cs_quantity = $fields['cs_quantity'] ?? null;
+        $this->cs_list_price = $fields['cs_list_price'] ?? null;
+        $this->cs_coupon_amt = $fields['cs_coupon_amt'] ?? null;
+        $this->cs_sales_price = $fields['cs_sales_price'] ?? null;
+    }
+}
+class CustomerDemo {
+    public $cd_demo_sk;
+    public $cd_gender;
+    public $cd_marital_status;
+    public $cd_education_status;
+    public function __construct($fields = []) {
+        $this->cd_demo_sk = $fields['cd_demo_sk'] ?? null;
+        $this->cd_gender = $fields['cd_gender'] ?? null;
+        $this->cd_marital_status = $fields['cd_marital_status'] ?? null;
+        $this->cd_education_status = $fields['cd_education_status'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+    }
+}
+class Promotion {
+    public $p_promo_sk;
+    public $p_channel_email;
+    public $p_channel_event;
+    public function __construct($fields = []) {
+        $this->p_promo_sk = $fields['p_promo_sk'] ?? null;
+        $this->p_channel_email = $fields['p_channel_email'] ?? null;
+        $this->p_channel_event = $fields['p_channel_event'] ?? null;
+    }
+}
+$catalog_sales = [
+    [
+        "cs_sold_date_sk" => 1,
+        "cs_item_sk" => 1,
+        "cs_bill_cdemo_sk" => 1,
+        "cs_promo_sk" => 1,
+        "cs_quantity" => 10,
+        "cs_list_price" => 100,
+        "cs_coupon_amt" => 5,
+        "cs_sales_price" => 95
+    ],
+    [
+        "cs_sold_date_sk" => 1,
+        "cs_item_sk" => 2,
+        "cs_bill_cdemo_sk" => 2,
+        "cs_promo_sk" => 2,
+        "cs_quantity" => 5,
+        "cs_list_price" => 50,
+        "cs_coupon_amt" => 2,
+        "cs_sales_price" => 48
+    ]
+];
+$customer_demographics = [
+    [
+        "cd_demo_sk" => 1,
+        "cd_gender" => "M",
+        "cd_marital_status" => "S",
+        "cd_education_status" => "College"
+    ],
+    [
+        "cd_demo_sk" => 2,
+        "cd_gender" => "F",
+        "cd_marital_status" => "M",
+        "cd_education_status" => "High School"
+    ]
+];
+$date_dim = [["d_date_sk" => 1, "d_year" => 2000]];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "ITEM1"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_item_id" => "ITEM2"
+    ]
+];
+$promotion = [
+    [
+        "p_promo_sk" => 1,
+        "p_channel_email" => "N",
+        "p_channel_event" => "Y"
+    ],
+    [
+        "p_promo_sk" => 2,
+        "p_channel_email" => "Y",
+        "p_channel_event" => "N"
+    ]
+];
+$result = (function() use ($catalog_sales, $customer_demographics, $date_dim, $item, $promotion) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($customer_demographics as $cd) {
+            if ($cs['cs_bill_cdemo_sk'] == $cd['cd_demo_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($cs['cs_sold_date_sk'] == $d['d_date_sk']) {
+                        foreach ($item as $i) {
+                            if ($cs['cs_item_sk'] == $i['i_item_sk']) {
+                                foreach ($promotion as $p) {
+                                    if ($cs['cs_promo_sk'] == $p['p_promo_sk']) {
+                                        if ($cd['cd_gender'] == "M" && $cd['cd_marital_status'] == "S" && $cd['cd_education_status'] == "College" && ($p['p_channel_email'] == "N" || $p['p_channel_event'] == "N") && $d['d_year'] == 2000) {
+                                            $_k = json_encode($i['i_item_id']);
+                                            $groups[$_k][] = ["cs" => $cs, "cd" => $cd, "d" => $d, "i" => $i, "p" => $p];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_id" => $g['key'],
+    "agg1" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_quantity'];
+        }
+        return $result;
+    })()),
+    "agg2" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_list_price'];
+        }
+        return $result;
+    })()),
+    "agg3" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_coupon_amt'];
+        }
+        return $result;
+    })()),
+    "agg4" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_sales_price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

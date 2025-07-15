@@ -1,0 +1,18 @@
+<?php
+$web_sales = [["amount" => 34]];
+$store_sales = [["amount" => 35]];
+$result = array_sum((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $w) {
+        $result[] = $w['amount'];
+    }
+    return $result;
+})()) + array_sum((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        $result[] = $s['amount'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

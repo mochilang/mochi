@@ -1,0 +1,252 @@
+<?php
+class StoreSale {
+    public $ss_sold_date_sk;
+    public $ss_item_sk;
+    public $ss_customer_sk;
+    public $ss_ticket_number;
+    public $ss_quantity;
+    public $ss_store_sk;
+    public function __construct($fields = []) {
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_ticket_number = $fields['ss_ticket_number'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+    }
+}
+class StoreReturn {
+    public $sr_returned_date_sk;
+    public $sr_customer_sk;
+    public $sr_item_sk;
+    public $sr_ticket_number;
+    public $sr_return_quantity;
+    public function __construct($fields = []) {
+        $this->sr_returned_date_sk = $fields['sr_returned_date_sk'] ?? null;
+        $this->sr_customer_sk = $fields['sr_customer_sk'] ?? null;
+        $this->sr_item_sk = $fields['sr_item_sk'] ?? null;
+        $this->sr_ticket_number = $fields['sr_ticket_number'] ?? null;
+        $this->sr_return_quantity = $fields['sr_return_quantity'] ?? null;
+    }
+}
+class CatalogSale {
+    public $cs_sold_date_sk;
+    public $cs_item_sk;
+    public $cs_bill_customer_sk;
+    public $cs_quantity;
+    public function __construct($fields = []) {
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_bill_customer_sk = $fields['cs_bill_customer_sk'] ?? null;
+        $this->cs_quantity = $fields['cs_quantity'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_quarter_name;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_quarter_name = $fields['d_quarter_name'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_state;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_state = $fields['s_state'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public $i_item_desc;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+        $this->i_item_desc = $fields['i_item_desc'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_sold_date_sk" => 1,
+        "ss_item_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_ticket_number" => 1,
+        "ss_quantity" => 10,
+        "ss_store_sk" => 1
+    ]
+];
+$store_returns = [
+    [
+        "sr_returned_date_sk" => 2,
+        "sr_customer_sk" => 1,
+        "sr_item_sk" => 1,
+        "sr_ticket_number" => 1,
+        "sr_return_quantity" => 2
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_sold_date_sk" => 3,
+        "cs_item_sk" => 1,
+        "cs_bill_customer_sk" => 1,
+        "cs_quantity" => 5
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_quarter_name" => "1998Q1"
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_quarter_name" => "1998Q2"
+    ],
+    [
+        "d_date_sk" => 3,
+        "d_quarter_name" => "1998Q3"
+    ]
+];
+$store = [["s_store_sk" => 1, "s_state" => "CA"]];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "I1",
+        "i_item_desc" => "Item 1"
+    ]
+];
+$joined = (function() use ($catalog_sales, $date_dim, $item, $store, $store_returns, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($store_returns as $sr) {
+            if ($ss['ss_customer_sk'] == $sr['sr_customer_sk'] && $ss['ss_item_sk'] == $sr['sr_item_sk'] && $ss['ss_ticket_number'] == $sr['sr_ticket_number']) {
+                foreach ($catalog_sales as $cs) {
+                    if ($sr['sr_customer_sk'] == $cs['cs_bill_customer_sk'] && $sr['sr_item_sk'] == $cs['cs_item_sk']) {
+                        foreach ($date_dim as $d1) {
+                            if ($ss['ss_sold_date_sk'] == $d1['d_date_sk'] && $d1['d_quarter_name'] == "1998Q1") {
+                                foreach ($date_dim as $d2) {
+                                    if (in_array($sr['sr_returned_date_sk'] == $d2['d_date_sk'] && $d2['d_quarter_name'], ["1998Q1", "1998Q2", "1998Q3"])) {
+                                        foreach ($date_dim as $d3) {
+                                            if (in_array($cs['cs_sold_date_sk'] == $d3['d_date_sk'] && $d3['d_quarter_name'], ["1998Q1", "1998Q2", "1998Q3"])) {
+                                                foreach ($store as $s) {
+                                                    if ($ss['ss_store_sk'] == $s['s_store_sk']) {
+                                                        foreach ($item as $i) {
+                                                            if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                                                                $result[] = [
+    "qty" => $ss['ss_quantity'],
+    "ret" => $sr['sr_return_quantity'],
+    "csq" => $cs['cs_quantity'],
+    "i_item_id" => $i['i_item_id'],
+    "i_item_desc" => $i['i_item_desc'],
+    "s_state" => $s['s_state']
+];
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = (function() use ($joined) {
+    $groups = [];
+    foreach ($joined as $j) {
+        $_k = json_encode([
+    "i_item_id" => $j['i_item_id'],
+    "i_item_desc" => $j['i_item_desc'],
+    "s_state" => $j['s_state']
+]);
+        $groups[$_k][] = $j;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_id" => $g['key']['i_item_id'],
+    "i_item_desc" => $g['key']['i_item_desc'],
+    "s_state" => $g['key']['s_state'],
+    "store_sales_quantitycount" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $_) {
+            $result[] = $_;
+        }
+        return $result;
+    })()),
+    "store_sales_quantityave" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['qty'];
+        }
+        return $result;
+    })()),
+    "store_sales_quantitystdev" => 0,
+    "store_sales_quantitycov" => 0,
+    "store_returns_quantitycount" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $_) {
+            $result[] = $_;
+        }
+        return $result;
+    })()),
+    "store_returns_quantityave" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ret'];
+        }
+        return $result;
+    })()),
+    "store_returns_quantitystdev" => 0,
+    "store_returns_quantitycov" => 0,
+    "catalog_sales_quantitycount" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $_) {
+            $result[] = $_;
+        }
+        return $result;
+    })()),
+    "catalog_sales_quantityave" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['csq'];
+        }
+        return $result;
+    })()),
+    "catalog_sales_quantitystdev" => 0,
+    "catalog_sales_quantitycov" => 0
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

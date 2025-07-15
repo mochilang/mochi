@@ -1,0 +1,202 @@
+<?php
+class Inventory {
+    public $inv_item_sk;
+    public $inv_warehouse_sk;
+    public $inv_date_sk;
+    public $inv_quantity_on_hand;
+    public function __construct($fields = []) {
+        $this->inv_item_sk = $fields['inv_item_sk'] ?? null;
+        $this->inv_warehouse_sk = $fields['inv_warehouse_sk'] ?? null;
+        $this->inv_date_sk = $fields['inv_date_sk'] ?? null;
+        $this->inv_quantity_on_hand = $fields['inv_quantity_on_hand'] ?? null;
+    }
+}
+class Warehouse {
+    public $w_warehouse_sk;
+    public $w_warehouse_name;
+    public function __construct($fields = []) {
+        $this->w_warehouse_sk = $fields['w_warehouse_sk'] ?? null;
+        $this->w_warehouse_name = $fields['w_warehouse_name'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_date;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_date = $fields['d_date'] ?? null;
+    }
+}
+$inventory = [
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 30
+    ],
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 2,
+        "inv_quantity_on_hand" => 40
+    ],
+    [
+        "inv_item_sk" => 2,
+        "inv_warehouse_sk" => 2,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 20
+    ],
+    [
+        "inv_item_sk" => 2,
+        "inv_warehouse_sk" => 2,
+        "inv_date_sk" => 2,
+        "inv_quantity_on_hand" => 20
+    ]
+];
+$warehouse = [
+    [
+        "w_warehouse_sk" => 1,
+        "w_warehouse_name" => "Main"
+    ],
+    [
+        "w_warehouse_sk" => 2,
+        "w_warehouse_name" => "Backup"
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "ITEM1"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_item_id" => "ITEM2"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2000-03-01"
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_date" => "2000-03-20"
+    ]
+];
+$before = (function() use ($date_dim, $inventory) {
+    $groups = [];
+    foreach ($inventory as $inv) {
+        foreach ($date_dim as $d) {
+            if ($inv['inv_date_sk'] == $d['d_date_sk']) {
+                if ($d['d_date'] < "2000-03-15") {
+                    $_k = json_encode([
+    "w" => $inv['inv_warehouse_sk'],
+    "i" => $inv['inv_item_sk']
+]);
+                    $groups[$_k][] = ["inv" => $inv, "d" => $d];
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "w" => $g['key']['w'],
+    "i" => $g['key']['i'],
+    "qty" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['inv_quantity_on_hand'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$after = (function() use ($date_dim, $inventory) {
+    $groups = [];
+    foreach ($inventory as $inv) {
+        foreach ($date_dim as $d) {
+            if ($inv['inv_date_sk'] == $d['d_date_sk']) {
+                if ($d['d_date'] >= "2000-03-15") {
+                    $_k = json_encode([
+    "w" => $inv['inv_warehouse_sk'],
+    "i" => $inv['inv_item_sk']
+]);
+                    $groups[$_k][] = ["inv" => $inv, "d" => $d];
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "w" => $g['key']['w'],
+    "i" => $g['key']['i'],
+    "qty" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['inv_quantity_on_hand'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$joined = (function() use ($after, $before, $item, $warehouse) {
+    $result = [];
+    foreach ($before as $b) {
+        foreach ($after as $a) {
+            if ($b['w'] == $a['w'] && $b['i'] == $a['i']) {
+                foreach ($warehouse as $w) {
+                    if ($w['w_warehouse_sk'] == $b['w']) {
+                        foreach ($item as $it) {
+                            if ($it['i_item_sk'] == $b['i']) {
+                                $result[] = [
+    "w_name" => $w['w_warehouse_name'],
+    "i_id" => $it['i_item_id'],
+    "before_qty" => $b['qty'],
+    "after_qty" => $a['qty'],
+    "ratio" => $a['qty'] / $b['qty']
+];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = (function() use ($joined) {
+    $result = [];
+    foreach ($joined as $r) {
+        if ($r['ratio'] >= (2 / 3) && $r['ratio'] <= (3 / 2)) {
+            $result[] = [[$r['w_name'], $r['i_id']], [
+    "w_warehouse_name" => $r['w_name'],
+    "i_item_id" => $r['i_id'],
+    "inv_before" => $r['before_qty'],
+    "inv_after" => $r['after_qty']
+]];
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>
