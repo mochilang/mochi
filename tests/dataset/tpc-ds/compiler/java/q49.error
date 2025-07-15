@@ -1,12 +1,7 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq493439964118/001/Q49.java:95: error: cannot find symbol
-    Object tmp = (concat((new java.util.function.Supplier<List<ChannelItemReturnRatioReturnRankCurrencyRank>>(){public List<ChannelItemReturnRatioReturnRankCurrencyRank> get(){
-                  ^
-  symbol:   method concat(List<ChannelItemReturnRatioReturnRankCurrencyRank>,List<ChannelItemReturnRatioReturnRankCurrencyRank>,List<ChannelItemReturnRatioReturnRankCurrencyRank>)
-  location: class Q49
-/tmp/TestJavaCompiler_TPCDSQueriesq493439964118/001/Q49.java:119: error: for-each not applicable to expression type
+/tmp/TestJavaCompiler_TPCDSQueriesq49693570697/001/Q49.java:119: error: for-each not applicable to expression type
     for (var r : tmp) {
                  ^
   required: array or java.lang.Iterable
   found:    Object
-2 errors
+1 error

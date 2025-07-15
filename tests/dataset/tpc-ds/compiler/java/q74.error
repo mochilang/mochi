@@ -1,59 +1,36 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:236: error: cannot find symbol
-    Object year_total = concat((new java.util.function.Supplier<List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>>(){public List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType> get(){
-                        ^
-  symbol:   method concat(List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>,List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>)
-  location: class Q74
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:295: error: cannot find symbol
-    Object s_firstyear = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:238: error: cannot find symbol
+        res5.add(x.ss.ss_net_paid);
+                  ^
+  symbol:   variable ss
+  location: variable x of type CD
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:267: error: cannot find symbol
+        res11.add(x.ws.ws_net_paid);
+                   ^
+  symbol:   variable ws
+  location: variable x of type CD
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:274: error: cannot find symbol
+    Object s_firstyear = first((new java.util.function.Supplier<List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>>(){public List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType> get(){
                          ^
-  symbol:   method first(List<CAP#1>)
+  symbol:   method first(List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>)
   location: class Q74
-  where CAP#1 is a fresh type-variable:
-    CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:297: error: for-each not applicable to expression type
-    for (var y : year_total) {
-                 ^
-  required: array or java.lang.Iterable
-  found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:303: error: cannot find symbol
-    Object s_secyear = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:282: error: cannot find symbol
+    Object s_secyear = first((new java.util.function.Supplier<List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>>(){public List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType> get(){
                        ^
-  symbol:   method first(List<CAP#1>)
+  symbol:   method first(List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>)
   location: class Q74
-  where CAP#1 is a fresh type-variable:
-    CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:305: error: for-each not applicable to expression type
-    for (var y : year_total) {
-                 ^
-  required: array or java.lang.Iterable
-  found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:311: error: cannot find symbol
-    Object w_firstyear = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:290: error: cannot find symbol
+    Object w_firstyear = first((new java.util.function.Supplier<List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>>(){public List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType> get(){
                          ^
-  symbol:   method first(List<CAP#1>)
+  symbol:   method first(List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>)
   location: class Q74
-  where CAP#1 is a fresh type-variable:
-    CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:313: error: for-each not applicable to expression type
-    for (var y : year_total) {
-                 ^
-  required: array or java.lang.Iterable
-  found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:319: error: cannot find symbol
-    Object w_secyear = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:298: error: cannot find symbol
+    Object w_secyear = first((new java.util.function.Supplier<List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>>(){public List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType> get(){
                        ^
-  symbol:   method first(List<CAP#1>)
+  symbol:   method first(List<CustomerIdCustomerFirstNameCustomerLastNameYearYearTotalSaleType>)
   location: class Q74
-  where CAP#1 is a fresh type-variable:
-    CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:321: error: for-each not applicable to expression type
-    for (var y : year_total) {
-                 ^
-  required: array or java.lang.Iterable
-  found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq741137416979/001/Q74.java:327: error: incompatible types: Object cannot be converted to int
+/tmp/TestJavaCompiler_TPCDSQueriesq743644240356/001/Q74.java:306: error: incompatible types: Object cannot be converted to int
     Object result = (((Number)((Map<?,?>)s_firstyear).get("year_total")).doubleValue() > 0 && ((Number)((Map<?,?>)w_firstyear).get("year_total")).doubleValue() > 0 && String.valueOf((((Number)((Map<?,?>)w_secyear).get("year_total")).doubleValue() / ((Number)((Map<?,?>)w_firstyear).get("year_total")).doubleValue())).compareTo(String.valueOf((((Number)((Map<?,?>)s_secyear).get("year_total")).doubleValue() / ((Number)((Map<?,?>)s_firstyear).get("year_total")).doubleValue()))) > 0 ? Arrays.asList(new CustomerIdCustomerFirstNameCustomerLastName(((Map<?,?>)s_secyear).get("customer_id"), ((Map<?,?>)s_secyear).get("customer_first_name"), ((Map<?,?>)s_secyear).get("customer_last_name"))) : Arrays.asList());
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-10 errors
+7 errors

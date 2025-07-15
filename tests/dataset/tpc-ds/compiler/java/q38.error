@@ -1,35 +1,35 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:76: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:76: error: cannot find symbol
     static List<any> distinct(List<any> xs) {
                                    ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:76: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:76: error: cannot find symbol
     static List<any> distinct(List<any> xs) {
                 ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:78: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:78: error: cannot find symbol
         for (any x : xs) {
              ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:134: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:134: error: cannot find symbol
     List<any> store_ids = distinct((new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
          ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:142: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:142: error: cannot find symbol
     List<any> catalog_ids = distinct((new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
          ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:150: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:150: error: cannot find symbol
     List<any> web_ids = distinct((new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
          ^
   symbol:   class any
   location: class Q38
-/tmp/TestJavaCompiler_TPCDSQueriesq381648372766/001/Q38.java:158: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq381207003436/001/Q38.java:158: error: cannot find symbol
     List<any> hot = store_ids.stream().filter(catalog_ids::contains).distinct().collect(java.util.stream.Collectors.toList()).stream().filter(web_ids::contains).distinct().collect(java.util.stream.Collectors.toList());
          ^
   symbol:   class any

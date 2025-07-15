@@ -1,14 +1,98 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:307: error: illegal start of expression
-    for (? g : new ArrayList<>(grouped.values())) {
-         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:307: error: ';' expected
-    for (? g : new ArrayList<>(grouped.values())) {
-                                                ^
-/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:310: error: illegal start of expression
-        for (? q : g.qtys) {
-             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq392245877831/001/Q39.java:310: error: ';' expected
-        for (? q : g.qtys) {
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:154: error: cannot find symbol
+    Map<String,any> w;
+               ^
+  symbol:   class any
+  location: class WIQtys
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:155: error: cannot find symbol
+    Map<String,any> i;
+               ^
+  symbol:   class any
+  location: class WIQtys
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:157: error: cannot find symbol
+    WIQtys(Map<String,any> w, Map<String,any> i, List<Integer> qtys) {
+                      ^
+  symbol:   class any
+  location: class WIQtys
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:157: error: cannot find symbol
+    WIQtys(Map<String,any> w, Map<String,any> i, List<Integer> qtys) {
+                                         ^
+  symbol:   class any
+  location: class WIQtys
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:288: error: cannot find symbol
+        res5.add(x.inv_quantity_on_hand);
+                  ^
+  symbol:   variable inv_quantity_on_hand
+  location: variable x of type InvDIW
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:295: error: cannot find symbol
+    Map<String,Map<String,any>> grouped = new LinkedHashMap<String,Map<String,any>>();
+                          ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:295: error: cannot find symbol
+    Map<String,Map<String,any>> grouped = new LinkedHashMap<String,Map<String,any>>();
+                                                                              ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:299: error: cannot find symbol
+            Map<String,Map<String,any>> g = grouped.get(key);
+                                  ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:300: error: cannot find symbol
+            grouped.put(key, new WIQtys(((Map<String,Map<String,any>>)g).get("w"), ((Map<String,Map<String,any>>)g).get("i"), append(((Map<String,Map<String,any>>)g).get("qtys"), m.qty)));
+                                                                ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:300: error: cannot find symbol
+            grouped.put(key, new WIQtys(((Map<String,Map<String,any>>)g).get("w"), ((Map<String,Map<String,any>>)g).get("i"), append(((Map<String,Map<String,any>>)g).get("qtys"), m.qty)));
+                                                                                                           ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:300: error: cannot find symbol
+            grouped.put(key, new WIQtys(((Map<String,Map<String,any>>)g).get("w"), ((Map<String,Map<String,any>>)g).get("i"), append(((Map<String,Map<String,any>>)g).get("qtys"), m.qty)));
+                                                                                                                                                             ^
+  symbol:   class any
+  location: class Q39
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:303: error: incompatible types: int cannot be converted to Map<String,any>
+            grouped.put(key, new WIQtys(m.w, m.i, Arrays.asList(m.qty)));
+                                         ^
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:308: error: cannot find symbol
+        double mean = g.qtys.stream().mapToDouble(n -> ((Number)n).doubleValue()).average().orElse(0);
+                       ^
+  symbol:   variable qtys
+  location: variable g of type Number
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:310: error: cannot find symbol
+        for (Number q : g.qtys) {
                          ^
-4 errors
+  symbol:   variable qtys
+  location: variable g of type Number
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:311: error: bad operand types for binary operator '-'
+            sumsq = sumsq + (q - mean) * (q - mean);
+                               ^
+  first type:  Number
+  second type: double
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:311: error: bad operand types for binary operator '-'
+            sumsq = sumsq + (q - mean) * (q - mean);
+                                            ^
+  first type:  Number
+  second type: double
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:313: error: cannot find symbol
+        double variance = sumsq / (g.qtys.size() - 1);
+                                    ^
+  symbol:   variable qtys
+  location: variable g of type Number
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:316: error: cannot find symbol
+            summary.add(new WWarehouseSkIItemSkCov(g.w, g.i, cov));
+                                                    ^
+  symbol:   variable w
+  location: variable g of type Number
+/tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java:316: error: cannot find symbol
+            summary.add(new WWarehouseSkIItemSkCov(g.w, g.i, cov));
+                                                         ^
+  symbol:   variable i
+  location: variable g of type Number
+Note: /tmp/TestJavaCompiler_TPCDSQueriesq391860892842/001/Q39.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+19 errors

@@ -1,13 +1,13 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq32502513255/001/Q3.java:197: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq33271995567/001/Q3.java:195: error: cannot find symbol
         res5.add(x.ss_ext_sales_price);
                   ^
   symbol:   variable ss_ext_sales_price
-  location: variable x of type DtSsI
-/tmp/TestJavaCompiler_TPCDSQueriesq32502513255/001/Q3.java:205: error: incompatible types: possible lossy conversion from double to int
+  location: variable x of type DtI
+/tmp/TestJavaCompiler_TPCDSQueriesq33271995567/001/Q3.java:203: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new DYearBrandIdBrandSumAgg(1998, 2, "Brand2", 20.000000), new DYearBrandIdBrandSumAgg(1998, 1, "Brand1", 10.000000))))) throw new AssertionError("expect failed");
                                                                                               ^
-/tmp/TestJavaCompiler_TPCDSQueriesq32502513255/001/Q3.java:205: error: incompatible types: possible lossy conversion from double to int
+/tmp/TestJavaCompiler_TPCDSQueriesq33271995567/001/Q3.java:203: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new DYearBrandIdBrandSumAgg(1998, 2, "Brand2", 20.000000), new DYearBrandIdBrandSumAgg(1998, 1, "Brand1", 10.000000))))) throw new AssertionError("expect failed");
                                                                                                                                                          ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

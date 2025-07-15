@@ -1,5 +1,5 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq92816403412/001/Q9.java:219: error: incompatible types: Object cannot be converted to double
+/tmp/TestJavaCompiler_TPCDSQueriesq94131271399/001/Q9.java:219: error: incompatible types: Object cannot be converted to double
         res15.add(new Bucket1Bucket2Bucket3Bucket4Bucket5(bucket1, bucket2, bucket3, bucket4, bucket5));
                                                           ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

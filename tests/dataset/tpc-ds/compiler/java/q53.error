@@ -1,18 +1,18 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq532136190910/001/Q53.java:192: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq53430811329/001/Q53.java:190: error: cannot find symbol
         res5.add(x.price);
                   ^
   symbol:   variable price
-  location: variable x of type SsID
-/tmp/TestJavaCompiler_TPCDSQueriesq532136190910/001/Q53.java:198: error: cannot find symbol
+  location: variable x of type SsI
+/tmp/TestJavaCompiler_TPCDSQueriesq53430811329/001/Q53.java:196: error: cannot find symbol
         res6.add(x.price);
                   ^
   symbol:   variable price
-  location: variable x of type SsID
-/tmp/TestJavaCompiler_TPCDSQueriesq532136190910/001/Q53.java:214: error: incompatible types: possible lossy conversion from double to int
+  location: variable x of type SsI
+/tmp/TestJavaCompiler_TPCDSQueriesq53430811329/001/Q53.java:212: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new IManufactIdSumSales(1, 20.000000), new IManufactIdSumSales(2, 53.000000))))) throw new AssertionError("expect failed");
                                                                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq532136190910/001/Q53.java:214: error: incompatible types: possible lossy conversion from double to int
+/tmp/TestJavaCompiler_TPCDSQueriesq53430811329/001/Q53.java:212: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new IManufactIdSumSales(1, 20.000000), new IManufactIdSumSales(2, 53.000000))))) throw new AssertionError("expect failed");
                                                                                                                  ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

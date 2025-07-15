@@ -1,5 +1,5 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq83706397706/001/Q83.java:70: error: bad operand types for binary operator '+'
+/tmp/TestJavaCompiler_TPCDSQueriesq833765994884/001/Q83.java:70: error: bad operand types for binary operator '+'
 }}).get().stream().mapToInt(n -> ((Number)n).intValue()).sum()).doubleValue() + ((Number)(new java.util.function.Supplier<List<Integer>>(){public List<Integer> get(){
                                                                               ^
   first type:  Number

@@ -1,68 +1,68 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:145: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:145: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:149: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:147: error: <identifier> expected
     ItemIdItemDescCategoryClassPrice(String item_id, String item_desc, String category, String class, double price) {
                                                                                               ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:149: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:147: error: <identifier> expected
     ItemIdItemDescCategoryClassPrice(String item_id, String item_desc, String category, String class, double price) {
                                                                                                     ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:149: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:147: error: ';' expected
     ItemIdItemDescCategoryClassPrice(String item_id, String item_desc, String category, String class, double price) {
                                                                                                                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:153: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:151: error: <identifier> expected
         this.class = class;
              ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:153: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:151: error: illegal start of expression
         this.class = class;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:153: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:151: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:159: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:157: error: <identifier> expected
         return Objects.equals(this.item_id, other.item_id) && Objects.equals(this.item_desc, other.item_desc) && Objects.equals(this.category, other.category) && Objects.equals(this.class, other.class) && Objects.equals(this.price, other.price);
                                                                                                                                                                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:162: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:160: error: illegal start of expression
         return Objects.hash(item_id, item_desc, category, class, price);
                                                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:162: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:160: error: <identifier> expected
         return Objects.hash(item_id, item_desc, category, class, price);
                                                                ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:192: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:190: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:192: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:190: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:194: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:192: error: <identifier> expected
     ClassTotal(String class, int total) {
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:194: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:192: error: <identifier> expected
     ClassTotal(String class, int total) {
                            ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:194: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:192: error: ';' expected
     ClassTotal(String class, int total) {
                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:195: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:193: error: <identifier> expected
         this.class = class;
              ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:195: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:193: error: illegal start of expression
         this.class = class;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:195: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:193: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:201: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:199: error: <identifier> expected
         return Objects.equals(this.class, other.class) && Objects.equals(this.total, other.total);
                                    ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:204: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:202: error: illegal start of expression
         return Objects.hash(class, total);
                             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq983331158237/001/Q98.java:204: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq981790096670/001/Q98.java:202: error: <identifier> expected
         return Objects.hash(class, total);
                                  ^
 22 errors

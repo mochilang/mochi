@@ -1,68 +1,68 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:147: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:147: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:149: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:149: error: <identifier> expected
     IdDescCatClassPrice(String id, String desc, String cat, String class, double price) {
                                                                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:149: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:149: error: <identifier> expected
     IdDescCatClassPrice(String id, String desc, String cat, String class, double price) {
                                                                         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:149: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:149: error: ';' expected
     IdDescCatClassPrice(String id, String desc, String cat, String class, double price) {
                                                                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:153: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:153: error: <identifier> expected
         this.class = class;
              ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:153: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:153: error: illegal start of expression
         this.class = class;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:153: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:153: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:159: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:159: error: <identifier> expected
         return Objects.equals(this.id, other.id) && Objects.equals(this.desc, other.desc) && Objects.equals(this.cat, other.cat) && Objects.equals(this.class, other.class) && Objects.equals(this.price, other.price);
                                                                                                                                                         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:162: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:162: error: illegal start of expression
         return Objects.hash(id, desc, cat, class, price);
                                            ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:162: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:162: error: <identifier> expected
         return Objects.hash(id, desc, cat, class, price);
                                                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:192: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:192: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:192: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:192: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:194: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:194: error: <identifier> expected
     ClassTotal(String class, int total) {
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:194: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:194: error: <identifier> expected
     ClassTotal(String class, int total) {
                            ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:194: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:194: error: ';' expected
     ClassTotal(String class, int total) {
                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:195: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:195: error: <identifier> expected
         this.class = class;
              ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:195: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:195: error: illegal start of expression
         this.class = class;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:195: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:195: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:201: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:201: error: <identifier> expected
         return Objects.equals(this.class, other.class) && Objects.equals(this.total, other.total);
                                    ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:204: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:204: error: illegal start of expression
         return Objects.hash(class, total);
                             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq202546230148/001/Q20.java:204: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq202747526122/001/Q20.java:204: error: <identifier> expected
         return Objects.hash(class, total);
                                  ^
 22 errors

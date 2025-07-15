@@ -1,18 +1,18 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq81644558321/001/Q8.java:191: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq84211628332/001/Q8.java:187: error: cannot find symbol
     reverse(substr("zip", 0, 2));
             ^
   symbol:   method substr(String,int,int)
   location: class Q8
-/tmp/TestJavaCompiler_TPCDSQueriesq81644558321/001/Q8.java:202: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq84211628332/001/Q8.java:198: error: cannot find symbol
                     if (!(Objects.equals(substr(s.s_zip, 0, 2), substr(ca.ca_zip, 0, 2)))) continue;
                                          ^
   symbol: method substr(String,int,int)
-/tmp/TestJavaCompiler_TPCDSQueriesq81644558321/001/Q8.java:202: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq84211628332/001/Q8.java:198: error: cannot find symbol
                     if (!(Objects.equals(substr(s.s_zip, 0, 2), substr(ca.ca_zip, 0, 2)))) continue;
                                                                 ^
   symbol: method substr(String,int,int)
-/tmp/TestJavaCompiler_TPCDSQueriesq81644558321/001/Q8.java:205: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq84211628332/001/Q8.java:201: error: cannot find symbol
                         if (!(zip_list.contains(substr(ca.ca_zip, 0, 5)))) continue;
                                                 ^
   symbol: method substr(String,int,int)

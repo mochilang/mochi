@@ -1,9 +1,7 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq65427643181/001/Q65.java:65: error: incompatible types: int cannot be converted to String
-        return sum / (Double.parseDouble(xs.size()));
-                                                ^
-/tmp/TestJavaCompiler_TPCDSQueriesq65427643181/001/Q65.java:144: error: incompatible types: List<Integer> cannot be converted to List<Double>
-}}).get());
-       ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors
+/tmp/TestJavaCompiler_TPCDSQueriesq65912834569/001/Q65.java:63: error: bad operand types for binary operator '+'
+            sum = sum + x;
+                      ^
+  first type:  double
+  second type: Number
+1 error

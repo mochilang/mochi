@@ -1,43 +1,24 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:212: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq16636620856/001/Q16.java:191: error: cannot find symbol
     static List<any> distinct(List<any> xs) {
                                    ^
   symbol:   class any
   location: class Q16
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:212: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq16636620856/001/Q16.java:191: error: cannot find symbol
     static List<any> distinct(List<any> xs) {
                 ^
   symbol:   class any
   location: class Q16
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:214: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq16636620856/001/Q16.java:193: error: cannot find symbol
         for (any x : xs) {
              ^
   symbol:   class any
   location: class Q16
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:294: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq16636620856/001/Q16.java:273: error: cannot find symbol
                     if (!(catalog_sales.stream().anyMatch(cs2 -> Objects.equals(cs1.cs_order_number, cs2.cs_order_number) && !Objects.equals(cs1.cs_warehouse_sk, cs2.cs_warehouse_sk)) && Objects.equals(catalog_returns.stream().anyMatch(cr -> Objects.equals(cs1.cs_order_number, cr.cr_order_number)), false))) continue;
                                                                                                                                                                                                                                                                                         ^
   symbol:   variable cr_order_number
   location: variable cr of type Object
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:310: error: cannot find symbol
-        res5.add(x.cs_order_number);
-                  ^
-  symbol:   variable cs_order_number
-  location: variable x of type Cs1DCaCc
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:316: error: cannot find symbol
-        res6.add(x.cs_ext_ship_cost);
-                  ^
-  symbol:   variable cs_ext_ship_cost
-  location: variable x of type Cs1DCaCc
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:322: error: cannot find symbol
-        res7.add(x.cs_net_profit);
-                  ^
-  symbol:   variable cs_net_profit
-  location: variable x of type Cs1DCaCc
-/tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java:330: error: incompatible types: possible lossy conversion from double to int
-    if (!(Objects.equals(filtered, Arrays.asList(new OrderCountTotalShippingCostTotalNetProfit(1, 5.000000, 20.000000))))) throw new AssertionError("expect failed");
-                                                                                                  ^
-Note: /tmp/TestJavaCompiler_TPCDSQueriesq163009931322/001/Q16.java uses unchecked or unsafe operations.
+Note: /tmp/TestJavaCompiler_TPCDSQueriesq16636620856/001/Q16.java uses unchecked or unsafe operations.
 Note: Recompile with -Xlint:unchecked for details.
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-8 errors
+4 errors

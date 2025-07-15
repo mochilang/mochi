@@ -1,17 +1,17 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq541133814373/001/Q54.java:165: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq541073203029/001/Q54.java:165: error: <identifier> expected
     static int int(double x) {
               ^
-/tmp/TestJavaCompiler_TPCDSQueriesq541133814373/001/Q54.java:165: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq541073203029/001/Q54.java:165: error: <identifier> expected
     static int int(double x) {
                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq541133814373/001/Q54.java:267: error: '.class' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq541073203029/001/Q54.java:267: error: '.class' expected
         Seg key10 = new Seg(int(r.revenue / 50));
                                ^
-/tmp/TestJavaCompiler_TPCDSQueriesq541133814373/001/Q54.java:267: error: not a statement
+/tmp/TestJavaCompiler_TPCDSQueriesq541073203029/001/Q54.java:267: error: not a statement
         Seg key10 = new Seg(int(r.revenue / 50));
                                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq541133814373/001/Q54.java:267: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq541073203029/001/Q54.java:267: error: ';' expected
         Seg key10 = new Seg(int(r.revenue / 50));
                                               ^
 5 errors

@@ -1,62 +1,62 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:142: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:142: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:142: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:142: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:144: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:144: error: <identifier> expected
     ProductNameBrandClassCategory(String product_name, String brand, String class, String category) {
                                                                            ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:144: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:144: error: <identifier> expected
     ProductNameBrandClassCategory(String product_name, String brand, String class, String category) {
                                                                                  ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:145: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:145: error: illegal start of type
         this.product_name = product_name;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:145: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:145: error: ';' expected
         this.product_name = product_name;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:145: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:145: error: <identifier> expected
         this.product_name = product_name;
                          ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:146: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:146: error: illegal start of type
         this.brand = brand;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:146: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:146: error: ';' expected
         this.brand = brand;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:146: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:146: error: <identifier> expected
         this.brand = brand;
                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:147: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:147: error: illegal start of type
         this.class = class;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:147: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:147: error: ';' expected
         this.class = class;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:147: error: <identifier> expected
         this.class = class;
                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:147: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:147: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:148: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:148: error: illegal start of type
         this.category = category;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:148: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:148: error: ';' expected
         this.category = category;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:148: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:148: error: <identifier> expected
         this.category = category;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:153: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:153: error: <identifier> expected
         return Objects.equals(this.product_name, other.product_name) && Objects.equals(this.brand, other.brand) && Objects.equals(this.class, other.class) && Objects.equals(this.category, other.category);
                                                                                                                                        ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:156: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:156: error: illegal start of expression
         return Objects.hash(product_name, brand, class, category);
                                                  ^
-/tmp/TestJavaCompiler_TPCDSQueriesq221651215634/001/Q22.java:156: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq224025979123/001/Q22.java:156: error: <identifier> expected
         return Objects.hash(product_name, brand, class, category);
                                                       ^
 20 errors

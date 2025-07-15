@@ -1,44 +1,44 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:104: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:104: error: <identifier> expected
     String class;
           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:104: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:104: error: <identifier> expected
     String class;
                 ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:105: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:105: error: <identifier> expected
     CategoryClass(String category, String class) {
                                          ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:105: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:105: error: <identifier> expected
     CategoryClass(String category, String class) {
                                                ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:106: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:106: error: illegal start of type
         this.category = category;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:106: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:106: error: ';' expected
         this.category = category;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:106: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:106: error: <identifier> expected
         this.category = category;
                      ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:107: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:107: error: illegal start of type
         this.class = class;
         ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:107: error: ';' expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:107: error: ';' expected
         this.class = class;
             ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:107: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:107: error: <identifier> expected
         this.class = class;
                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:107: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:107: error: <identifier> expected
         this.class = class;
                           ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:112: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:112: error: <identifier> expected
         return Objects.equals(this.category, other.category) && Objects.equals(this.class, other.class);
                                                                                     ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:115: error: illegal start of expression
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:115: error: illegal start of expression
         return Objects.hash(category, class);
                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq361399936573/001/Q36.java:115: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq361754966736/001/Q36.java:115: error: <identifier> expected
         return Objects.hash(category, class);
                                            ^
 14 errors

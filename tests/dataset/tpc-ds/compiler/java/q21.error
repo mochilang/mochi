@@ -1,10 +1,10 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq212280437/001/Q21.java:314: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq213195750338/001/Q21.java:314: error: cannot find symbol
         res5.add(x.inv_quantity_on_hand);
                   ^
   symbol:   variable inv_quantity_on_hand
   location: variable x of type InvD
-/tmp/TestJavaCompiler_TPCDSQueriesq212280437/001/Q21.java:341: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq213195750338/001/Q21.java:341: error: cannot find symbol
         res11.add(x.inv_quantity_on_hand);
                    ^
   symbol:   variable inv_quantity_on_hand

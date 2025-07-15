@@ -1,15 +1,15 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq812071451949/001/Q81.java:113: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq81884207237/001/Q81.java:113: error: cannot find symbol
     Object avg_state = first((new java.util.function.Supplier<List<StateAvgAmt>>(){public List<StateAvgAmt> get(){
                        ^
   symbol:   method first(List<StateAvgAmt>)
   location: class Q81
-/tmp/TestJavaCompiler_TPCDSQueriesq812071451949/001/Q81.java:124: error: bad operand types for binary operator '*'
+/tmp/TestJavaCompiler_TPCDSQueriesq81884207237/001/Q81.java:124: error: bad operand types for binary operator '*'
         if (!(Objects.equals(r.state, "CA") && r.amt > ((Number)((Number)((Map<?,?>)avg_state).get("avg_amt")).doubleValue() * 1.200000).doubleValue())) continue;
                                                                                                                              ^
   first type:  Number
   second type: double
-/tmp/TestJavaCompiler_TPCDSQueriesq812071451949/001/Q81.java:129: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq81884207237/001/Q81.java:129: error: cannot find symbol
     Object result = first(result_list);
                     ^
   symbol:   method first(List<Double>)
