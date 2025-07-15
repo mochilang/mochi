@@ -12,6 +12,10 @@
 - Began refactoring query codegen to support dynamic grouping and sort keys.
 ## Recent Updates (2025-07-15 05:46)
 - Regenerated TPC-DS q1 golden with dynamic sort fix.
+## Recent Updates (2025-07-15 08:17)
+- Expanded TPCH golden test to cover queries `q1`-`q22` and added
+  `compile_tpch_cs.go` script to generate golden outputs.
+- Fixed dynamic string comparison in the C# backend.
 
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.
