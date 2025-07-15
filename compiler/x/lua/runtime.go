@@ -715,13 +715,15 @@ const (
 		"                for ri, right in ipairs(jitems) do\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
+		"                        local args = {}\n" +
+		"                        for i=1,ji do args[i] = left[i] end\n" +
 		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        keep = j.on(table.unpack(args,1,ji+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true; matched[ri] = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
+		"                        local row = {}\n" +
+		"                        for i=1,ji do row[i] = left[i] end\n" +
 		"                        row[#row+1] = right\n" +
 		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                        else\n" +
@@ -730,7 +732,8 @@ const (
 		"                    end\n" +
 		"                end\n" +
 		"                if not m then\n" +
-		"                    local row = {table.unpack(left)}\n" +
+		"                    local row = {}\n" +
+		"                    for i=1,ji do row[i] = left[i] end\n" +
 		"                    row[#row+1] = nil\n" +
 		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                    else\n" +
@@ -755,13 +758,15 @@ const (
 		"                for _, left in ipairs(items) do\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
+		"                        local args = {}\n" +
+		"                        for i=1,ji do args[i] = left[i] end\n" +
 		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        keep = j.on(table.unpack(args,1,ji+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
+		"                        local row = {}\n" +
+		"                        for i=1,ji do row[i] = left[i] end\n" +
 		"                        row[#row+1] = right\n" +
 		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                        else\n" +
@@ -785,13 +790,15 @@ const (
 		"                for _, right in ipairs(jitems) do\n" +
 		"                    local keep = true\n" +
 		"                    if j.on then\n" +
-		"                        local args = {table.unpack(left)}\n" +
+		"                        local args = {}\n" +
+		"                        for i=1,ji do args[i] = left[i] end\n" +
 		"                        args[#args+1] = right\n" +
-		"                        keep = j.on(table.unpack(args))\n" +
+		"                        keep = j.on(table.unpack(args,1,ji+1))\n" +
 		"                    end\n" +
 		"                    if keep then\n" +
 		"                        m = true\n" +
-		"                        local row = {table.unpack(left)}\n" +
+		"                        local row = {}\n" +
+		"                        for i=1,ji do row[i] = left[i] end\n" +
 		"                        row[#row+1] = right\n" +
 		"                        if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                        else\n" +
@@ -800,7 +807,8 @@ const (
 		"                    end\n" +
 		"                end\n" +
 		"                if j.left and not m then\n" +
-		"                    local row = {table.unpack(left)}\n" +
+		"                    local row = {}\n" +
+		"                    for i=1,ji do row[i] = left[i] end\n" +
 		"                    row[#row+1] = nil\n" +
 		"                    if ji == #joins and whereFn and not whereFn(table.unpack(row)) then\n" +
 		"                    else\n" +

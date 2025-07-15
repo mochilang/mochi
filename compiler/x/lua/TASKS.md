@@ -31,3 +31,7 @@
 - Fixed sorting comparator to handle complex keys without runtime errors.
 - Regenerated Lua code and outputs for queries q21,q24,q41,q42,q44,q47,q49,q51,q52,q55.
 - Removed old `.lua.out` files from dataset.
+
+## Progress (2025-07-15 07:42)
+- Fixed join argument handling to preserve nils when unpacking rows.
+- Regenerated Lua query outputs; q40 and q93 now run without errors.
