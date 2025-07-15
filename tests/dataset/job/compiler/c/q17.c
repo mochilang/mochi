@@ -58,17 +58,14 @@ static list_list_int list_list_int_create(int len) {
   }
   return l;
 }
-static char *_min_string(list_string v) {
+static int _min_int(list_int v) {
   if (v.len == 0)
-    return "";
-  char *m = v.data[0];
+    return 0;
+  int m = v.data[0];
   for (int i = 1; i < v.len; i++)
-    if (strcmp(v.data[i], m) < 0)
+    if (v.data[i] < m)
       m = v.data[i];
   return m;
-}
-static int contains_string(char *s, char *sub) {
-  return strstr(s, sub) != NULL;
 }
 static void _json_int(int v) { printf("%d", v); }
 static void _json_float(double v) { printf("%g", v); }
@@ -110,8 +107,8 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  const char *rating;
-  const char *movie_title;
+  const char *member_in_charnamed_american_movie;
+  const char *a1;
 } tmp1_t;
 typedef struct {
   int len;
@@ -129,17 +126,36 @@ tmp1_list_t create_tmp1_list(int len) {
 }
 
 typedef struct {
-  int id;
-  const char *info;
-} info_type_t;
+  int movie_id;
+  int person_id;
+} cast_info_t;
 typedef struct {
   int len;
-  info_type_t *data;
-} info_type_list_t;
-info_type_list_t create_info_type_list(int len) {
-  info_type_list_t l;
+  cast_info_t *data;
+} cast_info_list_t;
+cast_info_list_t create_cast_info_list(int len) {
+  cast_info_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(info_type_t));
+  l.data = calloc(len, sizeof(cast_info_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int id;
+  const char *country_code;
+} company_name_t;
+typedef struct {
+  int len;
+  company_name_t *data;
+} company_name_list_t;
+company_name_list_t create_company_name_list(int len) {
+  company_name_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(company_name_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -167,18 +183,17 @@ keyword_list_t create_keyword_list(int len) {
 }
 
 typedef struct {
-  int id;
-  const char *title;
-  int production_year;
-} title_t;
+  int movie_id;
+  int company_id;
+} movie_companie_t;
 typedef struct {
   int len;
-  title_t *data;
-} title_list_t;
-title_list_t create_title_list(int len) {
-  title_list_t l;
+  movie_companie_t *data;
+} movie_companie_list_t;
+movie_companie_list_t create_movie_companie_list(int len) {
+  movie_companie_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(title_t));
+  l.data = calloc(len, sizeof(movie_companie_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -206,18 +221,17 @@ movie_keyword_list_t create_movie_keyword_list(int len) {
 }
 
 typedef struct {
-  int movie_id;
-  int info_type_id;
-  const char *info;
-} movie_info_idx_t;
+  int id;
+  const char *name;
+} name_t;
 typedef struct {
   int len;
-  movie_info_idx_t *data;
-} movie_info_idx_list_t;
-movie_info_idx_list_t create_movie_info_idx_list(int len) {
-  movie_info_idx_list_t l;
+  name_t *data;
+} name_list_t;
+name_list_t create_name_list(int len) {
+  name_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(movie_info_idx_t));
+  l.data = calloc(len, sizeof(name_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -226,17 +240,17 @@ movie_info_idx_list_t create_movie_info_idx_list(int len) {
 }
 
 typedef struct {
-  const char *rating;
+  int id;
   const char *title;
-} rows_item_t;
+} title_t;
 typedef struct {
   int len;
-  rows_item_t *data;
-} rows_item_list_t;
-rows_item_list_t create_rows_item_list(int len) {
-  rows_item_list_t l;
+  title_t *data;
+} title_list_t;
+title_list_t create_title_list(int len) {
+  title_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(rows_item_t));
+  l.data = calloc(len, sizeof(title_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -245,8 +259,8 @@ rows_item_list_t create_rows_item_list(int len) {
 }
 
 typedef struct {
-  const char *rating;
-  const char *movie_title;
+  int member_in_charnamed_american_movie;
+  int a1;
 } result_t;
 typedef struct {
   int len;
@@ -263,19 +277,25 @@ result_list_t create_result_list(int len) {
   return l;
 }
 
-static list_int test_Q4_returns_minimum_rating_and_title_for_sequels_result;
-static void test_Q4_returns_minimum_rating_and_title_for_sequels() {
-  tmp1_t tmp1[] = {(tmp1_t){.rating = "6.2", .movie_title = "Alpha Movie"}};
+static list_int
+    test_Q17_finds_US_character_name_movie_with_actor_starting_with_B_result;
+static void
+test_Q17_finds_US_character_name_movie_with_actor_starting_with_B() {
+  tmp1_t tmp1[] = {(tmp1_t){.member_in_charnamed_american_movie = "Bob Smith",
+                            .a1 = "Bob Smith"}};
   int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
-  if (test_Q4_returns_minimum_rating_and_title_for_sequels_result.len !=
-      tmp1.len) {
+  if (test_Q17_finds_US_character_name_movie_with_actor_starting_with_B_result
+          .len != tmp1.len) {
     tmp2 = 0;
   } else {
-    for (int i3 = 0;
-         i3 < test_Q4_returns_minimum_rating_and_title_for_sequels_result.len;
-         i3++) {
-      if (test_Q4_returns_minimum_rating_and_title_for_sequels_result
+    for (
+        int i3 = 0;
+        i3 <
+        test_Q17_finds_US_character_name_movie_with_actor_starting_with_B_result
+            .len;
+        i3++) {
+      if (test_Q17_finds_US_character_name_movie_with_actor_starting_with_B_result
               .data[i3] != tmp1.data[i3]) {
         tmp2 = 0;
         break;
@@ -289,41 +309,46 @@ static void test_Q4_returns_minimum_rating_and_title_for_sequels() {
 }
 
 int main() {
-  info_type_t info_type[] = {(info_type_t){.id = 1, .info = "rating"},
-                             (info_type_t){.id = 2, .info = "other"}};
-  int info_type_len = sizeof(info_type) / sizeof(info_type[0]);
-  keyword_t keyword[] = {(keyword_t){.id = 1, .keyword = "great sequel"},
-                         (keyword_t){.id = 2, .keyword = "prequel"}};
+  cast_info_t cast_info[] = {(cast_info_t){.movie_id = 1, .person_id = 1},
+                             (cast_info_t){.movie_id = 2, .person_id = 2}};
+  int cast_info_len = sizeof(cast_info) / sizeof(cast_info[0]);
+  company_name_t company_name[] = {
+      (company_name_t){.id = 1, .country_code = "[us]"},
+      (company_name_t){.id = 2, .country_code = "[ca]"}};
+  int company_name_len = sizeof(company_name) / sizeof(company_name[0]);
+  keyword_t keyword[] = {
+      (keyword_t){.id = 10, .keyword = "character-name-in-title"},
+      (keyword_t){.id = 20, .keyword = "other"}};
   int keyword_len = sizeof(keyword) / sizeof(keyword[0]);
-  title_t title[] = {
-      (title_t){.id = 10, .title = "Alpha Movie", .production_year = 2006},
-      (title_t){.id = 20, .title = "Beta Film", .production_year = 2007},
-      (title_t){.id = 30, .title = "Old Film", .production_year = 2004}};
-  int title_len = sizeof(title) / sizeof(title[0]);
+  movie_companie_t movie_companies[] = {
+      (movie_companie_t){.movie_id = 1, .company_id = 1},
+      (movie_companie_t){.movie_id = 2, .company_id = 2}};
+  int movie_companies_len =
+      sizeof(movie_companies) / sizeof(movie_companies[0]);
   movie_keyword_t movie_keyword[] = {
-      (movie_keyword_t){.movie_id = 10, .keyword_id = 1},
-      (movie_keyword_t){.movie_id = 20, .keyword_id = 1},
-      (movie_keyword_t){.movie_id = 30, .keyword_id = 1}};
+      (movie_keyword_t){.movie_id = 1, .keyword_id = 10},
+      (movie_keyword_t){.movie_id = 2, .keyword_id = 20}};
   int movie_keyword_len = sizeof(movie_keyword) / sizeof(movie_keyword[0]);
-  movie_info_idx_t movie_info_idx[] = {
-      (movie_info_idx_t){.movie_id = 10, .info_type_id = 1, .info = "6.2"},
-      (movie_info_idx_t){.movie_id = 20, .info_type_id = 1, .info = "7.8"},
-      (movie_info_idx_t){.movie_id = 30, .info_type_id = 1, .info = "4.5"}};
-  int movie_info_idx_len = sizeof(movie_info_idx) / sizeof(movie_info_idx[0]);
-  rows_item_list_t tmp4 =
-      rows_item_list_t_create(info_type.len * movie_info_idx.len * title.len *
-                              movie_keyword.len * keyword.len);
+  name_t name[] = {(name_t){.id = 1, .name = "Bob Smith"},
+                   (name_t){.id = 2, .name = "Alice Jones"}};
+  int name_len = sizeof(name) / sizeof(name[0]);
+  title_t title[] = {(title_t){.id = 1, .title = "Bob's Journey"},
+                     (title_t){.id = 2, .title = "Foreign Film"}};
+  int title_len = sizeof(title) / sizeof(title[0]);
+  int tmp4 =
+      int_create(name.len * cast_info.len * title.len * movie_keyword.len *
+                 keyword.len * movie_companies.len * company_name.len);
   int tmp5 = 0;
-  for (int tmp6 = 0; tmp6 < info_type_len; tmp6++) {
-    info_type_t it = info_type[tmp6];
-    for (int tmp7 = 0; tmp7 < movie_info_idx_len; tmp7++) {
-      movie_info_idx_t mi = movie_info_idx[tmp7];
-      if (!(it.id == mi.info_type_id)) {
+  for (int tmp6 = 0; tmp6 < name_len; tmp6++) {
+    name_t n = name[tmp6];
+    for (int tmp7 = 0; tmp7 < cast_info_len; tmp7++) {
+      cast_info_t ci = cast_info[tmp7];
+      if (!(ci.person_id == n.id)) {
         continue;
       }
       for (int tmp8 = 0; tmp8 < title_len; tmp8++) {
         title_t t = title[tmp8];
-        if (!(t.id == mi.movie_id)) {
+        if (!(t.id == ci.movie_id)) {
           continue;
         }
         for (int tmp9 = 0; tmp9 < movie_keyword_len; tmp9++) {
@@ -336,59 +361,54 @@ int main() {
             if (!(k.id == mk.keyword_id)) {
               continue;
             }
-            if (!((strcmp(it.info, "rating") == 0) &&
-                  contains_string(k.keyword, "sequel") && mi.info > "5.0" &&
-                  t.production_year > 2005 && mk.movie_id == mi.movie_id)) {
-              continue;
+            for (int tmp11 = 0; tmp11 < movie_companies_len; tmp11++) {
+              movie_companie_t mc = movie_companies[tmp11];
+              if (!(mc.movie_id == t.id)) {
+                continue;
+              }
+              for (int tmp12 = 0; tmp12 < company_name_len; tmp12++) {
+                company_name_t cn = company_name[tmp12];
+                if (!(cn.id == mc.company_id)) {
+                  continue;
+                }
+                if (!((strcmp(cn.country_code, "[us]") == 0) &&
+                      k.keyword == "character-name-in-title" &&
+                      n.name.starts_with("B") && ci.movie_id == mk.movie_id &&
+                      ci.movie_id == mc.movie_id &&
+                      mc.movie_id == mk.movie_id)) {
+                  continue;
+                }
+                tmp4.data[tmp5] = n.name;
+                tmp5++;
+              }
             }
-            tmp4.data[tmp5] =
-                (rows_item_t){.rating = mi.info, .title = t.title};
-            tmp5++;
           }
         }
       }
     }
   }
   tmp4.len = tmp5;
-  rows_item_list_t rows = tmp4;
-  int tmp11 = int_create(rows.len);
-  int tmp12 = 0;
-  for (int tmp13 = 0; tmp13 < rows.len; tmp13++) {
-    rows_item_t r = rows.data[tmp13];
-    tmp11.data[tmp12] = r.rating;
-    tmp12++;
-  }
-  tmp11.len = tmp12;
-  int tmp14 = int_create(rows.len);
-  int tmp15 = 0;
-  for (int tmp16 = 0; tmp16 < rows.len; tmp16++) {
-    rows_item_t r = rows.data[tmp16];
-    tmp14.data[tmp15] = r.title;
-    tmp15++;
-  }
-  tmp14.len = tmp15;
-  result_t result[] = {(result_t){.rating = _min_string(tmp11),
-                                  .movie_title = _min_string(tmp14)}};
+  int matches = tmp4;
+  result_t result[] = {
+      (result_t){.member_in_charnamed_american_movie = _min_int(matches),
+                 .a1 = _min_int(matches)}};
   int result_len = sizeof(result) / sizeof(result[0]);
   printf("[");
-  for (int i17 = 0; i17 < result_len; i17++) {
-    if (i17 > 0)
+  for (int i13 = 0; i13 < result_len; i13++) {
+    if (i13 > 0)
       printf(",");
-    result_t it = result[i17];
+    result_t it = result[i13];
     printf("{");
-    _json_string("rating");
+    _json_string("member_in_charnamed_american_movie");
     printf(":");
-    _json_string(it.rating);
     printf(",");
-    _json_string("movie_title");
+    _json_string("a1");
     printf(":");
-    _json_string(it.movie_title);
     printf("}");
   }
   printf("]");
-  test_Q4_returns_minimum_rating_and_title_for_sequels_result = result;
-  test_Q4_returns_minimum_rating_and_title_for_sequels();
-  free(tmp11.data);
-  free(tmp14.data);
+  test_Q17_finds_US_character_name_movie_with_actor_starting_with_B_result =
+      result;
+  test_Q17_finds_US_character_name_movie_with_actor_starting_with_B();
   return 0;
 }

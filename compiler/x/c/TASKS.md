@@ -97,3 +97,4 @@ should compile and run successfully.
 
 - 2025-07-14 04:36 – Refactored group_by_join output to use simpler loops and static arrays.
 - 2025-07-14 12:25 – Updated TPCH q1 code generation to infer struct lists in tests
+- 2025-07-15 03:06 – Generated C code for JOB queries q1-q33 and extended golden tests

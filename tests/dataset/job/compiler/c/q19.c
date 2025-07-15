@@ -116,9 +116,8 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  const char *alternative_name;
-  const char *character_name;
-  const char *movie;
+  const char *voicing_actress;
+  const char *voiced_movie;
 } tmp1_t;
 typedef struct {
   int len;
@@ -174,9 +173,9 @@ char_name_list_t create_char_name_list(int len) {
 }
 
 typedef struct {
-  int person_id;
-  int person_role_id;
   int movie_id;
+  int person_role_id;
+  int person_id;
   int role_id;
   const char *note;
 } cast_info_t;
@@ -215,6 +214,25 @@ company_name_list_t create_company_name_list(int len) {
 }
 
 typedef struct {
+  int id;
+  const char *info;
+} info_type_t;
+typedef struct {
+  int len;
+  info_type_t *data;
+} info_type_list_t;
+info_type_list_t create_info_type_list(int len) {
+  info_type_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(info_type_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
   int movie_id;
   int company_id;
   const char *note;
@@ -227,6 +245,26 @@ movie_companie_list_t create_movie_companie_list(int len) {
   movie_companie_list_t l;
   l.len = len;
   l.data = calloc(len, sizeof(movie_companie_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int movie_id;
+  int info_type_id;
+  const char *info;
+} movie_info_t;
+typedef struct {
+  int len;
+  movie_info_t *data;
+} movie_info_list_t;
+movie_info_list_t create_movie_info_list(int len) {
+  movie_info_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(movie_info_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -294,8 +332,7 @@ title_list_t create_title_list(int len) {
 }
 
 typedef struct {
-  const char *alt;
-  const char *character;
+  const char *actress;
   const char *movie;
 } matches_item_t;
 typedef struct {
@@ -314,9 +351,8 @@ matches_item_list_t create_matches_item_list(int len) {
 }
 
 typedef struct {
-  const char *alternative_name;
-  const char *character_name;
-  const char *movie;
+  const char *voicing_actress;
+  const char *voiced_movie;
 } result_t;
 typedef struct {
   int len;
@@ -334,23 +370,24 @@ result_list_t create_result_list(int len) {
 }
 
 static list_int
-    test_Q9_selects_minimal_alternative_name__character_and_movie_result;
-static void test_Q9_selects_minimal_alternative_name__character_and_movie() {
-  tmp1_t tmp1[] = {(tmp1_t){.alternative_name = "A. N. G.",
-                            .character_name = "Angel",
-                            .movie = "Famous Film"}};
+    test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009_result;
+static void
+test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009() {
+  tmp1_t tmp1[] = {(tmp1_t){.voicing_actress = "Angela Stone",
+                            .voiced_movie = "Voiced Movie"}};
   int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
-  if (test_Q9_selects_minimal_alternative_name__character_and_movie_result
+  if (test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009_result
           .len != tmp1.len) {
     tmp2 = 0;
   } else {
-    for (int i3 = 0;
-         i3 <
-         test_Q9_selects_minimal_alternative_name__character_and_movie_result
-             .len;
-         i3++) {
-      if (test_Q9_selects_minimal_alternative_name__character_and_movie_result
+    for (
+        int i3 = 0;
+        i3 <
+        test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009_result
+            .len;
+        i3++) {
+      if (test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009_result
               .data[i3] != tmp1.data[i3]) {
         tmp2 = 0;
         break;
@@ -364,43 +401,50 @@ static void test_Q9_selects_minimal_alternative_name__character_and_movie() {
 }
 
 int main() {
-  aka_name_t aka_name[] = {(aka_name_t){.person_id = 1, .name = "A. N. G."},
-                           (aka_name_t){.person_id = 2, .name = "J. D."}};
+  aka_name_t aka_name[] = {(aka_name_t){.person_id = 1, .name = "A. Stone"},
+                           (aka_name_t){.person_id = 2, .name = "J. Doe"}};
   int aka_name_len = sizeof(aka_name) / sizeof(aka_name[0]);
-  char_name_t char_name[] = {(char_name_t){.id = 10, .name = "Angel"},
-                             (char_name_t){.id = 20, .name = "Devil"}};
+  char_name_t char_name[] = {(char_name_t){.id = 1, .name = "Protagonist"},
+                             (char_name_t){.id = 2, .name = "Extra"}};
   int char_name_len = sizeof(char_name) / sizeof(char_name[0]);
-  cast_info_t cast_info[] = {(cast_info_t){.person_id = 1,
-                                           .person_role_id = 10,
-                                           .movie_id = 100,
-                                           .role_id = 1000,
+  cast_info_t cast_info[] = {(cast_info_t){.movie_id = 1,
+                                           .person_role_id = 1,
+                                           .person_id = 1,
+                                           .role_id = 1,
                                            .note = "(voice)"},
-                             (cast_info_t){.person_id = 2,
-                                           .person_role_id = 20,
-                                           .movie_id = 200,
-                                           .role_id = 1000,
-                                           .note = "(voice)"}};
+                             (cast_info_t){.movie_id = 2,
+                                           .person_role_id = 2,
+                                           .person_id = 2,
+                                           .role_id = 2,
+                                           .note = "Cameo"}};
   int cast_info_len = sizeof(cast_info) / sizeof(cast_info[0]);
   company_name_t company_name[] = {
-      (company_name_t){.id = 100, .country_code = "[us]"},
-      (company_name_t){.id = 200, .country_code = "[gb]"}};
+      (company_name_t){.id = 10, .country_code = "[us]"},
+      (company_name_t){.id = 20, .country_code = "[gb]"}};
   int company_name_len = sizeof(company_name) / sizeof(company_name[0]);
+  info_type_t info_type[] = {(info_type_t){.id = 100, .info = "release dates"}};
+  int info_type_len = sizeof(info_type) / sizeof(info_type[0]);
   movie_companie_t movie_companies[] = {
       (movie_companie_t){
-          .movie_id = 100, .company_id = 100, .note = "ACME Studios (USA)"},
+          .movie_id = 1, .company_id = 10, .note = "Studio (USA)"},
       (movie_companie_t){
-          .movie_id = 200, .company_id = 200, .note = "Maple Films"}};
+          .movie_id = 2, .company_id = 20, .note = "Other (worldwide)"}};
   int movie_companies_len =
       sizeof(movie_companies) / sizeof(movie_companies[0]);
-  name_t name[] = {(name_t){.id = 1, .name = "Angela Smith", .gender = "f"},
-                   (name_t){.id = 2, .name = "John Doe", .gender = "m"}};
+  movie_info_t movie_info[] = {
+      (movie_info_t){
+          .movie_id = 1, .info_type_id = 100, .info = "USA: June 2006"},
+      (movie_info_t){.movie_id = 2, .info_type_id = 100, .info = "UK: 1999"}};
+  int movie_info_len = sizeof(movie_info) / sizeof(movie_info[0]);
+  name_t name[] = {(name_t){.id = 1, .name = "Angela Stone", .gender = "f"},
+                   (name_t){.id = 2, .name = "Bob Angstrom", .gender = "m"}};
   int name_len = sizeof(name) / sizeof(name[0]);
-  role_type_t role_type[] = {(role_type_t){.id = 1000, .role = "actress"},
-                             (role_type_t){.id = 2000, .role = "actor"}};
+  role_type_t role_type[] = {(role_type_t){.id = 1, .role = "actress"},
+                             (role_type_t){.id = 2, .role = "actor"}};
   int role_type_len = sizeof(role_type) / sizeof(role_type[0]);
   title_t title[] = {
-      (title_t){.id = 100, .title = "Famous Film", .production_year = 2010},
-      (title_t){.id = 200, .title = "Old Movie", .production_year = 1999}};
+      (title_t){.id = 1, .title = "Voiced Movie", .production_year = 2006},
+      (title_t){.id = 2, .title = "Other Movie", .production_year = 2010}};
   int title_len = sizeof(title) / sizeof(title[0]);
   list_string matches = list_string_create(4);
   matches.data[0] = "(voice)";
@@ -408,19 +452,20 @@ int main() {
   matches.data[2] = "(voice) (uncredited)";
   matches.data[3] = "(voice: English version)";
   matches_item_list_t tmp4 = matches_item_list_t_create(
-      aka_name.len * name.len * cast_info.len * char_name.len * title.len *
-      movie_companies.len * company_name.len * role_type.len);
+      aka_name.len * name.len * cast_info.len * char_name.len * role_type.len *
+      title.len * movie_companies.len * company_name.len * movie_info.len *
+      info_type.len);
   int tmp5 = 0;
   for (int tmp6 = 0; tmp6 < aka_name_len; tmp6++) {
     aka_name_t an = aka_name[tmp6];
     for (int tmp7 = 0; tmp7 < name_len; tmp7++) {
       name_t n = name[tmp7];
-      if (!(an.person_id == n.id)) {
+      if (!(n.id == an.person_id)) {
         continue;
       }
       for (int tmp8 = 0; tmp8 < cast_info_len; tmp8++) {
         cast_info_t ci = cast_info[tmp8];
-        if (!(ci.person_id == n.id)) {
+        if (!(ci.person_id == an.person_id)) {
           continue;
         }
         for (int tmp9 = 0; tmp9 < char_name_len; tmp9++) {
@@ -428,38 +473,56 @@ int main() {
           if (!(chn.id == ci.person_role_id)) {
             continue;
           }
-          for (int tmp10 = 0; tmp10 < title_len; tmp10++) {
-            title_t t = title[tmp10];
-            if (!(t.id == ci.movie_id)) {
+          for (int tmp10 = 0; tmp10 < role_type_len; tmp10++) {
+            role_type_t rt = role_type[tmp10];
+            if (!(rt.id == ci.role_id)) {
               continue;
             }
-            for (int tmp11 = 0; tmp11 < movie_companies_len; tmp11++) {
-              movie_companie_t mc = movie_companies[tmp11];
-              if (!(mc.movie_id == t.id)) {
+            for (int tmp11 = 0; tmp11 < title_len; tmp11++) {
+              title_t t = title[tmp11];
+              if (!(t.id == ci.movie_id)) {
                 continue;
               }
-              for (int tmp12 = 0; tmp12 < company_name_len; tmp12++) {
-                company_name_t cn = company_name[tmp12];
-                if (!(cn.id == mc.company_id)) {
+              for (int tmp12 = 0; tmp12 < movie_companies_len; tmp12++) {
+                movie_companie_t mc = movie_companies[tmp12];
+                if (!(mc.movie_id == t.id)) {
                   continue;
                 }
-                for (int tmp13 = 0; tmp13 < role_type_len; tmp13++) {
-                  role_type_t rt = role_type[tmp13];
-                  if (!(rt.id == ci.role_id)) {
+                for (int tmp13 = 0; tmp13 < company_name_len; tmp13++) {
+                  company_name_t cn = company_name[tmp13];
+                  if (!(cn.id == mc.company_id)) {
                     continue;
                   }
-                  if (!((contains_list_string(matches, ci.note)) &&
-                        cn.country_code == "[us]" &&
-                        (contains_string(mc.note, "(USA)") ||
-                         contains_string(mc.note, "(worldwide)")) &&
-                        n.gender == "f" && contains_string(n.name, "Ang") &&
-                        rt.role == "actress" && t.production_year >= 2005 &&
-                        t.production_year <= 2015)) {
-                    continue;
+                  for (int tmp14 = 0; tmp14 < movie_info_len; tmp14++) {
+                    movie_info_t mi = movie_info[tmp14];
+                    if (!(mi.movie_id == t.id)) {
+                      continue;
+                    }
+                    for (int tmp15 = 0; tmp15 < info_type_len; tmp15++) {
+                      info_type_t it = info_type[tmp15];
+                      if (!(it.id == mi.info_type_id)) {
+                        continue;
+                      }
+                      if (!(contains_list_string(matches, ci.note) &&
+                            cn.country_code == "[us]" &&
+                            it.info == "release dates" && mc.note != 0 &&
+                            (contains_string(mc.note, "(USA)") ||
+                             contains_string(mc.note, "(worldwide)")) &&
+                            mi.info != 0 &&
+                            ((contains_string(mi.info, "Japan:") &&
+                              contains_string(mi.info, "200")) ||
+                             (contains_string(mi.info, "USA:") &&
+                              contains_string(mi.info, "200"))) &&
+                            n.gender == "f" && contains_string(n.name, "Ang") &&
+                            rt.role == "actress" && t.production_year >= 2005 &&
+                            t.production_year <= 2009)) {
+                        continue;
+                      }
+                      tmp4.data[tmp5] =
+                          (matches_item_t){.actress = n.name, .movie = t.title};
+                      tmp5++;
+                    }
                   }
-                  tmp4.data[tmp5] = (matches_item_t){
-                      .alt = an.name, .character = chn.name, .movie = t.title};
-                  tmp5++;
                 }
               }
             }
@@ -470,58 +533,45 @@ int main() {
   }
   tmp4.len = tmp5;
   matches_item_list_t matches = tmp4;
-  int tmp14 = int_create(matches.len);
-  int tmp15 = 0;
-  for (int tmp16 = 0; tmp16 < matches.len; tmp16++) {
-    matches_item_t x = matches.data[tmp16];
-    tmp14.data[tmp15] = x.alt;
-    tmp15++;
+  int tmp16 = int_create(matches.len);
+  int tmp17 = 0;
+  for (int tmp18 = 0; tmp18 < matches.len; tmp18++) {
+    matches_item_t r = matches.data[tmp18];
+    tmp16.data[tmp17] = r.actress;
+    tmp17++;
   }
-  tmp14.len = tmp15;
-  int tmp17 = int_create(matches.len);
-  int tmp18 = 0;
-  for (int tmp19 = 0; tmp19 < matches.len; tmp19++) {
-    matches_item_t x = matches.data[tmp19];
-    tmp17.data[tmp18] = x.character;
-    tmp18++;
+  tmp16.len = tmp17;
+  int tmp19 = int_create(matches.len);
+  int tmp20 = 0;
+  for (int tmp21 = 0; tmp21 < matches.len; tmp21++) {
+    matches_item_t r = matches.data[tmp21];
+    tmp19.data[tmp20] = r.movie;
+    tmp20++;
   }
-  tmp17.len = tmp18;
-  int tmp20 = int_create(matches.len);
-  int tmp21 = 0;
-  for (int tmp22 = 0; tmp22 < matches.len; tmp22++) {
-    matches_item_t x = matches.data[tmp22];
-    tmp20.data[tmp21] = x.movie;
-    tmp21++;
-  }
-  tmp20.len = tmp21;
-  result_t result[] = {(result_t){.alternative_name = _min_string(tmp14),
-                                  .character_name = _min_string(tmp17),
-                                  .movie = _min_string(tmp20)}};
+  tmp19.len = tmp20;
+  result_t result[] = {(result_t){.voicing_actress = _min_string(tmp16),
+                                  .voiced_movie = _min_string(tmp19)}};
   int result_len = sizeof(result) / sizeof(result[0]);
   printf("[");
-  for (int i23 = 0; i23 < result_len; i23++) {
-    if (i23 > 0)
+  for (int i22 = 0; i22 < result_len; i22++) {
+    if (i22 > 0)
       printf(",");
-    result_t it = result[i23];
+    result_t it = result[i22];
     printf("{");
-    _json_string("alternative_name");
+    _json_string("voicing_actress");
     printf(":");
-    _json_string(it.alternative_name);
+    _json_string(it.voicing_actress);
     printf(",");
-    _json_string("character_name");
+    _json_string("voiced_movie");
     printf(":");
-    _json_string(it.character_name);
-    printf(",");
-    _json_string("movie");
-    printf(":");
-    _json_string(it.movie);
+    _json_string(it.voiced_movie);
     printf("}");
   }
   printf("]");
-  test_Q9_selects_minimal_alternative_name__character_and_movie_result = result;
-  test_Q9_selects_minimal_alternative_name__character_and_movie();
-  free(tmp14.data);
-  free(tmp17.data);
-  free(tmp20.data);
+  test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009_result =
+      result;
+  test_Q19_finds_female_voice_actress_in_US_Japan_release_between_2005_and_2009();
+  free(tmp16.data);
+  free(tmp19.data);
   return 0;
 }

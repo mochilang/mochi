@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -111,17 +110,17 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  char *uncredited_voiced_character;
-  char *russian_movie;
-} TmpItem;
+  const char *uncredited_voiced_character;
+  const char *russian_movie;
+} tmp1_t;
 typedef struct {
   int len;
-  TmpItem *data;
-} list_TmpItem;
-static list_TmpItem list_TmpItem_create(int len) {
-  list_TmpItem l;
+  tmp1_t *data;
+} tmp1_list_t;
+tmp1_list_t create_tmp1_list(int len) {
+  tmp1_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TmpItem));
+  l.data = calloc(len, sizeof(tmp1_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -131,16 +130,16 @@ static list_TmpItem list_TmpItem_create(int len) {
 
 typedef struct {
   int id;
-  char *name;
-} Char_nameItem;
+  const char *name;
+} char_name_t;
 typedef struct {
   int len;
-  Char_nameItem *data;
-} list_Char_nameItem;
-static list_Char_nameItem list_Char_nameItem_create(int len) {
-  list_Char_nameItem l;
+  char_name_t *data;
+} char_name_list_t;
+char_name_list_t create_char_name_list(int len) {
+  char_name_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Char_nameItem));
+  l.data = calloc(len, sizeof(char_name_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -152,16 +151,16 @@ typedef struct {
   int movie_id;
   int person_role_id;
   int role_id;
-  char *note;
-} Cast_infoItem;
+  const char *note;
+} cast_info_t;
 typedef struct {
   int len;
-  Cast_infoItem *data;
-} list_Cast_infoItem;
-static list_Cast_infoItem list_Cast_infoItem_create(int len) {
-  list_Cast_infoItem l;
+  cast_info_t *data;
+} cast_info_list_t;
+cast_info_list_t create_cast_info_list(int len) {
+  cast_info_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Cast_infoItem));
+  l.data = calloc(len, sizeof(cast_info_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -171,16 +170,16 @@ static list_Cast_infoItem list_Cast_infoItem_create(int len) {
 
 typedef struct {
   int id;
-  char *country_code;
-} Company_nameItem;
+  const char *country_code;
+} company_name_t;
 typedef struct {
   int len;
-  Company_nameItem *data;
-} list_Company_nameItem;
-static list_Company_nameItem list_Company_nameItem_create(int len) {
-  list_Company_nameItem l;
+  company_name_t *data;
+} company_name_list_t;
+company_name_list_t create_company_name_list(int len) {
+  company_name_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Company_nameItem));
+  l.data = calloc(len, sizeof(company_name_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -190,15 +189,15 @@ static list_Company_nameItem list_Company_nameItem_create(int len) {
 
 typedef struct {
   int id;
-} Company_typeItem;
+} company_type_t;
 typedef struct {
   int len;
-  Company_typeItem *data;
-} list_Company_typeItem;
-static list_Company_typeItem list_Company_typeItem_create(int len) {
-  list_Company_typeItem l;
+  company_type_t *data;
+} company_type_list_t;
+company_type_list_t create_company_type_list(int len) {
+  company_type_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Company_typeItem));
+  l.data = calloc(len, sizeof(company_type_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -210,15 +209,15 @@ typedef struct {
   int movie_id;
   int company_id;
   int company_type_id;
-} Movie_companiesItem;
+} movie_companie_t;
 typedef struct {
   int len;
-  Movie_companiesItem *data;
-} list_Movie_companiesItem;
-static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
-  list_Movie_companiesItem l;
+  movie_companie_t *data;
+} movie_companie_list_t;
+movie_companie_list_t create_movie_companie_list(int len) {
+  movie_companie_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_companiesItem));
+  l.data = calloc(len, sizeof(movie_companie_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -228,16 +227,16 @@ static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
 
 typedef struct {
   int id;
-  char *role;
-} Role_typeItem;
+  const char *role;
+} role_type_t;
 typedef struct {
   int len;
-  Role_typeItem *data;
-} list_Role_typeItem;
-static list_Role_typeItem list_Role_typeItem_create(int len) {
-  list_Role_typeItem l;
+  role_type_t *data;
+} role_type_list_t;
+role_type_list_t create_role_type_list(int len) {
+  role_type_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Role_typeItem));
+  l.data = calloc(len, sizeof(role_type_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -247,17 +246,17 @@ static list_Role_typeItem list_Role_typeItem_create(int len) {
 
 typedef struct {
   int id;
-  char *title;
+  const char *title;
   int production_year;
-} TitleItem;
+} title_t;
 typedef struct {
   int len;
-  TitleItem *data;
-} list_TitleItem;
-static list_TitleItem list_TitleItem_create(int len) {
-  list_TitleItem l;
+  title_t *data;
+} title_list_t;
+title_list_t create_title_list(int len) {
+  title_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TitleItem));
+  l.data = calloc(len, sizeof(title_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -266,17 +265,17 @@ static list_TitleItem list_TitleItem_create(int len) {
 }
 
 typedef struct {
-  char *character;
-  char *movie;
-} MatchesItem;
+  const char *character;
+  const char *movie;
+} matches_item_t;
 typedef struct {
   int len;
-  MatchesItem *data;
-} list_MatchesItem;
-static list_MatchesItem list_MatchesItem_create(int len) {
-  list_MatchesItem l;
+  matches_item_t *data;
+} matches_item_list_t;
+matches_item_list_t create_matches_item_list(int len) {
+  matches_item_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(MatchesItem));
+  l.data = calloc(len, sizeof(matches_item_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -285,17 +284,17 @@ static list_MatchesItem list_MatchesItem_create(int len) {
 }
 
 typedef struct {
-  char *uncredited_voiced_character;
-  char *russian_movie;
-} ResultItem;
+  const char *uncredited_voiced_character;
+  const char *russian_movie;
+} result_t;
 typedef struct {
   int len;
-  ResultItem *data;
-} list_ResultItem;
-static list_ResultItem list_ResultItem_create(int len) {
-  list_ResultItem l;
+  result_t *data;
+} result_list_t;
+result_list_t create_result_list(int len) {
+  result_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(ResultItem));
+  l.data = calloc(len, sizeof(result_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -305,9 +304,9 @@ static list_ResultItem list_ResultItem_create(int len) {
 
 static list_int test_Q10_finds_uncredited_voice_actor_in_Russian_movie_result;
 static void test_Q10_finds_uncredited_voice_actor_in_Russian_movie() {
-  list_int tmp1 = list_int_create(1);
-  tmp1.data[0] = (TmpItem){.uncredited_voiced_character = "Ivan",
-                           .russian_movie = "Vodka Dreams"};
+  tmp1_t tmp1[] = {(tmp1_t){.uncredited_voiced_character = "Ivan",
+                            .russian_movie = "Vodka Dreams"}};
+  int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
   if (test_Q10_finds_uncredited_voice_actor_in_Russian_movie_result.len !=
       tmp1.len) {
@@ -330,79 +329,72 @@ static void test_Q10_finds_uncredited_voice_actor_in_Russian_movie() {
 }
 
 int main() {
-  Char_nameItem tmp4_data[] = {(Char_nameItem){.id = 1, .name = "Ivan"},
-                               (Char_nameItem){.id = 2, .name = "Alex"}};
-  list_Char_nameItem tmp4 = {2, tmp4_data};
-  list_Char_nameItem char_name = tmp4;
-  Cast_infoItem tmp5_data[] = {
-      (Cast_infoItem){.movie_id = 10,
-                      .person_role_id = 1,
-                      .role_id = 1,
-                      .note = "Soldier (voice) (uncredited)"},
-      (Cast_infoItem){.movie_id = 11,
-                      .person_role_id = 2,
-                      .role_id = 1,
-                      .note = "(voice)"}};
-  list_Cast_infoItem tmp5 = {2, tmp5_data};
-  list_Cast_infoItem cast_info = tmp5;
-  Company_nameItem tmp6_data[] = {
-      (Company_nameItem){.id = 1, .country_code = "[ru]"},
-      (Company_nameItem){.id = 2, .country_code = "[us]"}};
-  list_Company_nameItem tmp6 = {2, tmp6_data};
-  list_Company_nameItem company_name = tmp6;
-  Company_typeItem tmp7_data[] = {(Company_typeItem){.id = 1},
-                                  (Company_typeItem){.id = 2}};
-  list_Company_typeItem tmp7 = {2, tmp7_data};
-  list_Company_typeItem company_type = tmp7;
-  Movie_companiesItem tmp8_data[] = {
-      (Movie_companiesItem){
-          .movie_id = 10, .company_id = 1, .company_type_id = 1},
-      (Movie_companiesItem){
+  char_name_t char_name[] = {(char_name_t){.id = 1, .name = "Ivan"},
+                             (char_name_t){.id = 2, .name = "Alex"}};
+  int char_name_len = sizeof(char_name) / sizeof(char_name[0]);
+  cast_info_t cast_info[] = {
+      (cast_info_t){.movie_id = 10,
+                    .person_role_id = 1,
+                    .role_id = 1,
+                    .note = "Soldier (voice) (uncredited)"},
+      (cast_info_t){.movie_id = 11,
+                    .person_role_id = 2,
+                    .role_id = 1,
+                    .note = "(voice)"}};
+  int cast_info_len = sizeof(cast_info) / sizeof(cast_info[0]);
+  company_name_t company_name[] = {
+      (company_name_t){.id = 1, .country_code = "[ru]"},
+      (company_name_t){.id = 2, .country_code = "[us]"}};
+  int company_name_len = sizeof(company_name) / sizeof(company_name[0]);
+  company_type_t company_type[] = {(company_type_t){.id = 1},
+                                   (company_type_t){.id = 2}};
+  int company_type_len = sizeof(company_type) / sizeof(company_type[0]);
+  movie_companie_t movie_companies[] = {
+      (movie_companie_t){.movie_id = 10, .company_id = 1, .company_type_id = 1},
+      (movie_companie_t){
           .movie_id = 11, .company_id = 2, .company_type_id = 1}};
-  list_Movie_companiesItem tmp8 = {2, tmp8_data};
-  list_Movie_companiesItem movie_companies = tmp8;
-  Role_typeItem tmp9_data[] = {(Role_typeItem){.id = 1, .role = "actor"},
-                               (Role_typeItem){.id = 2, .role = "director"}};
-  list_Role_typeItem tmp9 = {2, tmp9_data};
-  list_Role_typeItem role_type = tmp9;
-  TitleItem tmp10_data[] = {
-      (TitleItem){.id = 10, .title = "Vodka Dreams", .production_year = 2006},
-      (TitleItem){.id = 11, .title = "Other Film", .production_year = 2004}};
-  list_TitleItem tmp10 = {2, tmp10_data};
-  list_TitleItem title = tmp10;
-  list_MatchesItem tmp11 = list_MatchesItem_create(
+  int movie_companies_len =
+      sizeof(movie_companies) / sizeof(movie_companies[0]);
+  role_type_t role_type[] = {(role_type_t){.id = 1, .role = "actor"},
+                             (role_type_t){.id = 2, .role = "director"}};
+  int role_type_len = sizeof(role_type) / sizeof(role_type[0]);
+  title_t title[] = {
+      (title_t){.id = 10, .title = "Vodka Dreams", .production_year = 2006},
+      (title_t){.id = 11, .title = "Other Film", .production_year = 2004}};
+  int title_len = sizeof(title) / sizeof(title[0]);
+  matches_item_list_t tmp4 = matches_item_list_t_create(
       char_name.len * cast_info.len * role_type.len * title.len *
       movie_companies.len * company_name.len * company_type.len);
-  int tmp12 = 0;
-  for (int tmp13 = 0; tmp13 < char_name.len; tmp13++) {
-    Char_nameItem chn = char_name.data[tmp13];
-    for (int tmp14 = 0; tmp14 < cast_info.len; tmp14++) {
-      Cast_infoItem ci = cast_info.data[tmp14];
+  int tmp5 = 0;
+  for (int tmp6 = 0; tmp6 < char_name_len; tmp6++) {
+    char_name_t chn = char_name[tmp6];
+    for (int tmp7 = 0; tmp7 < cast_info_len; tmp7++) {
+      cast_info_t ci = cast_info[tmp7];
       if (!(chn.id == ci.person_role_id)) {
         continue;
       }
-      for (int tmp15 = 0; tmp15 < role_type.len; tmp15++) {
-        Role_typeItem rt = role_type.data[tmp15];
+      for (int tmp8 = 0; tmp8 < role_type_len; tmp8++) {
+        role_type_t rt = role_type[tmp8];
         if (!(rt.id == ci.role_id)) {
           continue;
         }
-        for (int tmp16 = 0; tmp16 < title.len; tmp16++) {
-          TitleItem t = title.data[tmp16];
+        for (int tmp9 = 0; tmp9 < title_len; tmp9++) {
+          title_t t = title[tmp9];
           if (!(t.id == ci.movie_id)) {
             continue;
           }
-          for (int tmp17 = 0; tmp17 < movie_companies.len; tmp17++) {
-            Movie_companiesItem mc = movie_companies.data[tmp17];
+          for (int tmp10 = 0; tmp10 < movie_companies_len; tmp10++) {
+            movie_companie_t mc = movie_companies[tmp10];
             if (!(mc.movie_id == t.id)) {
               continue;
             }
-            for (int tmp18 = 0; tmp18 < company_name.len; tmp18++) {
-              Company_nameItem cn = company_name.data[tmp18];
+            for (int tmp11 = 0; tmp11 < company_name_len; tmp11++) {
+              company_name_t cn = company_name[tmp11];
               if (!(cn.id == mc.company_id)) {
                 continue;
               }
-              for (int tmp19 = 0; tmp19 < company_type.len; tmp19++) {
-                Company_typeItem ct = company_type.data[tmp19];
+              for (int tmp12 = 0; tmp12 < company_type_len; tmp12++) {
+                company_type_t ct = company_type[tmp12];
                 if (!(ct.id == mc.company_type_id)) {
                   continue;
                 }
@@ -412,9 +404,9 @@ int main() {
                       t.production_year > 2005)) {
                   continue;
                 }
-                tmp11.data[tmp12] =
-                    (MatchesItem){.character = chn.name, .movie = t.title};
-                tmp12++;
+                tmp4.data[tmp5] =
+                    (matches_item_t){.character = chn.name, .movie = t.title};
+                tmp5++;
               }
             }
           }
@@ -422,34 +414,33 @@ int main() {
       }
     }
   }
-  tmp11.len = tmp12;
-  list_MatchesItem matches = tmp11;
-  list_string tmp21 = list_string_create(matches.len);
-  int tmp22 = 0;
-  for (int tmp23 = 0; tmp23 < matches.len; tmp23++) {
-    MatchesItem x = matches.data[tmp23];
-    tmp21.data[tmp22] = x.character;
-    tmp22++;
+  tmp4.len = tmp5;
+  matches_item_list_t matches = tmp4;
+  int tmp13 = int_create(matches.len);
+  int tmp14 = 0;
+  for (int tmp15 = 0; tmp15 < matches.len; tmp15++) {
+    matches_item_t x = matches.data[tmp15];
+    tmp13.data[tmp14] = x.character;
+    tmp14++;
   }
-  tmp21.len = tmp22;
-  list_string tmp24 = list_string_create(matches.len);
-  int tmp25 = 0;
-  for (int tmp26 = 0; tmp26 < matches.len; tmp26++) {
-    MatchesItem x = matches.data[tmp26];
-    tmp24.data[tmp25] = x.movie;
-    tmp25++;
+  tmp13.len = tmp14;
+  int tmp16 = int_create(matches.len);
+  int tmp17 = 0;
+  for (int tmp18 = 0; tmp18 < matches.len; tmp18++) {
+    matches_item_t x = matches.data[tmp18];
+    tmp16.data[tmp17] = x.movie;
+    tmp17++;
   }
-  tmp24.len = tmp25;
-  ResultItem tmp20_data[] = {
-      (ResultItem){.uncredited_voiced_character = _min_string(tmp21),
-                   .russian_movie = _min_string(tmp24)}};
-  list_ResultItem tmp20 = {1, tmp20_data};
-  list_ResultItem result = tmp20;
+  tmp16.len = tmp17;
+  result_t result[] = {
+      (result_t){.uncredited_voiced_character = _min_string(tmp13),
+                 .russian_movie = _min_string(tmp16)}};
+  int result_len = sizeof(result) / sizeof(result[0]);
   printf("[");
-  for (int i27 = 0; i27 < result.len; i27++) {
-    if (i27 > 0)
+  for (int i19 = 0; i19 < result_len; i19++) {
+    if (i19 > 0)
       printf(",");
-    ResultItem it = result.data[i27];
+    result_t it = result[i19];
     printf("{");
     _json_string("uncredited_voiced_character");
     printf(":");
@@ -463,5 +454,7 @@ int main() {
   printf("]");
   test_Q10_finds_uncredited_voice_actor_in_Russian_movie_result = result;
   test_Q10_finds_uncredited_voice_actor_in_Russian_movie();
+  free(tmp13.data);
+  free(tmp16.data);
   return 0;
 }
