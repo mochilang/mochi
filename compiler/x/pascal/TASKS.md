@@ -4,6 +4,7 @@
 - [2025-07-13 05:05] Installed FPC in CI environment and regenerated Pascal outputs.
 - [2025-07-13 05:05] Fixed element type inference for grouped query results.
 - [2025-07-28 15:50] Added Pascal compiler support for TPCH queries q11-q22 and updated dataset tests.
+- [2025-07-15 06:32] Generated Pascal code and outputs for TPC-DS queries q50-q99 with new golden test and compile script.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
