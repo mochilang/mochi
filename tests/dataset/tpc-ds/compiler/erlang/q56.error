@@ -1,0 +1,6 @@
+run: exit status 127
+/tmp/q56.erl:12:13: function concat/3 undefined
+%   12|     Union = concat(Ss, Cs, Ws),
+%     |             ^
+
+escript: There were compilation errors.

@@ -1,0 +1,20 @@
+run: exit status 127
+escript: exception error: bad key: ss_ext_sales_price
+  in function  map_get/2
+     called as map_get(ss_ext_sales_price,
+                       #{i =>
+                             #{i_item_sk => 1,i_item_id => "I1",
+                               i_item_desc => "desc1",i_category => "CatA",
+                               i_class => "Class1",i_current_price => 100},
+                         ss =>
+                             #{ss_item_sk => 1,ss_sold_date_sk => 1,
+                               ss_ext_sales_price => 50},
+                         d => #{d_date_sk => 1,d_date => "2000-02-01"}})
+     *** argument 1: not present in map
+  in call from q98_erl__escript__1752__555540__926102__8965:'-main/1-lc$^5/1-1-'/1 (/tmp/q98.erl, line 9)
+  in call from q98_erl__escript__1752__555540__926102__8965:'-main/1-lc$^4/1-0-'/1 (/tmp/q98.erl, line 9)
+  in call from q98_erl__escript__1752__555540__926102__8965:main/1 (/tmp/q98.erl, line 9)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 

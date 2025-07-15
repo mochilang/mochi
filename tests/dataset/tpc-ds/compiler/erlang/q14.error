@@ -1,0 +1,26 @@
+run: exit status 127
+/tmp/q14.erl:13:160: variable '_' is unbound
+%   13|     Store_filtered = [#{channel => "store", sales => lists:sum([(maps:get(ss_quantity, X) * maps:get(ss_list_price, X)) || X <- Val0]), number_sales => (case [_ || _ <- Val0] of #{items := It} -> length(It); _ -> length([_ || _ <- Val0]) end)} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{brand_id => 1, class_id => 1, category_id => 1}, #{ss => Ss, d => D}} || Ss <- Store_sales, D <- Date_dim, (((maps:get(ss_sold_date_sk, Ss) == maps:get(d_date_sk, D)) andalso (maps:get(d_year, D) == 2002)) andalso (maps:get(d_moy, D) == 11)), lists:member(maps:get(ss_item_sk, Ss), ([maps:get(ss_item_sk, Ci) || Ci <- Cross_items]))]))],
+%     |                                                                                                                                                                ^
+
+/tmp/q14.erl:13:222: variable '_' is unbound
+%   13|     Store_filtered = [#{channel => "store", sales => lists:sum([(maps:get(ss_quantity, X) * maps:get(ss_list_price, X)) || X <- Val0]), number_sales => (case [_ || _ <- Val0] of #{items := It} -> length(It); _ -> length([_ || _ <- Val0]) end)} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{brand_id => 1, class_id => 1, category_id => 1}, #{ss => Ss, d => D}} || Ss <- Store_sales, D <- Date_dim, (((maps:get(ss_sold_date_sk, Ss) == maps:get(d_date_sk, D)) andalso (maps:get(d_year, D) == 2002)) andalso (maps:get(d_moy, D) == 11)), lists:member(maps:get(ss_item_sk, Ss), ([maps:get(ss_item_sk, Ci) || Ci <- Cross_items]))]))],
+%     |                                                                                                                                                                                                                              ^
+
+/tmp/q14.erl:7:5: Warning: variable 'Catalog_sales' is unused
+%    7|     Catalog_sales = [#{cs_item_sk => 1, cs_list_price => 10, cs_quantity => 2, cs_sold_date_sk => 1}],
+%     |     ^
+
+/tmp/q14.erl:8:5: Warning: variable 'Web_sales' is unused
+%    8|     Web_sales = [#{ws_item_sk => 1, ws_list_price => 30, ws_quantity => 1, ws_sold_date_sk => 1}],
+%     |     ^
+
+/tmp/q14.erl:9:5: Warning: variable 'Item' is unused
+%    9|     Item = [#{i_item_sk => 1, i_brand_id => 1, i_class_id => 1, i_category_id => 1}],
+%     |     ^
+
+/tmp/q14.erl:13:249: Warning: variable 'Key0' is unused
+%   13|     Store_filtered = [#{channel => "store", sales => lists:sum([(maps:get(ss_quantity, X) * maps:get(ss_list_price, X)) || X <- Val0]), number_sales => (case [_ || _ <- Val0] of #{items := It} -> length(It); _ -> length([_ || _ <- Val0]) end)} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{brand_id => 1, class_id => 1, category_id => 1}, #{ss => Ss, d => D}} || Ss <- Store_sales, D <- Date_dim, (((maps:get(ss_sold_date_sk, Ss) == maps:get(d_date_sk, D)) andalso (maps:get(d_year, D) == 2002)) andalso (maps:get(d_moy, D) == 11)), lists:member(maps:get(ss_item_sk, Ss), ([maps:get(ss_item_sk, Ci) || Ci <- Cross_items]))]))],
+%     |                                                                                                                                                                                                                                                         ^
+
+escript: There were compilation errors.

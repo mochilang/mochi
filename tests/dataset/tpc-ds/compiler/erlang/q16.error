@@ -1,0 +1,18 @@
+run: exit status 127
+/tmp/q16.erl:7:39: function contains/2 undefined
+%    7|     lists:foreach(fun(X) -> (case not contains(Out0, X) of true -> Out1 = Out0 ++ [X]; _ -> ok end) end, Xs),
+%     |                                       ^
+
+/tmp/q16.erl:8:5: variable 'Out1' is unbound
+%    8|     Out1.
+%     |     ^
+
+/tmp/q16.erl:7:68: Warning: variable 'Out1' is unused
+%    7|     lists:foreach(fun(X) -> (case not contains(Out0, X) of true -> Out1 = Out0 ++ [X]; _ -> ok end) end, Xs),
+%     |                                                                    ^
+
+/tmp/q16.erl:16:255: Warning: variable 'Key0' is unused
+%   16|     Filtered = [#{order_count => length(distinct([maps:get(cs_order_number, X) || X <- Val0])), total_shipping_cost => lists:sum([maps:get(cs_ext_ship_cost, X) || X <- Val0]), total_net_profit => lists:sum([maps:get(cs_net_profit, X) || X <- Val0])} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{}, #{cs1 => Cs1, d => D, ca => Ca, cc => Cc}} || Cs1 <- Catalog_sales, D <- Date_dim, Ca <- Customer_address, Cc <- Call_center, (((maps:get(cs_ship_date_sk, Cs1) == maps:get(d_date_sk, D)) andalso (maps:get(d_date, D) >= "2000-03-01")) andalso (maps:get(d_date, D) =< "2000-04-30")), ((maps:get(cs_ship_addr_sk, Cs1) == maps:get(ca_address_sk, Ca)) andalso (maps:get(ca_state, Ca) == "CA")), ((maps:get(cs_call_center_sk, Cs1) == maps:get(cc_call_center_sk, Cc)) andalso (maps:get(cc_county, Cc) == "CountyA")), (lists:any(fun(Cs2) -> ((maps:get(cs_order_number, Cs1) == maps:get(cs_order_number, Cs2)) andalso (maps:get(cs_warehouse_sk, Cs1) /= maps:get(cs_warehouse_sk, Cs2))) end, Catalog_sales) andalso (lists:any(fun(Cr) -> (maps:get(cs_order_number, Cs1) == maps:get(cr_order_number, Cr)) end, Catalog_returns) == false))]))],
+%     |                                                                                                                                                                                                                                                               ^
+
+escript: There were compilation errors.

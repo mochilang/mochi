@@ -1,0 +1,32 @@
+run: exit status 127
+escript: exception error: bad key: ss_net_profit
+  in function  map_get/2
+     called as map_get(ss_net_profit,
+                       #{s =>
+                             #{s_store_sk => 1,s_store_id => "S1",
+                               s_store_name => "Store1"},
+                         i =>
+                             #{i_item_sk => 1,i_item_id => "ITEM1",
+                               i_item_desc => "Desc1"},
+                         ss =>
+                             #{ss_sold_date_sk => 1,ss_item_sk => 1,
+                               ss_store_sk => 1,ss_customer_sk => 1,
+                               ss_net_profit => 50,ss_ticket_number => 1},
+                         sr =>
+                             #{sr_returned_date_sk => 2,sr_item_sk => 1,
+                               sr_customer_sk => 1,sr_ticket_number => 1,
+                               sr_net_loss => 10},
+                         cs =>
+                             #{cs_sold_date_sk => 3,cs_item_sk => 1,
+                               cs_bill_customer_sk => 1,cs_net_profit => 30},
+                         d1 => #{d_date_sk => 1,d_moy => 4,d_year => 2000},
+                         d2 => #{d_date_sk => 2,d_moy => 5,d_year => 2000},
+                         d3 => #{d_date_sk => 3,d_moy => 6,d_year => 2000}})
+     *** argument 1: not present in map
+  in call from q25_erl__escript__1752__555504__144430__8965:'-main/1-lc$^10/1-1-'/1 (/tmp/q25.erl, line 12)
+  in call from q25_erl__escript__1752__555504__144430__8965:'-main/1-lc$^9/1-0-'/1 (/tmp/q25.erl, line 12)
+  in call from q25_erl__escript__1752__555504__144430__8965:main/1 (/tmp/q25.erl, line 12)
+  in call from escript:run/2 (escript.erl, line 904)
+  in call from escript:start/1 (escript.erl, line 418)
+  in call from init:start_it/1 
+  in call from init:start_em/1 

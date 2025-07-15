@@ -1,0 +1,14 @@
+run: exit status 127
+/tmp/q97.erl:11:205: variable 'It' unsafe in 'case' (line 10, column 13)
+%   11|     Store_only = (case [1 || S <- Ssci, not (lists:any(fun(C) -> ((maps:get(customer_sk, S) == maps:get(customer_sk, C)) andalso (maps:get(item_sk, S) == maps:get(item_sk, C))) end, Csci))] of #{items := It} -> length(It); _ -> length([1 || S <- Ssci, not (lists:any(fun(C) -> ((maps:get(customer_sk, S) == maps:get(customer_sk, C)) andalso (maps:get(item_sk, S) == maps:get(item_sk, C))) end, Csci))]) end),
+%     |                                                                                                                                                                                                             ^
+
+/tmp/q97.erl:8:105: Warning: variable 'Val0' is unused
+%    8|     Ssci = [#{customer_sk => maps:get(customer_sk, Key0), item_sk => maps:get(item_sk, Key0)} || {Key0, Val0} <- maps:to_list(lists:foldl(fun({Key0, Val0}, Acc0) -> L = maps:get(Key0, Acc0, []), maps:put(Key0, [Val0 | L], Acc0) end, #{}, [{#{customer_sk => maps:get(ss_customer_sk, Ss), item_sk => maps:get(ss_item_sk, Ss)}, Ss} || Ss <- Store_sales]))],
+%     |                                                                                                         ^
+
+/tmp/q97.erl:9:105: Warning: variable 'Val1' is unused
+%    9|     Csci = [#{customer_sk => maps:get(customer_sk, Key1), item_sk => maps:get(item_sk, Key1)} || {Key1, Val1} <- maps:to_list(lists:foldl(fun({Key1, Val1}, Acc1) -> L = maps:get(Key1, Acc1, []), maps:put(Key1, [Val1 | L], Acc1) end, #{}, [{#{customer_sk => maps:get(cs_bill_customer_sk, Cs), item_sk => maps:get(cs_item_sk, Cs)}, Cs} || Cs <- Catalog_sales]))],
+%     |                                                                                                         ^
+
+escript: There were compilation errors.

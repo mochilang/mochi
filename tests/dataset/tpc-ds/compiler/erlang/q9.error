@@ -1,0 +1,6 @@
+run: exit status 127
+/tmp/q9.erl:9:143: variable 'It' unsafe in 'case' (line 8, column 23)
+%    9|     Bucket2 = (case ((case [S || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))] of #{items := It} -> length(It); _ -> length([S || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))]) end) > 20) of true -> (lists:sum([maps:get(ss_ext_discount_amt, S) || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))]) / length([maps:get(ss_ext_discount_amt, S) || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))])); _ -> (lists:sum([maps:get(ss_net_paid, S) || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))]) / length([maps:get(ss_net_paid, S) || S <- Store_sales, ((maps:get(ss_quantity, S) >= 21) andalso (maps:get(ss_quantity, S) =< 40))])) end),
+%     |                                                                                                                                               ^
+
+escript: There were compilation errors.

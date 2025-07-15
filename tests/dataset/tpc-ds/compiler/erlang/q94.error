@@ -1,0 +1,14 @@
+run: exit status 127
+/tmp/q94.erl:7:39: function contains/2 undefined
+%    7|     lists:foreach(fun(X) -> (case not contains(Out0, X) of true -> Out1 = Out0 ++ [X]; _ -> ok end) end, Xs),
+%     |                                       ^
+
+/tmp/q94.erl:8:5: variable 'Out1' is unbound
+%    8|     Out1.
+%     |     ^
+
+/tmp/q94.erl:7:68: Warning: variable 'Out1' is unused
+%    7|     lists:foreach(fun(X) -> (case not contains(Out0, X) of true -> Out1 = Out0 ++ [X]; _ -> ok end) end, Xs),
+%     |                                                                    ^
+
+escript: There were compilation errors.

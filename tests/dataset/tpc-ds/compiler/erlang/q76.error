@@ -1,0 +1,6 @@
+run: exit status 127
+/tmp/q76.erl:14:16: function concat/3 undefined
+%   14|     All_rows = concat(Store_part, Web_part, Catalog_part),
+%     |                ^
+
+escript: There were compilation errors.

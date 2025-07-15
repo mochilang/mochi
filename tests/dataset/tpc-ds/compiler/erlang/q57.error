@@ -1,0 +1,7 @@
+run: exit status 127
+/tmp/q57.erl:15:290: ambiguous call of overridden pre Erlang/OTP R14 auto-imported BIF abs/1 --
+use erlang:abs/1 or \"-compile({no_auto_import,[abs/1]}).\" to resolve name clash
+%   15|     Result = [#{i_category => maps:get(cat, G), sum_sales => maps:get(sum_sales, G)} || G <- Grouped, A <- Avg_by_year, ((maps:get(cat, G) == maps:get(cat, A)) andalso (maps:get(call, G) == maps:get(call, A))), (((maps:get(year, G) == 2001) andalso (maps:get(avg_sales, A) > 0)) andalso ((abs((maps:get(sum_sales, G) - maps:get(avg_sales, A))) / maps:get(avg_sales, A)) > 0.1))],
+%     |                                                                                                                                                                                                                                                                                                  ^
+
+escript: There were compilation errors.

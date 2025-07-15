@@ -1,0 +1,5 @@
+%    6|     Store_sales = [#{item => 1, cost => 20, list => 30, coupon => 5}],
+%     |     ^
+%    7|     Store_returns = [#{item => 1, ticket => 1}],
+%     |     ^
+64
