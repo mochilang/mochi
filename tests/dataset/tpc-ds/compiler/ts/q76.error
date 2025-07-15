@@ -31,5 +31,5 @@
   ) throw new Error("expect failed");
 [0m[31m          ^[0m
     at [0m[1m[3mtest_TPCDS_Q76_simplified[0m ([0m[36mfile:///tmp/q76.ts[0m:[0m[33m46[0m:[0m[33m11[0m)
-    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q76.ts[0m:[0m[33m215[0m:[0m[33m3[0m)
-    at [0m[36mfile:///tmp/q76.ts[0m:[0m[33m273[0m:[0m[33m1[0m
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q76.ts[0m:[0m[33m206[0m:[0m[33m3[0m)
+    at [0m[36mfile:///tmp/q76.ts[0m:[0m[33m282[0m:[0m[33m1[0m

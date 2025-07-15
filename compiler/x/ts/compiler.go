@@ -2723,16 +2723,21 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			var sv string
 			if group {
 				sv = sanitizeName(q.Group.Name)
+				b.WriteString("\tlet _pairs = _items.map(it => { const " + sv + " = it; return {item: it, key: " + sortExpr + "}; });\n")
 			} else {
 				sv = sanitizeName(q.Var)
+				vars := []string{sanitizeName(q.Var)}
+				for _, f := range q.Froms {
+					vars = append(vars, sanitizeName(f.Var))
+				}
+				for _, j := range q.Joins {
+					vars = append(vars, sanitizeName(j.Var))
+				}
+				b.WriteString("\tlet _pairs = _items.map(it => { const {" + strings.Join(vars, ", ") + "} = it; return {item: it, key: " + sortExpr + "}; });\n")
 			}
-			b.WriteString("\tlet _pairs = _items.map(it => { const " + sv + " = it; return {item: it, key: " + sortExpr + "}; });\n")
-			b.WriteString("\t_pairs.sort((a, b) => {\n")
-			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
-			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
-			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
-			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
-			b.WriteString("\t});\n")
+			b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
+			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
+			c.use("_cmp")
 			b.WriteString("\t_items = _pairs.map(p => p.item);\n")
 		}
 
@@ -3083,13 +3088,9 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		b.WriteString("\tlet _itemsG = Array.from(_map.values());\n")
 		if sortExpr != "" {
 			b.WriteString("\tlet _pairs = _itemsG.map(it => { const " + sanitizeName(q.Group.Name) + " = it; return {item: it, key: " + sortExpr + "}; });\n")
-			b.WriteString("\t_pairs.sort((a, b) => {\n")
-			b.WriteString("\t\tconst ak = a.key; const bk = b.key;\n")
-			b.WriteString("\t\tif (typeof ak === 'number' && typeof bk === 'number') return ak - bk;\n")
-			b.WriteString("\t\tif (typeof ak === 'string' && typeof bk === 'string') return ak < bk ? -1 : (ak > bk ? 1 : 0);\n")
-			b.WriteString("\t\treturn String(ak) < String(bk) ? -1 : (String(ak) > String(bk) ? 1 : 0);\n")
-			b.WriteString("\t});\n")
+			b.WriteString("\t_pairs.sort((a, b) => _cmp(a.key, b.key));\n")
 			b.WriteString("\t_itemsG = _pairs.map(p => p.item);\n")
+			c.use("_cmp")
 		}
 		if skipExpr != "" {
 			b.WriteString("\t{ const _n = " + skipExpr + "; _itemsG = _n < _itemsG.length ? _itemsG.slice(_n) : []; }\n")

@@ -204,6 +204,20 @@ const (
 		"  return a === b;\n" +
 		"}\n"
 
+	helperCmp = "function _cmp(a: any, b: any): number {\n" +
+		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
+		"    const n = Math.min(a.length, b.length);\n" +
+		"    for (let i = 0; i < n; i++) {\n" +
+		"      const c = _cmp(a[i], b[i]);\n" +
+		"      if (c !== 0) return c;\n" +
+		"    }\n" +
+		"    return a.length - b.length;\n" +
+		"  }\n" +
+		"  if (typeof a === 'number' && typeof b === 'number') return a - b;\n" +
+		"  if (typeof a === 'string' && typeof b === 'string') return a < b ? -1 : (a > b ? 1 : 0);\n" +
+		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
+		"}\n"
+
 	helperFetch = "async function _fetch(url: string, opts: any): Promise<any> {\n" +
 		"  if (url.startsWith('file://')) {\n" +
 		"    let path = url.slice(7);\n" +
@@ -543,6 +557,7 @@ var helperMap = map[string]string{
 	"_gen_text":    helperGenText,
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
+	"_cmp":         helperCmp,
 	"_equal":       helperEqual,
 	"_fetch":       helperFetch,
 	"_toAnyMap":    helperToAnyMap,
