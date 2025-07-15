@@ -1,2 +1,1 @@
-[{"agg2":100,"agg3":5,"i_item_id":"ITEM1","agg4":95,"agg1":10}]
-   test TPCDS Q26 demographic averages ... ok (5.0µs)
+[{"agg1":10,"agg2":100,"agg3":5,"agg4":95,"i_item_id":"ITEM1"}]

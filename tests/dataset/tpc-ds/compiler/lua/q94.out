@@ -1,2 +1,1 @@
-{"total_net_profit":5,"order_count":1,"total_shipping_cost":2}
-   test TPCDS Q94 shipping ... ok (4.0µs)
+{"order_count":1,"total_net_profit":5.0,"total_shipping_cost":2.0}

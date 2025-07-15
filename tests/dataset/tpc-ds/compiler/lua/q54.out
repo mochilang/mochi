@@ -1,2 +1,1 @@
-54
-   test TPCDS Q54 placeholder ... ok (2.0µs)
+[{"num_customers":1,"segment":1.2,"segment_base":60.0},{"num_customers":1,"segment":0.8,"segment_base":40.0}]

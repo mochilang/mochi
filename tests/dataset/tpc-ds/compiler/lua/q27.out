@@ -1,2 +1,1 @@
-[{"i_item_id":"ITEM1","agg4":90,"agg3":10,"agg2":100,"agg1":5,"s_state":"CA"}]
-   test TPCDS Q27 averages by state ... ok (8.0µs)
+[{"agg1":5,"agg2":100,"agg3":10,"agg4":90,"i_item_id":"ITEM1","s_state":"CA"}]

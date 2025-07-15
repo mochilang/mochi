@@ -1,2 +1,1 @@
-[{"i_class":"Class1","itemrevenue":50,"i_current_price":100,"i_category":"CatA","i_item_id":"I1","revenueratio":33.333333333333,"i_item_desc":"desc1"},{"i_class":"Class1","itemrevenue":100,"i_current_price":200,"i_category":"CatB","i_item_id":"I2","revenueratio":66.666666666667,"i_item_desc":"desc2"}]
-   test TPCDS Q98 revenue ... ok (9.0µs)
+[{"i_category":"CatA","i_class":"Class1","i_current_price":100.0,"i_item_desc":"desc1","i_item_id":"I1","itemrevenue":50.0,"revenueratio":33.333333333333},{"i_category":"CatB","i_class":"Class1","i_current_price":200.0,"i_item_desc":"desc2","i_item_id":"I2","itemrevenue":100.0,"revenueratio":66.666666666667}]

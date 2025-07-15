@@ -1,2 +1,1 @@
-[{"customer_id":"C1","customer_login":"alice","customer_last_name":"A","customer_first_name":"Alice"}]
-   test TPCDS Q4 result ... ok (4.0µs)
+[{"customer_first_name":"Alice","customer_id":"C1","customer_last_name":"A","customer_login":"alice"}]

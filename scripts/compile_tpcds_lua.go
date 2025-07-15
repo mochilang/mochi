@@ -72,12 +72,20 @@ func main() {
 			cmd.Stdin = bytes.NewReader(data)
 		}
 		out, err := cmd.CombinedOutput()
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "run %s: %v\n%s\n", q, err, out)
-		}
 		cleaned := append(bytes.TrimSpace(out), '\n')
-		if err := os.WriteFile(filepath.Join(outDir, q+".out"), cleaned, 0o644); err != nil {
-			fmt.Fprintln(os.Stderr, "write out", q, err)
+		outPath := filepath.Join(outDir, q+".out")
+		errPath := filepath.Join(outDir, q+".error")
+		if err != nil {
+			_ = os.Remove(outPath)
+			if werr := os.WriteFile(errPath, cleaned, 0o644); werr != nil {
+				fmt.Fprintln(os.Stderr, "write error", q, werr)
+			}
+			fmt.Fprintf(os.Stderr, "run %s: %v\n%s\n", q, err, out)
+		} else {
+			_ = os.Remove(errPath)
+			if werr := os.WriteFile(outPath, cleaned, 0o644); werr != nil {
+				fmt.Fprintln(os.Stderr, "write out", q, werr)
+			}
 		}
 	}
 }

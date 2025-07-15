@@ -1,2 +1,1 @@
-[{"i_category":"A","i_current_price":10,"i_item_id":"ITEM1","revenueratio":50,"itemrevenue":200,"i_class":"C1","i_item_desc":"Item One"},{"i_category":"A","i_current_price":20,"i_item_id":"ITEM2","revenueratio":50,"itemrevenue":200,"i_class":"C1","i_item_desc":"Item Two"}]
-   test TPCDS Q12 revenue ratio ... ok (10.0µs)
+[{"i_category":"A","i_class":"C1","i_current_price":10.0,"i_item_desc":"Item One","i_item_id":"ITEM1","itemrevenue":200.0,"revenueratio":50.0},{"i_category":"A","i_class":"C1","i_current_price":20.0,"i_item_desc":"Item Two","i_item_id":"ITEM2","itemrevenue":200.0,"revenueratio":50.0}]

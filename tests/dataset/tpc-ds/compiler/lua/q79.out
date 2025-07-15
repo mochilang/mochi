@@ -1,2 +1,1 @@
-[{"c_last_name":"Smith","c_first_name":"Alice","profit":10,"ss_ticket_number":1,"s_city":"CityA","amt":5}]
-   test TPCDS Q79 simplified ... ok (5.0µs)
+[{"amt":5.0,"c_first_name":"Alice","c_last_name":"Smith","profit":10.0,"s_city":"CityA","ss_ticket_number":1}]

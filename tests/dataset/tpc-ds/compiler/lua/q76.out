@@ -1,2 +1,1 @@
-[{"i_category":"CatA","d_year":1998,"channel":"store","d_qoy":1,"sales_cnt":1,"sales_amt":10},{"i_category":"CatB","d_year":1998,"channel":"web","d_qoy":1,"sales_cnt":1,"sales_amt":15},{"i_category":"CatC","d_year":1998,"channel":"catalog","d_qoy":1,"sales_cnt":1,"sales_amt":20}]
-   test TPCDS Q76 simplified ... ok (12.0µs)
+[{"channel":"store","d_qoy":1,"d_year":1998,"i_category":"CatA","sales_amt":10.0,"sales_cnt":1},{"channel":"web","d_qoy":1,"d_year":1998,"i_category":"CatB","sales_amt":15.0,"sales_cnt":1},{"channel":"catalog","d_qoy":1,"d_year":1998,"i_category":"CatC","sales_amt":20.0,"sales_cnt":1}]

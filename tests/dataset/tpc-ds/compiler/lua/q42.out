@@ -1,4 +1,1 @@
-[{"d_year":2020,"i_category_id":100,"sum_ss_ext_sales_price":10,"i_category":"CatA"}]
-   test TPCDS Q42 simplified ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq421370614938/001/main.lua:291: expect failed (4.0µs)
-
-[FAIL] 1 test(s) failed.
+[{"d_year":2020,"i_category":"CatB","i_category_id":200,"sum_ss_ext_sales_price":20.0},{"d_year":2020,"i_category":"CatA","i_category_id":100,"sum_ss_ext_sales_price":10.0}]

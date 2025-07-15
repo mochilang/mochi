@@ -1,2 +1,1 @@
-[{"agg2":10,"agg3":2,"i_item_id":"I1","agg4":8,"agg1":5}]
-   test TPCDS Q7 result ... ok (7.0µs)
+[{"agg1":5,"agg2":10,"agg3":2,"agg4":8,"i_item_id":"I1"}]

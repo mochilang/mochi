@@ -4,9 +4,12 @@ package luacode_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
+	"regexp"
 	"testing"
 
 	luacode "mochi/compiler/x/lua"
@@ -14,6 +17,14 @@ import (
 	"mochi/parser"
 	"mochi/types"
 )
+
+var pathRE = regexp.MustCompile(`[^\s]*main\.lua`)
+
+func sanitizeError(q string, b []byte) []byte {
+	s := pathRE.ReplaceAll(b, []byte("/tmp/"+q+".lua"))
+	s = bytes.ReplaceAll(s, []byte("<"), nil)
+	return bytes.TrimSpace(s)
+}
 
 // TestLuaCompiler_TPCDS_Dataset_Golden compiles the TPC-DS examples and verifies
 // the generated Lua code and program output.
@@ -57,6 +68,7 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 			if err := os.WriteFile(file, code, 0644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
+			errPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "lua", q+".error")
 			out, _ := exec.Command("lua", file).CombinedOutput()
 			gotLines := bytes.Split(bytes.TrimSpace(out), []byte("\n"))
 			if len(gotLines) == 0 {
@@ -64,7 +76,18 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 			}
 			gotJSON := gotLines[0]
 			if bytes.HasPrefix(gotJSON, []byte("lua:")) {
+				if wantErr, err := os.ReadFile(errPath); err == nil {
+					wantClean := sanitizeError(q, wantErr)
+					gotClean := sanitizeError(q, out)
+					if !bytes.Equal(gotClean, wantClean) {
+						t.Errorf("error output mismatch for %s.error\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotClean, wantClean)
+					}
+					return
+				}
 				t.Skipf("runtime error: %s", gotJSON)
+			}
+			if _, err := os.Stat(errPath); err == nil {
+				t.Errorf("expected runtime failure for %s", q)
 			}
 			wantOut, err := os.ReadFile(outWant)
 			if err != nil {
@@ -72,7 +95,14 @@ func TestLuaCompiler_TPCDS_Dataset_Golden(t *testing.T) {
 			}
 			wantLines := bytes.Split(bytes.TrimSpace(wantOut), []byte("\n"))
 			wantJSON := wantLines[0]
-			if !bytes.Equal(gotJSON, wantJSON) {
+			var gotVal, wantVal any
+			if err := json.Unmarshal(gotJSON, &gotVal); err != nil {
+				t.Fatalf("parse got json: %v", err)
+			}
+			if err := json.Unmarshal(wantJSON, &wantVal); err != nil {
+				t.Fatalf("parse want json: %v", err)
+			}
+			if !reflect.DeepEqual(gotVal, wantVal) {
 				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotJSON, wantJSON)
 			}
 		})

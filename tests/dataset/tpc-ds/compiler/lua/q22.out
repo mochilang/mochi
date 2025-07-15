@@ -1,2 +1,1 @@
-[{"i_class":"Class1","qoh":15,"i_brand":"Brand1","i_product_name":"Prod1","i_category":"Cat1"},{"i_class":"Class2","qoh":50,"i_brand":"Brand2","i_product_name":"Prod2","i_category":"Cat2"}]
-   test TPCDS Q22 average inventory ... ok (8.0µs)
+[{"i_brand":"Brand1","i_category":"Cat1","i_class":"Class1","i_product_name":"Prod1","qoh":15},{"i_brand":"Brand2","i_category":"Cat2","i_class":"Class2","i_product_name":"Prod2","qoh":50}]
