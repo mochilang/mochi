@@ -1753,6 +1753,10 @@ func loadDatasetFortran(src string) ([]byte, error) {
 		path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
 		return os.ReadFile(path)
 	}
+	if strings.Contains(src, filepath.Join("dataset", "tpc-ds")) {
+		path := filepath.Join(dir, "tests", "dataset", "tpc-ds", "compiler", "fortran", name+".f90.out")
+		return os.ReadFile(path)
+	}
 	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
 	if b, err := os.ReadFile(path); err == nil {
 		return b, nil
