@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q54.pl:62: user:main number_string/2: Type error: `list' expected, found `0/50' (a compound)

@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q8.pl:64: user:main main/0: Unknown procedure: substr/4

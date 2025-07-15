@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q74.pl:58: user:main atom_concat/3: Type error: `atomic' expected, found `[map{customer_first_name:"Alice",customer_id:1,customer_last_name:"Smith",sale_type:"s",year:1999,year_total:0},map{customer_first_name:"Alice",customer_id:1,customer_last_name:"Smith",sale_type:"s",year:1998,year_total:0}]' (a list)

@@ -1,0 +1,10 @@
+run: exit status 2
+{
+  "b1_cnt":3,
+  "b1_cntd":1,
+  "b1_lp":100,
+  "b2_cnt":3,
+  "b2_cntd":1,
+  "b2_lp":80
+}
+ERROR: /tmp/q28.pl:58: user:main Unknown message: error('expect failed')

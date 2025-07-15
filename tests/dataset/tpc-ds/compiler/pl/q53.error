@@ -1,0 +1,5 @@
+run: exit status 2
+ERROR: /tmp/q53.pl:60:15: Syntax error: Operator expected
+ERROR: /tmp/q53.pl:63:3: Syntax error: Illegal start of term
+[]
+ERROR: /tmp/q53.pl:66: user:main Unknown message: error('expect failed')

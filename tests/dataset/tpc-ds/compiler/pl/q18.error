@@ -1,0 +1,17 @@
+run: exit status 2
+[
+  {
+    "agg1":0,
+    "agg2":0,
+    "agg3":0,
+    "agg4":0,
+    "agg5":0,
+    "agg6":0,
+    "agg7":0,
+    "ca_country":"US",
+    "ca_county":"County1",
+    "ca_state":"CA",
+    "i_item_id":"I1"
+  }
+]
+ERROR: /tmp/q18.pl:58: user:main Unknown message: error('expect failed')

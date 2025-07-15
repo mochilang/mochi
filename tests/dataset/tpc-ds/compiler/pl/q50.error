@@ -1,0 +1,12 @@
+run: exit status 2
+[
+  {
+    "d30":0,
+    "d31_60":0,
+    "d61_90":0,
+    "d91_120":0,
+    "d_gt_120":0,
+    "s_store_name":"Main"
+  }
+]
+ERROR: /tmp/q50.pl:58: user:main Unknown message: error('expect failed')

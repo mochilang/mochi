@@ -1,0 +1,2 @@
+run: exit status 2
+ERROR: /tmp/q12.pl:64: user:main >=/2: Type error: `[]' expected, found `"2001-01-20"' (a string) ("x" must hold one character)

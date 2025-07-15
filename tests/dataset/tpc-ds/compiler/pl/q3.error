@@ -1,0 +1,6 @@
+run: exit status 2
+[
+  {"brand":"Brand2", "brand_id":2, "d_year":1998, "sum_agg":0},
+  {"brand":"Brand1", "brand_id":1, "d_year":1998, "sum_agg":0}
+]
+ERROR: /tmp/q3.pl:58: user:main Unknown message: error('expect failed')

@@ -1,0 +1,4 @@
+run: exit status 2
+ERROR: /tmp/q65.pl:67:16: Syntax error: Operator expected
+ERROR: /tmp/q65.pl:70:3: Syntax error: Illegal start of term
+ERROR: /tmp/q65.pl:90: user:main nb_getval/2: variable `sum' does not exist
