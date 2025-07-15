@@ -1,0 +1,45 @@
+(select
+  (map
+    (entry
+      (selector is_promo)
+      (binary in
+        (string PROMO)
+        (selector p_type (selector p))
+      )
+    )
+    (entry
+      (selector revenue)
+      (binary *
+        (selector l_extendedprice (selector l))
+        (group
+          (binary -
+            (int 1)
+            (selector l_discount (selector l))
+          )
+        )
+      )
+    )
+  )
+  (where
+    (binary <
+      (binary &&
+        (binary >=
+          (selector l_shipdate (selector l))
+          (selector start_date)
+        )
+        (selector l_shipdate (selector l))
+      )
+      (selector end_date)
+    )
+    (join
+      (scan l (selector lineitem))
+      (scan p (selector part))
+      (on
+        (binary ==
+          (selector p_partkey (selector p))
+          (selector l_partkey (selector l))
+        )
+      )
+    )
+  )
+)

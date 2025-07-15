@@ -1,0 +1,156 @@
+(select
+  (map
+    (entry
+      (selector o_year)
+      (selector key (selector year))
+    )
+    (entry
+      (selector mkt_share)
+      (binary /
+        (call sum
+          (query x
+            (source (selector year))
+            (select
+              (match
+                (binary ==
+                  (selector n_name
+                    (selector n (selector x))
+                  )
+                  (selector target_nation)
+                )
+                (case
+                  (bool true)
+                  (binary *
+                    (selector l_extendedprice
+                      (selector l (selector x))
+                    )
+                    (group
+                      (binary -
+                        (int 1)
+                        (selector l_discount
+                          (selector l (selector x))
+                        )
+                      )
+                    )
+                  )
+                )
+                (case (_) (float 0))
+              )
+            )
+          )
+        )
+        (call sum
+          (query x
+            (source (selector year))
+            (select
+              (binary *
+                (selector l_extendedprice
+                  (selector l (selector x))
+                )
+                (group
+                  (binary -
+                    (int 1)
+                    (selector l_discount
+                      (selector l (selector x))
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+  (sort
+    (selector key (selector year))
+    (group year
+      (call substring
+        (selector o_orderdate (selector o))
+        (int 0)
+        (int 4)
+      )
+      (where
+        (group
+          (binary ==
+            (binary &&
+              (binary <=
+                (binary &&
+                  (binary >=
+                    (binary &&
+                      (binary ==
+                        (selector p_type (selector p))
+                        (selector target_type)
+                      )
+                      (selector o_orderdate (selector o))
+                    )
+                    (selector start_date)
+                  )
+                  (selector o_orderdate (selector o))
+                )
+                (selector end_date)
+              )
+              (selector r_name (selector r))
+            )
+            (string AMERICA)
+          )
+        )
+        (join
+          (join
+            (join
+              (join
+                (join
+                  (join
+                    (scan l (selector lineitem))
+                    (scan p (selector part))
+                    (on
+                      (binary ==
+                        (selector p_partkey (selector p))
+                        (selector l_partkey (selector l))
+                      )
+                    )
+                  )
+                  (scan s (selector supplier))
+                  (on
+                    (binary ==
+                      (selector s_suppkey (selector s))
+                      (selector l_suppkey (selector l))
+                    )
+                  )
+                )
+                (scan o (selector orders))
+                (on
+                  (binary ==
+                    (selector o_orderkey (selector o))
+                    (selector l_orderkey (selector l))
+                  )
+                )
+              )
+              (scan c (selector customer))
+              (on
+                (binary ==
+                  (selector c_custkey (selector c))
+                  (selector o_custkey (selector o))
+                )
+              )
+            )
+            (scan n (selector nation))
+            (on
+              (binary ==
+                (selector n_nationkey (selector n))
+                (selector c_nationkey (selector c))
+              )
+            )
+          )
+          (scan r (selector region))
+          (on
+            (binary ==
+              (selector r_regionkey (selector r))
+              (selector n_regionkey (selector n))
+            )
+          )
+        )
+      )
+    )
+  )
+)

@@ -1,0 +1,46 @@
+(select
+  (map
+    (entry
+      (selector c_count)
+      (call count
+        (query o
+          (source (selector orders))
+          (where
+            (group
+              (binary &&
+                (binary &&
+                  (binary ==
+                    (selector o_custkey (selector o))
+                    (selector c_custkey (selector c))
+                  )
+                  (group
+                    (unary !
+                      (group
+                        (binary in
+                          (string special)
+                          (selector o_comment (selector o))
+                        )
+                      )
+                    )
+                  )
+                )
+                (group
+                  (unary !
+                    (group
+                      (binary in
+                        (string requests)
+                        (selector o_comment (selector o))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+          (select (selector o))
+        )
+      )
+    )
+  )
+  (scan c (selector customer))
+)

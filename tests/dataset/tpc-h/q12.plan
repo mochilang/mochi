@@ -1,0 +1,108 @@
+(select
+  (map
+    (entry
+      (selector l_shipmode)
+      (selector key (selector g))
+    )
+    (entry
+      (selector high_line_count)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (if_expr
+              (binary in
+                (selector o_orderpriority
+                  (selector o (selector x))
+                )
+                (list (string 1-URGENT) (string 2-HIGH))
+              )
+              (int 1)
+              (int 0)
+            )
+          )
+        )
+      )
+    )
+    (entry
+      (selector low_line_count)
+      (call sum
+        (query x
+          (source (selector g))
+          (select
+            (if_expr
+              (unary !
+                (group
+                  (binary in
+                    (selector o_orderpriority
+                      (selector o (selector x))
+                    )
+                    (list (string 1-URGENT) (string 2-HIGH))
+                  )
+                )
+              )
+              (int 1)
+              (int 0)
+            )
+          )
+        )
+      )
+    )
+  )
+  (sort
+    (selector key (selector g))
+    (group g
+      (selector l_shipmode (selector l))
+      (join
+        (where
+          (binary &&
+            (binary &&
+              (binary &&
+                (binary &&
+                  (group
+                    (binary in
+                      (selector l_shipmode (selector l))
+                      (list (string MAIL) (string SHIP))
+                    )
+                  )
+                  (group
+                    (binary <
+                      (selector l_commitdate (selector l))
+                      (selector l_receiptdate (selector l))
+                    )
+                  )
+                )
+                (group
+                  (binary <
+                    (selector l_shipdate (selector l))
+                    (selector l_commitdate (selector l))
+                  )
+                )
+              )
+              (group
+                (binary >=
+                  (selector l_receiptdate (selector l))
+                  (string 1994-01-01)
+                )
+              )
+            )
+            (group
+              (binary <
+                (selector l_receiptdate (selector l))
+                (string 1995-01-01)
+              )
+            )
+          )
+          (scan l (selector lineitem))
+        )
+        (scan o (selector orders))
+        (on
+          (binary ==
+            (selector o_orderkey (selector o))
+            (selector l_orderkey (selector l))
+          )
+        )
+      )
+    )
+  )
+)

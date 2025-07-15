@@ -1,0 +1,27 @@
+(select
+  (map
+    (entry
+      (selector city)
+      (selector key (selector g))
+    )
+    (entry
+      (selector count)
+      (call count (selector g))
+    )
+    (entry
+      (selector avg_age)
+      (call avg
+        (query p
+          (source (selector g))
+          (select
+            (selector age (selector p))
+          )
+        )
+      )
+    )
+  )
+  (group g
+    (selector city (selector person))
+    (scan person (selector people))
+  )
+)
