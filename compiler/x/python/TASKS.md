@@ -1,5 +1,7 @@
+## Recent Enhancements (2025-07-15 02:40)
+- Selector inference uses stored element types; `_get` helper removed.
 ## Recent Enhancements (2025-07-14 12:16)
-- Recompiled all programs and restored dataset checklist.
+ - Recompiled all programs and restored dataset checklist.
 ## Recent Enhancements (2025-07-14 07:13)
 - TPCH queries q1-q22 regenerate with shared dataclass names.
 ## Recent Enhancements (2025-07-14 05:55)

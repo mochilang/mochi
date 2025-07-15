@@ -103,6 +103,7 @@ Compiled programs: 100/100 successful.
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
+
 ## Dataset Queries
 - [x] tpc-h/q1.mochi
 

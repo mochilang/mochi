@@ -347,24 +347,6 @@ var helperIntersect = "def _intersect(a: list[T], b: list[T]) -> list[T]:\n" +
 	"            res.append(it)\n" +
 	"    return res\n"
 
-var helperGet = "def _get(obj, name):\n" +
-	"    if obj is None:\n" +
-	"        return None\n" +
-	"    if isinstance(obj, dict):\n" +
-	"        if name in obj:\n" +
-	"            return obj[name]\n" +
-	"    if hasattr(obj, name):\n" +
-	"        return getattr(obj, name)\n" +
-	"    if name == 'items' and hasattr(obj, 'Items'):\n" +
-	"        return getattr(obj, 'Items')\n" +
-	"    if isinstance(obj, (list, tuple)):\n" +
-	"        for it in obj:\n" +
-	"            try:\n" +
-	"                return _get(it, name)\n" +
-	"            except Exception:\n" +
-	"                pass\n" +
-	"    raise Exception('field not found: ' + name)\n"
-
 var helperSortKey = "def _sort_key(k):\n" +
 	"    if hasattr(k, '__dataclass_fields__'):\n" +
 	"        return str(k)\n" +
@@ -531,7 +513,6 @@ var helperMap = map[string]string{
 	"_union":      helperUnion,
 	"_except":     helperExcept,
 	"_intersect":  helperIntersect,
-	"_get":        helperGet,
 	"_append":     helperAppend,
 	"_contains":   helperContains,
 	"_values":     helperValues,
