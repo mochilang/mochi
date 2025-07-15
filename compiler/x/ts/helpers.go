@@ -249,6 +249,18 @@ func isStruct(t types.Type) bool {
 	}
 }
 
+func isPrimitive(t types.Type) bool {
+	switch tt := t.(type) {
+	case types.IntType, types.Int64Type, types.FloatType,
+		types.StringType, types.BoolType:
+		return true
+	case types.OptionType:
+		return isPrimitive(tt.Elem)
+	default:
+		return false
+	}
+}
+
 func tsType(t types.Type) string {
 	switch tt := t.(type) {
 	case types.IntType, types.Int64Type, types.FloatType:

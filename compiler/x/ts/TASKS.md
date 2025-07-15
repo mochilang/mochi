@@ -3,6 +3,8 @@
 ## Recent Enhancements
 ### 2025-07-15 03:07 UTC
 - Added JOB dataset queries q1-q33 to golden tests and regenerated outputs.
+### 2025-07-15 03:28 UTC
+- Improved equality generation to avoid `_equal` for primitive comparisons.
 ### 2025-07-14 09:34 UTC
 - Removed `_order` slice; grouped queries now use `Map` insertion order.
 ### 2025-07-14 06:16 UTC
