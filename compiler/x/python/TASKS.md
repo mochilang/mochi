@@ -1,3 +1,13 @@
+## Recent Enhancements (2025-07-15 05:54)
+- Updated _sort_key to handle nested lists and tuples
+- Regenerated TPCDS q1-q3 Python outputs
+
+## Recent Enhancements (2025-07-15 05:05)
+- Regenerated TPCDS q1-q2 Python outputs without type hints; tests pass.
+
+## Recent Enhancements (2025-07-15 04:51)
+- Grouped query fields correctly map to tuple aliases, enabling TPCDS q1-q2 regeneration.
+
 ## Recent Enhancements (2025-07-15 03:26)
 - JOB dataset tests now cover q1-q33 with struct literals preserved as dataclasses.
 ## Recent Enhancements (2025-07-15 02:40)

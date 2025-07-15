@@ -350,7 +350,11 @@ var helperIntersect = "def _intersect(a: list[T], b: list[T]) -> list[T]:\n" +
 var helperSortKey = "def _sort_key(k):\n" +
 	"    if hasattr(k, '__dataclass_fields__'):\n" +
 	"        return str(k)\n" +
-	"    if isinstance(k, (list, tuple, dict)):\n" +
+	"    if isinstance(k, list):\n" +
+	"        return tuple(_sort_key(x) for x in k)\n" +
+	"    if isinstance(k, tuple):\n" +
+	"        return tuple(_sort_key(x) for x in k)\n" +
+	"    if isinstance(k, dict):\n" +
 	"        return str(k)\n" +
 	"    return k\n"
 
