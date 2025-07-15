@@ -2761,6 +2761,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if typ == "double" || typ == "Double" {
 				return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).sum()", a1), nil
 			}
+			if typ == "?" || typ == "" {
+				at := c.inferType(p.Call.Args[0])
+				if at == "double" || at == "Double" {
+					return fmt.Sprintf("%s.stream().mapToDouble(n -> ((Number)n).doubleValue()).sum()", a1), nil
+				}
+			}
 			return fmt.Sprintf("%s.stream().mapToInt(n -> ((Number)n).intValue()).sum()", a1), nil
 		case "avg":
 			if len(p.Call.Args) != 1 {
@@ -3137,12 +3143,12 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		return false
 	}
 	for _, fr := range q.Froms {
-		if usesVar(fr.Var) {
+		if q.Group != nil || usesVar(fr.Var) {
 			rowVars = append(rowVars, fr.Var)
 		}
 	}
 	for _, j := range q.Joins {
-		if usesVar(j.Var) {
+		if q.Group != nil || usesVar(j.Var) {
 			rowVars = append(rowVars, j.Var)
 		}
 	}
@@ -3354,17 +3360,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	}
 	if groupsVar != "" {
 		rowVar := c.tmpName("row")
-		vars := []string{q.Var}
-		for _, fr := range q.Froms {
-			if usesVar(fr.Var) {
-				vars = append(vars, fr.Var)
-			}
-		}
-		for _, j := range q.Joins {
-			if usesVar(j.Var) {
-				vars = append(vars, j.Var)
-			}
-		}
+		vars := rowVars
 		if len(vars) == 1 {
 			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, rowVar, vars[0]))
 			c.vars[rowVar] = c.vars[vars[0]]
@@ -3448,6 +3444,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		}
 		b.WriteString("\t}\n")
 		delete(c.groupKeys, gName)
+		delete(c.groupItems, gName)
 	}
 	b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
 	b.WriteString("}}).get()")
