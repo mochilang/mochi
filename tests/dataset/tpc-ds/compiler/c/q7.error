@@ -1,0 +1,13 @@
+/tmp/TestCCompiler_TPCDS_Goldenq72020997932/001/prog.c: In function ‘test_TPCDS_Q7_result’:
+/tmp/TestCCompiler_TPCDS_Goldenq72020997932/001/prog.c:255:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  255 |   if (test_TPCDS_Q7_result_result.len != tmp1.len) {
+      |                                              ^
+      |                                              ->
+/tmp/TestCCompiler_TPCDS_Goldenq72020997932/001/prog.c:259:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  259 |       if (test_TPCDS_Q7_result_result.data[i3] != tmp1.data[i3]) {
+      |                                                       ^
+      |                                                       ->
+/tmp/TestCCompiler_TPCDS_Goldenq72020997932/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq72020997932/001/prog.c:324:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  324 |   test_TPCDS_Q7_result_result = result;
+      |                                 ^~~~~~

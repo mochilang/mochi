@@ -1,0 +1,29 @@
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c: In function ‘test_TPCDS_Q9_result’:
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:200:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  200 |   if (test_TPCDS_Q9_result_result.len != tmp1.len) {
+      |                                              ^
+      |                                              ->
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:204:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  204 |       if (test_TPCDS_Q9_result_result.data[i3] != tmp1.data[i3]) {
+      |                                                       ^
+      |                                                       ->
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:231:28: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  231 |   store_sale_list_t tmp4 = store_sale_list_t_create(store_sales_len);
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:231:28: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:265:29: error: invalid initializer
+  265 |   store_sale_list_t tmp13 = store_sale_list_t_create(store_sales_len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:299:29: error: invalid initializer
+  299 |   store_sale_list_t tmp22 = store_sale_list_t_create(store_sales_len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:333:29: error: invalid initializer
+  333 |   store_sale_list_t tmp31 = store_sale_list_t_create(store_sales_len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:367:29: error: invalid initializer
+  367 |   store_sale_list_t tmp40 = store_sale_list_t_create(store_sales_len);
+      |                             ^~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq9600008835/001/prog.c:445:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  445 |   test_TPCDS_Q9_result_result = result;
+      |                                 ^~~~~~

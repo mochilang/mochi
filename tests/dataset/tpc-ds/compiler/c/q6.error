@@ -1,0 +1,19 @@
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c: In function ‘test_TPCDS_Q6_result’:
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c:253:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  253 |   if (test_TPCDS_Q6_result_result.len != tmp1.len) {
+      |                                              ^
+      |                                              ->
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c:257:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  257 |       if (test_TPCDS_Q6_result_result.data[i3] != tmp1.data[i3]) {
+      |                                                       ^
+      |                                                       ->
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c:327:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  327 |     _json_string(it.state);
+      |                  ~~^~~~~~
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c:73:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   73 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^
+/tmp/TestCCompiler_TPCDS_Goldenq671648691/001/prog.c:335:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  335 |   test_TPCDS_Q6_result_result = result;
+      |                                 ^~~~~~
