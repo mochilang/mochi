@@ -1,0 +1,8 @@
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: s2 is not defined
+          s2.customer_id,
+[0m[31m          ^[0m
+    at [0m[36mfile:///tmp/q4.ts[0m:[0m[33m286[0m:[0m[33m11[0m
+    at [0m[1m[3mArray.map[0m ([0m[36m<anonymous>[0m)
+    at [0m[36mfile:///tmp/q4.ts[0m:[0m[33m281[0m:[0m[33m25[0m
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q4.ts[0m:[0m[33m321[0m:[0m[33m4[0m)
+    at [0m[36mfile:///tmp/q4.ts[0m:[0m[33m372[0m:[0m[33m1[0m

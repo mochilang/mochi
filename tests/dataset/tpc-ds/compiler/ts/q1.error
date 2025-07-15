@@ -1,0 +1,8 @@
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: c is not defined
+      return { item: it, key: c.c_customer_id };
+[0m[31m                              ^[0m
+    at [0m[36mfile:///tmp/q1.ts[0m:[0m[33m109[0m:[0m[33m31[0m
+    at [0m[1m[3mArray.map[0m ([0m[36m<anonymous>[0m)
+    at [0m[36mfile:///tmp/q1.ts[0m:[0m[33m107[0m:[0m[33m25[0m
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q1.ts[0m:[0m[33m131[0m:[0m[33m4[0m)
+    at [0m[36mfile:///tmp/q1.ts[0m:[0m[33m196[0m:[0m[33m1[0m

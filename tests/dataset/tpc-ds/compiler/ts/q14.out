@@ -1,1 +1,10 @@
-[{"channel":"store","i_brand_id":1,"i_category_id":1,"i_class_id":1,"number_sales":1,"sales":60}]
+[
+  {
+    "channel": "store",
+    "i_brand_id": 1,
+    "i_category_id": 1,
+    "i_class_id": 1,
+    "number_sales": 1,
+    "sales": 60
+  }
+]

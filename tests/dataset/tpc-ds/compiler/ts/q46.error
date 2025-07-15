@@ -1,0 +1,8 @@
+[0m[1m[31merror[0m: Uncaught (in promise) ReferenceError: c is not defined
+          c.c_last_name,
+[0m[31m          ^[0m
+    at [0m[36mfile:///tmp/q46.ts[0m:[0m[33m169[0m:[0m[33m11[0m
+    at [0m[1m[3mArray.map[0m ([0m[36m<anonymous>[0m)
+    at [0m[36mfile:///tmp/q46.ts[0m:[0m[33m164[0m:[0m[33m25[0m
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q46.ts[0m:[0m[33m205[0m:[0m[33m4[0m)
+    at [0m[36mfile:///tmp/q46.ts[0m:[0m[33m257[0m:[0m[33m1[0m
