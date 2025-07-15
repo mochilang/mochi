@@ -51,3 +51,7 @@
 - Regenerated TPC-DS TypeScript outputs via compile_tpcds_ts.go.
 - Only q40 and q76 still fail at runtime.
 
+### 2025-07-15 08:15 UTC
+- Added `tpch_golden_test.go` to compile and verify TPC-H queries with Deno.
+- Regenerated all TPC-H TypeScript outputs via `compile_tpch_ts.go`.
+- All queries run successfully without errors.
