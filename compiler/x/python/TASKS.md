@@ -1,3 +1,6 @@
+## Recent Enhancements (2025-07-15 07:41)
+- Regenerated TPCDS q4 Python output
+
 ## Recent Enhancements (2025-07-15 05:54)
 - Updated _sort_key to handle nested lists and tuples
 - Regenerated TPCDS q1-q3 Python outputs
