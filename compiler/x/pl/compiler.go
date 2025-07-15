@@ -1419,6 +1419,46 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, bool, error) {
 		c.needsGroup = true
 		c.writeln(fmt.Sprintf("count(%s, %s),", arg, tmp))
 		return tmp, true, nil
+	case "exists":
+		if len(call.Args) != 1 {
+			return "", false, fmt.Errorf("exists expects 1 arg")
+		}
+		if q := getQuery(call.Args[0]); q != nil {
+			tmp := c.newTmp()
+			if err := c.compileExists(tmp, q); err != nil {
+				return "", false, err
+			}
+			return tmp, false, nil
+		}
+		arg, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		lenVar := c.newTmp()
+		tmp := c.newTmp()
+		c.needsLenAny = true
+		c.writeln(fmt.Sprintf("len_any(%s, %s),", arg, lenVar))
+		c.writeln(fmt.Sprintf("(%s > 0 -> %s = true ; %s = false),", lenVar, tmp, tmp))
+		return tmp, false, nil
+	case "substr":
+		if len(call.Args) != 3 {
+			return "", false, fmt.Errorf("substr expects 3 args")
+		}
+		str, _, err := c.compileExpr(call.Args[0])
+		if err != nil {
+			return "", false, err
+		}
+		start, _, err := c.compileExpr(call.Args[1])
+		if err != nil {
+			return "", false, err
+		}
+		length, _, err := c.compileExpr(call.Args[2])
+		if err != nil {
+			return "", false, err
+		}
+		tmp := c.newTmp()
+		c.writeln(fmt.Sprintf("sub_string(%s, %s, %s, _, %s),", str, start, length, tmp))
+		return tmp, false, nil
 	case "str":
 		if len(call.Args) != 1 {
 			return "", false, fmt.Errorf("str expects 1 arg")

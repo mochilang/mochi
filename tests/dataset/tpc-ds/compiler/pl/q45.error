@@ -1,2 +1,6 @@
 run: exit status 2
-ERROR: /tmp/q45.pl:64: user:main '<meta-call>'/1: Unknown procedure: substr/4
+[
+  {"ca_zip":"99999", "sum_ws_sales_price":0},
+  {"ca_zip":"85669", "sum_ws_sales_price":0}
+]
+ERROR: /tmp/q45.pl:64: user:main Unknown message: error('expect failed')
