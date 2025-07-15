@@ -1,0 +1,83 @@
+runhaskell: exit status 1
+
+/tmp/q24.hs:200:1468: error:
+    Variable not in scope:
+      strings
+        :: Map.Map
+             String ((a0 -> Maybe a0 -> a0) -> t0 -> Maybe AnyValue -> AnyValue)
+    Suggested fix:
+      Perhaps use data constructor ‘Aeson.String’ (imported from Data.Aeson)
+    |
+200 | ssales = [Map.fromList [("c_last_name", fromMaybe (error "missing") (Map.lookup "last" (key (g)))), ("c_first_name", fromMaybe (error "missing") (Map.lookup "first" (key (g)))), ("s_store_name", fromMaybe (error "missing") (Map.lookup "store_name" (key (g)))), ("color", fromMaybe (error "missing") (Map.lookup "color" (key (g)))), ("netpaid", VDouble (sum [fromMaybe (error "missing") (Map.lookup "ss_net_paid" (x)) | x <- g]))] | g <- _group_by [(ss, sr, s, i, c, ca) | ss <- store_sales, sr <- store_returns, s <- store, i <- item, c <- customer, ca <- customer_address, (((fromMaybe (error "missing") (Map.lookup "ss_ticket_number" (ss)) == fromMaybe (error "missing") (Map.lookup "sr_ticket_number" (sr))) && fromMaybe (error "missing") (Map.lookup "ss_item_sk" (ss))) == fromMaybe (error "missing") (Map.lookup "sr_item_sk" (sr))), (fromMaybe (error "missing") (Map.lookup "ss_store_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "s_store_sk" (s))), (fromMaybe (error "missing") (Map.lookup "ss_item_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "i_item_sk" (i))), (fromMaybe (error "missing") (Map.lookup "ss_customer_sk" (ss)) == fromMaybe (error "missing") (Map.lookup "c_customer_sk" (c))), (fromMaybe (error "missing") (Map.lookup "c_current_addr_sk" (c)) == fromMaybe (error "missing") (Map.lookup "ca_address_sk" (ca))), (((((fromMaybe (error "missing") (Map.lookup "c_birth_country" c) /= fromMaybe (error "missing") (Map.lookup "ToUpper" (strings)) fromMaybe (error "missing") (Map.lookup "ca_country" ca)) && fromMaybe (error "missing") (Map.lookup "s_zip" s)) == fromMaybe (error "missing") (Map.lookup "ca_zip" ca)) && fromMaybe (error "missing") (Map.lookup "s_market_id" s)) == 5)] (\(ss, sr, s, i, c, ca) -> Map.fromList [("last", fromMaybe (error "missing") (Map.lookup "c_last_name" c)), ("first", fromMaybe (error "missing") (Map.lookup "c_first_name" c)), ("store_name", fromMaybe (error "missing") (Map.lookup "s_store_name" s)), ("color", fromMaybe (error "missing") (Map.lookup "i_color" i))]), let g = g]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^
+
+/tmp/q24.hs:202:92: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the second argument of ‘div’, namely
+        ‘length
+           [fromMaybe (error "missing") (Map.lookup "netpaid" x) |
+              x <- ssales]’
+      In the expression:
+        sum
+          [fromMaybe (error "missing") (Map.lookup "netpaid" x) |
+             x <- ssales]
+          `div`
+            length
+              [fromMaybe (error "missing") (Map.lookup "netpaid" x) |
+                 x <- ssales]
+      In an equation for ‘avg_paid’:
+          avg_paid
+            = (sum
+                 [fromMaybe (error "missing") (Map.lookup "netpaid" x) |
+                    x <- ssales]
+                 `div`
+                   length
+                     [fromMaybe (error "missing") (Map.lookup "netpaid" x) |
+                        x <- ssales])
+    |
+202 | avg_paid = (sum [fromMaybe (error "missing") (Map.lookup "netpaid" x) | x <- ssales] `div` length [fromMaybe (error "missing") (Map.lookup "netpaid" x) | x <- ssales])
+    |                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/tmp/q24.hs:204:602: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘"RED"’
+      In the first argument of ‘(&&)’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "color" x) == "RED")’
+      In the first argument of ‘(>)’, namely
+        ‘((fromMaybe (error "missing") (Map.lookup "color" x) == "RED")
+            && fromMaybe (error "missing") (Map.lookup "netpaid" x))’
+    |
+204 | result = map snd (List.sortOn fst [([fromMaybe (error "missing") (Map.lookup "c_last_name" (x)), fromMaybe (error "missing") (Map.lookup "c_first_name" (x)), fromMaybe (error "missing") (Map.lookup "s_store_name" (x))], Map.fromList [("c_last_name", fromMaybe (error "missing") (Map.lookup "c_last_name" x)), ("c_first_name", fromMaybe (error "missing") (Map.lookup "c_first_name" x)), ("s_store_name", fromMaybe (error "missing") (Map.lookup "s_store_name" x)), ("paid", fromMaybe (error "missing") (Map.lookup "netpaid" x))]) | x <- ssales, ((((fromMaybe (error "missing") (Map.lookup "color" x) == "RED") && fromMaybe (error "missing") (Map.lookup "netpaid" x)) > 0.05) * avg_paid)])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ^^^^^
+
+/tmp/q24.hs:204:662: error:
+    • Couldn't match type ‘AnyValue’ with ‘Bool’
+      Expected: Map.Map String Bool
+        Actual: Map.Map String AnyValue
+    • In the second argument of ‘Map.lookup’, namely ‘x’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "netpaid" x)’
+      In the second argument of ‘(&&)’, namely
+        ‘fromMaybe (error "missing") (Map.lookup "netpaid" x)’
+    |
+204 | result = map snd (List.sortOn fst [([fromMaybe (error "missing") (Map.lookup "c_last_name" (x)), fromMaybe (error "missing") (Map.lookup "c_first_name" (x)), fromMaybe (error "missing") (Map.lookup "s_store_name" (x))], Map.fromList [("c_last_name", fromMaybe (error "missing") (Map.lookup "c_last_name" x)), ("c_first_name", fromMaybe (error "missing") (Map.lookup "c_first_name" x)), ("s_store_name", fromMaybe (error "missing") (Map.lookup "s_store_name" x)), ("paid", fromMaybe (error "missing") (Map.lookup "netpaid" x))]) | x <- ssales, ((((fromMaybe (error "missing") (Map.lookup "color" x) == "RED") && fromMaybe (error "missing") (Map.lookup "netpaid" x)) > 0.05) * avg_paid)])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+/tmp/q24.hs:204:676: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘AnyValue’
+    • In the second argument of ‘(*)’, namely ‘avg_paid’
+      In the expression:
+        (((fromMaybe (error "missing") (Map.lookup "color" x) == "RED")
+            && fromMaybe (error "missing") (Map.lookup "netpaid" x))
+           > 0.05)
+          * avg_paid
+      In a stmt of a list comprehension:
+        ((((fromMaybe (error "missing") (Map.lookup "color" x) == "RED")
+             && fromMaybe (error "missing") (Map.lookup "netpaid" x))
+            > 0.05)
+           * avg_paid)
+    |
+204 | result = map snd (List.sortOn fst [([fromMaybe (error "missing") (Map.lookup "c_last_name" (x)), fromMaybe (error "missing") (Map.lookup "c_first_name" (x)), fromMaybe (error "missing") (Map.lookup "s_store_name" (x))], Map.fromList [("c_last_name", fromMaybe (error "missing") (Map.lookup "c_last_name" x)), ("c_first_name", fromMaybe (error "missing") (Map.lookup "c_first_name" x)), ("s_store_name", fromMaybe (error "missing") (Map.lookup "s_store_name" x)), ("paid", fromMaybe (error "missing") (Map.lookup "netpaid" x))]) | x <- ssales, ((((fromMaybe (error "missing") (Map.lookup "color" x) == "RED") && fromMaybe (error "missing") (Map.lookup "netpaid" x)) > 0.05) * avg_paid)])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^^^^^^^^

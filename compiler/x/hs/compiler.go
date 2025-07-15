@@ -1384,6 +1384,20 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		if _, ok := mt.Value.(types.AnyType); ok {
 			anyVal = true
 		}
+		hetero := false
+		var first types.Type
+		for i, it := range p.Map.Items {
+			vt := c.inferExprType(it.Value)
+			if i == 0 {
+				first = vt
+			} else if fmt.Sprintf("%T", vt) != fmt.Sprintf("%T", first) {
+				hetero = true
+				break
+			}
+		}
+		if hetero {
+			anyVal = true
+		}
 		items := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
 			if s, ok := simpleStringKey(it.Key); ok {
