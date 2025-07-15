@@ -4,9 +4,8 @@ This directory contains Swift code compiled from Mochi programs in `tests/vm/val
 
 ## Progress
 
-Compiled: 100/100 programs
-### TPC-H
-- [ ] q1.mochi
+Compiled: 95/100 programs
+
 ## Checklist
 
 - [x] append_builtin.mochi
@@ -40,7 +39,7 @@ Compiled: 100/100 programs
 - [ ] group_by_multi_join.mochi
 - [ ] group_by_multi_join_sort.mochi
 - [x] group_by_sort.mochi
-- [x] group_items_iteration.mochi
+- [ ] group_items_iteration.mochi
 - [x] if_else.mochi
 - [x] if_then_else.mochi
 - [x] if_then_else_nested.mochi
@@ -109,10 +108,3 @@ Compiled: 100/100 programs
 - [x] values_builtin.mochi
 - [x] var_assignment.mochi
 - [x] while_loop.mochi
-
-## Remaining Tasks
-
-- [ ] Fix generation for `group_by_multi_join.mochi` and `group_by_multi_join_sort.mochi`.
-- [ ] Investigate runtime failures for `outer_join.mochi` and `right_join.mochi`.
-- [ ] Verify `group_items_iteration.mochi` matches the reference output.
-- [ ] Resolve type-checking errors in generated `q1.swift` for the TPC-H benchmark.
