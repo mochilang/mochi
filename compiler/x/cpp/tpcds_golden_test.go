@@ -20,6 +20,8 @@ func TestCPPCompiler_TPCDSQueries(t *testing.T) {
 	if _, err := exec.LookPath("g++"); err != nil {
 		t.Skip("g++ not installed")
 	}
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 	root := testutil.FindRepoRoot(t)
 	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
