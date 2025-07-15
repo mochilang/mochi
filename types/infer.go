@@ -561,6 +561,8 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 		var elemType Type = AnyType{}
 		if lt, ok := srcType.(ListType); ok {
 			elemType = lt.Elem
+		} else if gt, ok := srcType.(GroupType); ok {
+			elemType = gt.Elem
 		}
 		child := NewEnv(env)
 		child.SetVar(p.Query.Var, elemType, true)
