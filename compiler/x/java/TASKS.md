@@ -19,3 +19,5 @@
 - [ ] Trim remaining uses of helper methods for builtins
 - [ ] Investigate performance of TPCH queries on larger datasets
 - [ ] Support streaming JSON output for large datasets
+
+- 2025-07-15 07:52 - reduced grouped join rows to avoid unused fields and regenerated TPC-DS Java outputs.

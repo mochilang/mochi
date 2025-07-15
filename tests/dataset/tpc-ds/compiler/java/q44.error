@@ -1,39 +1,39 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:149: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:149: error: cannot find symbol
     Object best = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
                   ^
   symbol:   method first(List<CAP#1>)
   location: class Q44
   where CAP#1 is a fresh type-variable:
     CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:151: error: for-each not applicable to expression type
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:151: error: for-each not applicable to expression type
     for (var x : grouped) {
                  ^
   required: array or java.lang.Iterable
   found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:156: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:156: error: cannot find symbol
     Object worst = first((new java.util.function.Supplier<List<?>>(){public List<?> get(){
                    ^
   symbol:   method first(List<CAP#1>)
   location: class Q44
   where CAP#1 is a fresh type-variable:
     CAP#1 extends Object from capture of ?
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:158: error: for-each not applicable to expression type
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:158: error: for-each not applicable to expression type
     for (var x : grouped) {
                  ^
   required: array or java.lang.Iterable
   found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:163: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:163: error: cannot find symbol
     Object best_name = first((new java.util.function.Supplier<List<String>>(){public List<String> get(){
                        ^
   symbol:   method first(List<String>)
   location: class Q44
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:171: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:171: error: cannot find symbol
     Object worst_name = first((new java.util.function.Supplier<List<String>>(){public List<String> get(){
                         ^
   symbol:   method first(List<String>)
   location: class Q44
-/tmp/TestJavaCompiler_TPCDSQueriesq441475342903/001/Q44.java:179: error: incompatible types: Object cannot be converted to String
+/tmp/TestJavaCompiler_TPCDSQueriesq443197396429/001/Q44.java:179: error: incompatible types: Object cannot be converted to String
     BestPerformingWorstPerforming result = new BestPerformingWorstPerforming(best_name, worst_name);
                                                                              ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

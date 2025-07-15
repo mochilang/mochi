@@ -1,31 +1,95 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:651: error: cannot find symbol
-    Object per_channel = concat((new java.util.function.Supplier<List<ChannelIdSalesReturnsProfit>>(){public List<ChannelIdSalesReturnsProfit> get(){
-                         ^
-  symbol:   method concat(List<ChannelIdSalesReturnsProfit>,List<ChannelIdSalesReturnsProfit>,List<ChannelIdSalesReturnsProfit>)
-  location: class Q77
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:694: error: for-each not applicable to expression type
-    for (var p : per_channel) {
-                 ^
-  required: array or java.lang.Iterable
-  found:    Object
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:704: error: incompatible types: Object cannot be converted to String
-        res49.add(new ChannelIdSalesReturnsProfit(g.key.channel, g.key.id, (new java.util.function.Supplier<List<Object>>(){public List<Object> get(){
-                                                       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:719: error: cannot find symbol
-        res56.add(x.p.profit);
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:376: error: cannot find symbol
+        res5.add(x.ss.ss_ext_sales_price);
+                  ^
+  symbol:   variable ss
+  location: variable x of type SsSoldDateSkSStoreSkSsExtSalesPriceSsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:382: error: cannot find symbol
+        res6.add(x.ss.ss_net_profit);
+                  ^
+  symbol:   variable ss
+  location: variable x of type SsSoldDateSkSStoreSkSsExtSalesPriceSsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:408: error: cannot find symbol
+        res12.add(x.sr.sr_return_amt);
                    ^
-  symbol:   variable p
-  location: variable x of type Object
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:713: error: cannot find symbol
-        res55.add(x.p.returns);
+  symbol:   variable sr
+  location: variable x of type SrReturnedDateSkSStoreSkSrReturnAmtSrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:414: error: cannot find symbol
+        res13.add(x.sr.sr_net_loss);
                    ^
-  symbol:   variable p
-  location: variable x of type Object
-/tmp/TestJavaCompiler_TPCDSQueriesq77509255950/001/Q77.java:707: error: cannot find symbol
+  symbol:   variable sr
+  location: variable x of type SrReturnedDateSkSStoreSkSrReturnAmtSrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:440: error: cannot find symbol
+        res19.add(x.cs.cs_ext_sales_price);
+                   ^
+  symbol:   variable cs
+  location: variable x of type CsSoldDateSkCsCallCenterSkCsExtSalesPriceCsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:446: error: cannot find symbol
+        res20.add(x.cs.cs_net_profit);
+                   ^
+  symbol:   variable cs
+  location: variable x of type CsSoldDateSkCsCallCenterSkCsExtSalesPriceCsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:472: error: cannot find symbol
+        res26.add(x.cr.cr_return_amount);
+                   ^
+  symbol:   variable cr
+  location: variable x of type CrReturnedDateSkCrCallCenterSkCrReturnAmountCrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:478: error: cannot find symbol
+        res27.add(x.cr.cr_net_loss);
+                   ^
+  symbol:   variable cr
+  location: variable x of type CrReturnedDateSkCrCallCenterSkCrReturnAmountCrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:504: error: cannot find symbol
+        res33.add(x.ws.ws_ext_sales_price);
+                   ^
+  symbol:   variable ws
+  location: variable x of type WsSoldDateSkWsWebPageSkWsExtSalesPriceWsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:510: error: cannot find symbol
+        res34.add(x.ws.ws_net_profit);
+                   ^
+  symbol:   variable ws
+  location: variable x of type WsSoldDateSkWsWebPageSkWsExtSalesPriceWsNetProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:536: error: cannot find symbol
+        res40.add(x.wr.wr_return_amt);
+                   ^
+  symbol:   variable wr
+  location: variable x of type WrReturnedDateSkWrWebPageSkWrReturnAmtWrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:542: error: cannot find symbol
+        res41.add(x.wr.wr_net_loss);
+                   ^
+  symbol:   variable wr
+  location: variable x of type WrReturnedDateSkWrWebPageSkWrReturnAmtWrNetLoss
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:560: error: incompatible types: bad type in conditional expression
+            res42.add(new ChannelIdSalesReturnsProfit("store channel", s.s_store_sk, s.sales, (Objects.equals(r, null) ? 0.000000 : r.returns), s.profit - ((Objects.equals(r, null) ? 0.000000 : r.profit_loss))));
+                                                                                                                       ^
+    possible lossy conversion from double to int
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:584: error: incompatible types: bad type in conditional expression
+            res46.add(new ChannelIdSalesReturnsProfit("web channel", w.wp_web_page_sk, w.sales, (Objects.equals(r, null) ? 0.000000 : r.returns), w.profit - ((Objects.equals(r, null) ? 0.000000 : r.profit_loss))));
+                                                                                                                         ^
+    possible lossy conversion from double to int
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:605: error: cannot find symbol
         res54.add(x.p.sales);
                    ^
   symbol:   variable p
-  location: variable x of type Object
+  location: variable x of type ChannelIdSalesReturnsProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:611: error: cannot find symbol
+        res55.add(x.p.returns);
+                   ^
+  symbol:   variable p
+  location: variable x of type ChannelIdSalesReturnsProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:617: error: cannot find symbol
+        res56.add(x.p.profit);
+                   ^
+  symbol:   variable p
+  location: variable x of type ChannelIdSalesReturnsProfit
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:625: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelIdSalesReturnsProfit("catalog channel", 1, 150.000000, 7.000000, 12.000000), new ChannelIdSalesReturnsProfit("store channel", 1, 100.000000, 5.000000, 9.000000), new ChannelIdSalesReturnsProfit("web channel", 1, 200.000000, 10.000000, 18.000000))))) throw new AssertionError("expect failed");
+                                                                                                     ^
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:625: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelIdSalesReturnsProfit("catalog channel", 1, 150.000000, 7.000000, 12.000000), new ChannelIdSalesReturnsProfit("store channel", 1, 100.000000, 5.000000, 9.000000), new ChannelIdSalesReturnsProfit("web channel", 1, 200.000000, 10.000000, 18.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                           ^
+/tmp/TestJavaCompiler_TPCDSQueriesq771317501180/001/Q77.java:625: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new ChannelIdSalesReturnsProfit("catalog channel", 1, 150.000000, 7.000000, 12.000000), new ChannelIdSalesReturnsProfit("store channel", 1, 100.000000, 5.000000, 9.000000), new ChannelIdSalesReturnsProfit("web channel", 1, 200.000000, 10.000000, 18.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                                                                                                              ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-6 errors
+20 errors

@@ -1,11 +1,11 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq297617501/001/Q2.java:84: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq22163501475/001/Q2.java:84: error: illegal start of type
     ? w;
     ^
-/tmp/TestJavaCompiler_TPCDSQueriesq297617501/001/Q2.java:84: error: <identifier> expected
+/tmp/TestJavaCompiler_TPCDSQueriesq22163501475/001/Q2.java:84: error: <identifier> expected
     ? w;
        ^
-/tmp/TestJavaCompiler_TPCDSQueriesq297617501/001/Q2.java:86: error: illegal start of type
+/tmp/TestJavaCompiler_TPCDSQueriesq22163501475/001/Q2.java:86: error: illegal start of type
     WD(? w, DDateSkDWeekSeqDDayNameDYear d) {
        ^
 3 errors

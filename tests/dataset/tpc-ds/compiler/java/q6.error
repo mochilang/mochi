@@ -1,5 +1,5 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq62125658848/001/Q6.java:213: error: bad operand types for binary operator '*'
+/tmp/TestJavaCompiler_TPCDSQueriesq64210833613/001/Q6.java:209: error: bad operand types for binary operator '*'
                         if (!(d.d_month_seq == target_month_seq && i.i_current_price > ((Number)1.200000 * ((Number)(new java.util.function.Supplier<List<Double>>(){public List<Double> get(){
                                                                                                          ^
   first type:  Number

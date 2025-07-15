@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq901134489807/001/Q90.java:172: error: incompatible types: int cannot be converted to String
-    double result = (Double.parseDouble(amc)) / (Double.parseDouble(pmc));
-                                        ^
-/tmp/TestJavaCompiler_TPCDSQueriesq901134489807/001/Q90.java:172: error: incompatible types: int cannot be converted to String
-    double result = (Double.parseDouble(amc)) / (Double.parseDouble(pmc));
-                                                                    ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors

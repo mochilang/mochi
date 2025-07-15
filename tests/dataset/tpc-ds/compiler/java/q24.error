@@ -1,14 +1,14 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq244026306253/001/Q24.java:421: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq243337278395/001/Q24.java:419: error: cannot find symbol
                             if (!(!Objects.equals(c.c_birth_country, strings.ToUpper(ca.ca_country)) && Objects.equals(s.s_zip, ca.ca_zip) && s.s_market_id == 5)) continue;
                                                                      ^
   symbol: variable strings
-/tmp/TestJavaCompiler_TPCDSQueriesq244026306253/001/Q24.java:439: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq243337278395/001/Q24.java:437: error: cannot find symbol
         res5.add(x.ss_net_paid);
                   ^
   symbol:   variable ss_net_paid
-  location: variable x of type SsSrSICCa
-/tmp/TestJavaCompiler_TPCDSQueriesq244026306253/001/Q24.java:462: error: incompatible types: possible lossy conversion from double to int
+  location: variable x of type SsSICCa
+/tmp/TestJavaCompiler_TPCDSQueriesq243337278395/001/Q24.java:460: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new CLastNameCFirstNameSStoreNamePaid("Smith", "Ann", "Store1", 100.000000))))) throw new AssertionError("expect failed");
                                                                                                                ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

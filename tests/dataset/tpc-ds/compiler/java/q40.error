@@ -1,5 +1,5 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq401839572308/001/Q40.java:269: error: incompatible types: possible lossy conversion from double to int
+/tmp/TestJavaCompiler_TPCDSQueriesq40355849773/001/Q40.java:269: error: incompatible types: possible lossy conversion from double to int
     if (!(Objects.equals(result, Arrays.asList(new WStateIItemIdSalesBeforeSalesAfter("CA", "I1", 100.000000, 0.000000))))) throw new AssertionError("expect failed");
                                                                                                   ^
 Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output

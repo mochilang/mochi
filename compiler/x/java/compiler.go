@@ -3108,11 +3108,43 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 	resVar := c.tmpName("res")
 
 	rowVars := []string{q.Var}
+	usesVar := func(name string) bool {
+		if exprUsesVar(name, q.Select) {
+			return true
+		}
+		if exprUsesVar(name, q.Where) {
+			return true
+		}
+		if q.Group != nil {
+			for _, e := range q.Group.Exprs {
+				if exprUsesVar(name, e) {
+					return true
+				}
+			}
+			if exprUsesVar(name, q.Group.Having) {
+				return true
+			}
+		}
+		if exprUsesVar(name, q.Sort) {
+			return true
+		}
+		if exprUsesVar(name, q.Skip) {
+			return true
+		}
+		if exprUsesVar(name, q.Take) {
+			return true
+		}
+		return false
+	}
 	for _, fr := range q.Froms {
-		rowVars = append(rowVars, fr.Var)
+		if usesVar(fr.Var) {
+			rowVars = append(rowVars, fr.Var)
+		}
 	}
 	for _, j := range q.Joins {
-		rowVars = append(rowVars, j.Var)
+		if usesVar(j.Var) {
+			rowVars = append(rowVars, j.Var)
+		}
 	}
 	rowType := elemType
 	if q.Group != nil && len(rowVars) > 1 {
@@ -3324,10 +3356,14 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 		rowVar := c.tmpName("row")
 		vars := []string{q.Var}
 		for _, fr := range q.Froms {
-			vars = append(vars, fr.Var)
+			if usesVar(fr.Var) {
+				vars = append(vars, fr.Var)
+			}
 		}
 		for _, j := range q.Joins {
-			vars = append(vars, j.Var)
+			if usesVar(j.Var) {
+				vars = append(vars, j.Var)
+			}
 		}
 		if len(vars) == 1 {
 			b.WriteString(fmt.Sprintf("%svar %s = %s;\n", indent, rowVar, vars[0]))
@@ -3764,4 +3800,286 @@ func collectUsedGlobalsInExpr(e *parser.Expr, globals map[string]bool, used map[
 	for _, part := range e.Binary.Right {
 		scanPostfix(part.Right)
 	}
+}
+
+func exprUsesVar(name string, e *parser.Expr) bool {
+	if e == nil || e.Binary == nil {
+		return false
+	}
+	found := false
+	var scanUnary func(u *parser.Unary)
+	var scanPostfix func(p *parser.PostfixExpr)
+	var scanPrimary func(p *parser.Primary)
+
+	scanUnary = func(u *parser.Unary) {
+		if u == nil || found {
+			return
+		}
+		scanPostfix(u.Value)
+	}
+	scanPostfix = func(p *parser.PostfixExpr) {
+		if p == nil || found {
+			return
+		}
+		scanPrimary(p.Target)
+		for _, op := range p.Ops {
+			if op.Call != nil {
+				for _, a := range op.Call.Args {
+					if exprUsesVar(name, a) {
+						found = true
+						return
+					}
+				}
+			}
+			if op.Index != nil {
+				if exprUsesVar(name, op.Index.Start) || exprUsesVar(name, op.Index.End) || exprUsesVar(name, op.Index.Step) {
+					found = true
+					return
+				}
+			}
+		}
+	}
+	scanPrimary = func(p *parser.Primary) {
+		if p == nil || found {
+			return
+		}
+		switch {
+		case p.Selector != nil:
+			if p.Selector.Root == name {
+				found = true
+				return
+			}
+		case p.Call != nil:
+			if p.Call.Func == name {
+				found = true
+				return
+			}
+			for _, a := range p.Call.Args {
+				if exprUsesVar(name, a) {
+					found = true
+					return
+				}
+			}
+		case p.List != nil:
+			for _, el := range p.List.Elems {
+				if exprUsesVar(name, el) {
+					found = true
+					return
+				}
+			}
+		case p.Map != nil:
+			for _, it := range p.Map.Items {
+				if exprUsesVar(name, it.Key) || exprUsesVar(name, it.Value) {
+					found = true
+					return
+				}
+			}
+		case p.Struct != nil:
+			for _, f := range p.Struct.Fields {
+				if exprUsesVar(name, f.Value) {
+					found = true
+					return
+				}
+			}
+		case p.Generate != nil:
+			for _, f := range p.Generate.Fields {
+				if exprUsesVar(name, f.Value) {
+					found = true
+					return
+				}
+			}
+		case p.Match != nil:
+			if exprUsesVar(name, p.Match.Target) {
+				found = true
+				return
+			}
+			for _, cs := range p.Match.Cases {
+				if exprUsesVar(name, cs.Pattern) || exprUsesVar(name, cs.Result) {
+					found = true
+					return
+				}
+			}
+		case p.If != nil:
+			if exprUsesVarInIfExpr(name, p.If) {
+				found = true
+				return
+			}
+		case p.Query != nil:
+			if exprUsesVar(name, p.Query.Source) {
+				found = true
+				return
+			}
+			for _, fr := range p.Query.Froms {
+				if exprUsesVar(name, fr.Src) {
+					found = true
+					return
+				}
+			}
+			for _, j := range p.Query.Joins {
+				if exprUsesVar(name, j.Src) || exprUsesVar(name, j.On) {
+					found = true
+					return
+				}
+			}
+			if exprUsesVar(name, p.Query.Where) {
+				found = true
+				return
+			}
+			if p.Query.Group != nil {
+				for _, e := range p.Query.Group.Exprs {
+					if exprUsesVar(name, e) {
+						found = true
+						return
+					}
+				}
+				if exprUsesVar(name, p.Query.Group.Having) {
+					found = true
+					return
+				}
+			}
+			if exprUsesVar(name, p.Query.Select) || exprUsesVar(name, p.Query.Sort) || exprUsesVar(name, p.Query.Skip) || exprUsesVar(name, p.Query.Take) {
+				found = true
+				return
+			}
+		case p.FunExpr != nil:
+			for _, st := range p.FunExpr.BlockBody {
+				if exprUsesVarInStmt(name, st) {
+					found = true
+					return
+				}
+			}
+			if exprUsesVar(name, p.FunExpr.ExprBody) {
+				found = true
+				return
+			}
+		case p.Group != nil:
+			if exprUsesVar(name, p.Group) {
+				found = true
+				return
+			}
+		}
+	}
+
+	scanUnary(e.Binary.Left)
+	for _, part := range e.Binary.Right {
+		scanPostfix(part.Right)
+		if found {
+			break
+		}
+	}
+	return found
+}
+
+func exprUsesVarInStmt(name string, s *parser.Statement) bool {
+	switch {
+	case s.Var != nil:
+		return exprUsesVar(name, s.Var.Value)
+	case s.Let != nil:
+		return exprUsesVar(name, s.Let.Value)
+	case s.Assign != nil:
+		if s.Assign.Name == name {
+			return true
+		}
+		for _, ix := range s.Assign.Index {
+			if exprUsesVar(name, ix.Start) || exprUsesVar(name, ix.End) || exprUsesVar(name, ix.Step) {
+				return true
+			}
+		}
+		return exprUsesVar(name, s.Assign.Value)
+	case s.Return != nil:
+		return exprUsesVar(name, s.Return.Value)
+	case s.If != nil:
+		if exprUsesVarInIf(name, s.If) {
+			return true
+		}
+	case s.For != nil:
+		if exprUsesVar(name, s.For.Source) || exprUsesVar(name, s.For.RangeEnd) {
+			return true
+		}
+		for _, st := range s.For.Body {
+			if exprUsesVarInStmt(name, st) {
+				return true
+			}
+		}
+	case s.While != nil:
+		if exprUsesVar(name, s.While.Cond) {
+			return true
+		}
+		for _, st := range s.While.Body {
+			if exprUsesVarInStmt(name, st) {
+				return true
+			}
+		}
+	case s.Fun != nil:
+		for _, st := range s.Fun.Body {
+			if exprUsesVarInStmt(name, st) {
+				return true
+			}
+		}
+	case s.Expect != nil:
+		return exprUsesVar(name, s.Expect.Value)
+	case s.Expr != nil:
+		return exprUsesVar(name, s.Expr.Expr)
+	case s.Test != nil:
+		for _, st := range s.Test.Body {
+			if exprUsesVarInStmt(name, st) {
+				return true
+			}
+		}
+	case s.Fetch != nil:
+		return exprUsesVar(name, s.Fetch.URL) || exprUsesVar(name, s.Fetch.With)
+	case s.Update != nil:
+		if s.Update.Target == name {
+			return true
+		}
+		for _, it := range s.Update.Set.Items {
+			if exprUsesVar(name, it.Value) {
+				return true
+			}
+		}
+		return exprUsesVar(name, s.Update.Where)
+	}
+	return false
+}
+
+func exprUsesVarInIf(name string, ifs *parser.IfStmt) bool {
+	if ifs == nil {
+		return false
+	}
+	if exprUsesVar(name, ifs.Cond) {
+		return true
+	}
+	for _, st := range ifs.Then {
+		if exprUsesVarInStmt(name, st) {
+			return true
+		}
+	}
+	if exprUsesVarInIf(name, ifs.ElseIf) {
+		return true
+	}
+	for _, st := range ifs.Else {
+		if exprUsesVarInStmt(name, st) {
+			return true
+		}
+	}
+	return false
+}
+
+func exprUsesVarInIfExpr(name string, ife *parser.IfExpr) bool {
+	if ife == nil {
+		return false
+	}
+	if exprUsesVar(name, ife.Cond) {
+		return true
+	}
+	if exprUsesVar(name, ife.Then) {
+		return true
+	}
+	if exprUsesVarInIfExpr(name, ife.ElseIf) {
+		return true
+	}
+	if exprUsesVar(name, ife.Else) {
+		return true
+	}
+	return false
 }

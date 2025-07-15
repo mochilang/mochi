@@ -1,11 +1,17 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:150: error: illegal start of type
-    ? s;
-    ^
-/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:150: error: <identifier> expected
-    ? s;
-       ^
-/tmp/TestJavaCompiler_TPCDSQueriesq711359472940/001/Q71.java:152: error: illegal start of type
-    IST(IItemSkIBrandIdIBrandIManagerId i, ? s, TTimeSkTHourTMinuteTMealTime t) {
-                                           ^
-3 errors
+/tmp/TestJavaCompiler_TPCDSQueriesq711942682729/001/Q71.java:319: error: cannot find symbol
+        res8.add(x.s.ext_price);
+                  ^
+  symbol:   variable s
+  location: variable x of type IT
+/tmp/TestJavaCompiler_TPCDSQueriesq711942682729/001/Q71.java:327: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 18, 0, 200.000000), new IBrandIdIBrandTHourTMinuteExtPrice(20, "BrandB", 8, 30, 150.000000), new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 8, 30, 100.000000))))) throw new AssertionError("expect failed");
+                                                                                                           ^
+/tmp/TestJavaCompiler_TPCDSQueriesq711942682729/001/Q71.java:327: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 18, 0, 200.000000), new IBrandIdIBrandTHourTMinuteExtPrice(20, "BrandB", 8, 30, 150.000000), new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 8, 30, 100.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                    ^
+/tmp/TestJavaCompiler_TPCDSQueriesq711942682729/001/Q71.java:327: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 18, 0, 200.000000), new IBrandIdIBrandTHourTMinuteExtPrice(20, "BrandB", 8, 30, 150.000000), new IBrandIdIBrandTHourTMinuteExtPrice(10, "BrandA", 8, 30, 100.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                                                                                             ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

@@ -1,87 +1,87 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:281: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:281: error: cannot find symbol
                     WarehouseSmTypeCcName key3 = new WarehouseSmTypeCcName(substr(w.w_warehouse_name, 0, 20), sm.sm_type, cc.cc_name);
                                                                            ^
   symbol: method substr(String,int,int)
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:292: error: incompatible types: Object cannot be converted to String
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:292: error: incompatible types: Object cannot be converted to String
         res0.add(new WarehouseSmTypeCcNameD30D60D90D120Dmore(g.key.warehouse, g.key.sm_type, g.key.cc_name, (new java.util.function.Supplier<List<CsWSmCc>>(){public List<CsWSmCc> get(){
                                                                   ^
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:323: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:323: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 120)) continue;
                ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:323: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:323: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 120)) continue;
                                    ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:316: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:316: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120)) continue;
                ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:316: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:316: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120)) continue;
                                    ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:316: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:316: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120)) continue;
                                                              ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:316: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:316: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 90 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 120)) continue;
                                                                                  ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:309: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:309: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90)) continue;
                ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:309: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:309: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90)) continue;
                                    ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:309: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:309: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90)) continue;
                                                              ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:309: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:309: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 60 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 90)) continue;
                                                                                  ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:302: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:302: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 30 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 60)) continue;
                ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:302: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:302: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 30 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 60)) continue;
                                    ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:302: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:302: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 30 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 60)) continue;
                                                              ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:302: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:302: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk > 30 && x.cs_ship_date_sk - x.cs_sold_date_sk <= 60)) continue;
                                                                                  ^
   symbol:   variable cs_sold_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:295: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:295: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk <= 30)) continue;
                ^
   symbol:   variable cs_ship_date_sk
   location: variable x of type CsWSmCc
-/tmp/TestJavaCompiler_TPCDSQueriesq99139517966/001/Q99.java:295: error: cannot find symbol
+/tmp/TestJavaCompiler_TPCDSQueriesq992956410988/001/Q99.java:295: error: cannot find symbol
         if (!(x.cs_ship_date_sk - x.cs_sold_date_sk <= 30)) continue;
                                    ^
   symbol:   variable cs_sold_date_sk

@@ -1,11 +1,19 @@
 javac error: exit status 1
-/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:132: error: illegal start of type
-    ? sd;
-    ^
-/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:132: error: <identifier> expected
-    ? sd;
-        ^
-/tmp/TestJavaCompiler_TPCDSQueriesq753699005120/001/Q75.java:134: error: illegal start of type
-    SdI(? sd, IItemSkIBrandIdIClassIdICategoryIdIManufactIdICategory i) {
-        ^
-3 errors
+/tmp/TestJavaCompiler_TPCDSQueriesq752254193114/001/Q75.java:345: error: cannot find symbol
+    Object prev_yr = first((new java.util.function.Supplier<List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt>>(){public List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt> get(){
+                     ^
+  symbol:   method first(List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt>)
+  location: class Q75
+/tmp/TestJavaCompiler_TPCDSQueriesq752254193114/001/Q75.java:353: error: cannot find symbol
+    Object curr_yr = first((new java.util.function.Supplier<List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt>>(){public List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt> get(){
+                     ^
+  symbol:   method first(List<DYearIBrandIdIClassIdICategoryIdIManufactIdSalesCntSalesAmt>)
+  location: class Q75
+/tmp/TestJavaCompiler_TPCDSQueriesq752254193114/001/Q75.java:361: error: incompatible types: Object cannot be converted to int
+    Object result = (((Number)(((Number)((Map<?,?>)curr_yr).get("sales_cnt")).doubleValue() / ((Number)((Map<?,?>)prev_yr).get("sales_cnt")).doubleValue())).doubleValue() < 0.900000 ? Arrays.asList(new PrevYearYearIBrandIdIClassIdICategoryIdIManufactIdPrevYrCntCurrYrCntSalesCntDiffSalesAmtDiff(((Map<?,?>)prev_yr).get("d_year"), ((Map<?,?>)curr_yr).get("d_year"), ((Map<?,?>)curr_yr).get("i_brand_id"), ((Map<?,?>)curr_yr).get("i_class_id"), ((Map<?,?>)curr_yr).get("i_category_id"), ((Map<?,?>)curr_yr).get("i_manufact_id"), ((Map<?,?>)prev_yr).get("sales_cnt"), ((Map<?,?>)curr_yr).get("sales_cnt"), ((Number)((Map<?,?>)curr_yr).get("sales_cnt")).doubleValue() - ((Number)((Map<?,?>)prev_yr).get("sales_cnt")).doubleValue(), ((Number)((Map<?,?>)curr_yr).get("sales_amt")).doubleValue() - ((Number)((Map<?,?>)prev_yr).get("sales_amt")).doubleValue())) : Arrays.asList());
+                                                                                                                                                                                                                                                                                                                              ^
+/tmp/TestJavaCompiler_TPCDSQueriesq752254193114/001/Q75.java:363: error: incompatible types: possible lossy conversion from double to int
+    if (!(Objects.equals(result, Arrays.asList(new PrevYearYearIBrandIdIClassIdICategoryIdIManufactIdPrevYrCntCurrYrCntSalesCntDiffSalesAmtDiff(2000, 2001, 1, 2, 3, 4, 100, 80, -20, -200.000000))))) throw new AssertionError("expect failed");
+                                                                                                                                                                                      ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors
