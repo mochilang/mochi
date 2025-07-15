@@ -65,3 +65,5 @@ TPC-H progress:
 
 - 2025-07-14 07:39 - Investigated TPCH q1 runtime build issues; added placeholder alias for v
 - 2025-07-14 12:19 - Regenerated TPCH q1 Go code after fixing numeric casting
+
+- 2025-07-14 12:49 - Attempted to generate TPCH Go files via tpch_golden_test; several queries still fail go run due to syntax errors.
