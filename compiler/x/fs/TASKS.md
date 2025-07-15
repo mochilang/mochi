@@ -15,4 +15,7 @@
 - [ ] Continue refining inference to reduce `obj` usage.
 
 - 2025-07-14 00:20 - Installed mono and dotnet runtime. q1 still fails to compile due to type errors in generated code; investigate group_by and numeric inference.
+- 2025-07-15 04:48 - Generated F# code for all TPC-DS queries using new script. Added
+  initial `tpcds_test.go` but compilation of generated code fails with numerous
+  type errors.
 
