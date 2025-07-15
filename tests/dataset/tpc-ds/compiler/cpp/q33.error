@@ -1,0 +1,106 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:89:12: error: ‘i’ was not declared in this scope
+   89 |   decltype(i.i_manufact_id) manu;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:89:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:90:12: error: ‘ss’ was not declared in this scope
+   90 |   decltype(ss.ss_ext_sales_price) price;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:90:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:273:7: error: ‘concat’ was not declared in this scope; did you mean ‘wcsncat’?
+  273 |       concat(([&]() {
+      |       ^~~~~~
+      |       wcsncat
+/tmp/TestCPPCompiler_TPCDSQueriesq33638932158/001/prog.cpp:393:5: error: conversion from ‘vector<Result>’ to non-scalar type ‘vector<UnionSale>’ requested
+  348 |   std::vector<UnionSale> result = ([&]() {
+      |                                   ~~~~~~~~
+  349 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  350 |     for (auto s : union_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  351 |       auto __key = s.manu;
+      |       ~~~~~~~~~~~~~~~~~~~~
+  352 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  353 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  354 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  355 |           __g.items.push_back(UnionSale{s});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  356 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  357 |           break;
+      |           ~~~~~~
+  358 |         }
+      |         ~
+  359 |       }
+      |       ~
+  360 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  361 |         __groups.push_back(
+      |         ~~~~~~~~~~~~~~~~~~~
+  362 |             __struct8{__key, std::vector<UnionSale>{UnionSale{s}}});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  363 |       }
+      |       ~
+  364 |     }
+      |     ~
+  365 |     std::vector<std::pair<double, Result>> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |                ([&]() {
+      |                ~~~~~~~~
+  370 |                  std::vector<decltype(std::declval<UnionSale>().price)> __items;
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  372 |                    __items.push_back(x.price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |                  }
+      |                  ~
+  374 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  375 |                })())),
+      |                ~~~~~~~
+  376 |            Result{
+      |            ~~~~~~~
+  377 |                g.key, ([&](auto v) {
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  378 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  379 |                })(([&]() {
+      |                ~~~~~~~~~~~
+  380 |                  std::vector<decltype(std::declval<UnionSale>().price)> __items;
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  381 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  382 |                    __items.push_back(x.price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  383 |                  }
+      |                  ~
+  384 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  385 |                })())}});
+      |                ~~~~~~~~~
+  386 |     }
+      |     ~
+  387 |     std::sort(__items.begin(), __items.end(),
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  388 |               [](auto &a, auto &b) { return a.first < b.first; });
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |     std::vector<Result> __res;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  390 |     for (auto &p : __items)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  391 |       __res.push_back(p.second);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  392 |     return __res;
+      |     ~~~~~~~~~~~~~
+  393 |   })();
+      |   ~~^~

@@ -1,0 +1,341 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:82:8: error: redefinition of ‘struct Customer’
+   82 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:53:8: note: previous definition of ‘struct Customer’
+   53 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:102:8: error: redefinition of ‘struct StoreSale’
+  102 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:73:8: note: previous definition of ‘struct StoreSale’
+   73 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:106:8: error: redefinition of ‘struct DateDim’
+  106 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:77:8: note: previous definition of ‘struct DateDim’
+   77 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:112:12: error: ‘a’ was not declared in this scope
+  112 |   decltype(a.cd_gender) gender;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:112:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:113:12: error: ‘a’ was not declared in this scope
+  113 |   decltype(a.cd_marital_status) marital;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:113:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:114:12: error: ‘a’ was not declared in this scope
+  114 |   decltype(a.cd_education_status) education;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:114:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:115:12: error: ‘a’ was not declared in this scope
+  115 |   decltype(a.cd_purchase_estimate) purchase;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:115:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:116:12: error: ‘a’ was not declared in this scope
+  116 |   decltype(a.cd_credit_rating) credit;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:116:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:117:12: error: ‘a’ was not declared in this scope
+  117 |   decltype(a.cd_dep_count) dep;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:117:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:118:12: error: ‘a’ was not declared in this scope
+  118 |   decltype(a.cd_dep_employed_count) depemp;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:118:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:119:12: error: ‘a’ was not declared in this scope
+  119 |   decltype(a.cd_dep_college_count) depcol;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:119:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:122:12: error: ‘a’ was not declared in this scope
+  122 |   decltype(a) a;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:122:12: error: ‘a’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:264:13: error: redefinition of ‘void __json(const Customer&)’
+  264 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:144:13: note: ‘void __json(const Customer&)’ previously defined here
+  144 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:424:13: error: redefinition of ‘void __json(const DateDim&)’
+  424 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:229:13: note: ‘void __json(const DateDim&)’ previously defined here
+  229 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:489:13: error: redefinition of ‘void __json(const StoreSale&)’
+  489 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:249:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  249 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:526:26: error: ‘cd’ was not declared in this scope
+  526 |     std::vector<decltype(cd)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:526:29: error: template argument 1 is invalid
+  526 |     std::vector<decltype(cd)> __items;
+      |                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:526:29: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:536:42: error: ‘ss’ was not declared in this scope
+  536 |                     std::vector<decltype(ss)> __items;
+      |                                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:536:45: error: template argument 1 is invalid
+  536 |                     std::vector<decltype(ss)> __items;
+      |                                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:536:45: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:546:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  546 |                         __items.push_back(ss);
+      |                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:551:24: error: request for member ‘empty’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & store_sales), (* & date_dim), c}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  551 |                       .empty())))
+      |                        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:553:19: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  553 |           __items.push_back(cd);
+      |                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:561:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  561 |     for (auto a : active) {
+      |                   ^~~~~~
+      |                   std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:2:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:561:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  561 |     for (auto a : active) {
+      |                   ^~~~~~
+      |                   std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:580:65: error: no matching function for call to ‘std::vector<__struct7>::vector(<brace-enclosed initializer list>)’
+  580 |             __struct8{__key, std::vector<__struct7>{__struct7{a}}});
+      |                                                                 ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:6:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; value_type = std::vector<__struct7>::value_type; allocator_type = std::allocator<__struct7>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; allocator_type = std::allocator<__struct7>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq103714614541/001/prog.cpp:641:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
+  559 |   std::vector<__struct7> result = ([&]() {
+      |                                   ~~~~~~~~
+  560 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  561 |     for (auto a : active) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  562 |       auto __key = Result{a.cd_gender,
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  563 |                           a.cd_marital_status,
+      |                           ~~~~~~~~~~~~~~~~~~~~
+  564 |                           a.cd_education_status,
+      |                           ~~~~~~~~~~~~~~~~~~~~~~
+  565 |                           a.cd_purchase_estimate,
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~
+  566 |                           a.cd_credit_rating,
+      |                           ~~~~~~~~~~~~~~~~~~~
+  567 |                           a.cd_dep_count,
+      |                           ~~~~~~~~~~~~~~~
+  568 |                           a.cd_dep_employed_count,
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~
+  569 |                           a.cd_dep_college_count};
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~
+  570 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  571 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  572 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  573 |           __g.items.push_back(__struct7{a});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  574 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  575 |           break;
+      |           ~~~~~~
+  576 |         }
+      |         ~
+  577 |       }
+      |       ~
+  578 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  579 |         __groups.push_back(
+      |         ~~~~~~~~~~~~~~~~~~~
+  580 |             __struct8{__key, std::vector<__struct7>{__struct7{a}}});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  581 |       }
+      |       ~
+  582 |     }
+      |     ~
+  583 |     std::vector<__struct9> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  584 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  585 |       __items.push_back(__struct9{g.key.gender, g.key.marital, g.key.education,
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  586 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  587 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  588 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  589 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  590 |                                      }
+      |                                      ~
+  591 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  592 |                                    })()
+      |                                    ~~~~
+  593 |                                        .size()),
+      |                                        ~~~~~~~~~
+  594 |                                   g.key.purchase,
+      |                                   ~~~~~~~~~~~~~~~
+  595 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  596 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  597 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  598 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  599 |                                      }
+      |                                      ~
+  600 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  601 |                                    })()
+      |                                    ~~~~
+  602 |                                        .size()),
+      |                                        ~~~~~~~~~
+  603 |                                   g.key.credit,
+      |                                   ~~~~~~~~~~~~~
+  604 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  605 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  606 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  607 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  608 |                                      }
+      |                                      ~
+  609 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  610 |                                    })()
+      |                                    ~~~~
+  611 |                                        .size()),
+      |                                        ~~~~~~~~~
+  612 |                                   g.key.dep,
+      |                                   ~~~~~~~~~~
+  613 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  614 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  615 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  616 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  617 |                                      }
+      |                                      ~
+  618 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  619 |                                    })()
+      |                                    ~~~~
+  620 |                                        .size()),
+      |                                        ~~~~~~~~~
+  621 |                                   g.key.depemp,
+      |                                   ~~~~~~~~~~~~~
+  622 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  623 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  624 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  625 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  626 |                                      }
+      |                                      ~
+  627 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  628 |                                    })()
+      |                                    ~~~~
+  629 |                                        .size()),
+      |                                        ~~~~~~~~~
+  630 |                                   g.key.depcol,
+      |                                   ~~~~~~~~~~~~~
+  631 |                                   ((int)([&]() {
+      |                                   ~~~~~~~~~~~~~~
+  632 |                                      std::vector<__struct7> __items;
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  633 |                                      for (auto _ : g.items) {
+      |                                      ~~~~~~~~~~~~~~~~~~~~~~~~
+  634 |                                        __items.push_back(_);
+      |                                        ~~~~~~~~~~~~~~~~~~~~~
+  635 |                                      }
+      |                                      ~
+  636 |                                      return __items;
+      |                                      ~~~~~~~~~~~~~~~
+  637 |                                    })()
+      |                                    ~~~~
+  638 |                                        .size())});
+      |                                        ~~~~~~~~~~~
+  639 |     }
+      |     ~
+  640 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  641 |   })();
+      |   ~~^~

@@ -1,0 +1,419 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:88:8: error: redefinition of ‘struct StoreSale’
+   88 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:54:8: note: previous definition of ‘struct StoreSale’
+   54 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:100:8: error: redefinition of ‘struct Store’
+  100 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:66:8: note: previous definition of ‘struct Store’
+   66 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:118:8: error: redefinition of ‘struct DateDim’
+  118 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:84:8: note: previous definition of ‘struct DateDim’
+   84 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:123:12: error: ‘r’ was not declared in this scope
+  123 |   decltype(r) r;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:123:12: error: ‘r’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:348:13: error: redefinition of ‘void __json(const DateDim&)’
+  348 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:183:13: note: ‘void __json(const DateDim&)’ previously defined here
+  183 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:378:13: error: redefinition of ‘void __json(const Store&)’
+  378 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:213:13: note: ‘void __json(const Store&)’ previously defined here
+  213 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:393:13: error: redefinition of ‘void __json(const StoreSale&)’
+  393 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:228:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  228 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:470:26: error: ‘ss’ was not declared in this scope
+  470 |     std::vector<decltype(ss)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:470:29: error: template argument 1 is invalid
+  470 |     std::vector<decltype(ss)> __items;
+      |                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:470:29: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:493:25: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  493 |                 __items.push_back(ss);
+      |                         ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:504:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  504 |     for (auto r : filtered) {
+      |                   ^~~~~~~~
+      |                   std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:2:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:504:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  504 |     for (auto r : filtered) {
+      |                   ^~~~~~~~
+      |                   std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:515:74: error: no matching function for call to ‘std::vector<Result>::vector(<brace-enclosed initializer list>)’
+  515 |         __groups.push_back(__struct8{__key, std::vector<Result>{Result{r}}});
+      |                                                                          ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:7:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Result; _Alloc = std::allocator<Result>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>; std::__type_identity_t<_Alloc> = std::allocator<Result>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>; std::__type_identity_t<_Alloc> = std::allocator<Result>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; size_type = long unsigned int; value_type = Result; allocator_type = std::allocator<Result>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; size_type = long unsigned int; allocator_type = std::allocator<Result>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Result; _Alloc = std::allocator<Result>; allocator_type = std::allocator<Result>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Result; _Alloc = std::allocator<Result>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:522:57: error: ‘struct Result’ has no member named ‘ss_quantity’
+  522 |             std::vector<decltype(std::declval<Result>().ss_quantity)> __items;
+      |                                                         ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:522:57: error: ‘struct Result’ has no member named ‘ss_quantity’
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:522:69: error: template argument 1 is invalid
+  522 |             std::vector<decltype(std::declval<Result>().ss_quantity)> __items;
+      |                                                                     ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:522:69: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:524:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  524 |               __items.push_back(x.ss_quantity);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:524:35: error: ‘struct Result’ has no member named ‘ss_quantity’
+  524 |               __items.push_back(x.ss_quantity);
+      |                                   ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:521:16: error: no matching function for call to ‘__avg(int)’
+  521 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  522 |             std::vector<decltype(std::declval<Result>().ss_quantity)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  523 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  524 |               __items.push_back(x.ss_quantity);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  525 |             }
+      |             ~   
+  526 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  527 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  129 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:521:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  521 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  522 |             std::vector<decltype(std::declval<Result>().ss_quantity)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  523 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  524 |               __items.push_back(x.ss_quantity);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  525 |             }
+      |             ~   
+  526 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  527 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:529:57: error: ‘struct Result’ has no member named ‘ss_ext_sales_price’
+  529 |             std::vector<decltype(std::declval<Result>().ss_ext_sales_price)>
+      |                                                         ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:529:57: error: ‘struct Result’ has no member named ‘ss_ext_sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:529:76: error: template argument 1 is invalid
+  529 |             std::vector<decltype(std::declval<Result>().ss_ext_sales_price)>
+      |                                                                            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:529:76: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:532:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  532 |               __items.push_back(x.ss_ext_sales_price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:532:35: error: ‘struct Result’ has no member named ‘ss_ext_sales_price’
+  532 |               __items.push_back(x.ss_ext_sales_price);
+      |                                   ^~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:528:16: error: no matching function for call to ‘__avg(int)’
+  528 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  529 |             std::vector<decltype(std::declval<Result>().ss_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  530 |                 __items;
+      |                 ~~~~~~~~
+  531 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  532 |               __items.push_back(x.ss_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  533 |             }
+      |             ~   
+  534 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  535 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  129 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:528:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  528 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  529 |             std::vector<decltype(std::declval<Result>().ss_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  530 |                 __items;
+      |                 ~~~~~~~~
+  531 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  532 |               __items.push_back(x.ss_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  533 |             }
+      |             ~   
+  534 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  535 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:537:57: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+  537 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:537:57: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:537:79: error: template argument 1 is invalid
+  537 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |                                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:537:79: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:540:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  540 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:540:35: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+  540 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |                                   ^~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:536:16: error: no matching function for call to ‘__avg(int)’
+  536 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  537 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  538 |                 __items;
+      |                 ~~~~~~~~
+  539 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  540 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  541 |             }
+      |             ~   
+  542 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  543 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  129 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:129:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:536:16: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  536 |           __avg(([&]() {
+      |           ~~~~~^~~~~~~~~
+  537 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  538 |                 __items;
+      |                 ~~~~~~~~
+  539 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  540 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  541 |             }
+      |             ~   
+  542 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  543 |           })()),
+      |           ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:547:57: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+  547 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |                                                         ^~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:547:57: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:547:79: error: template argument 1 is invalid
+  547 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |                                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:547:79: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:550:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  550 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:550:35: error: ‘struct Result’ has no member named ‘ss_ext_wholesale_cost’
+  550 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |                                   ^~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:546:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:545:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  545 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:545:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  545 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq1397465437/001/prog.cpp:556:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<Result>’ requested
+  502 |   std::vector<Result> result = ([&]() {
+      |                                ~~~~~~~~
+  503 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  504 |     for (auto r : filtered) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
+  505 |       auto __key = std::unordered_map<int, int>{};
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  506 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  507 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  508 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  509 |           __g.items.push_back(Result{r});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  510 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  511 |           break;
+      |           ~~~~~~
+  512 |         }
+      |         ~
+  513 |       }
+      |       ~
+  514 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  515 |         __groups.push_back(__struct8{__key, std::vector<Result>{Result{r}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  516 |       }
+      |       ~
+  517 |     }
+      |     ~
+  518 |     std::vector<__struct9> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  519 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  520 |       __items.push_back(__struct9{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  521 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  522 |             std::vector<decltype(std::declval<Result>().ss_quantity)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  523 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  524 |               __items.push_back(x.ss_quantity);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  525 |             }
+      |             ~
+  526 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  527 |           })()),
+      |           ~~~~~~
+  528 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  529 |             std::vector<decltype(std::declval<Result>().ss_ext_sales_price)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  530 |                 __items;
+      |                 ~~~~~~~~
+  531 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  532 |               __items.push_back(x.ss_ext_sales_price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  533 |             }
+      |             ~
+  534 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  535 |           })()),
+      |           ~~~~~~
+  536 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  537 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  538 |                 __items;
+      |                 ~~~~~~~~
+  539 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  540 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  541 |             }
+      |             ~
+  542 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  543 |           })()),
+      |           ~~~~~~
+  544 |           ([&](auto v) {
+      |           ~~~~~~~~~~~~~~
+  545 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  546 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  547 |             std::vector<decltype(std::declval<Result>().ss_ext_wholesale_cost)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  548 |                 __items;
+      |                 ~~~~~~~~
+  549 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  550 |               __items.push_back(x.ss_ext_wholesale_cost);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  551 |             }
+      |             ~
+  552 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  553 |           })())});
+      |           ~~~~~~~~
+  554 |     }
+      |     ~
+  555 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  556 |   })();
+      |   ~~^~

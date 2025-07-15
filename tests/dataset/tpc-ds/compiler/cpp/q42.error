@@ -1,0 +1,146 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:73:12: error: ‘dt’ was not declared in this scope
+   73 |   decltype(dt.d_year) d_year;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:73:12: error: ‘dt’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:74:12: error: ‘it’ was not declared in this scope; did you mean ‘int’?
+   74 |   decltype(it.i_category_id) i_category_id;
+      |            ^~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:74:12: error: ‘it’ was not declared in this scope; did you mean ‘int’?
+   74 |   decltype(it.i_category_id) i_category_id;
+      |            ^~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:75:12: error: ‘it’ was not declared in this scope; did you mean ‘int’?
+   75 |   decltype(it.i_category) i_category;
+      |            ^~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:75:12: error: ‘it’ was not declared in this scope; did you mean ‘int’?
+   75 |   decltype(it.i_category) i_category;
+      |            ^~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:76:12: error: ‘ss’ was not declared in this scope
+   76 |   decltype(ss.ext_sales_price) price;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:76:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:248:68: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  248 |           __items.push_back(Record{dt.d_year, it.i_category_id, it.i_category,
+      |                                                                 ~~~^~~~~~~~~~
+      |                                                                    |
+      |                                                                    std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:261:21: error: no match for ‘operator==’ (operand types are ‘Grouped’ and ‘Grouped’)
+  261 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 |      Grouped
+      |                 Grouped
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:285:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<Record>’ requested
+  255 |   std::vector<Record> grouped = ([&]() {
+      |                                 ~~~~~~~~
+  256 |     std::vector<__struct6> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  257 |     for (auto r : records) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~
+  258 |       auto __key = Grouped{r.d_year, r.i_category_id, r.i_category};
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  259 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  260 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  261 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  262 |           __g.items.push_back(Record{r});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  263 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  264 |           break;
+      |           ~~~~~~
+  265 |         }
+      |         ~
+  266 |       }
+      |       ~
+  267 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  268 |         __groups.push_back(__struct6{__key, std::vector<Record>{Record{r}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  269 |       }
+      |       ~
+  270 |     }
+      |     ~
+  271 |     std::vector<__struct7> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  272 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  273 |       __items.push_back(__struct7{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  274 |           g.key.d_year, g.key.i_category_id, g.key.i_category, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  275 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  276 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  277 |             std::vector<decltype(std::declval<Record>().price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  278 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  279 |               __items.push_back(x.price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  280 |             }
+      |             ~
+  281 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  282 |           })())});
+      |           ~~~~~~~~
+  283 |     }
+      |     ~
+  284 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  285 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:288:41: error: ‘struct Record’ has no member named ‘sum_ss_ext_sales_price’
+  288 |         decltype(std::declval<Record>().sum_ss_ext_sales_price), Record>>
+      |                                         ^~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:288:41: error: ‘struct Record’ has no member named ‘sum_ss_ext_sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:288:66: error: template argument 1 is invalid
+  288 |         decltype(std::declval<Record>().sum_ss_ext_sales_price), Record>>
+      |                                                                  ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:288:72: error: template argument 1 is invalid
+  288 |         decltype(std::declval<Record>().sum_ss_ext_sales_price), Record>>
+      |                                                                        ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:288:72: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:291:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  291 |       __items.push_back({(-g.sum_ss_ext_sales_price), g});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:291:30: error: ‘struct Record’ has no member named ‘sum_ss_ext_sales_price’
+  291 |       __items.push_back({(-g.sum_ss_ext_sales_price), g});
+      |                              ^~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:293:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  293 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:293:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  293 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:296:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  296 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq423590881961/001/prog.cpp:296:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  296 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

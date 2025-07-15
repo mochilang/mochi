@@ -1,0 +1,19 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:100:26: error: ‘ss’ was not declared in this scope
+  100 |     std::vector<decltype(ss.price)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:100:35: error: template argument 1 is invalid
+  100 |     std::vector<decltype(ss.price)> __items;
+      |                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:100:35: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:116:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  116 |         __items.push_back(ss.price);
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:99:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:98:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   98 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq673111448586/001/prog.cpp:98:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   98 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~

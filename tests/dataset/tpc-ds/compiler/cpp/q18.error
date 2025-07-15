@@ -1,0 +1,262 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:91:8: error: redefinition of ‘struct CatalogSale’
+   91 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:53:8: note: previous definition of ‘struct CatalogSale’
+   53 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:108:8: error: redefinition of ‘struct Customer’
+  108 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:70:8: note: previous definition of ‘struct Customer’
+   70 | struct Customer {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:121:8: error: redefinition of ‘struct DateDim’
+  121 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:83:8: note: previous definition of ‘struct DateDim’
+   83 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:125:8: error: redefinition of ‘struct Item’
+  125 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:87:8: note: previous definition of ‘struct Item’
+   87 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:130:12: error: ‘i’ was not declared in this scope
+  130 |   decltype(i.i_item_id) i_item_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:130:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:131:12: error: ‘ca’ was not declared in this scope
+  131 |   decltype(ca.ca_country) ca_country;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:131:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:132:12: error: ‘ca’ was not declared in this scope
+  132 |   decltype(ca.ca_state) ca_state;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:132:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:133:12: error: ‘ca’ was not declared in this scope
+  133 |   decltype(ca.ca_county) ca_county;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:133:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:134:12: error: ‘cs’ was not declared in this scope
+  134 |   decltype(cs.cs_quantity) q;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:134:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:135:12: error: ‘cs’ was not declared in this scope
+  135 |   decltype(cs.cs_list_price) lp;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:135:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:136:12: error: ‘cs’ was not declared in this scope
+  136 |   decltype(cs.cs_coupon_amt) cp;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:136:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:137:12: error: ‘cs’ was not declared in this scope; did you mean ‘cp’?
+  137 |   decltype(cs.cs_sales_price) sp;
+      |            ^~
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:137:12: error: ‘cs’ was not declared in this scope; did you mean ‘cp’?
+  137 |   decltype(cs.cs_sales_price) sp;
+      |            ^~
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:138:12: error: ‘cs’ was not declared in this scope; did you mean ‘cp’?
+  138 |   decltype(cs.cs_net_profit) np;
+      |            ^~
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:138:12: error: ‘cs’ was not declared in this scope; did you mean ‘cp’?
+  138 |   decltype(cs.cs_net_profit) np;
+      |            ^~
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:139:12: error: ‘c’ was not declared in this scope; did you mean ‘cp’?
+  139 |   decltype(c.c_birth_year) by;
+      |            ^
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:139:12: error: ‘c’ was not declared in this scope; did you mean ‘cp’?
+  139 |   decltype(c.c_birth_year) by;
+      |            ^
+      |            cp
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:140:12: error: ‘cd1’ was not declared in this scope
+  140 |   decltype(cd1.cd_dep_count) dep;
+      |            ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:140:12: error: ‘cd1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:333:13: error: redefinition of ‘void __json(const Customer&)’
+  333 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:223:13: note: ‘void __json(const Customer&)’ previously defined here
+  223 | inline void __json(const Customer &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:413:13: error: redefinition of ‘void __json(const CatalogSale&)’
+  413 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:173:13: note: ‘void __json(const CatalogSale&)’ previously defined here
+  173 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:463:13: error: redefinition of ‘void __json(const DateDim&)’
+  463 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:303:13: note: ‘void __json(const DateDim&)’ previously defined here
+  303 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:623:13: error: redefinition of ‘void __json(const Item&)’
+  623 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:318:13: note: ‘void __json(const Item&)’ previously defined here
+  318 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:674:25: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  674 |                       i.i_item_id, ca.ca_country, ca.ca_state, ca.ca_county,
+      |                       ~~^~~~~~~~~
+      |                         |
+      |                         std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:693:21: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+  693 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 Result Result
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq181722201480/001/prog.cpp:758:5: error: conversion from ‘vector<__struct10>’ to non-scalar type ‘vector<Joined>’ requested
+  687 |   std::vector<Joined> result = ([&]() {
+      |                                ~~~~~~~~
+  688 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  689 |     for (auto j : joined) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  690 |       auto __key = Result{j.i_item_id, j.ca_country, j.ca_state, j.ca_county};
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  691 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  692 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  693 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  694 |           __g.items.push_back(Joined{j});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  695 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  696 |           break;
+      |           ~~~~~~
+  697 |         }
+      |         ~
+  698 |       }
+      |       ~
+  699 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  700 |         __groups.push_back(__struct9{__key, std::vector<Joined>{Joined{j}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  701 |       }
+      |       ~
+  702 |     }
+      |     ~
+  703 |     std::vector<__struct10> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  704 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  705 |       __items.push_back(__struct10{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  706 |           g.key.i_item_id, g.key.ca_country, g.key.ca_state, g.key.ca_county,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  707 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  708 |             std::vector<decltype(std::declval<Joined>().q)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  709 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  710 |               __items.push_back(x.q);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~
+  711 |             }
+      |             ~
+  712 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  713 |           })()),
+      |           ~~~~~~
+  714 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  715 |             std::vector<decltype(std::declval<Joined>().lp)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  716 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  717 |               __items.push_back(x.lp);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  718 |             }
+      |             ~
+  719 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  720 |           })()),
+      |           ~~~~~~
+  721 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  722 |             std::vector<decltype(std::declval<Joined>().cp)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  723 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  724 |               __items.push_back(x.cp);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  725 |             }
+      |             ~
+  726 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  727 |           })()),
+      |           ~~~~~~
+  728 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  729 |             std::vector<decltype(std::declval<Joined>().sp)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  730 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  731 |               __items.push_back(x.sp);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  732 |             }
+      |             ~
+  733 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  734 |           })()),
+      |           ~~~~~~
+  735 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  736 |             std::vector<decltype(std::declval<Joined>().np)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  737 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  738 |               __items.push_back(x.np);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  739 |             }
+      |             ~
+  740 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  741 |           })()),
+      |           ~~~~~~
+  742 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  743 |             std::vector<decltype(std::declval<Joined>().by)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  744 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  745 |               __items.push_back(x.by);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~
+  746 |             }
+      |             ~
+  747 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  748 |           })()),
+      |           ~~~~~~
+  749 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  750 |             std::vector<decltype(std::declval<Joined>().dep)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  751 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  752 |               __items.push_back(x.dep);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+  753 |             }
+      |             ~
+  754 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  755 |           })())});
+      |           ~~~~~~~~
+  756 |     }
+      |     ~
+  757 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  758 |   })();
+      |   ~~^~

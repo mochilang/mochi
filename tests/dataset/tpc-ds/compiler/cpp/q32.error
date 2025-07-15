@@ -1,0 +1,62 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:131:26: error: ‘cs’ was not declared in this scope
+  131 |     std::vector<decltype(cs.cs_ext_discount_amt)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:131:49: error: template argument 1 is invalid
+  131 |     std::vector<decltype(cs.cs_ext_discount_amt)> __items;
+      |                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:131:49: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:141:19: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  141 |           __items.push_back(cs.cs_ext_discount_amt);
+      |                   ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:147:28: error: no matching function for call to ‘__avg(int&)’
+  147 |   auto avg_discount = __avg(filtered);
+      |                       ~~~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:66:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   66 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:66:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:147:28: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  147 |   auto avg_discount = __avg(filtered);
+      |                       ~~~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:151:26: error: ‘x’ was not declared in this scope
+  151 |     std::vector<decltype(x)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:151:28: error: template argument 1 is invalid
+  151 |     std::vector<decltype(x)> __items;
+      |                            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:151:28: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:152:19: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  152 |     for (auto x : filtered) {
+      |                   ^~~~~~~~
+      |                   std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:2:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:152:19: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  152 |     for (auto x : filtered) {
+      |                   ^~~~~~~~
+      |                   std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:155:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  155 |       __items.push_back(x);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:150:5:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:149:30: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  149 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq324058117265/001/prog.cpp:149:41: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  149 |     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                       ~~^~~

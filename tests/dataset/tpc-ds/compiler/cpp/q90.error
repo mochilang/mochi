@@ -1,0 +1,53 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:57:8: error: redefinition of ‘struct WebSale’
+   57 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:52:8: note: previous definition of ‘struct WebSale’
+   52 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:139:13: error: redefinition of ‘void __json(const WebSale&)’
+  139 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:74:13: note: ‘void __json(const WebSale&)’ previously defined here
+   74 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:167:38: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  167 |                 std::vector<decltype(ws)> __items;
+      |                                      ^~
+      |                                      std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:2:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:167:41: error: template argument 1 is invalid
+  167 |                 std::vector<decltype(ws)> __items;
+      |                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:167:41: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:183:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  183 |                         __items.push_back(ws);
+      |                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:190:20: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{web_sales, household_demographics, time_dim, web_page}.main()::<lambda()>()’, which is of non-class type ‘int’
+  190 |                   .size());
+      |                    ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:192:38: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  192 |                 std::vector<decltype(ws)> __items;
+      |                                      ^~
+      |                                      std::ws
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:192:41: error: template argument 1 is invalid
+  192 |                 std::vector<decltype(ws)> __items;
+      |                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:192:41: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:208:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  208 |                         __items.push_back(ws);
+      |                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq90398916581/001/prog.cpp:215:20: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{web_sales, household_demographics, time_dim, web_page}.main()::<lambda()>()’, which is of non-class type ‘int’
+  215 |                   .size());
+      |                    ^~~~

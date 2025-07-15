@@ -1,0 +1,171 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:73:8: error: redefinition of ‘struct StoreSale’
+   73 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:56:8: note: previous definition of ‘struct StoreSale’
+   56 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:80:8: error: redefinition of ‘struct StoreReturn’
+   80 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:63:8: note: previous definition of ‘struct StoreReturn’
+   63 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:86:8: error: redefinition of ‘struct Reason’
+   86 | struct Reason {
+      |        ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:69:8: note: previous definition of ‘struct Reason’
+   69 | struct Reason {
+      |        ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:91:12: error: ‘ss’ was not declared in this scope
+   91 |   decltype(ss.ss_customer_sk) ss_customer_sk;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:91:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:191:13: error: redefinition of ‘void __json(const Reason&)’
+  191 | inline void __json(const Reason &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:106:13: note: ‘void __json(const Reason&)’ previously defined here
+  106 | inline void __json(const Reason &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:206:13: error: redefinition of ‘void __json(const StoreReturn&)’
+  206 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:121:13: note: ‘void __json(const StoreReturn&)’ previously defined here
+  121 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:261:13: error: redefinition of ‘void __json(const StoreSale&)’
+  261 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:146:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  146 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:309:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  309 |               if (!(((sr != nullptr) && (sr.sr_reason_sk == r.r_reason_sk))))
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:312:25: error: no match for ‘operator==’ (operand types are ‘Reason’ and ‘std::nullptr_t’)
+  312 |               if (!(((r == nullptr) ||
+      |                       ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:317:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  317 |                     ((sr != nullptr)
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:324:25: error: no match for ‘operator==’ (operand types are ‘Reason’ and ‘std::nullptr_t’)
+  324 |               if (!(((r == nullptr) ||
+      |                       ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:329:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  329 |                     ((sr != nullptr)
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:341:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  341 |               if (!(((sr != nullptr) && (sr.sr_reason_sk == r.r_reason_sk))))
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:344:25: error: no match for ‘operator==’ (operand types are ‘Reason’ and ‘std::nullptr_t’)
+  344 |               if (!(((r == nullptr) ||
+      |                       ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:349:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  349 |                     ((sr != nullptr)
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:356:25: error: no match for ‘operator==’ (operand types are ‘Reason’ and ‘std::nullptr_t’)
+  356 |               if (!(((r == nullptr) ||
+      |                       ~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:361:26: error: no match for ‘operator!=’ (operand types are ‘StoreReturn’ and ‘std::nullptr_t’)
+  361 |                     ((sr != nullptr)
+      |                       ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq93491760966/001/prog.cpp:420:5: error: conversion from ‘vector<Result>’ to non-scalar type ‘vector<T>’ requested
+  372 |   std::vector<T> result = ([&]() {
+      |                           ~~~~~~~~
+  373 |     std::vector<__struct5> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  374 |     for (auto x : t) {
+      |     ~~~~~~~~~~~~~~~~~~
+  375 |       auto __key = x.ss_customer_sk;
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  376 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  377 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  378 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  379 |           __g.items.push_back(T{x});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  380 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  381 |           break;
+      |           ~~~~~~
+  382 |         }
+      |         ~
+  383 |       }
+      |       ~
+  384 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  385 |         __groups.push_back(__struct5{__key, std::vector<T>{T{x}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  386 |       }
+      |       ~
+  387 |     }
+      |     ~
+  388 |     std::vector<std::pair<__struct7, Result>> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  390 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  391 |           {__struct7{
+      |           ~~~~~~~~~~~
+  392 |                ([&](auto v) {
+      |                ~~~~~~~~~~~~~~
+  393 |                  return std::accumulate(v.begin(), v.end(), 0.0);
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  394 |                })(([&]() {
+      |                ~~~~~~~~~~~
+  395 |                  std::vector<decltype(std::declval<T>().act_sales)> __items;
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  396 |                  for (auto y : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  397 |                    __items.push_back(y.act_sales);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  398 |                  }
+      |                  ~
+  399 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  400 |                })()),
+      |                ~~~~~~
+  401 |                g.key},
+      |                ~~~~~~~
+  402 |            Result{g.key, ([&](auto v) {
+      |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  403 |                     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  404 |                   })(([&]() {
+      |                   ~~~~~~~~~~~
+  405 |                     std::vector<decltype(std::declval<T>().act_sales)> __items;
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  406 |                     for (auto y : g.items) {
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~
+  407 |                       __items.push_back(y.act_sales);
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  408 |                     }
+      |                     ~
+  409 |                     return __items;
+      |                     ~~~~~~~~~~~~~~~
+  410 |                   })())}});
+      |                   ~~~~~~~~~
+  411 |     }
+      |     ~
+  412 |     std::sort(__items.begin(), __items.end(), [](auto &a, auto &b) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  413 |       return std::tie(a.first.f0, a.first.f1) <
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  414 |              std::tie(b.first.f0, b.first.f1);
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  415 |     });
+      |     ~~~
+  416 |     std::vector<Result> __res;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  417 |     for (auto &p : __items)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  418 |       __res.push_back(p.second);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  419 |     return __res;
+      |     ~~~~~~~~~~~~~
+  420 |   })();
+      |   ~~^~

@@ -1,0 +1,180 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:85:12: error: ‘s’ was not declared in this scope
+   85 |   decltype(s) s;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:85:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:86:13: error: ‘sr’ was not declared in this scope; did you mean ‘s’?
+   86 |   decltype((sr.returned - ss.sold)) diff;
+      |             ^~
+      |             s
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:86:27: error: ‘ss’ was not declared in this scope; did you mean ‘s’?
+   86 |   decltype((sr.returned - ss.sold)) diff;
+      |                           ^~
+      |                           s
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:86:13: error: ‘sr’ was not declared in this scope; did you mean ‘s’?
+   86 |   decltype((sr.returned - ss.sold)) diff;
+      |             ^~
+      |             s
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:86:27: error: ‘ss’ was not declared in this scope; did you mean ‘s’?
+   86 |   decltype((sr.returned - ss.sold)) diff;
+      |                           ^~
+      |                           s
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:93:42: error: request for member ‘s_store_name’ in ‘std::declval<__struct6>().__struct6::key’, which is of non-class type ‘int’
+   93 |   decltype(std::declval<__struct6>().key.s_store_name) s_store_name;
+      |                                          ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:93:42: error: request for member ‘s_store_name’ in ‘std::declval<__struct6>().__struct6::key’, which is of non-class type ‘int’
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:320:40: error: cannot convert ‘Store’ to ‘int’ in initialization
+  320 |               __items.push_back(Joined{s, (sr.returned - ss.sold)});
+      |                                        ^
+      |                                        |
+      |                                        Store
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:346:38: error: request for member ‘s_store_name’ in ‘g.__struct6::key’, which is of non-class type ‘int’
+  346 |       __items.push_back(Result{g.key.s_store_name,
+      |                                      ^~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq501930065693/001/prog.cpp:399:5: error: conversion from ‘vector<Result>’ to non-scalar type ‘vector<Joined>’ requested
+  328 |   std::vector<Joined> result = ([&]() {
+      |                                ~~~~~~~~
+  329 |     std::vector<__struct6> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  330 |     for (auto j : joined) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  331 |       auto __key = j.s;
+      |       ~~~~~~~~~~~~~~~~~
+  332 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  333 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  334 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  335 |           __g.items.push_back(Joined{j});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  336 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  337 |           break;
+      |           ~~~~~~
+  338 |         }
+      |         ~
+  339 |       }
+      |       ~
+  340 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  341 |         __groups.push_back(__struct6{__key, std::vector<Joined>{Joined{j}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  342 |       }
+      |       ~
+  343 |     }
+      |     ~
+  344 |     std::vector<Result> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  345 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  346 |       __items.push_back(Result{g.key.s_store_name,
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  347 |                                ((int)([&]() {
+      |                                ~~~~~~~~~~~~~~
+  348 |                                   std::vector<decltype(1)> __items;
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  349 |                                   for (auto x : g.items) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+  350 |                                     if (!((x.diff <= 30)))
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~
+  351 |                                       continue;
+      |                                       ~~~~~~~~~
+  352 |                                     __items.push_back(1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~
+  353 |                                   }
+      |                                   ~
+  354 |                                   return __items;
+      |                                   ~~~~~~~~~~~~~~~
+  355 |                                 })()
+      |                                 ~~~~
+  356 |                                     .size()),
+      |                                     ~~~~~~~~~
+  357 |                                ((int)([&]() {
+      |                                ~~~~~~~~~~~~~~
+  358 |                                   std::vector<decltype(1)> __items;
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  359 |                                   for (auto x : g.items) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+  360 |                                     if (!(((x.diff > 30) && (x.diff <= 60))))
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |                                       continue;
+      |                                       ~~~~~~~~~
+  362 |                                     __items.push_back(1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~
+  363 |                                   }
+      |                                   ~
+  364 |                                   return __items;
+      |                                   ~~~~~~~~~~~~~~~
+  365 |                                 })()
+      |                                 ~~~~
+  366 |                                     .size()),
+      |                                     ~~~~~~~~~
+  367 |                                ((int)([&]() {
+      |                                ~~~~~~~~~~~~~~
+  368 |                                   std::vector<decltype(1)> __items;
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |                                   for (auto x : g.items) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+  370 |                                     if (!(((x.diff > 60) && (x.diff <= 90))))
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |                                       continue;
+      |                                       ~~~~~~~~~
+  372 |                                     __items.push_back(1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~
+  373 |                                   }
+      |                                   ~
+  374 |                                   return __items;
+      |                                   ~~~~~~~~~~~~~~~
+  375 |                                 })()
+      |                                 ~~~~
+  376 |                                     .size()),
+      |                                     ~~~~~~~~~
+  377 |                                ((int)([&]() {
+      |                                ~~~~~~~~~~~~~~
+  378 |                                   std::vector<decltype(1)> __items;
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  379 |                                   for (auto x : g.items) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+  380 |                                     if (!(((x.diff > 90) && (x.diff <= 120))))
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  381 |                                       continue;
+      |                                       ~~~~~~~~~
+  382 |                                     __items.push_back(1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~
+  383 |                                   }
+      |                                   ~
+  384 |                                   return __items;
+      |                                   ~~~~~~~~~~~~~~~
+  385 |                                 })()
+      |                                 ~~~~
+  386 |                                     .size()),
+      |                                     ~~~~~~~~~
+  387 |                                ((int)([&]() {
+      |                                ~~~~~~~~~~~~~~
+  388 |                                   std::vector<decltype(1)> __items;
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |                                   for (auto x : g.items) {
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~
+  390 |                                     if (!((x.diff > 120)))
+      |                                     ~~~~~~~~~~~~~~~~~~~~~~
+  391 |                                       continue;
+      |                                       ~~~~~~~~~
+  392 |                                     __items.push_back(1);
+      |                                     ~~~~~~~~~~~~~~~~~~~~~
+  393 |                                   }
+      |                                   ~
+  394 |                                   return __items;
+      |                                   ~~~~~~~~~~~~~~~
+  395 |                                 })()
+      |                                 ~~~~
+  396 |                                     .size())});
+      |                                     ~~~~~~~~~~~
+  397 |     }
+      |     ~
+  398 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  399 |   })();
+      |   ~~^~

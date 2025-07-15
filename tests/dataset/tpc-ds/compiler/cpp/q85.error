@@ -1,0 +1,46 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:89:26: error: ‘r’ was not declared in this scope
+   89 |     std::vector<decltype(r.qty)> __items;
+      |                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:89:32: error: template argument 1 is invalid
+   89 |     std::vector<decltype(r.qty)> __items;
+      |                                ^
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:89:32: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:91:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   91 |       __items.push_back(r.qty);
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:88:22: error: no matching function for call to ‘__avg(int)’
+   88 |   auto result = __avg(([&]() {
+      |                 ~~~~~^~~~~~~~~
+   89 |     std::vector<decltype(r.qty)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   90 |     for (auto r : web_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   91 |       __items.push_back(r.qty);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+   92 |     }
+      |     ~                 
+   93 |     return __items;
+      |     ~~~~~~~~~~~~~~~   
+   94 |   })());
+      |   ~~~~~               
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:57:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   57 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:57:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq854161813206/001/prog.cpp:88:22: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+   88 |   auto result = __avg(([&]() {
+      |                 ~~~~~^~~~~~~~~
+   89 |     std::vector<decltype(r.qty)> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   90 |     for (auto r : web_returns) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   91 |       __items.push_back(r.qty);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+   92 |     }
+      |     ~                 
+   93 |     return __items;
+      |     ~~~~~~~~~~~~~~~   
+   94 |   })());
+      |   ~~~~~               

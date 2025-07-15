@@ -1,0 +1,106 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:56:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   56 |       std::vector<decltype(std::unordered_map<std::string, decltype(10)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   57 |           {std::string("qty"), 10}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   58 |           std::unordered_map<std::string, decltype(10)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   59 |               {std::string("qty"), 10}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   60 |           std::unordered_map<std::string, decltype(5)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   61 |               {std::string("qty"), 5}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:63:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   63 |       std::vector<decltype(std::unordered_map<std::string, decltype(25)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   64 |           {std::string("qty"), 25}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   65 |           std::unordered_map<std::string, decltype(25)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   66 |               {std::string("qty"), 25}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   67 |           std::unordered_map<std::string, decltype(20)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   68 |               {std::string("qty"), 20}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:70:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+   70 |       std::vector<decltype(std::unordered_map<std::string, decltype(10)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   71 |           {std::string("qty"), 10}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   72 |           std::unordered_map<std::string, decltype(10)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   73 |               {std::string("qty"), 10}},
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   74 |           std::unordered_map<std::string, decltype(13)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   75 |               {std::string("qty"), 13}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:79:42: error: ‘x’ was not declared in this scope
+   79 |                     std::vector<decltype(x.qty)> __items;
+      |                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:79:48: error: template argument 1 is invalid
+   79 |                     std::vector<decltype(x.qty)> __items;
+      |                                                ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:79:48: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:81:31: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   81 |                       __items.push_back(x.qty);
+      |                               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:81:43: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘qty’
+   81 |                       __items.push_back(x.qty);
+      |                                           ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:78:21:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:77:46: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   77 |                     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:77:57: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   77 |                     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:88:42: error: ‘x’ was not declared in this scope
+   88 |                     std::vector<decltype(x.qty)> __items;
+      |                                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:88:48: error: template argument 1 is invalid
+   88 |                     std::vector<decltype(x.qty)> __items;
+      |                                                ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:88:48: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:90:31: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   90 |                       __items.push_back(x.qty);
+      |                               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:90:43: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘qty’
+   90 |                       __items.push_back(x.qty);
+      |                                           ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:87:21:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:86:46: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   86 |                     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                            ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:86:57: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   86 |                     return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                       ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:97:41: error: ‘x’ was not declared in this scope
+   97 |                    std::vector<decltype(x.qty)> __items;
+      |                                         ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:97:47: error: template argument 1 is invalid
+   97 |                    std::vector<decltype(x.qty)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:97:47: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:99:30: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   99 |                      __items.push_back(x.qty);
+      |                              ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:99:42: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘qty’
+   99 |                      __items.push_back(x.qty);
+      |                                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:3)> [with auto:3 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:96:20:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:95:45: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+   95 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                           ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq831466913293/001/prog.cpp:95:56: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+   95 |                    return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                      ~~^~~

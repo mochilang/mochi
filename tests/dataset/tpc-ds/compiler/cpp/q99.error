@@ -1,0 +1,398 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:72:8: error: redefinition of ‘struct CatalogSale’
+   72 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:53:8: note: previous definition of ‘struct CatalogSale’
+   53 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:79:8: error: redefinition of ‘struct Warehouse’
+   79 | struct Warehouse {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:60:8: note: previous definition of ‘struct Warehouse’
+   60 | struct Warehouse {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:83:8: error: redefinition of ‘struct ShipMode’
+   83 | struct ShipMode {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:64:8: note: previous definition of ‘struct ShipMode’
+   64 | struct ShipMode {
+      |        ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:87:8: error: redefinition of ‘struct CallCenter’
+   87 | struct CallCenter {
+      |        ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:68:8: note: previous definition of ‘struct CallCenter’
+   68 | struct CallCenter {
+      |        ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:92:19: error: ‘w’ was not declared in this scope
+   92 |   decltype(substr(w.w_warehouse_name, 0, 20)) warehouse;
+      |                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:92:12: error: ‘substr’ was not declared in this scope
+   92 |   decltype(substr(w.w_warehouse_name, 0, 20)) warehouse;
+      |            ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:92:19: error: ‘w’ was not declared in this scope
+   92 |   decltype(substr(w.w_warehouse_name, 0, 20)) warehouse;
+      |                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:92:12: error: ‘substr’ was not declared in this scope
+   92 |   decltype(substr(w.w_warehouse_name, 0, 20)) warehouse;
+      |            ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:93:12: error: ‘sm’ was not declared in this scope; did you mean ‘tm’?
+   93 |   decltype(sm.sm_type) sm_type;
+      |            ^~
+      |            tm
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:93:12: error: ‘sm’ was not declared in this scope; did you mean ‘tm’?
+   93 |   decltype(sm.sm_type) sm_type;
+      |            ^~
+      |            tm
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:94:12: error: ‘cc’ was not declared in this scope
+   94 |   decltype(cc.cc_name) cc_name;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:94:12: error: ‘cc’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:97:12: error: ‘cs’ was not declared in this scope
+   97 |   decltype(cs) cs;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:97:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:98:12: error: ‘w’ was not declared in this scope
+   98 |   decltype(w) w;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:98:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:99:12: error: ‘sm’ was not declared in this scope; did you mean ‘tm’?
+   99 |   decltype(sm) sm;
+      |            ^~
+      |            tm
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:99:12: error: ‘sm’ was not declared in this scope; did you mean ‘tm’?
+   99 |   decltype(sm) sm;
+      |            ^~
+      |            tm
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:100:12: error: ‘cc’ was not declared in this scope; did you mean ‘cs’?
+  100 |   decltype(cc) cc;
+      |            ^~
+      |            cs
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:100:12: error: ‘cc’ was not declared in this scope; did you mean ‘cs’?
+  100 |   decltype(cc) cc;
+      |            ^~
+      |            cs
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:191:13: error: redefinition of ‘void __json(const CallCenter&)’
+  191 | inline void __json(const CallCenter &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:116:13: note: ‘void __json(const CallCenter&)’ previously defined here
+  116 | inline void __json(const CallCenter &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:206:13: error: redefinition of ‘void __json(const CatalogSale&)’
+  206 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:131:13: note: ‘void __json(const CatalogSale&)’ previously defined here
+  131 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:236:13: error: redefinition of ‘void __json(const ShipMode&)’
+  236 | inline void __json(const ShipMode &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:161:13: note: ‘void __json(const ShipMode&)’ previously defined here
+  161 | inline void __json(const ShipMode &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:276:13: error: redefinition of ‘void __json(const Warehouse&)’
+  276 | inline void __json(const Warehouse &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:176:13: note: ‘void __json(const Warehouse&)’ previously defined here
+  176 | inline void __json(const Warehouse &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:376:34: error: ‘substr’ was not declared in this scope
+  376 |             auto __key = Grouped{substr(w.w_warehouse_name, 0, 20), sm.sm_type,
+      |                                  ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:381:47: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  381 |                 __g.items.push_back(__struct6{cs, w, sm, cc});
+      |                                               ^~
+      |                                               |
+      |                                               CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:388:59: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  388 |                   __key, std::vector<__struct6>{__struct6{cs, w, sm, cc}}});
+      |                                                           ^~
+      |                                                           |
+      |                                                           CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:388:73: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
+  388 |                   __key, std::vector<__struct6>{__struct6{cs, w, sm, cc}}});
+      |                                                                         ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:6:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; value_type = std::vector<__struct6>::value_type; allocator_type = std::allocator<__struct6>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; allocator_type = std::allocator<__struct6>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:401:26: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  401 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 30)))
+      |                          ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:401:46: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  401 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 30)))
+      |                                              ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:411:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  411 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 30) &&
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:411:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  411 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 30) &&
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:412:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  412 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 60))))
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:412:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  412 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 60))))
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:422:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  422 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 60) &&
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:422:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  422 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 60) &&
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:423:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  423 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 90))))
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:423:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  423 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 90))))
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:433:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  433 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 90) &&
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:433:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  433 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 90) &&
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:434:27: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  434 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 120))))
+      |                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:434:47: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  434 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 120))))
+      |                                               ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:444:26: error: ‘struct __struct6’ has no member named ‘cs_ship_date_sk’
+  444 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) > 120)))
+      |                          ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:444:46: error: ‘struct __struct6’ has no member named ‘cs_sold_date_sk’
+  444 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) > 120)))
+      |                                              ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq994045550400/001/prog.cpp:453:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
+  364 |   std::vector<__struct6> grouped = ([&]() {
+      |                                    ~~~~~~~~
+  365 |     std::vector<__struct7> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |     for (auto cs : catalog_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |       for (auto w : warehouse) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  368 |         if (!((cs.cs_warehouse_sk == w.w_warehouse_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |           continue;
+      |           ~~~~~~~~~
+  370 |         for (auto sm : ship_mode) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |           if (!((cs.cs_ship_mode_sk == sm.sm_ship_mode_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  372 |             continue;
+      |             ~~~~~~~~~
+  373 |           for (auto cc : call_center) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  374 |             if (!((cs.cs_call_center_sk == cc.cc_call_center_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |               continue;
+      |               ~~~~~~~~~
+  376 |             auto __key = Grouped{substr(w.w_warehouse_name, 0, 20), sm.sm_type,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  377 |                                  cc.cc_name};
+      |                                  ~~~~~~~~~~~~
+  378 |             bool __found = false;
+      |             ~~~~~~~~~~~~~~~~~~~~~
+  379 |             for (auto &__g : __groups) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  380 |               if (__g.key == __key) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~
+  381 |                 __g.items.push_back(__struct6{cs, w, sm, cc});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  382 |                 __found = true;
+      |                 ~~~~~~~~~~~~~~~
+  383 |                 break;
+      |                 ~~~~~~
+  384 |               }
+      |               ~
+  385 |             }
+      |             ~
+  386 |             if (!__found) {
+      |             ~~~~~~~~~~~~~~~
+  387 |               __groups.push_back(__struct7{
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  388 |                   __key, std::vector<__struct6>{__struct6{cs, w, sm, cc}}});
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |             }
+      |             ~
+  390 |           }
+      |           ~
+  391 |         }
+      |         ~
+  392 |       }
+      |       ~
+  393 |     }
+      |     ~
+  394 |     std::vector<__struct8> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  395 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  396 |       __items.push_back(__struct8{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  397 |           g.key.warehouse, g.key.sm_type, g.key.cc_name,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  398 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  399 |              std::vector<__struct6> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  400 |              for (auto x : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  401 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 30)))
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  402 |                  continue;
+      |                  ~~~~~~~~~
+  403 |                __items.push_back(x);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  404 |              }
+      |              ~
+  405 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  406 |            })()
+      |            ~~~~
+  407 |                .size()),
+      |                ~~~~~~~~~
+  408 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  409 |              std::vector<__struct6> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  410 |              for (auto x : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  411 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 30) &&
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  412 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 60))))
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  413 |                  continue;
+      |                  ~~~~~~~~~
+  414 |                __items.push_back(x);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  415 |              }
+      |              ~
+  416 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  417 |            })()
+      |            ~~~~
+  418 |                .size()),
+      |                ~~~~~~~~~
+  419 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  420 |              std::vector<__struct6> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  421 |              for (auto x : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  422 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 60) &&
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  423 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 90))))
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  424 |                  continue;
+      |                  ~~~~~~~~~
+  425 |                __items.push_back(x);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  426 |              }
+      |              ~
+  427 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  428 |            })()
+      |            ~~~~
+  429 |                .size()),
+      |                ~~~~~~~~~
+  430 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  431 |              std::vector<__struct6> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  432 |              for (auto x : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  433 |                if (!((((x.cs_ship_date_sk - x.cs_sold_date_sk) > 90) &&
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  434 |                       ((x.cs_ship_date_sk - x.cs_sold_date_sk) <= 120))))
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  435 |                  continue;
+      |                  ~~~~~~~~~
+  436 |                __items.push_back(x);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  437 |              }
+      |              ~
+  438 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  439 |            })()
+      |            ~~~~
+  440 |                .size()),
+      |                ~~~~~~~~~
+  441 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  442 |              std::vector<__struct6> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  443 |              for (auto x : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  444 |                if (!(((x.cs_ship_date_sk - x.cs_sold_date_sk) > 120)))
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  445 |                  continue;
+      |                  ~~~~~~~~~
+  446 |                __items.push_back(x);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  447 |              }
+      |              ~
+  448 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  449 |            })()
+      |            ~~~~
+  450 |                .size())});
+      |                ~~~~~~~~~~~
+  451 |     }
+      |     ~
+  452 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  453 |   })();
+      |   ~~^~

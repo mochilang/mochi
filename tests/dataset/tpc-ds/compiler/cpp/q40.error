@@ -1,0 +1,860 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:80:12: error: ‘w’ was not declared in this scope
+   80 |   decltype(w.state) w_state;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:80:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:81:12: error: ‘i’ was not declared in this scope
+   81 |   decltype(i.item_id) i_item_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:81:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:82:12: error: ‘d’ was not declared in this scope
+   82 |   decltype(d.date) sold_date;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:82:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:295:46: error: no match for ‘operator==’ (operand types are ‘CatalogReturn’ and ‘std::nullptr_t’)
+  295 |                            (cs.price - (((cr == nullptr) ? 0 : cr.refunded)))});
+      |                                           ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:315:46: error: no match for ‘operator==’ (operand types are ‘CatalogReturn’ and ‘std::nullptr_t’)
+  315 |                            (cs.price - (((cr == nullptr) ? 0 : cr.refunded)))});
+      |                                           ~~~^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:330:21: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+  330 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 Result Result
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:51: error: no match for ‘operator<’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+In file included from /usr/include/c++/13/string:48,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:2:
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const _CharT*’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/map:63,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:3:
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/map:64:
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:7:
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:51: error: no match for ‘operator<’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const _CharT*’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:347:53: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                                                     ^~~~~~~~~~
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:349:26: error: template argument 1 is invalid
+  349 |                     : 0))>
+      |                          ^
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:349:26: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:47: error: no match for ‘operator<’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                   ~~~~~~~~~~~ ^ ~~~~~~~~~~
+      |                                     |           |
+      |                                     int         std::__cxx11::basic_string<char>
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  455 |     operator<(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:455:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  500 |     operator<(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:500:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1705 |     operator<(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1705:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator<(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1770 |     operator<(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1770:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator<(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  835 |     operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:835:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/string_view:671:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  671 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:671:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/string_view:678:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  678 |     operator< (basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:678:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/string_view:686:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator<(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  686 |     operator< (__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:686:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3829 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3829:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3843 |     operator<(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3843:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator<(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3856 |     operator<(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3856:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const _CharT*’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator<(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1961 |     operator<(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1961:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1551 |     operator<(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1551:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator<(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1172 |     operator<(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1172:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator<(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2079 |     operator<(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2079:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:352:49: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |                                                 ^~~~~~~~~~
+/usr/include/c++/13/system_error:324:3: note: candidate: ‘bool std::operator<(const error_code&, const error_code&)’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:324:31: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  324 |   operator<(const error_code& __lhs, const error_code& __rhs) noexcept
+      |             ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:507:3: note: candidate: ‘bool std::operator<(const error_condition&, const error_condition&)’
+  507 |   operator<(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:507:36: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  507 |   operator<(const error_condition& __lhs,
+      |             ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:345:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:344:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  344 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:344:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  344 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:55: error: no match for ‘operator>=’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  483 |     operator>=(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  527 |     operator>=(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1735 |     operator>=(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1791 |     operator>=(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator>=(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  860 |     operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:737:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  737 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:737:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:744:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  744 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:744:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:752:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  752 |     operator>=(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:752:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3952 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3966 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3979 |     operator>=(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const _CharT*’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator>=(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1992 |     operator>=(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1579 |     operator>=(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1200 |     operator>=(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator>=(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2104 |     operator>=(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:55: error: no match for ‘operator>=’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  483 |     operator>=(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  527 |     operator>=(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1735 |     operator>=(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1791 |     operator>=(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator>=(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  860 |     operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:737:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  737 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:737:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:744:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  744 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:744:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/string_view:752:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  752 |     operator>=(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:752:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3952 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3966 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3979 |     operator>=(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const _CharT*’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator>=(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1992 |     operator>=(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1579 |     operator>=(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1200 |     operator>=(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator>=(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2104 |     operator>=(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:359:58: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                                                          ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:361:30: error: template argument 1 is invalid
+  361 |                         : 0))>
+      |                              ^
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:361:30: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                           ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:51: error: no match for ‘operator>=’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                       ~~~~~~~~~~~ ^~ ~~~~~~~~~~
+      |                                         |            |
+      |                                         int          std::__cxx11::basic_string<char>
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  483 |     operator>=(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:483:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  527 |     operator>=(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:527:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1735 |     operator>=(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1735:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator>=(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1791 |     operator>=(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1791:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator>=(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  860 |     operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:860:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/string_view:737:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  737 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:737:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/string_view:744:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  744 |     operator>=(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:744:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/string_view:752:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator>=(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  752 |     operator>=(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:752:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3952 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3952:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3966 |     operator>=(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3966:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator>=(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3979 |     operator>=(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3979:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const _CharT*’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator>=(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1992 |     operator>=(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1992:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const map<_Key, _Tp, _Compare, _Allocator>&, const map<_Key, _Tp, _Compare, _Allocator>&)’
+ 1579 |     operator>=(const map<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_map.h:1579:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::map<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note: candidate: ‘template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator>=(const multimap<_Key, _Tp, _Compare, _Allocator>&, const multimap<_Key, _Tp, _Compare, _Allocator>&)’
+ 1200 |     operator>=(const multimap<_Key, _Tp, _Compare, _Alloc>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_multimap.h:1200:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::multimap<_Key, _Tp, _Compare, _Allocator>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator>=(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2104 |     operator>=(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2104:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:364:54: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                                                      ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:356:77:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:356:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  356 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                 ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:356:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  356 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                            ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq40497414356/001/prog.cpp:370:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<Record>’ requested
+  324 |   std::vector<Record> result = ([&]() {
+      |                                ~~~~~~~~
+  325 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  326 |     for (auto r : records) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~
+  327 |       auto __key = Result{r.w_state, r.i_item_id};
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  328 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  329 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  330 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  331 |           __g.items.push_back(Record{r});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  332 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  333 |           break;
+      |           ~~~~~~
+  334 |         }
+      |         ~
+  335 |       }
+      |       ~
+  336 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  337 |         __groups.push_back(__struct8{__key, std::vector<Record>{Record{r}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  338 |       }
+      |       ~
+  339 |     }
+      |     ~
+  340 |     std::vector<__struct9> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  341 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  342 |       __items.push_back(__struct9{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  343 |           g.key.w_state, g.key.i_item_id, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  344 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  345 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  346 |             std::vector<decltype((
+      |             ~~~~~~~~~~~~~~~~~~~~~~
+  347 |                 (std::declval<Record>().sold_date < sales_date)
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  348 |                     ? std::declval<Record>().net
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  349 |                     : 0))>
+      |                     ~~~~~~
+  350 |                 __items;
+      |                 ~~~~~~~~
+  351 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  352 |               __items.push_back(((x.sold_date < sales_date) ? x.net : 0));
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  353 |             }
+      |             ~
+  354 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  355 |           })()),
+      |           ~~~~~~
+  356 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  357 |               ([&]() {
+      |               ~~~~~~~~
+  358 |                 std::vector<decltype((
+      |                 ~~~~~~~~~~~~~~~~~~~~~~
+  359 |                     (std::declval<Record>().sold_date >= sales_date)
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  360 |                         ? std::declval<Record>().net
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |                         : 0))>
+      |                         ~~~~~~
+  362 |                     __items;
+      |                     ~~~~~~~~
+  363 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  364 |                   __items.push_back(((x.sold_date >= sales_date) ? x.net : 0));
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  365 |                 }
+      |                 ~
+  366 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  367 |               })())});
+      |               ~~~~~~~~
+  368 |     }
+      |     ~
+  369 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  370 |   })();
+      |   ~~^~

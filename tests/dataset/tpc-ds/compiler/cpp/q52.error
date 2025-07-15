@@ -1,0 +1,259 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:73:12: error: ‘d’ was not declared in this scope
+   73 |   decltype(d.d_year) year;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:73:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:74:12: error: ‘i’ was not declared in this scope
+   74 |   decltype(i.i_brand_id) brand_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:74:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:75:12: error: ‘i’ was not declared in this scope
+   75 |   decltype(i.i_brand) brand;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:75:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:78:12: error: ‘ss’ was not declared in this scope
+   78 |   decltype(ss) ss;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:78:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:79:12: error: ‘i’ was not declared in this scope
+   79 |   decltype(i) i;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:79:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:80:12: error: ‘d’ was not declared in this scope
+   80 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:80:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:232:59: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  232 |           auto __key = Filtered{d.d_year, i.i_brand_id, i.i_brand};
+      |                                                         ~~^~~~~~~
+      |                                                           |
+      |                                                           std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:236:45: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  236 |               __g.items.push_back(__struct5{ss, i, d});
+      |                                             ^~
+      |                                             |
+      |                                             StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:243:67: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  243 |                 __struct6{__key, std::vector<__struct5>{__struct5{ss, i, d}}});
+      |                                                                   ^~
+      |                                                                   |
+      |                                                                   StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:243:76: error: no matching function for call to ‘std::vector<__struct5>::vector(<brace-enclosed initializer list>)’
+  243 |                 __struct6{__key, std::vector<__struct5>{__struct5{ss, i, d}}});
+      |                                                                            ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:9:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; std::__type_identity_t<_Alloc> = std::allocator<__struct5>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; std::__type_identity_t<_Alloc> = std::allocator<__struct5>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; size_type = long unsigned int; value_type = std::vector<__struct5>::value_type; allocator_type = std::allocator<__struct5>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; size_type = long unsigned int; allocator_type = std::allocator<__struct5>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct5; _Alloc = std::allocator<__struct5>; allocator_type = std::allocator<__struct5>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct5; _Alloc = std::allocator<__struct5>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:254:60: error: ‘struct __struct5’ has no member named ‘price’
+  254 |             std::vector<decltype(std::declval<__struct5>().price)> __items;
+      |                                                            ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:254:60: error: ‘struct __struct5’ has no member named ‘price’
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:254:66: error: template argument 1 is invalid
+  254 |             std::vector<decltype(std::declval<__struct5>().price)> __items;
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:254:66: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:256:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  256 |               __items.push_back(x.price);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:256:35: error: ‘struct __struct5’ has no member named ‘price’
+  256 |               __items.push_back(x.price);
+      |                                   ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:253:13:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:252:38: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  252 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                    ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:252:49: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  252 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                               ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:262:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<__struct5>’ requested
+  222 |   std::vector<__struct5> filtered = ([&]() {
+      |                                     ~~~~~~~~
+  223 |     std::vector<__struct6> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  224 |     for (auto ss : store_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  225 |       for (auto i : item) {
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  226 |         if (!(((ss.item == i.i_item_sk) && (i.i_manager_id == 1))))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  227 |           continue;
+      |           ~~~~~~~~~
+  228 |         for (auto d : date_dim) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+  229 |           if (!((((ss.sold_date == d.d_date_sk) && (d.d_year == 2001)) &&
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  230 |                  (d.d_moy == 11))))
+      |                  ~~~~~~~~~~~~~~~~~~
+  231 |             continue;
+      |             ~~~~~~~~~
+  232 |           auto __key = Filtered{d.d_year, i.i_brand_id, i.i_brand};
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  233 |           bool __found = false;
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  234 |           for (auto &__g : __groups) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  235 |             if (__g.key == __key) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~
+  236 |               __g.items.push_back(__struct5{ss, i, d});
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  237 |               __found = true;
+      |               ~~~~~~~~~~~~~~~
+  238 |               break;
+      |               ~~~~~~
+  239 |             }
+      |             ~
+  240 |           }
+      |           ~
+  241 |           if (!__found) {
+      |           ~~~~~~~~~~~~~~~
+  242 |             __groups.push_back(
+      |             ~~~~~~~~~~~~~~~~~~~
+  243 |                 __struct6{__key, std::vector<__struct5>{__struct5{ss, i, d}}});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  244 |           }
+      |           ~
+  245 |         }
+      |         ~
+  246 |       }
+      |       ~
+  247 |     }
+      |     ~
+  248 |     std::vector<__struct7> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  249 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  250 |       __items.push_back(__struct7{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  251 |           g.key.year, g.key.brand_id, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  252 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  253 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  254 |             std::vector<decltype(std::declval<__struct5>().price)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  255 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  256 |               __items.push_back(x.price);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  257 |             }
+      |             ~
+  258 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  259 |           })())});
+      |           ~~~~~~~~
+  260 |     }
+      |     ~
+  261 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  262 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:265:54: error: ‘struct __struct5’ has no member named ‘d_year’
+  265 |         std::pair<decltype(std::declval<__struct5>().d_year), __struct5>>
+      |                                                      ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:265:54: error: ‘struct __struct5’ has no member named ‘d_year’
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:265:63: error: template argument 1 is invalid
+  265 |         std::pair<decltype(std::declval<__struct5>().d_year), __struct5>>
+      |                                                               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:265:72: error: template argument 1 is invalid
+  265 |         std::pair<decltype(std::declval<__struct5>().d_year), __struct5>>
+      |                                                                        ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:265:72: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:268:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  268 |       __items.push_back({std::vector<decltype(r.d_year)>{
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:268:49: error: ‘struct __struct5’ has no member named ‘d_year’
+  268 |       __items.push_back({std::vector<decltype(r.d_year)>{
+      |                                                 ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:268:49: error: ‘struct __struct5’ has no member named ‘d_year’
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:268:56: error: template argument 1 is invalid
+  268 |       __items.push_back({std::vector<decltype(r.d_year)>{
+      |                                                        ^
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:268:56: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:269:32: error: ‘struct __struct5’ has no member named ‘d_year’
+  269 |                              r.d_year, (-r.ext_price), r.brand_id},
+      |                                ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:269:44: error: ‘struct __struct5’ has no member named ‘ext_price’
+  269 |                              r.d_year, (-r.ext_price), r.brand_id},
+      |                                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:269:58: error: ‘struct __struct5’ has no member named ‘brand_id’
+  269 |                              r.d_year, (-r.ext_price), r.brand_id},
+      |                                                          ^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:272:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  272 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:272:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  272 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:275:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  275 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq521107151015/001/prog.cpp:275:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  275 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

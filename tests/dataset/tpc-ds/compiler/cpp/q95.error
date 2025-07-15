@@ -1,0 +1,342 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:79:8: error: redefinition of ‘struct WebSale’
+   79 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:55:8: note: previous definition of ‘struct WebSale’
+   55 | struct WebSale {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:88:8: error: redefinition of ‘struct DateDim’
+   88 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:67:8: note: previous definition of ‘struct DateDim’
+   67 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:96:8: error: redefinition of ‘struct WebSite’
+   96 | struct WebSite {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:75:8: note: previous definition of ‘struct WebSite’
+   75 | struct WebSite {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:215:13: error: redefinition of ‘void __json(const DateDim&)’
+  215 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:120:13: note: ‘void __json(const DateDim&)’ previously defined here
+  120 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:250:13: error: redefinition of ‘void __json(const WebSite&)’
+  250 | inline void __json(const WebSite &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:185:13: note: ‘void __json(const WebSite&)’ previously defined here
+  185 | inline void __json(const WebSite &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:265:13: error: redefinition of ‘void __json(const WebSale&)’
+  265 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:145:13: note: ‘void __json(const WebSale&)’ previously defined here
+  145 | inline void __json(const WebSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:306:15: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+  306 | auto distinct(auto xs) {
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:320:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+  320 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  321 |           {std::string("wr_order_number"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  322 |           std::unordered_map<std::string, decltype(1)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  323 |               {std::string("wr_order_number"), 1}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:330:59: error: ‘ws1’ was not declared in this scope
+  330 |         decltype(std::unordered_map<std::string, decltype(ws1.ws_order_number)>{
+      |                                                           ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:330:79: error: template argument 2 is invalid
+  330 |         decltype(std::unordered_map<std::string, decltype(ws1.ws_order_number)>{
+      |                                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:330:79: error: template argument 5 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:331:68: error: template argument 1 is invalid
+  331 |             {std::string("ws_order_number"), ws1.ws_order_number}})>
+      |                                                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:331:68: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:338:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  338 |         __items.push_back(
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:346:26: error: ‘ws’ was not declared in this scope; did you mean ‘std::ws’?
+  346 |     std::vector<decltype(ws)> __items;
+      |                          ^~
+      |                          std::ws
+In file included from /usr/include/c++/13/istream:1106,
+                 from /usr/include/c++/13/iostream:42,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:3:
+/usr/include/c++/13/bits/istream.tcc:1070:5: note: ‘std::ws’ declared here
+ 1070 |     ws(basic_istream<_CharT, _Traits>& __in)
+      |     ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:346:29: error: template argument 1 is invalid
+  346 |     std::vector<decltype(ws)> __items;
+      |                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:346:29: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:361:49: error: ‘x’ was not declared in this scope
+  361 |                            std::vector<decltype(x.ws_order_number)> __items;
+      |                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:361:67: error: template argument 1 is invalid
+  361 |                            std::vector<decltype(x.ws_order_number)> __items;
+      |                                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:361:67: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:362:42: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  362 |                            for (auto x : ws_wh) {
+      |                                          ^~~~~
+      |                                          std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:362:42: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  362 |                            for (auto x : ws_wh) {
+      |                                          ^~~~~
+      |                                          std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:363:38: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  363 |                              __items.push_back(x.ws_order_number);
+      |                                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:367:31: error: request for member ‘begin’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & ws_wh)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  367 |                              .begin(),
+      |                               ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:369:49: error: ‘x’ was not declared in this scope
+  369 |                            std::vector<decltype(x.ws_order_number)> __items;
+      |                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:369:67: error: template argument 1 is invalid
+  369 |                            std::vector<decltype(x.ws_order_number)> __items;
+      |                                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:369:67: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:370:42: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  370 |                            for (auto x : ws_wh) {
+      |                                          ^~~~~
+      |                                          std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:370:42: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  370 |                            for (auto x : ws_wh) {
+      |                                          ^~~~~
+      |                                          std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:371:38: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  371 |                              __items.push_back(x.ws_order_number);
+      |                                      ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:375:31: error: request for member ‘end’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & ws_wh)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  375 |                              .end(),
+      |                               ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:378:45: error: ‘x’ was not declared in this scope
+  378 |                        std::vector<decltype(x.ws_order_number)> __items;
+      |                                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:378:63: error: template argument 1 is invalid
+  378 |                        std::vector<decltype(x.ws_order_number)> __items;
+      |                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:378:63: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:379:38: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  379 |                        for (auto x : ws_wh) {
+      |                                      ^~~~~
+      |                                      std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:379:38: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  379 |                        for (auto x : ws_wh) {
+      |                                      ^~~~~
+      |                                      std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:380:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  380 |                          __items.push_back(x.ws_order_number);
+      |                                  ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:384:27: error: request for member ‘end’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & ws_wh)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  384 |                          .end())) &&
+      |                           ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:387:48: error: ‘wr’ was not declared in this scope; did you mean ‘w’?
+  387 |                           std::vector<decltype(wr.wr_order_number)> __items;
+      |                                                ^~
+      |                                                w
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:387:67: error: template argument 1 is invalid
+  387 |                           std::vector<decltype(wr.wr_order_number)> __items;
+      |                                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:387:67: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:389:37: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  389 |                             __items.push_back(wr.wr_order_number);
+      |                                     ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:389:50: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘wr_order_number’
+  389 |                             __items.push_back(wr.wr_order_number);
+      |                                                  ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:393:30: error: request for member ‘begin’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & web_returns)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  393 |                             .begin(),
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:395:48: error: ‘wr’ was not declared in this scope; did you mean ‘w’?
+  395 |                           std::vector<decltype(wr.wr_order_number)> __items;
+      |                                                ^~
+      |                                                w
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:395:67: error: template argument 1 is invalid
+  395 |                           std::vector<decltype(wr.wr_order_number)> __items;
+      |                                                                   ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:395:67: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:397:37: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  397 |                             __items.push_back(wr.wr_order_number);
+      |                                     ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:397:50: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘wr_order_number’
+  397 |                             __items.push_back(wr.wr_order_number);
+      |                                                  ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:401:30: error: request for member ‘end’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & web_returns)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  401 |                             .end(),
+      |                              ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:404:44: error: ‘wr’ was not declared in this scope; did you mean ‘w’?
+  404 |                       std::vector<decltype(wr.wr_order_number)> __items;
+      |                                            ^~
+      |                                            w
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:404:63: error: template argument 1 is invalid
+  404 |                       std::vector<decltype(wr.wr_order_number)> __items;
+      |                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:404:63: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:406:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  406 |                         __items.push_back(wr.wr_order_number);
+      |                                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:406:46: error: ‘class std::__cxx11::basic_string<char>’ has no member named ‘wr_order_number’
+  406 |                         __items.push_back(wr.wr_order_number);
+      |                                              ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:410:26: error: request for member ‘end’ in ‘<lambda closure object>main()::<lambda()>::<lambda()>{(* & web_returns)}.main()::<lambda()>::<lambda()>()’, which is of non-class type ‘int’
+  410 |                         .end()))))
+      |                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:412:21: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  412 |             __items.push_back(ws);
+      |                     ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:420:47: error: ‘x’ was not declared in this scope
+  420 |                          std::vector<decltype(x.ws_order_number)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:420:65: error: template argument 1 is invalid
+  420 |                          std::vector<decltype(x.ws_order_number)> __items;
+      |                                                                 ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:420:65: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:421:40: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  421 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:421:40: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  421 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:422:36: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  422 |                            __items.push_back(x.ws_order_number);
+      |                                    ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In instantiation of ‘auto distinct(auto:1) [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:419:32:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:308:3: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  308 |   for (auto x : xs) {
+      |   ^~~
+      |   std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:308:3: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  308 |   for (auto x : xs) {
+      |   ^~~
+      |   std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:309:19: error: ‘contains’ was not declared in this scope
+  309 |     if ((!contains(out, x))) {
+      |           ~~~~~~~~^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:430:47: error: ‘x’ was not declared in this scope
+  430 |                          std::vector<decltype(x.ws_ext_ship_cost)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:430:66: error: template argument 1 is invalid
+  430 |                          std::vector<decltype(x.ws_ext_ship_cost)> __items;
+      |                                                                  ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:430:66: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:431:40: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  431 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:431:40: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  431 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:432:36: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  432 |                            __items.push_back(x.ws_ext_ship_cost);
+      |                                    ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:2)> [with auto:2 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:429:26:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:428:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  428 |                          return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                 ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:428:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  428 |                          return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                            ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:439:47: error: ‘x’ was not declared in this scope
+  439 |                          std::vector<decltype(x.ws_net_profit)> __items;
+      |                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:439:63: error: template argument 1 is invalid
+  439 |                          std::vector<decltype(x.ws_net_profit)> __items;
+      |                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:439:63: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:440:40: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  440 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:440:40: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  440 |                          for (auto x : filtered) {
+      |                                        ^~~~~~~~
+      |                                        std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:441:36: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  441 |                            __items.push_back(x.ws_net_profit);
+      |                                    ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:3)> [with auto:3 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:438:26:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:437:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  437 |                          return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                 ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq951187726932/001/prog.cpp:437:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  437 |                          return std::accumulate(v.begin(), v.end(), 0.0);
+      |                                                            ~~^~~

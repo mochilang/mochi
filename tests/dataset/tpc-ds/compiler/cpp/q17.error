@@ -1,0 +1,252 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:88:8: error: redefinition of ‘struct StoreSale’
+   88 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:54:8: note: previous definition of ‘struct StoreSale’
+   54 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:96:8: error: redefinition of ‘struct StoreReturn’
+   96 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:62:8: note: previous definition of ‘struct StoreReturn’
+   62 | struct StoreReturn {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:103:8: error: redefinition of ‘struct CatalogSale’
+  103 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:69:8: note: previous definition of ‘struct CatalogSale’
+   69 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:109:8: error: redefinition of ‘struct DateDim’
+  109 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:75:8: note: previous definition of ‘struct DateDim’
+   75 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:113:8: error: redefinition of ‘struct Store’
+  113 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:79:8: note: previous definition of ‘struct Store’
+   79 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:117:8: error: redefinition of ‘struct Item’
+  117 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:83:8: note: previous definition of ‘struct Item’
+   83 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:123:12: error: ‘ss’ was not declared in this scope
+  123 |   decltype(ss.ss_quantity) qty;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:123:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:124:12: error: ‘sr’ was not declared in this scope
+  124 |   decltype(sr.sr_return_quantity) ret;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:124:12: error: ‘sr’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:125:12: error: ‘cs’ was not declared in this scope
+  125 |   decltype(cs.cs_quantity) csq;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:125:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:126:12: error: ‘i’ was not declared in this scope
+  126 |   decltype(i.i_item_id) i_item_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:126:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:127:12: error: ‘i’ was not declared in this scope
+  127 |   decltype(i.i_item_desc) i_item_desc;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:127:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:128:12: error: ‘s’ was not declared in this scope
+  128 |   decltype(s.s_state) s_state;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:128:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:304:13: error: redefinition of ‘void __json(const CatalogSale&)’
+  304 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:164:13: note: ‘void __json(const CatalogSale&)’ previously defined here
+  164 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:329:13: error: redefinition of ‘void __json(const DateDim&)’
+  329 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:189:13: note: ‘void __json(const DateDim&)’ previously defined here
+  189 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:444:13: error: redefinition of ‘void __json(const Item&)’
+  444 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:204:13: note: ‘void __json(const Item&)’ previously defined here
+  204 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:499:13: error: redefinition of ‘void __json(const Store&)’
+  499 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:224:13: note: ‘void __json(const Store&)’ previously defined here
+  224 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:514:13: error: redefinition of ‘void __json(const StoreReturn&)’
+  514 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:239:13: note: ‘void __json(const StoreReturn&)’ previously defined here
+  239 | inline void __json(const StoreReturn &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:544:13: error: redefinition of ‘void __json(const StoreSale&)’
+  544 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:269:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  269 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:645:27: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  645 |                         i.i_item_id, i.i_item_desc, s.s_state});
+      |                         ~~^~~~~~~~~
+      |                           |
+      |                           std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:662:21: error: no match for ‘operator==’ (operand types are ‘Result’ and ‘Result’)
+  662 |         if (__g.key == __key) {
+      |             ~~~~~~~ ^~ ~~~~~
+      |                 |      |
+      |                 Result Result
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq172066913715/001/prog.cpp:726:5: error: conversion from ‘vector<__struct10>’ to non-scalar type ‘vector<Joined>’ requested
+  656 |   std::vector<Joined> result = ([&]() {
+      |                                ~~~~~~~~
+  657 |     std::vector<__struct9> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  658 |     for (auto j : joined) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  659 |       auto __key = Result{j.i_item_id, j.i_item_desc, j.s_state};
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  660 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  661 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  662 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  663 |           __g.items.push_back(Joined{j});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  664 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  665 |           break;
+      |           ~~~~~~
+  666 |         }
+      |         ~
+  667 |       }
+      |       ~
+  668 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  669 |         __groups.push_back(__struct9{__key, std::vector<Joined>{Joined{j}}});
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  670 |       }
+      |       ~
+  671 |     }
+      |     ~
+  672 |     std::vector<__struct10> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  673 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  674 |       __items.push_back(__struct10{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  675 |           g.key.i_item_id, g.key.i_item_desc, g.key.s_state,
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  676 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  677 |              std::vector<Joined> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  678 |              for (auto _ : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  679 |                __items.push_back(_);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  680 |              }
+      |              ~
+  681 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  682 |            })()
+      |            ~~~~
+  683 |                .size()),
+      |                ~~~~~~~~~
+  684 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  685 |             std::vector<decltype(std::declval<Joined>().qty)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  686 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  687 |               __items.push_back(x.qty);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+  688 |             }
+      |             ~
+  689 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  690 |           })()),
+      |           ~~~~~~
+  691 |           0, 0,
+      |           ~~~~~
+  692 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  693 |              std::vector<Joined> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  694 |              for (auto _ : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  695 |                __items.push_back(_);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  696 |              }
+      |              ~
+  697 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  698 |            })()
+      |            ~~~~
+  699 |                .size()),
+      |                ~~~~~~~~~
+  700 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  701 |             std::vector<decltype(std::declval<Joined>().ret)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  702 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  703 |               __items.push_back(x.ret);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+  704 |             }
+      |             ~
+  705 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  706 |           })()),
+      |           ~~~~~~
+  707 |           0, 0,
+      |           ~~~~~
+  708 |           ((int)([&]() {
+      |           ~~~~~~~~~~~~~~
+  709 |              std::vector<Joined> __items;
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  710 |              for (auto _ : g.items) {
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~
+  711 |                __items.push_back(_);
+      |                ~~~~~~~~~~~~~~~~~~~~~
+  712 |              }
+      |              ~
+  713 |              return __items;
+      |              ~~~~~~~~~~~~~~~
+  714 |            })()
+      |            ~~~~
+  715 |                .size()),
+      |                ~~~~~~~~~
+  716 |           __avg(([&]() {
+      |           ~~~~~~~~~~~~~~
+  717 |             std::vector<decltype(std::declval<Joined>().csq)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  718 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  719 |               __items.push_back(x.csq);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~
+  720 |             }
+      |             ~
+  721 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  722 |           })()),
+      |           ~~~~~~
+  723 |           0, 0});
+      |           ~~~~~~~
+  724 |     }
+      |     ~
+  725 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  726 |   })();
+      |   ~~^~

@@ -1,0 +1,29 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:172:12: error: conversion from ‘vector<std::unordered_map<std::__cxx11::basic_string<char>, int>>’ to non-scalar type ‘vector<std::__cxx11::basic_string<char>>’ requested
+  172 |       std::vector<decltype(std::unordered_map<std::string, decltype(1)>{
+      |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  173 |           {std::string("s_store_sk"), 1}})>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  174 |           std::unordered_map<std::string, decltype(1)>{
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |               {std::string("s_store_sk"), 1}}};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:190:26: error: ‘ss’ was not declared in this scope
+  190 |     std::vector<decltype(ss.quantity)> __items;
+      |                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:190:38: error: template argument 1 is invalid
+  190 |     std::vector<decltype(ss.quantity)> __items;
+      |                                      ^
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:190:38: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:227:21: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  227 |             __items.push_back(ss.quantity);
+      |                     ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp: In instantiation of ‘main()::<lambda(auto:1)> [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:236:73:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:236:47: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  236 |       ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(qty);
+      |                                             ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq4898482275/001/prog.cpp:236:58: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  236 |       ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(qty);
+      |                                                        ~~^~~

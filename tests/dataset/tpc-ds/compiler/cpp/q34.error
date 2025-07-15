@@ -1,0 +1,265 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:85:12: error: ‘ss’ was not declared in this scope
+   85 |   decltype(ss.ss_ticket_number) ticket;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:85:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:86:12: error: ‘ss’ was not declared in this scope
+   86 |   decltype(ss.ss_customer_sk) cust;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:86:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:89:12: error: ‘ss’ was not declared in this scope
+   89 |   decltype(ss) ss;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:89:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:90:12: error: ‘d’ was not declared in this scope
+   90 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:90:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:91:12: error: ‘s’ was not declared in this scope
+   91 |   decltype(s) s;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:91:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:92:12: error: ‘hd’ was not declared in this scope; did you mean ‘d’?
+   92 |   decltype(hd) hd;
+      |            ^~
+      |            d
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:92:12: error: ‘hd’ was not declared in this scope; did you mean ‘d’?
+   92 |   decltype(hd) hd;
+      |            ^~
+      |            d
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:104:12: error: ‘c’ was not declared in this scope
+  104 |   decltype(c.c_last_name) c_last_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:104:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:105:12: error: ‘c’ was not declared in this scope
+  105 |   decltype(c.c_first_name) c_first_name;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:105:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:106:12: error: ‘c’ was not declared in this scope
+  106 |   decltype(c.c_salutation) c_salutation;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:106:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:107:12: error: ‘c’ was not declared in this scope
+  107 |   decltype(c.c_preferred_cust_flag) c_preferred_cust_flag;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:107:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:108:38: error: ‘struct __struct7’ has no member named ‘ss_ticket_number’
+  108 |   decltype(std::declval<__struct7>().ss_ticket_number) ss_ticket_number;
+      |                                      ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:108:38: error: ‘struct __struct7’ has no member named ‘ss_ticket_number’
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:109:38: error: ‘struct __struct7’ has no member named ‘cnt’
+  109 |   decltype(std::declval<__struct7>().cnt) cnt;
+      |                                      ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:109:38: error: ‘struct __struct7’ has no member named ‘cnt’
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:373:27: error: no match for ‘operator==’ (operand types are ‘Dn’ and ‘Dn’)
+  373 |               if (__g.key == __key) {
+      |                   ~~~~~~~ ^~ ~~~~~
+      |                       |      |
+      |                       Dn     Dn
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:374:47: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  374 |                 __g.items.push_back(__struct7{ss, d, s, hd});
+      |                                               ^~
+      |                                               |
+      |                                               StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:381:59: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  381 |                   __key, std::vector<__struct7>{__struct7{ss, d, s, hd}}});
+      |                                                           ^~
+      |                                                           |
+      |                                                           StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:381:72: error: no matching function for call to ‘std::vector<__struct7>::vector(<brace-enclosed initializer list>)’
+  381 |                   __key, std::vector<__struct7>{__struct7{ss, d, s, hd}}});
+      |                                                                        ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; value_type = std::vector<__struct7>::value_type; allocator_type = std::allocator<__struct7>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; allocator_type = std::allocator<__struct7>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:393:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
+  351 |   std::vector<__struct7> dn = ([&]() {
+      |                               ~~~~~~~~
+  352 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  353 |     for (auto ss : store_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  354 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  355 |         if (!((ss.ss_sold_date_sk == d.d_date_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  356 |           continue;
+      |           ~~~~~~~~~
+  357 |         for (auto s : store) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~
+  358 |           if (!((ss.ss_store_sk == s.s_store_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  359 |             continue;
+      |             ~~~~~~~~~
+  360 |           for (auto hd : household_demographics) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |             if (!((ss.ss_hdemo_sk == hd.hd_demo_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  362 |               continue;
+      |               ~~~~~~~~~
+  363 |             if (!(((((((((d.d_dom >= 1) && (d.d_dom <= 3))) &&
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  364 |                        (hd.hd_buy_potential == std::string(">10000"))) &&
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  365 |                       (hd.hd_vehicle_count > 0)) &&
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |                      (((hd.hd_dep_count / hd.hd_vehicle_count)) > 1.2)) &&
+      |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  367 |                     (d.d_year == 2000)) &&
+      |                     ~~~~~~~~~~~~~~~~~~~~~~
+  368 |                    (s.s_county == std::string("A")))))
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |               continue;
+      |               ~~~~~~~~~
+  370 |             auto __key = Dn{ss.ss_ticket_number, ss.ss_customer_sk};
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  371 |             bool __found = false;
+      |             ~~~~~~~~~~~~~~~~~~~~~
+  372 |             for (auto &__g : __groups) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |               if (__g.key == __key) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~
+  374 |                 __g.items.push_back(__struct7{ss, d, s, hd});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  375 |                 __found = true;
+      |                 ~~~~~~~~~~~~~~~
+  376 |                 break;
+      |                 ~~~~~~
+  377 |               }
+      |               ~
+  378 |             }
+      |             ~
+  379 |             if (!__found) {
+      |             ~~~~~~~~~~~~~~~
+  380 |               __groups.push_back(__struct8{
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  381 |                   __key, std::vector<__struct7>{__struct7{ss, d, s, hd}}});
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  382 |             }
+      |             ~
+  383 |           }
+      |           ~
+  384 |         }
+      |         ~
+  385 |       }
+      |       ~
+  386 |     }
+      |     ~
+  387 |     std::vector<__struct9> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  388 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  389 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  390 |           __struct9{g.key.ticket, g.key.cust, ((int)g.items.size())});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  391 |     }
+      |     ~
+  392 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  393 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:395:36: error: ‘c’ was not declared in this scope
+  395 |     std::vector<std::pair<decltype(c.c_last_name), Result>> __items;
+      |                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:395:52: error: template argument 1 is invalid
+  395 |     std::vector<std::pair<decltype(c.c_last_name), Result>> __items;
+      |                                                    ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:395:58: error: template argument 1 is invalid
+  395 |     std::vector<std::pair<decltype(c.c_last_name), Result>> __items;
+      |                                                          ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:395:58: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:398:20: error: ‘struct __struct7’ has no member named ‘ss_customer_sk’
+  398 |         if (!((dn1.ss_customer_sk == c.c_customer_sk)))
+      |                    ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:400:21: error: ‘struct __struct7’ has no member named ‘cnt’
+  400 |         if (!(((dn1.cnt >= 15) && (dn1.cnt <= 20))))
+      |                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:400:40: error: ‘struct __struct7’ has no member named ‘cnt’
+  400 |         if (!(((dn1.cnt >= 15) && (dn1.cnt <= 20))))
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:402:17: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  402 |         __items.push_back(
+      |                 ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:405:50: error: ‘struct __struct7’ has no member named ‘ss_ticket_number’
+  405 |                     c.c_preferred_cust_flag, dn1.ss_ticket_number, dn1.cnt}});
+      |                                                  ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:405:72: error: ‘struct __struct7’ has no member named ‘cnt’
+  405 |                     c.c_preferred_cust_flag, dn1.ss_ticket_number, dn1.cnt}});
+      |                                                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:408:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  408 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:408:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  408 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:411:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  411 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq342411866166/001/prog.cpp:411:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  411 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~

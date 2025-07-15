@@ -1,0 +1,379 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:79:8: error: redefinition of ‘struct CatalogSale’
+   79 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:55:8: note: previous definition of ‘struct CatalogSale’
+   55 | struct CatalogSale {
+      |        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:88:8: error: redefinition of ‘struct DateDim’
+   88 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:64:8: note: previous definition of ‘struct DateDim’
+   64 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:96:8: error: redefinition of ‘struct CallCenter’
+   96 | struct CallCenter {
+      |        ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:72:8: note: previous definition of ‘struct CallCenter’
+   72 | struct CallCenter {
+      |        ^~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:101:12: error: ‘cs1’ was not declared in this scope
+  101 |   decltype(cs1) cs1;
+      |            ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:101:12: error: ‘cs1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:102:12: error: ‘d’ was not declared in this scope
+  102 |   decltype(d) d;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:102:12: error: ‘d’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:103:12: error: ‘ca’ was not declared in this scope
+  103 |   decltype(ca) ca;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:103:12: error: ‘ca’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:104:12: error: ‘cc’ was not declared in this scope; did you mean ‘ca’?
+  104 |   decltype(cc) cc;
+      |            ^~
+      |            ca
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:104:12: error: ‘cc’ was not declared in this scope; did you mean ‘ca’?
+  104 |   decltype(cc) cc;
+      |            ^~
+      |            ca
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:225:13: error: redefinition of ‘void __json(const CallCenter&)’
+  225 | inline void __json(const CallCenter &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:115:13: note: ‘void __json(const CallCenter&)’ previously defined here
+  115 | inline void __json(const CallCenter &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:240:13: error: redefinition of ‘void __json(const CatalogSale&)’
+  240 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:140:13: note: ‘void __json(const CatalogSale&)’ previously defined here
+  140 | inline void __json(const CatalogSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:280:13: error: redefinition of ‘void __json(const DateDim&)’
+  280 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:195:13: note: ‘void __json(const DateDim&)’ previously defined here
+  195 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:348:15: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+  348 | auto distinct(auto xs) {
+      |               ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:391:46: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  391 |                 __g.items.push_back(Filtered{cs1, d, ca, cc});
+      |                                              ^~~
+      |                                              |
+      |                                              CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:398:57: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  398 |                   __key, std::vector<Filtered>{Filtered{cs1, d, ca, cc}}});
+      |                                                         ^~~
+      |                                                         |
+      |                                                         CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:398:72: error: no matching function for call to ‘std::vector<Filtered>::vector(<brace-enclosed initializer list>)’
+  398 |                   __key, std::vector<Filtered>{Filtered{cs1, d, ca, cc}}});
+      |                                                                        ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Filtered; _Alloc = std::allocator<Filtered>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; allocator_type = std::allocator<Filtered>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; std::__type_identity_t<_Alloc> = std::allocator<Filtered>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; allocator_type = std::allocator<Filtered>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; allocator_type = std::allocator<Filtered>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; std::__type_identity_t<_Alloc> = std::allocator<Filtered>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; size_type = long unsigned int; value_type = Filtered; allocator_type = std::allocator<Filtered>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; size_type = long unsigned int; allocator_type = std::allocator<Filtered>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Filtered; _Alloc = std::allocator<Filtered>; allocator_type = std::allocator<Filtered>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Filtered; _Alloc = std::allocator<Filtered>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:408:59: error: ‘struct Filtered’ has no member named ‘cs_order_number’
+  408 |             std::vector<decltype(std::declval<Filtered>().cs_order_number)>
+      |                                                           ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:408:59: error: ‘struct Filtered’ has no member named ‘cs_order_number’
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:408:75: error: template argument 1 is invalid
+  408 |             std::vector<decltype(std::declval<Filtered>().cs_order_number)>
+      |                                                                           ^
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:408:75: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:411:23: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  411 |               __items.push_back(x.cs_order_number);
+      |                       ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:411:35: error: ‘struct Filtered’ has no member named ‘cs_order_number’
+  411 |               __items.push_back(x.cs_order_number);
+      |                                   ^~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In instantiation of ‘auto distinct(auto:1) [with auto:1 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:407:19:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:350:3: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  350 |   for (auto x : xs) {
+      |   ^~~
+      |   std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:350:3: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  350 |   for (auto x : xs) {
+      |   ^~~
+      |   std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:351:19: error: ‘contains’ was not declared in this scope
+  351 |     if ((!contains(out, x))) {
+      |           ~~~~~~~~^~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:418:63: error: ‘struct Filtered’ has no member named ‘cs_ext_ship_cost’
+  418 |                 std::vector<decltype(std::declval<Filtered>().cs_ext_ship_cost)>
+      |                                                               ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:418:63: error: ‘struct Filtered’ has no member named ‘cs_ext_ship_cost’
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:418:80: error: template argument 1 is invalid
+  418 |                 std::vector<decltype(std::declval<Filtered>().cs_ext_ship_cost)>
+      |                                                                                ^
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:418:80: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:421:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  421 |                   __items.push_back(x.cs_ext_ship_cost);
+      |                           ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:421:39: error: ‘struct Filtered’ has no member named ‘cs_ext_ship_cost’
+  421 |                   __items.push_back(x.cs_ext_ship_cost);
+      |                                       ^~~~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:4)> [with auto:4 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:416:77:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:416:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  416 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                 ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:416:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  416 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                            ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:427:63: error: ‘struct Filtered’ has no member named ‘cs_net_profit’
+  427 |                 std::vector<decltype(std::declval<Filtered>().cs_net_profit)>
+      |                                                               ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:427:63: error: ‘struct Filtered’ has no member named ‘cs_net_profit’
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:427:77: error: template argument 1 is invalid
+  427 |                 std::vector<decltype(std::declval<Filtered>().cs_net_profit)>
+      |                                                                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:427:77: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:430:27: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  430 |                   __items.push_back(x.cs_net_profit);
+      |                           ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:430:39: error: ‘struct Filtered’ has no member named ‘cs_net_profit’
+  430 |                   __items.push_back(x.cs_net_profit);
+      |                                       ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:5)> [with auto:5 = int]’:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:425:77:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:425:51: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  425 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                 ~~^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:425:62: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  425 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |                                                            ~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:436:5: error: conversion from ‘vector<__struct7>’ to non-scalar type ‘vector<Filtered>’ requested
+  359 |   std::vector<Filtered> filtered = ([&]() {
+      |                                    ~~~~~~~~
+  360 |     std::vector<__struct6> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  361 |     for (auto cs1 : catalog_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  362 |       for (auto d : date_dim) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~
+  363 |         if (!((((cs1.cs_ship_date_sk == d.d_date_sk) &&
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  364 |                 (d.d_date >= std::string("2000-03-01"))) &&
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  365 |                (d.d_date <= std::string("2000-04-30")))))
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  366 |           continue;
+      |           ~~~~~~~~~
+  367 |         for (auto ca : customer_address) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  368 |           if (!(((cs1.cs_ship_addr_sk == ca.ca_address_sk) &&
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  369 |                  (ca.ca_state == std::string("CA")))))
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  370 |             continue;
+      |             ~~~~~~~~~
+  371 |           for (auto cc : call_center) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  372 |             if (!(((cs1.cs_call_center_sk == cc.cc_call_center_sk) &&
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  373 |                    (cc.cc_county == std::string("CountyA")))))
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  374 |               continue;
+      |               ~~~~~~~~~
+  375 |             if (!((std::any_of(
+      |             ~~~~~~~~~~~~~~~~~~~
+  376 |                        catalog_sales.begin(), catalog_sales.end(),
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  377 |                        [&](auto cs2) {
+      |                        ~~~~~~~~~~~~~~~
+  378 |                          return ((cs1.cs_order_number == cs2.cs_order_number) &&
+      |                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  379 |                                  (cs1.cs_warehouse_sk != cs2.cs_warehouse_sk));
+      |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  380 |                        }) &&
+      |                        ~~~~~
+  381 |                    (std::any_of(catalog_returns.begin(), catalog_returns.end(),
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  382 |                                 [&](auto cr) {
+      |                                 ~~~~~~~~~~~~~~
+  383 |                                   return (cs1.cs_order_number ==
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  384 |                                           cr.cr_order_number);
+      |                                           ~~~~~~~~~~~~~~~~~~~~
+  385 |                                 }) == false))))
+      |                                 ~~~~~~~~~~~~~~~
+  386 |               continue;
+      |               ~~~~~~~~~
+  387 |             auto __key = std::unordered_map<int, int>{};
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  388 |             bool __found = false;
+      |             ~~~~~~~~~~~~~~~~~~~~~
+  389 |             for (auto &__g : __groups) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  390 |               if (__g.key == __key) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~
+  391 |                 __g.items.push_back(Filtered{cs1, d, ca, cc});
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  392 |                 __found = true;
+      |                 ~~~~~~~~~~~~~~~
+  393 |                 break;
+      |                 ~~~~~~
+  394 |               }
+      |               ~
+  395 |             }
+      |             ~
+  396 |             if (!__found) {
+      |             ~~~~~~~~~~~~~~~
+  397 |               __groups.push_back(__struct6{
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  398 |                   __key, std::vector<Filtered>{Filtered{cs1, d, ca, cc}}});
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  399 |             }
+      |             ~
+  400 |           }
+      |           ~
+  401 |         }
+      |         ~
+  402 |       }
+      |       ~
+  403 |     }
+      |     ~
+  404 |     std::vector<__struct7> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  405 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  406 |       __items.push_back(__struct7{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  407 |           distinct(([&]() {
+      |           ~~~~~~~~~~~~~~~~~
+  408 |             std::vector<decltype(std::declval<Filtered>().cs_order_number)>
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  409 |                 __items;
+      |                 ~~~~~~~~
+  410 |             for (auto x : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  411 |               __items.push_back(x.cs_order_number);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  412 |             }
+      |             ~
+  413 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  414 |           })())
+      |           ~~~~~
+  415 |               .size(),
+      |               ~~~~~~~~
+  416 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  417 |               ([&]() {
+      |               ~~~~~~~~
+  418 |                 std::vector<decltype(std::declval<Filtered>().cs_ext_ship_cost)>
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  419 |                     __items;
+      |                     ~~~~~~~~
+  420 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  421 |                   __items.push_back(x.cs_ext_ship_cost);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  422 |                 }
+      |                 ~
+  423 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  424 |               })()),
+      |               ~~~~~~
+  425 |           ([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  426 |               ([&]() {
+      |               ~~~~~~~~
+  427 |                 std::vector<decltype(std::declval<Filtered>().cs_net_profit)>
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                     __items;
+      |                     ~~~~~~~~
+  429 |                 for (auto x : g.items) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~
+  430 |                   __items.push_back(x.cs_net_profit);
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  431 |                 }
+      |                 ~
+  432 |                 return __items;
+      |                 ~~~~~~~~~~~~~~~
+  433 |               })())});
+      |               ~~~~~~~~
+  434 |     }
+      |     ~
+  435 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  436 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:3)> [with auto:3 = int]’:
+/usr/include/c++/13/bits/predefined_ops.h:318:23:   required from ‘bool __gnu_cxx::__ops::_Iter_pred<_Predicate>::operator()(_Iterator) [with _Iterator = __gnu_cxx::__normal_iterator<int*, std::vector<int> >; _Predicate = main()::<lambda()>::<lambda(auto:3)>]’
+/usr/include/c++/13/bits/stl_algobase.h:2072:14:   required from ‘_RandomAccessIterator std::__find_if(_RandomAccessIterator, _RandomAccessIterator, _Predicate, random_access_iterator_tag) [with _RandomAccessIterator = __gnu_cxx::__normal_iterator<int*, vector<int> >; _Predicate = __gnu_cxx::__ops::_Iter_pred<main()::<lambda()>::<lambda(auto:3)> >]’
+/usr/include/c++/13/bits/stl_algobase.h:2117:23:   required from ‘_Iterator std::__find_if(_Iterator, _Iterator, _Predicate) [with _Iterator = __gnu_cxx::__normal_iterator<int*, vector<int> >; _Predicate = __gnu_cxx::__ops::_Iter_pred<main()::<lambda()>::<lambda(auto:3)> >]’
+/usr/include/c++/13/bits/stl_algo.h:3923:28:   required from ‘_IIter std::find_if(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<int*, vector<int> >; _Predicate = main()::<lambda()>::<lambda(auto:3)>]’
+/usr/include/c++/13/bits/stl_algo.h:477:47:   required from ‘bool std::none_of(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<int*, vector<int> >; _Predicate = main()::<lambda()>::<lambda(auto:3)>]’
+/usr/include/c++/13/bits/stl_algo.h:496:27:   required from ‘bool std::any_of(_IIter, _IIter, _Predicate) [with _IIter = __gnu_cxx::__normal_iterator<int*, vector<int> >; _Predicate = main()::<lambda()>::<lambda(auto:3)>]’
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:381:32:   required from here
+/tmp/TestCPPCompiler_TPCDSQueriesq162701178739/001/prog.cpp:384:46: error: request for member ‘cr_order_number’ in ‘cr’, which is of non-class type ‘int’
+  384 |                                           cr.cr_order_number);
+      |                                           ~~~^~~~~~~~~~~~~~~

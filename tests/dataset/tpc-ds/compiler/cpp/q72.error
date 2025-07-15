@@ -1,0 +1,323 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:92:12: error: ‘i’ was not declared in this scope
+   92 |   decltype(i.i_item_desc) item_desc;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:92:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:93:12: error: ‘w’ was not declared in this scope
+   93 |   decltype(w.w_warehouse_name) warehouse;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:93:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:94:12: error: ‘d1’ was not declared in this scope
+   94 |   decltype(d1.d_week_seq) week_seq;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:94:12: error: ‘d1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:97:12: error: ‘cs’ was not declared in this scope
+   97 |   decltype(cs) cs;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:97:12: error: ‘cs’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:98:12: error: ‘inv’ was not declared in this scope; did you mean ‘int’?
+   98 |   decltype(inv) inv;
+      |            ^~~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:98:12: error: ‘inv’ was not declared in this scope; did you mean ‘int’?
+   98 |   decltype(inv) inv;
+      |            ^~~
+      |            int
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:99:12: error: ‘w’ was not declared in this scope
+   99 |   decltype(w) w;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:99:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:100:12: error: ‘i’ was not declared in this scope
+  100 |   decltype(i) i;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:100:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:101:12: error: ‘cd’ was not declared in this scope; did you mean ‘cs’?
+  101 |   decltype(cd) cd;
+      |            ^~
+      |            cs
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:101:12: error: ‘cd’ was not declared in this scope; did you mean ‘cs’?
+  101 |   decltype(cd) cd;
+      |            ^~
+      |            cs
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:102:12: error: ‘hd’ was not declared in this scope; did you mean ‘cd’?
+  102 |   decltype(hd) hd;
+      |            ^~
+      |            cd
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:102:12: error: ‘hd’ was not declared in this scope; did you mean ‘cd’?
+  102 |   decltype(hd) hd;
+      |            ^~
+      |            cd
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:103:12: error: ‘d1’ was not declared in this scope
+  103 |   decltype(d1) d1;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:103:12: error: ‘d1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:104:12: error: ‘d2’ was not declared in this scope; did you mean ‘d1’?
+  104 |   decltype(d2) d2;
+      |            ^~
+      |            d1
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:104:12: error: ‘d2’ was not declared in this scope; did you mean ‘d1’?
+  104 |   decltype(d2) d2;
+      |            ^~
+      |            d1
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:105:12: error: ‘d3’ was not declared in this scope; did you mean ‘d2’?
+  105 |   decltype(d3) d3;
+      |            ^~
+      |            d2
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:105:12: error: ‘d3’ was not declared in this scope; did you mean ‘d2’?
+  105 |   decltype(d3) d3;
+      |            ^~
+      |            d2
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:427:45: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  427 |                       auto __key = Result{i.i_item_desc, w.w_warehouse_name,
+      |                                           ~~^~~~~~~~~~~
+      |                                             |
+      |                                             std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:433:41: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  433 |                               __struct9{cs, inv, w, i, cd, hd, d1, d2, d3});
+      |                                         ^~
+      |                                         |
+      |                                         CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:441:40: error: cannot convert ‘CatalogSale’ to ‘int’ in initialization
+  441 |                                        cs, inv, w, i, cd, hd, d1, d2, d3}}});
+      |                                        ^~
+      |                                        |
+      |                                        CatalogSale
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:441:74: error: no matching function for call to ‘std::vector<__struct9>::vector(<brace-enclosed initializer list>)’
+  441 |                                        cs, inv, w, i, cd, hd, d1, d2, d3}}});
+      |                                                                          ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:6:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct9; _Alloc = std::allocator<__struct9>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; allocator_type = std::allocator<__struct9>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; std::__type_identity_t<_Alloc> = std::allocator<__struct9>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; allocator_type = std::allocator<__struct9>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; allocator_type = std::allocator<__struct9>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; std::__type_identity_t<_Alloc> = std::allocator<__struct9>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; size_type = long unsigned int; value_type = std::vector<__struct9>::value_type; allocator_type = std::allocator<__struct9>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; size_type = long unsigned int; allocator_type = std::allocator<__struct9>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct9; _Alloc = std::allocator<__struct9>; allocator_type = std::allocator<__struct9>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct9; _Alloc = std::allocator<__struct9>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:459:50: error: ‘struct __struct9’ has no member named ‘cs_promo_sk’
+  459 |                                         if (!((x.cs_promo_sk == nullptr)))
+      |                                                  ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:469:50: error: ‘struct __struct9’ has no member named ‘cs_promo_sk’
+  469 |                                         if (!((x.cs_promo_sk != nullptr)))
+      |                                                  ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq72273986548/001/prog.cpp:479:5: error: conversion from ‘vector<__struct11>’ to non-scalar type ‘vector<__struct9>’ requested
+  392 |   std::vector<__struct9> result = ([&]() {
+      |                                   ~~~~~~~~
+  393 |     std::vector<__struct10> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  394 |     for (auto cs : catalog_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  395 |       for (auto inv : inventory) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  396 |         if (!((inv.inv_item_sk == cs.cs_item_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  397 |           continue;
+      |           ~~~~~~~~~
+  398 |         for (auto w : warehouse) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  399 |           if (!((w.w_warehouse_sk == inv.inv_warehouse_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  400 |             continue;
+      |             ~~~~~~~~~
+  401 |           for (auto i : item) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  402 |             if (!((i.i_item_sk == cs.cs_item_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  403 |               continue;
+      |               ~~~~~~~~~
+  404 |             for (auto cd : customer_demographics) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  405 |               if (!((cd.cd_demo_sk == cs.cs_bill_cdemo_sk)))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  406 |                 continue;
+      |                 ~~~~~~~~~
+  407 |               for (auto hd : household_demographics) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  408 |                 if (!((hd.hd_demo_sk == cs.cs_bill_hdemo_sk)))
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  409 |                   continue;
+      |                   ~~~~~~~~~
+  410 |                 for (auto d1 : date_dim) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  411 |                   if (!((d1.d_date_sk == cs.cs_sold_date_sk)))
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  412 |                     continue;
+      |                     ~~~~~~~~~
+  413 |                   for (auto d2 : date_dim) {
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  414 |                     if (!((d2.d_date_sk == inv.inv_date_sk)))
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  415 |                       continue;
+      |                       ~~~~~~~~~
+  416 |                     for (auto d3 : date_dim) {
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  417 |                       if (!((d3.d_date_sk == cs.cs_ship_date_sk)))
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  418 |                         continue;
+      |                         ~~~~~~~~~
+  419 |                       if (!(((((((d1.d_week_seq == d2.d_week_seq) &&
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  420 |                                  (inv.inv_quantity_on_hand < cs.cs_quantity)) &&
+      |                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  421 |                                 (d3.d_date > (d1.d_date + 5))) &&
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  422 |                                (hd.hd_buy_potential ==
+      |                                ~~~~~~~~~~~~~~~~~~~~~~~
+  423 |                                 std::string("5001-10000"))) &&
+      |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  424 |                               (d1.d_year == 2000)) &&
+      |                               ~~~~~~~~~~~~~~~~~~~~~~~
+  425 |                              (cd.cd_marital_status == std::string("M")))))
+      |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  426 |                         continue;
+      |                         ~~~~~~~~~
+  427 |                       auto __key = Result{i.i_item_desc, w.w_warehouse_name,
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  428 |                                           d1.d_week_seq};
+      |                                           ~~~~~~~~~~~~~~~
+  429 |                       bool __found = false;
+      |                       ~~~~~~~~~~~~~~~~~~~~~
+  430 |                       for (auto &__g : __groups) {
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  431 |                         if (__g.key == __key) {
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~
+  432 |                           __g.items.push_back(
+      |                           ~~~~~~~~~~~~~~~~~~~~
+  433 |                               __struct9{cs, inv, w, i, cd, hd, d1, d2, d3});
+      |                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  434 |                           __found = true;
+      |                           ~~~~~~~~~~~~~~~
+  435 |                           break;
+      |                           ~~~~~~
+  436 |                         }
+      |                         ~
+  437 |                       }
+      |                       ~
+  438 |                       if (!__found) {
+      |                       ~~~~~~~~~~~~~~~
+  439 |                         __groups.push_back(__struct10{
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  440 |                             __key, std::vector<__struct9>{__struct9{
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  441 |                                        cs, inv, w, i, cd, hd, d1, d2, d3}}});
+      |                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  442 |                       }
+      |                       ~
+  443 |                     }
+      |                     ~
+  444 |                   }
+      |                   ~
+  445 |                 }
+      |                 ~
+  446 |               }
+      |               ~
+  447 |             }
+      |             ~
+  448 |           }
+      |           ~
+  449 |         }
+      |         ~
+  450 |       }
+      |       ~
+  451 |     }
+      |     ~
+  452 |     std::vector<__struct11> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  453 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  454 |       __items.push_back(__struct11{g.key.item_desc, g.key.warehouse,
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  455 |                                    g.key.week_seq,
+      |                                    ~~~~~~~~~~~~~~~
+  456 |                                    ((int)([&]() {
+      |                                    ~~~~~~~~~~~~~~
+  457 |                                       std::vector<__struct9> __items;
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  458 |                                       for (auto x : g.items) {
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~~~
+  459 |                                         if (!((x.cs_promo_sk == nullptr)))
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  460 |                                           continue;
+      |                                           ~~~~~~~~~
+  461 |                                         __items.push_back(x);
+      |                                         ~~~~~~~~~~~~~~~~~~~~~
+  462 |                                       }
+      |                                       ~
+  463 |                                       return __items;
+      |                                       ~~~~~~~~~~~~~~~
+  464 |                                     })()
+      |                                     ~~~~
+  465 |                                         .size()),
+      |                                         ~~~~~~~~~
+  466 |                                    ((int)([&]() {
+      |                                    ~~~~~~~~~~~~~~
+  467 |                                       std::vector<__struct9> __items;
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  468 |                                       for (auto x : g.items) {
+      |                                       ~~~~~~~~~~~~~~~~~~~~~~~~
+  469 |                                         if (!((x.cs_promo_sk != nullptr)))
+      |                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  470 |                                           continue;
+      |                                           ~~~~~~~~~
+  471 |                                         __items.push_back(x);
+      |                                         ~~~~~~~~~~~~~~~~~~~~~
+  472 |                                       }
+      |                                       ~
+  473 |                                       return __items;
+      |                                       ~~~~~~~~~~~~~~~
+  474 |                                     })()
+      |                                     ~~~~
+  475 |                                         .size()),
+      |                                         ~~~~~~~~~
+  476 |                                    ((int)g.items.size())});
+      |                                    ~~~~~~~~~~~~~~~~~~~~~~~~
+  477 |     }
+      |     ~
+  478 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  479 |   })();
+      |   ~~^~

@@ -1,0 +1,128 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:60:12: error: ‘x’ was not declared in this scope
+   60 |   decltype(x.date) date;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:60:12: error: ‘x’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:64:12: error: ‘w’ was not declared in this scope
+   64 |   decltype(w.date) date;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:64:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:65:12: error: ‘w’ was not declared in this scope
+   65 |   decltype(w.price) price;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:65:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:69:12: error: ‘w’ was not declared in this scope
+   69 |   decltype(w.date) d_date;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:69:12: error: ‘w’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:140:17: warning: use of ‘auto’ in parameter declaration only available with ‘-std=c++20’ or ‘-fconcepts’
+  140 | auto cumulative(auto xs) {
+      |                 ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp: In function ‘auto cumulative(auto:1)’:
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:145:18: error: no matching function for call to ‘std::vector<int>::push_back(__struct2)’
+  145 |     out.push_back(__struct2{x.date, acc});
+      |     ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:7:
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘__struct2’ to ‘const std::vector<int>::value_type&’ {aka ‘const int&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘__struct2’ to ‘std::vector<int>::value_type&&’ {aka ‘int&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:152:36: error: ‘w’ was not declared in this scope
+  152 |     std::vector<std::pair<decltype(w.date), WebCum>> __items;
+      |                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:152:45: error: template argument 1 is invalid
+  152 |     std::vector<std::pair<decltype(w.date), WebCum>> __items;
+      |                                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:152:51: error: template argument 1 is invalid
+  152 |     std::vector<std::pair<decltype(w.date), WebCum>> __items;
+      |                                                   ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:152:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:154:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  154 |       __items.push_back({w.date, WebCum{w.date, w.price}});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:156:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  156 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:156:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  156 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:159:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  159 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+In file included from /usr/include/c++/13/string:53,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:3:
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:159:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  159 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:164:36: error: ‘s’ was not declared in this scope
+  164 |     std::vector<std::pair<decltype(s.date), WebCum>> __items;
+      |                                    ^
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:164:45: error: template argument 1 is invalid
+  164 |     std::vector<std::pair<decltype(s.date), WebCum>> __items;
+      |                                             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:164:51: error: template argument 1 is invalid
+  164 |     std::vector<std::pair<decltype(s.date), WebCum>> __items;
+      |                                                   ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:164:51: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:166:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  166 |       __items.push_back({s.date, WebCum{s.date, s.price}});
+      |               ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:168:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+  168 |     std::sort(__items.begin(), __items.end(),
+      |                       ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:168:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+  168 |     std::sort(__items.begin(), __items.end(),
+      |                                        ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:171:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+  171 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::begin
+/usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
+  114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
+      |                                     ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:171:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+  171 |     for (auto &p : __items)
+      |                    ^~~~~~~
+      |                    std::end
+/usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
+  116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
+      |                                     ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:179:18: error: request for member ‘date’ in ‘w’, which is of non-class type ‘int’
+  179 |         if (!((w.date == s.date)))
+      |                  ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:179:28: error: request for member ‘date’ in ‘s’, which is of non-class type ‘int’
+  179 |         if (!((w.date == s.date)))
+      |                            ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:181:18: error: request for member ‘cum’ in ‘w’, which is of non-class type ‘int’
+  181 |         if (!((w.cum > s.cum)))
+      |                  ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:181:26: error: request for member ‘cum’ in ‘s’, which is of non-class type ‘int’
+  181 |         if (!((w.cum > s.cum)))
+      |                          ^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq51782556970/001/prog.cpp:183:39: error: request for member ‘date’ in ‘w’, which is of non-class type ‘int’
+  183 |         __items.push_back(Joined{1, w.date});
+      |                                       ^~~~

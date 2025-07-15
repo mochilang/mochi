@@ -1,0 +1,51 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:71:8: error: redefinition of ‘struct StoreSale’
+   71 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:53:8: note: previous definition of ‘struct StoreSale’
+   53 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:80:8: error: redefinition of ‘struct TimeDim’
+   80 | struct TimeDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:62:8: note: previous definition of ‘struct TimeDim’
+   62 | struct TimeDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:85:8: error: redefinition of ‘struct Store’
+   85 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:67:8: note: previous definition of ‘struct Store’
+   67 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:174:13: error: redefinition of ‘void __json(const Store&)’
+  174 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:104:13: note: ‘void __json(const Store&)’ previously defined here
+  104 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:189:13: error: redefinition of ‘void __json(const StoreSale&)’
+  189 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:119:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  119 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:209:13: error: redefinition of ‘void __json(const TimeDim&)’
+  209 | inline void __json(const TimeDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:139:13: note: ‘void __json(const TimeDim&)’ previously defined here
+  139 | inline void __json(const TimeDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:237:41: error: ‘ss’ was not declared in this scope
+  237 |                    std::vector<decltype(ss)> __items;
+      |                                         ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:237:44: error: template argument 1 is invalid
+  237 |                    std::vector<decltype(ss)> __items;
+      |                                            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:237:44: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:252:36: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  252 |                            __items.push_back(ss);
+      |                                    ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq962529256213/001/prog.cpp:259:23: error: request for member ‘size’ in ‘<lambda closure object>main()::<lambda()>{store_sales, household_demographics, time_dim, store}.main()::<lambda()>()’, which is of non-class type ‘int’
+  259 |                      .size());
+      |                       ^~~~

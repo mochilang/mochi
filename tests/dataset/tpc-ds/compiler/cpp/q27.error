@@ -1,0 +1,630 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:83:8: error: redefinition of ‘struct StoreSale’
+   83 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:55:8: note: previous definition of ‘struct StoreSale’
+   55 | struct StoreSale {
+      |        ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:99:8: error: redefinition of ‘struct DateDim’
+   99 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:71:8: note: previous definition of ‘struct DateDim’
+   71 | struct DateDim {
+      |        ^~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:103:8: error: redefinition of ‘struct Store’
+  103 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:75:8: note: previous definition of ‘struct Store’
+   75 | struct Store {
+      |        ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:107:8: error: redefinition of ‘struct Item’
+  107 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:79:8: note: previous definition of ‘struct Item’
+   79 | struct Item {
+      |        ^~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:112:12: error: ‘i’ was not declared in this scope
+  112 |   decltype(i.i_item_id) item_id;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:112:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:113:12: error: ‘s’ was not declared in this scope
+  113 |   decltype(s.s_state) state;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:113:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:116:12: error: ‘ss’ was not declared in this scope
+  116 |   decltype(ss) ss;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:116:12: error: ‘ss’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:117:12: error: ‘cd’ was not declared in this scope
+  117 |   decltype(cd) cd;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:117:12: error: ‘cd’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:118:12: error: ‘d’ was not declared in this scope; did you mean ‘cd’?
+  118 |   decltype(d) d;
+      |            ^
+      |            cd
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:118:12: error: ‘d’ was not declared in this scope; did you mean ‘cd’?
+  118 |   decltype(d) d;
+      |            ^
+      |            cd
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:119:12: error: ‘s’ was not declared in this scope
+  119 |   decltype(s) s;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:119:12: error: ‘s’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:120:12: error: ‘i’ was not declared in this scope
+  120 |   decltype(i) i;
+      |            ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:120:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:301:13: error: redefinition of ‘void __json(const DateDim&)’
+  301 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:171:13: note: ‘void __json(const DateDim&)’ previously defined here
+  171 | inline void __json(const DateDim &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:351:13: error: redefinition of ‘void __json(const Item&)’
+  351 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:186:13: note: ‘void __json(const Item&)’ previously defined here
+  186 | inline void __json(const Item &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:381:13: error: redefinition of ‘void __json(const Store&)’
+  381 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:201:13: note: ‘void __json(const Store&)’ previously defined here
+  201 | inline void __json(const Store &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:396:13: error: redefinition of ‘void __json(const StoreSale&)’
+  396 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:216:13: note: ‘void __json(const StoreSale&)’ previously defined here
+  216 | inline void __json(const StoreSale &v) {
+      |             ^~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:509:37: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  509 |               auto __key = Result{i.i_item_id, s.s_state};
+      |                                   ~~^~~~~~~~~
+      |                                     |
+      |                                     std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:513:49: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  513 |                   __g.items.push_back(__struct7{ss, cd, d, s, i});
+      |                                                 ^~
+      |                                                 |
+      |                                                 StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:520:61: error: cannot convert ‘StoreSale’ to ‘int’ in initialization
+  520 |                     __key, std::vector<__struct7>{__struct7{ss, cd, d, s, i}}});
+      |                                                             ^~
+      |                                                             |
+      |                                                             StoreSale
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:520:77: error: no matching function for call to ‘std::vector<__struct7>::vector(<brace-enclosed initializer list>)’
+  520 |                     __key, std::vector<__struct7>{__struct7{ss, cd, d, s, i}}});
+      |                                                                             ^
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:8:
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; std::__type_identity_t<_Alloc> = std::allocator<__struct7>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; value_type = std::vector<__struct7>::value_type; allocator_type = std::allocator<__struct7>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; size_type = long unsigned int; allocator_type = std::allocator<__struct7>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct7; _Alloc = std::allocator<__struct7>; allocator_type = std::allocator<__struct7>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct7; _Alloc = std::allocator<__struct7>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:533:65: error: ‘struct __struct7’ has no member named ‘ss_quantity’
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                                                                 ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:533:65: error: ‘struct __struct7’ has no member named ‘ss_quantity’
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:533:77: error: template argument 1 is invalid
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                                                                             ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:533:77: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:536:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  536 |                    __items.push_back(x.ss_quantity);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:536:40: error: ‘struct __struct7’ has no member named ‘ss_quantity’
+  536 |                    __items.push_back(x.ss_quantity);
+      |                                        ^~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:532:49: error: no matching function for call to ‘__avg(int)’
+  532 |                g.key.item_id, g.key.state, __avg(([&]() {
+      |                                            ~~~~~^~~~~~~~~
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  534 |                      __items;
+      |                      ~~~~~~~~                    
+  535 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~        
+  536 |                    __items.push_back(x.ss_quantity);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  537 |                  }
+      |                  ~                               
+  538 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~                 
+  539 |                })()),
+      |                ~~~~~                             
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  126 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:532:49: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  532 |                g.key.item_id, g.key.state, __avg(([&]() {
+      |                                            ~~~~~^~~~~~~~~
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  534 |                      __items;
+      |                      ~~~~~~~~                    
+  535 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~        
+  536 |                    __items.push_back(x.ss_quantity);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  537 |                  }
+      |                  ~                               
+  538 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~                 
+  539 |                })()),
+      |                ~~~~~                             
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:541:65: error: ‘struct __struct7’ has no member named ‘ss_list_price’
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                                                                 ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:541:65: error: ‘struct __struct7’ has no member named ‘ss_list_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:541:79: error: template argument 1 is invalid
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:541:79: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:544:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  544 |                    __items.push_back(x.ss_list_price);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:544:40: error: ‘struct __struct7’ has no member named ‘ss_list_price’
+  544 |                    __items.push_back(x.ss_list_price);
+      |                                        ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:540:21: error: no matching function for call to ‘__avg(int)’
+  540 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  542 |                      __items;
+      |                      ~~~~~~~~
+  543 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  544 |                    __items.push_back(x.ss_list_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  545 |                  }
+      |                  ~   
+  546 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  547 |                })()),
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  126 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:540:21: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  540 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  542 |                      __items;
+      |                      ~~~~~~~~
+  543 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  544 |                    __items.push_back(x.ss_list_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  545 |                  }
+      |                  ~   
+  546 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  547 |                })()),
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:549:65: error: ‘struct __struct7’ has no member named ‘ss_coupon_amt’
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                                                                 ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:549:65: error: ‘struct __struct7’ has no member named ‘ss_coupon_amt’
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:549:79: error: template argument 1 is invalid
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                                                                               ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:549:79: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:552:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:552:40: error: ‘struct __struct7’ has no member named ‘ss_coupon_amt’
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                                        ^~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:548:21: error: no matching function for call to ‘__avg(int)’
+  548 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  550 |                      __items;
+      |                      ~~~~~~~~
+  551 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  553 |                  }
+      |                  ~   
+  554 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  555 |                })()),
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  126 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:548:21: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  548 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  550 |                      __items;
+      |                      ~~~~~~~~
+  551 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  553 |                  }
+      |                  ~   
+  554 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  555 |                })()),
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:557:65: error: ‘struct __struct7’ has no member named ‘ss_sales_price’
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                                                                 ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:557:65: error: ‘struct __struct7’ has no member named ‘ss_sales_price’
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:557:80: error: template argument 1 is invalid
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                                                                                ^
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:557:80: error: template argument 2 is invalid
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:560:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                            ^~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:560:40: error: ‘struct __struct7’ has no member named ‘ss_sales_price’
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                                        ^~~~~~~~~~~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:556:21: error: no matching function for call to ‘__avg(int)’
+  556 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  558 |                      __items;
+      |                      ~~~~~~~~
+  559 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  561 |                  }
+      |                  ~   
+  562 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  563 |                })())}});
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+  126 | template <typename T> double __avg(const std::vector<T> &v) {
+      |                              ^~~~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:126:30: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:556:21: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+  556 |                __avg(([&]() {
+      |                ~~~~~^~~~~~~~~
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  558 |                      __items;
+      |                      ~~~~~~~~
+  559 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  561 |                  }
+      |                  ~   
+  562 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  563 |                })())}});
+      |                ~~~~~ 
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:529:24: error: no matching function for call to ‘std::vector<std::pair<__struct10, __struct9> >::push_back(<brace-enclosed initializer list>)’
+  529 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~^
+  530 |           {__struct10{g.key.item_id, g.key.state},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  531 |            __struct9{
+      |            ~~~~~~~~~~   
+  532 |                g.key.item_id, g.key.state, __avg(([&]() {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  534 |                      __items;
+      |                      ~~~~~~~~
+  535 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  536 |                    __items.push_back(x.ss_quantity);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  537 |                  }
+      |                  ~      
+  538 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  539 |                })()),
+      |                ~~~~~~   
+  540 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  542 |                      __items;
+      |                      ~~~~~~~~
+  543 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  544 |                    __items.push_back(x.ss_list_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  545 |                  }
+      |                  ~      
+  546 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  547 |                })()),
+      |                ~~~~~~   
+  548 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  550 |                      __items;
+      |                      ~~~~~~~~
+  551 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  553 |                  }
+      |                  ~      
+  554 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  555 |                })()),
+      |                ~~~~~~   
+  556 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  558 |                      __items;
+      |                      ~~~~~~~~
+  559 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  561 |                  }
+      |                  ~      
+  562 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  563 |                })())}});
+      |                ~~~~~~~~ 
+/usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<__struct10, __struct9>; _Alloc = std::allocator<std::pair<__struct10, __struct9> >; value_type = std::pair<__struct10, __struct9>]’
+ 1281 |       push_back(const value_type& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1281:35: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const std::vector<std::pair<__struct10, __struct9> >::value_type&’ {aka ‘const std::pair<__struct10, __struct9>&’}
+ 1281 |       push_back(const value_type& __x)
+      |                 ~~~~~~~~~~~~~~~~~~^~~
+/usr/include/c++/13/bits/stl_vector.h:1298:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(value_type&&) [with _Tp = std::pair<__struct10, __struct9>; _Alloc = std::allocator<std::pair<__struct10, __struct9> >; value_type = std::pair<__struct10, __struct9>]’
+ 1298 |       push_back(value_type&& __x)
+      |       ^~~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<__struct10, __struct9> >::value_type&&’ {aka ‘std::pair<__struct10, __struct9>&&’}
+ 1298 |       push_back(value_type&& __x)
+      |                 ~~~~~~~~~~~~~^~~
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_TPCDSQueriesq27212138119/001/prog.cpp:573:5: error: conversion from ‘vector<__struct9>’ to non-scalar type ‘vector<__struct7>’ requested
+  484 |   std::vector<__struct7> result = ([&]() {
+      |                                   ~~~~~~~~
+  485 |     std::vector<__struct8> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  486 |     for (auto ss : store_sales) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  487 |       for (auto cd : customer_demographics) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  488 |         if (!((ss.ss_cdemo_sk == cd.cd_demo_sk)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  489 |           continue;
+      |           ~~~~~~~~~
+  490 |         for (auto d : date_dim) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~
+  491 |           if (!((ss.ss_sold_date_sk == d.d_date_sk)))
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  492 |             continue;
+      |             ~~~~~~~~~
+  493 |           for (auto s : store) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~
+  494 |             if (!((ss.ss_store_sk == s.s_store_sk)))
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  495 |               continue;
+      |               ~~~~~~~~~
+  496 |             for (auto i : item) {
+      |             ~~~~~~~~~~~~~~~~~~~~~
+  497 |               if (!((ss.ss_item_sk == i.i_item_sk)))
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  498 |                 continue;
+      |                 ~~~~~~~~~
+  499 |               if (!((((((cd.cd_gender == std::string("F")) &&
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  500 |                         (cd.cd_marital_status == std::string("M"))) &&
+      |                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  501 |                        (cd.cd_education_status == std::string("College"))) &&
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  502 |                       (d.d_year == 2000)) &&
+      |                       ~~~~~~~~~~~~~~~~~~~~~~
+  503 |                      (std::find(
+      |                      ~~~~~~~~~~~
+  504 |                           std::vector<std::string>{std::string("CA")}.begin(),
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  505 |                           std::vector<std::string>{std::string("CA")}.end(),
+      |                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  506 |                           s.s_state) !=
+      |                           ~~~~~~~~~~~~~
+  507 |                       std::vector<std::string>{std::string("CA")}.end()))))
+      |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  508 |                 continue;
+      |                 ~~~~~~~~~
+  509 |               auto __key = Result{i.i_item_id, s.s_state};
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  510 |               bool __found = false;
+      |               ~~~~~~~~~~~~~~~~~~~~~
+  511 |               for (auto &__g : __groups) {
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  512 |                 if (__g.key == __key) {
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~
+  513 |                   __g.items.push_back(__struct7{ss, cd, d, s, i});
+      |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  514 |                   __found = true;
+      |                   ~~~~~~~~~~~~~~~
+  515 |                   break;
+      |                   ~~~~~~
+  516 |                 }
+      |                 ~
+  517 |               }
+      |               ~
+  518 |               if (!__found) {
+      |               ~~~~~~~~~~~~~~~
+  519 |                 __groups.push_back(__struct8{
+      |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  520 |                     __key, std::vector<__struct7>{__struct7{ss, cd, d, s, i}}});
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  521 |               }
+      |               ~
+  522 |             }
+      |             ~
+  523 |           }
+      |           ~
+  524 |         }
+      |         ~
+  525 |       }
+      |       ~
+  526 |     }
+      |     ~
+  527 |     std::vector<std::pair<__struct10, __struct9>> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  528 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  529 |       __items.push_back(
+      |       ~~~~~~~~~~~~~~~~~~
+  530 |           {__struct10{g.key.item_id, g.key.state},
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  531 |            __struct9{
+      |            ~~~~~~~~~~
+  532 |                g.key.item_id, g.key.state, __avg(([&]() {
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  533 |                  std::vector<decltype(std::declval<__struct7>().ss_quantity)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  534 |                      __items;
+      |                      ~~~~~~~~
+  535 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  536 |                    __items.push_back(x.ss_quantity);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  537 |                  }
+      |                  ~
+  538 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  539 |                })()),
+      |                ~~~~~~
+  540 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  541 |                  std::vector<decltype(std::declval<__struct7>().ss_list_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  542 |                      __items;
+      |                      ~~~~~~~~
+  543 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  544 |                    __items.push_back(x.ss_list_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  545 |                  }
+      |                  ~
+  546 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  547 |                })()),
+      |                ~~~~~~
+  548 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  549 |                  std::vector<decltype(std::declval<__struct7>().ss_coupon_amt)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  550 |                      __items;
+      |                      ~~~~~~~~
+  551 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  552 |                    __items.push_back(x.ss_coupon_amt);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  553 |                  }
+      |                  ~
+  554 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  555 |                })()),
+      |                ~~~~~~
+  556 |                __avg(([&]() {
+      |                ~~~~~~~~~~~~~~
+  557 |                  std::vector<decltype(std::declval<__struct7>().ss_sales_price)>
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  558 |                      __items;
+      |                      ~~~~~~~~
+  559 |                  for (auto x : g.items) {
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~
+  560 |                    __items.push_back(x.ss_sales_price);
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  561 |                  }
+      |                  ~
+  562 |                  return __items;
+      |                  ~~~~~~~~~~~~~~~
+  563 |                })())}});
+      |                ~~~~~~~~~
+  564 |     }
+      |     ~
+  565 |     std::sort(__items.begin(), __items.end(), [](auto &a, auto &b) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  566 |       return std::tie(a.first.f0, a.first.f1) <
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  567 |              std::tie(b.first.f0, b.first.f1);
+      |              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  568 |     });
+      |     ~~~
+  569 |     std::vector<__struct9> __res;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  570 |     for (auto &p : __items)
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+  571 |       __res.push_back(p.second);
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  572 |     return __res;
+      |     ~~~~~~~~~~~~~
+  573 |   })();
+      |   ~~^~

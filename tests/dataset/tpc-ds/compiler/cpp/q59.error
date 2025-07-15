@@ -1,0 +1,16 @@
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:58:12: error: ‘y1’ was not declared in this scope
+   58 |   decltype(y1.store) s_store_id1;
+      |            ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:58:12: error: ‘y1’ was not declared in this scope
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:59:13: error: ‘y2’ was not declared in this scope
+   59 |   decltype((y2.amount / y1.amount)) ratio;
+      |             ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:59:25: error: ‘y1’ was not declared in this scope
+   59 |   decltype((y2.amount / y1.amount)) ratio;
+      |                         ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:59:13: error: ‘y2’ was not declared in this scope
+   59 |   decltype((y2.amount / y1.amount)) ratio;
+      |             ^~
+/tmp/TestCPPCompiler_TPCDSQueriesq593451684786/001/prog.cpp:59:25: error: ‘y1’ was not declared in this scope
+   59 |   decltype((y2.amount / y1.amount)) ratio;
+      |                         ^~
