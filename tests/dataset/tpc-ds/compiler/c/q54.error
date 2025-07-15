@@ -1,55 +1,55 @@
-/tmp/q54.c: In function ‘test_TPCDS_Q54_simplified’:
-/tmp/q54.c:348:7: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
-  348 |       (tmp_item_t){.segment = 0, .num_customers = 1, .segment_base = 0}};
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c: In function ‘test_TPCDS_Q54_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:347:7: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  347 |       (tmp_item_t){.segment = 0, .num_customers = 1, .segment_base = 0}};
       |       ^
-/tmp/q54.c:351:39: error: request for member ‘len’ in something not a structure or union
-  351 |   if (test_TPCDS_Q54_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:350:39: error: request for member ‘len’ in something not a structure or union
+  350 |   if (test_TPCDS_Q54_simplified_result.len != tmp1.len) {
       |                                       ^
-/tmp/q54.c:351:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  351 |   if (test_TPCDS_Q54_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:350:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  350 |   if (test_TPCDS_Q54_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q54.c:354:59: error: request for member ‘len’ in something not a structure or union
-  354 |     for (int i3 = 0; i3 < test_TPCDS_Q54_simplified_result.len; i3++) {
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:353:59: error: request for member ‘len’ in something not a structure or union
+  353 |     for (int i3 = 0; i3 < test_TPCDS_Q54_simplified_result.len; i3++) {
       |                                                           ^
-/tmp/q54.c:355:43: error: request for member ‘data’ in something not a structure or union
-  355 |       if (test_TPCDS_Q54_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:354:43: error: request for member ‘data’ in something not a structure or union
+  354 |       if (test_TPCDS_Q54_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                           ^
-/tmp/q54.c:355:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  355 |       if (test_TPCDS_Q54_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:354:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  354 |       if (test_TPCDS_Q54_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q54.c: In function ‘main’:
-/tmp/q54.c:386:7: warning: implicit declaration of function ‘revenue_item_list_t_create’ [-Wimplicit-function-declaration]
-  386 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:385:7: warning: implicit declaration of function ‘revenue_item_list_t_create’ [-Wimplicit-function-declaration]
+  385 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q54.c:386:45: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  386 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:385:45: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  385 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
       |                                             ^
       |                                             ->
-/tmp/q54.c:386:60: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  386 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:385:60: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  385 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
       |                                                            ^
       |                                                            ->
-/tmp/q54.c:386:75: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
-  386 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:385:75: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  385 |       revenue_item_list_t_create(store_sales.len * date_dim.len * customer.len *
       |                                                                           ^
       |                                                                           ->
-/tmp/q54.c:387:50: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
-  387 |                                  customer_address.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:386:50: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  386 |                                  customer_address.len * store.len);
       |                                                  ^
       |                                                  ->
-/tmp/q54.c:387:62: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
-  387 |                                  customer_address.len * store.len);
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:386:62: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  386 |                                  customer_address.len * store.len);
       |                                                              ^
       |                                                              ->
-/tmp/q54.c:436:35: warning: implicit declaration of function ‘by_customer_item_list_t_create’ [-Wimplicit-function-declaration]
-  436 |   by_customer_item_list_t tmp16 = by_customer_item_list_t_create(tmp15.len);
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:435:35: warning: implicit declaration of function ‘by_customer_item_list_t_create’ [-Wimplicit-function-declaration]
+  435 |   by_customer_item_list_t tmp16 = by_customer_item_list_t_create(tmp15.len);
       |                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q54.c:436:35: error: invalid initializer
-/tmp/q54.c:440:33: error: invalid initializer
-  440 |     revenue_item_list_t tmp18 = revenue_item_list_t_create(_gp.items.len);
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:435:35: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:439:33: error: invalid initializer
+  439 |     revenue_item_list_t tmp18 = revenue_item_list_t_create(_gp.items.len);
       |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q54.c:485:38: error: incompatible types when assigning to type ‘int’ from type ‘segments_item_list_t’
-  485 |   test_TPCDS_Q54_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq54394341405/001/prog.c:484:38: error: incompatible types when assigning to type ‘int’ from type ‘segments_item_list_t’
+  484 |   test_TPCDS_Q54_simplified_result = result;
       |                                      ^~~~~~

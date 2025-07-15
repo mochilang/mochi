@@ -1,13 +1,13 @@
-/tmp/q99.c: In function ‘test_TPCDS_Q99_buckets’:
-/tmp/q99.c:271:49: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  271 |   if (test_TPCDS_Q99_buckets_grouped.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq993611551473/001/prog.c: In function ‘test_TPCDS_Q99_buckets’:
+/tmp/TestCCompiler_TPCDS_Goldenq993611551473/001/prog.c:270:49: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  270 |   if (test_TPCDS_Q99_buckets_grouped.len != tmp1.len) {
       |                                                 ^
       |                                                 ->
-/tmp/q99.c:275:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  275 |       if (test_TPCDS_Q99_buckets_grouped.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq993611551473/001/prog.c:274:58: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  274 |       if (test_TPCDS_Q99_buckets_grouped.data[i3] != tmp1.data[i3]) {
       |                                                          ^
       |                                                          ->
-/tmp/q99.c: In function ‘main’:
-/tmp/q99.c:364:36: error: incompatible types when assigning to type ‘list_int’ from type ‘grouped_item_list_t’
-  364 |   test_TPCDS_Q99_buckets_grouped = grouped;
+/tmp/TestCCompiler_TPCDS_Goldenq993611551473/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq993611551473/001/prog.c:363:36: error: incompatible types when assigning to type ‘list_int’ from type ‘grouped_item_list_t’
+  363 |   test_TPCDS_Q99_buckets_grouped = grouped;
       |                                    ^~~~~~~

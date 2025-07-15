@@ -1,65 +1,65 @@
-/tmp/q76.c: In function ‘test_TPCDS_Q76_simplified’:
-/tmp/q76.c:378:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  378 |                    (tmp_item_t){.channel = "web",
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c: In function ‘test_TPCDS_Q76_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:377:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  377 |                    (tmp_item_t){.channel = "web",
       |                    ^
-/tmp/q76.c:394:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  394 |   if (test_TPCDS_Q76_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:393:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  393 |   if (test_TPCDS_Q76_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q76.c:398:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  398 |       if (test_TPCDS_Q76_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:397:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  397 |       if (test_TPCDS_Q76_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q76.c: In function ‘main’:
-/tmp/q76.c:434:7: warning: implicit declaration of function ‘store_part_item_list_t_create’ [-Wimplicit-function-declaration]
-  434 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:433:7: warning: implicit declaration of function ‘store_part_item_list_t_create’ [-Wimplicit-function-declaration]
+  433 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q76.c:434:48: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  434 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:433:48: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  433 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
       |                                                ^
       |                                                ->
-/tmp/q76.c:434:59: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  434 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:433:59: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  433 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
       |                                                           ^
       |                                                           ->
-/tmp/q76.c:434:74: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  434 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:433:74: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  433 |       store_part_item_list_t_create(store_sales.len * item.len * date_dim.len);
       |                                                                          ^
       |                                                                          ->
-/tmp/q76.c:465:7: warning: implicit declaration of function ‘web_part_item_list_t_create’ [-Wimplicit-function-declaration]
-  465 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:464:7: warning: implicit declaration of function ‘web_part_item_list_t_create’ [-Wimplicit-function-declaration]
+  464 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q76.c:465:44: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
-  465 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:464:44: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  464 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
       |                                            ^
       |                                            ->
-/tmp/q76.c:465:55: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  465 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:464:55: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  464 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
       |                                                       ^
       |                                                       ->
-/tmp/q76.c:465:70: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  465 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:464:70: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  464 |       web_part_item_list_t_create(web_sales.len * item.len * date_dim.len);
       |                                                                      ^
       |                                                                      ->
-/tmp/q76.c:495:36: warning: implicit declaration of function ‘catalog_part_item_list_t_create’ [-Wimplicit-function-declaration]
-  495 |   catalog_part_item_list_t tmp14 = catalog_part_item_list_t_create(
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:494:36: warning: implicit declaration of function ‘catalog_part_item_list_t_create’ [-Wimplicit-function-declaration]
+  494 |   catalog_part_item_list_t tmp14 = catalog_part_item_list_t_create(
       |                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q76.c:496:20: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  496 |       catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:495:20: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  495 |       catalog_sales.len * item.len * date_dim.len);
       |                    ^
       |                    ->
-/tmp/q76.c:496:31: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  496 |       catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:495:31: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  495 |       catalog_sales.len * item.len * date_dim.len);
       |                               ^
       |                               ->
-/tmp/q76.c:496:46: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  496 |       catalog_sales.len * item.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:495:46: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  495 |       catalog_sales.len * item.len * date_dim.len);
       |                                              ^
       |                                              ->
-/tmp/q76.c:526:23: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
-  526 |   list_int all_rows = concat(store_part, web_part, catalog_part);
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:525:23: warning: implicit declaration of function ‘concat’ [-Wimplicit-function-declaration]
+  525 |   list_int all_rows = concat(store_part, web_part, catalog_part);
       |                       ^~~~~~
-/tmp/q76.c:526:23: error: invalid initializer
-/tmp/q76.c:564:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  564 |   test_TPCDS_Q76_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:525:23: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq76470307824/001/prog.c:563:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  563 |   test_TPCDS_Q76_simplified_result = result;
       |                                      ^~~~~~

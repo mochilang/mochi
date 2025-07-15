@@ -1,23 +1,23 @@
-/tmp/q55.c: In function ‘test_TPCDS_Q55_simplified’:
-/tmp/q55.c:222:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
-  222 |                    (tmp_item_t){.brand_id = 20, .ext_price = 20.0}};
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c: In function ‘test_TPCDS_Q55_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:221:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  221 |                    (tmp_item_t){.brand_id = 20, .ext_price = 20.0}};
       |                    ^
-/tmp/q55.c:225:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  225 |   if (test_TPCDS_Q55_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:224:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  224 |   if (test_TPCDS_Q55_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q55.c:229:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  229 |       if (test_TPCDS_Q55_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:228:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  228 |       if (test_TPCDS_Q55_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q55.c: In function ‘main’:
-/tmp/q55.c:256:30: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
-  256 |   grouped_item_list_t tmp4 = grouped_item_list_t_create(grouped.len);
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:255:30: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
+  255 |   grouped_item_list_t tmp4 = grouped_item_list_t_create(grouped.len);
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q55.c:256:30: error: invalid initializer
-/tmp/q55.c:265:18: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
-  265 |     tmp7[tmp5] = result;
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:255:30: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:264:18: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  264 |     tmp7[tmp5] = result;
       |                  ^~~~~~
-/tmp/q55.c:298:38: error: incompatible types when assigning to type ‘list_int’ from type ‘grouped_item_list_t’
-  298 |   test_TPCDS_Q55_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq551264150302/001/prog.c:297:38: error: incompatible types when assigning to type ‘list_int’ from type ‘grouped_item_list_t’
+  297 |   test_TPCDS_Q55_simplified_result = result;
       |                                      ^~~~~~

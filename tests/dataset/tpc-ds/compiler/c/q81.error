@@ -1,18 +1,18 @@
-/tmp/q81.c: In function ‘main’:
-/tmp/q81.c:211:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  211 |     tmp2.data[tmp3] = r.state;
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:210:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  210 |     tmp2.data[tmp3] = r.state;
       |                     ^
-/tmp/q81.c:221:34: warning: implicit declaration of function ‘catalog_return_list_t_create’ [-Wimplicit-function-declaration]
-  221 |     catalog_return_list_t tmp8 = catalog_return_list_t_create(_gp.items.len);
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:220:34: warning: implicit declaration of function ‘catalog_return_list_t_create’ [-Wimplicit-function-declaration]
+  220 |     catalog_return_list_t tmp8 = catalog_return_list_t_create(_gp.items.len);
       |                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q81.c:221:34: error: invalid initializer
-/tmp/q81.c:244:32: warning: implicit declaration of function ‘avg_list_item_list_t_create’ [-Wimplicit-function-declaration]
-  244 |   avg_list_item_list_t tmp13 = avg_list_item_list_t_create(avg_list.len);
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:220:34: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:243:32: warning: implicit declaration of function ‘avg_list_item_list_t_create’ [-Wimplicit-function-declaration]
+  243 |   avg_list_item_list_t tmp13 = avg_list_item_list_t_create(avg_list.len);
       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q81.c:244:32: error: invalid initializer
-/tmp/q81.c:255:19: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
-  255 |   int avg_state = first(tmp13);
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:243:32: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:254:19: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  254 |   int avg_state = first(tmp13);
       |                   ^~~~~
-/tmp/q81.c:260:60: error: request for member ‘avg_amt’ in something not a structure or union
-  260 |     if (!((strcmp(r.state, "CA") == 0) && r.amt > avg_state.avg_amt * 1.2)) {
+/tmp/TestCCompiler_TPCDS_Goldenq814187139478/001/prog.c:259:60: error: request for member ‘avg_amt’ in something not a structure or union
+  259 |     if (!((strcmp(r.state, "CA") == 0) && r.amt > avg_state.avg_amt * 1.2)) {
       |                                                            ^

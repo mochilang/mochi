@@ -1,35 +1,35 @@
-/tmp/q47.c:189:8: error: conflicting types for ‘abs’; have ‘double(double)’
-  189 | double abs(double x) {
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:188:8: error: conflicting types for ‘abs’; have ‘double(double)’
+  188 | double abs(double x) {
       |        ^~~
-In file included from /tmp/q47.c:4:
+In file included from /tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:3:
 /usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
   980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
       |            ^~~
-/tmp/q47.c: In function ‘test_TPCDS_Q47_simplified’:
-/tmp/q47.c:203:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
-  203 |                    (tmp_item_t){.d_year = 2020,
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c: In function ‘test_TPCDS_Q47_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:202:20: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+  202 |                    (tmp_item_t){.d_year = 2020,
       |                    ^
-/tmp/q47.c:209:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  209 |   if (test_TPCDS_Q47_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:208:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  208 |   if (test_TPCDS_Q47_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q47.c:213:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  213 |       if (test_TPCDS_Q47_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:212:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  212 |       if (test_TPCDS_Q47_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q47.c: In function ‘main’:
-/tmp/q47.c:255:20: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
-  255 |     result.data[1] = v.item;
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:254:20: warning: assignment to ‘int’ from ‘const char *’ makes integer from pointer without a cast [-Wint-conversion]
+  254 |     result.data[1] = v.item;
       |                    ^
-/tmp/q47.c:256:18: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
-  256 |     tmp7[tmp5] = result;
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:255:18: error: incompatible types when assigning to type ‘int’ from type ‘list_int’
+  255 |     tmp7[tmp5] = result;
       |                  ^~~~~~
-/tmp/q47.c:285:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  285 |     _json_string(it.item);
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:284:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  284 |     _json_string(it.item);
       |                  ~~^~~~~
-/tmp/q47.c:65:32: note: expected ‘char *’ but argument is of type ‘const char *’
-   65 | static void _json_string(char *s) { printf("\"%s\"", s); }
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
       |                          ~~~~~~^
-/tmp/q47.c:297:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  297 |   test_TPCDS_Q47_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq47562481942/001/prog.c:296:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  296 |   test_TPCDS_Q47_simplified_result = result;
       |                                      ^~~~~~

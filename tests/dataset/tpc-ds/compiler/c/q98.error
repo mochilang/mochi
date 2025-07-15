@@ -1,28 +1,28 @@
-/tmp/q98.c: In function ‘test_TPCDS_Q98_revenue’:
-/tmp/q98.c:355:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  355 |                    (tmp_item_t){.i_item_id = "I2",
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c: In function ‘test_TPCDS_Q98_revenue’:
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:354:20: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  354 |                    (tmp_item_t){.i_item_id = "I2",
       |                    ^
-/tmp/q98.c:364:48: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  364 |   if (test_TPCDS_Q98_revenue_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:363:48: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  363 |   if (test_TPCDS_Q98_revenue_result.len != tmp1.len) {
       |                                                ^
       |                                                ->
-/tmp/q98.c:368:57: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  368 |       if (test_TPCDS_Q98_revenue_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:367:57: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  367 |       if (test_TPCDS_Q98_revenue_result.data[i3] != tmp1.data[i3]) {
       |                                                         ^
       |                                                         ->
-/tmp/q98.c: In function ‘main’:
-/tmp/q98.c:417:29: warning: implicit declaration of function ‘totals_item_list_t_create’ [-Wimplicit-function-declaration]
-  417 |   totals_item_list_t tmp9 = totals_item_list_t_create(tmp8.len);
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:416:29: warning: implicit declaration of function ‘totals_item_list_t_create’ [-Wimplicit-function-declaration]
+  416 |   totals_item_list_t tmp9 = totals_item_list_t_create(tmp8.len);
       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q98.c:417:29: error: invalid initializer
-/tmp/q98.c:421:33: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
-  421 |     grouped_item_list_t tmp11 = grouped_item_list_t_create(_gp.items.len);
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:416:29: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:420:33: warning: implicit declaration of function ‘grouped_item_list_t_create’ [-Wimplicit-function-declaration]
+  420 |     grouped_item_list_t tmp11 = grouped_item_list_t_create(_gp.items.len);
       |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q98.c:421:33: error: invalid initializer
-/tmp/q98.c:445:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
-  445 |       result_item_list_t_create(grouped.len * totals.len);
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:420:33: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:444:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  444 |       result_item_list_t_create(grouped.len * totals.len);
       |       ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q98.c:445:7: error: invalid initializer
-/tmp/q98.c:503:35: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  503 |   test_TPCDS_Q98_revenue_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:444:7: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq982416252793/001/prog.c:502:35: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  502 |   test_TPCDS_Q98_revenue_result = result;
       |                                   ^~~~~~

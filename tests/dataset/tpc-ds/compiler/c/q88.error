@@ -1,148 +1,148 @@
-/tmp/q88.c: In function ‘count_range’:
-/tmp/q88.c:189:14: error: request for member ‘sold_time_sk’ in something not a structure or union
-  189 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c: In function ‘count_range’:
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:188:14: error: request for member ‘sold_time_sk’ in something not a structure or union
+  188 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
       |              ^
-/tmp/q88.c:189:32: error: request for member ‘time_sk’ in something not a structure or union
-  189 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:188:32: error: request for member ‘time_sk’ in something not a structure or union
+  188 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
       |                                ^
-/tmp/q88.c:189:45: error: request for member ‘hour’ in something not a structure or union
-  189 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:188:45: error: request for member ‘hour’ in something not a structure or union
+  188 |       if ((ss.sold_time_sk == t.time_sk && t.hour == hour &&
       |                                             ^
-/tmp/q88.c:190:13: error: request for member ‘minute’ in something not a structure or union
-  190 |            t.minute >= start_min && t.minute < end_min)) {
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:189:13: error: request for member ‘minute’ in something not a structure or union
+  189 |            t.minute >= start_min && t.minute < end_min)) {
       |             ^
-/tmp/q88.c:190:38: error: request for member ‘minute’ in something not a structure or union
-  190 |            t.minute >= start_min && t.minute < end_min)) {
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:189:38: error: request for member ‘minute’ in something not a structure or union
+  189 |            t.minute >= start_min && t.minute < end_min)) {
       |                                      ^
-/tmp/q88.c:191:27: error: request for member ‘qty’ in something not a structure or union
-  191 |         total = total + ss.qty;
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:190:27: error: request for member ‘qty’ in something not a structure or union
+  190 |         total = total + ss.qty;
       |                           ^
-/tmp/q88.c: In function ‘main’:
-/tmp/q88.c:240:35: error: incompatible type for argument 1 of ‘count_range’
-  240 |   double h8_30_to_9 = count_range(store_sales, time_dim, 8, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:239:35: error: incompatible type for argument 1 of ‘count_range’
+  239 |   double h8_30_to_9 = count_range(store_sales, time_dim, 8, 30, 60);
       |                                   ^~~~~~~~~~~
       |                                   |
       |                                   store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:240:48: error: incompatible type for argument 2 of ‘count_range’
-  240 |   double h8_30_to_9 = count_range(store_sales, time_dim, 8, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:239:48: error: incompatible type for argument 2 of ‘count_range’
+  239 |   double h8_30_to_9 = count_range(store_sales, time_dim, 8, 30, 60);
       |                                                ^~~~~~~~
       |                                                |
       |                                                time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:241:35: error: incompatible type for argument 1 of ‘count_range’
-  241 |   double h9_to_9_30 = count_range(store_sales, time_dim, 9, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:240:35: error: incompatible type for argument 1 of ‘count_range’
+  240 |   double h9_to_9_30 = count_range(store_sales, time_dim, 9, 0, 30);
       |                                   ^~~~~~~~~~~
       |                                   |
       |                                   store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:241:48: error: incompatible type for argument 2 of ‘count_range’
-  241 |   double h9_to_9_30 = count_range(store_sales, time_dim, 9, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:240:48: error: incompatible type for argument 2 of ‘count_range’
+  240 |   double h9_to_9_30 = count_range(store_sales, time_dim, 9, 0, 30);
       |                                                ^~~~~~~~
       |                                                |
       |                                                time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:242:36: error: incompatible type for argument 1 of ‘count_range’
-  242 |   double h9_30_to_10 = count_range(store_sales, time_dim, 9, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:241:36: error: incompatible type for argument 1 of ‘count_range’
+  241 |   double h9_30_to_10 = count_range(store_sales, time_dim, 9, 30, 60);
       |                                    ^~~~~~~~~~~
       |                                    |
       |                                    store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:242:49: error: incompatible type for argument 2 of ‘count_range’
-  242 |   double h9_30_to_10 = count_range(store_sales, time_dim, 9, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:241:49: error: incompatible type for argument 2 of ‘count_range’
+  241 |   double h9_30_to_10 = count_range(store_sales, time_dim, 9, 30, 60);
       |                                                 ^~~~~~~~
       |                                                 |
       |                                                 time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:243:37: error: incompatible type for argument 1 of ‘count_range’
-  243 |   double h10_to_10_30 = count_range(store_sales, time_dim, 10, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:242:37: error: incompatible type for argument 1 of ‘count_range’
+  242 |   double h10_to_10_30 = count_range(store_sales, time_dim, 10, 0, 30);
       |                                     ^~~~~~~~~~~
       |                                     |
       |                                     store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:243:50: error: incompatible type for argument 2 of ‘count_range’
-  243 |   double h10_to_10_30 = count_range(store_sales, time_dim, 10, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:242:50: error: incompatible type for argument 2 of ‘count_range’
+  242 |   double h10_to_10_30 = count_range(store_sales, time_dim, 10, 0, 30);
       |                                                  ^~~~~~~~
       |                                                  |
       |                                                  time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:244:37: error: incompatible type for argument 1 of ‘count_range’
-  244 |   double h10_30_to_11 = count_range(store_sales, time_dim, 10, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:243:37: error: incompatible type for argument 1 of ‘count_range’
+  243 |   double h10_30_to_11 = count_range(store_sales, time_dim, 10, 30, 60);
       |                                     ^~~~~~~~~~~
       |                                     |
       |                                     store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:244:50: error: incompatible type for argument 2 of ‘count_range’
-  244 |   double h10_30_to_11 = count_range(store_sales, time_dim, 10, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:243:50: error: incompatible type for argument 2 of ‘count_range’
+  243 |   double h10_30_to_11 = count_range(store_sales, time_dim, 10, 30, 60);
       |                                                  ^~~~~~~~
       |                                                  |
       |                                                  time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:245:37: error: incompatible type for argument 1 of ‘count_range’
-  245 |   double h11_to_11_30 = count_range(store_sales, time_dim, 11, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:244:37: error: incompatible type for argument 1 of ‘count_range’
+  244 |   double h11_to_11_30 = count_range(store_sales, time_dim, 11, 0, 30);
       |                                     ^~~~~~~~~~~
       |                                     |
       |                                     store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:245:50: error: incompatible type for argument 2 of ‘count_range’
-  245 |   double h11_to_11_30 = count_range(store_sales, time_dim, 11, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:244:50: error: incompatible type for argument 2 of ‘count_range’
+  244 |   double h11_to_11_30 = count_range(store_sales, time_dim, 11, 0, 30);
       |                                                  ^~~~~~~~
       |                                                  |
       |                                                  time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:246:37: error: incompatible type for argument 1 of ‘count_range’
-  246 |   double h11_30_to_12 = count_range(store_sales, time_dim, 11, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:245:37: error: incompatible type for argument 1 of ‘count_range’
+  245 |   double h11_30_to_12 = count_range(store_sales, time_dim, 11, 30, 60);
       |                                     ^~~~~~~~~~~
       |                                     |
       |                                     store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:246:50: error: incompatible type for argument 2 of ‘count_range’
-  246 |   double h11_30_to_12 = count_range(store_sales, time_dim, 11, 30, 60);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:245:50: error: incompatible type for argument 2 of ‘count_range’
+  245 |   double h11_30_to_12 = count_range(store_sales, time_dim, 11, 30, 60);
       |                                                  ^~~~~~~~
       |                                                  |
       |                                                  time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~
-/tmp/q88.c:247:37: error: incompatible type for argument 1 of ‘count_range’
-  247 |   double h12_to_12_30 = count_range(store_sales, time_dim, 12, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:246:37: error: incompatible type for argument 1 of ‘count_range’
+  246 |   double h12_to_12_30 = count_range(store_sales, time_dim, 12, 0, 30);
       |                                     ^~~~~~~~~~~
       |                                     |
       |                                     store_sale_t *
-/tmp/q88.c:182:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:29: note: expected ‘list_int’ but argument is of type ‘store_sale_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                    ~~~~~~~~~^~~~~~
-/tmp/q88.c:247:50: error: incompatible type for argument 2 of ‘count_range’
-  247 |   double h12_to_12_30 = count_range(store_sales, time_dim, 12, 0, 30);
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:246:50: error: incompatible type for argument 2 of ‘count_range’
+  246 |   double h12_to_12_30 = count_range(store_sales, time_dim, 12, 0, 30);
       |                                                  ^~~~~~~~
       |                                                  |
       |                                                  time_dim_t *
-/tmp/q88.c:182:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
-  182 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
+/tmp/TestCCompiler_TPCDS_Goldenq884259403969/001/prog.c:181:46: note: expected ‘list_int’ but argument is of type ‘time_dim_t *’
+  181 | double count_range(list_int ssales, list_int tdim, int hour, int start_min,
       |                                     ~~~~~~~~~^~~~

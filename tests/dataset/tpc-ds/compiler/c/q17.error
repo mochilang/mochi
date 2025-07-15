@@ -1,80 +1,80 @@
-/tmp/q17.c: In function ‘test_TPCDS_Q17_stats’:
-/tmp/q17.c:385:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  385 |   if (test_TPCDS_Q17_stats_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c: In function ‘test_TPCDS_Q17_stats’:
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:384:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  384 |   if (test_TPCDS_Q17_stats_result.len != tmp1.len) {
       |                                              ^
       |                                              ->
-/tmp/q17.c:389:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  389 |       if (test_TPCDS_Q17_stats_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:388:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  388 |       if (test_TPCDS_Q17_stats_result.data[i3] != tmp1.data[i3]) {
       |                                                       ^
       |                                                       ->
-/tmp/q17.c: In function ‘main’:
-/tmp/q17.c:434:15: error: redefinition of ‘joined’
-  434 |   list_string joined = list_string_create(3);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:433:15: error: redefinition of ‘joined’
+  433 |   list_string joined = list_string_create(3);
       |               ^~~~~~
-/tmp/q17.c:430:15: note: previous definition of ‘joined’ with type ‘list_string’
-  430 |   list_string joined = list_string_create(3);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:429:15: note: previous definition of ‘joined’ with type ‘list_string’
+  429 |   list_string joined = list_string_create(3);
       |               ^~~~~~
-/tmp/q17.c:438:29: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
-  438 |   joined_item_list_t tmp4 = joined_item_list_t_create(
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:437:29: warning: implicit declaration of function ‘joined_item_list_t_create’ [-Wimplicit-function-declaration]
+  437 |   joined_item_list_t tmp4 = joined_item_list_t_create(
       |                             ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q17.c:439:18: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  439 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:438:18: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  438 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
       |                  ^
       |                  ->
-/tmp/q17.c:439:38: error: ‘(store_return_t *)&store_returns’ is a pointer; did you mean to use ‘->’?
-  439 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:438:38: error: ‘(store_return_t *)&store_returns’ is a pointer; did you mean to use ‘->’?
+  438 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
       |                                      ^
       |                                      ->
-/tmp/q17.c:439:58: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
-  439 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:438:58: error: ‘(catalog_sale_t *)&catalog_sales’ is a pointer; did you mean to use ‘->’?
+  438 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
       |                                                          ^
       |                                                          ->
-/tmp/q17.c:439:73: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  439 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:438:73: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  438 |       store_sales.len * store_returns.len * catalog_sales.len * date_dim.len *
       |                                                                         ^
       |                                                                         ->
-/tmp/q17.c:440:15: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  440 |       date_dim.len * date_dim.len * store.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:439:15: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  439 |       date_dim.len * date_dim.len * store.len * item.len);
       |               ^
       |               ->
-/tmp/q17.c:440:30: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  440 |       date_dim.len * date_dim.len * store.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:439:30: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  439 |       date_dim.len * date_dim.len * store.len * item.len);
       |                              ^
       |                              ->
-/tmp/q17.c:440:42: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
-  440 |       date_dim.len * date_dim.len * store.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:439:42: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  439 |       date_dim.len * date_dim.len * store.len * item.len);
       |                                          ^
       |                                          ->
-/tmp/q17.c:440:53: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
-  440 |       date_dim.len * date_dim.len * store.len * item.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:439:53: error: ‘(item_t *)&item’ is a pointer; did you mean to use ‘->’?
+  439 |       date_dim.len * date_dim.len * store.len * item.len);
       |                                                     ^
       |                                                     ->
-/tmp/q17.c:466:79: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
-  466 |                                        sr.sr_returned_date_sk == d2.d_date_sk &&
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:465:79: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
+  465 |                                        sr.sr_returned_date_sk == d2.d_date_sk &&
       |                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
       |                                                                               |
       |                                                                               int
-  467 |                                            d2.d_quarter_name))) {
+  466 |                                            d2.d_quarter_name))) {
       |                                            ~~~~~~~~~~~~~~~~~                   
-/tmp/q17.c:63:54: note: expected ‘char *’ but argument is of type ‘int’
-   63 | static int contains_list_string(list_string v, char *item) {
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:62:54: note: expected ‘char *’ but argument is of type ‘int’
+   62 | static int contains_list_string(list_string v, char *item) {
       |                                                ~~~~~~^~~~
-/tmp/q17.c:473:77: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
-  473 |                                          cs.cs_sold_date_sk == d3.d_date_sk &&
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:472:77: warning: passing argument 2 of ‘contains_list_string’ makes pointer from integer without a cast [-Wint-conversion]
+  472 |                                          cs.cs_sold_date_sk == d3.d_date_sk &&
       |                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~
       |                                                                             |
       |                                                                             int
-  474 |                                              d3.d_quarter_name))) {
+  473 |                                              d3.d_quarter_name))) {
       |                                              ~~~~~~~~~~~~~~~~~               
-/tmp/q17.c:63:54: note: expected ‘char *’ but argument is of type ‘int’
-   63 | static int contains_list_string(list_string v, char *item) {
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:62:54: note: expected ‘char *’ but argument is of type ‘int’
+   62 | static int contains_list_string(list_string v, char *item) {
       |                                                ~~~~~~^~~~
-/tmp/q17.c:504:22: error: conflicting types for ‘joined’; have ‘joined_item_list_t’
-  504 |   joined_item_list_t joined = tmp4;
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:503:22: error: conflicting types for ‘joined’; have ‘joined_item_list_t’
+  503 |   joined_item_list_t joined = tmp4;
       |                      ^~~~~~
-/tmp/q17.c:434:15: note: previous definition of ‘joined’ with type ‘list_string’
-  434 |   list_string joined = list_string_create(3);
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:433:15: note: previous definition of ‘joined’ with type ‘list_string’
+  433 |   list_string joined = list_string_create(3);
       |               ^~~~~~
-/tmp/q17.c:574:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  574 |   test_TPCDS_Q17_stats_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq1717219184/001/prog.c:573:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  573 |   test_TPCDS_Q17_stats_result = result;
       |                                 ^~~~~~

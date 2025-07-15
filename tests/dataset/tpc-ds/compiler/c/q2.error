@@ -1,54 +1,54 @@
-/tmp/q2.c: In function ‘test_TPCDS_Q2_result’:
-/tmp/q2.c:292:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  292 |   if (test_TPCDS_Q2_result_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c: In function ‘test_TPCDS_Q2_result’:
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:291:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  291 |   if (test_TPCDS_Q2_result_result.len != tmp1.len) {
       |                                              ^
       |                                              ->
-/tmp/q2.c:296:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  296 |       if (test_TPCDS_Q2_result_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:295:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  295 |       if (test_TPCDS_Q2_result_result.data[i3] != tmp1.data[i3]) {
       |                                                       ^
       |                                                       ->
-/tmp/q2.c: In function ‘main’:
-/tmp/q2.c:373:19: error: invalid initializer
-  373 |   list_int wscs = (tmp4) union(tmp7);
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:372:19: error: invalid initializer
+  372 |   list_int wscs = (tmp4) union(tmp7);
       |                   ^
-/tmp/q2.c:373:26: error: expected ‘,’ or ‘;’ before ‘union’
-  373 |   list_int wscs = (tmp4) union(tmp7);
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:372:26: error: expected ‘,’ or ‘;’ before ‘union’
+  372 |   list_int wscs = (tmp4) union(tmp7);
       |                          ^~~~~
-/tmp/q2.c:380:14: error: request for member ‘sold_date_sk’ in something not a structure or union
-  380 |       if (!(w.sold_date_sk == d.d_date_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:379:14: error: request for member ‘sold_date_sk’ in something not a structure or union
+  379 |       if (!(w.sold_date_sk == d.d_date_sk)) {
       |              ^
-/tmp/q2.c:385:31: error: ‘wswscs_item_t’ has no member named ‘name’
-  385 |         if (strcmp(wswscs[i13].name, (tmp_item_t){.week_seq = d.d_week_seq}) ==
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:384:31: error: ‘wswscs_item_t’ has no member named ‘name’
+  384 |         if (strcmp(wswscs[i13].name, (tmp_item_t){.week_seq = d.d_week_seq}) ==
       |                               ^
-/tmp/q2.c:385:50: error: incompatible type for argument 2 of ‘strcmp’
-  385 |         if (strcmp(wswscs[i13].name, (tmp_item_t){.week_seq = d.d_week_seq}) ==
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:384:50: error: incompatible type for argument 2 of ‘strcmp’
+  384 |         if (strcmp(wswscs[i13].name, (tmp_item_t){.week_seq = d.d_week_seq}) ==
       |                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                                  |
       |                                                  tmp_item_t
-In file included from /tmp/q2.c:5:
+In file included from /tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:4:
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘tmp_item_t’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q2.c:392:27: error: ‘wswscs_item_t’ has no member named ‘name’
-  392 |         wswscs[wswscs_len].name = (tmp_item_t){.week_seq = d.d_week_seq};
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:391:27: error: ‘wswscs_item_t’ has no member named ‘name’
+  391 |         wswscs[wswscs_len].name = (tmp_item_t){.week_seq = d.d_week_seq};
       |                           ^
-/tmp/q2.c:393:27: error: ‘wswscs_item_t’ has no member named ‘count’
-  393 |         wswscs[wswscs_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:392:27: error: ‘wswscs_item_t’ has no member named ‘count’
+  392 |         wswscs[wswscs_len].count = 1;
       |                           ^
-/tmp/q2.c:397:22: error: ‘wswscs_item_t’ has no member named ‘count’
-  397 |         wswscs[tmp12].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:396:22: error: ‘wswscs_item_t’ has no member named ‘count’
+  396 |         wswscs[tmp12].count++;
       |                      ^
-/tmp/q2.c:401:30: warning: implicit declaration of function ‘wswscs_item_list_t_create’ [-Wimplicit-function-declaration]
-  401 |   wswscs_item_list_t tmp14 = wswscs_item_list_t_create(wswscs_len);
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:400:30: warning: implicit declaration of function ‘wswscs_item_list_t_create’ [-Wimplicit-function-declaration]
+  400 |   wswscs_item_list_t tmp14 = wswscs_item_list_t_create(wswscs_len);
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q2.c:401:30: error: invalid initializer
-/tmp/q2.c:413:30: error: invalid initializer
-  413 |   wswscs_item_list_t tmp17 = wswscs_item_list_t_create(wswscs_len);
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:400:30: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:412:30: error: invalid initializer
+  412 |   wswscs_item_list_t tmp17 = wswscs_item_list_t_create(wswscs_len);
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q2.c:425:30: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
-  425 |   result_item_list_t tmp20 = result_item_list_t_create(year1.len * year2.len);
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:424:30: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  424 |   result_item_list_t tmp20 = result_item_list_t_create(year1.len * year2.len);
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q2.c:425:30: error: invalid initializer
-/tmp/q2.c:463:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  463 |   test_TPCDS_Q2_result_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:424:30: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq2937939553/001/prog.c:462:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  462 |   test_TPCDS_Q2_result_result = result;
       |                                 ^~~~~~

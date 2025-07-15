@@ -1,43 +1,43 @@
-/tmp/q41.c: In function ‘test_TPCDS_Q41_simplified’:
-/tmp/q41.c:138:53: warning: comparison between pointer and integer
-  138 |       if (test_TPCDS_Q41_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c: In function ‘test_TPCDS_Q41_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:137:53: warning: comparison between pointer and integer
+  137 |       if (test_TPCDS_Q41_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                     ^~
-/tmp/q41.c: In function ‘main’:
-/tmp/q41.c:173:22: warning: implicit declaration of function ‘item_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
-  173 |   item_list_t tmp4 = item_list_t_create(item_len);
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:172:22: warning: implicit declaration of function ‘item_list_t_create’; did you mean ‘list_list_int_create’? [-Wimplicit-function-declaration]
+  172 |   item_list_t tmp4 = item_list_t_create(item_len);
       |                      ^~~~~~~~~~~~~~~~~~
       |                      list_list_int_create
-/tmp/q41.c:173:22: error: invalid initializer
-/tmp/q41.c:177:26: error: ‘i1’ undeclared (first use in this function); did you mean ‘i2’?
-  177 |     if (!(i2.manufact == i1.manufact && i2.category == i1.category)) {
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:172:22: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:176:26: error: ‘i1’ undeclared (first use in this function); did you mean ‘i2’?
+  176 |     if (!(i2.manufact == i1.manufact && i2.category == i1.category)) {
       |                          ^~
       |                          i2
-/tmp/q41.c:177:26: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q41.c:184:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
-  184 |   int tmp7 = int_create(item_len);
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:176:26: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:183:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  183 |   int tmp7 = int_create(item_len);
       |              ^~~~~~~~~~
       |              list_int_create
-/tmp/q41.c:193:9: error: request for member ‘data’ in something not a structure or union
-  193 |     tmp7.data[tmp8] = i1.product_name;
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:192:9: error: request for member ‘data’ in something not a structure or union
+  192 |     tmp7.data[tmp8] = i1.product_name;
       |         ^
-/tmp/q41.c:197:7: error: request for member ‘len’ in something not a structure or union
-  197 |   tmp7.len = tmp8;
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:196:7: error: request for member ‘len’ in something not a structure or union
+  196 |   tmp7.len = tmp8;
       |       ^
-/tmp/q41.c:204:33: error: request for member ‘data’ in something not a structure or union
-  204 |         const char *tmp12 = tmp7.data[i13];
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:203:33: error: request for member ‘data’ in something not a structure or union
+  203 |         const char *tmp12 = tmp7.data[i13];
       |                                 ^
-/tmp/q41.c:205:13: error: request for member ‘data’ in something not a structure or union
-  205 |         tmp7.data[i13] = tmp7.data[i14];
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:204:13: error: request for member ‘data’ in something not a structure or union
+  204 |         tmp7.data[i13] = tmp7.data[i14];
       |             ^
-/tmp/q41.c:205:30: error: request for member ‘data’ in something not a structure or union
-  205 |         tmp7.data[i13] = tmp7.data[i14];
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:204:30: error: request for member ‘data’ in something not a structure or union
+  204 |         tmp7.data[i13] = tmp7.data[i14];
       |                              ^
-/tmp/q41.c:206:13: error: request for member ‘data’ in something not a structure or union
-  206 |         tmp7.data[i14] = tmp12;
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:205:13: error: request for member ‘data’ in something not a structure or union
+  205 |         tmp7.data[i14] = tmp12;
       |             ^
-/tmp/q41.c:212:38: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
-  212 |   test_TPCDS_Q41_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:211:38: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  211 |   test_TPCDS_Q41_simplified_result = result;
       |                                      ^~~~~~
-/tmp/q41.c:215:14: error: request for member ‘data’ in something not a structure or union
-  215 |   free(result.data);
+/tmp/TestCCompiler_TPCDS_Goldenq413608549139/001/prog.c:214:14: error: request for member ‘data’ in something not a structure or union
+  214 |   free(result.data);
       |              ^

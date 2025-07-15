@@ -1,56 +1,56 @@
-/tmp/q44.c: In function ‘test_TPCDS_Q44_simplified’:
-/tmp/q44.c:246:42: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
-  246 |   if (!(test_TPCDS_Q44_simplified_result ==
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c: In function ‘test_TPCDS_Q44_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:245:42: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  245 |   if (!(test_TPCDS_Q44_simplified_result ==
       |                                          ^~
-/tmp/q44.c: In function ‘main’:
-/tmp/q44.c:277:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
-  277 |   ss_item_list_t tmp6 = ss_item_list_t_create(tmp5.len);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:276:25: warning: implicit declaration of function ‘ss_item_list_t_create’ [-Wimplicit-function-declaration]
+  276 |   ss_item_list_t tmp6 = ss_item_list_t_create(tmp5.len);
       |                         ^~~~~~~~~~~~~~~~~~~~~
-/tmp/q44.c:277:25: error: invalid initializer
-/tmp/q44.c:281:30: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
-  281 |     store_sale_list_t tmp8 = store_sale_list_t_create(_gp.items.len);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:276:25: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:280:30: warning: implicit declaration of function ‘store_sale_list_t_create’ [-Wimplicit-function-declaration]
+  280 |     store_sale_list_t tmp8 = store_sale_list_t_create(_gp.items.len);
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q44.c:281:30: error: invalid initializer
-/tmp/q44.c:303:27: error: invalid initializer
-  303 |   list_int grouped_base = (tmp6);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:280:30: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:302:27: error: invalid initializer
+  302 |   list_int grouped_base = (tmp6);
       |                           ^
-/tmp/q44.c:311:23: error: request for member ‘avg_profit’ in something not a structure or union
-  311 |     tmp16[tmp14] = (-x.avg_profit);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:310:23: error: request for member ‘avg_profit’ in something not a structure or union
+  310 |     tmp16[tmp14] = (-x.avg_profit);
       |                       ^
-/tmp/q44.c:327:14: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
-  327 |   int best = first(tmp13);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:326:14: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  326 |   int best = first(tmp13);
       |              ^~~~~
-/tmp/q44.c:334:21: error: request for member ‘avg_profit’ in something not a structure or union
-  334 |     tmp24[tmp22] = x.avg_profit;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:333:21: error: request for member ‘avg_profit’ in something not a structure or union
+  333 |     tmp24[tmp22] = x.avg_profit;
       |                     ^
-/tmp/q44.c:351:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
-  351 |   int tmp29 = int_create(item_len);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:350:15: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  350 |   int tmp29 = int_create(item_len);
       |               ^~~~~~~~~~
       |               list_int_create
-/tmp/q44.c:355:30: error: request for member ‘item_sk’ in something not a structure or union
-  355 |     if (!(i.i_item_sk == best.item_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:354:30: error: request for member ‘item_sk’ in something not a structure or union
+  354 |     if (!(i.i_item_sk == best.item_sk)) {
       |                              ^
-/tmp/q44.c:358:10: error: request for member ‘data’ in something not a structure or union
-  358 |     tmp29.data[tmp30] = i.i_product_name;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:357:10: error: request for member ‘data’ in something not a structure or union
+  357 |     tmp29.data[tmp30] = i.i_product_name;
       |          ^
-/tmp/q44.c:361:8: error: request for member ‘len’ in something not a structure or union
-  361 |   tmp29.len = tmp30;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:360:8: error: request for member ‘len’ in something not a structure or union
+  360 |   tmp29.len = tmp30;
       |        ^
-/tmp/q44.c:367:31: error: request for member ‘item_sk’ in something not a structure or union
-  367 |     if (!(i.i_item_sk == worst.item_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:366:31: error: request for member ‘item_sk’ in something not a structure or union
+  366 |     if (!(i.i_item_sk == worst.item_sk)) {
       |                               ^
-/tmp/q44.c:370:10: error: request for member ‘data’ in something not a structure or union
-  370 |     tmp32.data[tmp33] = i.i_product_name;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:369:10: error: request for member ‘data’ in something not a structure or union
+  369 |     tmp32.data[tmp33] = i.i_product_name;
       |          ^
-/tmp/q44.c:373:8: error: request for member ‘len’ in something not a structure or union
-  373 |   tmp32.len = tmp33;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:372:8: error: request for member ‘len’ in something not a structure or union
+  372 |   tmp32.len = tmp33;
       |        ^
-/tmp/q44.c:386:38: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
-  386 |   test_TPCDS_Q44_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:385:38: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  385 |   test_TPCDS_Q44_simplified_result = result;
       |                                      ^~~~~~
-/tmp/q44.c:390:13: error: request for member ‘data’ in something not a structure or union
-  390 |   free(tmp29.data);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:389:13: error: request for member ‘data’ in something not a structure or union
+  389 |   free(tmp29.data);
       |             ^
-/tmp/q44.c:391:13: error: request for member ‘data’ in something not a structure or union
-  391 |   free(tmp32.data);
+/tmp/TestCCompiler_TPCDS_Goldenq442197737928/001/prog.c:390:13: error: request for member ‘data’ in something not a structure or union
+  390 |   free(tmp32.data);
       |             ^

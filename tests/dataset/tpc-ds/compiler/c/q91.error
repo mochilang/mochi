@@ -1,35 +1,35 @@
-/tmp/q91.c:326:3: error: unknown type name ‘customer_address_t’
-  326 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:325:3: error: unknown type name ‘customer_address_t’
+  325 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q91.c: In function ‘create_customer_address_list’:
-/tmp/q91.c:331:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  331 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:330:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  330 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q91.c:331:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q91.c: At top level:
-/tmp/q91.c:346:3: error: unknown type name ‘customer_demographics_t’
-  346 |   customer_demographics_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:330:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: At top level:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:345:3: error: unknown type name ‘customer_demographics_t’
+  345 |   customer_demographics_t *data;
       |   ^~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q91.c: In function ‘create_customer_demographics_list’:
-/tmp/q91.c:351:31: error: ‘customer_demographics_t’ undeclared (first use in this function); did you mean ‘customer_demographic_t’?
-  351 |   l.data = calloc(len, sizeof(customer_demographics_t));
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: In function ‘create_customer_demographics_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:350:31: error: ‘customer_demographics_t’ undeclared (first use in this function); did you mean ‘customer_demographic_t’?
+  350 |   l.data = calloc(len, sizeof(customer_demographics_t));
       |                               ^~~~~~~~~~~~~~~~~~~~~~~
       |                               customer_demographic_t
-/tmp/q91.c: At top level:
-/tmp/q91.c:365:3: error: unknown type name ‘household_demographics_t’
-  365 |   household_demographics_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: At top level:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:364:3: error: unknown type name ‘household_demographics_t’
+  364 |   household_demographics_t *data;
       |   ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q91.c: In function ‘create_household_demographics_list’:
-/tmp/q91.c:370:31: error: ‘household_demographics_t’ undeclared (first use in this function); did you mean ‘household_demographic_t’?
-  370 |   l.data = calloc(len, sizeof(household_demographics_t));
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: In function ‘create_household_demographics_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:369:31: error: ‘household_demographics_t’ undeclared (first use in this function); did you mean ‘household_demographic_t’?
+  369 |   l.data = calloc(len, sizeof(household_demographics_t));
       |                               ^~~~~~~~~~~~~~~~~~~~~~~~
       |                               household_demographic_t
-/tmp/q91.c: In function ‘test_TPCDS_Q91_returns’:
-/tmp/q91.c:380:40: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
-  380 |   if (!((test_TPCDS_Q91_returns_result ==
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: In function ‘test_TPCDS_Q91_returns’:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:379:40: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  379 |   if (!((test_TPCDS_Q91_returns_result ==
       |                                        ^~
-/tmp/q91.c: In function ‘main’:
-/tmp/q91.c:425:16: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
-  425 |   int result = first((cc_item_list_t){0, NULL});
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq912346614554/001/prog.c:424:16: warning: implicit declaration of function ‘first’ [-Wimplicit-function-declaration]
+  424 |   int result = first((cc_item_list_t){0, NULL});
       |                ^~~~~

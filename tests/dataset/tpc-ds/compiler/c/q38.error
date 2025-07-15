@@ -1,8 +1,8 @@
-/tmp/q38.c: In function ‘distinct’:
-/tmp/q38.c:192:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
-  192 |     if (((!contains(tmp2, x)))) {
+/tmp/TestCCompiler_TPCDS_Goldenq384264501875/001/prog.c: In function ‘distinct’:
+/tmp/TestCCompiler_TPCDS_Goldenq384264501875/001/prog.c:191:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  191 |     if (((!contains(tmp2, x)))) {
       |            ^~~~~~~~
-/tmp/q38.c: In function ‘main’:
-/tmp/q38.c:266:28: error: expected ‘,’ or ‘;’ before ‘intersect’
-  266 |   list_int hot = store_ids intersect catalog_ids intersect web_ids;
+/tmp/TestCCompiler_TPCDS_Goldenq384264501875/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq384264501875/001/prog.c:265:28: error: expected ‘,’ or ‘;’ before ‘intersect’
+  265 |   list_int hot = store_ids intersect catalog_ids intersect web_ids;
       |                            ^~~~~~~~~

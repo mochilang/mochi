@@ -1,16 +1,16 @@
-/tmp/q70.c: In function ‘test_TPCDS_Q70_simplified’:
-/tmp/q70.c:227:7: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
-  227 |       (tmp_item_t){.s_state = "TX", .s_county = "Travis", .total_sum = 20.0}};
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c: In function ‘test_TPCDS_Q70_simplified’:
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c:226:7: error: incompatible types when initializing type ‘const char *’ using type ‘tmp_item_t’
+  226 |       (tmp_item_t){.s_state = "TX", .s_county = "Travis", .total_sum = 20.0}};
       |       ^
-/tmp/q70.c:230:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  230 |   if (test_TPCDS_Q70_simplified_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c:229:51: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  229 |   if (test_TPCDS_Q70_simplified_result.len != tmp1.len) {
       |                                                   ^
       |                                                   ->
-/tmp/q70.c:234:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  234 |       if (test_TPCDS_Q70_simplified_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c:233:60: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  233 |       if (test_TPCDS_Q70_simplified_result.data[i3] != tmp1.data[i3]) {
       |                                                            ^
       |                                                            ->
-/tmp/q70.c: In function ‘main’:
-/tmp/q70.c:284:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  284 |   test_TPCDS_Q70_simplified_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq701142173884/001/prog.c:283:38: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  283 |   test_TPCDS_Q70_simplified_result = result;
       |                                      ^~~~~~

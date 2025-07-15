@@ -1,62 +1,62 @@
-/tmp/q1.c: In function ‘test_TPCDS_Q1_result’:
-/tmp/q1.c:269:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  269 |   if (test_TPCDS_Q1_result_result.len != tmp1.len) {
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c: In function ‘test_TPCDS_Q1_result’:
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:268:46: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  268 |   if (test_TPCDS_Q1_result_result.len != tmp1.len) {
       |                                              ^
       |                                              ->
-/tmp/q1.c:273:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
-  273 |       if (test_TPCDS_Q1_result_result.data[i3] != tmp1.data[i3]) {
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:272:55: error: ‘(tmp1_t *)&tmp1’ is a pointer; did you mean to use ‘->’?
+  272 |       if (test_TPCDS_Q1_result_result.data[i3] != tmp1.data[i3]) {
       |                                                       ^
       |                                                       ->
-/tmp/q1.c: In function ‘main’:
-/tmp/q1.c:314:45: error: ‘customer_total_return_item_t’ has no member named ‘name’
-  314 |         if (strcmp(customer_total_return[i7].name,
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:313:45: error: ‘customer_total_return_item_t’ has no member named ‘name’
+  313 |         if (strcmp(customer_total_return[i7].name,
       |                                             ^
-/tmp/q1.c:315:32: error: incompatible type for argument 2 of ‘strcmp’
-  315 |                    (tmp_item_t){.customer_sk = sr.sr_customer_sk,
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:314:32: error: incompatible type for argument 2 of ‘strcmp’
+  314 |                    (tmp_item_t){.customer_sk = sr.sr_customer_sk,
       |                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                |
       |                                tmp_item_t
-  316 |                                 .store_sk = sr.sr_store_sk}) == 0) {
+  315 |                                 .store_sk = sr.sr_store_sk}) == 0) {
       |                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from /tmp/q1.c:5:
+In file included from /tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:4:
 /usr/include/string.h:156:50: note: expected ‘const char *’ but argument is of type ‘tmp_item_t’
   156 | extern int strcmp (const char *__s1, const char *__s2)
       |                                      ~~~~~~~~~~~~^~~~
-/tmp/q1.c:322:57: error: ‘customer_total_return_item_t’ has no member named ‘name’
-  322 |         customer_total_return[customer_total_return_len].name = (tmp_item_t){
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:321:57: error: ‘customer_total_return_item_t’ has no member named ‘name’
+  321 |         customer_total_return[customer_total_return_len].name = (tmp_item_t){
       |                                                         ^
-/tmp/q1.c:324:57: error: ‘customer_total_return_item_t’ has no member named ‘count’
-  324 |         customer_total_return[customer_total_return_len].count = 1;
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:323:57: error: ‘customer_total_return_item_t’ has no member named ‘count’
+  323 |         customer_total_return[customer_total_return_len].count = 1;
       |                                                         ^
-/tmp/q1.c:328:36: error: ‘customer_total_return_item_t’ has no member named ‘count’
-  328 |         customer_total_return[tmp6].count++;
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:327:36: error: ‘customer_total_return_item_t’ has no member named ‘count’
+  327 |         customer_total_return[tmp6].count++;
       |                                    ^
-/tmp/q1.c:336:11: error: ‘ctr1’ undeclared (first use in this function); did you mean ‘ctr2’?
-  336 |     if (!(ctr1.ctr_store_sk == ctr2.ctr_store_sk)) {
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:335:11: error: ‘ctr1’ undeclared (first use in this function); did you mean ‘ctr2’?
+  335 |     if (!(ctr1.ctr_store_sk == ctr2.ctr_store_sk)) {
       |           ^~~~
       |           ctr2
-/tmp/q1.c:336:11: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q1.c:343:30: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
-  343 |   result_item_list_t tmp11 = result_item_list_t_create(
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:335:11: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:342:30: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+  342 |   result_item_list_t tmp11 = result_item_list_t_create(
       |                              ^~~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q1.c:344:28: error: ‘(customer_total_return_item_t *)&customer_total_return’ is a pointer; did you mean to use ‘->’?
-  344 |       customer_total_return.len * store.len * customer.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:343:28: error: ‘(customer_total_return_item_t *)&customer_total_return’ is a pointer; did you mean to use ‘->’?
+  343 |       customer_total_return.len * store.len * customer.len);
       |                            ^
       |                            ->
-/tmp/q1.c:344:40: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
-  344 |       customer_total_return.len * store.len * customer.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:343:40: error: ‘(store_t *)&store’ is a pointer; did you mean to use ‘->’?
+  343 |       customer_total_return.len * store.len * customer.len);
       |                                        ^
       |                                        ->
-/tmp/q1.c:344:55: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
-  344 |       customer_total_return.len * store.len * customer.len);
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:343:55: error: ‘(customer_t *)&customer’ is a pointer; did you mean to use ‘->’?
+  343 |       customer_total_return.len * store.len * customer.len);
       |                                                       ^
       |                                                       ->
-/tmp/q1.c:377:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  377 |     _json_string(it.c_customer_id);
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:376:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  376 |     _json_string(it.c_customer_id);
       |                  ~~^~~~~~~~~~~~~~
-/tmp/q1.c:73:32: note: expected ‘char *’ but argument is of type ‘const char *’
-   73 | static void _json_string(char *s) { printf("\"%s\"", s); }
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:72:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   72 | static void _json_string(char *s) { printf("\"%s\"", s); }
       |                          ~~~~~~^
-/tmp/q1.c:381:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
-  381 |   test_TPCDS_Q1_result_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq1729588485/001/prog.c:380:33: error: incompatible types when assigning to type ‘list_int’ from type ‘result_item_list_t’
+  380 |   test_TPCDS_Q1_result_result = result;
       |                                 ^~~~~~

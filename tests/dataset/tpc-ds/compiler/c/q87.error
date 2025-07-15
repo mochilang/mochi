@@ -1,81 +1,81 @@
-/tmp/q87.c: In function ‘main’:
-/tmp/q87.c:161:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
-  161 |   int tmp1 = int_create(store_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:160:14: warning: implicit declaration of function ‘int_create’; did you mean ‘list_int_create’? [-Wimplicit-function-declaration]
+  160 |   int tmp1 = int_create(store_sales_len);
       |              ^~~~~~~~~~
       |              list_int_create
-/tmp/q87.c:165:9: error: request for member ‘data’ in something not a structure or union
-  165 |     tmp1.data[tmp2] = s.cust;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:164:9: error: request for member ‘data’ in something not a structure or union
+  164 |     tmp1.data[tmp2] = s.cust;
       |         ^
-/tmp/q87.c:168:7: error: request for member ‘len’ in something not a structure or union
-  168 |   tmp1.len = tmp2;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:167:7: error: request for member ‘len’ in something not a structure or union
+  167 |   tmp1.len = tmp2;
       |       ^
-/tmp/q87.c:174:9: error: request for member ‘data’ in something not a structure or union
-  174 |     tmp4.data[tmp5] = s.cust;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:173:9: error: request for member ‘data’ in something not a structure or union
+  173 |     tmp4.data[tmp5] = s.cust;
       |         ^
-/tmp/q87.c:177:7: error: request for member ‘len’ in something not a structure or union
-  177 |   tmp4.len = tmp5;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:176:7: error: request for member ‘len’ in something not a structure or union
+  176 |   tmp4.len = tmp5;
       |       ^
-/tmp/q87.c:184:24: error: request for member ‘cust’ in something not a structure or union
-  184 |     tmp8.data[tmp9] = s.cust;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:183:24: error: request for member ‘cust’ in something not a structure or union
+  183 |     tmp8.data[tmp9] = s.cust;
       |                        ^
-/tmp/q87.c:188:23: error: incompatible types when initializing type ‘int’ using type ‘list_int’
-  188 |   int web_customers = tmp8;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:187:23: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  187 |   int web_customers = tmp8;
       |                       ^~~~
-/tmp/q87.c:189:43: error: request for member ‘len’ in something not a structure or union
-  189 |   int tmp11 = int_create(catalog_customers.len);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:188:43: error: request for member ‘len’ in something not a structure or union
+  188 |   int tmp11 = int_create(catalog_customers.len);
       |                                           ^
-/tmp/q87.c:191:48: error: request for member ‘len’ in something not a structure or union
-  191 |   for (int tmp13 = 0; tmp13 < catalog_customers.len; tmp13++) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:190:48: error: request for member ‘len’ in something not a structure or union
+  190 |   for (int tmp13 = 0; tmp13 < catalog_customers.len; tmp13++) {
       |                                                ^
-/tmp/q87.c:192:38: error: request for member ‘data’ in something not a structure or union
-  192 |     const char *x = catalog_customers.data[tmp13];
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:191:38: error: request for member ‘data’ in something not a structure or union
+  191 |     const char *x = catalog_customers.data[tmp13];
       |                                      ^
-/tmp/q87.c:193:22: error: ‘c’ undeclared (first use in this function)
-  193 |     if (!((strcmp(x, c) == 0))) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:192:22: error: ‘c’ undeclared (first use in this function)
+  192 |     if (!((strcmp(x, c) == 0))) {
       |                      ^
-/tmp/q87.c:193:22: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q87.c:196:10: error: request for member ‘data’ in something not a structure or union
-  196 |     tmp11.data[tmp12] = x;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:192:22: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:195:10: error: request for member ‘data’ in something not a structure or union
+  195 |     tmp11.data[tmp12] = x;
       |          ^
-/tmp/q87.c:199:8: error: request for member ‘len’ in something not a structure or union
-  199 |   tmp11.len = tmp12;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:198:8: error: request for member ‘len’ in something not a structure or union
+  198 |   tmp11.len = tmp12;
       |        ^
-/tmp/q87.c:200:41: error: request for member ‘len’ in something not a structure or union
-  200 |   int tmp14 = int_create(store_customers.len);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:199:41: error: request for member ‘len’ in something not a structure or union
+  199 |   int tmp14 = int_create(store_customers.len);
       |                                         ^
-/tmp/q87.c:202:46: error: request for member ‘len’ in something not a structure or union
-  202 |   for (int tmp16 = 0; tmp16 < store_customers.len; tmp16++) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:201:46: error: request for member ‘len’ in something not a structure or union
+  201 |   for (int tmp16 = 0; tmp16 < store_customers.len; tmp16++) {
       |                                              ^
-/tmp/q87.c:203:36: error: request for member ‘data’ in something not a structure or union
-  203 |     const char *c = store_customers.data[tmp16];
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:202:36: error: request for member ‘data’ in something not a structure or union
+  202 |     const char *c = store_customers.data[tmp16];
       |                                    ^
-/tmp/q87.c:204:16: error: request for member ‘len’ in something not a structure or union
-  204 |     if (!(tmp11.len == 0 && 0.len == 0)) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:203:16: error: request for member ‘len’ in something not a structure or union
+  203 |     if (!(tmp11.len == 0 && 0.len == 0)) {
       |                ^
-/tmp/q87.c:204:29: error: invalid suffix "len" on floating constant
-  204 |     if (!(tmp11.len == 0 && 0.len == 0)) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:203:29: error: invalid suffix "len" on floating constant
+  203 |     if (!(tmp11.len == 0 && 0.len == 0)) {
       |                             ^~~~~
-/tmp/q87.c:207:10: error: request for member ‘data’ in something not a structure or union
-  207 |     tmp14.data[tmp15] = c;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:206:10: error: request for member ‘data’ in something not a structure or union
+  206 |     tmp14.data[tmp15] = c;
       |          ^
-/tmp/q87.c:210:8: error: request for member ‘len’ in something not a structure or union
-  210 |   tmp14.len = tmp15;
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:209:8: error: request for member ‘len’ in something not a structure or union
+  209 |   tmp14.len = tmp15;
       |        ^
-/tmp/q87.c:216:11: error: invalid suffix "len" on floating constant
-  216 |     if (!(0.len > 0)) {
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:215:11: error: invalid suffix "len" on floating constant
+  215 |     if (!(0.len > 0)) {
       |           ^~~~~
-/tmp/q87.c:227:23: error: request for member ‘data’ in something not a structure or union
-  227 |   free(store_customers.data);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:226:23: error: request for member ‘data’ in something not a structure or union
+  226 |   free(store_customers.data);
       |                       ^
-/tmp/q87.c:228:25: error: request for member ‘data’ in something not a structure or union
-  228 |   free(catalog_customers.data);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:227:25: error: request for member ‘data’ in something not a structure or union
+  227 |   free(catalog_customers.data);
       |                         ^
-/tmp/q87.c:229:21: error: request for member ‘data’ in something not a structure or union
-  229 |   free(web_customers.data);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:228:21: error: request for member ‘data’ in something not a structure or union
+  228 |   free(web_customers.data);
       |                     ^
-/tmp/q87.c:230:13: error: request for member ‘data’ in something not a structure or union
-  230 |   free(tmp11.data);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:229:13: error: request for member ‘data’ in something not a structure or union
+  229 |   free(tmp11.data);
       |             ^
-/tmp/q87.c:231:18: error: request for member ‘data’ in something not a structure or union
-  231 |   free(store_only.data);
+/tmp/TestCCompiler_TPCDS_Goldenq871711579040/001/prog.c:230:18: error: request for member ‘data’ in something not a structure or union
+  230 |   free(store_only.data);
       |                  ^

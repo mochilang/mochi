@@ -1,49 +1,49 @@
-/tmp/q94.c:272:3: error: unknown type name ‘customer_address_t’
-  272 |   customer_address_t *data;
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:271:3: error: unknown type name ‘customer_address_t’
+  271 |   customer_address_t *data;
       |   ^~~~~~~~~~~~~~~~~~
-/tmp/q94.c: In function ‘create_customer_address_list’:
-/tmp/q94.c:277:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
-  277 |   l.data = calloc(len, sizeof(customer_address_t));
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c: In function ‘create_customer_address_list’:
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:276:31: error: ‘customer_address_t’ undeclared (first use in this function); did you mean ‘customer_addres_t’?
+  276 |   l.data = calloc(len, sizeof(customer_address_t));
       |                               ^~~~~~~~~~~~~~~~~~
       |                               customer_addres_t
-/tmp/q94.c:277:31: note: each undeclared identifier is reported only once for each function it appears in
-/tmp/q94.c: In function ‘distinct’:
-/tmp/q94.c:309:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
-  309 |     if (((!contains(tmp2, x)))) {
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:276:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c: In function ‘distinct’:
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:308:12: warning: implicit declaration of function ‘contains’ [-Wimplicit-function-declaration]
+  308 |     if (((!contains(tmp2, x)))) {
       |            ^~~~~~~~
-/tmp/q94.c: In function ‘test_TPCDS_Q94_shipping’:
-/tmp/q94.c:324:40: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
-  324 |   if (!(test_TPCDS_Q94_shipping_result ==
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c: In function ‘test_TPCDS_Q94_shipping’:
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:323:40: error: invalid operands to binary == (have ‘int’ and ‘tmp_item_t’)
+  323 |   if (!(test_TPCDS_Q94_shipping_result ==
       |                                        ^~
-/tmp/q94.c: In function ‘main’:
-/tmp/q94.c:368:26: warning: implicit declaration of function ‘web_sale_list_t_create’ [-Wimplicit-function-declaration]
-  368 |   web_sale_list_t tmp7 = web_sale_list_t_create(web_sales_len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:367:26: warning: implicit declaration of function ‘web_sale_list_t_create’ [-Wimplicit-function-declaration]
+  367 |   web_sale_list_t tmp7 = web_sale_list_t_create(web_sales_len);
       |                          ^~~~~~~~~~~~~~~~~~~~~~
-/tmp/q94.c:368:26: error: invalid initializer
-/tmp/q94.c:372:11: error: ‘ws’ undeclared (first use in this function); did you mean ‘ws2’?
-  372 |     if (!(ws.ws_order_number == ws2.ws_order_number &&
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:367:26: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:371:11: error: ‘ws’ undeclared (first use in this function); did you mean ‘ws2’?
+  371 |     if (!(ws.ws_order_number == ws2.ws_order_number &&
       |           ^~
       |           ws2
-/tmp/q94.c:380:29: warning: implicit declaration of function ‘web_return_list_t_create’ [-Wimplicit-function-declaration]
-  380 |   web_return_list_t tmp10 = web_return_list_t_create(web_returns_len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:379:29: warning: implicit declaration of function ‘web_return_list_t_create’ [-Wimplicit-function-declaration]
+  379 |   web_return_list_t tmp10 = web_return_list_t_create(web_returns_len);
       |                             ^~~~~~~~~~~~~~~~~~~~~~~~
-/tmp/q94.c:380:29: error: invalid initializer
-/tmp/q94.c:392:16: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
-  392 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:379:29: error: invalid initializer
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:391:16: error: ‘(web_sale_t *)&web_sales’ is a pointer; did you mean to use ‘->’?
+  391 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
       |                ^
       |                ->
-/tmp/q94.c:392:31: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  392 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:391:31: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  391 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
       |                               ^
       |                               ->
-/tmp/q94.c:392:54: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
-  392 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:391:54: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  391 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
       |                                                      ^
       |                                                      ->
-/tmp/q94.c:392:69: error: ‘(web_site_t *)&web_site’ is a pointer; did you mean to use ‘->’?
-  392 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:391:69: error: ‘(web_site_t *)&web_site’ is a pointer; did you mean to use ‘->’?
+  391 |       web_sales.len * date_dim.len * customer_address.len * web_site.len);
       |                                                                     ^
       |                                                                     ->
-/tmp/q94.c:465:36: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
-  465 |   test_TPCDS_Q94_shipping_result = result;
+/tmp/TestCCompiler_TPCDS_Goldenq943417003068/001/prog.c:464:36: error: incompatible types when assigning to type ‘int’ from type ‘result_item_t’
+  464 |   test_TPCDS_Q94_shipping_result = result;
       |                                    ^~~~~~

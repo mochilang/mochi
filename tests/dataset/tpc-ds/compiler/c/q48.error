@@ -1,53 +1,53 @@
-/tmp/q48.c: In function ‘main’:
-/tmp/q48.c:271:7: error: conflicting types for ‘states1’; have ‘int’
-  271 |   int states1 = states1;
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c: In function ‘main’:
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:270:7: error: conflicting types for ‘states1’; have ‘int’
+  270 |   int states1 = states1;
       |       ^~~~~~~
-/tmp/q48.c:269:15: note: previous definition of ‘states1’ with type ‘list_string’
-  269 |   list_string states1 = list_string_create(1);
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:268:15: note: previous definition of ‘states1’ with type ‘list_string’
+  268 |   list_string states1 = list_string_create(1);
       |               ^~~~~~~
-/tmp/q48.c:274:7: error: conflicting types for ‘states2’; have ‘int’
-  274 |   int states2 = states2;
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:273:7: error: conflicting types for ‘states2’; have ‘int’
+  273 |   int states2 = states2;
       |       ^~~~~~~
-/tmp/q48.c:272:15: note: previous definition of ‘states2’ with type ‘list_string’
-  272 |   list_string states2 = list_string_create(1);
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:271:15: note: previous definition of ‘states2’ with type ‘list_string’
+  271 |   list_string states2 = list_string_create(1);
       |               ^~~~~~~
-/tmp/q48.c:277:7: error: conflicting types for ‘states3’; have ‘int’
-  277 |   int states3 = states3;
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:276:7: error: conflicting types for ‘states3’; have ‘int’
+  276 |   int states3 = states3;
       |       ^~~~~~~
-/tmp/q48.c:275:15: note: previous definition of ‘states3’ with type ‘list_string’
-  275 |   list_string states3 = list_string_create(1);
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:274:15: note: previous definition of ‘states3’ with type ‘list_string’
+  274 |   list_string states3 = list_string_create(1);
       |               ^~~~~~~
-/tmp/q48.c:278:46: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
-  278 |   list_int tmp1 = list_int_create(store_sales.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:277:46: error: ‘(store_sale_t *)&store_sales’ is a pointer; did you mean to use ‘->’?
+  277 |   list_int tmp1 = list_int_create(store_sales.len * customer_demographics.len *
       |                                              ^
       |                                              ->
-/tmp/q48.c:278:74: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
-  278 |   list_int tmp1 = list_int_create(store_sales.len * customer_demographics.len *
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:277:74: error: ‘(customer_demographic_t *)&customer_demographics’ is a pointer; did you mean to use ‘->’?
+  277 |   list_int tmp1 = list_int_create(store_sales.len * customer_demographics.len *
       |                                                                          ^
       |                                                                          ->
-/tmp/q48.c:279:51: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
-  279 |                                   customer_address.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:278:51: error: ‘(customer_addres_t *)&customer_address’ is a pointer; did you mean to use ‘->’?
+  278 |                                   customer_address.len * date_dim.len);
       |                                                   ^
       |                                                   ->
-/tmp/q48.c:279:66: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
-  279 |                                   customer_address.len * date_dim.len);
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:278:66: error: ‘(date_dim_t *)&date_dim’ is a pointer; did you mean to use ‘->’?
+  278 |                                   customer_address.len * date_dim.len);
       |                                                                  ^
       |                                                                  ->
-/tmp/q48.c:308:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  308 |                 ((contains_list_string(states1, ca.ca_state) &&
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:307:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  307 |                 ((contains_list_string(states1, ca.ca_state) &&
       |                                                 ~~^~~~~~~~~
-/tmp/q48.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
-   69 | static int contains_list_string(list_string v, char *item) {
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:68:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   68 | static int contains_list_string(list_string v, char *item) {
       |                                                ~~~~~~^~~~
-/tmp/q48.c:310:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  310 |                  (contains_list_string(states2, ca.ca_state) &&
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:309:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  309 |                  (contains_list_string(states2, ca.ca_state) &&
       |                                                 ~~^~~~~~~~~
-/tmp/q48.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
-   69 | static int contains_list_string(list_string v, char *item) {
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:68:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   68 | static int contains_list_string(list_string v, char *item) {
       |                                                ~~~~~~^~~~
-/tmp/q48.c:312:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
-  312 |                  (contains_list_string(states3, ca.ca_state) &&
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:311:51: warning: passing argument 2 of ‘contains_list_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  311 |                  (contains_list_string(states3, ca.ca_state) &&
       |                                                 ~~^~~~~~~~~
-/tmp/q48.c:69:54: note: expected ‘char *’ but argument is of type ‘const char *’
-   69 | static int contains_list_string(list_string v, char *item) {
+/tmp/TestCCompiler_TPCDS_Goldenq482036163363/001/prog.c:68:54: note: expected ‘char *’ but argument is of type ‘const char *’
+   68 | static int contains_list_string(list_string v, char *item) {
       |                                                ~~~~~~^~~~
