@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq88476348488/001/main.go:298:4: syntax error: unexpected keyword return after top level declaration

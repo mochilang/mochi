@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq52965247187/001/main.go:504:2: syntax error: unexpected name ny after top level declaration

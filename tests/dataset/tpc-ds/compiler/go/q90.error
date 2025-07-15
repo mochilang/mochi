@@ -1,0 +1,3 @@
+go run error: exit status 1
+# command-line-arguments
+/tmp/TestGoCompiler_TPCDSq901327842218/001/main.go:168:2: syntax error: unexpected name al after top level declaration

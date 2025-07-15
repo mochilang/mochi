@@ -4580,7 +4580,18 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 			child.SetVar(p.Name, c.resolveTypeRef(p.Type), true)
 		}
 	}
-	sub := &Compiler{imports: c.imports, helpers: c.helpers, env: child, memo: map[string]*parser.Literal{}}
+	sub := New(child)
+	sub.imports = c.imports
+	sub.helpers = c.helpers
+	sub.structs = c.structs
+	sub.pyModules = c.pyModules
+	sub.goModules = c.goModules
+	sub.tsModules = c.tsModules
+	sub.pyAuto = c.pyAuto
+	sub.goAuto = c.goAuto
+	sub.tsAuto = c.tsAuto
+	sub.externObjects = c.externObjects
+	sub.defaultAlias = c.defaultAlias
 	sub.indent = 1
 	if fn.Return != nil {
 		sub.returnType = c.resolveTypeRef(fn.Return)
