@@ -62,6 +62,9 @@ func FromStatement(s *parser.Statement) *Node {
 
 	case s.Fun != nil:
 		n := &Node{Kind: "fun", Value: s.Fun.Name}
+		for _, tp := range s.Fun.TypeParams {
+			n.Children = append(n.Children, &Node{Kind: "typeparam", Value: tp})
+		}
 		for _, param := range s.Fun.Params {
 			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {
@@ -365,6 +368,9 @@ func FromPrimary(p *parser.Primary) *Node {
 	switch {
 	case p.FunExpr != nil:
 		n := &Node{Kind: "funexpr"}
+		for _, tp := range p.FunExpr.TypeParams {
+			n.Children = append(n.Children, &Node{Kind: "typeparam", Value: tp})
+		}
 		for _, param := range p.FunExpr.Params {
 			pn := &Node{Kind: "param", Value: param.Name}
 			if param.Type != nil {

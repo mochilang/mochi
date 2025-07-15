@@ -1,0 +1,8 @@
+(program
+  (fun id
+    (typeparam T)
+    (param x (type T))
+    (type T)
+    (return (selector x))
+  )
+)

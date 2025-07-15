@@ -1,0 +1,13 @@
+func main (regs=2)
+  // print(id(42))
+  Const        r0, 42
+  Print        r0
+  // print(id("ok"))
+  Const        r1, "ok"
+  Print        r1
+  Return       r0
+
+  // fun id<T>(x: T): T { return x }
+func id (regs=1)
+  // fun id<T>(x: T): T { return x }
+  Return       r0
