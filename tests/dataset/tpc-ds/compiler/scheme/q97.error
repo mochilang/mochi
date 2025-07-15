@@ -1,0 +1,12 @@
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+ERROR: exception handler returned
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+  called from error on line 100 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 241 of file /tmp/q97.scm
+  called from <anonymous> on line 1292 of file /usr/share/chibi/init-7.scm
+  called from <anonymous> on line 821 of file /usr/share/chibi/init-7.scm
+{"store_only":0,"catalog_only":0,"store_and_catalog":0}
+   test TPCDS Q97 overlap ... fail #<Exception 139918065643616>
