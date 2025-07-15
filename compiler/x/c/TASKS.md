@@ -100,3 +100,7 @@ should compile and run successfully.
 - 2025-07-15 03:06 – Generated C code for JOB queries q1-q33 and extended golden tests
 - 2025-07-15 03:20 - Attempted JOB query compilation; added golden update flag in tests. Compilation still fails for many queries.
 - 2025-07-15 03:31 – Added error capture to JOB golden tests and re-ran q1-q33. Compilation still failing but .error files are recorded.
+- 2025-07-15 04:45 – Attempted to compile TPC-DS queries with new script, but compilation fails for all queries due to unsupported features.
+- 2025-07-15 04:55 – Retried TPC-DS compilation with golden test capturing errors. Compilation still fails for most queries.
+- 2025-07-15 05:43 – Generated C code for TPC-DS queries q1–q10 using compile_tpcds_c.go. Compilation failed, .error logs stored.
+
