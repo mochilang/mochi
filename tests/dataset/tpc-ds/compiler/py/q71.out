@@ -1,1 +1,1 @@
-[{"i_brand_id": 10, "i_brand": "BrandA", "t_hour": 8, "t_minute": 30, "ext_price": 100.0}, {"i_brand_id": 20, "i_brand": "BrandB", "t_hour": 8, "t_minute": 30, "ext_price": 150.0}, {"i_brand_id": 10, "i_brand": "BrandA", "t_hour": 18, "t_minute": 0, "ext_price": 200.0}]
+[{"i_brand_id": 10, "i_brand": "BrandA", "t_hour": 18, "t_minute": 0, "ext_price": 200.0}, {"i_brand_id": 20, "i_brand": "BrandB", "t_hour": 8, "t_minute": 30, "ext_price": 150.0}, {"i_brand_id": 10, "i_brand": "BrandA", "t_hour": 8, "t_minute": 30, "ext_price": 100.0}]

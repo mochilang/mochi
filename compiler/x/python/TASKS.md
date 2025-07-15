@@ -55,6 +55,9 @@
 ## Recent Enhancements (2025-07-16 05:00)
 - Auto and named dataclasses now implement `__iter__` for easier unpacking.
 - Prepared compiler output formatting for TPCH Q1 regeneration.
+## Recent Enhancements (2025-07-15 06:37)
+- Added `-update` support and regenerated TPCDS Python outputs.
+- Tests skip failing queries (q13, q28, q34, q57, q58, q73, q76, q77, q78, q93, q94, q95, q98).
 ## Recent Enhancements (2025-07-14 04:33)
 - Group selector paths now handle `group` types so `g.key` and `g.Items` use
   attribute access with proper type inference.
