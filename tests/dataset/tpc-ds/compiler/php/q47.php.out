@@ -1,0 +1,51 @@
+<?php
+$v2 = [
+    [
+        "d_year" => 2020,
+        "item" => "A",
+        "avg_monthly_sales" => 100,
+        "sum_sales" => 120
+    ],
+    [
+        "d_year" => 2020,
+        "item" => "B",
+        "avg_monthly_sales" => 80,
+        "sum_sales" => 70
+    ],
+    [
+        "d_year" => 2019,
+        "item" => "C",
+        "avg_monthly_sales" => 50,
+        "sum_sales" => 60
+    ]
+];
+$year = 2020;
+$orderby = "item";
+function abs($x) {
+    if ($x >= 0) {
+        return $x;
+    } else {
+        return -$x;
+    }
+}
+$result = (function() use ($v2, $year) {
+    $result = [];
+    foreach ($v2 as $v) {
+        if ($v['d_year'] >= $year - 1 && $v['avg_monthly_sales'] > 0 && $v['sum_sales'] > $v['avg_monthly_sales'] && abs($v['sum_sales'] - $v['avg_monthly_sales']) / $v['avg_monthly_sales'] > 0.1) {
+            $result[] = [[
+    $v['sum_sales'] - $v['avg_monthly_sales'],
+    $v['item']
+], [
+    "d_year" => $v['d_year'],
+    "item" => $v['item'],
+    "avg_monthly_sales" => $v['avg_monthly_sales'],
+    "sum_sales" => $v['sum_sales']
+]];
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

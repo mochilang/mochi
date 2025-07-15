@@ -1,1 +1,8 @@
-[]
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q3.php on line 64
+
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q3.php on line 76
+
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q3.php on line 64
+
+Warning: Undefined array key "ss_ext_sales_price" in /tmp/q3.php on line 76
+[{"d_year":1998,"brand_id":1,"brand":"Brand1","sum_agg":0},{"d_year":1998,"brand_id":2,"brand":"Brand2","sum_agg":0}]

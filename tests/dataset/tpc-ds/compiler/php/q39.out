@@ -1,0 +1,16 @@
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q39.php on line 88
+
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q39.php on line 88
+
+Warning: Undefined array key "inv_quantity_on_hand" in /tmp/q39.php on line 88
+
+Warning: Array to string conversion in /tmp/q39.php on line 98
+
+Warning: Array to string conversion in /tmp/q39.php on line 98
+
+Warning: Array to string conversion in /tmp/q39.php on line 98
+
+Fatal error: Uncaught DivisionByZeroError: Division by zero in /tmp/q39.php:122
+Stack trace:
+#0 {main}
+  thrown in /tmp/q39.php on line 122

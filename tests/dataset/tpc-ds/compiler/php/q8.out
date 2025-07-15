@@ -1,1 +1,6 @@
-[]
+Warning: Undefined variable $reverse in /tmp/q8.php on line 36
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q8.php:36
+Stack trace:
+#0 {main}
+  thrown in /tmp/q8.php on line 36

@@ -1,0 +1,74 @@
+<?php
+class WebSale {
+    public $ws_item_sk;
+    public $ws_sold_date_sk;
+    public $ws_ext_discount_amt;
+    public function __construct($fields = []) {
+        $this->ws_item_sk = $fields['ws_item_sk'] ?? null;
+        $this->ws_sold_date_sk = $fields['ws_sold_date_sk'] ?? null;
+        $this->ws_ext_discount_amt = $fields['ws_ext_discount_amt'] ?? null;
+    }
+}
+$web_sales = [
+    [
+        "ws_item_sk" => 1,
+        "ws_sold_date_sk" => 1,
+        "ws_ext_discount_amt" => 1
+    ],
+    [
+        "ws_item_sk" => 1,
+        "ws_sold_date_sk" => 1,
+        "ws_ext_discount_amt" => 1
+    ],
+    [
+        "ws_item_sk" => 1,
+        "ws_sold_date_sk" => 1,
+        "ws_ext_discount_amt" => 2
+    ]
+];
+$item = [
+    ["i_item_sk" => 1, "i_manufact_id" => 1]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2000-01-02"
+    ]
+];
+$sum_amt = array_sum((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        $result[] = $ws['ws_ext_discount_amt'];
+    }
+    return $result;
+})());
+$avg_amt = _avg((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        $result[] = $ws['ws_ext_discount_amt'];
+    }
+    return $result;
+})());
+$result = ($sum_amt > $avg_amt * 1.3 ? $sum_amt : 0);
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

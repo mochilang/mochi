@@ -1,0 +1,37 @@
+<?php
+$sales = [
+    ["mgr" => 1, "amount" => 30],
+    ["mgr" => 2, "amount" => 33]
+];
+$by_mgr = (function() use ($sales) {
+    $groups = [];
+    foreach ($sales as $s) {
+        $_k = json_encode(["mgr" => $s['mgr']]);
+        $groups[$_k][] = $s;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "mgr" => $g['key']['mgr'],
+    "sum_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['amount'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = array_sum((function() use ($by_mgr) {
+    $result = [];
+    foreach ($by_mgr as $x) {
+        $result[] = $x['sum_sales'];
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

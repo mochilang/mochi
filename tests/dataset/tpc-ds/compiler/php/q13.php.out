@@ -1,0 +1,194 @@
+<?php
+class StoreSale {
+    public $ss_store_sk;
+    public $ss_sold_date_sk;
+    public $ss_hdemo_sk;
+    public $ss_cdemo_sk;
+    public $ss_addr_sk;
+    public $ss_sales_price;
+    public $ss_net_profit;
+    public $ss_quantity;
+    public $ss_ext_sales_price;
+    public $ss_ext_wholesale_cost;
+    public function __construct($fields = []) {
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_hdemo_sk = $fields['ss_hdemo_sk'] ?? null;
+        $this->ss_cdemo_sk = $fields['ss_cdemo_sk'] ?? null;
+        $this->ss_addr_sk = $fields['ss_addr_sk'] ?? null;
+        $this->ss_sales_price = $fields['ss_sales_price'] ?? null;
+        $this->ss_net_profit = $fields['ss_net_profit'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_ext_sales_price = $fields['ss_ext_sales_price'] ?? null;
+        $this->ss_ext_wholesale_cost = $fields['ss_ext_wholesale_cost'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_state;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_state = $fields['s_state'] ?? null;
+    }
+}
+class CustomerDemographics {
+    public $cd_demo_sk;
+    public $cd_marital_status;
+    public $cd_education_status;
+    public function __construct($fields = []) {
+        $this->cd_demo_sk = $fields['cd_demo_sk'] ?? null;
+        $this->cd_marital_status = $fields['cd_marital_status'] ?? null;
+        $this->cd_education_status = $fields['cd_education_status'] ?? null;
+    }
+}
+class HouseholdDemographics {
+    public $hd_demo_sk;
+    public $hd_dep_count;
+    public function __construct($fields = []) {
+        $this->hd_demo_sk = $fields['hd_demo_sk'] ?? null;
+        $this->hd_dep_count = $fields['hd_dep_count'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_country;
+    public $ca_state;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_country = $fields['ca_country'] ?? null;
+        $this->ca_state = $fields['ca_state'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_store_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_hdemo_sk" => 1,
+        "ss_cdemo_sk" => 1,
+        "ss_addr_sk" => 1,
+        "ss_sales_price" => 120,
+        "ss_net_profit" => 150,
+        "ss_quantity" => 10,
+        "ss_ext_sales_price" => 100,
+        "ss_ext_wholesale_cost" => 50
+    ]
+];
+$store = [["s_store_sk" => 1, "s_state" => "CA"]];
+$customer_demographics = [
+    [
+        "cd_demo_sk" => 1,
+        "cd_marital_status" => "M1",
+        "cd_education_status" => "ES1"
+    ]
+];
+$household_demographics = [
+    ["hd_demo_sk" => 1, "hd_dep_count" => 3]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_country" => "United States",
+        "ca_state" => "CA"
+    ]
+];
+$date_dim = [["d_date_sk" => 1, "d_year" => 2001]];
+$filtered = (function() use ($customer_address, $customer_demographics, $date_dim, $household_demographics, $store, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($store as $s) {
+            if ($ss['ss_store_sk'] == $s['s_store_sk']) {
+                foreach ($customer_demographics as $cd) {
+                    if ($ss['ss_cdemo_sk'] == $cd['cd_demo_sk'] && $cd['cd_marital_status'] == "M1" && $cd['cd_education_status'] == "ES1") {
+                        foreach ($household_demographics as $hd) {
+                            if ($ss['ss_hdemo_sk'] == $hd['hd_demo_sk'] && $hd['hd_dep_count'] == 3) {
+                                foreach ($customer_address as $ca) {
+                                    if ($ss['ss_addr_sk'] == $ca['ca_address_sk'] && $ca['ca_country'] == "United States" && $ca['ca_state'] == "CA") {
+                                        foreach ($date_dim as $d) {
+                                            if ($ss['ss_sold_date_sk'] == $d['d_date_sk'] && $d['d_year'] == 2001) {
+                                                $result[] = $ss;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = (function() use ($filtered) {
+    $groups = [];
+    foreach ($filtered as $r) {
+        $_k = json_encode([]);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "avg_ss_quantity" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_quantity'];
+        }
+        return $result;
+    })()),
+    "avg_ss_ext_sales_price" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_ext_sales_price'];
+        }
+        return $result;
+    })()),
+    "avg_ss_ext_wholesale_cost" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_ext_wholesale_cost'];
+        }
+        return $result;
+    })()),
+    "sum_ss_ext_wholesale_cost" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_ext_wholesale_cost'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

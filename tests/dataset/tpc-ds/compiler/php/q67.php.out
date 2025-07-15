@@ -1,0 +1,24 @@
+<?php
+$store_sales = [
+    ["reason" => 1, "price" => 40],
+    ["reason" => 2, "price" => 27]
+];
+$reason = [
+    ["id" => 1, "name" => "PROMO"],
+    ["id" => 2, "name" => "RETURN"]
+];
+$result = array_sum((function() use ($reason, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($reason as $r) {
+            if ($ss['reason'] == $r['id']) {
+                if (in_array($r['name'], ["PROMO", "RETURN"])) {
+                    $result[] = $ss['price'];
+                }
+            }
+        }
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

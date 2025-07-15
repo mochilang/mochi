@@ -1,0 +1,254 @@
+<?php
+class StoreSale {
+    public $ss_item_sk;
+    public $ss_sold_date_sk;
+    public $ss_customer_sk;
+    public $ss_quantity;
+    public $ss_sales_price;
+    public function __construct($fields = []) {
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_sales_price = $fields['ss_sales_price'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public $d_moy;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+        $this->d_moy = $fields['d_moy'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+    }
+}
+class CatalogSale {
+    public $cs_sold_date_sk;
+    public $cs_item_sk;
+    public $cs_bill_customer_sk;
+    public $cs_quantity;
+    public $cs_list_price;
+    public function __construct($fields = []) {
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_bill_customer_sk = $fields['cs_bill_customer_sk'] ?? null;
+        $this->cs_quantity = $fields['cs_quantity'] ?? null;
+        $this->cs_list_price = $fields['cs_list_price'] ?? null;
+    }
+}
+class WebSale {
+    public $ws_sold_date_sk;
+    public $ws_item_sk;
+    public $ws_bill_customer_sk;
+    public $ws_quantity;
+    public $ws_list_price;
+    public function __construct($fields = []) {
+        $this->ws_sold_date_sk = $fields['ws_sold_date_sk'] ?? null;
+        $this->ws_item_sk = $fields['ws_item_sk'] ?? null;
+        $this->ws_bill_customer_sk = $fields['ws_bill_customer_sk'] ?? null;
+        $this->ws_quantity = $fields['ws_quantity'] ?? null;
+        $this->ws_list_price = $fields['ws_list_price'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 2,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 2,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_sold_date_sk" => 1,
+        "ss_customer_sk" => 2,
+        "ss_quantity" => 1,
+        "ss_sales_price" => 10
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2000,
+        "d_moy" => 1
+    ]
+];
+$item = [["i_item_sk" => 1], ["i_item_sk" => 2]];
+$catalog_sales = [
+    [
+        "cs_sold_date_sk" => 1,
+        "cs_item_sk" => 1,
+        "cs_bill_customer_sk" => 1,
+        "cs_quantity" => 2,
+        "cs_list_price" => 10
+    ],
+    [
+        "cs_sold_date_sk" => 1,
+        "cs_item_sk" => 2,
+        "cs_bill_customer_sk" => 2,
+        "cs_quantity" => 2,
+        "cs_list_price" => 10
+    ]
+];
+$web_sales = [
+    [
+        "ws_sold_date_sk" => 1,
+        "ws_item_sk" => 1,
+        "ws_bill_customer_sk" => 1,
+        "ws_quantity" => 3,
+        "ws_list_price" => 10
+    ],
+    [
+        "ws_sold_date_sk" => 1,
+        "ws_item_sk" => 2,
+        "ws_bill_customer_sk" => 2,
+        "ws_quantity" => 1,
+        "ws_list_price" => 10
+    ]
+];
+$frequent_ss_items = (function() use ($date_dim, $item, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($ss['ss_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($item as $i) {
+                    if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                        if ($d['d_year'] == 2000) {
+                            $_k = json_encode([
+    "item_sk" => $i['i_item_sk'],
+    "date_sk" => $d['d_date_sk']
+]);
+                            $groups[$_k][] = ["ss" => $ss, "d" => $d, "i" => $i];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        if (count($g['items']) > 4) {
+        $result[] = $g['key']['item_sk'];
+        }
+    }
+    return $result;
+})();
+$customer_totals = (function() use ($store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        $_k = json_encode($ss['ss_customer_sk']);
+        $groups[$_k][] = $ss;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "cust" => $g['key'],
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_quantity'] * $x['ss_sales_price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$max_sales = max((function() use ($customer_totals) {
+    $result = [];
+    foreach ($customer_totals as $c) {
+        $result[] = $c['sales'];
+    }
+    return $result;
+})());
+$best_ss_customer = (function() use ($customer_totals, $max_sales) {
+    $result = [];
+    foreach ($customer_totals as $c) {
+        if ($c['sales'] > 0.95 * $max_sales) {
+            $result[] = $c['cust'];
+        }
+    }
+    return $result;
+})();
+$catalog = (function() use ($best_ss_customer, $catalog_sales, $date_dim, $frequent_ss_items) {
+    $result = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($date_dim as $d) {
+            if ($cs['cs_sold_date_sk'] == $d['d_date_sk']) {
+                if (in_array(in_array($d['d_year'] == 2000 && $d['d_moy'] == 1 && $cs['cs_bill_customer_sk'], $best_ss_customer) && $cs['cs_item_sk'], $frequent_ss_items)) {
+                    $result[] = $cs['cs_quantity'] * $cs['cs_list_price'];
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$web = (function() use ($best_ss_customer, $date_dim, $frequent_ss_items, $web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($ws['ws_sold_date_sk'] == $d['d_date_sk']) {
+                if (in_array(in_array($d['d_year'] == 2000 && $d['d_moy'] == 1 && $ws['ws_bill_customer_sk'], $best_ss_customer) && $ws['ws_item_sk'], $frequent_ss_items)) {
+                    $result[] = $ws['ws_quantity'] * $ws['ws_list_price'];
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = array_sum($catalog) + array_sum($web);
+echo json_encode($result), PHP_EOL;
+?>

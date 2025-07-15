@@ -1,0 +1,34 @@
+<?php
+$web_sales = [
+    [
+        "cat" => "A",
+        "class" => "B",
+        "net" => 40
+    ],
+    [
+        "cat" => "A",
+        "class" => "B",
+        "net" => 46
+    ],
+    [
+        "cat" => "A",
+        "class" => "C",
+        "net" => 10
+    ],
+    [
+        "cat" => "B",
+        "class" => "B",
+        "net" => 20
+    ]
+];
+$result = array_sum((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        if ($ws['cat'] == "A" && $ws['class'] == "B") {
+            $result[] = $ws['net'];
+        }
+    }
+    return $result;
+})());
+echo json_encode($result), PHP_EOL;
+?>

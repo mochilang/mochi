@@ -1,0 +1,92 @@
+<?php
+$catalog_returns = [
+    [
+        "cust" => 1,
+        "state" => "CA",
+        "amt" => 40
+    ],
+    [
+        "cust" => 2,
+        "state" => "CA",
+        "amt" => 50
+    ],
+    [
+        "cust" => 3,
+        "state" => "CA",
+        "amt" => 81
+    ],
+    [
+        "cust" => 4,
+        "state" => "TX",
+        "amt" => 30
+    ],
+    [
+        "cust" => 5,
+        "state" => "TX",
+        "amt" => 20
+    ]
+];
+$avg_list = (function() use ($catalog_returns) {
+    $groups = [];
+    foreach ($catalog_returns as $r) {
+        $_k = json_encode($r['state']);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "state" => $g['key'],
+    "avg_amt" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['amt'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$avg_state = $first((function() use ($avg_list) {
+    $result = [];
+    foreach ($avg_list as $a) {
+        if ($a['state'] == "CA") {
+            $result[] = $a;
+        }
+    }
+    return $result;
+})());
+$result_list = (function() use ($avg_state, $catalog_returns) {
+    $result = [];
+    foreach ($catalog_returns as $r) {
+        if ($r['state'] == "CA" && $r['amt'] > $avg_state['avg_amt'] * 1.2) {
+            $result[] = $r['amt'];
+        }
+    }
+    return $result;
+})();
+$result = $first($result_list);
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

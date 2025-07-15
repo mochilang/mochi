@@ -1,0 +1,99 @@
+<?php
+$store_sales = [["item" => 1, "price" => 10]];
+$catalog_sales = [["item" => 1, "price" => 20]];
+$web_sales = [["item" => 1, "price" => 30]];
+$ss = (function() use ($store_sales) {
+    $groups = [];
+    foreach ($store_sales as $s) {
+        $_k = json_encode($s['item']);
+        $groups[$_k][] = $s;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "item" => $g['key'],
+    "total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$cs = (function() use ($catalog_sales) {
+    $groups = [];
+    foreach ($catalog_sales as $s) {
+        $_k = json_encode($s['item']);
+        $groups[$_k][] = $s;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "item" => $g['key'],
+    "total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$ws = (function() use ($web_sales) {
+    $groups = [];
+    foreach ($web_sales as $s) {
+        $_k = json_encode($s['item']);
+        $groups[$_k][] = $s;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "item" => $g['key'],
+    "total" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$union = $concat($ss, $cs, $ws);
+$result = (function() use ($union) {
+    $groups = [];
+    foreach ($union as $u) {
+        $_k = json_encode($u['item']);
+        $groups[$_k][] = $u;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_id" => $g['key'],
+    "total_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['total'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,114 @@
+<?php
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_net_profit" => 5
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_net_profit" => 5
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_store_sk" => 1,
+        "ss_net_profit" => -1
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_product_name" => "ItemA"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_product_name" => "ItemB"
+    ]
+];
+$grouped_base = ((function() use ($store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        $_k = json_encode($ss['ss_item_sk']);
+        $groups[$_k][] = $ss;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "item_sk" => $g['key'],
+    "avg_profit" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_net_profit'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})());
+$grouped = $grouped_base;
+$best = $first((function() use ($grouped) {
+    $result = [];
+    foreach ($grouped as $x) {
+        $result[] = [-$x['avg_profit'], $x];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})());
+$worst = $first((function() use ($grouped) {
+    $result = [];
+    foreach ($grouped as $x) {
+        $result[] = [$x['avg_profit'], $x];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})());
+$best_name = $first((function() use ($best, $item) {
+    $result = [];
+    foreach ($item as $i) {
+        if ($i['i_item_sk'] == $best['item_sk']) {
+            $result[] = $i['i_product_name'];
+        }
+    }
+    return $result;
+})());
+$worst_name = $first((function() use ($item, $worst) {
+    $result = [];
+    foreach ($item as $i) {
+        if ($i['i_item_sk'] == $worst['item_sk']) {
+            $result[] = $i['i_product_name'];
+        }
+    }
+    return $result;
+})());
+$result = [
+    "best_performing" => $best_name,
+    "worst_performing" => $worst_name
+];
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

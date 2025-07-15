@@ -1,0 +1,195 @@
+<?php
+class StoreSale {
+    public $ss_item_sk;
+    public $ss_list_price;
+    public $ss_quantity;
+    public $ss_sold_date_sk;
+    public function __construct($fields = []) {
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_list_price = $fields['ss_list_price'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+    }
+}
+class CatalogSale {
+    public $cs_item_sk;
+    public $cs_list_price;
+    public $cs_quantity;
+    public $cs_sold_date_sk;
+    public function __construct($fields = []) {
+        $this->cs_item_sk = $fields['cs_item_sk'] ?? null;
+        $this->cs_list_price = $fields['cs_list_price'] ?? null;
+        $this->cs_quantity = $fields['cs_quantity'] ?? null;
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+    }
+}
+class WebSale {
+    public $ws_item_sk;
+    public $ws_list_price;
+    public $ws_quantity;
+    public $ws_sold_date_sk;
+    public function __construct($fields = []) {
+        $this->ws_item_sk = $fields['ws_item_sk'] ?? null;
+        $this->ws_list_price = $fields['ws_list_price'] ?? null;
+        $this->ws_quantity = $fields['ws_quantity'] ?? null;
+        $this->ws_sold_date_sk = $fields['ws_sold_date_sk'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_brand_id;
+    public $i_class_id;
+    public $i_category_id;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_brand_id = $fields['i_brand_id'] ?? null;
+        $this->i_class_id = $fields['i_class_id'] ?? null;
+        $this->i_category_id = $fields['i_category_id'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public $d_moy;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+        $this->d_moy = $fields['d_moy'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_list_price" => 10,
+        "ss_quantity" => 2,
+        "ss_sold_date_sk" => 1
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_list_price" => 20,
+        "ss_quantity" => 3,
+        "ss_sold_date_sk" => 2
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_list_price" => 10,
+        "cs_quantity" => 2,
+        "cs_sold_date_sk" => 1
+    ]
+];
+$web_sales = [
+    [
+        "ws_item_sk" => 1,
+        "ws_list_price" => 30,
+        "ws_quantity" => 1,
+        "ws_sold_date_sk" => 1
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_brand_id" => 1,
+        "i_class_id" => 1,
+        "i_category_id" => 1
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2000,
+        "d_moy" => 12
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_year" => 2002,
+        "d_moy" => 11
+    ]
+];
+$cross_items = [["ss_item_sk" => 1]];
+$avg_sales = _avg([20, 20, 30]);
+$store_filtered = (function() use ($cross_items, $date_dim, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($ss['ss_sold_date_sk'] == $d['d_date_sk'] && $d['d_year'] == 2002 && $d['d_moy'] == 11) {
+                if (in_array($ss['ss_item_sk'], ((function() use ($cross_items) {
+    $result = [];
+    foreach ($cross_items as $ci) {
+        $result[] = $ci['ss_item_sk'];
+    }
+    return $result;
+})()))) {
+                    $_k = json_encode([
+    "brand_id" => 1,
+    "class_id" => 1,
+    "category_id" => 1
+]);
+                    $groups[$_k][] = ["ss" => $ss, "d" => $d];
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "channel" => "store",
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_quantity'] * $x['ss_list_price'];
+        }
+        return $result;
+    })()),
+    "number_sales" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $_) {
+            $result[] = $_;
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = (function() use ($avg_sales, $store_filtered) {
+    $result = [];
+    foreach ($store_filtered as $r) {
+        if ($r['sales'] > $avg_sales) {
+            $result[] = [
+    "channel" => $r['channel'],
+    "i_brand_id" => 1,
+    "i_class_id" => 1,
+    "i_category_id" => 1,
+    "sales" => $r['sales'],
+    "number_sales" => $r['number_sales']
+];
+        }
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

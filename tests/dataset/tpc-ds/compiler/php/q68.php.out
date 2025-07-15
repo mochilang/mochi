@@ -1,0 +1,21 @@
+<?php
+$catalog_sales = [
+    ["item" => 1, "profit" => 30],
+    ["item" => 2, "profit" => 38]
+];
+$store_sales = [["item" => 1, "profit" => 30]];
+$result = array_sum((function() use ($catalog_sales) {
+    $result = [];
+    foreach ($catalog_sales as $c) {
+        $result[] = $c['profit'];
+    }
+    return $result;
+})()) - array_sum((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        $result[] = $s['profit'];
+    }
+    return $result;
+})()) + 30;
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,129 @@
+<?php
+$ss = [
+    [
+        "ss_sold_year" => 1998,
+        "ss_item_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_qty" => 10,
+        "ss_wc" => 50,
+        "ss_sp" => 100
+    ]
+];
+$ws = [
+    [
+        "ws_sold_year" => 1998,
+        "ws_item_sk" => 1,
+        "ws_customer_sk" => 1,
+        "ws_qty" => 5,
+        "ws_wc" => 25,
+        "ws_sp" => 50
+    ]
+];
+$cs = [
+    [
+        "cs_sold_year" => 1998,
+        "cs_item_sk" => 1,
+        "cs_customer_sk" => 1,
+        "cs_qty" => 3,
+        "cs_wc" => 15,
+        "cs_sp" => 30
+    ]
+];
+$result = _query($ss, [['items'=>$ws, 'on'=>function($s, $w) use ($cs, $ss, $ws){return $w['ws_sold_year'] == $s['ss_sold_year'] && $w['ws_item_sk'] == $s['ss_item_sk'] && $w['ws_customer_sk'] == $s['ss_customer_sk'];}, 'left'=>true], ['items'=>$cs, 'on'=>function($s, $w, $c) use ($cs, $ss, $ws){return $c['cs_sold_year'] == $s['ss_sold_year'] && $c['cs_item_sk'] == $s['ss_item_sk'] && $c['cs_customer_sk'] == $s['ss_customer_sk'];}, 'left'=>true]], [ 'select' => function($s, $w, $c) use ($cs, $ss, $ws){return [
+    "ss_sold_year" => $s['ss_sold_year'],
+    "ss_item_sk" => $s['ss_item_sk'],
+    "ss_customer_sk" => $s['ss_customer_sk'],
+    "ratio" => $s['ss_qty'] / ((($w == null ? 0 : $w['ws_qty'])) + (($c == null ? 0 : $c['cs_qty']))),
+    "store_qty" => $s['ss_qty'],
+    "store_wholesale_cost" => $s['ss_wc'],
+    "store_sales_price" => $s['ss_sp'],
+    "other_chan_qty" => (($w == null ? 0 : $w['ws_qty'])) + (($c == null ? 0 : $c['cs_qty'])),
+    "other_chan_wholesale_cost" => (($w == null ? 0 : $w['ws_wc'])) + (($c == null ? 0 : $c['cs_wc'])),
+    "other_chan_sales_price" => (($w == null ? 0 : $w['ws_sp'])) + (($c == null ? 0 : $c['cs_sp']))
+];} ]);
+echo json_encode($result), PHP_EOL;
+function _query($src, $joins, $opts) {
+    $items = [];
+    foreach ($src as $v) { $items[] = [$v]; }
+    foreach ($joins as $j) {
+        $joined = [];
+        $jitems = $j['items'] ?? [];
+        if (($j['right'] ?? false) && ($j['left'] ?? false)) {
+            $matched = array_fill(0, count($jitems), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $row = $left; $row[] = $right;
+                    $joined[] = $row;
+                }
+                if (!$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+            foreach ($jitems as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $row = $undef; $row[] = $right; $joined[] = $row;
+                }
+            }
+        } elseif (($j['right'] ?? false)) {
+            foreach ($jitems as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (!$m) { $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : []; $row = $undef; $row[] = $right; $joined[] = $row; }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (($j['left'] ?? false) && !$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $fn = $opts['where'];
+        $items = array_values(array_filter($items, fn($r) => $fn(...$r)));
+    }
+    if (isset($opts['sortKey'])) {
+        $sk = $opts['sortKey'];
+        usort($items, function($a,$b) use($sk) {
+            $ak = $sk(...$a); $bk = $sk(...$b);
+            if (is_array($ak) || is_object($ak)) $ak = json_encode($ak);
+            if (is_array($bk) || is_object($bk)) $bk = json_encode($bk);
+            return $ak <=> $bk;
+        });
+    }
+    if (isset($opts['skip'])) {
+        $n = $opts['skip']; if ($n < 0) $n = 0; $items = array_slice($items, $n);
+    }
+    if (isset($opts['take'])) {
+        $n = $opts['take']; if ($n < 0) $n = 0; $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    $sel = $opts['select'];
+    foreach ($items as $r) { $res[] = $sel(...$r); }
+    return $res;
+}
+?>

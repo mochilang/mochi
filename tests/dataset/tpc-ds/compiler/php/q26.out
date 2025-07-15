@@ -1,0 +1,8 @@
+Warning: Undefined array key "cs_quantity" in /tmp/q26.php on line 152
+
+Fatal error: Uncaught Exception: avg() expects numbers in /tmp/q26.php:197
+Stack trace:
+#0 /tmp/q26.php(149): _avg(Array)
+#1 /tmp/q26.php(180): {closure:/tmp/q26.php:119}()
+#2 {main}
+  thrown in /tmp/q26.php on line 197

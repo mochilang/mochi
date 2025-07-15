@@ -1,0 +1,109 @@
+<?php
+$item = [
+    ["i_item_sk" => 1, "i_manufact_id" => 1],
+    ["i_item_sk" => 2, "i_manufact_id" => 2]
+];
+$store_sales = [
+    [
+        "item" => 1,
+        "date" => 1,
+        "price" => 10
+    ],
+    [
+        "item" => 1,
+        "date" => 2,
+        "price" => 10
+    ],
+    [
+        "item" => 2,
+        "date" => 1,
+        "price" => 30
+    ],
+    [
+        "item" => 2,
+        "date" => 2,
+        "price" => 23
+    ]
+];
+$date_dim = [
+    ["d_date_sk" => 1, "d_month_seq" => 1],
+    ["d_date_sk" => 2, "d_month_seq" => 2]
+];
+function abs($x) {
+    if ($x >= 0) {
+        return $x;
+    }
+    return -$x;
+}
+$grouped = (function() use ($date_dim, $item, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($item as $i) {
+            if ($ss['item'] == $i['i_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($ss['date'] == $d['d_date_sk']) {
+                        $_k = json_encode($i['i_manufact_id']);
+                        $groups[$_k][] = ["ss" => $ss, "i" => $i, "d" => $d];
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "manu" => $g['key'],
+    "sum_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })()),
+    "avg_sales" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$result = (function() use ($grouped) {
+    $result = [];
+    foreach ($grouped as $g) {
+        if ($g['avg_sales'] > 0 && abs($g['sum_sales'] - $g['avg_sales']) / $g['avg_sales'] > 0.1) {
+            $result[] = [
+    "i_manufact_id" => $g['manu'],
+    "sum_sales" => $g['sum_sales']
+];
+        }
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

@@ -1,0 +1,7 @@
+Warning: Undefined variable $substr in /tmp/q19.php on line 119
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q19.php:119
+Stack trace:
+#0 /tmp/q19.php(161): {closure:/tmp/q19.php:107}()
+#1 {main}
+  thrown in /tmp/q19.php on line 119

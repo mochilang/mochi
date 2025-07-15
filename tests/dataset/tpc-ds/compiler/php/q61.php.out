@@ -1,0 +1,25 @@
+<?php
+$sales = [
+    ["promo" => true, "price" => 20],
+    ["promo" => true, "price" => 41],
+    ["promo" => false, "price" => 39]
+];
+$promotions = array_sum((function() use ($sales) {
+    $result = [];
+    foreach ($sales as $s) {
+        if ($s['promo']) {
+            $result[] = $s['price'];
+        }
+    }
+    return $result;
+})());
+$total = array_sum((function() use ($sales) {
+    $result = [];
+    foreach ($sales as $s) {
+        $result[] = $s['price'];
+    }
+    return $result;
+})());
+$result = $promotions * 100 / $total;
+echo json_encode($result), PHP_EOL;
+?>

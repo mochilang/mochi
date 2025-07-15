@@ -1,0 +1,208 @@
+<?php
+$store_sales = [
+    [
+        "ticket" => 1,
+        "item" => 101,
+        "sold" => 1,
+        "customer" => 1,
+        "store" => 1
+    ],
+    [
+        "ticket" => 2,
+        "item" => 102,
+        "sold" => 1,
+        "customer" => 1,
+        "store" => 1
+    ],
+    [
+        "ticket" => 3,
+        "item" => 103,
+        "sold" => 1,
+        "customer" => 1,
+        "store" => 1
+    ],
+    [
+        "ticket" => 4,
+        "item" => 104,
+        "sold" => 1,
+        "customer" => 1,
+        "store" => 1
+    ],
+    [
+        "ticket" => 5,
+        "item" => 105,
+        "sold" => 1,
+        "customer" => 1,
+        "store" => 1
+    ]
+];
+$store_returns = [
+    [
+        "ticket" => 1,
+        "item" => 101,
+        "returned" => 16,
+        "customer" => 1
+    ],
+    [
+        "ticket" => 2,
+        "item" => 102,
+        "returned" => 46,
+        "customer" => 1
+    ],
+    [
+        "ticket" => 3,
+        "item" => 103,
+        "returned" => 76,
+        "customer" => 1
+    ],
+    [
+        "ticket" => 4,
+        "item" => 104,
+        "returned" => 111,
+        "customer" => 1
+    ],
+    [
+        "ticket" => 5,
+        "item" => 105,
+        "returned" => 151,
+        "customer" => 1
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2001,
+        "d_moy" => 7
+    ],
+    [
+        "d_date_sk" => 16,
+        "d_year" => 2001,
+        "d_moy" => 8
+    ],
+    [
+        "d_date_sk" => 46,
+        "d_year" => 2001,
+        "d_moy" => 8
+    ],
+    [
+        "d_date_sk" => 76,
+        "d_year" => 2001,
+        "d_moy" => 8
+    ],
+    [
+        "d_date_sk" => 111,
+        "d_year" => 2001,
+        "d_moy" => 8
+    ],
+    [
+        "d_date_sk" => 151,
+        "d_year" => 2001,
+        "d_moy" => 8
+    ]
+];
+$store = [
+    [
+        "s_store_sk" => 1,
+        "s_store_name" => "Main",
+        "s_company_id" => 1,
+        "s_street_number" => "1",
+        "s_street_name" => "Main",
+        "s_street_type" => "St",
+        "s_suite_number" => "100",
+        "s_city" => "City",
+        "s_county" => "County",
+        "s_state" => "CA",
+        "s_zip" => "12345"
+    ]
+];
+$year = 2001;
+$month = 8;
+$joined = (function() use ($date_dim, $month, $store, $store_returns, $store_sales, $year) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($store_returns as $sr) {
+            if ($ss['ticket'] == $sr['ticket'] && $ss['item'] == $sr['item'] && $ss['customer'] == $sr['customer']) {
+                foreach ($date_dim as $d1) {
+                    if ($ss['sold'] == $d1['d_date_sk']) {
+                        foreach ($date_dim as $d2) {
+                            if ($sr['returned'] == $d2['d_date_sk'] && $d2['d_year'] == $year && $d2['d_moy'] == $month) {
+                                foreach ($store as $s) {
+                                    if ($ss['store'] == $s['s_store_sk']) {
+                                        $result[] = [
+    "s" => $s,
+    "diff" => $sr['returned'] - $ss['sold']
+];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = (function() use ($joined) {
+    $groups = [];
+    foreach ($joined as $j) {
+        $_k = json_encode($j['s']);
+        $groups[$_k][] = $j;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "s_store_name" => $g['key']['s_store_name'],
+    "d30" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['diff'] <= 30) {
+                $result[] = 1;
+            }
+        }
+        return $result;
+    })()),
+    "d31_60" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['diff'] > 30 && $x['diff'] <= 60) {
+                $result[] = 1;
+            }
+        }
+        return $result;
+    })()),
+    "d61_90" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['diff'] > 60 && $x['diff'] <= 90) {
+                $result[] = 1;
+            }
+        }
+        return $result;
+    })()),
+    "d91_120" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['diff'] > 90 && $x['diff'] <= 120) {
+                $result[] = 1;
+            }
+        }
+        return $result;
+    })()),
+    "d_gt_120" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['diff'] > 120) {
+                $result[] = 1;
+            }
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

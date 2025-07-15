@@ -1,0 +1,21 @@
+<?php
+$item = [["id" => 1], ["id" => 2], ["id" => 3]];
+$inventory = [
+    ["item" => 1, "qty" => 20],
+    ["item" => 1, "qty" => 22],
+    ["item" => 1, "qty" => 5],
+    ["item" => 2, "qty" => 30],
+    ["item" => 2, "qty" => 5],
+    ["item" => 3, "qty" => 10]
+];
+$store_sales = [["item" => 1], ["item" => 2]];
+$result = 0;
+foreach ($inventory as $inv) {
+    foreach ($store_sales as $s) {
+        if ($inv['item'] == $s['item']) {
+            $result = $result + $inv['qty'];
+        }
+    }
+}
+echo json_encode($result), PHP_EOL;
+?>

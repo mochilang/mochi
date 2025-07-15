@@ -1,0 +1,83 @@
+<?php
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "I1",
+        "i_item_desc" => "Item1",
+        "i_current_price" => 30,
+        "i_manufact_id" => 800
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_item_id" => "I2",
+        "i_item_desc" => "Item2",
+        "i_current_price" => 60,
+        "i_manufact_id" => 801
+    ]
+];
+$inventory = [
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 200
+    ],
+    [
+        "inv_item_sk" => 2,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 1,
+        "inv_quantity_on_hand" => 300
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2000-01-15"
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_sold_date_sk" => 1
+    ]
+];
+$result = (function() use ($catalog_sales, $date_dim, $inventory, $item) {
+    $groups = [];
+    foreach ($item as $i) {
+        foreach ($inventory as $inv) {
+            if ($i['i_item_sk'] == $inv['inv_item_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($inv['inv_date_sk'] == $d['d_date_sk']) {
+                        foreach ($catalog_sales as $cs) {
+                            if ($cs['cs_item_sk'] == $i['i_item_sk']) {
+                                if ($i['i_current_price'] >= 20 && $i['i_current_price'] <= 50 && $i['i_manufact_id'] >= 800 && $i['i_manufact_id'] <= 803 && $inv['inv_quantity_on_hand'] >= 100 && $inv['inv_quantity_on_hand'] <= 500) {
+                                    $_k = json_encode([
+    "id" => $i['i_item_id'],
+    "desc" => $i['i_item_desc'],
+    "price" => $i['i_current_price']
+]);
+                                    $groups[$_k][] = ["i" => $i, "inv" => $inv, "d" => $d, "cs" => $cs];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [$g['key']['id'], [
+    "i_item_id" => $g['key']['id'],
+    "i_item_desc" => $g['key']['desc'],
+    "i_current_price" => $g['key']['price']
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

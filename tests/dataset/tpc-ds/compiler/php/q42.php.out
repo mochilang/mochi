@@ -1,0 +1,109 @@
+<?php
+$store_sales = [
+    [
+        "sold_date_sk" => 1,
+        "item_sk" => 1,
+        "ext_sales_price" => 10
+    ],
+    [
+        "sold_date_sk" => 1,
+        "item_sk" => 2,
+        "ext_sales_price" => 20
+    ],
+    [
+        "sold_date_sk" => 2,
+        "item_sk" => 1,
+        "ext_sales_price" => 15
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_manager_id" => 1,
+        "i_category_id" => 100,
+        "i_category" => "CatA"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_manager_id" => 1,
+        "i_category_id" => 200,
+        "i_category" => "CatB"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_year" => 2020,
+        "d_moy" => 5
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_year" => 2021,
+        "d_moy" => 5
+    ]
+];
+$month = 5;
+$year = 2020;
+$records = (function() use ($date_dim, $item, $month, $store_sales, $year) {
+    $result = [];
+    foreach ($date_dim as $dt) {
+        foreach ($store_sales as $ss) {
+            if ($ss['sold_date_sk'] == $dt['d_date_sk']) {
+                foreach ($item as $it) {
+                    if ($ss['item_sk'] == $it['i_item_sk']) {
+                        if ($it['i_manager_id'] == 1 && $dt['d_moy'] == $month && $dt['d_year'] == $year) {
+                            $result[] = [
+    "d_year" => $dt['d_year'],
+    "i_category_id" => $it['i_category_id'],
+    "i_category" => $it['i_category'],
+    "price" => $ss['ext_sales_price']
+];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$grouped = (function() use ($records) {
+    $groups = [];
+    foreach ($records as $r) {
+        $_k = json_encode([
+    "d_year" => $r['d_year'],
+    "i_category_id" => $r['i_category_id'],
+    "i_category" => $r['i_category']
+]);
+        $groups[$_k][] = $r;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "d_year" => $g['key']['d_year'],
+    "i_category_id" => $g['key']['i_category_id'],
+    "i_category" => $g['key']['i_category'],
+    "sum_ss_ext_sales_price" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['price'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$base = (function() use ($grouped) {
+    $result = [];
+    foreach ($grouped as $g) {
+        $result[] = [-$g['sum_ss_ext_sales_price'], $g];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+$result = $base;
+echo json_encode($result), PHP_EOL;
+?>

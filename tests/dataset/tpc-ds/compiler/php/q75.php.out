@@ -1,0 +1,183 @@
+<?php
+$date_dim = [
+    ["d_date_sk" => 1, "d_year" => 2000],
+    ["d_date_sk" => 2, "d_year" => 2001]
+];
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_quantity" => 50,
+        "ss_sales_price" => 500,
+        "ss_sold_date_sk" => 1
+    ],
+    [
+        "ss_item_sk" => 1,
+        "ss_quantity" => 40,
+        "ss_sales_price" => 400,
+        "ss_sold_date_sk" => 2
+    ]
+];
+$web_sales = [
+    [
+        "ws_item_sk" => 1,
+        "ws_quantity" => 30,
+        "ws_sales_price" => 300,
+        "ws_sold_date_sk" => 1
+    ],
+    [
+        "ws_item_sk" => 1,
+        "ws_quantity" => 25,
+        "ws_sales_price" => 250,
+        "ws_sold_date_sk" => 2
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_quantity" => 20,
+        "cs_sales_price" => 200,
+        "cs_sold_date_sk" => 1
+    ],
+    [
+        "cs_item_sk" => 1,
+        "cs_quantity" => 15,
+        "cs_sales_price" => 150,
+        "cs_sold_date_sk" => 2
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_brand_id" => 1,
+        "i_class_id" => 2,
+        "i_category_id" => 3,
+        "i_manufact_id" => 4,
+        "i_category" => "Electronics"
+    ]
+];
+$sales_detail = $concat((function() use ($date_dim, $store_sales) {
+    $result = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                $result[] = [
+    "d_year" => $d['d_year'],
+    "i_item_sk" => $ss['ss_item_sk'],
+    "quantity" => $ss['ss_quantity'],
+    "amount" => $ss['ss_sales_price']
+];
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($date_dim, $web_sales) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ws['ws_sold_date_sk']) {
+                $result[] = [
+    "d_year" => $d['d_year'],
+    "i_item_sk" => $ws['ws_item_sk'],
+    "quantity" => $ws['ws_quantity'],
+    "amount" => $ws['ws_sales_price']
+];
+            }
+        }
+    }
+    return $result;
+})(), (function() use ($catalog_sales, $date_dim) {
+    $result = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                $result[] = [
+    "d_year" => $d['d_year'],
+    "i_item_sk" => $cs['cs_item_sk'],
+    "quantity" => $cs['cs_quantity'],
+    "amount" => $cs['cs_sales_price']
+];
+            }
+        }
+    }
+    return $result;
+})());
+$all_sales = (function() use ($item, $sales_detail) {
+    $groups = [];
+    foreach ($sales_detail as $sd) {
+        foreach ($item as $i) {
+            if ($i['i_item_sk'] == $sd['i_item_sk']) {
+                if ($i['i_category'] == "Electronics") {
+                    $_k = json_encode([
+    "year" => $sd['d_year'],
+    "brand_id" => $i['i_brand_id'],
+    "class_id" => $i['i_class_id'],
+    "category_id" => $i['i_category_id'],
+    "manuf_id" => $i['i_manufact_id']
+]);
+                    $groups[$_k][] = ["sd" => $sd, "i" => $i];
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "d_year" => $g['key']['year'],
+    "i_brand_id" => $g['key']['brand_id'],
+    "i_class_id" => $g['key']['class_id'],
+    "i_category_id" => $g['key']['category_id'],
+    "i_manufact_id" => $g['key']['manuf_id'],
+    "sales_cnt" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['sd']['quantity'];
+        }
+        return $result;
+    })()),
+    "sales_amt" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['sd']['amount'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$prev_yr = $first((function() use ($all_sales) {
+    $result = [];
+    foreach ($all_sales as $a) {
+        if ($a['d_year'] == 2000) {
+            $result[] = $a;
+        }
+    }
+    return $result;
+})());
+$curr_yr = $first((function() use ($all_sales) {
+    $result = [];
+    foreach ($all_sales as $a) {
+        if ($a['d_year'] == 2001) {
+            $result[] = $a;
+        }
+    }
+    return $result;
+})());
+$result = (($curr_yr['sales_cnt'] / $prev_yr['sales_cnt']) < 0.9 ? [
+    [
+        "prev_year" => $prev_yr['d_year'],
+        "year" => $curr_yr['d_year'],
+        "i_brand_id" => $curr_yr['i_brand_id'],
+        "i_class_id" => $curr_yr['i_class_id'],
+        "i_category_id" => $curr_yr['i_category_id'],
+        "i_manufact_id" => $curr_yr['i_manufact_id'],
+        "prev_yr_cnt" => $prev_yr['sales_cnt'],
+        "curr_yr_cnt" => $curr_yr['sales_cnt'],
+        "sales_cnt_diff" => $curr_yr['sales_cnt'] - $prev_yr['sales_cnt'],
+        "sales_amt_diff" => $curr_yr['sales_amt'] - $prev_yr['sales_amt']
+    ]
+] : []);
+echo json_encode($result), PHP_EOL;
+?>

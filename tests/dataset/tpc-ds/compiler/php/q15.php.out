@@ -1,0 +1,117 @@
+<?php
+class CatalogSale {
+    public $cs_bill_customer_sk;
+    public $cs_sales_price;
+    public $cs_sold_date_sk;
+    public function __construct($fields = []) {
+        $this->cs_bill_customer_sk = $fields['cs_bill_customer_sk'] ?? null;
+        $this->cs_sales_price = $fields['cs_sales_price'] ?? null;
+        $this->cs_sold_date_sk = $fields['cs_sold_date_sk'] ?? null;
+    }
+}
+class Customer {
+    public $c_customer_sk;
+    public $c_current_addr_sk;
+    public function __construct($fields = []) {
+        $this->c_customer_sk = $fields['c_customer_sk'] ?? null;
+        $this->c_current_addr_sk = $fields['c_current_addr_sk'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_zip;
+    public $ca_state;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_zip = $fields['ca_zip'] ?? null;
+        $this->ca_state = $fields['ca_state'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_qoy;
+    public $d_year;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_qoy = $fields['d_qoy'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+    }
+}
+$catalog_sales = [
+    [
+        "cs_bill_customer_sk" => 1,
+        "cs_sales_price" => 600,
+        "cs_sold_date_sk" => 1
+    ]
+];
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_current_addr_sk" => 1
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_zip" => "85669",
+        "ca_state" => "CA"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_qoy" => 1,
+        "d_year" => 2000
+    ]
+];
+$filtered = (function() use ($catalog_sales, $customer, $customer_address, $date_dim) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($customer as $c) {
+            if ($cs['cs_bill_customer_sk'] == $c['c_customer_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($c['c_current_addr_sk'] == $ca['ca_address_sk']) {
+                        foreach ($date_dim as $d) {
+                            if ($cs['cs_sold_date_sk'] == $d['d_date_sk']) {
+                                if ((in_array(in_array($substr($ca['ca_zip'], 0, 5), [
+    "85669",
+    "86197",
+    "88274",
+    "83405",
+    "86475",
+    "85392",
+    "85460",
+    "80348",
+    "81792"
+]) || $ca['ca_state'], ["CA", "WA", "GA"]) || $cs['cs_sales_price'] > 500) && $d['d_qoy'] == 1 && $d['d_year'] == 2000) {
+                                    $_k = json_encode(["zip" => $ca['ca_zip']]);
+                                    $groups[$_k][] = ["cs" => $cs, "c" => $c, "ca" => $ca, "d" => $d];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [$g['key']['zip'], [
+    "ca_zip" => $g['key']['zip'],
+    "sum_sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs_sales_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($filtered), PHP_EOL;
+?>

@@ -1,0 +1,142 @@
+<?php
+$catalog_sales = [
+    [
+        "cs_item_sk" => 1,
+        "cs_order_number" => 1,
+        "cs_quantity" => 1,
+        "cs_sold_date_sk" => 1,
+        "cs_ship_date_sk" => 3,
+        "cs_bill_cdemo_sk" => 1,
+        "cs_bill_hdemo_sk" => 1,
+        "cs_promo_sk" => null
+    ]
+];
+$inventory = [
+    [
+        "inv_item_sk" => 1,
+        "inv_warehouse_sk" => 1,
+        "inv_date_sk" => 2,
+        "inv_quantity_on_hand" => 0
+    ]
+];
+$warehouse = [
+    [
+        "w_warehouse_sk" => 1,
+        "w_warehouse_name" => "Main"
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_desc" => "ItemA"
+    ]
+];
+$customer_demographics = [
+    [
+        "cd_demo_sk" => 1,
+        "cd_marital_status" => "M"
+    ]
+];
+$household_demographics = [
+    [
+        "hd_demo_sk" => 1,
+        "hd_buy_potential" => "5001-10000"
+    ]
+];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_week_seq" => 10,
+        "d_date" => 1,
+        "d_year" => 2000
+    ],
+    [
+        "d_date_sk" => 2,
+        "d_week_seq" => 10,
+        "d_date" => 1,
+        "d_year" => 2000
+    ],
+    [
+        "d_date_sk" => 3,
+        "d_week_seq" => 10,
+        "d_date" => 7,
+        "d_year" => 2000
+    ]
+];
+$result = (function() use ($catalog_sales, $customer_demographics, $date_dim, $household_demographics, $inventory, $item, $warehouse) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($inventory as $inv) {
+            if ($inv['inv_item_sk'] == $cs['cs_item_sk']) {
+                foreach ($warehouse as $w) {
+                    if ($w['w_warehouse_sk'] == $inv['inv_warehouse_sk']) {
+                        foreach ($item as $i) {
+                            if ($i['i_item_sk'] == $cs['cs_item_sk']) {
+                                foreach ($customer_demographics as $cd) {
+                                    if ($cd['cd_demo_sk'] == $cs['cs_bill_cdemo_sk']) {
+                                        foreach ($household_demographics as $hd) {
+                                            if ($hd['hd_demo_sk'] == $cs['cs_bill_hdemo_sk']) {
+                                                foreach ($date_dim as $d1) {
+                                                    if ($d1['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                                                        foreach ($date_dim as $d2) {
+                                                            if ($d2['d_date_sk'] == $inv['inv_date_sk']) {
+                                                                foreach ($date_dim as $d3) {
+                                                                    if ($d3['d_date_sk'] == $cs['cs_ship_date_sk']) {
+                                                                        if ($d1['d_week_seq'] == $d2['d_week_seq'] && $inv['inv_quantity_on_hand'] < $cs['cs_quantity'] && $d3['d_date'] > $d1['d_date'] + 5 && $hd['hd_buy_potential'] == "5001-10000" && $d1['d_year'] == 2000 && $cd['cd_marital_status'] == "M") {
+                                                                            $_k = json_encode([
+    "item_desc" => $i['i_item_desc'],
+    "warehouse" => $w['w_warehouse_name'],
+    "week_seq" => $d1['d_week_seq']
+]);
+                                                                            $groups[$_k][] = ["cs" => $cs, "inv" => $inv, "w" => $w, "i" => $i, "cd" => $cd, "hd" => $hd, "d1" => $d1, "d2" => $d2, "d3" => $d3];
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "i_item_desc" => $g['key']['item_desc'],
+    "w_warehouse_name" => $g['key']['warehouse'],
+    "d_week_seq" => $g['key']['week_seq'],
+    "no_promo" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['cs_promo_sk'] == null) {
+                $result[] = $x;
+            }
+        }
+        return $result;
+    })()),
+    "promo" => count((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            if ($x['cs_promo_sk'] != null) {
+                $result[] = $x;
+            }
+        }
+        return $result;
+    })()),
+    "total_cnt" => count($g['items'])
+];
+    }
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

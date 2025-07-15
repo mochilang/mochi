@@ -1,0 +1,7 @@
+Warning: Undefined array key "ToUpper" in /tmp/q24.php on line 177
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q24.php:177
+Stack trace:
+#0 /tmp/q24.php(216): {closure:/tmp/q24.php:164}()
+#1 {main}
+  thrown in /tmp/q24.php on line 177

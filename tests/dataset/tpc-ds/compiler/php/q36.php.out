@@ -1,0 +1,100 @@
+<?php
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_ext_sales_price" => 100,
+        "ss_net_profit" => 20
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_store_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_ext_sales_price" => 200,
+        "ss_net_profit" => 50
+    ],
+    [
+        "ss_item_sk" => 3,
+        "ss_store_sk" => 2,
+        "ss_sold_date_sk" => 1,
+        "ss_ext_sales_price" => 150,
+        "ss_net_profit" => 30
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_category" => "Books",
+        "i_class" => "C1"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_category" => "Books",
+        "i_class" => "C2"
+    ],
+    [
+        "i_item_sk" => 3,
+        "i_category" => "Electronics",
+        "i_class" => "C3"
+    ]
+];
+$store = [
+    ["s_store_sk" => 1, "s_state" => "A"],
+    ["s_store_sk" => 2, "s_state" => "B"]
+];
+$date_dim = [["d_date_sk" => 1, "d_year" => 2000]];
+$result = (function() use ($date_dim, $item, $store, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($ss['ss_sold_date_sk'] == $d['d_date_sk']) {
+                foreach ($item as $i) {
+                    if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                        foreach ($store as $s) {
+                            if ($ss['ss_store_sk'] == $s['s_store_sk']) {
+                                if ($d['d_year'] == 2000 && ($s['s_state'] == "A" || $s['s_state'] == "B")) {
+                                    $_k = json_encode([
+    "category" => $i['i_category'],
+    "class" => $i['i_class']
+]);
+                                    $groups[$_k][] = ["ss" => $ss, "d" => $d, "i" => $i, "s" => $s];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [[
+    $g['key']['category'],
+    $g['key']['class']
+], [
+    "i_category" => $g['key']['category'],
+    "i_class" => $g['key']['class'],
+    "gross_margin" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_net_profit'];
+        }
+        return $result;
+    })()) / array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_ext_sales_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+?>

@@ -1,0 +1,412 @@
+<?php
+$date_dim = [["d_date_sk" => 1, "d_date" => 1]];
+$store_sales = [
+    [
+        "ss_sold_date_sk" => 1,
+        "s_store_sk" => 1,
+        "ss_ext_sales_price" => 100,
+        "ss_net_profit" => 10
+    ]
+];
+$store_returns = [
+    [
+        "sr_returned_date_sk" => 1,
+        "s_store_sk" => 1,
+        "sr_return_amt" => 5,
+        "sr_net_loss" => 1
+    ]
+];
+$catalog_sales = [
+    [
+        "cs_sold_date_sk" => 1,
+        "cs_call_center_sk" => 1,
+        "cs_ext_sales_price" => 150,
+        "cs_net_profit" => 15
+    ]
+];
+$catalog_returns = [
+    [
+        "cr_returned_date_sk" => 1,
+        "cr_call_center_sk" => 1,
+        "cr_return_amount" => 7,
+        "cr_net_loss" => 3
+    ]
+];
+$web_sales = [
+    [
+        "ws_sold_date_sk" => 1,
+        "ws_web_page_sk" => 1,
+        "ws_ext_sales_price" => 200,
+        "ws_net_profit" => 20
+    ]
+];
+$web_returns = [
+    [
+        "wr_returned_date_sk" => 1,
+        "wr_web_page_sk" => 1,
+        "wr_return_amt" => 10,
+        "wr_net_loss" => 2
+    ]
+];
+$ss = (function() use ($date_dim, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ss['ss_sold_date_sk']) {
+                $_k = json_encode($ss['s_store_sk']);
+                $groups[$_k][] = ["ss" => $ss, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "s_store_sk" => $g['key'],
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss']['ss_ext_sales_price'];
+        }
+        return $result;
+    })()),
+    "profit" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss']['ss_net_profit'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$sr = (function() use ($date_dim, $store_returns) {
+    $groups = [];
+    foreach ($store_returns as $sr) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $sr['sr_returned_date_sk']) {
+                $_k = json_encode($sr['s_store_sk']);
+                $groups[$_k][] = ["sr" => $sr, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "s_store_sk" => $g['key'],
+    "returns" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['sr']['sr_return_amt'];
+        }
+        return $result;
+    })()),
+    "profit_loss" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['sr']['sr_net_loss'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$cs = (function() use ($catalog_sales, $date_dim) {
+    $groups = [];
+    foreach ($catalog_sales as $cs) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $cs['cs_sold_date_sk']) {
+                $_k = json_encode($cs['cs_call_center_sk']);
+                $groups[$_k][] = ["cs" => $cs, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "cs_call_center_sk" => $g['key'],
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs']['cs_ext_sales_price'];
+        }
+        return $result;
+    })()),
+    "profit" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cs']['cs_net_profit'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$cr = (function() use ($catalog_returns, $date_dim) {
+    $groups = [];
+    foreach ($catalog_returns as $cr) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $cr['cr_returned_date_sk']) {
+                $_k = json_encode($cr['cr_call_center_sk']);
+                $groups[$_k][] = ["cr" => $cr, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "cr_call_center_sk" => $g['key'],
+    "returns" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cr']['cr_return_amount'];
+        }
+        return $result;
+    })()),
+    "profit_loss" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['cr']['cr_net_loss'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$ws = (function() use ($date_dim, $web_sales) {
+    $groups = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $ws['ws_sold_date_sk']) {
+                $_k = json_encode($ws['ws_web_page_sk']);
+                $groups[$_k][] = ["ws" => $ws, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "wp_web_page_sk" => $g['key'],
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ws']['ws_ext_sales_price'];
+        }
+        return $result;
+    })()),
+    "profit" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ws']['ws_net_profit'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$wr = (function() use ($date_dim, $web_returns) {
+    $groups = [];
+    foreach ($web_returns as $wr) {
+        foreach ($date_dim as $d) {
+            if ($d['d_date_sk'] == $wr['wr_returned_date_sk']) {
+                $_k = json_encode($wr['wr_web_page_sk']);
+                $groups[$_k][] = ["wr" => $wr, "d" => $d];
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "wp_web_page_sk" => $g['key'],
+    "returns" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['wr']['wr_return_amt'];
+        }
+        return $result;
+    })()),
+    "profit_loss" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['wr']['wr_net_loss'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$per_channel = $concat(_query($ss, [['items'=>$sr, 'on'=>function($s, $r) use ($sr, $ss){return $s['s_store_sk'] == $r['s_store_sk'];}, 'left'=>true]], [ 'select' => function($s, $r) use ($sr, $ss){return [
+    "channel" => "store channel",
+    "id" => $s['s_store_sk'],
+    "sales" => $s['sales'],
+    "returns" => ($r == null ? 0 : $r['returns']),
+    "profit" => $s['profit'] - (($r == null ? 0 : $r['profit_loss']))
+];} ]), (function() use ($cr, $cs) {
+    $result = [];
+    foreach ($cs as $c) {
+        foreach ($cr as $r) {
+            if ($c['cs_call_center_sk'] == $r['cr_call_center_sk']) {
+                $result[] = [
+    "channel" => "catalog channel",
+    "id" => $c['cs_call_center_sk'],
+    "sales" => $c['sales'],
+    "returns" => $r['returns'],
+    "profit" => $c['profit'] - $r['profit_loss']
+];
+            }
+        }
+    }
+    return $result;
+})(), _query($ws, [['items'=>$wr, 'on'=>function($w, $r) use ($wr, $ws){return $w['wp_web_page_sk'] == $r['wp_web_page_sk'];}, 'left'=>true]], [ 'select' => function($w, $r) use ($wr, $ws){return [
+    "channel" => "web channel",
+    "id" => $w['wp_web_page_sk'],
+    "sales" => $w['sales'],
+    "returns" => ($r == null ? 0 : $r['returns']),
+    "profit" => $w['profit'] - (($r == null ? 0 : $r['profit_loss']))
+];} ]));
+$result = (function() use ($per_channel) {
+    $groups = [];
+    foreach ($per_channel as $p) {
+        $_k = json_encode([
+    "channel" => $p['channel'],
+    "id" => $p['id']
+]);
+        $groups[$_k][] = $p;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [$g['key']['channel'], [
+    "channel" => $g['key']['channel'],
+    "id" => $g['key']['id'],
+    "sales" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['p']['sales'];
+        }
+        return $result;
+    })()),
+    "returns" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['p']['returns'];
+        }
+        return $result;
+    })()),
+    "profit" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['p']['profit'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _query($src, $joins, $opts) {
+    $items = [];
+    foreach ($src as $v) { $items[] = [$v]; }
+    foreach ($joins as $j) {
+        $joined = [];
+        $jitems = $j['items'] ?? [];
+        if (($j['right'] ?? false) && ($j['left'] ?? false)) {
+            $matched = array_fill(0, count($jitems), false);
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $ri => $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $matched[$ri] = true;
+                    $row = $left; $row[] = $right;
+                    $joined[] = $row;
+                }
+                if (!$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+            foreach ($jitems as $ri => $right) {
+                if (!$matched[$ri]) {
+                    $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : [];
+                    $row = $undef; $row[] = $right; $joined[] = $row;
+                }
+            }
+        } elseif (($j['right'] ?? false)) {
+            foreach ($jitems as $right) {
+                $m = false;
+                foreach ($items as $left) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (!$m) { $undef = count($items) > 0 ? array_fill(0, count($items[0]), null) : []; $row = $undef; $row[] = $right; $joined[] = $row; }
+            }
+        } else {
+            foreach ($items as $left) {
+                $m = false;
+                foreach ($jitems as $right) {
+                    $keep = true;
+                    if (isset($j['on'])) {
+                        $args = $left; $args[] = $right;
+                        $keep = $j['on'](...$args);
+                    }
+                    if (!$keep) continue;
+                    $m = true; $row = $left; $row[] = $right; $joined[] = $row;
+                }
+                if (($j['left'] ?? false) && !$m) { $row = $left; $row[] = null; $joined[] = $row; }
+            }
+        }
+        $items = $joined;
+    }
+    if (isset($opts['where'])) {
+        $fn = $opts['where'];
+        $items = array_values(array_filter($items, fn($r) => $fn(...$r)));
+    }
+    if (isset($opts['sortKey'])) {
+        $sk = $opts['sortKey'];
+        usort($items, function($a,$b) use($sk) {
+            $ak = $sk(...$a); $bk = $sk(...$b);
+            if (is_array($ak) || is_object($ak)) $ak = json_encode($ak);
+            if (is_array($bk) || is_object($bk)) $bk = json_encode($bk);
+            return $ak <=> $bk;
+        });
+    }
+    if (isset($opts['skip'])) {
+        $n = $opts['skip']; if ($n < 0) $n = 0; $items = array_slice($items, $n);
+    }
+    if (isset($opts['take'])) {
+        $n = $opts['take']; if ($n < 0) $n = 0; $items = array_slice($items, 0, $n);
+    }
+    $res = [];
+    $sel = $opts['select'];
+    foreach ($items as $r) { $res[] = $sel(...$r); }
+    return $res;
+}
+?>

@@ -1,0 +1,201 @@
+<?php
+class StoreSale {
+    public $ss_item_sk;
+    public $ss_store_sk;
+    public $ss_cdemo_sk;
+    public $ss_sold_date_sk;
+    public $ss_quantity;
+    public $ss_list_price;
+    public $ss_coupon_amt;
+    public $ss_sales_price;
+    public function __construct($fields = []) {
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+        $this->ss_cdemo_sk = $fields['ss_cdemo_sk'] ?? null;
+        $this->ss_sold_date_sk = $fields['ss_sold_date_sk'] ?? null;
+        $this->ss_quantity = $fields['ss_quantity'] ?? null;
+        $this->ss_list_price = $fields['ss_list_price'] ?? null;
+        $this->ss_coupon_amt = $fields['ss_coupon_amt'] ?? null;
+        $this->ss_sales_price = $fields['ss_sales_price'] ?? null;
+    }
+}
+class CustomerDemo {
+    public $cd_demo_sk;
+    public $cd_gender;
+    public $cd_marital_status;
+    public $cd_education_status;
+    public function __construct($fields = []) {
+        $this->cd_demo_sk = $fields['cd_demo_sk'] ?? null;
+        $this->cd_gender = $fields['cd_gender'] ?? null;
+        $this->cd_marital_status = $fields['cd_marital_status'] ?? null;
+        $this->cd_education_status = $fields['cd_education_status'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_year;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_year = $fields['d_year'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_state;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_state = $fields['s_state'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_item_id;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_item_id = $fields['i_item_id'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_item_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_cdemo_sk" => 1,
+        "ss_sold_date_sk" => 1,
+        "ss_quantity" => 5,
+        "ss_list_price" => 100,
+        "ss_coupon_amt" => 10,
+        "ss_sales_price" => 90
+    ],
+    [
+        "ss_item_sk" => 2,
+        "ss_store_sk" => 2,
+        "ss_cdemo_sk" => 2,
+        "ss_sold_date_sk" => 1,
+        "ss_quantity" => 2,
+        "ss_list_price" => 50,
+        "ss_coupon_amt" => 5,
+        "ss_sales_price" => 45
+    ]
+];
+$customer_demographics = [
+    [
+        "cd_demo_sk" => 1,
+        "cd_gender" => "F",
+        "cd_marital_status" => "M",
+        "cd_education_status" => "College"
+    ],
+    [
+        "cd_demo_sk" => 2,
+        "cd_gender" => "M",
+        "cd_marital_status" => "S",
+        "cd_education_status" => "College"
+    ]
+];
+$date_dim = [["d_date_sk" => 1, "d_year" => 2000]];
+$store = [
+    ["s_store_sk" => 1, "s_state" => "CA"],
+    ["s_store_sk" => 2, "s_state" => "TX"]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_item_id" => "ITEM1"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_item_id" => "ITEM2"
+    ]
+];
+$result = (function() use ($customer_demographics, $date_dim, $item, $store, $store_sales) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($customer_demographics as $cd) {
+            if ($ss['ss_cdemo_sk'] == $cd['cd_demo_sk']) {
+                foreach ($date_dim as $d) {
+                    if ($ss['ss_sold_date_sk'] == $d['d_date_sk']) {
+                        foreach ($store as $s) {
+                            if ($ss['ss_store_sk'] == $s['s_store_sk']) {
+                                foreach ($item as $i) {
+                                    if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                                        if (in_array($cd['cd_gender'] == "F" && $cd['cd_marital_status'] == "M" && $cd['cd_education_status'] == "College" && $d['d_year'] == 2000 && $s['s_state'], ["CA"])) {
+                                            $_k = json_encode([
+    "item_id" => $i['i_item_id'],
+    "state" => $s['s_state']
+]);
+                                            $groups[$_k][] = ["ss" => $ss, "cd" => $cd, "d" => $d, "s" => $s, "i" => $i];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [[
+    $g['key']['item_id'],
+    $g['key']['state']
+], [
+    "i_item_id" => $g['key']['item_id'],
+    "s_state" => $g['key']['state'],
+    "agg1" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_quantity'];
+        }
+        return $result;
+    })()),
+    "agg2" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_list_price'];
+        }
+        return $result;
+    })()),
+    "agg3" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_coupon_amt'];
+        }
+        return $result;
+    })()),
+    "agg4" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_sales_price'];
+        }
+        return $result;
+    })())
+]];
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>

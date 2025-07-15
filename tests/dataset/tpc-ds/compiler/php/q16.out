@@ -1,0 +1,12 @@
+Warning: Undefined array key "cs_order_number" in /tmp/q16.php on line 142
+
+Warning: Undefined array key "cs_order_number" in /tmp/q16.php on line 142
+
+Warning: Undefined variable $contains in /tmp/q16.php on line 92
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/q16.php:92
+Stack trace:
+#0 /tmp/q16.php(139): distinct(Array)
+#1 /tmp/q16.php(163): {closure:/tmp/q16.php:98}()
+#2 {main}
+  thrown in /tmp/q16.php on line 92

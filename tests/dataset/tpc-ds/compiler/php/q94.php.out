@@ -1,0 +1,168 @@
+<?php
+class WebSale {
+    public $ws_order_number;
+    public $ws_ship_date_sk;
+    public $ws_warehouse_sk;
+    public $ws_ship_addr_sk;
+    public $ws_web_site_sk;
+    public $ws_net_profit;
+    public $ws_ext_ship_cost;
+    public function __construct($fields = []) {
+        $this->ws_order_number = $fields['ws_order_number'] ?? null;
+        $this->ws_ship_date_sk = $fields['ws_ship_date_sk'] ?? null;
+        $this->ws_warehouse_sk = $fields['ws_warehouse_sk'] ?? null;
+        $this->ws_ship_addr_sk = $fields['ws_ship_addr_sk'] ?? null;
+        $this->ws_web_site_sk = $fields['ws_web_site_sk'] ?? null;
+        $this->ws_net_profit = $fields['ws_net_profit'] ?? null;
+        $this->ws_ext_ship_cost = $fields['ws_ext_ship_cost'] ?? null;
+    }
+}
+class WebReturn {
+    public $wr_order_number;
+    public function __construct($fields = []) {
+        $this->wr_order_number = $fields['wr_order_number'] ?? null;
+    }
+}
+class DateDim {
+    public $d_date_sk;
+    public $d_date;
+    public function __construct($fields = []) {
+        $this->d_date_sk = $fields['d_date_sk'] ?? null;
+        $this->d_date = $fields['d_date'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_state;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_state = $fields['ca_state'] ?? null;
+    }
+}
+class WebSite {
+    public $web_site_sk;
+    public $web_company_name;
+    public function __construct($fields = []) {
+        $this->web_site_sk = $fields['web_site_sk'] ?? null;
+        $this->web_company_name = $fields['web_company_name'] ?? null;
+    }
+}
+$web_sales = [
+    [
+        "ws_order_number" => 1,
+        "ws_ship_date_sk" => 1,
+        "ws_warehouse_sk" => 1,
+        "ws_ship_addr_sk" => 1,
+        "ws_web_site_sk" => 1,
+        "ws_net_profit" => 5,
+        "ws_ext_ship_cost" => 2
+    ],
+    [
+        "ws_order_number" => 1,
+        "ws_ship_date_sk" => 1,
+        "ws_warehouse_sk" => 2,
+        "ws_ship_addr_sk" => 1,
+        "ws_web_site_sk" => 1,
+        "ws_net_profit" => 0,
+        "ws_ext_ship_cost" => 0
+    ],
+    [
+        "ws_order_number" => 2,
+        "ws_ship_date_sk" => 1,
+        "ws_warehouse_sk" => 3,
+        "ws_ship_addr_sk" => 1,
+        "ws_web_site_sk" => 1,
+        "ws_net_profit" => 3,
+        "ws_ext_ship_cost" => 1
+    ]
+];
+$web_returns = [["wr_order_number" => 2]];
+$date_dim = [
+    [
+        "d_date_sk" => 1,
+        "d_date" => "2001-02-01"
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_state" => "CA"
+    ]
+];
+$web_site = [
+    [
+        "web_site_sk" => 1,
+        "web_company_name" => "pri"
+    ]
+];
+function distinct($xs) {
+    $out = [];
+    foreach ($xs as $x) {
+        if (!$contains($out, $x)) {
+            $out = array_merge($out, [$x]);
+        }
+    }
+    return $out;
+}
+$filtered = (function() use ($customer_address, $date_dim, $web_returns, $web_sales, $web_site) {
+    $result = [];
+    foreach ($web_sales as $ws) {
+        foreach ($date_dim as $d) {
+            if ($ws['ws_ship_date_sk'] == $d['d_date_sk']) {
+                foreach ($customer_address as $ca) {
+                    if ($ws['ws_ship_addr_sk'] == $ca['ca_address_sk']) {
+                        foreach ($web_site as $w) {
+                            if ($ws['ws_web_site_sk'] == $w['web_site_sk']) {
+                                if (!($ca['ca_state'] == "CA" && $w['web_company_name'] == "pri" && count((function() use ($web_sales, $ws) {
+    $result = [];
+    foreach ($web_sales as $ws2) {
+        if ($ws['ws_order_number'] == $ws2['ws_order_number'] && $ws['ws_warehouse_sk'] != $ws2['ws_warehouse_sk']) {
+            $result[] = $ws2;
+        }
+    }
+    return $result;
+})()) > 0 && count((function() use ($web_returns, $ws) {
+    $result = [];
+    foreach ($web_returns as $wr) {
+        if ($wr['wr_order_number'] == $ws['ws_order_number']) {
+            $result[] = $wr;
+        }
+    }
+    return $result;
+})()) > 0)) {
+                                    $result[] = $ws;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $result;
+})();
+$result = [
+    "order_count" => count(distinct((function() use ($filtered) {
+        $result = [];
+        foreach ($filtered as $x) {
+            $result[] = $x['ws_order_number'];
+        }
+        return $result;
+    })())),
+    "total_shipping_cost" => array_sum((function() use ($filtered) {
+        $result = [];
+        foreach ($filtered as $x) {
+            $result[] = $x['ws_ext_ship_cost'];
+        }
+        return $result;
+    })()),
+    "total_net_profit" => array_sum((function() use ($filtered) {
+        $result = [];
+        foreach ($filtered as $x) {
+            $result[] = $x['ws_net_profit'];
+        }
+        return $result;
+    })())
+];
+echo json_encode($result), PHP_EOL;
+?>

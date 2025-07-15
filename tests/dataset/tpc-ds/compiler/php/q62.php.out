@@ -1,0 +1,11 @@
+<?php
+$web_sales = [
+    ["days" => 10],
+    ["days" => 40],
+    ["days" => 70],
+    ["days" => 100],
+    ["days" => 130]
+];
+$result = count($web_sales) * 12 + 2;
+echo json_encode($result), PHP_EOL;
+?>

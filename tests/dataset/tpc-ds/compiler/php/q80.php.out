@@ -1,0 +1,36 @@
+<?php
+$store_sales = [
+    ["price" => 20, "ret" => 5],
+    ["price" => 10, "ret" => 2],
+    ["price" => 5, "ret" => 0]
+];
+$catalog_sales = [
+    ["price" => 15, "ret" => 3],
+    ["price" => 8, "ret" => 1]
+];
+$web_sales = [
+    ["price" => 25, "ret" => 5],
+    ["price" => 15, "ret" => 8],
+    ["price" => 8, "ret" => 2]
+];
+$total_profit = array_sum((function() use ($store_sales) {
+    $result = [];
+    foreach ($store_sales as $s) {
+        $result[] = $s['price'] - $s['ret'];
+    }
+    return $result;
+})()) + array_sum((function() use ($catalog_sales) {
+    $result = [];
+    foreach ($catalog_sales as $c) {
+        $result[] = $c['price'] - $c['ret'];
+    }
+    return $result;
+})()) + array_sum((function() use ($web_sales) {
+    $result = [];
+    foreach ($web_sales as $w) {
+        $result[] = $w['price'] - $w['ret'];
+    }
+    return $result;
+})());
+echo json_encode($total_profit), PHP_EOL;
+?>

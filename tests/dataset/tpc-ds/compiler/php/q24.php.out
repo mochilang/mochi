@@ -1,0 +1,265 @@
+<?php
+$strings = [];
+class StoreSale {
+    public $ss_ticket_number;
+    public $ss_item_sk;
+    public $ss_customer_sk;
+    public $ss_store_sk;
+    public $ss_net_paid;
+    public function __construct($fields = []) {
+        $this->ss_ticket_number = $fields['ss_ticket_number'] ?? null;
+        $this->ss_item_sk = $fields['ss_item_sk'] ?? null;
+        $this->ss_customer_sk = $fields['ss_customer_sk'] ?? null;
+        $this->ss_store_sk = $fields['ss_store_sk'] ?? null;
+        $this->ss_net_paid = $fields['ss_net_paid'] ?? null;
+    }
+}
+class StoreReturn {
+    public $sr_ticket_number;
+    public $sr_item_sk;
+    public function __construct($fields = []) {
+        $this->sr_ticket_number = $fields['sr_ticket_number'] ?? null;
+        $this->sr_item_sk = $fields['sr_item_sk'] ?? null;
+    }
+}
+class Store {
+    public $s_store_sk;
+    public $s_store_name;
+    public $s_market_id;
+    public $s_state;
+    public $s_zip;
+    public function __construct($fields = []) {
+        $this->s_store_sk = $fields['s_store_sk'] ?? null;
+        $this->s_store_name = $fields['s_store_name'] ?? null;
+        $this->s_market_id = $fields['s_market_id'] ?? null;
+        $this->s_state = $fields['s_state'] ?? null;
+        $this->s_zip = $fields['s_zip'] ?? null;
+    }
+}
+class Item {
+    public $i_item_sk;
+    public $i_color;
+    public $i_current_price;
+    public $i_manager_id;
+    public $i_units;
+    public $i_size;
+    public function __construct($fields = []) {
+        $this->i_item_sk = $fields['i_item_sk'] ?? null;
+        $this->i_color = $fields['i_color'] ?? null;
+        $this->i_current_price = $fields['i_current_price'] ?? null;
+        $this->i_manager_id = $fields['i_manager_id'] ?? null;
+        $this->i_units = $fields['i_units'] ?? null;
+        $this->i_size = $fields['i_size'] ?? null;
+    }
+}
+class Customer {
+    public $c_customer_sk;
+    public $c_first_name;
+    public $c_last_name;
+    public $c_current_addr_sk;
+    public $c_birth_country;
+    public function __construct($fields = []) {
+        $this->c_customer_sk = $fields['c_customer_sk'] ?? null;
+        $this->c_first_name = $fields['c_first_name'] ?? null;
+        $this->c_last_name = $fields['c_last_name'] ?? null;
+        $this->c_current_addr_sk = $fields['c_current_addr_sk'] ?? null;
+        $this->c_birth_country = $fields['c_birth_country'] ?? null;
+    }
+}
+class CustomerAddress {
+    public $ca_address_sk;
+    public $ca_state;
+    public $ca_country;
+    public $ca_zip;
+    public function __construct($fields = []) {
+        $this->ca_address_sk = $fields['ca_address_sk'] ?? null;
+        $this->ca_state = $fields['ca_state'] ?? null;
+        $this->ca_country = $fields['ca_country'] ?? null;
+        $this->ca_zip = $fields['ca_zip'] ?? null;
+    }
+}
+$store_sales = [
+    [
+        "ss_ticket_number" => 1,
+        "ss_item_sk" => 1,
+        "ss_customer_sk" => 1,
+        "ss_store_sk" => 1,
+        "ss_net_paid" => 100
+    ],
+    [
+        "ss_ticket_number" => 2,
+        "ss_item_sk" => 2,
+        "ss_customer_sk" => 2,
+        "ss_store_sk" => 1,
+        "ss_net_paid" => 50
+    ]
+];
+$store_returns = [
+    [
+        "sr_ticket_number" => 1,
+        "sr_item_sk" => 1
+    ],
+    [
+        "sr_ticket_number" => 2,
+        "sr_item_sk" => 2
+    ]
+];
+$store = [
+    [
+        "s_store_sk" => 1,
+        "s_store_name" => "Store1",
+        "s_market_id" => 5,
+        "s_state" => "CA",
+        "s_zip" => "12345"
+    ]
+];
+$item = [
+    [
+        "i_item_sk" => 1,
+        "i_color" => "RED",
+        "i_current_price" => 10,
+        "i_manager_id" => 1,
+        "i_units" => "EA",
+        "i_size" => "M"
+    ],
+    [
+        "i_item_sk" => 2,
+        "i_color" => "BLUE",
+        "i_current_price" => 20,
+        "i_manager_id" => 2,
+        "i_units" => "EA",
+        "i_size" => "L"
+    ]
+];
+$customer = [
+    [
+        "c_customer_sk" => 1,
+        "c_first_name" => "Ann",
+        "c_last_name" => "Smith",
+        "c_current_addr_sk" => 1,
+        "c_birth_country" => "Canada"
+    ],
+    [
+        "c_customer_sk" => 2,
+        "c_first_name" => "Bob",
+        "c_last_name" => "Jones",
+        "c_current_addr_sk" => 2,
+        "c_birth_country" => "USA"
+    ]
+];
+$customer_address = [
+    [
+        "ca_address_sk" => 1,
+        "ca_state" => "CA",
+        "ca_country" => "USA",
+        "ca_zip" => "12345"
+    ],
+    [
+        "ca_address_sk" => 2,
+        "ca_state" => "CA",
+        "ca_country" => "USA",
+        "ca_zip" => "54321"
+    ]
+];
+$ssales = (function() use ($customer, $customer_address, $item, $store, $store_returns, $store_sales, $strings) {
+    $groups = [];
+    foreach ($store_sales as $ss) {
+        foreach ($store_returns as $sr) {
+            if ($ss['ss_ticket_number'] == $sr['sr_ticket_number'] && $ss['ss_item_sk'] == $sr['sr_item_sk']) {
+                foreach ($store as $s) {
+                    if ($ss['ss_store_sk'] == $s['s_store_sk']) {
+                        foreach ($item as $i) {
+                            if ($ss['ss_item_sk'] == $i['i_item_sk']) {
+                                foreach ($customer as $c) {
+                                    if ($ss['ss_customer_sk'] == $c['c_customer_sk']) {
+                                        foreach ($customer_address as $ca) {
+                                            if ($c['c_current_addr_sk'] == $ca['ca_address_sk']) {
+                                                if ($c['c_birth_country'] != $strings['ToUpper']($ca['ca_country']) && $s['s_zip'] == $ca['ca_zip'] && $s['s_market_id'] == 5) {
+                                                    $_k = json_encode([
+    "last" => $c['c_last_name'],
+    "first" => $c['c_first_name'],
+    "store_name" => $s['s_store_name'],
+    "color" => $i['i_color']
+]);
+                                                    $groups[$_k][] = ["ss" => $ss, "sr" => $sr, "s" => $s, "i" => $i, "c" => $c, "ca" => $ca];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "c_last_name" => $g['key']['last'],
+    "c_first_name" => $g['key']['first'],
+    "s_store_name" => $g['key']['store_name'],
+    "color" => $g['key']['color'],
+    "netpaid" => array_sum((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $x) {
+            $result[] = $x['ss_net_paid'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
+})();
+$avg_paid = _avg((function() use ($ssales) {
+    $result = [];
+    foreach ($ssales as $x) {
+        $result[] = $x['netpaid'];
+    }
+    return $result;
+})());
+$result = (function() use ($avg_paid, $ssales) {
+    $result = [];
+    foreach ($ssales as $x) {
+        if ($x['color'] == "RED" && $x['netpaid'] > 0.05 * $avg_paid) {
+            $result[] = [[
+    $x['c_last_name'],
+    $x['c_first_name'],
+    $x['s_store_name']
+], [
+    "c_last_name" => $x['c_last_name'],
+    "c_first_name" => $x['c_first_name'],
+    "s_store_name" => $x['s_store_name'],
+    "paid" => $x['netpaid']
+]];
+        }
+    }
+    usort($result, function($a, $b) { return $a[0] <=> $b[0]; });
+    $result = array_map(fn($r) => $r[1], $result);
+    return $result;
+})();
+echo json_encode($result), PHP_EOL;
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
+}
+?>
