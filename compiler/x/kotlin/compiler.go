@@ -851,92 +851,145 @@ func (c *Compiler) binary(b *parser.BinaryExpr) (string, error) {
 		return "", err
 	}
 	lType := types.TypeOfUnary(b.Left, c.env)
-	res := left
-	for _, op := range b.Right {
-		r, err := c.postfix(op.Right)
+
+	operands := []string{left}
+	typesList := []types.Type{lType}
+	ops := []string{}
+
+	for _, part := range b.Right {
+		r, err := c.postfix(part.Right)
 		if err != nil {
 			return "", err
 		}
-		rType := types.TypeOfPostfix(op.Right, c.env)
-		if op.Op == "union" {
-			if op.All {
-				res = fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", res, r)
-			} else {
-				c.use("union")
-				res = fmt.Sprintf("union(%s.toMutableList(), %s.toMutableList())", res, r)
-			}
-			lType = types.ListType{}
-			continue
+		rType := types.TypeOfPostfix(part.Right, c.env)
+		op := part.Op
+		if part.Op == "union" && part.All {
+			op = "union_all"
 		}
-		if op.Op == "except" {
-			c.use("except")
-			res = fmt.Sprintf("except(%s.toMutableList(), %s.toMutableList())", res, r)
-			lType = types.ListType{}
-			continue
-		}
-		if op.Op == "intersect" {
-			c.use("intersect")
-			res = fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", res, r)
-			lType = types.ListType{}
-			continue
-		}
-		if isNumericOp(op.Op) {
-			if _, ok := lType.(types.FloatType); ok {
-				c.use("toDouble")
-				res = fmt.Sprintf("toDouble(%s)", res)
-			}
-			if _, ok := rType.(types.FloatType); ok {
-				c.use("toDouble")
-				r = fmt.Sprintf("toDouble(%s)", r)
-			}
-			if _, lok := lType.(types.AnyType); lok {
-				if _, rok := rType.(types.AnyType); rok {
-					c.use("toDouble")
-					res = fmt.Sprintf("toDouble(%s)", res)
-					r = fmt.Sprintf("toDouble(%s)", r)
-				} else {
-					switch rType.(type) {
-					case types.IntType:
-						c.use("toInt")
-						res = fmt.Sprintf("toInt(%s)", res)
-					case types.FloatType:
-						c.use("toDouble")
-						res = fmt.Sprintf("toDouble(%s)", res)
-					}
+		ops = append(ops, op)
+		operands = append(operands, r)
+		typesList = append(typesList, rType)
+	}
+
+	precLevels := [][]string{
+		{"*", "/", "%"},
+		{"+", "-"},
+		{"<", "<=", ">", ">="},
+		{"==", "!=", "in"},
+		{"&&"},
+		{"||"},
+		{"union", "union_all", "except", "intersect"},
+	}
+
+	for _, level := range precLevels {
+		for i := 0; i < len(ops); {
+			if contains(level, ops[i]) {
+				expr, typ, err := c.binaryOp(operands[i], typesList[i], ops[i], operands[i+1], typesList[i+1])
+				if err != nil {
+					return "", err
 				}
-			} else if _, rok := rType.(types.AnyType); rok {
-				switch lType.(type) {
+				operands[i] = expr
+				typesList[i] = typ
+				operands = append(operands[:i+1], operands[i+2:]...)
+				typesList = append(typesList[:i+1], typesList[i+2:]...)
+				ops = append(ops[:i], ops[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
+
+	if len(operands) != 1 {
+		return "", fmt.Errorf("unexpected state after binary compilation")
+	}
+	return operands[0], nil
+}
+
+func (c *Compiler) binaryOp(left string, lType types.Type, op string, right string, rType types.Type) (string, types.Type, error) {
+	switch op {
+	case "union_all":
+		return fmt.Sprintf("%s.toMutableList().apply { addAll(%s) }", left, right), types.ListType{}, nil
+	case "union":
+		c.use("union")
+		return fmt.Sprintf("union(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
+	case "except":
+		c.use("except")
+		return fmt.Sprintf("except(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
+	case "intersect":
+		c.use("intersect")
+		return fmt.Sprintf("intersect(%s.toMutableList(), %s.toMutableList())", left, right), types.ListType{}, nil
+	case "+", "-", "*", "/", "%":
+		if _, ok := lType.(types.FloatType); ok {
+			c.use("toDouble")
+			left = fmt.Sprintf("toDouble(%s)", left)
+		}
+		if _, ok := rType.(types.FloatType); ok {
+			c.use("toDouble")
+			right = fmt.Sprintf("toDouble(%s)", right)
+		}
+		if _, lok := lType.(types.AnyType); lok {
+			if _, rok := rType.(types.AnyType); rok {
+				c.use("toDouble")
+				left = fmt.Sprintf("toDouble(%s)", left)
+				right = fmt.Sprintf("toDouble(%s)", right)
+			} else {
+				switch rType.(type) {
 				case types.IntType:
 					c.use("toInt")
-					r = fmt.Sprintf("toInt(%s)", r)
+					left = fmt.Sprintf("toInt(%s)", left)
 				case types.FloatType:
 					c.use("toDouble")
-					r = fmt.Sprintf("toDouble(%s)", r)
-				default:
-					c.use("toDouble")
-					r = fmt.Sprintf("toDouble(%s)", r)
+					left = fmt.Sprintf("toDouble(%s)", left)
 				}
 			}
-			if op.Op == "/" {
-				if _, ok := lType.(types.IntType); ok {
-					res = fmt.Sprintf("(%s).toDouble()", res)
-					lType = types.FloatType{}
-				}
-				if _, ok := rType.(types.IntType); ok {
-					r = fmt.Sprintf("(%s).toDouble()", r)
-					rType = types.FloatType{}
-				}
+		} else if _, rok := rType.(types.AnyType); rok {
+			switch lType.(type) {
+			case types.IntType:
+				c.use("toInt")
+				right = fmt.Sprintf("toInt(%s)", right)
+			case types.FloatType:
+				c.use("toDouble")
+				right = fmt.Sprintf("toDouble(%s)", right)
+			default:
+				c.use("toDouble")
+				right = fmt.Sprintf("toDouble(%s)", right)
 			}
 		}
-		if op.Op == "/" && (isAnyType(lType) || isAnyType(rType)) {
+		if op == "/" {
+			if _, ok := lType.(types.IntType); ok {
+				left = fmt.Sprintf("(%s).toDouble()", left)
+				lType = types.FloatType{}
+			}
+			if _, ok := rType.(types.IntType); ok {
+				right = fmt.Sprintf("(%s).toDouble()", right)
+				rType = types.FloatType{}
+			}
+		}
+		if op == "/" && (isAnyType(lType) || isAnyType(rType)) {
 			c.use("div")
-			res = fmt.Sprintf("div(%s, %s)", res, r)
-		} else {
-			res = fmt.Sprintf("%s %s %s", res, op.Op, r)
+			return fmt.Sprintf("div(%s, %s)", left, right), types.FloatType{}, nil
 		}
-		lType = rType
+		t := rType
+		if isComparisonOp(op) {
+			t = types.BoolType{}
+		}
+		return fmt.Sprintf("%s %s %s", left, op, right), t, nil
+	case "==", "!=", "<", "<=", ">", ">=":
+		if isAnyType(lType) {
+			c.use("toDouble")
+			left = fmt.Sprintf("toDouble(%s)", left)
+		}
+		if isAnyType(rType) {
+			c.use("toDouble")
+			right = fmt.Sprintf("toDouble(%s)", right)
+		}
+		return fmt.Sprintf("%s %s %s", left, op, right), types.BoolType{}, nil
+	case "in":
+		return fmt.Sprintf("%s in %s", left, right), types.BoolType{}, nil
+	case "&&", "||":
+		return fmt.Sprintf("%s %s %s", left, op, right), types.BoolType{}, nil
 	}
-	return res, nil
+	return "", types.AnyType{}, fmt.Errorf("unsupported operator %s", op)
 }
 
 func (c *Compiler) unary(u *parser.Unary) (string, error) {
@@ -2190,9 +2243,27 @@ func replaceIdent(s, name, repl string) string {
 	return re.ReplaceAllString(s, repl)
 }
 
+func contains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
+
 func isNumericOp(op string) bool {
 	switch op {
-	case "+", "-", "*", "/", "%", "<", "<=", ">", ">=":
+	case "+", "-", "*", "/", "%":
+		return true
+	default:
+		return false
+	}
+}
+
+func isComparisonOp(op string) bool {
+	switch op {
+	case "==", "!=", "<", "<=", ">", ">=":
 		return true
 	default:
 		return false
