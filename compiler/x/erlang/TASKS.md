@@ -16,6 +16,8 @@
   failures.
 - [2025-07-15 06:30] Regenerated TPC-DS Erlang outputs with `compile_tpcds_erlang.go`
   after updating the compiler to v0.10.26.
+- [2025-07-15 07:16] Added smart map access fallback via `mochi_get` and
+  regenerated failing TPC-DS outputs.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.
