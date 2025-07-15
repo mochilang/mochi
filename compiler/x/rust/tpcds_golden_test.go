@@ -23,7 +23,10 @@ func TestRustCompiler_TPCDSQueries(t *testing.T) {
 	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs.out")
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs")
+		if _, err := os.Stat(codeWant); err != nil {
+			codeWant = filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".rs.out")
+		}
 		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".out")
 		errFile := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "rust", base+".error")
 		if _, err := os.Stat(codeWant); err != nil {
@@ -62,7 +65,7 @@ func TestRustCompiler_TPCDSQueries(t *testing.T) {
 			got := stripHeader(bytes.TrimSpace(code))
 			want := stripHeader(bytes.TrimSpace(wantCode))
 			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.rs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.rs")

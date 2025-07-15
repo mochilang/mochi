@@ -1750,7 +1750,28 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if types.IsMapType(t) {
 				val = fmt.Sprintf("%s[\"%s\"]", val, op.Field.Name)
 			} else {
-				val = fmt.Sprintf("%s.%s", val, op.Field.Name)
+				fieldName := op.Field.Name
+				if st, ok := t.(types.StructType); ok {
+					if _, ok := st.Fields[fieldName]; !ok {
+						nested := ""
+						for fn, ft := range st.Fields {
+							if st2, ok2 := ft.(types.StructType); ok2 {
+								if _, ok3 := st2.Fields[fieldName]; ok3 {
+									if nested != "" {
+										nested = ""
+										break
+									}
+									nested = fn
+								}
+							}
+						}
+						if nested != "" {
+							val = fmt.Sprintf("%s.%s.%s", val, nested, fieldName)
+							break
+						}
+					}
+				}
+				val = fmt.Sprintf("%s.%s", val, fieldName)
 			}
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))

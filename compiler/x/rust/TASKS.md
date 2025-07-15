@@ -11,6 +11,7 @@
 - 2025-07-15 04:50 - Added golden tests for TPC-DS queries q1 through q19 and script to regenerate outputs.
 - 2025-07-15 05:45 - Improved TPC-DS Rust updater to capture errors and write `.rs.out` files
 - 2025-07-15 06:34 - Generated Rust code for additional TPC-DS queries and updated golden test to regenerate outputs automatically.
+- 2025-07-15 07:09 - Improved field access for nested structs and regenerated TPC-DS Rust outputs as `.rs` files.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time

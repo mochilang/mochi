@@ -1,0 +1,113 @@
+rustc: exit status 1
+warning: type `Store_sale` should have an upper camel case name
+  --> /tmp/q17.rs:49:8
+   |
+49 | struct Store_sale {
+   |        ^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreSale`
+   |
+   = note: `#[warn(non_camel_case_types)]` on by default
+
+warning: type `Store_return` should have an upper camel case name
+  --> /tmp/q17.rs:59:8
+   |
+59 | struct Store_return {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `StoreReturn`
+
+warning: type `Catalog_sale` should have an upper camel case name
+  --> /tmp/q17.rs:68:8
+   |
+68 | struct Catalog_sale {
+   |        ^^^^^^^^^^^^ help: convert the identifier to upper camel case: `CatalogSale`
+
+warning: type `Date_dim` should have an upper camel case name
+  --> /tmp/q17.rs:76:8
+   |
+76 | struct Date_dim {
+   |        ^^^^^^^^ help: convert the identifier to upper camel case: `DateDim`
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q17.rs:153:634
+    |
+153 | ...tmp4 = Vec::new();for _ in &g.clone().items { tmp4.push(_.clone()); } tmp4 }.len() as i32, store_sales_quantityave: avg(&{ let mut tmp...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q17.rs:153:941
+    |
+153 | ...tmp6 = Vec::new();for _ in &g.clone().items { tmp6.push(_.clone()); } tmp6 }.len() as i32, store_returns_quantityave: avg(&{ let mut t...
+    |                                                            ^ `_` not allowed here
+
+error: in expressions, `_` can only be used on the left-hand side of an assignment
+   --> /tmp/q17.rs:153:1254
+    |
+153 | ...tmp8 = Vec::new();for _ in &g.clone().items { tmp8.push(_.clone()); } tmp8 }.len() as i32, catalog_sales_quantityave: avg(&{ let mut t...
+    |                                                            ^ `_` not allowed here
+
+error[E0308]: mismatched types
+   --> /tmp/q17.rs:152:586
+    |
+152 | ...", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["19...
+    |                          ---------------------------------------    ^^^^^^^^^^^^^^^^^ expected `bool`, found `&str`
+    |                          |
+    |                          expected because this is `bool`
+
+error[E0277]: can't compare `&i32` with `i32`
+   --> /tmp/q17.rs:152:567
+    |
+152 | ...Q2", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["...
+    |                                                    ^^ no implementation for `&i32 == i32`
+    |
+    = help: the trait `PartialEq<i32>` is not implemented for `&i32`
+help: consider removing the borrow
+    |
+152 -     let joined = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1") { continue; } for d2 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } tmp1.push(Result { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }); } } } } } } } } tmp1 };
+152 +     let joined = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1") { continue; } for d2 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } tmp1.push(Result { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }); } } } } } } } } tmp1 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q17.rs:152:543
+    |
+152 | ...98Q2", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!...
+    |                     -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&&str`, found `bool`
+    |                     |
+    |                     arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error[E0308]: mismatched types
+   --> /tmp/q17.rs:152:730
+    |
+152 | ...Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_store_sk...
+    |                            -----------------------------------    ^^^^^^^^^^^^^^^^^ expected `bool`, found `&str`
+    |                            |
+    |                            expected because this is `bool`
+
+error[E0277]: can't compare `&i32` with `i32`
+   --> /tmp/q17.rs:152:711
+    |
+152 | ...1998Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_stor...
+    |                                                    ^^ no implementation for `&i32 == i32`
+    |
+    = help: the trait `PartialEq<i32>` is not implemented for `&i32`
+help: consider removing the borrow
+    |
+152 -     let joined = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1") { continue; } for d2 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } tmp1.push(Result { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }); } } } } } } } } tmp1 };
+152 +     let joined = { let mut tmp1 = Vec::new();for ss in &store_sales { for sr in &store_returns { if !(ss.ss_customer_sk == sr.sr_customer_sk && ss.ss_item_sk == sr.sr_item_sk && ss.ss_ticket_number == sr.sr_ticket_number) { continue; } for cs in &catalog_sales { if !(sr.sr_customer_sk == cs.cs_bill_customer_sk && sr.sr_item_sk == cs.cs_item_sk) { continue; } for d1 in &date_dim { if !(ss.ss_sold_date_sk == d1.d_date_sk && d1.d_quarter_name == "1998Q1") { continue; } for d2 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(&sr.sr_returned_date_sk == d2.d_date_sk && d2.d_quarter_name)) { continue; } for d3 in &date_dim { if !(vec!["1998Q1", "1998Q2", "1998Q3"].contains(cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_store_sk == s.s_store_sk) { continue; } for i in &item { if !(ss.ss_item_sk == i.i_item_sk) { continue; } tmp1.push(Result { qty: ss.ss_quantity, ret: sr.sr_return_quantity, csq: cs.cs_quantity, i_item_id: i.i_item_id, i_item_desc: i.i_item_desc, s_state: s.s_state }); } } } } } } } } tmp1 };
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/q17.rs:152:691
+    |
+152 | ...1998Q2", "1998Q3"].contains(&cs.cs_sold_date_sk == d3.d_date_sk && d3.d_quarter_name)) { continue; } for s in &store { if !(ss.ss_stor...
+    |                       -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&&str`, found `bool`
+    |                       |
+    |                       arguments to this method are incorrect
+    |
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/slice/mod.rs:2549:12
+
+error: aborting due to 9 previous errors; 4 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

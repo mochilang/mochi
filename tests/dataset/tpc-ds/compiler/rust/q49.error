@@ -24,10 +24,10 @@ help: use `!` to invoke the macro
    |                      +
 
 error[E0308]: mismatched types
-  --> /tmp/q49.rs:67:124
+  --> /tmp/q49.rs:67:217
    |
-67 | ...}, Result { channel: "store", item: "A", return_ratio: 0.25, return_rank: 1, currency_rank: 1 }, Result { channel: "web", item: "A", r...
-   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result2`, found `Result`
+67 | ... }, Result1 { channel: "web", item: "A", return_ratio: 0.2, return_rank: 1, currency_rank: 1 }, Result { channel: "web", item: "B", re...
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Result`, found `Result1`
 
 error: aborting due to 2 previous errors; 1 warning emitted
 
