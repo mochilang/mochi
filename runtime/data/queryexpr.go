@@ -27,7 +27,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 	var exec func(Plan, string) ([]any, string, error)
 	exec = func(pl Plan, ctx string) ([]any, string, error) {
 		switch p := pl.(type) {
-		case *scanPlan:
+		case *ScanPlan:
 			val, err := eval(p.Src)
 			if err != nil {
 				return nil, "", err
@@ -47,7 +47,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			out := append([]any(nil), list...)
 			return out, p.Alias, nil
 
-		case *wherePlan:
+		case *WherePlan:
 			items, alias, err := exec(p.Input, ctx)
 			if err != nil {
 				return nil, "", err
@@ -65,7 +65,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			}
 			return filtered, alias, nil
 
-		case *selectPlan:
+		case *SelectPlan:
 			items, alias, err := exec(p.Input, ctx)
 			if err != nil {
 				return nil, "", err
@@ -81,7 +81,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			}
 			return results, "", nil
 
-		case *joinPlan:
+		case *JoinPlan:
 			leftItems, lalias, err := exec(p.Left, ctx)
 			if err != nil {
 				return nil, "", err
@@ -202,7 +202,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 
 			return merged, "", nil
 
-		case *groupPlan:
+		case *GroupPlan:
 			items, alias, err := exec(p.Input, ctx)
 			if err != nil {
 				return nil, "", err
@@ -244,7 +244,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			}
 			return results, p.Name, nil
 
-		case *sortPlan:
+		case *SortPlan:
 			items, alias, err := exec(p.Input, ctx)
 			if err != nil {
 				return nil, "", err
@@ -290,7 +290,7 @@ func ExecPlan(plan Plan, env *types.Env, eval func(*parser.Expr) (any, error)) (
 			}
 			return items, alias, nil
 
-		case *limitPlan:
+		case *LimitPlan:
 			items, alias, err := exec(p.Input, ctx)
 			if err != nil {
 				return nil, "", err

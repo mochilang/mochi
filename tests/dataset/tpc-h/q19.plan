@@ -1,0 +1,167 @@
+type: [any]
+plan:
+Select((binary *
+  (selector l_extendedprice (selector l))
+  (group
+    (binary -
+      (int 1)
+      (selector l_discount (selector l))
+    )
+  )
+))
+  Where((binary ==
+  (binary &&
+    (binary in
+      (binary &&
+        (group
+          (binary ||
+            (binary ||
+              (group
+                (binary &&
+                  (binary &&
+                    (binary &&
+                      (group
+                        (binary ==
+                          (selector p_brand (selector p))
+                          (string "Brand#12")
+                        )
+                      )
+                      (group
+                        (binary in
+                          (selector p_container (selector p))
+                          (list (string "SM CASE") (string "SM BOX") (string "SM PACK") (string "SM PKG"))
+                        )
+                      )
+                    )
+                    (group
+                      (binary <=
+                        (binary &&
+                          (binary >=
+                            (selector l_quantity (selector l))
+                            (int 1)
+                          )
+                          (selector l_quantity (selector l))
+                        )
+                        (int 11)
+                      )
+                    )
+                  )
+                  (group
+                    (binary <=
+                      (binary &&
+                        (binary >=
+                          (selector p_size (selector p))
+                          (int 1)
+                        )
+                        (selector p_size (selector p))
+                      )
+                      (int 5)
+                    )
+                  )
+                )
+              )
+              (group
+                (binary &&
+                  (binary &&
+                    (binary &&
+                      (group
+                        (binary ==
+                          (selector p_brand (selector p))
+                          (string "Brand#23")
+                        )
+                      )
+                      (group
+                        (binary in
+                          (selector p_container (selector p))
+                          (list (string "MED BAG") (string "MED BOX") (string "MED PKG") (string "MED PACK"))
+                        )
+                      )
+                    )
+                    (group
+                      (binary <=
+                        (binary &&
+                          (binary >=
+                            (selector l_quantity (selector l))
+                            (int 10)
+                          )
+                          (selector l_quantity (selector l))
+                        )
+                        (int 20)
+                      )
+                    )
+                  )
+                  (group
+                    (binary <=
+                      (binary &&
+                        (binary >=
+                          (selector p_size (selector p))
+                          (int 1)
+                        )
+                        (selector p_size (selector p))
+                      )
+                      (int 10)
+                    )
+                  )
+                )
+              )
+            )
+            (group
+              (binary &&
+                (binary &&
+                  (binary &&
+                    (group
+                      (binary ==
+                        (selector p_brand (selector p))
+                        (string "Brand#34")
+                      )
+                    )
+                    (group
+                      (binary in
+                        (selector p_container (selector p))
+                        (list (string "LG CASE") (string "LG BOX") (string "LG PACK") (string "LG PKG"))
+                      )
+                    )
+                  )
+                  (group
+                    (binary <=
+                      (binary &&
+                        (binary >=
+                          (selector l_quantity (selector l))
+                          (int 20)
+                        )
+                        (selector l_quantity (selector l))
+                      )
+                      (int 30)
+                    )
+                  )
+                )
+                (group
+                  (binary <=
+                    (binary &&
+                      (binary >=
+                        (selector p_size (selector p))
+                        (int 1)
+                      )
+                      (selector p_size (selector p))
+                    )
+                    (int 15)
+                  )
+                )
+              )
+            )
+          )
+        )
+        (selector l_shipmode (selector l))
+      )
+      (list (string AIR) (string "AIR REG"))
+    )
+    (selector l_shipinstruct (selector l))
+  )
+  (string "DELIVER IN PERSON")
+))
+    Join(inner on (binary ==
+  (selector p_partkey (selector p))
+  (selector l_partkey (selector l))
+))
+      Scan(alias=l, src=(selector lineitem))
+      Scan(alias=p, src=(selector part))

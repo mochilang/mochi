@@ -1,0 +1,14 @@
+type: [{string: any}]
+plan:
+Select((selector o))
+  Where((binary <
+  (binary &&
+    (binary >=
+      (selector o_orderdate (selector o))
+      (selector start_date)
+    )
+    (selector o_orderdate (selector o))
+  )
+  (selector end_date)
+))
+    Scan(alias=o, src=(selector orders))

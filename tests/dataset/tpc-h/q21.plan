@@ -1,0 +1,81 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector s_name)
+    (selector key (selector g))
+  )
+  (entry
+    (selector numwait)
+    (call count (selector g))
+  )
+))
+  Sort((list
+  (unary -
+    (call count (selector g))
+  )
+  (selector key (selector g))
+))
+    Group(g by (selector s_name (selector s)))
+      Where((binary &&
+  (binary ==
+    (binary &&
+      (binary >
+        (binary &&
+          (binary ==
+            (selector o_orderstatus (selector o))
+            (string F)
+          )
+          (selector l_receiptdate (selector l1))
+        )
+        (selector l_commitdate (selector l1))
+      )
+      (selector n_name (selector n))
+    )
+    (string "SAUDI ARABIA")
+  )
+  (group
+    (unary !
+      (call exists
+        (query x
+          (source (selector lineitem))
+          (where
+            (binary >
+              (binary &&
+                (binary !=
+                  (binary &&
+                    (binary ==
+                      (selector l_orderkey (selector x))
+                      (selector l_orderkey (selector l1))
+                    )
+                    (selector l_suppkey (selector x))
+                  )
+                  (selector l_suppkey (selector l1))
+                )
+                (selector l_receiptdate (selector x))
+              )
+              (selector l_commitdate (selector x))
+            )
+          )
+          (select (selector x))
+        )
+      )
+    )
+  )
+))
+        Join(inner on (binary ==
+  (selector n_nationkey (selector n))
+  (selector s_nationkey (selector s))
+))
+          Join(inner on (binary ==
+  (selector o_orderkey (selector o))
+  (selector l_orderkey (selector l1))
+))
+            Join(inner on (binary ==
+  (selector s_suppkey (selector s))
+  (selector l_suppkey (selector l1))
+))
+              Scan(alias=s, src=(selector supplier))
+              Scan(alias=l1, src=(selector lineitem))
+            Scan(alias=o, src=(selector orders))
+          Scan(alias=n, src=(selector nation))

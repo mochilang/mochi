@@ -1,0 +1,134 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector nation)
+    (selector nation
+      (selector key (selector g))
+    )
+  )
+  (entry
+    (selector o_year)
+    (call str
+      (selector o_year
+        (selector key (selector g))
+      )
+    )
+  )
+  (entry
+    (selector profit)
+    (call sum
+      (query x
+        (source (selector g))
+        (select
+          (binary -
+            (group
+              (binary *
+                (selector l_extendedprice
+                  (selector l (selector x))
+                )
+                (group
+                  (binary -
+                    (int 1)
+                    (selector l_discount
+                      (selector l (selector x))
+                    )
+                  )
+                )
+              )
+            )
+            (group
+              (binary *
+                (selector ps_supplycost
+                  (selector ps (selector x))
+                )
+                (selector l_quantity
+                  (selector l (selector x))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+))
+  Sort((list
+  (selector nation
+    (selector key (selector g))
+  )
+  (unary -
+    (selector o_year
+      (selector key (selector g))
+    )
+  )
+))
+    Group(g by (map
+  (entry
+    (selector nation)
+    (selector n_name (selector n))
+  )
+  (entry
+    (selector o_year)
+    (cast
+      (call substring
+        (selector o_orderdate (selector o))
+        (int 0)
+        (int 4)
+      )
+      (type int)
+    )
+  )
+))
+      Where((binary <=
+  (binary &&
+    (binary >=
+      (binary &&
+        (binary ==
+          (call substring
+            (selector p_name (selector p))
+            (int 0)
+            (call len (selector prefix))
+          )
+          (selector prefix)
+        )
+        (selector o_orderdate (selector o))
+      )
+      (selector start_date)
+    )
+    (selector o_orderdate (selector o))
+  )
+  (selector end_date)
+))
+        Join(inner on (binary ==
+  (selector n_nationkey (selector n))
+  (selector s_nationkey (selector s))
+))
+          Join(inner on (binary ==
+  (selector o_orderkey (selector o))
+  (selector l_orderkey (selector l))
+))
+            Join(inner on (binary ==
+  (binary &&
+    (binary ==
+      (selector ps_partkey (selector ps))
+      (selector l_partkey (selector l))
+    )
+    (selector ps_suppkey (selector ps))
+  )
+  (selector l_suppkey (selector l))
+))
+              Join(inner on (binary ==
+  (selector s_suppkey (selector s))
+  (selector l_suppkey (selector l))
+))
+                Join(inner on (binary ==
+  (selector p_partkey (selector p))
+  (selector l_partkey (selector l))
+))
+                  Scan(alias=l, src=(selector lineitem))
+                  Scan(alias=p, src=(selector part))
+                Scan(alias=s, src=(selector supplier))
+              Scan(alias=ps, src=(selector partsupp))
+            Scan(alias=o, src=(selector orders))
+          Scan(alias=n, src=(selector nation))

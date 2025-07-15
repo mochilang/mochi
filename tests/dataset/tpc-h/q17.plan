@@ -1,0 +1,51 @@
+type: [any]
+plan:
+Select((selector l_extendedprice (selector l)))
+  Where((group
+  (binary &&
+    (binary &&
+      (group
+        (binary ==
+          (selector p_brand (selector p))
+          (selector brand)
+        )
+      )
+      (group
+        (binary ==
+          (selector p_container (selector p))
+          (selector container)
+        )
+      )
+    )
+    (group
+      (binary <
+        (selector l_quantity (selector l))
+        (group
+          (binary *
+            (float 0.2)
+            (call avg
+              (query x
+                (source (selector lineitem))
+                (where
+                  (binary ==
+                    (selector l_partkey (selector x))
+                    (selector p_partkey (selector p))
+                  )
+                )
+                (select
+                  (selector l_quantity (selector x))
+                )
+              )
+            )
+          )
+        )
+      )
+    )
+  )
+))
+    Join(inner on (binary ==
+  (selector p_partkey (selector p))
+  (selector l_partkey (selector l))
+))
+      Scan(alias=l, src=(selector lineitem))
+      Scan(alias=p, src=(selector part))

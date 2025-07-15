@@ -1,0 +1,13 @@
+type: [{string: any}]
+plan:
+Select((selector n))
+  Join(inner on (binary ==
+  (selector n_regionkey (selector n))
+  (selector r_regionkey (selector r))
+))
+    Where((binary ==
+  (selector r_name (selector r))
+  (string ASIA)
+))
+      Scan(alias=r, src=(selector region))
+    Scan(alias=n, src=(selector nation))

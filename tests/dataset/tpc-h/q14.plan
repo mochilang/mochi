@@ -1,0 +1,39 @@
+type: [{string: any}]
+plan:
+Select((map
+  (entry
+    (selector is_promo)
+    (binary in
+      (string PROMO)
+      (selector p_type (selector p))
+    )
+  )
+  (entry
+    (selector revenue)
+    (binary *
+      (selector l_extendedprice (selector l))
+      (group
+        (binary -
+          (int 1)
+          (selector l_discount (selector l))
+        )
+      )
+    )
+  )
+))
+  Where((binary <
+  (binary &&
+    (binary >=
+      (selector l_shipdate (selector l))
+      (selector start_date)
+    )
+    (selector l_shipdate (selector l))
+  )
+  (selector end_date)
+))
+    Join(inner on (binary ==
+  (selector p_partkey (selector p))
+  (selector l_partkey (selector l))
+))
+      Scan(alias=l, src=(selector lineitem))
+      Scan(alias=p, src=(selector part))
