@@ -1,1 +1,12 @@
-54
+[
+  {
+    "num_customers": 1,
+    "segment": 1,
+    "segment_base": 50
+  },
+  {
+    "num_customers": 1,
+    "segment": 0,
+    "segment_base": 0
+  }
+]

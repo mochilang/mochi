@@ -1,1 +1,13 @@
-[{"fri_sales":60,"mon_sales":20,"s_store_id":"S1","s_store_name":"Main","sat_sales":70,"sun_sales":10,"thu_sales":50,"tue_sales":30,"wed_sales":40}]
+[
+  {
+    "fri_sales": 60,
+    "mon_sales": 20,
+    "s_store_id": "S1",
+    "s_store_name": "Main",
+    "sat_sales": 70,
+    "sun_sales": 10,
+    "thu_sales": 50,
+    "tue_sales": 30,
+    "wed_sales": 40
+  }
+]

@@ -1,1 +1,12 @@
-[{"s_county":"Orange","s_state":"CA","total_sum":15},{"s_county":"Travis","s_state":"TX","total_sum":20}]
+[
+  {
+    "s_county": "Orange",
+    "s_state": "CA",
+    "total_sum": 15
+  },
+  {
+    "s_county": "Travis",
+    "s_state": "TX",
+    "total_sum": 20
+  }
+]

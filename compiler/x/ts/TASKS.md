@@ -39,3 +39,10 @@
 - [ ] Expand idiomatic patterns for more query shapes
 ### 2025-07-15 03:39 UTC
 - Regenerated JOB q1-q33 TypeScript outputs via compile_job_ts.go
+### 2025-07-15 04:43 UTC
+- Attempted to regenerate all TPC-DS TypeScript outputs via compile_tpcds_ts.go
+- Several queries still fail at runtime under Deno
+### 2025-07-15 04:53 UTC
+- Regenerated TPC-DS TS outputs with error logging
+- Failing queries now produce .error files (e.g., q1, q3)
+

@@ -1,1 +1,9 @@
-[{"ext_price":100,"i_brand":"B1","i_brand_id":1,"i_manufact":"M1","i_manufact_id":1}]
+[
+  {
+    "ext_price": 100,
+    "i_brand": "B1",
+    "i_brand_id": 1,
+    "i_manufact": "M1",
+    "i_manufact_id": 1
+  }
+]

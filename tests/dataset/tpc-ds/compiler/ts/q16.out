@@ -1,1 +1,7 @@
-[{"order_count":1,"total_net_profit":20,"total_shipping_cost":5}]
+[
+  {
+    "order_count": 1,
+    "total_net_profit": 20,
+    "total_shipping_cost": 5
+  }
+]

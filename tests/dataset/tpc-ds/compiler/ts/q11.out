@@ -1,1 +1,7 @@
-[{"customer_first_name":"John","customer_id":"C1","customer_last_name":"Doe"}]
+[
+  {
+    "customer_first_name": "John",
+    "customer_id": "C1",
+    "customer_last_name": "Doe"
+  }
+]

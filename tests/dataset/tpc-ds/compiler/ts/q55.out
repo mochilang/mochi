@@ -1,1 +1,10 @@
-55
+[
+  {
+    "brand_id": 10,
+    "ext_price": 35
+  },
+  {
+    "brand_id": 20,
+    "ext_price": 20
+  }
+]

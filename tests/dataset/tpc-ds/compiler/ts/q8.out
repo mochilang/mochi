@@ -1,1 +1,6 @@
-[{"net_profit":10,"s_store_name":"Store1"}]
+[
+  {
+    "net_profit": 10,
+    "s_store_name": "Store1"
+  }
+]

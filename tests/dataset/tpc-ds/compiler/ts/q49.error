@@ -1,0 +1,36 @@
+[
+  {
+    "channel": "web",
+    "currency_rank": 1,
+    "item": "A",
+    "return_rank": 1,
+    "return_ratio": 0.2
+  },
+  {
+    "channel": "web",
+    "currency_rank": 2,
+    "item": "B",
+    "return_rank": 2,
+    "return_ratio": 0.5
+  },
+  {
+    "channel": "catalog",
+    "currency_rank": 1,
+    "item": "A",
+    "return_rank": 1,
+    "return_ratio": 0.3
+  },
+  {
+    "channel": "store",
+    "currency_rank": 1,
+    "item": "A",
+    "return_rank": 1,
+    "return_ratio": 0.25
+  }
+]
+[0m[1m[31merror[0m: Uncaught (in promise) Error: expect failed
+  ) throw new Error("expect failed");
+[0m[31m          ^[0m
+    at [0m[1m[3mtest_TPCDS_Q49_simplified[0m ([0m[36mfile:///tmp/q49.ts[0m:[0m[33m42[0m:[0m[33m11[0m)
+    at [0m[1m[3mmain[0m ([0m[36mfile:///tmp/q49.ts[0m:[0m[33m146[0m:[0m[33m3[0m)
+    at [0m[36mfile:///tmp/q49.ts[0m:[0m[33m182[0m:[0m[33m1[0m

@@ -1,1 +1,5 @@
-[0m[1m[31merror[0m: Uncaught (in promise) TypeError: Cannot read properties of null (reading 'customer_sk')
+{
+  "catalog_only": 1,
+  "store_and_catalog": 1,
+  "store_only": 1
+}
