@@ -1,2 +1,1 @@
-{"Call_Center":"CC1","Manager":"Alice","Call_Center_Name":"Main","Returns_Loss":10}
-   test TPCDS Q91 returns ... ok (4.0µs)
+{"Call_Center":"CC1","Call_Center_Name":"Main","Manager":"Alice","Returns_Loss":10.0}

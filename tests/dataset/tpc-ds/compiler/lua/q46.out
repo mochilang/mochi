@@ -1,2 +1,1 @@
-[{"ss_ticket_number":1,"profit":20,"ca_city":"Seattle","c_first_name":"John","bought_city":"Portland","amt":5,"c_last_name":"Doe"}]
-   test TPCDS Q46 simplified ... ok (5.0µs)
+[{"amt":5.0,"bought_city":"Portland","c_first_name":"John","c_last_name":"Doe","ca_city":"Seattle","profit":20.0,"ss_ticket_number":1}]

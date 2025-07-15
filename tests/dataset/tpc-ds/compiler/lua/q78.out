@@ -1,4 +1,1 @@
-[{"other_chan_sales_price":80,"other_chan_qty":8,"store_qty":10,"ratio":1,"ss_sold_year":1998,"other_chan_wholesale_cost":40,"store_sales_price":100,"ss_customer_sk":1,"ss_item_sk":1,"store_wholesale_cost":50}]
-   test TPCDS Q78 simplified ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq78477482850/001/main.lua:252: expect failed (6.0µs)
-
-[FAIL] 1 test(s) failed.
+[{"other_chan_qty":8,"other_chan_sales_price":80.0,"other_chan_wholesale_cost":40.0,"ratio":1,"ss_customer_sk":1,"ss_item_sk":1,"ss_sold_year":1998,"store_qty":10,"store_sales_price":100.0,"store_wholesale_cost":50.0}]

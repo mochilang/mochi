@@ -1,2 +1,1 @@
-[{"profit":8,"channel":"catalog channel","id":"catalog_page100","sales":30,"returns":3},{"profit":4,"channel":"store channel","id":"store10","sales":20,"returns":2},{"profit":10,"channel":"web channel","id":"web_site200","sales":40,"returns":4}]
-   test TPCDS Q5 result ... ok (2.0µs)
+[{"channel":"catalog channel","id":"catalog_page100","profit":8.0,"returns":3.0,"sales":30.0},{"channel":"store channel","id":"store10","profit":4.0,"returns":2.0,"sales":20.0},{"channel":"web channel","id":"web_site200","profit":10.0,"returns":4.0,"sales":40.0}]

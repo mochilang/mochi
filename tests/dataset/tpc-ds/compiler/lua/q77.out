@@ -1,4 +1,1 @@
-[{"profit":9,"channel":"store channel","returns":5,"sales":100,"id":1},{"profit":12,"channel":"catalog channel","returns":7,"sales":150,"id":1},{"profit":18,"channel":"web channel","returns":10,"sales":200,"id":1}]
-   test TPCDS Q77 simplified ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq77314409567/001/main.lua:297: expect failed (6.0µs)
-
-[FAIL] 1 test(s) failed.
+[{"channel":"store channel","id":1,"profit":9.0,"returns":5.0,"sales":100.0},{"channel":"catalog channel","id":1,"profit":12.0,"returns":7.0,"sales":150.0},{"channel":"web channel","id":1,"profit":18.0,"returns":10.0,"sales":200.0}]

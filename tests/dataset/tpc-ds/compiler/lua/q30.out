@@ -1,2 +1,1 @@
-[{"ctr_total_return":150,"c_customer_id":"C1","c_last_name":"Doe","c_first_name":"John"}]
-   test TPCDS Q30 simplified ... ok (5.0µs)
+[{"c_customer_id":"C1","c_first_name":"John","c_last_name":"Doe","ctr_total_return":150.0}]

@@ -1,4 +1,1 @@
-[{"ext_price":100,"i_brand_id":10,"t_minute":30,"i_brand":"BrandA","t_hour":8},{"ext_price":200,"i_brand_id":10,"t_minute":0,"i_brand":"BrandA","t_hour":18},{"ext_price":150,"i_brand_id":20,"t_minute":30,"i_brand":"BrandB","t_hour":8}]
-   test TPCDS Q71 simplified ... fail /tmp/TestLuaCompiler_TPCDS_Goldenq711461621511/001/main.lua:297: expect failed (9.0µs)
-
-[FAIL] 1 test(s) failed.
+[{"ext_price":100.0,"i_brand":"BrandA","i_brand_id":10,"t_hour":8,"t_minute":30},{"ext_price":200.0,"i_brand":"BrandA","i_brand_id":10,"t_hour":18,"t_minute":0},{"ext_price":150.0,"i_brand":"BrandB","i_brand_id":20,"t_hour":8,"t_minute":30}]

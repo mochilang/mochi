@@ -1,2 +1,1 @@
-[{"c_first_name":"Ann","s_store_name":"Store1","c_last_name":"Smith","paid":100}]
-   test TPCDS Q24 customer net paid ... ok (5.0µs)
+[{"c_first_name":"Ann","c_last_name":"Smith","paid":100.0,"s_store_name":"Store1"}]

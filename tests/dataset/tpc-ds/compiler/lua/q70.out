@@ -1,2 +1,1 @@
-[{"s_county":"Orange","total_sum":15,"s_state":"CA"},{"s_county":"Travis","total_sum":20,"s_state":"TX"}]
-   test TPCDS Q70 simplified ... ok (7.0µs)
+[{"s_county":"Orange","s_state":"CA","total_sum":15.0},{"s_county":"Travis","s_state":"TX","total_sum":20.0}]

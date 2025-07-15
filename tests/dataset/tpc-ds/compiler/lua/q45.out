@@ -1,2 +1,1 @@
-[{"sum_ws_sales_price":50,"ca_zip":"85669"},{"sum_ws_sales_price":30,"ca_zip":"99999"}]
-   test TPCDS Q45 simplified ... ok (5.0µs)
+[{"ca_zip":"85669","sum_ws_sales_price":50.0},{"ca_zip":"99999","sum_ws_sales_price":30.0}]

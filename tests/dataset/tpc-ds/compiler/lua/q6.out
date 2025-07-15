@@ -1,2 +1,1 @@
-[{"state":"CA","cnt":10}]
-   test TPCDS Q6 result ... ok (4.0µs)
+[{"cnt":10,"state":"CA"}]

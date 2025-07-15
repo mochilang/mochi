@@ -1,2 +1,1 @@
-[{"total_cnt":1,"i_item_desc":"ItemA","promo":0,"d_week_seq":10,"no_promo":1,"w_warehouse_name":"Main"}]
-   test TPCDS Q72 simplified ... ok (7.0µs)
+[{"d_week_seq":10,"i_item_desc":"ItemA","no_promo":1,"promo":0,"total_cnt":1,"w_warehouse_name":"Main"}]
