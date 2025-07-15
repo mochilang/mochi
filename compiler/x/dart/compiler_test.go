@@ -189,6 +189,76 @@ func TestDartCompiler_JOBQueries(t *testing.T) {
 	}
 }
 
+func TestDartCompiler_TPCDSQueries(t *testing.T) {
+	if _, err := exec.LookPath("dart"); err != nil {
+		t.Skip("dart not installed")
+	}
+	root := findRepoRoot(t)
+	for i := 1; i <= 99; i++ {
+		q := fmt.Sprintf("q%d", i)
+		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "dart", q+".dart.out")
+		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "dart", q+".out")
+		errPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "dart", q+".error")
+		if _, err := os.Stat(codeWant); err != nil {
+			continue
+		}
+		if _, err := os.Stat(outWant); err != nil {
+			if _, err2 := os.Stat(errPath); err2 == nil {
+				continue // known failing query
+			}
+			continue
+		}
+		t.Run(q, func(t *testing.T) {
+			src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
+			prog, err := parser.Parse(src)
+			if err != nil {
+				t.Fatalf("parse error: %v", err)
+			}
+			env := types.NewEnv(nil)
+			if errs := types.Check(prog, env); len(errs) > 0 {
+				t.Fatalf("type error: %v", errs[0])
+			}
+			code, err := dart.New(env).Compile(prog)
+			if err != nil {
+				t.Fatalf("compile error: %v", err)
+			}
+			wantCode, err := os.ReadFile(codeWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			strip := func(b []byte) []byte {
+				if i := bytes.IndexByte(b, '\n'); i >= 0 {
+					return bytes.TrimSpace(b[i+1:])
+				}
+				return bytes.TrimSpace(b)
+			}
+			got := strip(code)
+			want := strip(wantCode)
+			if !bytes.Equal(got, want) {
+				t.Errorf("generated code mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".dart.out", got, want)
+			}
+			dir := t.TempDir()
+			file := filepath.Join(dir, "prog.dart")
+			if err := os.WriteFile(file, code, 0644); err != nil {
+				t.Fatalf("write error: %v", err)
+			}
+			cmd := exec.Command("dart", file)
+			out, err := cmd.CombinedOutput()
+			if err != nil {
+				t.Fatalf("dart run error: %v\n%s", err, out)
+			}
+			gotOut := bytes.TrimSpace(out)
+			wantOut, err := os.ReadFile(outWant)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q+".out", gotOut, bytes.TrimSpace(wantOut))
+			}
+		})
+	}
+}
+
 func writeError(dir, name, src string, err error) {
 	msg := err.Error()
 	os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg), 0644)
