@@ -1,1 +1,29 @@
-[]
+warning: variable "dt" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 28 │                %{items: item, on: fn dt, ss, i -> ss.ss_item_sk == i.i_item_sk end}
+    │                                      ~
+    │
+    └─ /tmp/q3.exs:28:38: Main.main/0
+
+    warning: variable "ss" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 34 │                where: fn [dt, ss, i] -> i.i_manufact_id == 100 && dt.d_moy == 12 end
+    │                               ~
+    │
+    └─ /tmp/q3.exs:34:31: Main.main/0
+
+    warning: variable "ss" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 39 │            _group_by(rows, fn %{dt: dt, ss: ss, i: i} ->
+    │                                             ~
+    │
+    └─ /tmp/q3.exs:39:45: Main.main/0
+
+     warning: default values for the optional arguments in _query/3 are never used
+     │
+ 141 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ /tmp/q3.exs:141:8: Main (module)
+
+[{"brand":"Brand2","brand_id":2,"d_year":1998,"sum_agg":20},{"brand":"Brand1","brand_id":1,"d_year":1998,"sum_agg":10}]
