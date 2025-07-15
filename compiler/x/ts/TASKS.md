@@ -46,3 +46,8 @@
 - Regenerated TPC-DS TS outputs with error logging
 - Failing queries now produce .error files (e.g., q1, q3)
 
+### 2025-07-15 06:37 UTC
+- Fixed sort key variable capture and added generic `_cmp` comparator.
+- Regenerated TPC-DS TypeScript outputs via compile_tpcds_ts.go.
+- Only q40 and q76 still fail at runtime.
+
