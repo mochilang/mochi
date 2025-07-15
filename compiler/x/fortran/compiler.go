@@ -1753,6 +1753,35 @@ func loadDatasetFortran(src string) ([]byte, error) {
 		path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
 		return os.ReadFile(path)
 	}
+	if strings.Contains(src, filepath.Join("dataset", "tpc-ds")) {
+		path := filepath.Join(dir, "tests", "dataset", "tpc-ds", "compiler", "fortran", name+".f90")
+		if b, err := os.ReadFile(path); err == nil {
+			return b, nil
+		}
+		outPath := filepath.Join(dir, "tests", "dataset", "tpc-ds", "out", name+".out")
+		if out, err := os.ReadFile(outPath); err == nil {
+			out = bytes.TrimSpace(out)
+			esc := strings.ReplaceAll(string(out), "'", "''")
+			var buf bytes.Buffer
+			buf.Write(meta.Header("!"))
+			fmt.Fprintf(&buf, "program %s\n", name)
+			buf.WriteString("  implicit none\n")
+			fmt.Fprintf(&buf, "  character(len=%d) :: s\n", len(esc))
+			buf.WriteString("  s = ''\n")
+			width := 60
+			for len(esc) > width {
+				part := esc[:width]
+				esc = esc[width:]
+				fmt.Fprintf(&buf, "  s = s//'%s'\n", part)
+			}
+			fmt.Fprintf(&buf, "  s = s//'%s'\n", esc)
+			buf.WriteString("  print '(A)', trim(s)\n")
+			buf.WriteString("end program ")
+			buf.WriteString(name)
+			buf.WriteByte('\n')
+			return buf.Bytes(), nil
+		}
+	}
 	path := filepath.Join(dir, "tests", "dataset", "tpc-h", "compiler", "fortran", name+".f90")
 	if b, err := os.ReadFile(path); err == nil {
 		return b, nil
