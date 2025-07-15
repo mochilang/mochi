@@ -4405,26 +4405,30 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) string {
 			if okLeft && okRight {
 				tmp := c.newTemp()
 				idx := c.newLoopVar()
+				leftLen := c.listLenExpr(left)
+				rightLen := c.listLenExpr(right)
 				c.writeln(fmt.Sprintf("int %s = 1;", tmp))
-				c.writeln(fmt.Sprintf("if (%s.len != %s.len) { %s = 0; } else {", left, right, tmp))
+				c.writeln(fmt.Sprintf("if (%s != %s) { %s = 0; } else {", leftLen, rightLen, tmp))
 				c.indent++
-				c.writeln(fmt.Sprintf("for (int %s=0; %s<%s.len; %s++) {", idx, idx, left, idx))
+				c.writeln(fmt.Sprintf("for (int %s=0; %s<%s; %s++) {", idx, idx, leftLen, idx))
 				c.indent++
 				if st, ok := lt.Elem.(types.StructType); ok {
 					parts := make([]string, 0, len(st.Order))
 					for _, f := range st.Order {
 						ft := st.Fields[f]
+						litem := c.listItemExpr(left, idx)
+						ritem := c.listItemExpr(right, idx)
 						if _, ok := ft.(types.StringType); ok {
 							c.need(needStringHeader)
-							parts = append(parts, fmt.Sprintf("strcmp(%s.data[%s].%s, %s.data[%s].%s) != 0", left, idx, fieldName(f), right, idx, fieldName(f)))
+							parts = append(parts, fmt.Sprintf("strcmp(%s.%s, %s.%s) != 0", litem, fieldName(f), ritem, fieldName(f)))
 						} else {
-							parts = append(parts, fmt.Sprintf("%s.data[%s].%s != %s.data[%s].%s", left, idx, fieldName(f), right, idx, fieldName(f)))
+							parts = append(parts, fmt.Sprintf("%s.%s != %s.%s", litem, fieldName(f), ritem, fieldName(f)))
 						}
 					}
 					cond := strings.Join(parts, " || ")
 					c.writeln(fmt.Sprintf("if (%s) { %s = 0; break; }", cond, tmp))
 				} else {
-					c.writeln(fmt.Sprintf("if (%s.data[%s] != %s.data[%s]) { %s = 0; break; }", left, idx, right, idx, tmp))
+					c.writeln(fmt.Sprintf("if (%s != %s) { %s = 0; break; }", c.listItemExpr(left, idx), c.listItemExpr(right, idx), tmp))
 				}
 				c.indent--
 				c.writeln("}")

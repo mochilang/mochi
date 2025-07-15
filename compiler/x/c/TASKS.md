@@ -108,3 +108,4 @@ should compile and run successfully.
 - 2025-07-15 07:31 – Ran tpcds\_golden\_test with update to regenerate all C outputs; compile errors persist across queries.
 - 2025-07-15 08:18 - Added compile_tpch_c.go script to generate C outputs for TPCH queries 1-22. Script compiles each query and records .error logs on failure.
 - 2025-07-15 08:34 - Fixed join result length calculation to use array length variables so TPCH queries with arrays compile.
+- 2025-07-15 12:09 - Adjusted list equality generation to handle arrays in expectations.
