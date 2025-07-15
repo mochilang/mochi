@@ -26,10 +26,13 @@ func TestCPPCompiler_TPCDSQueries(t *testing.T) {
 	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "cpp", base+".cpp.out")
-		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "cpp", base+".out")
-		if _, err := os.Stat(codeWant); err != nil {
-			continue
+		codePath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "cpp", base+".cpp")
+		outPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "cpp", base+".out")
+		errPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "cpp", base+".error")
+		if !shouldUpdate() {
+			if _, err := os.Stat(outPath); err != nil {
+				continue
+			}
 		}
 		t.Run(base, func(t *testing.T) {
 			prog, err := parser.Parse(src)
@@ -42,19 +45,23 @@ func TestCPPCompiler_TPCDSQueries(t *testing.T) {
 			}
 			code, err := cpp.New().Compile(prog)
 			if err != nil {
+				if shouldUpdate() {
+					_ = os.WriteFile(errPath, []byte(err.Error()), 0644)
+				}
 				t.Skipf("compile error: %v", err)
 				return
 			}
+			os.Remove(errPath)
 			gotCode := bytes.TrimSpace(code)
 			if shouldUpdate() {
-				_ = os.WriteFile(codeWant, append(gotCode, '\n'), 0644)
+				_ = os.WriteFile(codePath, append(gotCode, '\n'), 0644)
 			} else {
-				wantCode, err := os.ReadFile(codeWant)
+				wantCode, err := os.ReadFile(codePath)
 				if err != nil {
 					t.Fatalf("read golden: %v", err)
 				}
 				if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-					t.Errorf("generated code mismatch for %s.cpp.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotCode, bytes.TrimSpace(wantCode))
+					t.Errorf("generated code mismatch for %s.cpp\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotCode, bytes.TrimSpace(wantCode))
 				}
 			}
 			dir := t.TempDir()
@@ -64,19 +71,26 @@ func TestCPPCompiler_TPCDSQueries(t *testing.T) {
 			}
 			bin := filepath.Join(dir, "prog")
 			if out, err := exec.Command("g++", file, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+				if shouldUpdate() {
+					_ = os.WriteFile(errPath, out, 0644)
+				}
 				t.Skipf("g++ error: %v\n%s", err, out)
 				return
 			}
 			outBytes, err := exec.Command(bin).CombinedOutput()
 			if err != nil {
+				if shouldUpdate() {
+					_ = os.WriteFile(errPath, outBytes, 0644)
+				}
 				t.Skipf("run error: %v\n%s", err, outBytes)
 				return
 			}
+			os.Remove(errPath)
 			gotOut := bytes.TrimSpace(outBytes)
 			if shouldUpdate() {
-				_ = os.WriteFile(outWant, append(gotOut, '\n'), 0644)
+				_ = os.WriteFile(outPath, append(gotOut, '\n'), 0644)
 			} else {
-				wantOut, err := os.ReadFile(outWant)
+				wantOut, err := os.ReadFile(outPath)
 				if err != nil {
 					t.Fatalf("read golden: %v", err)
 				}

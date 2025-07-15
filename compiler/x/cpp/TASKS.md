@@ -19,6 +19,7 @@
 ## Recent Enhancements (2025-07-15 04:45 UTC)
 - Generated missing TPC-DS outputs (q10-q49) with new `tpcds_golden_test.go`.
 - Added deterministic timestamp via `SOURCE_DATE_EPOCH` for TPC-DS golden tests (2025-07-15 06:39 UTC).
+- Enhanced TPC-DS golden tests to emit `.cpp` files and capture compilation errors (2025-07-15 06:57 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
