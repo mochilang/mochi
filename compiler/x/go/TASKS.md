@@ -68,3 +68,4 @@ TPC-H progress:
 
 - 2025-07-14 12:49 - Attempted to generate TPCH Go files via tpch_golden_test; several queries still fail go run due to syntax errors.
 - 2025-07-15 02:37 - Simplified group item generation and removed reflection from _avg/_sum helpers
+- 2025-07-15 02:54 - Tweaked struct alias detection; prefer `Row` when available to fix TPCH generation
