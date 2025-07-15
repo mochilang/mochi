@@ -35,3 +35,5 @@
 - [x] Compile the rest of the TPC-H queries
 - [ ] Refine generated code formatting for readability
 - [ ] Expand idiomatic patterns for more query shapes
+### 2025-07-15 03:39 UTC
+- Regenerated JOB q1-q33 TypeScript outputs via compile_job_ts.go
