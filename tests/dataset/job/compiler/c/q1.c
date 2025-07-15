@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -120,18 +119,18 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  char *production_note;
-  char *movie_title;
+  const char *production_note;
+  const char *movie_title;
   int movie_year;
-} TmpItem;
+} tmp_item_t;
 typedef struct {
   int len;
-  TmpItem *data;
-} list_TmpItem;
-static list_TmpItem list_TmpItem_create(int len) {
-  list_TmpItem l;
+  tmp_item_t *data;
+} tmp_item_list_t;
+tmp_item_list_t create_tmp_item_list(int len) {
+  tmp_item_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TmpItem));
+  l.data = calloc(len, sizeof(tmp_item_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -141,16 +140,16 @@ static list_TmpItem list_TmpItem_create(int len) {
 
 typedef struct {
   int id;
-  char *kind;
-} Company_typeItem;
+  const char *kind;
+} company_type_t;
 typedef struct {
   int len;
-  Company_typeItem *data;
-} list_Company_typeItem;
-static list_Company_typeItem list_Company_typeItem_create(int len) {
-  list_Company_typeItem l;
+  company_type_t *data;
+} company_type_list_t;
+company_type_list_t create_company_type_list(int len) {
+  company_type_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Company_typeItem));
+  l.data = calloc(len, sizeof(company_type_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -160,16 +159,16 @@ static list_Company_typeItem list_Company_typeItem_create(int len) {
 
 typedef struct {
   int id;
-  char *info;
-} Info_typeItem;
+  const char *info;
+} info_type_t;
 typedef struct {
   int len;
-  Info_typeItem *data;
-} list_Info_typeItem;
-static list_Info_typeItem list_Info_typeItem_create(int len) {
-  list_Info_typeItem l;
+  info_type_t *data;
+} info_type_list_t;
+info_type_list_t create_info_type_list(int len) {
+  info_type_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Info_typeItem));
+  l.data = calloc(len, sizeof(info_type_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -179,17 +178,17 @@ static list_Info_typeItem list_Info_typeItem_create(int len) {
 
 typedef struct {
   int id;
-  char *title;
+  const char *title;
   int production_year;
-} TitleItem;
+} title_t;
 typedef struct {
   int len;
-  TitleItem *data;
-} list_TitleItem;
-static list_TitleItem list_TitleItem_create(int len) {
-  list_TitleItem l;
+  title_t *data;
+} title_list_t;
+title_list_t create_title_list(int len) {
+  title_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TitleItem));
+  l.data = calloc(len, sizeof(title_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -200,16 +199,16 @@ static list_TitleItem list_TitleItem_create(int len) {
 typedef struct {
   int movie_id;
   int company_type_id;
-  char *note;
-} Movie_companiesItem;
+  const char *note;
+} movie_companie_t;
 typedef struct {
   int len;
-  Movie_companiesItem *data;
-} list_Movie_companiesItem;
-static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
-  list_Movie_companiesItem l;
+  movie_companie_t *data;
+} movie_companie_list_t;
+movie_companie_list_t create_movie_companie_list(int len) {
+  movie_companie_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_companiesItem));
+  l.data = calloc(len, sizeof(movie_companie_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -220,15 +219,15 @@ static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
 typedef struct {
   int movie_id;
   int info_type_id;
-} Movie_info_idxItem;
+} movie_info_idx_t;
 typedef struct {
   int len;
-  Movie_info_idxItem *data;
-} list_Movie_info_idxItem;
-static list_Movie_info_idxItem list_Movie_info_idxItem_create(int len) {
-  list_Movie_info_idxItem l;
+  movie_info_idx_t *data;
+} movie_info_idx_list_t;
+movie_info_idx_list_t create_movie_info_idx_list(int len) {
+  movie_info_idx_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_info_idxItem));
+  l.data = calloc(len, sizeof(movie_info_idx_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -237,18 +236,18 @@ static list_Movie_info_idxItem list_Movie_info_idxItem_create(int len) {
 }
 
 typedef struct {
-  char *note;
-  char *title;
+  const char *note;
+  const char *title;
   int year;
-} FilteredItem;
+} filtered_item_t;
 typedef struct {
   int len;
-  FilteredItem *data;
-} list_FilteredItem;
-static list_FilteredItem list_FilteredItem_create(int len) {
-  list_FilteredItem l;
+  filtered_item_t *data;
+} filtered_item_list_t;
+filtered_item_list_t create_filtered_item_list(int len) {
+  filtered_item_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(FilteredItem));
+  l.data = calloc(len, sizeof(filtered_item_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -260,15 +259,15 @@ typedef struct {
   int production_note;
   int movie_title;
   int movie_year;
-} ResultItem;
+} result_item_t;
 typedef struct {
   int len;
-  ResultItem *data;
-} list_ResultItem;
-static list_ResultItem list_ResultItem_create(int len) {
-  list_ResultItem l;
+  result_item_t *data;
+} result_item_list_t;
+result_item_list_t create_result_item_list(int len) {
+  result_item_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(ResultItem));
+  l.data = calloc(len, sizeof(result_item_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -281,67 +280,62 @@ static int
 static void
 test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production() {
   if (!(test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production_result ==
-        (TmpItem){.production_note = "ACME (co-production)",
-                  .movie_title = "Good Movie",
-                  .movie_year = 1995})) {
+        (tmp_item_t){.production_note = "ACME (co-production)",
+                     .movie_title = "Good Movie",
+                     .movie_year = 1995})) {
     fprintf(stderr, "expect failed\n");
     exit(1);
   }
 }
 
 int main() {
-  Company_typeItem tmp1_data[] = {
-      (Company_typeItem){.id = 1, .kind = "production companies"},
-      (Company_typeItem){.id = 2, .kind = "distributors"}};
-  list_Company_typeItem tmp1 = {2, tmp1_data};
-  list_Company_typeItem company_type = tmp1;
-  Info_typeItem tmp2_data[] = {
-      (Info_typeItem){.id = 10, .info = "top 250 rank"},
-      (Info_typeItem){.id = 20, .info = "bottom 10 rank"}};
-  list_Info_typeItem tmp2 = {2, tmp2_data};
-  list_Info_typeItem info_type = tmp2;
-  TitleItem tmp3_data[] = {
-      (TitleItem){.id = 100, .title = "Good Movie", .production_year = 1995},
-      (TitleItem){.id = 200, .title = "Bad Movie", .production_year = 2000}};
-  list_TitleItem tmp3 = {2, tmp3_data};
-  list_TitleItem title = tmp3;
-  Movie_companiesItem tmp4_data[] = {
-      (Movie_companiesItem){.movie_id = 100,
-                            .company_type_id = 1,
-                            .note = "ACME (co-production)"},
-      (Movie_companiesItem){.movie_id = 200,
-                            .company_type_id = 1,
-                            .note = "MGM (as Metro-Goldwyn-Mayer Pictures)"}};
-  list_Movie_companiesItem tmp4 = {2, tmp4_data};
-  list_Movie_companiesItem movie_companies = tmp4;
-  Movie_info_idxItem tmp5_data[] = {
-      (Movie_info_idxItem){.movie_id = 100, .info_type_id = 10},
-      (Movie_info_idxItem){.movie_id = 200, .info_type_id = 20}};
-  list_Movie_info_idxItem tmp5 = {2, tmp5_data};
-  list_Movie_info_idxItem movie_info_idx = tmp5;
-  list_FilteredItem tmp6 =
-      list_FilteredItem_create(company_type.len * movie_companies.len *
-                               title.len * movie_info_idx.len * info_type.len);
-  int tmp7 = 0;
-  for (int tmp8 = 0; tmp8 < company_type.len; tmp8++) {
-    Company_typeItem ct = company_type.data[tmp8];
-    for (int tmp9 = 0; tmp9 < movie_companies.len; tmp9++) {
-      Movie_companiesItem mc = movie_companies.data[tmp9];
+  company_type_t company_type[] = {
+      (company_type_t){.id = 1, .kind = "production companies"},
+      (company_type_t){.id = 2, .kind = "distributors"}};
+  int company_type_len = sizeof(company_type) / sizeof(company_type[0]);
+  info_type_t info_type[] = {(info_type_t){.id = 10, .info = "top 250 rank"},
+                             (info_type_t){.id = 20, .info = "bottom 10 rank"}};
+  int info_type_len = sizeof(info_type) / sizeof(info_type[0]);
+  title_t title[] = {
+      (title_t){.id = 100, .title = "Good Movie", .production_year = 1995},
+      (title_t){.id = 200, .title = "Bad Movie", .production_year = 2000}};
+  int title_len = sizeof(title) / sizeof(title[0]);
+  movie_companie_t movie_companies[] = {
+      (movie_companie_t){.movie_id = 100,
+                         .company_type_id = 1,
+                         .note = "ACME (co-production)"},
+      (movie_companie_t){.movie_id = 200,
+                         .company_type_id = 1,
+                         .note = "MGM (as Metro-Goldwyn-Mayer Pictures)"}};
+  int movie_companies_len =
+      sizeof(movie_companies) / sizeof(movie_companies[0]);
+  movie_info_idx_t movie_info_idx[] = {
+      (movie_info_idx_t){.movie_id = 100, .info_type_id = 10},
+      (movie_info_idx_t){.movie_id = 200, .info_type_id = 20}};
+  int movie_info_idx_len = sizeof(movie_info_idx) / sizeof(movie_info_idx[0]);
+  filtered_item_list_t tmp1 = filtered_item_list_t_create(
+      company_type.len * movie_companies.len * title.len * movie_info_idx.len *
+      info_type.len);
+  int tmp2 = 0;
+  for (int tmp3 = 0; tmp3 < company_type_len; tmp3++) {
+    company_type_t ct = company_type[tmp3];
+    for (int tmp4 = 0; tmp4 < movie_companies_len; tmp4++) {
+      movie_companie_t mc = movie_companies[tmp4];
       if (!(ct.id == mc.company_type_id)) {
         continue;
       }
-      for (int tmp10 = 0; tmp10 < title.len; tmp10++) {
-        TitleItem t = title.data[tmp10];
+      for (int tmp5 = 0; tmp5 < title_len; tmp5++) {
+        title_t t = title[tmp5];
         if (!(t.id == mc.movie_id)) {
           continue;
         }
-        for (int tmp11 = 0; tmp11 < movie_info_idx.len; tmp11++) {
-          Movie_info_idxItem mi = movie_info_idx.data[tmp11];
+        for (int tmp6 = 0; tmp6 < movie_info_idx_len; tmp6++) {
+          movie_info_idx_t mi = movie_info_idx[tmp6];
           if (!(mi.movie_id == t.id)) {
             continue;
           }
-          for (int tmp12 = 0; tmp12 < info_type.len; tmp12++) {
-            Info_typeItem it = info_type.data[tmp12];
+          for (int tmp7 = 0; tmp7 < info_type_len; tmp7++) {
+            info_type_t it = info_type[tmp7];
             if (!(it.id == mi.info_type_id)) {
               continue;
             }
@@ -353,50 +347,50 @@ int main() {
                    contains_string(mc.note, "(presents)")))) {
               continue;
             }
-            tmp6.data[tmp7] = (FilteredItem){
+            tmp1.data[tmp2] = (filtered_item_t){
                 .note = mc.note, .title = t.title, .year = t.production_year};
-            tmp7++;
+            tmp2++;
           }
         }
       }
     }
   }
-  tmp6.len = tmp7;
-  list_FilteredItem filtered = tmp6;
-  list_string tmp13 = list_string_create(filtered.len);
-  int tmp14 = 0;
-  for (int tmp15 = 0; tmp15 < filtered.len; tmp15++) {
-    FilteredItem r = filtered.data[tmp15];
-    tmp13.data[tmp14] = r.note;
-    tmp14++;
+  tmp1.len = tmp2;
+  filtered_item_list_t filtered = tmp1;
+  int tmp8 = int_create(filtered.len);
+  int tmp9 = 0;
+  for (int tmp10 = 0; tmp10 < filtered.len; tmp10++) {
+    filtered_item_t r = filtered.data[tmp10];
+    tmp8.data[tmp9] = r.note;
+    tmp9++;
   }
-  tmp13.len = tmp14;
-  list_string tmp16 = list_string_create(filtered.len);
-  int tmp17 = 0;
-  for (int tmp18 = 0; tmp18 < filtered.len; tmp18++) {
-    FilteredItem r = filtered.data[tmp18];
-    tmp16.data[tmp17] = r.title;
-    tmp17++;
+  tmp8.len = tmp9;
+  int tmp11 = int_create(filtered.len);
+  int tmp12 = 0;
+  for (int tmp13 = 0; tmp13 < filtered.len; tmp13++) {
+    filtered_item_t r = filtered.data[tmp13];
+    tmp11.data[tmp12] = r.title;
+    tmp12++;
   }
-  tmp16.len = tmp17;
-  list_int tmp19 = list_int_create(filtered.len);
-  int tmp20 = 0;
-  for (int tmp21 = 0; tmp21 < filtered.len; tmp21++) {
-    FilteredItem r = filtered.data[tmp21];
-    tmp19.data[tmp20] = r.year;
-    tmp20++;
+  tmp11.len = tmp12;
+  list_int tmp14 = list_int_create(filtered.len);
+  int tmp15 = 0;
+  for (int tmp16 = 0; tmp16 < filtered.len; tmp16++) {
+    filtered_item_t r = filtered.data[tmp16];
+    tmp14.data[tmp15] = r.year;
+    tmp15++;
   }
-  tmp19.len = tmp20;
-  ResultItem result = (ResultItem){.production_note = _min_string(tmp13),
-                                   .movie_title = _min_string(tmp16),
-                                   .movie_year = _min_int(tmp19)};
-  list_int tmp22 = list_int_create(1);
-  tmp22.data[0] = result;
+  tmp14.len = tmp15;
+  result_item_t result = (result_item_t){.production_note = _min_string(tmp8),
+                                         .movie_title = _min_string(tmp11),
+                                         .movie_year = _min_int(tmp14)};
+  list_int tmp17 = list_int_create(1);
+  tmp17.data[0] = result;
   printf("[");
-  for (int i23 = 0; i23 < 1; i23++) {
-    if (i23 > 0)
+  for (int i18 = 0; i18 < 1; i18++) {
+    if (i18 > 0)
       printf(",");
-    ResultItem it = tmp22.data[i23];
+    result_item_t it = tmp17.data[i18];
     printf("{");
     _json_string("production_note");
     printf(":");
@@ -415,5 +409,8 @@ int main() {
   test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production_result =
       result;
   test_Q1_returns_min_note__title_and_year_for_top_ranked_co_production();
+  free(tmp8.data);
+  free(tmp11.data);
+  free(tmp14.data);
   return 0;
 }

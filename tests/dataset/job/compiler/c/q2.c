@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -109,16 +108,16 @@ static void _json_list_list_int(list_list_int v) {
 }
 typedef struct {
   int id;
-  char *country_code;
-} Company_nameItem;
+  const char *country_code;
+} company_name_t;
 typedef struct {
   int len;
-  Company_nameItem *data;
-} list_Company_nameItem;
-static list_Company_nameItem list_Company_nameItem_create(int len) {
-  list_Company_nameItem l;
+  company_name_t *data;
+} company_name_list_t;
+company_name_list_t create_company_name_list(int len) {
+  company_name_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Company_nameItem));
+  l.data = calloc(len, sizeof(company_name_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -128,16 +127,16 @@ static list_Company_nameItem list_Company_nameItem_create(int len) {
 
 typedef struct {
   int id;
-  char *keyword;
-} KeywordItem;
+  const char *keyword;
+} keyword_t;
 typedef struct {
   int len;
-  KeywordItem *data;
-} list_KeywordItem;
-static list_KeywordItem list_KeywordItem_create(int len) {
-  list_KeywordItem l;
+  keyword_t *data;
+} keyword_list_t;
+keyword_list_t create_keyword_list(int len) {
+  keyword_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(KeywordItem));
+  l.data = calloc(len, sizeof(keyword_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -148,15 +147,15 @@ static list_KeywordItem list_KeywordItem_create(int len) {
 typedef struct {
   int movie_id;
   int company_id;
-} Movie_companiesItem;
+} movie_companie_t;
 typedef struct {
   int len;
-  Movie_companiesItem *data;
-} list_Movie_companiesItem;
-static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
-  list_Movie_companiesItem l;
+  movie_companie_t *data;
+} movie_companie_list_t;
+movie_companie_list_t create_movie_companie_list(int len) {
+  movie_companie_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_companiesItem));
+  l.data = calloc(len, sizeof(movie_companie_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -167,15 +166,15 @@ static list_Movie_companiesItem list_Movie_companiesItem_create(int len) {
 typedef struct {
   int movie_id;
   int keyword_id;
-} Movie_keywordItem;
+} movie_keyword_t;
 typedef struct {
   int len;
-  Movie_keywordItem *data;
-} list_Movie_keywordItem;
-static list_Movie_keywordItem list_Movie_keywordItem_create(int len) {
-  list_Movie_keywordItem l;
+  movie_keyword_t *data;
+} movie_keyword_list_t;
+movie_keyword_list_t create_movie_keyword_list(int len) {
+  movie_keyword_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_keywordItem));
+  l.data = calloc(len, sizeof(movie_keyword_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -185,16 +184,16 @@ static list_Movie_keywordItem list_Movie_keywordItem_create(int len) {
 
 typedef struct {
   int id;
-  char *title;
-} TitleItem;
+  const char *title;
+} title_t;
 typedef struct {
   int len;
-  TitleItem *data;
-} list_TitleItem;
-static list_TitleItem list_TitleItem_create(int len) {
-  list_TitleItem l;
+  title_t *data;
+} title_list_t;
+title_list_t create_title_list(int len) {
+  title_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TitleItem));
+  l.data = calloc(len, sizeof(title_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -214,53 +213,48 @@ test_Q2_finds_earliest_title_for_German_companies_with_character_keyword() {
 }
 
 int main() {
-  Company_nameItem tmp1_data[] = {
-      (Company_nameItem){.id = 1, .country_code = "[de]"},
-      (Company_nameItem){.id = 2, .country_code = "[us]"}};
-  list_Company_nameItem tmp1 = {2, tmp1_data};
-  list_Company_nameItem company_name = tmp1;
-  KeywordItem tmp2_data[] = {
-      (KeywordItem){.id = 1, .keyword = "character-name-in-title"},
-      (KeywordItem){.id = 2, .keyword = "other"}};
-  list_KeywordItem tmp2 = {2, tmp2_data};
-  list_KeywordItem keyword = tmp2;
-  Movie_companiesItem tmp3_data[] = {
-      (Movie_companiesItem){.movie_id = 100, .company_id = 1},
-      (Movie_companiesItem){.movie_id = 200, .company_id = 2}};
-  list_Movie_companiesItem tmp3 = {2, tmp3_data};
-  list_Movie_companiesItem movie_companies = tmp3;
-  Movie_keywordItem tmp4_data[] = {
-      (Movie_keywordItem){.movie_id = 100, .keyword_id = 1},
-      (Movie_keywordItem){.movie_id = 200, .keyword_id = 2}};
-  list_Movie_keywordItem tmp4 = {2, tmp4_data};
-  list_Movie_keywordItem movie_keyword = tmp4;
-  TitleItem tmp5_data[] = {(TitleItem){.id = 100, .title = "Der Film"},
-                           (TitleItem){.id = 200, .title = "Other Movie"}};
-  list_TitleItem tmp5 = {2, tmp5_data};
-  list_TitleItem title = tmp5;
-  list_string tmp6 =
-      list_string_create(company_name.len * movie_companies.len * title.len *
-                         movie_keyword.len * keyword.len);
-  int tmp7 = 0;
-  for (int tmp8 = 0; tmp8 < company_name.len; tmp8++) {
-    Company_nameItem cn = company_name.data[tmp8];
-    for (int tmp9 = 0; tmp9 < movie_companies.len; tmp9++) {
-      Movie_companiesItem mc = movie_companies.data[tmp9];
+  company_name_t company_name[] = {
+      (company_name_t){.id = 1, .country_code = "[de]"},
+      (company_name_t){.id = 2, .country_code = "[us]"}};
+  int company_name_len = sizeof(company_name) / sizeof(company_name[0]);
+  keyword_t keyword[] = {
+      (keyword_t){.id = 1, .keyword = "character-name-in-title"},
+      (keyword_t){.id = 2, .keyword = "other"}};
+  int keyword_len = sizeof(keyword) / sizeof(keyword[0]);
+  movie_companie_t movie_companies[] = {
+      (movie_companie_t){.movie_id = 100, .company_id = 1},
+      (movie_companie_t){.movie_id = 200, .company_id = 2}};
+  int movie_companies_len =
+      sizeof(movie_companies) / sizeof(movie_companies[0]);
+  movie_keyword_t movie_keyword[] = {
+      (movie_keyword_t){.movie_id = 100, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 200, .keyword_id = 2}};
+  int movie_keyword_len = sizeof(movie_keyword) / sizeof(movie_keyword[0]);
+  title_t title[] = {(title_t){.id = 100, .title = "Der Film"},
+                     (title_t){.id = 200, .title = "Other Movie"}};
+  int title_len = sizeof(title) / sizeof(title[0]);
+  int tmp1 = int_create(company_name.len * movie_companies.len * title.len *
+                        movie_keyword.len * keyword.len);
+  int tmp2 = 0;
+  for (int tmp3 = 0; tmp3 < company_name_len; tmp3++) {
+    company_name_t cn = company_name[tmp3];
+    for (int tmp4 = 0; tmp4 < movie_companies_len; tmp4++) {
+      movie_companie_t mc = movie_companies[tmp4];
       if (!(mc.company_id == cn.id)) {
         continue;
       }
-      for (int tmp10 = 0; tmp10 < title.len; tmp10++) {
-        TitleItem t = title.data[tmp10];
+      for (int tmp5 = 0; tmp5 < title_len; tmp5++) {
+        title_t t = title[tmp5];
         if (!(mc.movie_id == t.id)) {
           continue;
         }
-        for (int tmp11 = 0; tmp11 < movie_keyword.len; tmp11++) {
-          Movie_keywordItem mk = movie_keyword.data[tmp11];
+        for (int tmp6 = 0; tmp6 < movie_keyword_len; tmp6++) {
+          movie_keyword_t mk = movie_keyword[tmp6];
           if (!(mk.movie_id == t.id)) {
             continue;
           }
-          for (int tmp12 = 0; tmp12 < keyword.len; tmp12++) {
-            KeywordItem k = keyword.data[tmp12];
+          for (int tmp7 = 0; tmp7 < keyword_len; tmp7++) {
+            keyword_t k = keyword[tmp7];
             if (!(mk.keyword_id == k.id)) {
               continue;
             }
@@ -269,15 +263,15 @@ int main() {
                   mc.movie_id == mk.movie_id)) {
               continue;
             }
-            tmp6.data[tmp7] = t.title;
-            tmp7++;
+            tmp1.data[tmp2] = t.title;
+            tmp2++;
           }
         }
       }
     }
   }
-  tmp6.len = tmp7;
-  list_string titles = tmp6;
+  tmp1.len = tmp2;
+  int titles = tmp1;
   int result = _min_string(titles);
   _json_int(result);
   test_Q2_finds_earliest_title_for_German_companies_with_character_keyword_result =

@@ -67,12 +67,6 @@ static char *_min_string(list_string v) {
       m = v.data[i];
   return m;
 }
-static int contains_list_string(list_string v, char *item) {
-  for (int i = 0; i < v.len; i++)
-    if (strcmp(v.data[i], item) == 0)
-      return 1;
-  return 0;
-}
 static int contains_string(char *s, char *sub) {
   return strstr(s, sub) != NULL;
 }
@@ -116,9 +110,9 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  const char *alternative_name;
-  const char *character_name;
-  const char *movie;
+  const char *from_company;
+  const char *movie_link_type;
+  const char *non_polish_sequel_movie;
 } tmp1_t;
 typedef struct {
   int len;
@@ -136,67 +130,8 @@ tmp1_list_t create_tmp1_list(int len) {
 }
 
 typedef struct {
-  int person_id;
-  const char *name;
-} aka_name_t;
-typedef struct {
-  int len;
-  aka_name_t *data;
-} aka_name_list_t;
-aka_name_list_t create_aka_name_list(int len) {
-  aka_name_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(aka_name_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
   int id;
   const char *name;
-} char_name_t;
-typedef struct {
-  int len;
-  char_name_t *data;
-} char_name_list_t;
-char_name_list_t create_char_name_list(int len) {
-  char_name_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(char_name_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
-  int person_id;
-  int person_role_id;
-  int movie_id;
-  int role_id;
-  const char *note;
-} cast_info_t;
-typedef struct {
-  int len;
-  cast_info_t *data;
-} cast_info_list_t;
-cast_info_list_t create_cast_info_list(int len) {
-  cast_info_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(cast_info_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
-  int id;
   const char *country_code;
 } company_name_t;
 typedef struct {
@@ -215,9 +150,67 @@ company_name_list_t create_company_name_list(int len) {
 }
 
 typedef struct {
+  int id;
+  const char *kind;
+} company_type_t;
+typedef struct {
+  int len;
+  company_type_t *data;
+} company_type_list_t;
+company_type_list_t create_company_type_list(int len) {
+  company_type_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(company_type_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int id;
+  const char *keyword;
+} keyword_t;
+typedef struct {
+  int len;
+  keyword_t *data;
+} keyword_list_t;
+keyword_list_t create_keyword_list(int len) {
+  keyword_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(keyword_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int id;
+  const char *link;
+} link_type_t;
+typedef struct {
+  int len;
+  link_type_t *data;
+} link_type_list_t;
+link_type_list_t create_link_type_list(int len) {
+  link_type_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(link_type_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
   int movie_id;
   int company_id;
-  const char *note;
+  int company_type_id;
+  int note;
 } movie_companie_t;
 typedef struct {
   int len;
@@ -235,18 +228,36 @@ movie_companie_list_t create_movie_companie_list(int len) {
 }
 
 typedef struct {
-  int id;
-  const char *name;
-  const char *gender;
-} name_t;
+  int movie_id;
+  int keyword_id;
+} movie_keyword_t;
 typedef struct {
   int len;
-  name_t *data;
-} name_list_t;
-name_list_t create_name_list(int len) {
-  name_list_t l;
+  movie_keyword_t *data;
+} movie_keyword_list_t;
+movie_keyword_list_t create_movie_keyword_list(int len) {
+  movie_keyword_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(name_t));
+  l.data = calloc(len, sizeof(movie_keyword_t));
+  if (!l.data && len > 0) {
+    fprintf(stderr, "alloc failed\n");
+    exit(1);
+  }
+  return l;
+}
+
+typedef struct {
+  int movie_id;
+  int link_type_id;
+} movie_link_t;
+typedef struct {
+  int len;
+  movie_link_t *data;
+} movie_link_list_t;
+movie_link_list_t create_movie_link_list(int len) {
+  movie_link_list_t l;
+  l.len = len;
+  l.data = calloc(len, sizeof(movie_link_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -256,27 +267,8 @@ name_list_t create_name_list(int len) {
 
 typedef struct {
   int id;
-  const char *role;
-} role_type_t;
-typedef struct {
-  int len;
-  role_type_t *data;
-} role_type_list_t;
-role_type_list_t create_role_type_list(int len) {
-  role_type_list_t l;
-  l.len = len;
-  l.data = calloc(len, sizeof(role_type_t));
-  if (!l.data && len > 0) {
-    fprintf(stderr, "alloc failed\n");
-    exit(1);
-  }
-  return l;
-}
-
-typedef struct {
-  int id;
-  const char *title;
   int production_year;
+  const char *title;
 } title_t;
 typedef struct {
   int len;
@@ -294,9 +286,9 @@ title_list_t create_title_list(int len) {
 }
 
 typedef struct {
-  const char *alt;
-  const char *character;
-  const char *movie;
+  const char *company;
+  const char *link;
+  const char *title;
 } matches_item_t;
 typedef struct {
   int len;
@@ -314,9 +306,9 @@ matches_item_list_t create_matches_item_list(int len) {
 }
 
 typedef struct {
-  const char *alternative_name;
-  const char *character_name;
-  const char *movie;
+  const char *from_company;
+  const char *movie_link_type;
+  const char *non_polish_sequel_movie;
 } result_t;
 typedef struct {
   int len;
@@ -333,25 +325,22 @@ result_list_t create_result_list(int len) {
   return l;
 }
 
-static list_int
-    test_Q9_selects_minimal_alternative_name__character_and_movie_result;
-static void test_Q9_selects_minimal_alternative_name__character_and_movie() {
-  tmp1_t tmp1[] = {(tmp1_t){.alternative_name = "A. N. G.",
-                            .character_name = "Angel",
-                            .movie = "Famous Film"}};
+static list_int test_Q11_returns_min_company__link_type_and_title_result;
+static void test_Q11_returns_min_company__link_type_and_title() {
+  tmp1_t tmp1[] = {(tmp1_t){.from_company = "Best Film Co",
+                            .movie_link_type = "follow-up",
+                            .non_polish_sequel_movie = "Alpha"}};
   int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
-  if (test_Q9_selects_minimal_alternative_name__character_and_movie_result
-          .len != tmp1.len) {
+  if (test_Q11_returns_min_company__link_type_and_title_result.len !=
+      tmp1.len) {
     tmp2 = 0;
   } else {
     for (int i3 = 0;
-         i3 <
-         test_Q9_selects_minimal_alternative_name__character_and_movie_result
-             .len;
+         i3 < test_Q11_returns_min_company__link_type_and_title_result.len;
          i3++) {
-      if (test_Q9_selects_minimal_alternative_name__character_and_movie_result
-              .data[i3] != tmp1.data[i3]) {
+      if (test_Q11_returns_min_company__link_type_and_title_result.data[i3] !=
+          tmp1.data[i3]) {
         tmp2 = 0;
         break;
       }
@@ -364,101 +353,105 @@ static void test_Q9_selects_minimal_alternative_name__character_and_movie() {
 }
 
 int main() {
-  aka_name_t aka_name[] = {(aka_name_t){.person_id = 1, .name = "A. N. G."},
-                           (aka_name_t){.person_id = 2, .name = "J. D."}};
-  int aka_name_len = sizeof(aka_name) / sizeof(aka_name[0]);
-  char_name_t char_name[] = {(char_name_t){.id = 10, .name = "Angel"},
-                             (char_name_t){.id = 20, .name = "Devil"}};
-  int char_name_len = sizeof(char_name) / sizeof(char_name[0]);
-  cast_info_t cast_info[] = {(cast_info_t){.person_id = 1,
-                                           .person_role_id = 10,
-                                           .movie_id = 100,
-                                           .role_id = 1000,
-                                           .note = "(voice)"},
-                             (cast_info_t){.person_id = 2,
-                                           .person_role_id = 20,
-                                           .movie_id = 200,
-                                           .role_id = 1000,
-                                           .note = "(voice)"}};
-  int cast_info_len = sizeof(cast_info) / sizeof(cast_info[0]);
   company_name_t company_name[] = {
-      (company_name_t){.id = 100, .country_code = "[us]"},
-      (company_name_t){.id = 200, .country_code = "[gb]"}};
+      (company_name_t){.id = 1, .name = "Best Film Co", .country_code = "[us]"},
+      (company_name_t){
+          .id = 2, .name = "Warner Studios", .country_code = "[de]"},
+      (company_name_t){
+          .id = 3, .name = "Polish Films", .country_code = "[pl]"}};
   int company_name_len = sizeof(company_name) / sizeof(company_name[0]);
+  company_type_t company_type[] = {
+      (company_type_t){.id = 1, .kind = "production companies"},
+      (company_type_t){.id = 2, .kind = "distributors"}};
+  int company_type_len = sizeof(company_type) / sizeof(company_type[0]);
+  keyword_t keyword[] = {(keyword_t){.id = 1, .keyword = "sequel"},
+                         (keyword_t){.id = 2, .keyword = "thriller"}};
+  int keyword_len = sizeof(keyword) / sizeof(keyword[0]);
+  link_type_t link_type[] = {(link_type_t){.id = 1, .link = "follow-up"},
+                             (link_type_t){.id = 2, .link = "follows from"},
+                             (link_type_t){.id = 3, .link = "remake"}};
+  int link_type_len = sizeof(link_type) / sizeof(link_type[0]);
   movie_companie_t movie_companies[] = {
       (movie_companie_t){
-          .movie_id = 100, .company_id = 100, .note = "ACME Studios (USA)"},
+          .movie_id = 10, .company_id = 1, .company_type_id = 1, .note = 0},
       (movie_companie_t){
-          .movie_id = 200, .company_id = 200, .note = "Maple Films"}};
+          .movie_id = 20, .company_id = 2, .company_type_id = 1, .note = 0},
+      (movie_companie_t){
+          .movie_id = 30, .company_id = 3, .company_type_id = 1, .note = 0}};
   int movie_companies_len =
       sizeof(movie_companies) / sizeof(movie_companies[0]);
-  name_t name[] = {(name_t){.id = 1, .name = "Angela Smith", .gender = "f"},
-                   (name_t){.id = 2, .name = "John Doe", .gender = "m"}};
-  int name_len = sizeof(name) / sizeof(name[0]);
-  role_type_t role_type[] = {(role_type_t){.id = 1000, .role = "actress"},
-                             (role_type_t){.id = 2000, .role = "actor"}};
-  int role_type_len = sizeof(role_type) / sizeof(role_type[0]);
+  movie_keyword_t movie_keyword[] = {
+      (movie_keyword_t){.movie_id = 10, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 20, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 20, .keyword_id = 2},
+      (movie_keyword_t){.movie_id = 30, .keyword_id = 1}};
+  int movie_keyword_len = sizeof(movie_keyword) / sizeof(movie_keyword[0]);
+  movie_link_t movie_link[] = {
+      (movie_link_t){.movie_id = 10, .link_type_id = 1},
+      (movie_link_t){.movie_id = 20, .link_type_id = 2},
+      (movie_link_t){.movie_id = 30, .link_type_id = 3}};
+  int movie_link_len = sizeof(movie_link) / sizeof(movie_link[0]);
   title_t title[] = {
-      (title_t){.id = 100, .title = "Famous Film", .production_year = 2010},
-      (title_t){.id = 200, .title = "Old Movie", .production_year = 1999}};
+      (title_t){.id = 10, .production_year = 1960, .title = "Alpha"},
+      (title_t){.id = 20, .production_year = 1970, .title = "Beta"},
+      (title_t){.id = 30, .production_year = 1985, .title = "Polish Movie"}};
   int title_len = sizeof(title) / sizeof(title[0]);
-  list_string matches = list_string_create(4);
-  matches.data[0] = "(voice)";
-  matches.data[1] = "(voice: Japanese version)";
-  matches.data[2] = "(voice) (uncredited)";
-  matches.data[3] = "(voice: English version)";
   matches_item_list_t tmp4 = matches_item_list_t_create(
-      aka_name.len * name.len * cast_info.len * char_name.len * title.len *
-      movie_companies.len * company_name.len * role_type.len);
+      company_name.len * movie_companies.len * company_type.len * title.len *
+      movie_keyword.len * keyword.len * movie_link.len * link_type.len);
   int tmp5 = 0;
-  for (int tmp6 = 0; tmp6 < aka_name_len; tmp6++) {
-    aka_name_t an = aka_name[tmp6];
-    for (int tmp7 = 0; tmp7 < name_len; tmp7++) {
-      name_t n = name[tmp7];
-      if (!(an.person_id == n.id)) {
+  for (int tmp6 = 0; tmp6 < company_name_len; tmp6++) {
+    company_name_t cn = company_name[tmp6];
+    for (int tmp7 = 0; tmp7 < movie_companies_len; tmp7++) {
+      movie_companie_t mc = movie_companies[tmp7];
+      if (!(mc.company_id == cn.id)) {
         continue;
       }
-      for (int tmp8 = 0; tmp8 < cast_info_len; tmp8++) {
-        cast_info_t ci = cast_info[tmp8];
-        if (!(ci.person_id == n.id)) {
+      for (int tmp8 = 0; tmp8 < company_type_len; tmp8++) {
+        company_type_t ct = company_type[tmp8];
+        if (!(ct.id == mc.company_type_id)) {
           continue;
         }
-        for (int tmp9 = 0; tmp9 < char_name_len; tmp9++) {
-          char_name_t chn = char_name[tmp9];
-          if (!(chn.id == ci.person_role_id)) {
+        for (int tmp9 = 0; tmp9 < title_len; tmp9++) {
+          title_t t = title[tmp9];
+          if (!(t.id == mc.movie_id)) {
             continue;
           }
-          for (int tmp10 = 0; tmp10 < title_len; tmp10++) {
-            title_t t = title[tmp10];
-            if (!(t.id == ci.movie_id)) {
+          for (int tmp10 = 0; tmp10 < movie_keyword_len; tmp10++) {
+            movie_keyword_t mk = movie_keyword[tmp10];
+            if (!(mk.movie_id == t.id)) {
               continue;
             }
-            for (int tmp11 = 0; tmp11 < movie_companies_len; tmp11++) {
-              movie_companie_t mc = movie_companies[tmp11];
-              if (!(mc.movie_id == t.id)) {
+            for (int tmp11 = 0; tmp11 < keyword_len; tmp11++) {
+              keyword_t k = keyword[tmp11];
+              if (!(k.id == mk.keyword_id)) {
                 continue;
               }
-              for (int tmp12 = 0; tmp12 < company_name_len; tmp12++) {
-                company_name_t cn = company_name[tmp12];
-                if (!(cn.id == mc.company_id)) {
+              for (int tmp12 = 0; tmp12 < movie_link_len; tmp12++) {
+                movie_link_t ml = movie_link[tmp12];
+                if (!(ml.movie_id == t.id)) {
                   continue;
                 }
-                for (int tmp13 = 0; tmp13 < role_type_len; tmp13++) {
-                  role_type_t rt = role_type[tmp13];
-                  if (!(rt.id == ci.role_id)) {
+                for (int tmp13 = 0; tmp13 < link_type_len; tmp13++) {
+                  link_type_t lt = link_type[tmp13];
+                  if (!(lt.id == ml.link_type_id)) {
                     continue;
                   }
-                  if (!((contains_list_string(matches, ci.note)) &&
-                        cn.country_code == "[us]" &&
-                        (contains_string(mc.note, "(USA)") ||
-                         contains_string(mc.note, "(worldwide)")) &&
-                        n.gender == "f" && contains_string(n.name, "Ang") &&
-                        rt.role == "actress" && t.production_year >= 2005 &&
-                        t.production_year <= 2015)) {
+                  if (!((strcmp(cn.country_code, "[pl]") != 0) &&
+                        (contains_string(cn.name, "Film") ||
+                         contains_string(cn.name, "Warner")) &&
+                        ct.kind == "production companies" &&
+                        k.keyword == "sequel" &&
+                        contains_string(lt.link, "follow") && mc.note == 0 &&
+                        t.production_year >= 1950 &&
+                        t.production_year <= 2000 &&
+                        ml.movie_id == mk.movie_id &&
+                        ml.movie_id == mc.movie_id &&
+                        mk.movie_id == mc.movie_id)) {
                     continue;
                   }
                   tmp4.data[tmp5] = (matches_item_t){
-                      .alt = an.name, .character = chn.name, .movie = t.title};
+                      .company = cn.name, .link = lt.link, .title = t.title};
                   tmp5++;
                 }
               }
@@ -474,7 +467,7 @@ int main() {
   int tmp15 = 0;
   for (int tmp16 = 0; tmp16 < matches.len; tmp16++) {
     matches_item_t x = matches.data[tmp16];
-    tmp14.data[tmp15] = x.alt;
+    tmp14.data[tmp15] = x.company;
     tmp15++;
   }
   tmp14.len = tmp15;
@@ -482,7 +475,7 @@ int main() {
   int tmp18 = 0;
   for (int tmp19 = 0; tmp19 < matches.len; tmp19++) {
     matches_item_t x = matches.data[tmp19];
-    tmp17.data[tmp18] = x.character;
+    tmp17.data[tmp18] = x.link;
     tmp18++;
   }
   tmp17.len = tmp18;
@@ -490,13 +483,14 @@ int main() {
   int tmp21 = 0;
   for (int tmp22 = 0; tmp22 < matches.len; tmp22++) {
     matches_item_t x = matches.data[tmp22];
-    tmp20.data[tmp21] = x.movie;
+    tmp20.data[tmp21] = x.title;
     tmp21++;
   }
   tmp20.len = tmp21;
-  result_t result[] = {(result_t){.alternative_name = _min_string(tmp14),
-                                  .character_name = _min_string(tmp17),
-                                  .movie = _min_string(tmp20)}};
+  result_t result[] = {
+      (result_t){.from_company = _min_string(tmp14),
+                 .movie_link_type = _min_string(tmp17),
+                 .non_polish_sequel_movie = _min_string(tmp20)}};
   int result_len = sizeof(result) / sizeof(result[0]);
   printf("[");
   for (int i23 = 0; i23 < result_len; i23++) {
@@ -504,22 +498,22 @@ int main() {
       printf(",");
     result_t it = result[i23];
     printf("{");
-    _json_string("alternative_name");
+    _json_string("from_company");
     printf(":");
-    _json_string(it.alternative_name);
+    _json_string(it.from_company);
     printf(",");
-    _json_string("character_name");
+    _json_string("movie_link_type");
     printf(":");
-    _json_string(it.character_name);
+    _json_string(it.movie_link_type);
     printf(",");
-    _json_string("movie");
+    _json_string("non_polish_sequel_movie");
     printf(":");
-    _json_string(it.movie);
+    _json_string(it.non_polish_sequel_movie);
     printf("}");
   }
   printf("]");
-  test_Q9_selects_minimal_alternative_name__character_and_movie_result = result;
-  test_Q9_selects_minimal_alternative_name__character_and_movie();
+  test_Q11_returns_min_company__link_type_and_title_result = result;
+  test_Q11_returns_min_company__link_type_and_title();
   free(tmp14.data);
   free(tmp17.data);
   free(tmp20.data);

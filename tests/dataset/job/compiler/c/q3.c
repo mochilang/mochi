@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -117,16 +116,16 @@ static void _json_list_list_int(list_list_int v) {
   printf("]");
 }
 typedef struct {
-  char *movie_title;
-} TmpItem;
+  const char *movie_title;
+} tmp1_t;
 typedef struct {
   int len;
-  TmpItem *data;
-} list_TmpItem;
-static list_TmpItem list_TmpItem_create(int len) {
-  list_TmpItem l;
+  tmp1_t *data;
+} tmp1_list_t;
+tmp1_list_t create_tmp1_list(int len) {
+  tmp1_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TmpItem));
+  l.data = calloc(len, sizeof(tmp1_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -136,16 +135,16 @@ static list_TmpItem list_TmpItem_create(int len) {
 
 typedef struct {
   int id;
-  char *keyword;
-} KeywordItem;
+  const char *keyword;
+} keyword_t;
 typedef struct {
   int len;
-  KeywordItem *data;
-} list_KeywordItem;
-static list_KeywordItem list_KeywordItem_create(int len) {
-  list_KeywordItem l;
+  keyword_t *data;
+} keyword_list_t;
+keyword_list_t create_keyword_list(int len) {
+  keyword_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(KeywordItem));
+  l.data = calloc(len, sizeof(keyword_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -155,16 +154,16 @@ static list_KeywordItem list_KeywordItem_create(int len) {
 
 typedef struct {
   int movie_id;
-  char *info;
-} Movie_infoItem;
+  const char *info;
+} movie_info_t;
 typedef struct {
   int len;
-  Movie_infoItem *data;
-} list_Movie_infoItem;
-static list_Movie_infoItem list_Movie_infoItem_create(int len) {
-  list_Movie_infoItem l;
+  movie_info_t *data;
+} movie_info_list_t;
+movie_info_list_t create_movie_info_list(int len) {
+  movie_info_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_infoItem));
+  l.data = calloc(len, sizeof(movie_info_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -175,15 +174,15 @@ static list_Movie_infoItem list_Movie_infoItem_create(int len) {
 typedef struct {
   int movie_id;
   int keyword_id;
-} Movie_keywordItem;
+} movie_keyword_t;
 typedef struct {
   int len;
-  Movie_keywordItem *data;
-} list_Movie_keywordItem;
-static list_Movie_keywordItem list_Movie_keywordItem_create(int len) {
-  list_Movie_keywordItem l;
+  movie_keyword_t *data;
+} movie_keyword_list_t;
+movie_keyword_list_t create_movie_keyword_list(int len) {
+  movie_keyword_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(Movie_keywordItem));
+  l.data = calloc(len, sizeof(movie_keyword_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -193,17 +192,17 @@ static list_Movie_keywordItem list_Movie_keywordItem_create(int len) {
 
 typedef struct {
   int id;
-  char *title;
+  const char *title;
   int production_year;
-} TitleItem;
+} title_t;
 typedef struct {
   int len;
-  TitleItem *data;
-} list_TitleItem;
-static list_TitleItem list_TitleItem_create(int len) {
-  list_TitleItem l;
+  title_t *data;
+} title_list_t;
+title_list_t create_title_list(int len) {
+  title_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(TitleItem));
+  l.data = calloc(len, sizeof(title_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -212,16 +211,16 @@ static list_TitleItem list_TitleItem_create(int len) {
 }
 
 typedef struct {
-  char *movie_title;
-} ResultItem;
+  const char *movie_title;
+} result_t;
 typedef struct {
   int len;
-  ResultItem *data;
-} list_ResultItem;
-static list_ResultItem list_ResultItem_create(int len) {
-  list_ResultItem l;
+  result_t *data;
+} result_list_t;
+result_list_t create_result_list(int len) {
+  result_list_t l;
   l.len = len;
-  l.data = calloc(len, sizeof(ResultItem));
+  l.data = calloc(len, sizeof(result_t));
   if (!l.data && len > 0) {
     fprintf(stderr, "alloc failed\n");
     exit(1);
@@ -231,8 +230,8 @@ static list_ResultItem list_ResultItem_create(int len) {
 
 static list_int test_Q3_returns_lexicographically_smallest_sequel_title_result;
 static void test_Q3_returns_lexicographically_smallest_sequel_title() {
-  list_int tmp1 = list_int_create(1);
-  tmp1.data[0] = (TmpItem){.movie_title = "Alpha"};
+  tmp1_t tmp1[] = {(tmp1_t){.movie_title = "Alpha"}};
+  int tmp1_len = sizeof(tmp1) / sizeof(tmp1[0]);
   int tmp2 = 1;
   if (test_Q3_returns_lexicographically_smallest_sequel_title_result.len !=
       tmp1.len) {
@@ -256,57 +255,52 @@ static void test_Q3_returns_lexicographically_smallest_sequel_title() {
 }
 
 int main() {
-  KeywordItem tmp4_data[] = {
-      (KeywordItem){.id = 1, .keyword = "amazing sequel"},
-      (KeywordItem){.id = 2, .keyword = "prequel"}};
-  list_KeywordItem tmp4 = {2, tmp4_data};
-  list_KeywordItem keyword = tmp4;
-  Movie_infoItem tmp5_data[] = {
-      (Movie_infoItem){.movie_id = 10, .info = "Germany"},
-      (Movie_infoItem){.movie_id = 30, .info = "Sweden"},
-      (Movie_infoItem){.movie_id = 20, .info = "France"}};
-  list_Movie_infoItem tmp5 = {3, tmp5_data};
-  list_Movie_infoItem movie_info = tmp5;
-  Movie_keywordItem tmp6_data[] = {
-      (Movie_keywordItem){.movie_id = 10, .keyword_id = 1},
-      (Movie_keywordItem){.movie_id = 30, .keyword_id = 1},
-      (Movie_keywordItem){.movie_id = 20, .keyword_id = 1},
-      (Movie_keywordItem){.movie_id = 10, .keyword_id = 2}};
-  list_Movie_keywordItem tmp6 = {4, tmp6_data};
-  list_Movie_keywordItem movie_keyword = tmp6;
-  TitleItem tmp7_data[] = {
-      (TitleItem){.id = 10, .title = "Alpha", .production_year = 2006},
-      (TitleItem){.id = 30, .title = "Beta", .production_year = 2008},
-      (TitleItem){.id = 20, .title = "Gamma", .production_year = 2009}};
-  list_TitleItem tmp7 = {3, tmp7_data};
-  list_TitleItem title = tmp7;
-  list_string tmp8 = list_string_create(8);
-  tmp8.data[0] = "Sweden";
-  tmp8.data[1] = "Norway";
-  tmp8.data[2] = "Germany";
-  tmp8.data[3] = "Denmark";
-  tmp8.data[4] = "Swedish";
-  tmp8.data[5] = "Denish";
-  tmp8.data[6] = "Norwegian";
-  tmp8.data[7] = "German";
-  list_string allowed_infos = tmp8;
-  list_string tmp9 = list_string_create(keyword.len * movie_keyword.len *
-                                        movie_info.len * title.len);
-  int tmp10 = 0;
-  for (int tmp11 = 0; tmp11 < keyword.len; tmp11++) {
-    KeywordItem k = keyword.data[tmp11];
-    for (int tmp12 = 0; tmp12 < movie_keyword.len; tmp12++) {
-      Movie_keywordItem mk = movie_keyword.data[tmp12];
+  keyword_t keyword[] = {(keyword_t){.id = 1, .keyword = "amazing sequel"},
+                         (keyword_t){.id = 2, .keyword = "prequel"}};
+  int keyword_len = sizeof(keyword) / sizeof(keyword[0]);
+  movie_info_t movie_info[] = {
+      (movie_info_t){.movie_id = 10, .info = "Germany"},
+      (movie_info_t){.movie_id = 30, .info = "Sweden"},
+      (movie_info_t){.movie_id = 20, .info = "France"}};
+  int movie_info_len = sizeof(movie_info) / sizeof(movie_info[0]);
+  movie_keyword_t movie_keyword[] = {
+      (movie_keyword_t){.movie_id = 10, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 30, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 20, .keyword_id = 1},
+      (movie_keyword_t){.movie_id = 10, .keyword_id = 2}};
+  int movie_keyword_len = sizeof(movie_keyword) / sizeof(movie_keyword[0]);
+  title_t title[] = {
+      (title_t){.id = 10, .title = "Alpha", .production_year = 2006},
+      (title_t){.id = 30, .title = "Beta", .production_year = 2008},
+      (title_t){.id = 20, .title = "Gamma", .production_year = 2009}};
+  int title_len = sizeof(title) / sizeof(title[0]);
+  list_string allowed_infos = list_string_create(8);
+  allowed_infos.data[0] = "Sweden";
+  allowed_infos.data[1] = "Norway";
+  allowed_infos.data[2] = "Germany";
+  allowed_infos.data[3] = "Denmark";
+  allowed_infos.data[4] = "Swedish";
+  allowed_infos.data[5] = "Denish";
+  allowed_infos.data[6] = "Norwegian";
+  allowed_infos.data[7] = "German";
+  int allowed_infos = allowed_infos;
+  int tmp4 =
+      int_create(keyword.len * movie_keyword.len * movie_info.len * title.len);
+  int tmp5 = 0;
+  for (int tmp6 = 0; tmp6 < keyword_len; tmp6++) {
+    keyword_t k = keyword[tmp6];
+    for (int tmp7 = 0; tmp7 < movie_keyword_len; tmp7++) {
+      movie_keyword_t mk = movie_keyword[tmp7];
       if (!(mk.keyword_id == k.id)) {
         continue;
       }
-      for (int tmp13 = 0; tmp13 < movie_info.len; tmp13++) {
-        Movie_infoItem mi = movie_info.data[tmp13];
+      for (int tmp8 = 0; tmp8 < movie_info_len; tmp8++) {
+        movie_info_t mi = movie_info[tmp8];
         if (!(mi.movie_id == mk.movie_id)) {
           continue;
         }
-        for (int tmp14 = 0; tmp14 < title.len; tmp14++) {
-          TitleItem t = title.data[tmp14];
+        for (int tmp9 = 0; tmp9 < title_len; tmp9++) {
+          title_t t = title[tmp9];
           if (!(t.id == mi.movie_id)) {
             continue;
           }
@@ -316,23 +310,22 @@ int main() {
                 t.production_year > 2005 && mk.movie_id == mi.movie_id)) {
             continue;
           }
-          tmp9.data[tmp10] = t.title;
-          tmp10++;
+          tmp4.data[tmp5] = t.title;
+          tmp5++;
         }
       }
     }
   }
-  tmp9.len = tmp10;
-  list_string candidate_titles = tmp9;
-  ResultItem tmp15_data[] = {
-      (ResultItem){.movie_title = _min_string(candidate_titles)}};
-  list_ResultItem tmp15 = {1, tmp15_data};
-  list_ResultItem result = tmp15;
+  tmp4.len = tmp5;
+  int candidate_titles = tmp4;
+  result_t result[] = {
+      (result_t){.movie_title = _min_string(candidate_titles)}};
+  int result_len = sizeof(result) / sizeof(result[0]);
   printf("[");
-  for (int i16 = 0; i16 < result.len; i16++) {
-    if (i16 > 0)
+  for (int i10 = 0; i10 < result_len; i10++) {
+    if (i10 > 0)
       printf(",");
-    ResultItem it = result.data[i16];
+    result_t it = result[i10];
     printf("{");
     _json_string("movie_title");
     printf(":");
