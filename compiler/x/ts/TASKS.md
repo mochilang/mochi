@@ -55,3 +55,7 @@
 - Added `tpch_golden_test.go` to compile and verify TPC-H queries with Deno.
 - Regenerated all TPC-H TypeScript outputs via `compile_tpch_ts.go`.
 - All queries run successfully without errors.
+### 2025-07-15 13:01 UTC
+- Added `tpcds_golden_test.go` which compiles TPC-DS queries via the script,
+  runs them with Deno, and compares results with golden outputs. `q1` now
+  succeeds while `q40` and `q76` still produce `.error` files.
