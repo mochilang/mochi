@@ -1,1 +1,1 @@
-[{"d_year": 1998, "brand_id": 1, "brand": "Brand1", "sum_agg": 10.0}, {"d_year": 1998, "brand_id": 2, "brand": "Brand2", "sum_agg": 20.0}]
+[{"d_year": 1998, "brand_id": 2, "brand": "Brand2", "sum_agg": 20.0}, {"d_year": 1998, "brand_id": 1, "brand": "Brand1", "sum_agg": 10.0}]

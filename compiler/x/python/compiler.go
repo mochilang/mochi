@@ -797,6 +797,27 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					typ = types.AnyType{}
 				}
 				tail = tail[1:]
+			} else {
+				if key != "key" {
+					if ftm, ok := c.tupleTypes[rootName]; ok {
+						for alias, idx := range fm {
+							switch at := ftm[alias].(type) {
+							case types.StructType:
+								if ft, ok := at.Fields[key]; ok {
+									expr += fmt.Sprintf("[%d].%s", idx, sanitizeName(key))
+									typ = ft
+									tail = tail[1:]
+									break
+								}
+							case types.MapType:
+								expr += fmt.Sprintf("[%d][%q]", idx, sanitizeName(key))
+								typ = at.Value
+								tail = tail[1:]
+								break
+							}
+						}
+					}
+				}
 			}
 		}
 		for i, s := range tail {
