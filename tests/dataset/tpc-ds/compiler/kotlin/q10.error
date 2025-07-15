@@ -1,0 +1,54 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q10.kt:20:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int, var c_current_cdemo_sk: Int)
+           ^
+/tmp/q10.kt:30:12: error: redeclaration: Customer
+data class Customer(var c_customer_sk: Int, var c_current_addr_sk: Int, var c_current_cdemo_sk: Int)
+           ^
+/tmp/q10.kt:48:17: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+val web_sales = mutableListOf()
+                ^
+/tmp/q10.kt:50:21: error: type inference failed: Not enough information to infer parameter T in inline fun <T> mutableListOf(): MutableList<T>
+Please specify it explicitly.
+
+val catalog_sales = mutableListOf()
+                    ^
+/tmp/q10.kt:102:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:103:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^
+/tmp/q10.kt:108:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:109:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^
+/tmp/q10.kt:114:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:115:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^
+/tmp/q10.kt:120:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:121:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^
+/tmp/q10.kt:126:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:127:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^
+/tmp/q10.kt:132:10: error: names _, __, ___, ..., are reserved in Kotlin
+    for (_ in g) {
+         ^
+/tmp/q10.kt:133:20: error: names _, __, ___, ... can be used only in back-ticks (`_`, `__`, `___`, ...)
+        __res.add((_ as MutableMap<String, Any?>))
+                   ^

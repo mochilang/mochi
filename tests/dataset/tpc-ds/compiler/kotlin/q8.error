@@ -1,0 +1,17 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/q8.kt:69:33: error: unresolved reference: substr
+                            if (substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)) {
+                                ^
+/tmp/q8.kt:69:58: error: unresolved reference: substr
+                            if (substr(s.s_zip, 0, 2) == substr(ca.ca_zip, 0, 2)) {
+                                                         ^
+/tmp/q8.kt:72:45: error: unresolved reference: substr
+                                        if (substr(ca.ca_zip, 0, 5) in zip_list) {
+                                            ^
+/tmp/q8.kt:110:5: error: unresolved reference: reverse
+    reverse(substr("zip", 0, 2))
+    ^
+/tmp/q8.kt:110:13: error: unresolved reference: substr
+    reverse(substr("zip", 0, 2))
+            ^
