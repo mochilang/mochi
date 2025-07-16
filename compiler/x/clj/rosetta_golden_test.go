@@ -25,7 +25,7 @@ func shouldUpdateRosetta() bool {
 func runRosettaTaskGolden(t *testing.T, name string) {
 	root := repoRoot(t)
 	script := exec.Command("go", "run", "-tags=archive,slow", "./scripts/compile_rosetta_clj.go")
-	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name)
+	script.Env = append(os.Environ(), "GOTOOLCHAIN=local", "TASKS="+name, "SOURCE_DATE_EPOCH=0")
 	script.Dir = root
 	if out, err := script.CombinedOutput(); err != nil {
 		t.Fatalf("compile script error: %v\n%s", err, out)
@@ -42,6 +42,7 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 		t.Fatalf("parse error: %v", err)
 	}
 	env := types.NewEnv(nil)
+	os.Setenv("SOURCE_DATE_EPOCH", "0")
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
