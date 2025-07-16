@@ -1,0 +1,41 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/9-billion-names-of-god-the-integer.kt:138:16: error: expecting property name or receiver type
+            val val = (cache[y - x] as MutableList<MutableList<Int>>)[minInt(x, y - x)]
+               ^
+/tmp/9-billion-names-of-god-the-integer.kt:138:20: error: expecting property name or receiver type
+            val val = (cache[y - x] as MutableList<MutableList<Int>>)[minInt(x, y - x)]
+                   ^
+/tmp/9-billion-names-of-god-the-integer.kt:139:51: error: expecting an expression
+            row = row + bigAdd(row[row.size - 1], val)
+                                                  ^
+/tmp/9-billion-names-of-god-the-integer.kt:139:51: error: expecting ')'
+            row = row + bigAdd(row[row.size - 1], val)
+                                                  ^
+/tmp/9-billion-names-of-god-the-integer.kt:139:54: error: unexpected tokens (use ';' to separate expressions on the same line)
+            row = row + bigAdd(row[row.size - 1], val)
+                                                     ^
+/tmp/9-billion-names-of-god-the-integer.kt:15:9: error: val cannot be reassigned
+        a = a.subList(0, n - 1)
+        ^
+/tmp/9-billion-names-of-god-the-integer.kt:33:18: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+        digits = digits + n % 10
+                 ^
+/tmp/9-billion-names-of-god-the-integer.kt:34:13: error: type mismatch: inferred type is Double but Int was expected
+        n = (n).toDouble() / (10).toDouble()
+            ^
+/tmp/9-billion-names-of-god-the-integer.kt:59:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+        res = res + s % 10
+              ^
+/tmp/9-billion-names-of-god-the-integer.kt:60:17: error: type mismatch: inferred type is Double but Int was expected
+        carry = (s).toDouble() / (10).toDouble()
+                ^
+/tmp/9-billion-names-of-god-the-integer.kt:90:15: error: type inference failed. Expected type mismatch: inferred type is List<Int> but MutableList<Int> was expected
+        res = res + diff
+              ^
+/tmp/9-billion-names-of-god-the-integer.kt:142:17: error: type inference failed. Expected type mismatch: inferred type is List<MutableList<out Any>> but MutableList<MutableList<MutableList<Int>>> was expected
+        cache = cache + row
+                ^
+/tmp/9-billion-names-of-god-the-integer.kt:159:15: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        out = out + bigToString(diff)
+              ^

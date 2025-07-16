@@ -1,0 +1,25 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/abbreviations-automatic.kt:18:25: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+                words = words + cur
+                        ^
+/tmp/abbreviations-automatic.kt:28:17: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        words = words + cur
+                ^
+/tmp/abbreviations-automatic.kt:65:19: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+            out = out + x
+                  ^
+/tmp/abbreviations-automatic.kt:84:21: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+            abbrs = abbrs + takeRunes(words[i], l)
+                    ^
+/tmp/abbreviations-automatic.kt:111:1: error: conflicting overloads: public fun main(): Unit defined in root package in file abbreviations-automatic.kt, public fun main(): Unit defined in root package in file abbreviations-automatic.kt
+fun main(): Unit {
+^
+/tmp/abbreviations-automatic.kt:122:1: error: conflicting overloads: public fun main(): Unit defined in root package in file abbreviations-automatic.kt, public fun main(): Unit defined in root package in file abbreviations-automatic.kt
+fun main() {
+^
+/tmp/abbreviations-automatic.kt:123:5: error: overload resolution ambiguity: 
+public fun main(): Unit defined in root package in file abbreviations-automatic.kt
+public fun main(): Unit defined in root package in file abbreviations-automatic.kt
+    main()
+    ^

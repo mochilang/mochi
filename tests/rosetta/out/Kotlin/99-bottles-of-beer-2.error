@@ -1,0 +1,22 @@
+kotlinc: exit status 1
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+/tmp/99-bottles-of-beer-2.kt:18:25: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+                words = words + cur
+                        ^
+/tmp/99-bottles-of-beer-2.kt:28:17: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        words = words + cur
+                ^
+/tmp/99-bottles-of-beer-2.kt:118:13: error: type inference failed. Expected type mismatch: inferred type is List<String> but MutableList<String> was expected
+        a = a + p.substring(i, i + 1)
+            ^
+/tmp/99-bottles-of-beer-2.kt:147:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt, public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt
+fun main(): Unit {
+^
+/tmp/99-bottles-of-beer-2.kt:158:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt, public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt
+fun main() {
+^
+/tmp/99-bottles-of-beer-2.kt:159:5: error: overload resolution ambiguity: 
+public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt
+public fun main(): Unit defined in root package in file 99-bottles-of-beer-2.kt
+    main()
+    ^
