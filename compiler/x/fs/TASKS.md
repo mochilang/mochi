@@ -2,6 +2,9 @@
 
 ## Recent Updates
 
+- 2025-07-16 12:07 UTC - Improved type hints for arrays by analyzing assignments
+  and fixed range loop bounds so Rosetta tasks compile and run without errors.
+
 - 2025-07-13 05:03 - Added simple type inference for identifiers and selectors so
   generated record fields use concrete types.
 - 2025-07-13 05:19 - Fixed binary expression inference crash by wrapping
