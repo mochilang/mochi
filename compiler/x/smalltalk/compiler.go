@@ -47,9 +47,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf = bytes.Buffer{}
 	c.indent = 0
 
-       var out bytes.Buffer
-       out.Write(meta.Header("\""))
-       out.WriteString("\"\n")
+	var out bytes.Buffer
+	out.Write(meta.Header("\""))
+	out.WriteString("\"\n")
 	vars := collectVars(p.Statements)
 	if len(vars) > 0 {
 		c.writeln("| " + strings.Join(vars, " ") + " |")
@@ -136,24 +136,24 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 		return c.compileBreak()
 	case s.Continue != nil:
 		return c.compileContinue()
-       case s.Return != nil:
-               expr, err := c.compileExpr(s.Return.Value)
-               if err != nil {
-                       return err
-               }
-               c.writeln(expr)
-               return nil
-       case s.Test != nil:
-               // Test blocks do not produce output in the generated Smalltalk
-               // program. They are ignored so TPCH queries compile successfully.
-               return nil
-       case s.Expect != nil:
-               // Expect statements are part of test blocks. Ignore them.
-               return nil
-       case s.Type != nil:
-               // Struct and enum definitions have no runtime effect in the
-               // generated Smalltalk code, so they are ignored.
-               return nil
+	case s.Return != nil:
+		expr, err := c.compileExpr(s.Return.Value)
+		if err != nil {
+			return err
+		}
+		c.writeln(expr)
+		return nil
+	case s.Test != nil:
+		// Test blocks do not produce output in the generated Smalltalk
+		// program. They are ignored so TPCH queries compile successfully.
+		return nil
+	case s.Expect != nil:
+		// Expect statements are part of test blocks. Ignore them.
+		return nil
+	case s.Type != nil:
+		// Struct and enum definitions have no runtime effect in the
+		// generated Smalltalk code, so they are ignored.
+		return nil
 	default:
 		return fmt.Errorf("unsupported statement at line %d", s.Pos.Line)
 	}
@@ -577,6 +577,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return "{" + strings.Join(elems, ". ") + "}", nil
 	case p.Group != nil:
 		return c.compileExpr(p.Group)
+	case p.Struct != nil:
+		return c.compileStructLiteral(p.Struct)
 	case p.Map != nil:
 		pairs := make([]string, len(p.Map.Items))
 		for i, it := range p.Map.Items {
@@ -1218,6 +1220,22 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 		opts = v
 	}
 	return fmt.Sprintf("(Main _fetch: %s opts: %s)", url, opts), nil
+}
+
+func (c *Compiler) compileStructLiteral(s *parser.StructLiteral) (string, error) {
+	if len(s.Fields) == 0 {
+		return "Dictionary new", nil
+	}
+	pairs := make([]string, len(s.Fields))
+	for i, f := range s.Fields {
+		v, err := c.compileExpr(f.Value)
+		if err != nil {
+			return "", err
+		}
+		key := fmt.Sprintf("'%s'", f.Name)
+		pairs[i] = fmt.Sprintf("%s -> %s", key, v)
+	}
+	return "Dictionary from: {" + strings.Join(pairs, ". ") + "}", nil
 }
 
 func (c *Compiler) compileLiteral(l *parser.Literal) string {
