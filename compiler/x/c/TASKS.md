@@ -113,3 +113,6 @@ should compile and run successfully.
 - 2025-09-02 12:00 - Added sha256 built-in and rosetta golden tests for C compiler
 - 2025-09-03 10:00 - Fixed append assignment to drop constant list tracking so loops like `100-doors.mochi` compile and run
 - 2025-09-05 15:10 - Renamed runtime entry to `_mochi_main` and aliased user `main` functions to avoid duplicate symbols in Rosetta tests
+- 2025-09-06 00:20 - Added VM golden tests for `tests/vm/valid` and included
+  JSON helpers when compiling `save` expressions so `save_jsonl_stdout.mochi`
+  compiles successfully.
