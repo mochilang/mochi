@@ -1,5 +1,5 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
+parse: error[P999]: tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
+  --> tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
 
 108 |   while !quit && !isSolved() {
     |                  ^

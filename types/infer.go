@@ -597,17 +597,17 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 	case p.Map != nil:
 		if len(p.Map.Items) > 0 {
 			st := StructType{Fields: make(map[string]Type), Order: make([]string, len(p.Map.Items))}
-			allId := true
+			allConst := true
 			for i, it := range p.Map.Items {
-				key, ok := identName(it.Key)
+				key, ok := stringKey(it.Key)
 				if !ok {
-					allId = false
+					allConst = false
 					break
 				}
 				st.Fields[key] = ExprType(it.Value, env)
 				st.Order[i] = key
 			}
-			if allId {
+			if allConst {
 				return st
 			}
 		}
@@ -629,10 +629,10 @@ func inferPrimaryType(env *Env, p *parser.Primary) Type {
 					kt = ExprType(it.Key, env)
 				}
 				vt := ExprType(it.Value, env)
-				if !equalTypes(keyType, kt) {
+				if !unify(keyType, kt, nil) {
 					keyType = AnyType{}
 				}
-				if !equalTypes(valType, vt) {
+				if !unify(valType, vt, nil) {
 					valType = AnyType{}
 				}
 			}
