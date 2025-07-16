@@ -13,6 +13,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   variable handling to avoid runtime errors.
 - 2025-07-16 12:20 – Implemented `now()` builtin using `(chibi time)` to reduce
   runtime failures when compiling Rosetta examples.
+- 2025-07-16 12:45 – Integer division now uses `quotient` when operands are
+  integers, reducing runtime errors for several Rosetta tasks.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks

@@ -116,3 +116,94 @@ func (c *Compiler) isListExpr(e *parser.Expr) bool {
 	}
 	return false
 }
+
+func (c *Compiler) isFloatExpr(e *parser.Expr) bool {
+	if types.IsFloatExpr(e, c.env) {
+		return true
+	}
+	root := rootNameExpr(e)
+	if root != "" && c.env != nil {
+		if t, err := c.env.GetVar(root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatUnary(u *parser.Unary) bool {
+	if u == nil {
+		return false
+	}
+	if c.isFloatPostfix(u.Value) {
+		return true
+	}
+	root := rootNameUnary(u)
+	if root != "" && c.env != nil {
+		if t, err := c.env.GetVar(root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatPostfix(p *parser.PostfixExpr) bool {
+	if p == nil {
+		return false
+	}
+	if c.isFloatPrimary(p.Target) {
+		return true
+	}
+	for _, op := range p.Ops {
+		if op.Cast != nil {
+			if op.Cast.Type != nil && op.Cast.Type.Simple != nil && *op.Cast.Type.Simple == "float" {
+				return true
+			}
+		}
+	}
+	root := rootNamePostfix(p)
+	if root != "" && c.env != nil {
+		if t, err := c.env.GetVar(root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatPrimary(p *parser.Primary) bool {
+	if p == nil {
+		return false
+	}
+	switch {
+	case p.Lit != nil && p.Lit.Float != nil:
+		return true
+	case p.Selector != nil && c.env != nil:
+		if t, err := c.env.GetVar(p.Selector.Root); err == nil {
+			if _, ok := t.(types.FloatType); ok {
+				return true
+			}
+		}
+	case p.Call != nil && c.env != nil:
+		if t, err := c.env.GetVar(p.Call.Func); err == nil {
+			if ft, ok := t.(types.FuncType); ok {
+				if _, ok2 := ft.Return.(types.FloatType); ok2 {
+					return true
+				}
+			}
+		}
+	case p.Group != nil:
+		return c.isFloatExpr(p.Group)
+	case p.List != nil:
+		for _, e := range p.List.Elems {
+			if c.isFloatExpr(e) {
+				return true
+			}
+		}
+	}
+	return false
+}
