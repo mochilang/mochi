@@ -45,3 +45,8 @@
 - Updated Rosetta golden files using new `__print` helper.
 - `4-rings-or-4-squares-puzzle` now passes and its `.error` file was removed.
 - Added generated Lua code for additional tasks (e.g. `100-prisoners`).
+
+## Progress (2025-07-16 15:30)
+- Added golden tests for VM programs under `tests/vm/valid`.
+- Implemented new `__print` helper to print list elements without brackets.
+- All 100 VM examples now compile and match runtime output.

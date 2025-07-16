@@ -339,18 +339,31 @@ const (
 		"            return '{'..table.concat(parts, ',')..'}'\n" +
 		"        end\n" +
 		"    else\n" +
+		"        if v == nil then return '<nil>' end\n" +
+		"        if type(v) == 'number' then\n" +
+		"            if math.type and math.type(v) == 'float' then\n" +
+		"                return string.format('%.16g', v)\n" +
+		"            end\n" +
+		"        end\n" +
 		"        return tostring(v)\n" +
 		"    end\n" +
 		"end\n"
 
-	helperPrint = "function __print(v)\n" +
-		"    if type(v) == 'table' and (v[1] ~= nil or #v > 0) and type(v[1]) == 'table' then\n" +
-		"        local parts = {}\n" +
-		"        for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
-		"        print(table.concat(parts, ' '))\n" +
-		"    else\n" +
-		"        print(__str(v))\n" +
+	helperPrint = "function __print(...)\n" +
+		"    local n = select('#', ...)\n" +
+		"    for ai = 1, n do\n" +
+		"        if ai > 1 then io.write(' ') end\n" +
+		"        local a = select(ai, ...)\n" +
+		"        if type(a) == 'table' and (a[1] ~= nil or #a > 0) then\n" +
+		"            for i = 1, #a do\n" +
+		"                if i > 1 then io.write(' ') end\n" +
+		"                io.write(__str(a[i]))\n" +
+		"            end\n" +
+		"        else\n" +
+		"            io.write(__str(a))\n" +
+		"        end\n" +
 		"    end\n" +
+		"    io.write('\\n')\n" +
 		"end\n"
 
 	helperEval = "function __eval(code)\n" +
