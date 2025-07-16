@@ -1,0 +1,6 @@
+exit status 1
+Execution error (FileNotFoundException) at main/eval138$loading (save_jsonl_stdout.clj:2).
+Could not locate clojure/data/json__init.class, clojure/data/json.clj or clojure/data/json.cljc on classpath.
+
+Full report at:
+/tmp/clojure-17660704091984711921.edn

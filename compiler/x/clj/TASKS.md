@@ -16,7 +16,10 @@ Recent updates (2025-07-16 11:36):
 - Fixed default indexing to use `get` when element type is unknown.
 - Regenerated machine translations for `tests/vm/valid`.
 
+2025-07-18 00:00:
+- Added VM golden tests for `tests/vm/valid` programs.
+- Fixed `_query` helper to pass correct arguments to `:select` functions.
+
 Remaining work:
-- [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
-- [ ] Support reading relative files for `load_yaml.mochi` during tests.
-- [ ] Expand dataset query coverage beyond TPCH Q1–Q6.
+ - [ ] Support reading relative files for `load_yaml.mochi` during tests.
+ - [ ] Expand dataset query coverage beyond TPCH Q1–Q6.
