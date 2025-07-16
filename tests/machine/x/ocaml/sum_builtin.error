@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/sum_builtin.ml", line 24, characters 37-38:
+File "/tmp/TestOCamlCompiler_VMValid_Goldensum_builtin3596956322/001/sum_builtin.ml", line 24, characters 37-38:
 24 |   print_endline (__show ((sum_float [1;2;3])));
                                           ^
 Error: This expression has type int but an expression was expected of type

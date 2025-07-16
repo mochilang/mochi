@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/query_sum_select.ml", line 26, characters 25-26:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenquery_sum_select3120598734/001/query_sum_select.ml", line 26, characters 25-26:
 26 |     __res0 := (sum_float n) :: !__res0;
                               ^
 Error: This expression has type int but an expression was expected of type

@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/inner_join.ml", line 33, characters 53-57:
+File "/tmp/TestOCamlCompiler_VMValid_Goldeninner_join2985014908/001/inner_join.ml", line 33, characters 53-57:
 33 |         __res0 := { orderId = o.id; customerName = c.name; total = o.total } :: !__res0;
                                                           ^^^^
 Error: This expression has type record2

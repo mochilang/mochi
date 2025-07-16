@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/group_by_having.ml", line 24, characters 2-6:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_having4039921911/001/group_by_having.ml", line 24, characters 2-6:
 24 |   json big;
        ^^^^
 Error: Unbound value json

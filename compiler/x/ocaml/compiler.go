@@ -827,8 +827,6 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 	}
 
 	c.indent--
-	c.writeln(fmt.Sprintf(") %s", itemVar)) // closing fun
-	c.indent--
 	c.writeln(fmt.Sprintf(") %s", list))
 	c.indent--
 
