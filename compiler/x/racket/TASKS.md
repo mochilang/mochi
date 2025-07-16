@@ -2,6 +2,9 @@
 
 Recent enhancements:
 
+- 2025-08-30 05:04 - Added golden tests for `tests/vm/valid` to
+  verify generated Racket code and runtime output.
+
 - 2025-07-25 05:04 - Compiler now supports casts to and from `bigint`
   and honors `SOURCE_DATE_EPOCH` for reproducible outputs.
 

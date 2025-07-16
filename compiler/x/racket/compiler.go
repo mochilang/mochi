@@ -105,7 +105,7 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 		return nil
 	case s.Let != nil:
 		name := s.Let.Name
-		expr := "0"
+		expr := "(void)"
 		if s.Let.Value != nil {
 			v, err := c.compileExpr(s.Let.Value)
 			if err != nil {
@@ -162,7 +162,7 @@ func (c *Compiler) compileStmtFull(s *parser.Statement, breakLbl, contLbl, retLb
 		c.writeln(fmt.Sprintf("(set! %s %s)", s.Assign.Name, val))
 	case s.Var != nil:
 		name := s.Var.Name
-		expr := "0"
+		expr := "(void)"
 		if s.Var.Value != nil {
 			v, err := c.compileExpr(s.Var.Value)
 			if err != nil {
@@ -512,10 +512,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")
 			}
+			c.needRuntime = true
 			if len(args) == 1 {
-				return fmt.Sprintf("(displayln %s)", args[0]), nil
+				return fmt.Sprintf("(displayln (_to_string %s))", args[0]), nil
 			}
-			return fmt.Sprintf("(displayln (string-join (map ~a (list %s)) \" \"))",
+			return fmt.Sprintf("(displayln (string-join (map _to_string (list %s)) \" \"))",
 				strings.Join(args, " ")), nil
 		case "append":
 			if len(args) != 2 {
