@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 	"time"
 
@@ -119,6 +120,33 @@ func builtinStr(i *Interpreter, c *parser.CallExpr) (any, error) {
 		return nil, err
 	}
 	return fmt.Sprint(val), nil
+}
+
+// builtinInt implements int(x) which converts strings or numbers to int.
+func builtinInt(i *Interpreter, c *parser.CallExpr) (any, error) {
+	if len(c.Args) != 1 {
+		return nil, fmt.Errorf("int(x) takes exactly one argument")
+	}
+	val, err := i.evalExpr(c.Args[0])
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case int:
+		return v, nil
+	case int64:
+		return int(v), nil
+	case float64:
+		return int(v), nil
+	case string:
+		n, err := strconv.Atoi(strings.TrimSpace(v))
+		if err != nil {
+			return nil, fmt.Errorf("invalid int: %v", err)
+		}
+		return n, nil
+	default:
+		return nil, fmt.Errorf("int() expects numeric or string, got %T", val)
+	}
 }
 
 // builtinInput reads a line from standard input.
@@ -297,6 +325,7 @@ func (i *Interpreter) builtinFuncs() map[string]func(*Interpreter, *parser.CallE
 		"now":       builtinNow,
 		"json":      builtinJSON,
 		"str":       builtinStr,
+		"int":       builtinInt,
 		"input":     builtinInput,
 		"count":     builtinCount,
 		"avg":       builtinAvg,
