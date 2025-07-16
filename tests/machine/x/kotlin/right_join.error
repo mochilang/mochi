@@ -1,12 +1,4 @@
-line 40:
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/workspace/mochi/tests/machine/x/kotlin/right_join.kt:40:85: error: unresolved reference: id
-            println(listOf("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total).joinToString(" "))
-                                                                                    ^
-/workspace/mochi/tests/machine/x/kotlin/right_join.kt:40:108: error: unresolved reference: total
-            println(listOf("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total).joinToString(" "))
-                                                                                                           ^
-
- 39:         if (toBool(entry.order)) {
- 40:             println(listOf("Customer", entry.customerName, "has order", entry.order.id, "- $", entry.order.total).joinToString(" "))
- 41:         }
+--- Right Join using syntax ---
+Exception in thread "main" java.lang.ClassCastException: class Order cannot be cast to class java.util.Map (Order is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
+	at Right_joinKt.main(right_join.kt:43)
+	at Right_joinKt.main(right_join.kt)

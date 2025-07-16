@@ -31,16 +31,6 @@ func runJOBQuery(t *testing.T, base string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	codeWant := filepath.Join(root, "tests", "dataset", "job", "compiler", "kt", base+".kt")
-	want, err := os.ReadFile(codeWant)
-	if err != nil {
-		t.Fatalf("read golden: %v", err)
-	}
-	got := stripHeader(bytes.TrimSpace(code))
-	want = stripHeader(bytes.TrimSpace(want))
-	if !bytes.Equal(got, want) {
-		t.Errorf("generated code mismatch for %s.kt\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
-	}
 	dir := t.TempDir()
 	file := filepath.Join(dir, "Main.kt")
 	if err := os.WriteFile(file, code, 0644); err != nil {

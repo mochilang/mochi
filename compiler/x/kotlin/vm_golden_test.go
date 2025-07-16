@@ -4,81 +4,71 @@ package kotlin_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	kotlin "mochi/compiler/x/kotlin"
-	_ "mochi/golden"
+	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
 )
 
-// TestKotlinCompiler_VMGolden compiles append_builtin.mochi to Kotlin and
-// verifies the generated source and runtime output. This keeps the test quick
-// while exercising the full pipeline.
-func TestKotlinCompiler_VMGolden(t *testing.T) {
+// TestKotlinCompiler_VMValid_Golden compiles the Mochi programs in tests/vm/valid
+// to Kotlin, runs them with the JVM and compares the runtime output to the
+// golden .out files. Generated source and outputs are written under
+// tests/machine/x/kotlin.
+func TestKotlinCompiler_VMValid_Golden(t *testing.T) {
 	if _, err := exec.LookPath("kotlinc"); err != nil {
 		t.Skip("kotlinc not installed")
 	}
-	root := repoRootVM()
-	src := filepath.Join(root, "tests", "vm", "valid", "append_builtin.mochi")
+	root := repoRoot()
+	outDir := filepath.Join(root, "tests", "machine", "x", "kotlin")
+	os.MkdirAll(outDir, 0o755)
 
-	prog, err := parser.Parse(src)
-	if err != nil {
-		t.Fatalf("parse error: %v", err)
-	}
-	env := types.NewEnv(nil)
-	if errs := types.Check(prog, env); len(errs) > 0 {
-		t.Fatalf("type error: %v", errs[0])
-	}
-	code, err := kotlin.New(env, src).Compile(prog)
-	if err != nil {
-		t.Fatalf("compile error: %v", err)
-	}
-
-	// Compare generated code to golden file.
-	wantCodePath := filepath.Join(root, "tests", "vm", "valid", "append_builtin.kt.out")
-	if want, err := os.ReadFile(wantCodePath); err == nil {
-		got := stripHeader(bytes.TrimSpace(code))
-		got = bytes.ReplaceAll(got, []byte(src), []byte("."))
-		want = stripHeader(bytes.TrimSpace(want))
-		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch\n\n--- got ---\n%s\n\n--- want ---\n%s", code, want)
+	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		prog, err := parser.Parse(src)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("parse: "+err.Error()), 0o644)
+			return nil, fmt.Errorf("parse error: %w", err)
 		}
-	} else if !os.IsNotExist(err) {
-		t.Fatalf("read golden: %v", err)
-	}
-
-	dir := t.TempDir()
-	ktFile := filepath.Join(dir, "Main.kt")
-	if err := os.WriteFile(ktFile, code, 0o644); err != nil {
-		t.Fatalf("write error: %v", err)
-	}
-	jar := filepath.Join(dir, "main.jar")
-	if out, err := exec.Command("kotlinc", ktFile, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
-		t.Fatalf("kotlinc error: %v\n%s", err, out)
-	}
-	runOut, err := exec.Command("java", "-jar", jar).CombinedOutput()
-	if err != nil {
-		t.Fatalf("java error: %v\n%s", err, runOut)
-	}
-	_ = runOut
-}
-
-// repoRoot returns the repository root directory by searching upwards for go.mod.
-func repoRootVM() string {
-	dir, _ := os.Getwd()
-	for i := 0; i < 10; i++ {
-		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
-			return dir
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("type: "+errs[0].Error()), 0o644)
+			return nil, fmt.Errorf("type error: %v", errs[0])
 		}
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
+		c := kotlin.New(env, filepath.Base(src))
+		code, err := c.Compile(prog)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("compile: "+err.Error()), 0o644)
+			return nil, fmt.Errorf("compile error: %w", err)
 		}
-		dir = parent
-	}
-	return dir
+		ktFile := filepath.Join(outDir, base+".kt")
+		if err := os.WriteFile(ktFile, code, 0o644); err != nil {
+			return nil, err
+		}
+		jar := filepath.Join(outDir, base+".jar")
+		if out, err := exec.Command("kotlinc", ktFile, "-include-runtime", "-d", jar).CombinedOutput(); err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), append([]byte("kotlinc: "+err.Error()+"\n"), out...), 0o644)
+			return nil, fmt.Errorf("kotlinc error: %w", err)
+		}
+		cmd := exec.Command("java", "-jar", jar)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+			return nil, fmt.Errorf("run error: %w", err)
+		}
+		out = bytes.TrimSpace(out)
+		_ = os.WriteFile(filepath.Join(outDir, base+".out"), out, 0o644)
+		_ = os.Remove(jar)
+		_ = os.Remove(filepath.Join(outDir, base+".error"))
+		return out, nil
+	})
 }
