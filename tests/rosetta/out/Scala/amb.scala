@@ -33,7 +33,7 @@ object amb {
       var out = "[" + (res).apply(0)
       var j = 1
       while (j < res.length) {
-        out = (out + " ").asInstanceOf[Int] + (res).apply(j)
+        out = out + " " + (res).apply(j)
         j += 1
       }
       out += "]"

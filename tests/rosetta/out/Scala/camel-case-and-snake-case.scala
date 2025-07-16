@@ -119,12 +119,12 @@ object camel_case_and_snake_case {
     val samples = List("snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces ")
     println("=== To snake_case ===")
     for(s <- samples) {
-      println((padLeft(s, 34) + " => ").asInstanceOf[Int] + camelToSnake(s))
+      println(padLeft(s, 34) + " => " + camelToSnake(s))
     }
     println("")
     println("=== To camelCase ===")
     for(s <- samples) {
-      println((padLeft(s, 34) + " => ").asInstanceOf[Int] + snakeToCamel(s))
+      println(padLeft(s, 34) + " => " + snakeToCamel(s))
     }
   }
   

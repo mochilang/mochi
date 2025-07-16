@@ -67,7 +67,7 @@ object bitmap_write_a_ppm_file {
       }
       y += 1
     }
-    var out = ((((("P3\n# generated from Bitmap.writeppmp3\n" + b.width.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + b.height.toString).asInstanceOf[Int] + "\n").asInstanceOf[Int] + maxv.toString).asInstanceOf[Int] + "\n"
+    var out = "P3\n# generated from Bitmap.writeppmp3\n" + b.width.toString + " " + b.height.toString + "\n" + maxv.toString + "\n"
     var numsize = maxv.toString.length
     y = b.height - 1
     while (y >= 0) {
@@ -75,7 +75,7 @@ object bitmap_write_a_ppm_file {
       var x = 0
       while (x < b.width) {
         val p = ((b.pixels).apply(y)).apply(x)
-        line = (((((line + "   ").asInstanceOf[Int] + pad(p.R, numsize)).asInstanceOf[Int] + " ").asInstanceOf[Int] + pad(p.G, numsize)).asInstanceOf[Int] + " ").asInstanceOf[Int] + pad(p.B, numsize)
+        line = line + "   " + pad(p.R, numsize) + " " + pad(p.G, numsize) + " " + pad(p.B, numsize)
         x += 1
       }
       out += line

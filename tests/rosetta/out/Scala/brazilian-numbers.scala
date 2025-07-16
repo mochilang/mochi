@@ -55,7 +55,7 @@ object brazilian_numbers {
   def main() = {
     var kinds = scala.collection.mutable.ArrayBuffer(" ", " odd ", " prime ")
     for(kind <- kinds) {
-      println(("First 20" + kind).asInstanceOf[Int] + "Brazilian numbers:")
+      println("First 20" + kind + "Brazilian numbers:")
       var c = 0
       var n = 7
       while (true) {

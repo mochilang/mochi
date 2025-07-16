@@ -116,7 +116,7 @@ object blum_integer {
               var line = ""
               var j = 0
               while (j < 10) {
-                line = (line + padLeft((blum).apply(idx), 3)).asInstanceOf[Int] + " "
+                line = line + padLeft((blum).apply(idx), 3) + " "
                 idx += 1
                 j += 1
               }

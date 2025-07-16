@@ -18,9 +18,9 @@ object anonymous_recursion_2 {
   def main() = {
     for(i <- List(-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)) {
       if (i < 0) {
-        println(("fib(" + i.toString).asInstanceOf[Int] + ") returned error: negative n is forbidden")
+        println("fib(" + i.toString + ") returned error: negative n is forbidden")
       } else {
-        println((("fib(" + i.toString).asInstanceOf[Int] + ") = ").asInstanceOf[Int] + fib(i).toString)
+        println("fib(" + i.toString + ") = " + fib(i).toString)
       }
     }
   }

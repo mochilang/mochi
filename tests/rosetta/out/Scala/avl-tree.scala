@@ -168,8 +168,8 @@ object avl_tree {
       println(line)
     } else {
       println(sp + "{")
-      println(((indentStr(indent + 3) + "\"Data\": ").asInstanceOf[Int] + (node).apply("Data").toString).asInstanceOf[Int] + ",")
-      println(((indentStr(indent + 3) + "\"Balance\": ").asInstanceOf[Int] + (node).apply("Balance").toString).asInstanceOf[Int] + ",")
+      println(indentStr(indent + 3) + "\"Data\": " + (node).apply("Data").toString + ",")
+      println(indentStr(indent + 3) + "\"Balance\": " + (node).apply("Balance").toString + ",")
       println(indentStr(indent + 3) + "\"Link\": [")
       dumpNode(getLink(node, 0), indent + 6, true)
       dumpNode(getLink(node, 1), indent + 6, false)

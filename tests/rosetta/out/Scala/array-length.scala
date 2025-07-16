@@ -1,7 +1,7 @@
 object array_length {
   def main() = {
     val arr = List("apple", "orange", "pear")
-    println(((("Length of " + arr.toString).asInstanceOf[Int] + " is ").asInstanceOf[Int] + arr.length.toString).asInstanceOf[Int] + ".")
+    println("Length of " + arr.toString + " is " + arr.length.toString + ".")
   }
   
   def main(args: Array[String]): Unit = {

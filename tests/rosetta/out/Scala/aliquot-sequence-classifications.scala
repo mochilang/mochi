@@ -71,14 +71,14 @@ object aliquot_sequence_classifications {
             aliquot = "Amicable"
           } else {
             if (n >= 4 && last == k) {
-              aliquot = ("Sociable[" + n - 1.toString).asInstanceOf[Int] + "]"
+              aliquot = "Sociable[" + n - 1.toString + "]"
             } else {
               if (last == (seq).apply(n - 2)) {
                 aliquot = "Aspiring"
               } else {
                 if (contains(seq.slice(1, maxOf(1, n - 2)), last)) {
                   val idx = indexOf(seq, last)
-                  aliquot = ("Cyclic[" + n - 1 - idx.toString).asInstanceOf[Int] + "]"
+                  aliquot = "Cyclic[" + n - 1 - idx.toString + "]"
                 } else {
                   if (n == 16 || last > THRESHOLD) {
                     aliquot = "Non-Terminating"
@@ -131,7 +131,7 @@ object aliquot_sequence_classifications {
     var k = 1
     while (k <= 10) {
       val res = classifySequence(k)
-      println((((padLeft(k, 2) + ": ").asInstanceOf[Int] + padRight((res).apply("aliquot").toString, 15)).asInstanceOf[Int] + " ").asInstanceOf[Int] + joinWithCommas((res).apply("seq").asInstanceOf[List[Int]]))
+      println(padLeft(k, 2) + ": " + padRight((res).apply("aliquot").toString, 15) + " " + joinWithCommas((res).apply("seq").asInstanceOf[List[Int]]))
       k += 1
     }
     println("")
@@ -140,13 +140,13 @@ object aliquot_sequence_classifications {
     while (i < s.length) {
       val val = (s).apply(i)
       val res = classifySequence(val)
-      println((((padLeft(val, 7) + ": ").asInstanceOf[Int] + padRight((res).apply("aliquot").toString, 15)).asInstanceOf[Int] + " ").asInstanceOf[Int] + joinWithCommas((res).apply("seq").asInstanceOf[List[Int]]))
+      println(padLeft(val, 7) + ": " + padRight((res).apply("aliquot").toString, 15) + " " + joinWithCommas((res).apply("seq").asInstanceOf[List[Int]]))
       i += 1
     }
     println("")
     val big = 15355717786080
     val r = classifySequence(big)
-    println((((big.toString + ": ").asInstanceOf[Int] + padRight((r).apply("aliquot").toString, 15)).asInstanceOf[Int] + " ").asInstanceOf[Int] + joinWithCommas((r).apply("seq").asInstanceOf[List[Int]]))
+    println(big.toString + ": " + padRight((r).apply("aliquot").toString, 15) + " " + joinWithCommas((r).apply("seq").asInstanceOf[List[Int]]))
   }
   
   def main(args: Array[String]): Unit = {

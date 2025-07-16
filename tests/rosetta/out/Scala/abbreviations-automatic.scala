@@ -81,7 +81,7 @@ object abbreviations_automatic {
     while (i < lines.length) {
       val words = fields((lines).apply(i))
       val l = abbrevLen(words)
-      println((pad2(l) + "  ").asInstanceOf[Int] + (lines).apply(i))
+      println(pad2(l) + "  " + (lines).apply(i))
       i += 1
     }
   }

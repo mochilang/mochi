@@ -121,7 +121,7 @@ object biorhythms {
     return n.toString
   }
   
-  def dateString(y: Int, m: Int, d: Int): String = (((y.toString + "-").asInstanceOf[Int] + pad2(m)).asInstanceOf[Int] + "-").asInstanceOf[Int] + pad2(d)
+  def dateString(y: Int, m: Int, d: Int): String = y.toString + "-" + pad2(m) + "-" + pad2(d)
   
   def day(y: Int, m: Int, d: Int): Int = {
     val part1 = 367 * y
@@ -140,7 +140,7 @@ object biorhythms {
     val tm = (tparts).apply(1)
     val td = (tparts).apply(2)
     val diff = absInt(day(ty, tm, td) - day(by, bm, bd))
-    println((("Born " + birth).asInstanceOf[Int] + ", Target ").asInstanceOf[Int] + target)
+    println("Born " + birth + ", Target " + target)
     println("Day " + diff.toString)
     val cycles = List("Physical day ", "Emotional day", "Mental day   ")
     val lengths = List(23, 28, 33)
@@ -175,7 +175,7 @@ object biorhythms {
             if (!contains(pct, ".")) {
               pct += ".0"
             }
-            description = (((((((" " + pct).asInstanceOf[Int] + "% (").asInstanceOf[Int] + trend).asInstanceOf[Int] + ", next ").asInstanceOf[Int] + next).asInstanceOf[Int] + " ").asInstanceOf[Int] + transition).asInstanceOf[Int] + ")"
+            description = " " + pct + "% (" + trend + ", next " + next + " " + transition + ")"
           }
         }
       }
@@ -183,7 +183,7 @@ object biorhythms {
       if (position < 10) {
         posStr = " " + posStr
       }
-      println(((cycle + posStr).asInstanceOf[Int] + " : ").asInstanceOf[Int] + description)
+      println(cycle + posStr + " : " + description)
       i += 1
     }
     println("")

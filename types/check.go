@@ -1630,6 +1630,10 @@ func checkPrimary(p *parser.Primary, env *Env, expected Type) (Type, error) {
 					typ = FuncType{Params: []Type{StringType{}}, Return: BoolType{}}
 					continue
 				}
+				if field == "padStart" {
+					typ = FuncType{Params: []Type{IntType{}, StringType{}}, Return: StringType{}, Pure: true}
+					continue
+				}
 				return nil, errNotStruct(p.Pos, typ)
 			case MapType:
 				if field == "keys" {

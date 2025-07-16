@@ -101,7 +101,7 @@ object average_loop_length {
       val a = avgLen(n)
       val b = ana(n)
       val err = absf(a - b) / b * 100
-      var line = ((((((padInt(n, 3) + "  ").asInstanceOf[Int] + padFloat(a, 9)).asInstanceOf[Int] + "  ").asInstanceOf[Int] + padFloat(b, 12)).asInstanceOf[Int] + "  (").asInstanceOf[Int] + padFloat(err, 6)).asInstanceOf[Int] + "%)"
+      var line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " + padFloat(b, 12) + "  (" + padFloat(err, 6) + "%)"
       println(line)
       n += 1
     }

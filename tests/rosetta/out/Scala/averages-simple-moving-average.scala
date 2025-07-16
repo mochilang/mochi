@@ -64,7 +64,7 @@ object averages_simple_moving_average {
     println("x       sma3   sma5")
     var i = 0
     while (i < xs.length) {
-      val line = (((pad(fmt3((xs).apply(i)), 5) + "  ").asInstanceOf[Int] + pad(fmt3((sma3).apply(i)), 5)).asInstanceOf[Int] + "  ").asInstanceOf[Int] + pad(fmt3((sma5).apply(i)), 5)
+      val line = pad(fmt3((xs).apply(i)), 5) + "  " + pad(fmt3((sma3).apply(i)), 5) + "  " + pad(fmt3((sma5).apply(i)), 5)
       println(line)
       i += 1
     }

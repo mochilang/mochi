@@ -1,7 +1,7 @@
 object cantor_set {
   val width = 81
   val height = 5
-  def setChar(s: String, idx: Int, ch: String): String = (s.substring(0, idx) + ch).asInstanceOf[Int] + s.substring(idx + 1, s.length)
+  def setChar(s: String, idx: Int, ch: String): String = s.substring(0, idx) + ch + s.substring(idx + 1, s.length)
   
   def main(args: Array[String]): Unit = {
     var lines: List[String] = scala.collection.mutable.ArrayBuffer[Any]()

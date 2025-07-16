@@ -68,7 +68,7 @@ object box_the_compass {
       val h = (headings).apply(i)
       val idx = i % 32 + 1
       val cp = degrees2compasspoint(h)
-      println(((((padLeft(idx.toString, 4) + "   ").asInstanceOf[Int] + padRight(cp, 19)).asInstanceOf[Int] + " ").asInstanceOf[Int] + format2(h)).asInstanceOf[Int] + "°")
+      println(padLeft(idx.toString, 4) + "   " + padRight(cp, 19) + " " + format2(h) + "°")
       i += 1
     }
   }

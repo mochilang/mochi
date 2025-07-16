@@ -138,10 +138,10 @@ object arithmetic_numbers {
     for(x <- List(1000, 10000, 100000, 1000000)) {
       val last = (arr).apply(x - 1)
       val lastc = commatize(last)
-      println((("\nThe " + commatize(x)).asInstanceOf[Int] + "th arithmetic number is: ").asInstanceOf[Int] + lastc)
+      println("\nThe " + commatize(x) + "th arithmetic number is: " + lastc)
       val pc = primeCount(primes, last, spf)
       val comp = x - pc - 1
-      println(((("The count of such numbers <= " + lastc).asInstanceOf[Int] + " which are composite is ").asInstanceOf[Int] + commatize(comp)).asInstanceOf[Int] + ".")
+      println("The count of such numbers <= " + lastc + " which are composite is " + commatize(comp) + ".")
     }
   }
   

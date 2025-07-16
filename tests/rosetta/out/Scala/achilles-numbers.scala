@@ -163,7 +163,7 @@ object achilles_numbers {
     var d = 2
     while (d <= maxDigits) {
       val c = (counts).apply(d - 2)
-      println((pad(d, 2) + " digits: ").asInstanceOf[Int] + c.toString)
+      println(pad(d, 2) + " digits: " + c.toString)
       d += 1
     }
   }

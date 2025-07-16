@@ -27,7 +27,7 @@ object calculating_the_value_of_e {
     }
     val intPart = digits.substring(0, digits.length - prec)
     val fracPart = digits.substring(digits.length - prec, digits.length)
-    return (intPart + ".").asInstanceOf[Int] + fracPart
+    return intPart + "." + fracPart
   }
   
   def main(args: Array[String]): Unit = {

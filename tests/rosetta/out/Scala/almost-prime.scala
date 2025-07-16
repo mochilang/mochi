@@ -30,7 +30,7 @@ object almost_prime {
   def main() = {
     var k = 1
     while (k <= 5) {
-      println((k.toString + " ").asInstanceOf[Int] + gen(k, 10).toString)
+      println(k.toString + " " + gen(k, 10).toString)
       k += 1
     }
   }

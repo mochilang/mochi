@@ -63,7 +63,7 @@ object caesar_cipher_2 {
     println("Plaintext: " + pt)
     for(key <- List(0, 1, 7, 25, 26)) {
       if (key < 1 || key > 25) {
-        println(("Key " + key.toString).asInstanceOf[Int] + " invalid")
+        println("Key " + key.toString + " invalid")
         // continue
       }
       val ct = encipher(pt, key)

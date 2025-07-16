@@ -37,7 +37,7 @@ object approximate_equality {
       val a = (pair).apply(0)
       val b = (pair).apply(1)
       val s = if (isClose(a, b)) "≈" else "≉"
-      println((((a.toString + " ").asInstanceOf[Int] + s).asInstanceOf[Int] + " ").asInstanceOf[Int] + b.toString)
+      println(a.toString + " " + s + " " + b.toString)
     }
   }
   

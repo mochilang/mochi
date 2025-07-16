@@ -41,7 +41,7 @@ object averages_pythagorean_means {
     val a = sum / count
     val g = nthRoot(prod, 10)
     val h = count / sumRecip
-    println((((("A: " + a.toString).asInstanceOf[Int] + " G: ").asInstanceOf[Int] + g.toString).asInstanceOf[Int] + " H: ").asInstanceOf[Int] + h.toString)
+    println("A: " + a.toString + " G: " + g.toString + " H: " + h.toString)
     println("A >= G >= H: " + a >= g && g >= h.toString)
   }
   

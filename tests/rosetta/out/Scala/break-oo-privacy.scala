@@ -2,7 +2,7 @@ case class Foobar(var Exported: Int, var unexported: Int)
 
 object break_oo_privacy {
   def examineAndModify(f: Foobar): Foobar = {
-    println((((((((" v: {" + f.Exported.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + f.unexported.toString).asInstanceOf[Int] + "} = {").asInstanceOf[Int] + f.Exported.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + f.unexported.toString).asInstanceOf[Int] + "}")
+    println(" v: {" + f.Exported.toString + " " + f.unexported.toString + "} = {" + f.Exported.toString + " " + f.unexported.toString + "}")
     println("    Idx Name       Type CanSet")
     println("     0: Exported   int  true")
     println("     1: unexported int  false")
@@ -18,9 +18,9 @@ object break_oo_privacy {
   
   def main(args: Array[String]): Unit = {
     var obj = Foobar(Exported = 12, unexported = 42)
-    println(((("obj: {" + obj.Exported.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + obj.unexported.toString).asInstanceOf[Int] + "}")
+    println("obj: {" + obj.Exported.toString + " " + obj.unexported.toString + "}")
     obj = examineAndModify(obj)
-    println(((("obj: {" + obj.Exported.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + obj.unexported.toString).asInstanceOf[Int] + "}")
+    println("obj: {" + obj.Exported.toString + " " + obj.unexported.toString + "}")
     anotherExample()
   }
 }

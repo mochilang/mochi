@@ -18,7 +18,7 @@ object averages_arithmetic_mean {
       println("Vector: " + v.toString)
       val r = mean(v)
       if ((r).apply("ok") != null) {
-        println((("Mean of " + v.length.toString).asInstanceOf[Int] + " numbers is ").asInstanceOf[Int] + (r).apply("mean").toString)
+        println("Mean of " + v.length.toString + " numbers is " + (r).apply("mean").toString)
       } else {
         println("Mean undefined")
       }

@@ -49,7 +49,7 @@ object carmichael_3_strong_pseudoprimes {
             // continue
           }
           val c = p1 * p2 * p3
-          println((((((pad(p1, 2) + "   ").asInstanceOf[Int] + pad(p2, 4)).asInstanceOf[Int] + "   ").asInstanceOf[Int] + pad(p3, 5)).asInstanceOf[Int] + "     ").asInstanceOf[Int] + c.toString)
+          println(pad(p1, 2) + "   " + pad(p2, 4) + "   " + pad(p3, 5) + "     " + c.toString)
         }
       }
     }

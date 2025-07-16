@@ -63,7 +63,7 @@ object attractive_numbers {
   
   def main() = {
     val max = 120
-    println(("The attractive numbers up to and including " + max.toString).asInstanceOf[Int] + " are:")
+    println("The attractive numbers up to and including " + max.toString + " are:")
     var count = 0
     var line = ""
     var lineCount = 0

@@ -152,7 +152,7 @@ object b_zier_curves_intersections {
     var i = 0
     while (i < inters.length) {
       val pt = (inters).apply(i)
-      println(((("(" + pt.x.toString).asInstanceOf[Int] + ", ").asInstanceOf[Int] + pt.y.toString).asInstanceOf[Int] + ")")
+      println("(" + pt.x.toString + ", " + pt.y.toString + ")")
       i += 1
     }
   }

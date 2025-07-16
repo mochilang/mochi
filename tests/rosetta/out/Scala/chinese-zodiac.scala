@@ -17,7 +17,7 @@ object chinese_zodiac {
   def main(args: Array[String]): Unit = {
     for(yr <- List(1935, 1938, 1968, 1972, 1976)) {
       val r = cz(yr, animal, yinYang, element, stemChArr, branchChArr)
-      println((((((((((yr.toString + ": ").asInstanceOf[Int] + r.element).asInstanceOf[Int] + " ").asInstanceOf[Int] + r.animal).asInstanceOf[Int] + ", ").asInstanceOf[Int] + r.yinYang).asInstanceOf[Int] + ", Cycle year ").asInstanceOf[Int] + r.cycle.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r.stemBranch)
+      println(yr.toString + ": " + r.element + " " + r.animal + ", " + r.yinYang + ", Cycle year " + r.cycle.toString + " " + r.stemBranch)
     }
   }
 }

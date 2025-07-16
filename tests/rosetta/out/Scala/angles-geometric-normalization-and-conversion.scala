@@ -35,19 +35,19 @@ object angles_geometric_normalization_and_conversion {
     val angles = List(-2, -1, 0, 1, 2, 6.2831853, 16, 57.2957795, 359, 399, 6399, 1e+06)
     println("degrees normalized_degs gradians mils radians")
     for(a <- angles) {
-      println((((((((a.toString + " ").asInstanceOf[Int] + d2d(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + d2g(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + d2m(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + d2r(a).toString)
+      println(a.toString + " " + d2d(a).toString + " " + d2g(a).toString + " " + d2m(a).toString + " " + d2r(a).toString)
     }
     println("\ngradians normalized_grds degrees mils radians")
     for(a <- angles) {
-      println((((((((a.toString + " ").asInstanceOf[Int] + g2g(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + g2d(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + g2m(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + g2r(a).toString)
+      println(a.toString + " " + g2g(a).toString + " " + g2d(a).toString + " " + g2m(a).toString + " " + g2r(a).toString)
     }
     println("\nmils normalized_mils degrees gradians radians")
     for(a <- angles) {
-      println((((((((a.toString + " ").asInstanceOf[Int] + m2m(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + m2d(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + m2g(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + m2r(a).toString)
+      println(a.toString + " " + m2m(a).toString + " " + m2d(a).toString + " " + m2g(a).toString + " " + m2r(a).toString)
     }
     println("\nradians normalized_rads degrees gradians mils")
     for(a <- angles) {
-      println((((((((a.toString + " ").asInstanceOf[Int] + r2r(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r2d(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r2g(a).toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r2m(a).toString)
+      println(a.toString + " " + r2r(a).toString + " " + r2d(a).toString + " " + r2g(a).toString + " " + r2m(a).toString)
     }
   }
   

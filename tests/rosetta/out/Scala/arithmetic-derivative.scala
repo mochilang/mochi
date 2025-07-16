@@ -97,7 +97,7 @@ object arithmetic_derivative {
         exp += " "
       }
       var res = m.toString + repeat("0", m - 1)
-      println((("D(10^" + exp).asInstanceOf[Int] + ") / 7 = ").asInstanceOf[Int] + res)
+      println("D(10^" + exp + ") / 7 = " + res)
       m += 1
     }
   }

@@ -83,7 +83,7 @@ object benfords_law {
     var i = 0
     while (i < 9) {
       val obs = ((counts).apply(i).toDouble) / (total.toDouble)
-      var line = (((("  " + i + 1.toString).asInstanceOf[Int] + "  ").asInstanceOf[Int] + padFloat3(obs, 9)).asInstanceOf[Int] + "  ").asInstanceOf[Int] + padFloat3((preds).apply(i), 8)
+      var line = "  " + i + 1.toString + "  " + padFloat3(obs, 9) + "  " + padFloat3((preds).apply(i), 8)
       println(line)
       i += 1
     }

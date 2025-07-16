@@ -19,7 +19,7 @@ object abstract_type {
   }
   
   def bprint(b: Beast) = {
-    println(((((beastName(b) + ", who's a ").asInstanceOf[Int] + beastKind(b)).asInstanceOf[Int] + ", cries: \"").asInstanceOf[Int] + beastCry(b)).asInstanceOf[Int] + "\".")
+    println(beastName(b) + ", who's a " + beastKind(b) + ", cries: \"" + beastCry(b) + "\".")
   }
   
   def main() = {

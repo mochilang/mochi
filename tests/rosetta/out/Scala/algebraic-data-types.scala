@@ -6,7 +6,7 @@ object algebraic_data_types {
       return "E"
     }
     val m = t.asInstanceOf[Map[String, any]]
-    return ((((((("T(" + ((m).apply("cl")).asInstanceOf[Int]).asInstanceOf[Int] + ", ").asInstanceOf[Int] + treeString((m).apply("le"))).asInstanceOf[Int] + ", ").asInstanceOf[Int] + (m).apply("aa").toString).asInstanceOf[Int] + ", ").asInstanceOf[Int] + treeString((m).apply("ri"))).asInstanceOf[Int] + ")"
+    return "T(" + (m).apply("cl") + ", " + treeString((m).apply("le")) + ", " + (m).apply("aa").toString + ", " + treeString((m).apply("ri")) + ")"
   }
   
   def balance(t: any): any = {

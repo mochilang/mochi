@@ -1,6 +1,6 @@
 object call_a_function_6 {
   def bar(a: Int, b: Int, c: Int) = {
-    println((((a.toString + ", ").asInstanceOf[Int] + b.toString).asInstanceOf[Int] + ", ").asInstanceOf[Int] + c.toString)
+    println(a.toString + ", " + b.toString + ", " + c.toString)
   }
   
   def main() = {

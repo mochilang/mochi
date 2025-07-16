@@ -99,7 +99,7 @@ object babylonian_spiral {
     var i = 0
     while (i < pts.length) {
       val p = (pts).apply(i)
-      val s = pad(((("(" + (p).apply(0).toString).asInstanceOf[Int] + ", ").asInstanceOf[Int] + (p).apply(1).toString).asInstanceOf[Int] + ")", 10)
+      val s = pad("(" + (p).apply(0).toString + ", " + (p).apply(1).toString + ")", 10)
       line += s
       if ((i + 1) % 10 == 0) {
         println(line)

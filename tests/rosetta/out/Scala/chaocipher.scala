@@ -12,9 +12,9 @@ object chaocipher {
   
   def rotate(s: String, n: Int): String = s.substring(n, s.length) + s.substring(0, n)
   
-  def scrambleLeft(s: String): String = ((s.substring(0, 1) + s.substring(2, 14)).asInstanceOf[Int] + s.substring(1, 2)).asInstanceOf[Int] + s.substring(14, s.length)
+  def scrambleLeft(s: String): String = s.substring(0, 1) + s.substring(2, 14) + s.substring(1, 2) + s.substring(14, s.length)
   
-  def scrambleRight(s: String): String = (((s.substring(1, 3) + s.substring(4, 15)).asInstanceOf[Int] + s.substring(3, 4)).asInstanceOf[Int] + s.substring(15, s.length)).asInstanceOf[Int] + s.substring(0, 1)
+  def scrambleRight(s: String): String = s.substring(1, 3) + s.substring(4, 15) + s.substring(3, 4) + s.substring(15, s.length) + s.substring(0, 1)
   
   def chao(text: String, encode: Boolean): String = {
     var left = "HXUCZVAMDSLKPEFJRIGTWOBNYQ"

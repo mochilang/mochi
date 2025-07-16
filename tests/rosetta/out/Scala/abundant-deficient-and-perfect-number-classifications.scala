@@ -29,9 +29,9 @@ object abundant_deficient_and_perfect_number_classifications {
       }
       i += 1
     }
-    println(("There are " + d.toString).asInstanceOf[Int] + " deficient numbers between 1 and 20000")
-    println(("There are " + a.toString).asInstanceOf[Int] + " abundant numbers  between 1 and 20000")
-    println(("There are " + pnum.toString).asInstanceOf[Int] + " perfect numbers between 1 and 20000")
+    println("There are " + d.toString + " deficient numbers between 1 and 20000")
+    println("There are " + a.toString + " abundant numbers  between 1 and 20000")
+    println("There are " + pnum.toString + " perfect numbers between 1 and 20000")
   }
   
   def main(args: Array[String]): Unit = {

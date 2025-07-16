@@ -23,7 +23,7 @@ object anti_primes {
     while (count < 20) {
       val d = countDivisors(n)
       if (d > maxDiv) {
-        line = (line + n.toString).asInstanceOf[Int] + " "
+        line = line + n.toString + " "
         maxDiv = d
         count += 1
       }

@@ -7,7 +7,7 @@ object check_that_file_exists {
         println(path + " is a file")
       }
     } else {
-      println(("stat " + path).asInstanceOf[Int] + ": no such file or directory")
+      println("stat " + path + ": no such file or directory")
     }
   }
   

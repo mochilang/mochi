@@ -16,14 +16,14 @@ object chat_server {
     }
     def add(name: String) = {
       clients = clients :+ name
-      broadcast(("+++ \"" + name).asInstanceOf[Int] + "\" connected +++\n")
+      broadcast("+++ \"" + name + "\" connected +++\n")
     }
     def send(name: String, msg: String) = {
-      broadcast(((name + "> ").asInstanceOf[Int] + msg).asInstanceOf[Int] + "\n")
+      broadcast(name + "> " + msg + "\n")
     }
     def remove(name: String) = {
       clients = removeName(clients, name)
-      broadcast(("--- \"" + name).asInstanceOf[Int] + "\" disconnected ---\n")
+      broadcast("--- \"" + name + "\" disconnected ---\n")
     }
     add("Alice")
     add("Bob")

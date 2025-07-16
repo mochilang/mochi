@@ -51,20 +51,20 @@ object circles_of_given_radius_through_two_points {
       val p1 = (tc).apply(0)
       val p2 = (tc).apply(1)
       val r = (tc).apply(2)
-      println(((("p1:  {" + p1.x.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + p1.y.toString).asInstanceOf[Int] + "}")
-      println(((("p2:  {" + p2.x.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + p2.y.toString).asInstanceOf[Int] + "}")
+      println("p1:  {" + p1.x.toString + " " + p1.y.toString + "}")
+      println("p2:  {" + p2.x.toString + " " + p2.y.toString + "}")
       println("r:  " + r.toString)
       val res = circles(p1, p2, r)
       val c1 = (res).apply(0)
       val c2 = (res).apply(1)
       val caseStr = (res).apply(2)
-      println("   " + (caseStr).asInstanceOf[Int])
+      println("   " + caseStr)
       if ((caseStr).asInstanceOf[Int] == "Points form a diameter and describe only a single circle." || (caseStr).asInstanceOf[Int] == "Coincident points with r==0.0 describe a degenerate circle.") {
-        println(((("   Center:  {" + c1.x.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + c1.y.toString).asInstanceOf[Int] + "}")
+        println("   Center:  {" + c1.x.toString + " " + c1.y.toString + "}")
       } else {
         if ((caseStr).asInstanceOf[Int] == "Two circles.") {
-          println(((("   Center 1:  {" + c1.x.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + c1.y.toString).asInstanceOf[Int] + "}")
-          println(((("   Center 2:  {" + c2.x.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + c2.y.toString).asInstanceOf[Int] + "}")
+          println("   Center 1:  {" + c1.x.toString + " " + c1.y.toString + "}")
+          println("   Center 2:  {" + c2.x.toString + " " + c2.y.toString + "}")
         }
       }
       println("")

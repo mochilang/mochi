@@ -55,7 +55,7 @@ object abc_problem {
   def main() = {
     val sp = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM")
     for(word <- List("A", "BARK", "BOOK", "TREAT", "COMMON", "SQUAD", "CONFUSE")) {
-      println((word + " ").asInstanceOf[Int] + sp(word).toString)
+      println(word + " " + sp(word).toString)
     }
   }
   

@@ -32,7 +32,7 @@ object cheryls_birthday {
   
   def bstr(b: Birthday): String = {
     val months = List("", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
-    return ((months).apply(b.month) + " ").asInstanceOf[Int] + b.day.toString
+    return (months).apply(b.month) + " " + b.day.toString
   }
   
   def main(args: Array[String]): Unit = {
