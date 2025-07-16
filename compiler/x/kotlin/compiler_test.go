@@ -66,6 +66,7 @@ func compileAndRun(t *testing.T, src string) (string, error) {
 	if err := os.WriteFile(outPath, runOut, 0o644); err != nil {
 		return "", err
 	}
+	_ = os.Remove(filepath.Join(outDir, base+".error"))
 	return string(bytes.TrimSpace(runOut)), nil
 }
 
