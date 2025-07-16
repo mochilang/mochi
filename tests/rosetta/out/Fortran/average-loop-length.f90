@@ -14,7 +14,7 @@ program average_loop_length
       integer, allocatable, dimension(:) :: visited
         logical, allocatable, dimension(:) :: app2
     integer :: nn
-    integer :: term
+    real :: term
     integer :: nmax
       integer :: a
       integer :: b

@@ -23,4 +23,4 @@ Error: Dummy argument ‘g’ with INTENT(IN) in variable definition context (as
 
    36 |     do while (((abs((a - g)) > abs(a)) * eps))
       |               1
-Error: Operands of binary numeric operator ‘*’ at (1) are LOGICAL(4)/INTEGER(4)
+Error: Operands of binary numeric operator ‘*’ at (1) are LOGICAL(4)/REAL(4)

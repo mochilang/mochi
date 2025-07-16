@@ -2,7 +2,7 @@
 program boolean_values
   implicit none
     integer :: l
-    integer :: n
+    logical :: n
     integer :: x
     integer :: y
     character(len=100) :: str1

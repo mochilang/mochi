@@ -9,7 +9,7 @@ program animate_a_pendulum
   real :: omega
   real :: t
   integer :: step
-    integer :: phi
+    real :: phi
     integer :: pos
     character(len=100) :: s0
     integer :: term

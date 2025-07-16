@@ -6,11 +6,11 @@ program camel_case_and_snake_case
     character(len=100) :: res
     integer :: n
     character(len=100) :: out
-    integer :: up
+    logical :: up
     integer :: i
-    integer :: prevUnd
+    logical :: prevUnd
     integer :: j
-    integer :: lastUnd
+    logical :: lastUnd
       integer :: c
     integer, dimension(12) :: samples
     integer :: i0

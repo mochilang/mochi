@@ -12,7 +12,7 @@ program abbreviations_easy
     integer, allocatable, dimension(:) :: results
     integer :: wi
       integer :: w
-      integer :: found
+      logical :: found
       integer :: wlen
       integer :: ci
         integer :: cmd

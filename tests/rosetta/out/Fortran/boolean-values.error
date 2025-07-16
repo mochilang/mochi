@@ -1,14 +1,4 @@
 gfortran: exit status 1
-/tmp/boolean-values.f90:23:8:
-
-   23 |     n = .true.
-      |        1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/boolean-values.f90:26:13:
-
-   26 |     n = .not. n
-      |             1
-Error: Operand of .not. operator at (1) is INTEGER(4)
 /tmp/boolean-values.f90:14:8:
 
    14 |     l = lower(s)

@@ -347,6 +347,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 				typ = c.typeNameFromTypes(t)
 			} else if types.IsStringExpr(l.Value, c.env) {
 				typ = "character(len=100)"
+			} else if types.IsBoolExpr(l.Value, c.env) {
+				typ = "logical"
+			} else if types.IsFloatExpr(l.Value, c.env) {
+				typ = "real"
 			} else if lst := listLiteral(l.Value); lst != nil && len(lst.Elems) == 0 {
 				typ = "logical"
 			}
@@ -424,6 +428,10 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 			typ = c.typeNameFromTypes(t)
 		} else if types.IsStringExpr(l.Value, c.env) {
 			typ = "character(len=100)"
+		} else if types.IsBoolExpr(l.Value, c.env) {
+			typ = "logical"
+		} else if types.IsFloatExpr(l.Value, c.env) {
+			typ = "real"
 		} else if lst := listLiteral(l.Value); lst != nil && len(lst.Elems) == 0 {
 			typ = "logical"
 		}
@@ -504,15 +512,56 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			arr := fmt.Sprintf("arr%d", c.tmpIndex)
 			idx := fmt.Sprintf("i%d", c.tmpIndex)
 			c.tmpIndex++
+			elemType := "integer"
+			allStr := true
+			maxLen := 0
+			if len(lst.Elems) > 0 {
+				first := lst.Elems[0]
+				switch {
+				case types.IsStringExpr(first, c.env):
+					elemType = "character(len=100)"
+				case types.IsBoolExpr(first, c.env):
+					elemType = "logical"
+					allStr = false
+				case types.IsFloatExpr(first, c.env):
+					elemType = "real"
+					allStr = false
+				default:
+					allStr = false
+				}
+			} else {
+				allStr = false
+			}
+
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
+				if allStr {
+					lit := literalString(e.Binary.Left)
+					if lit == nil {
+						allStr = false
+					} else {
+						if len(*lit) > maxLen {
+							maxLen = len(*lit)
+						}
+						elems[i] = *lit
+						continue
+					}
+				}
 				v, err := c.compileExpr(e)
 				if err != nil {
 					return err
 				}
 				elems[i] = v
 			}
-			c.writelnDecl(fmt.Sprintf("integer, dimension(%d) :: %s = (/%s/)", len(lst.Elems), arr, strings.Join(elems, ",")))
+			if allStr {
+				elemType = fmt.Sprintf("character(len=%d)", maxLen)
+				for i, s := range elems {
+					padded := s + strings.Repeat(" ", maxLen-len(s))
+					elems[i] = fmt.Sprintf("'%s'", strings.ReplaceAll(padded, "'", "''"))
+				}
+			}
+
+			c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s = (/%s/)", elemType, len(lst.Elems), arr, strings.Join(elems, ",")))
 			c.writelnDecl(fmt.Sprintf("integer :: %s", idx))
 			c.writeln(fmt.Sprintf("do %s = 1, %d", idx, len(lst.Elems)))
 			c.indent++

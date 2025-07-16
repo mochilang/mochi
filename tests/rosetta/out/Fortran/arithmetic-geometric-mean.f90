@@ -3,7 +3,7 @@ program arithmetic_geometric_mean
   implicit none
     integer :: guess
     integer :: i
-    integer :: eps
+    real :: eps
       integer :: newA
       integer :: newG
     character(len=100) :: s0

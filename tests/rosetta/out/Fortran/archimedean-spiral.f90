@@ -11,7 +11,7 @@ program archimedean_spiral
   real :: b
   real :: theta
   integer :: count
-    integer :: r
+    real :: r
     integer :: x
     integer :: y
       character(len=100) :: s0

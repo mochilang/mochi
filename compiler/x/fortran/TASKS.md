@@ -15,6 +15,9 @@
   `char(10)` concatenation and functions without a return value compile as
   `subroutine`s. Standalone calls to such functions generate `call` statements,
   reducing many `.error` files in the Rosetta suite.
+- 2025-07-16 13:00: List and scalar declarations infer boolean, float, and
+  string types automatically. `for` loops over string lists now declare arrays as
+  `character` vectors, fixing the `100-prisoners` task and similar cases.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
