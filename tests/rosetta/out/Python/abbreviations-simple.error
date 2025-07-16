@@ -1,0 +1,14 @@
+run: exit status 1
+Traceback (most recent call last):
+  File "/tmp/abbreviations-simple.py", line 153, in <module>
+    main()
+  File "/tmp/abbreviations-simple.py", line 135, in main
+    tbl = readTable(table)
+          ^^^^^^^^^^^^^^^^
+  File "/tmp/abbreviations-simple.py", line 89, in readTable
+    num = parseIntStr(toks[i])
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/abbreviations-simple.py", line 60, in parseIntStr
+    n = n * 10 + digits[_str[i : i + 1]]
+                 ~~~~~~^^^^^^^^^^^^^^^^^
+KeyError: '1'

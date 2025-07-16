@@ -1,0 +1,20 @@
+run: exit status 1
+Enter q to quit at any time
+
+You will choose first
+
+
+Running total is now 0
+
+
+ROUND 1:
+
+
+Your choice 1 to 3 : 
+Traceback (most recent call last):
+  File "/tmp/21-game.py", line 90, in <module>
+    main()
+  File "/tmp/21-game.py", line 63, in main
+    line = input()
+           ^^^^^^^
+EOFError: EOF when reading a line
