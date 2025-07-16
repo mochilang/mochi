@@ -37,10 +37,13 @@ func TestVMValidPrograms(t *testing.T) {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
+
+	var pass, fail int
 	errRE := regexp.MustCompile(`(?i)line ([0-9]+)`) // attempt to extract line number
+
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
+		result := t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
 				t.Fatalf("parse error: %v", err)
@@ -52,8 +55,9 @@ func TestVMValidPrograms(t *testing.T) {
 			code, err := schemecode.New(env).Compile(prog)
 			if err != nil {
 				errMsg := fmt.Sprintf("compile error: %v", err)
-				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(errMsg), 0o644)
-				t.Skip(errMsg)
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte(errMsg), 0o644)
+				t.Errorf("%s", errMsg)
+				return
 			}
 			codePath := filepath.Join(outDir, name+".scm")
 			if err := os.WriteFile(codePath, code, 0o644); err != nil {
@@ -70,7 +74,6 @@ func TestVMValidPrograms(t *testing.T) {
 				if m := errRE.FindSubmatch(out); m != nil {
 					line, _ = strconv.Atoi(string(m[1]))
 				}
-				// context lines from generated code
 				lines := bytes.Split(code, []byte("\n"))
 				start := line - 2
 				if start < 0 {
@@ -85,13 +88,33 @@ func TestVMValidPrograms(t *testing.T) {
 					ctx.Write(lines[i])
 					ctx.WriteByte('\n')
 				}
-				errMsg := fmt.Sprintf("error running %s:\n%s\n", name, out)
-				errMsg += fmt.Sprintf("context (line %d):\n%s", line, ctx.String())
-				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(errMsg), 0o644)
+				errMsg := fmt.Sprintf("error running %s:\n%s\ncontext (line %d):\n%s", name, out, line, ctx.String())
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte(errMsg), 0o644)
+				t.Errorf("%s", errMsg)
 				return
 			}
-			os.WriteFile(filepath.Join(outDir, name+".out"), out, 0o644)
+
+			_ = os.Remove(filepath.Join(outDir, name+".error"))
+			gotOut := bytes.TrimSpace(out)
+			outPath := filepath.Join(outDir, name+".out")
+			_ = os.WriteFile(outPath, append(gotOut, '\n'), 0o644)
+			if want, err := os.ReadFile(outPath); err == nil {
+				wantTrim := bytes.TrimSpace(want)
+				if !bytes.Equal(gotOut, wantTrim) {
+					t.Errorf("output mismatch\n\n--- Got ---\n%s\n\n--- Want ---\n%s", gotOut, wantTrim)
+				}
+			}
 		})
+		if result {
+			pass++
+		} else {
+			fail++
+		}
+	}
+
+	t.Logf("Summary: %d passed, %d failed", pass, fail)
+	if fail > 0 {
+		t.Fail()
 	}
 }
 

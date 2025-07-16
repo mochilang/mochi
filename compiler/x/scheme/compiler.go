@@ -736,7 +736,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if alias == "" {
 		alias = parser.AliasFromPath(im.Path)
 	}
-	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" && im.Auto {
+	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" {
 		c.writeln(fmt.Sprintf("(define %s (list (cons 'pi 3.141592653589793) (cons 'e 2.718281828459045) (cons 'sqrt (lambda (x) (sqrt x))) (cons 'pow (lambda (x y) (expt x y))) (cons 'sin (lambda (x) (sin x))) (cons 'log (lambda (x) (log x)))))", sanitizeName(alias)))
 		return nil
 	}
