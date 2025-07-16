@@ -17,6 +17,7 @@
 - 2025-07-15 07:48 UTC: Began implementing operator precedence handling in Kotlin compiler; initial attempt compiles but `q1` still fails due to type casting issues.
 - 2025-07-16 11:40 UTC: Escaped reserved identifiers like `this`, fixed `now()` cast and skipped wrapper `main` when user-defined main exists.
 - 2025-07-16 12:06 UTC: Empty list and map literals now use typed zero values when variables have explicit types, reducing Rosetta compile errors.
+- 2025-07-16 12:42 UTC: Added `int` builtin support and deterministic headers, reducing Rosetta compile errors.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.

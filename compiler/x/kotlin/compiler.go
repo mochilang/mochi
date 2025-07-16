@@ -1391,6 +1391,11 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 			c.use("starts_with")
 			return fmt.Sprintf("starts_with(%s, %s)", args[0], args[1]), true
 		}
+	case "int":
+		if len(args) == 1 {
+			c.use("toInt")
+			return fmt.Sprintf("toInt(%s)", args[0]), true
+		}
 	case "input":
 		if len(args) == 0 {
 			c.use("_input")

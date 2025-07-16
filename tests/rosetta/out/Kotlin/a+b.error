@@ -1,8 +1,8 @@
-kotlinc: exit status 1
-OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/a+b.kt:11:13: error: unresolved reference: int
-    val a = int(_input())
-            ^
-/tmp/a+b.kt:12:13: error: unresolved reference: int
-    val b = int(_input())
-            ^
+run: exit status 1
+Exception in thread "main" java.lang.NumberFormatException: For input string: ""
+	at java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
+	at java.base/java.lang.Integer.parseInt(Integer.java:672)
+	at java.base/java.lang.Integer.parseInt(Integer.java:778)
+	at A_bKt.toInt(a+b.kt:7)
+	at A_bKt.main(a+b.kt:19)
+	at A_bKt.main(a+b.kt)
