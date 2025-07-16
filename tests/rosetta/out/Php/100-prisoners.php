@@ -1,9 +1,9 @@
 <?php
-function shuffle($xs) {
+function _shuffle($xs) {
     $arr = $xs;
     $i = 99;
     while ($i > 0) {
-        $j = $now() % ($i + 1);
+        $j = time() % ($i + 1);
         $tmp = $arr[$i];
         $arr[$i] = $arr[$j];
         $arr[$j] = $tmp;
@@ -21,7 +21,7 @@ function doTrials($trials, $np, $strategy) {
             $drawers = array_merge($drawers, [$i]);
             $i = $i + 1;
         }
-        $drawers = shuffle($drawers);
+        $drawers = _shuffle($drawers);
         $p = 0;
         $success = true;
         while ($p < $np) {
@@ -30,12 +30,12 @@ function doTrials($trials, $np, $strategy) {
                 $prev = $p;
                 $d = 0;
                 while ($d < 50) {
-                    $this = $drawers[$prev];
-                    if ($this == $p) {
+                    $_this = $drawers[$prev];
+                    if ($_this == $p) {
                         $found = true;
                         break;
                     }
-                    $prev = $this;
+                    $prev = $_this;
                     $d = $d + 1;
                 }
             } else {
@@ -47,9 +47,9 @@ function doTrials($trials, $np, $strategy) {
                 }
                 $d = 0;
                 while ($d < 50) {
-                    $n = $now() % 100;
+                    $n = time() % 100;
                     while ($opened[$n]) {
-                        $n = $now() % 100;
+                        $n = time() % 100;
                     }
                     $opened[$n] = true;
                     if ($drawers[$n] == $p) {

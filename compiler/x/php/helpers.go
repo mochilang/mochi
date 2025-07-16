@@ -11,6 +11,11 @@ import (
 	"mochi/types"
 )
 
+var reservedNames = map[string]struct{}{
+	"shuffle": {},
+	"this":    {},
+}
+
 func sanitizeName(name string) string {
 	if name == "" {
 		return ""
@@ -25,6 +30,9 @@ func sanitizeName(name string) string {
 	}
 	s := b.String()
 	if s == "" || !((s[0] >= 'A' && s[0] <= 'Z') || (s[0] >= 'a' && s[0] <= 'z') || s[0] == '_') {
+		s = "_" + s
+	}
+	if _, ok := reservedNames[s]; ok {
 		s = "_" + s
 	}
 	return s
