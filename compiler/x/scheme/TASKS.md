@@ -15,6 +15,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
   runtime failures when compiling Rosetta examples.
 - 2025-07-16 12:45 – Integer division now uses `quotient` when operands are
   integers, reducing runtime errors for several Rosetta tasks.
+- 2025-07-16 13:10 – Added VM valid golden tests and fixed YAML key parsing.
+  Python `math` imports no longer require the `auto` keyword.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks

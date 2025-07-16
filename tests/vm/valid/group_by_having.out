@@ -1,6 +1,4 @@
-[
-  {
-    "city": "Paris",
-    "num": 4
-  }
-]
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
+{}

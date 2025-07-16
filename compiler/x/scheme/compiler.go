@@ -16,6 +16,9 @@ import (
 
 const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chibi process) (chibi) (chibi string))
 
+(define (open-input-pipe cmd)
+  (error "open-input-pipe not supported"))
+
 (define (_fmt . parts)
   (apply string-append (map _to_string parts)))
 
@@ -38,7 +41,7 @@ const datasetHelpers = `(import (srfi 1) (srfi 95) (chibi json) (chibi io) (chib
                   (let* ((p (string-split ln #\:))
                          (k (string-trim (car p)))
                          (val (string-trim (string-join (cdr p) ":"))))
-                    (set! cur (append cur (list (cons k (_yaml_value val))))))))
+                    (set! cur (append cur (list (cons (string->symbol k) (_yaml_value val))))))))
               (string-split text #\newline))
     (when (not (null? cur))
       (set! rows (append rows (list cur))))
@@ -736,7 +739,7 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if alias == "" {
 		alias = parser.AliasFromPath(im.Path)
 	}
-	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" && im.Auto {
+	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" {
 		c.writeln(fmt.Sprintf("(define %s (list (cons 'pi 3.141592653589793) (cons 'e 2.718281828459045) (cons 'sqrt (lambda (x) (sqrt x))) (cons 'pow (lambda (x y) (expt x y))) (cons 'sin (lambda (x) (sin x))) (cons 'log (lambda (x) (log x)))))", sanitizeName(alias)))
 		return nil
 	}
