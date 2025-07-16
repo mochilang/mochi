@@ -6,6 +6,8 @@
   improved float list detection to reduce `.error` files.
 - [2025-07-22 00:00] Fixed `update` statement generation and reworked VM tests
   to use outputs under `tests/machine/x/ocaml`.
+- [2025-07-23 00:00] Handled casts inside `print` and sanitized OCaml field names
+  to avoid reserved keyword errors.
 - [2025-07-13 05:05] Improved group key type inference and numeric average handling.
 - [2025-07-13 05:31] Added `sum_float` helper and logic to pick it when summing float lists.
 - [2025-07-13 15:40] Generated code for TPCH queries q6–q10 and extended tests to run them.

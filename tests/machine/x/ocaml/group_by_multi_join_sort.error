@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_multi_join_sort3229086597/001/group_by_multi_join_sort.ml", line 55, characters 19-20:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_multi_join_sort2321488010/001/group_by_multi_join_sort.ml", line 55, characters 19-20:
 55 |       __res1 := (x.l.l_extendedprice * ((1 - x.l.l_discount))) :: !__res1;
                         ^
 Error: Unbound record field l

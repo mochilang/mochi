@@ -1,5 +1,0 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenslice2424237404/001/slice.ml", line 31, characters 2-15:
-31 |   print_endline string_slice "hello" 1 4;
-       ^^^^^^^^^^^^^
-Error: This function has type string -> unit
-       It is applied to too many arguments; maybe you forgot a `;'.
