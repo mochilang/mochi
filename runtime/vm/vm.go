@@ -1242,7 +1242,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
 			if seededNow {
-				nowSeed = nowSeed*1664525 + 1013904223
+				nowSeed = (nowSeed*1664525 + 1013904223) % 2147483647
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(nowSeed)}
 			} else {
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
