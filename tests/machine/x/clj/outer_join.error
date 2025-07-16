@@ -3,4 +3,4 @@ Execution error (ArityException) at main/-query$fn (outer_join.clj:97).
 Wrong number of args (3) passed to: main/-main/fn--713
 
 Full report at:
-/tmp/clojure-7095628430407386642.edn
+/tmp/clojure-3686164030839327490.edn

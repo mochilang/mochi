@@ -16,6 +16,9 @@ Recent updates (2025-07-16 11:36):
 - Fixed default indexing to use `get` when element type is unknown.
 - Regenerated machine translations for `tests/vm/valid`.
 
+2025-07-17 20:45:
+- Added VM golden tests for `tests/vm/valid` and stored results under `tests/machine/x/clj`.
+
 Remaining work:
 - [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
 - [ ] Support reading relative files for `load_yaml.mochi` during tests.

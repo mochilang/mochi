@@ -16,10 +16,10 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var tpchUpdate = flag.Bool("tpch.update", false, "update TPCH golden files")
 
 func shouldUpdate() bool {
-	f := flag.Lookup("update")
+	f := flag.Lookup("tpch.update")
 	return f != nil && f.Value.String() == "true"
 }
 
