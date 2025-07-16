@@ -215,7 +215,9 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	if c.usesTime {
 		header.WriteString("import Data.Time.Clock.POSIX (getPOSIXTime)\n")
 	}
-	if c.usesMap || c.usesLoad || c.usesSave || c.usesFetch {
+	if c.usesMap || c.usesLoad || c.usesSave || c.usesFetch ||
+		c.usesLoop || c.usesList || c.usesTime || c.usesJSON ||
+		c.usesSlice || c.usesSliceStr || c.usesExpect {
 		header.WriteString("import qualified Data.Map as Map\n")
 	}
 	if c.usesList || c.usesSlice || c.usesSliceStr || c.usesLoop || c.usesFetch {

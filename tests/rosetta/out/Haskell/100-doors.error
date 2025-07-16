@@ -1,50 +1,160 @@
 runhaskell: exit status 1
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:43:18: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-43 |          in case Map.lookup k m of
-   |                  ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:134:26: error:
+    • Couldn't match expected type ‘IO b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe () ((let doors = (doors ++ [False]) in Nothing))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ i -> fromMaybe () ((let doors = (doors ++ [...]) in Nothing)))’
+    |
+134 |   mapM_ (\i -> fromMaybe () ((let doors = (doors ++ [False]) in Nothing))) [0 .. 100 - 1]
+    |                          ^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:44:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
-   |                                 ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:135:29: error:
+    • Couldn't match expected type ‘IO b1’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          ((let idx = (pass - 1)
+            in
+              whileLoop
+                (\ () -> (_asInt (idx) < 100))
+                (\ ()
+                   -> (let doors = _updateAt idx (const not (doors !! idx)) doors
+                       in (let idx = (_asInt (idx) + pass) in Nothing)))))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ pass
+            -> fromMaybe
+                 ()
+                 ((let idx = (pass - 1)
+                   in
+                     whileLoop
+                       (\ () -> (_asInt (idx) < 100))
+                       (\ ()
+                          -> (let doors = _updateAt idx (const not (doors !! idx)) doors
+                              in (let idx = (_asInt (idx) + pass) in Nothing))))))’
+    |
+135 |   mapM_ (\pass -> fromMaybe () ((let idx = (pass - 1) in whileLoop (\() -> (_asInt (idx) < 100)) (\() -> (let doors = _updateAt idx (const not (doors !! idx)) doors in (let idx = (_asInt (idx) + pass) in Nothing)))))) [1 .. 101 - 1]
+    |                             ^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:45:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
-   |                                 ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:135:129: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the first argument of ‘_updateAt’, namely ‘idx’
+      In the expression: _updateAt idx (const not (doors !! idx)) doors
+      In an equation for ‘doors’:
+          doors = _updateAt idx (const not (doors !! idx)) doors
+    |
+135 |   mapM_ (\pass -> fromMaybe () ((let idx = (pass - 1) in whileLoop (\() -> (_asInt (idx) < 100)) (\() -> (let doors = _updateAt idx (const not (doors !! idx)) doors in (let idx = (_asInt (idx) + pass) in Nothing)))))) [1 .. 101 - 1]
+    |                                                                                                                                 ^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:46:27: error:
-    Not in scope: ‘Map.empty’
-    NB: no module named ‘Map’ is imported.
-   |
-46 |       (m, order) = go src Map.empty []
-   |                           ^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:135:154: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘idx’
+      In the second argument of ‘const’, namely ‘(doors !! idx)’
+      In the second argument of ‘_updateAt’, namely
+        ‘(const not (doors !! idx))’
+    |
+135 |   mapM_ (\pass -> fromMaybe () ((let idx = (pass - 1) in whileLoop (\() -> (_asInt (idx) < 100)) (\() -> (let doors = _updateAt idx (const not (doors !! idx)) doors in (let idx = (_asInt (idx) + pass) in Nothing)))))) [1 .. 101 - 1]
+    |                                                                                                                                                          ^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:47:32: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
-   |                                ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:135:189: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(idx)’
+      In the first argument of ‘(+)’, namely ‘_asInt (idx)’
+      In the expression: _asInt (idx) + pass
+    |
+135 |   mapM_ (\pass -> fromMaybe () ((let idx = (pass - 1) in whileLoop (\() -> (_asInt (idx) < 100)) (\() -> (let doors = _updateAt idx (const not (doors !! idx)) doors in (let idx = (_asInt (idx) + pass) in Nothing)))))) [1 .. 101 - 1]
+    |                                                                                                                                                                                             ^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:83:41: error:
-    Not in scope: type constructor or class ‘Map.Map’
-    NB: no module named ‘Map’ is imported.
-   |
-83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
-   |                                         ^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:135:196: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(+)’, namely ‘pass’
+      In the expression: _asInt (idx) + pass
+      In an equation for ‘idx’: idx = (_asInt (idx) + pass)
+    |
+135 |   mapM_ (\pass -> fromMaybe () ((let idx = (pass - 1) in whileLoop (\() -> (_asInt (idx) < 100)) (\() -> (let doors = _updateAt idx (const not (doors !! idx)) doors in (let idx = (_asInt (idx) + pass) in Nothing)))))) [1 .. 101 - 1]
+    |                                                                                                                                                                                                    ^^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:96:21: error:
-    Not in scope: ‘Map.fromList’
-    NB: no module named ‘Map’ is imported.
-   |
-96 |                  in Map.fromList
-   |                     ^^^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:136:28: error:
+    • Couldn't match expected type ‘IO b2’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          ((let line = ""
+            in
+              case
+                  forLoop
+                    0 10
+                    (\ col
+                       -> (let idx = ((row * 10) + _asInt (col))
+                           in
+                             case
+                                 if _asBool ((doors !! idx)) then
+                                     (let ... in Nothing)
+                                 else
+                                     (let ... in Nothing)
+                             of
+                               Just v -> Just v
+                               Nothing
+                                 -> if (_asInt (col) < 9) then (let ... in Nothing) else Nothing))
+              of
+                Just v -> Just v
+                Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ row
+            -> fromMaybe
+                 ()
+                 ((let line = ""
+                   in
+                     case
+                         forLoop
+                           0 10
+                           (\ col
+                              -> (let idx = ...
+                                  in
+                                    case
+                                        if _asBool ((doors !! idx)) then
+                                            (let ... in Nothing)
+                                        else
+                                            (let ... in Nothing)
+                                    of
+                                      Just v -> Just v
+                                      Nothing -> ...))
+                     of
+                       Just v -> Just v
+                       Nothing -> (let _ = ... in Nothing))))’
+    |
+136 |   mapM_ (\row -> fromMaybe () ((let line = "" in case forLoop 0 10 (\col -> (let idx = ((row * 10) + _asInt (col)) in case if _asBool ((doors !! idx)) then (let line = (line + "1") in Nothing) else (let line = (line + "0") in Nothing) of Just v -> Just v; Nothing -> if (_asInt (col) < 9) then (let line = (line + " ") in Nothing) else Nothing)) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [0 .. 10 - 1]
+    |                            ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:136:110: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(col)’
+      In the second argument of ‘(+)’, namely ‘_asInt (col)’
+      In the expression: (row * 10) + _asInt (col)
+    |
+136 |   mapM_ (\row -> fromMaybe () ((let line = "" in case forLoop 0 10 (\col -> (let idx = ((row * 10) + _asInt (col)) in case if _asBool ((doors !! idx)) then (let line = (line + "1") in Nothing) else (let line = (line + "0") in Nothing) of Just v -> Just v; Nothing -> if (_asInt (col) < 9) then (let line = (line + " ") in Nothing) else Nothing)) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [0 .. 10 - 1]
+    |                                                                                                              ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:136:280: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(col)’
+      In the first argument of ‘(<)’, namely ‘_asInt (col)’
+      In the expression: _asInt (col) < 9
+    |
+136 |   mapM_ (\row -> fromMaybe () ((let line = "" in case forLoop 0 10 (\col -> (let idx = ((row * 10) + _asInt (col)) in case if _asBool ((doors !! idx)) then (let line = (line + "1") in Nothing) else (let line = (line + "0") in Nothing) of Just v -> Just v; Nothing -> if (_asInt (col) < 9) then (let line = (line + " ") in Nothing) else Nothing)) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [0 .. 10 - 1]
+    |                                                                                                                                                                                                                                                                                        ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors.hs:136:408: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the first argument of ‘_showAny’, namely ‘(line)’
+      In the first argument of ‘putStrLn’, namely ‘(_showAny (line))’
+      In the expression: putStrLn (_showAny (line))
+    |
+136 |   mapM_ (\row -> fromMaybe () ((let line = "" in case forLoop 0 10 (\col -> (let idx = ((row * 10) + _asInt (col)) in case if _asBool ((doors !! idx)) then (let line = (line + "1") in Nothing) else (let line = (line + "0") in Nothing) of Just v -> Just v; Nothing -> if (_asInt (col) < 9) then (let line = (line + " ") in Nothing) else Nothing)) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [0 .. 10 - 1]
+    |                                                                                                                                                                                                                                                                                                                                                                                                                        ^^^^
