@@ -1,7 +1,0 @@
-javac error: exit status 1
-/tmp/TestJavaCompiler_VMValidProgramsrecord_assign2842267638/001/RecordAssign.java:22: error: cannot find symbol
-        c.n = ((Number)((Map<?,?>)c).get("n")).doubleValue() + 1;
-         ^
-  symbol:   variable n
-  location: variable c of type Object
-1 error

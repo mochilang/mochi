@@ -1,3 +1,0 @@
-java run error: exit status 1
-Exception in thread "main" java.lang.ClassCastException: class Title cannot be cast to class java.util.Map (Title is in unnamed module of loader 'app'; java.util.Map is in module java.base of loader 'bootstrap')
-	at CastStruct.main(CastStruct.java:37)

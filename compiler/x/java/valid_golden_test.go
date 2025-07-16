@@ -140,6 +140,7 @@ func TestJavaCompiler_VMValidPrograms(t *testing.T) {
 				t.Skipf("javac error: %v\n%s", err, out)
 			}
 			cmd := exec.Command("java", "-cp", dir, className)
+			cmd.Env = append(os.Environ(), "MOCHI_ROOT="+root)
 			out, err := cmd.CombinedOutput()
 			if err != nil {
 				if updating {
