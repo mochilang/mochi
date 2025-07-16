@@ -1,18 +1,10 @@
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
-   12 |   decltype(person) person;
-      |            ^~~~~~
-      |            perror
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:12:12: error: ‘person’ was not declared in this scope; did you mean ‘perror’?
-   12 |   decltype(person) person;
-      |            ^~~~~~
-      |            perror
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:15:33: error: ‘struct Stat’ has no member named ‘city’
-   15 |   decltype(std::declval<Stat>().city) key;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:30:33: error: ‘struct Stat’ has no member named ‘city’
+   30 |   decltype(std::declval<Stat>().city) key;
       |                                 ^~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:15:33: error: ‘struct Stat’ has no member named ‘city’
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:30:33: error: ‘struct Stat’ has no member named ‘city’
 /workspace/mochi/tests/machine/x/cpp/group_by.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:21: error: no match for ‘operator==’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:21: error: no match for ‘operator==’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+   60 |         if (__g.key == __key) {
       |             ~~~~~~~ ^~ ~~~~~
       |                 |      |
       |                 int    std::__cxx11::basic_string<char>
@@ -24,13 +16,13 @@ In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:3
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /workspace/mochi/tests/machine/x/cpp/group_by.cpp:2:
+                 from /workspace/mochi/tests/machine/x/cpp/group_by.cpp:3:
 /usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> bool std::operator==(const __new_allocator<char>&, const __new_allocator<_Tp>&)’
   215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
       |         ^~~~~~~~
 /usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘const std::__new_allocator<_Tp>’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘const std::__new_allocator<_Tp>’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/iosfwd:42,
                  from /usr/include/c++/13/ios:40:
@@ -38,44 +30,44 @@ In file included from /usr/include/c++/13/iosfwd:42,
   192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
       |     ^~~~~~~~
 /usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’
   237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
       |     ^~~~~~~~
 /usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/string:48:
 /usr/include/c++/13/bits/stl_iterator.h:448:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
   448 |     operator==(const reverse_iterator<_Iterator>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:448:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/stl_iterator.h:493:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
   493 |     operator==(const reverse_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:493:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
  1678 |     operator==(const move_iterator<_IteratorL>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
  1748 |     operator==(const move_iterator<_Iterator>& __x,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
                  from /usr/include/c++/13/string:51:
@@ -83,8 +75,8 @@ In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
   812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/bits/basic_string.h:47,
                  from /usr/include/c++/13/string:54:
@@ -92,43 +84,43 @@ In file included from /usr/include/c++/13/bits/basic_string.h:47,
   609 |     operator==(basic_string_view<_CharT, _Traits> __x,
       |     ^~~~~~~~
 /usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
   616 |     operator==(basic_string_view<_CharT, _Traits> __x,
       |     ^~~~~~~~
 /usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/string_view:642:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
   642 |     operator==(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
       |     ^~~~~~~~
 /usr/include/c++/13/string_view:642:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
  3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
  3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/basic_string.h:3774:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
  3774 |     operator==(const _CharT* __lhs,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:3774:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const _CharT*’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const _CharT*’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/bits/memory_resource.h:47,
                  from /usr/include/c++/13/string:58:
@@ -136,8 +128,8 @@ In file included from /usr/include/c++/13/bits/memory_resource.h:47,
  1919 |     operator==(const tuple<_TElements...>& __t,
       |     ^~~~~~~~
 /usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/bits/locale_facets.h:48,
                  from /usr/include/c++/13/bits/basic_ios.h:37,
@@ -146,17 +138,17 @@ In file included from /usr/include/c++/13/bits/locale_facets.h:48,
   234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 In file included from /usr/include/c++/13/vector:66,
-                 from /workspace/mochi/tests/machine/x/cpp/group_by.cpp:4:
+                 from /workspace/mochi/tests/machine/x/cpp/group_by.cpp:5:
 /usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
  2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
       |     ^~~~~~~~
 /usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:45:24: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
-   45 |         if (__g.key == __key) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:60:24: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+   60 |         if (__g.key == __key) {
       |                        ^~~~~
 /usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘bool std::operator==(const allocator<char>&, const allocator<char>&)’
   216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
@@ -189,183 +181,127 @@ In file included from /usr/include/c++/13/bits/ios_base.h:46:
 /usr/include/c++/13/system_error:517:37: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
   517 |   operator==(const error_condition& __lhs, const error_code& __rhs) noexcept
       |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:46:36: error: cannot convert ‘People’ to ‘int’ in initialization
-   46 |           __g.items.push_back(Stat{person});
-      |                                    ^~~~~~
-      |                                    |
-      |                                    People
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:52:68: error: cannot convert ‘People’ to ‘int’ in initialization
-   52 |         __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
-      |                                                                    ^~~~~~
-      |                                                                    |
-      |                                                                    People
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:52:75: error: no matching function for call to ‘std::vector<Stat>::vector(<brace-enclosed initializer list>)’
-   52 |         __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
-      |                                                                           ^
-/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Stat; _Alloc = std::allocator<Stat>]’
-  707 |         vector(_InputIterator __first, _InputIterator __last,
-      |         ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
-/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>]’
-  678 |       vector(initializer_list<value_type> __l,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; std::__type_identity_t<_Alloc> = std::allocator<Stat>]’
-  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>; std::false_type = std::integral_constant<bool, false>]’
-  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>; std::true_type = std::integral_constant<bool, true>]’
-  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; std::__type_identity_t<_Alloc> = std::allocator<Stat>]’
-  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
-  620 |       vector(vector&&) noexcept = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
-  601 |       vector(const vector& __x)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; size_type = long unsigned int; value_type = Stat; allocator_type = std::allocator<Stat>]’
-  569 |       vector(size_type __n, const value_type& __value,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; size_type = long unsigned int; allocator_type = std::allocator<Stat>]’
-  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>]’
-  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
-  531 |       vector() = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:67:38: error: cannot convert ‘std::__cxx11::basic_string<char>’ to ‘int’ in initialization
+   67 |         __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
+      |                                      ^~~~~
+      |                                      |
+      |                                      std::__cxx11::basic_string<char>
 /workspace/mochi/tests/machine/x/cpp/group_by.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:59:65: error: ‘struct Stat’ has no member named ‘age’
-   59 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:74:65: error: ‘struct Stat’ has no member named ‘age’
+   74 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
       |                                                                 ^~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:59:65: error: ‘struct Stat’ has no member named ‘age’
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:59:69: error: template argument 1 is invalid
-   59 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:74:65: error: ‘struct Stat’ has no member named ‘age’
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:74:69: error: template argument 1 is invalid
+   74 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
       |                                                                     ^
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:59:69: error: template argument 2 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:61:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-   61 |                         __items.push_back(p.age);
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:74:69: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:76:33: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+   76 |                         __items.push_back(p.age);
       |                                 ^~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:61:45: error: ‘struct Stat’ has no member named ‘age’
-   61 |                         __items.push_back(p.age);
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:76:45: error: ‘struct Stat’ has no member named ‘age’
+   76 |                         __items.push_back(p.age);
       |                                             ^~~
 /workspace/mochi/tests/machine/x/cpp/group_by.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:58:56: error: no matching function for call to ‘__avg(int)’
-   58 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:73:56: error: no matching function for call to ‘__avg(int)’
+   73 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
       |                                                   ~~~~~^~~~~~~~~
-   59 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
+   74 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   60 |                       for (auto p : g.items) {
+   75 |                       for (auto p : g.items) {
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~          
-   61 |                         __items.push_back(p.age);
+   76 |                         __items.push_back(p.age);
       |                         ~~~~~~~~~~~~~~~~~~~~~~~~~       
-   62 |                       }
+   77 |                       }
       |                       ~                                 
-   63 |                       return __items;
+   78 |                       return __items;
       |                       ~~~~~~~~~~~~~~~                   
-   64 |                     })())});
+   79 |                     })())});
       |                     ~~~~~                               
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:18:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
-   18 | template <typename T> double __avg(const std::vector<T> &v) {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:33:30: note: candidate: ‘template<class T> double __avg(const std::vector<T>&)’
+   33 | template <typename T> double __avg(const std::vector<T> &v) {
       |                              ^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:18:30: note:   template argument deduction/substitution failed:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:58:56: note:   mismatched types ‘const std::vector<T>’ and ‘int’
-   58 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:33:30: note:   template argument deduction/substitution failed:
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:73:56: note:   mismatched types ‘const std::vector<T>’ and ‘int’
+   73 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
       |                                                   ~~~~~^~~~~~~~~
-   59 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
+   74 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   60 |                       for (auto p : g.items) {
+   75 |                       for (auto p : g.items) {
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~          
-   61 |                         __items.push_back(p.age);
+   76 |                         __items.push_back(p.age);
       |                         ~~~~~~~~~~~~~~~~~~~~~~~~~       
-   62 |                       }
+   77 |                       }
       |                       ~                                 
-   63 |                       return __items;
+   78 |                       return __items;
       |                       ~~~~~~~~~~~~~~~                   
-   64 |                     })())});
+   79 |                     })())});
       |                     ~~~~~                               
 /workspace/mochi/tests/machine/x/cpp/group_by.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:67:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Stat>’ requested
-   39 |   std::vector<Stat> stats = ([&]() {
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:82:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Stat>’ requested
+   54 |   std::vector<Stat> stats = ([&]() {
       |                             ~~~~~~~~
-   40 |     std::vector<__struct3> __groups;
+   55 |     std::vector<__struct3> __groups;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   41 |     for (auto person : people) {
+   56 |     for (auto person : people) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   42 |       auto __key = person.city;
+   57 |       auto __key = person.city;
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~
-   43 |       bool __found = false;
+   58 |       bool __found = false;
       |       ~~~~~~~~~~~~~~~~~~~~~
-   44 |       for (auto &__g : __groups) {
+   59 |       for (auto &__g : __groups) {
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   45 |         if (__g.key == __key) {
+   60 |         if (__g.key == __key) {
       |         ~~~~~~~~~~~~~~~~~~~~~~~
-   46 |           __g.items.push_back(Stat{person});
+   61 |           __g.items.push_back(Stat{person});
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   47 |           __found = true;
+   62 |           __found = true;
       |           ~~~~~~~~~~~~~~~
-   48 |           break;
+   63 |           break;
       |           ~~~~~~
-   49 |         }
+   64 |         }
       |         ~
-   50 |       }
+   65 |       }
       |       ~
-   51 |       if (!__found) {
+   66 |       if (!__found) {
       |       ~~~~~~~~~~~~~~~
-   52 |         __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
+   67 |         __groups.push_back(__struct3{__key, std::vector<Stat>{Stat{person}}});
       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   53 |       }
+   68 |       }
       |       ~
-   54 |     }
+   69 |     }
       |     ~
-   55 |     std::vector<__struct4> __items;
+   70 |     std::vector<__struct4> __items;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   56 |     for (auto &g : __groups) {
+   71 |     for (auto &g : __groups) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-   57 |       __items.push_back(
+   72 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~~
-   58 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
+   73 |           __struct4{g.key, ((int)g.items.size()), __avg(([&]() {
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   59 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
+   74 |                       std::vector<decltype(std::declval<Stat>().age)> __items;
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   60 |                       for (auto p : g.items) {
+   75 |                       for (auto p : g.items) {
       |                       ~~~~~~~~~~~~~~~~~~~~~~~~
-   61 |                         __items.push_back(p.age);
+   76 |                         __items.push_back(p.age);
       |                         ~~~~~~~~~~~~~~~~~~~~~~~~~
-   62 |                       }
+   77 |                       }
       |                       ~
-   63 |                       return __items;
+   78 |                       return __items;
       |                       ~~~~~~~~~~~~~~~
-   64 |                     })())});
+   79 |                     })())});
       |                     ~~~~~~~~
-   65 |     }
+   80 |     }
       |     ~
-   66 |     return __items;
+   81 |     return __items;
       |     ~~~~~~~~~~~~~~~
-   67 |   })();
+   82 |   })();
       |   ~~^~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:71:22: error: ‘struct Stat’ has no member named ‘city’
-   71 |       std::cout << s.city;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:86:22: error: ‘struct Stat’ has no member named ‘city’
+   86 |       std::cout << s.city;
       |                      ^~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:75:22: error: ‘struct Stat’ has no member named ‘count’
-   75 |       std::cout << s.count;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:90:22: error: ‘struct Stat’ has no member named ‘count’
+   90 |       std::cout << s.count;
       |                      ^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by.cpp:79:22: error: ‘struct Stat’ has no member named ‘avg_age’
-   79 |       std::cout << s.avg_age;
+/workspace/mochi/tests/machine/x/cpp/group_by.cpp:94:22: error: ‘struct Stat’ has no member named ‘avg_age’
+   94 |       std::cout << s.avg_age;
       |                      ^~~~~~~

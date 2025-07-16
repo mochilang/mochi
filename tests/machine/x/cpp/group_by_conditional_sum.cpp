@@ -74,7 +74,7 @@ struct Item {
   bool flag;
 };
 struct Result {
-  decltype(i) i;
+  std::any i;
 };
 struct __struct3 {
   decltype(std::declval<Result>().cat) key;
