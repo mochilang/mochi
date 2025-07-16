@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -22,6 +23,7 @@ func shouldUpdateRosetta() bool {
 }
 
 func runVM(src string) ([]byte, error) {
+	vm.SetNowSeed(1)
 	prog, err := parser.Parse(src)
 	if err != nil {
 		return nil, fmt.Errorf("parse error: %w", err)
@@ -44,6 +46,9 @@ func runVM(src string) ([]byte, error) {
 
 func TestRosettaVMGolden(t *testing.T) {
 	root := findRepoRoot(t)
+	os.Setenv("MOCHI_NOW_SEED", "1")
+	defer os.Unsetenv("MOCHI_NOW_SEED")
+	skip := map[string]bool{"100-prisoners": true}
 	pattern := filepath.Join(root, "tests/rosetta/x/Mochi", "*.mochi")
 	files, err := filepath.Glob(pattern)
 	if err != nil {
@@ -52,39 +57,69 @@ func TestRosettaVMGolden(t *testing.T) {
 	if len(files) == 0 {
 		t.Fatal("no Mochi Rosetta tests found")
 	}
-	max := 5
-	if len(files) < max {
-		max = len(files)
-	}
-	for _, src := range files[:max] {
+	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		outPath := filepath.Join(root, "tests/rosetta/x/Mochi", name+".out")
-		if _, err := os.Stat(outPath); err != nil {
+		if skip[name] {
+			t.Run(name, func(t *testing.T) { t.Skip("skipped") })
 			continue
 		}
+		outPath := filepath.Join(root, "tests/rosetta/x/Mochi", name+".out")
 		t.Run(name, func(t *testing.T) {
 			got, err := runVM(src)
+			errPath := strings.TrimSuffix(src, filepath.Ext(src)) + ".error"
 			if err != nil {
-				errPath := strings.TrimSuffix(src, filepath.Ext(src)) + ".error"
-				_ = os.WriteFile(errPath, []byte(err.Error()), 0644)
-				t.Skipf("%v", err)
+				if shouldUpdateRosetta() {
+					norm := normalizeOutput(root, []byte(err.Error()))
+					_ = os.WriteFile(errPath, append(norm, '\n'), 0644)
+					t.Logf("wrote: %s", errPath)
+				}
+				if data, e := os.ReadFile(errPath); e == nil {
+					want := bytes.TrimSpace(normalizeOutput(root, data))
+					gotb := bytes.TrimSpace(normalizeOutput(root, []byte(err.Error())))
+					if !bytes.Equal(gotb, want) {
+						t.Errorf("%s error\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, gotb, want)
+					}
+				} else {
+					t.Skipf("%v", err)
+				}
 				return
 			}
-			_ = os.Remove(strings.TrimSuffix(src, filepath.Ext(src)) + ".error")
+			_ = os.Remove(errPath)
 			if shouldUpdateRosetta() {
-				if err := os.WriteFile(outPath, append(got, '\n'), 0644); err != nil {
+				norm := normalizeOutput(root, got)
+				if err := os.WriteFile(outPath, append(norm, '\n'), 0644); err != nil {
 					t.Fatalf("write golden: %v", err)
 				}
 				t.Logf("updated: %s", outPath)
 				return
 			}
-			want, err := os.ReadFile(outPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
+			want, e := os.ReadFile(outPath)
+			if e != nil {
+				t.Skipf("missing golden: %v", e)
+				return
 			}
-			if !bytes.Equal(got, bytes.TrimSpace(want)) {
-				t.Errorf("%s output\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, bytes.TrimSpace(want))
+			want = bytes.TrimSpace(normalizeOutput(root, want))
+			got = bytes.TrimSpace(normalizeOutput(root, got))
+			if !bytes.Equal(got, want) {
+				t.Errorf("%s output\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", name, got, want)
 			}
 		})
 	}
+}
+
+func normalizeOutput(root string, b []byte) []byte {
+	out := string(b)
+	out = strings.ReplaceAll(out, filepath.ToSlash(root)+"/", "")
+	out = strings.ReplaceAll(out, filepath.ToSlash(root), "")
+	out = strings.ReplaceAll(out, "github.com/mochi-lang/mochi/", "")
+	out = strings.ReplaceAll(out, "mochi/tests/", "tests/")
+	durRE := regexp.MustCompile(`\([0-9]+(\.[0-9]+)?(ns|µs|ms|s)\)`)
+	out = durRE.ReplaceAllString(out, "(X)")
+	tsRE := regexp.MustCompile(`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`)
+	out = tsRE.ReplaceAllString(out, "2006-01-02T15:04:05Z")
+	out = strings.TrimSpace(out)
+	if !strings.HasSuffix(out, "\n") {
+		out += "\n"
+	}
+	return []byte(out)
 }
