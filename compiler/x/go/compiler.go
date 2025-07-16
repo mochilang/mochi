@@ -2025,7 +2025,10 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 			}
 			val = fmt.Sprintf("-%s", val)
 		case "!":
-			val = fmt.Sprintf("!%s", val)
+			if isAny(t) {
+				val = fmt.Sprintf("(%s).(bool)", val)
+			}
+			val = fmt.Sprintf("!(%s)", val)
 		}
 	}
 	return val, nil

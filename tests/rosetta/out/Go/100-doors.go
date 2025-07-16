@@ -20,7 +20,7 @@ func main() {
 	for pass := 1; pass < 101; pass++ {
 		idx := (pass - 1)
 		for idx < 100 {
-			doors[idx] = !doors[idx]
+			doors[idx] = !((doors[idx]).(bool))
 			idx = (idx + pass)
 		}
 	}
@@ -56,6 +56,8 @@ func _exists(v any) bool {
 		return len(s) > 0
 	case []bool:
 		return len(s) > 0
+	case bool:
+		return s
 	case []map[string]any:
 		return len(s) > 0
 	case map[string]any:
