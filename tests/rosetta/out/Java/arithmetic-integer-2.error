@@ -1,6 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavaarithmetic-integer-22306195380/001/ArithmeticInteger2.java:10: error: incompatible types: int cannot be converted to String
-        System.out.println(String.valueOf(a) + " quo " + String.valueOf(b) + " = " + String.valueOf(Integer.parseInt((a / b))));
-                                                                                                                        ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-1 error

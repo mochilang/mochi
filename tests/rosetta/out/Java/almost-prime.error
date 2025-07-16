@@ -1,7 +1,0 @@
-run error: exit status 1
-Exception in thread "main" java.lang.UnsupportedOperationException
-	at java.base/java.util.AbstractList.add(AbstractList.java:155)
-	at java.base/java.util.AbstractList.add(AbstractList.java:113)
-	at AlmostPrime.gen(AlmostPrime.java:26)
-	at AlmostPrime.main(AlmostPrime.java:35)
-	at AlmostPrime.main(AlmostPrime.java:45)

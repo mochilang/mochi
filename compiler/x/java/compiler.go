@@ -676,7 +676,7 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	case "float":
 		return "double"
 	default:
-		return *t.Simple
+		return "Object"
 	}
 }
 
@@ -2438,10 +2438,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "boolean":
 					val = fmt.Sprintf("Boolean.parseBoolean(%s)", val)
 				default:
-					if strings.Contains(t, "<") && strings.HasSuffix(t, ">") {
+					if t == "Object" {
+						val = fmt.Sprintf("(%s)%s", t, val)
+					} else if strings.Contains(t, "<") && strings.HasSuffix(t, ">") {
 						val = fmt.Sprintf("(%s)%s", t, val)
 					} else {
-						return "", fmt.Errorf("unsupported cast to %s", t)
+						val = fmt.Sprintf("(%s)%s", t, val)
 					}
 				}
 			}

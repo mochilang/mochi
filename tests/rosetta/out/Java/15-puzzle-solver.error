@@ -1,7 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJava15-puzzle-solver193679828/001/M15PuzzleSolver.java:10: error: cannot find symbol
-    System.out.println(testpkg.FifteenPuzzleExample());
-                              ^
-  symbol:   method FifteenPuzzleExample()
-  location: class testpkg
-1 error
