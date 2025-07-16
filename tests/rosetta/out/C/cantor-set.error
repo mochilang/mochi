@@ -1,0 +1,8 @@
+type error: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:38
+
+ 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
+    |                                      ^
+
+help:
+  Ensure the argument type matches the function’s signature.

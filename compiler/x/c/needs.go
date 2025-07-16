@@ -7,6 +7,7 @@ const (
 	needStr                  = "str"
 	needInput                = "input"
 	needIndexString          = "index_string"
+	needIndexOfString        = "index_of_string"
 	needSliceListInt         = "slice_list_int"
 	needSliceString          = "slice_string"
 	needListListInt          = "list_list_int"

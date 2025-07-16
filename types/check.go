@@ -518,6 +518,16 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("indexOf", FuncType{
+		Params: []Type{StringType{}, StringType{}},
+		Return: IntType{},
+		Pure:   true,
+	}, false)
+	env.SetVar("sha256", FuncType{
+		Params: []Type{AnyType{}},
+		Return: ListType{Elem: IntType{}},
+		Pure:   true,
+	}, false)
 	env.SetVar("num", FuncType{
 		Params: []Type{AnyType{}},
 		Return: BigIntType{},
@@ -2434,6 +2444,8 @@ var builtinArity = map[string]int{
 	"push":      2,
 	"first":     1,
 	"substring": 3,
+	"indexOf":   2,
+	"sha256":    1,
 	"num":       1,
 	"denom":     1,
 }
@@ -2696,6 +2708,28 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			}
 		}
 		return nil
+	case "indexOf":
+		if len(args) != 2 {
+			return errArgCount(pos, name, 2, len(args))
+		}
+		for i := 0; i < 2; i++ {
+			if _, ok := args[i].(StringType); !ok {
+				if _, ok := args[i].(AnyType); !ok {
+					return errArgTypeMismatch(pos, i, StringType{}, args[i])
+				}
+			}
+		}
+		return nil
+	case "sha256":
+		if len(args) != 1 {
+			return errArgCount(pos, name, 1, len(args))
+		}
+		switch args[0].(type) {
+		case StringType, ListType, AnyType:
+			return nil
+		default:
+			return fmt.Errorf("sha256 expects string or list")
+		}
 	case "num", "denom":
 		if len(args) != 1 {
 			return errArgCount(pos, name, 1, len(args))

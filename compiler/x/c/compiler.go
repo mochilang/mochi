@@ -5033,6 +5033,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 			start := c.compileExpr(p.Call.Args[1])
 			end := c.compileExpr(p.Call.Args[2])
 			return fmt.Sprintf("slice_string(%s, %s, %s)", s, start, end)
+		} else if p.Call.Func == "indexOf" {
+			c.need(needIndexOfString)
+			s := c.compileExpr(p.Call.Args[0])
+			sub := c.compileExpr(p.Call.Args[1])
+			return fmt.Sprintf("index_of_string(%s, %s)", s, sub)
 		} else if p.Call.Func == "print" {
 			simple := true
 			for _, a := range p.Call.Args {

@@ -508,6 +508,11 @@ static list_group_pair_string _group_by_pair_string(list_pair_string src) {
 	helperContainsString = `static int contains_string(char* s, char* sub) {
     return strstr(s, sub) != NULL;
 }`
+	helperIndexOfString = `static int index_of_string(char* s, char* sub) {
+    char* pos = strstr(s, sub);
+    if (!pos) return -1;
+    return pos - s;
+}`
 	helperContainsListListInt = `static int contains_list_list_int(list_list_int v, list_int item) {
     for (int i = 0; i < v.len; i++) if (equal_list_int(v.data[i], item)) return 1;
     return 0;
@@ -796,6 +801,7 @@ var helperCode = map[string]string{
 	needValuesMapStringInt:   helperValuesMapStringInt,
 	needValuesMapIntString:   helperValuesMapIntString,
 	needIndexString:          helperIndexString,
+	needIndexOfString:        helperIndexOfString,
 	needSliceString:          helperSliceString,
 	needSliceListInt:         helperSliceListInt,
 	needSliceListFloat:       helperSliceListFloat,
@@ -874,6 +880,7 @@ var helperOrder = []string{
 	needFetch,
 	needMapStringGet,
 	needIndexString,
+	needIndexOfString,
 	needSliceString,
 	needSliceListInt,
 	needSliceListFloat,
