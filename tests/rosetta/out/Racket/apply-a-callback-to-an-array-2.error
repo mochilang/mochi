@@ -1,0 +1,12 @@
+run: exit status 1
+number->string: contract violation
+  expected: number?
+  given: '(1 4 9 16 25)
+  context...:
+   /tmp/apply-a-callback-to-an-array-2.rkt:18:2
+   body of "/tmp/apply-a-callback-to-an-array-2.rkt"
+1
+4
+9
+16
+25

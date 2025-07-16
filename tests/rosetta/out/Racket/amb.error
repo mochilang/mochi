@@ -1,0 +1,9 @@
+run: exit status 1
+/tmp/amb.rkt:120:0: define: not allowed in an expression context
+  in: (define out (string-append "[" (cond ((string? res) (string-ref res 0)) ((hash? res) (hash-ref res 0)) (else (list-ref res 0)))))
+  location...:
+   /tmp/amb.rkt:120:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

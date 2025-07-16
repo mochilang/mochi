@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/100-prisoners.rkt:73:22: now: unbound identifier
+  in: now
+  location...:
+   /tmp/100-prisoners.rkt:73:22

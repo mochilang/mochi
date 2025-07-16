@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/adfgvx-cipher.rkt:85:22: now: unbound identifier
+  in: now
+  location...:
+   /tmp/adfgvx-cipher.rkt:85:22

@@ -1,0 +1,9 @@
+run: exit status 1
+/tmp/abelian-sandpile-model-identity.rkt:107:0: define: not allowed in an expression context
+  in: (define nbs (cond ((string? neighbors) (string-ref neighbors i)) ((hash? neighbors) (hash-ref neighbors i)) (else (list-ref neighbors i))))
+  location...:
+   /tmp/abelian-sandpile-model-identity.rkt:107:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

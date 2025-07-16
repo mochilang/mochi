@@ -1,0 +1,12 @@
+run: exit status 1
++: contract violation
+  expected: number?
+  given: "(-1"
+  context...:
+   /tmp/arithmetic-complex.rkt:87:2
+   /tmp/arithmetic-complex.rkt:105:0
+   body of "/tmp/arithmetic-complex.rkt"
+a:       (1+1i)
+b:       (3.14159+1.25i)
+a + b:   (4.14159+2.25i)
+a * b:   (1.8915899999999999+4.39159i)

@@ -1,0 +1,9 @@
+run: exit status 1
+/tmp/24-game-solve.rkt:142:0: define: not allowed in an expression context
+  in: (define f (exprEval (cond ((string? xs) (string-ref xs 0)) ((hash? xs) (hash-ref xs 0)) (else (list-ref xs 0)))))
+  location...:
+   /tmp/24-game-solve.rkt:142:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

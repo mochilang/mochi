@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/a+b.rkt:5:11: int: unbound identifier
+  in: int
+  location...:
+   /tmp/a+b.rkt:5:11

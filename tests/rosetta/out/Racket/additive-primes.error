@@ -1,0 +1,13 @@
+run: exit status 1
+string->number: contract violation
+  expected: string?
+  given: 1/5
+  context...:
+   /tmp/additive-primes.rkt:115:6
+   /tmp/additive-primes.rkt:112:0
+   /tmp/additive-primes.rkt:109:2
+   /tmp/additive-primes.rkt:149:6
+   /tmp/additive-primes.rkt:146:0
+   /tmp/additive-primes.rkt:140:2
+   body of "/tmp/additive-primes.rkt"
+Additive primes less than 500:

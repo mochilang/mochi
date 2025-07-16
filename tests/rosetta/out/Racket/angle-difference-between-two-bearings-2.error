@@ -1,0 +1,14 @@
+run: exit status 1
+remainder: contract violation
+  expected: integer?
+  given: -118.1184
+  context...:
+   /tmp/angle-difference-between-two-bearings-2.rkt:5:2
+   /usr/share/racket/collects/racket/private/for.rkt:1539:9
+   body of "/tmp/angle-difference-between-two-bearings-2.rkt"
+25
+90
+175
+-175
+170
+-170

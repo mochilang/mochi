@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/21-game.rkt:98:37: now: unbound identifier
+  in: now
+  location...:
+   /tmp/21-game.rkt:98:37
