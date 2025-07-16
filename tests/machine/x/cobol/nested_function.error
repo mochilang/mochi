@@ -1,0 +1,9 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:10: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:11: error: 'FN_OUTER_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob: in paragraph 'FN_OUTER':
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:15: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:16: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:17: error: 'FN_INNER_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/nested_function.cob:16: error: 'FN_INNER' is not defined
+

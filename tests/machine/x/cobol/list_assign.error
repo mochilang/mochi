@@ -1,0 +1,3 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/list_assign.cob:12: error: 'NUMS-E2' is not defined
+

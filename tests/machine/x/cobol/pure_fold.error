@@ -1,0 +1,7 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:11: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:12: error: 'FN_TRIPLE_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/pure_fold.cob: in paragraph 'FN_TRIPLE':
+/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:16: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/pure_fold.cob:17: error: 'X' cannot be used here
+

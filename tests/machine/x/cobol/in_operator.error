@@ -1,0 +1,3 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/in_operator.cob:18: error: invalid symbol '!' - skipping word
+

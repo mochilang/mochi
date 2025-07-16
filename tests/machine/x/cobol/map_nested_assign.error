@@ -1,1 +1,5 @@
-unsupported expression at line 1
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/map_nested_assign.cob:7: error: syntax error, unexpected DATA
+/workspace/mochi/tests/machine/x/cobol/map_nested_assign.cob:8: error: level number must begin with 01 or 77
+/workspace/mochi/tests/machine/x/cobol/map_nested_assign.cob:11: error: 'DATA-OUTER-INNER' is not defined
+

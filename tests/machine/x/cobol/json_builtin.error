@@ -1,0 +1,4 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/json_builtin.cob:12: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/json_builtin.cob:12: error: 'FN_JSON' is not defined
+
