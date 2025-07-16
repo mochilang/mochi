@@ -438,7 +438,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		case op.Cast != nil:
 			if op.Cast.Type.Simple != nil {
 				tname := *op.Cast.Type.Simple
-				if tname == "int" {
+				if tname == "int" || tname == "bigint" || tname == "bigrat" {
 					val = fmt.Sprintf("(string->number %s)", val)
 				} else if tname == "float" {
 					val = fmt.Sprintf("(exact->inexact (if (string? %s) (string->number %s) %s))", val, val, val)
