@@ -1819,6 +1819,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		}
 		if len(p.Selector.Tail) == 0 {
 			if c.env != nil {
+				if ut, ok := c.env.FindUnionByVariant(p.Selector.Root); ok {
+					if st, ok := ut.Variants[p.Selector.Root]; ok && len(st.Fields) == 0 {
+						return fmt.Sprintf("%s.new", name), nil
+					}
+				}
 				if _, err := c.env.GetVar(p.Selector.Root); err == nil {
 					return name, nil
 				}

@@ -10,6 +10,9 @@
 - 2025-07-18 08:12 - Added `rosetta_golden_test.go` and `compile_rosetta_rb.go`
   for generating Ruby Rosetta outputs. Updated `print` handling for lists to
   better match expected output and regenerate files.
+- 2025-07-16 15:30 - Added `vm_golden_test.go` for programs in `tests/vm/valid`
+  to verify generated Ruby code and runtime output. Regenerated `.rb` and `.out`
+  files with the `-update` flag.
 
 ## Progress (2025-07-15 04:48)
 - Recompiled `tpc-h` queries `q4`-`q22` using the updated compiler.
