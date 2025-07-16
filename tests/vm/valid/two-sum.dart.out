@@ -4,8 +4,8 @@ import 'dart:convert';
 List<int> twoSum(List<int> nums, int target) {
   var n = nums.length;
   for (var i = 0; i < n; i++) {
-    for (var j = i + 1; j < n; j++) {
-      if (nums[i] + nums[j] == target) {
+    for (var j = (i + 1) as int; j < n; j++) {
+      if ((nums[i] + nums[j]) as int == target) {
         return [i, j];
       }
     }

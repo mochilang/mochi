@@ -6,8 +6,8 @@ var people = [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 15}, {'name':
 var adults = (() {
   var _q0 = <dynamic>[];
   for (var person in people) {
-    if (!(person['age'] >= 18)) continue;
-    _q0.add({'name': person['name'], 'age': person['age'], 'is_senior': person['age'] >= 60});
+    if (!(person['age'].toString().compareTo(18.toString()) >= 0)) continue;
+    _q0.add({'name': person['name'], 'age': person['age'], 'is_senior': person['age'].toString().compareTo(60.toString()) >= 0});
   }
   return _q0;
 })();

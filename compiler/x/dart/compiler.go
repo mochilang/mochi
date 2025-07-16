@@ -934,16 +934,16 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	t := types.TypeOfPostfix(u.Value, c.env)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
 		op := u.Ops[i]
 		if op == "-" {
-			if !isNumericType(t) {
-				val = fmt.Sprintf("-(%s as num)", val)
-				continue
-			}
+			// Dart's strong typing rejects unary minus on values of
+			// type `Object?`. Always cast to `num` to avoid compile
+			// errors when the operand type is unknown.
+			val = fmt.Sprintf("-(%s as num)", val)
+		} else {
+			val = op + val
 		}
-		val = op + val
 	}
 	return val, nil
 }
@@ -2290,7 +2290,7 @@ func defaultValue(typ string) string {
 
 func isNumericType(t types.Type) bool {
 	switch t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType, types.AnyType:
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType:
 		return true
 	default:
 		return false
