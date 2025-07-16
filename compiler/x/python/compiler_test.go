@@ -217,6 +217,9 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 			}
 			c := pycode.New(env)
 			c.SetTypeHints(false)
+			prevEpoch := os.Getenv("SOURCE_DATE_EPOCH")
+			os.Setenv("SOURCE_DATE_EPOCH", "0")
+			defer os.Setenv("SOURCE_DATE_EPOCH", prevEpoch)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
@@ -352,6 +355,9 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 			}
 			c := pycode.New(env)
 			c.SetTypeHints(false)
+			prevEpoch := os.Getenv("SOURCE_DATE_EPOCH")
+			os.Setenv("SOURCE_DATE_EPOCH", "0")
+			defer os.Setenv("SOURCE_DATE_EPOCH", prevEpoch)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
@@ -410,6 +416,9 @@ func TestPyCompiler_SLTCases(t *testing.T) {
 			}
 			c := pycode.New(env)
 			c.SetTypeHints(false)
+			prevEpoch := os.Getenv("SOURCE_DATE_EPOCH")
+			os.Setenv("SOURCE_DATE_EPOCH", "0")
+			defer os.Setenv("SOURCE_DATE_EPOCH", prevEpoch)
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
@@ -586,8 +595,23 @@ func compileAndRun(t *testing.T, src, outDir, name string) {
 		writeError(t, outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
 		return
 	}
+	got := bytes.TrimSpace(buf.Bytes())
+	if len(got) > 0 && got[len(got)-1] != '\n' {
+		got = append(got, '\n')
+	}
+	wantPath := filepath.Join(filepath.Dir(src), name+".out")
+	if want, err := os.ReadFile(wantPath); err == nil {
+		want = bytes.TrimSpace(want)
+		if len(want) > 0 && want[len(want)-1] != '\n' {
+			want = append(want, '\n')
+		}
+		if !bytes.Equal(got, want) {
+			writeError(t, outDir, name, string(data), fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", got, want))
+			return
+		}
+	}
 	outPath := filepath.Join(outDir, name+".out")
-	os.WriteFile(outPath, buf.Bytes(), 0o644)
+	os.WriteFile(outPath, got, 0o644)
 	os.Remove(errPath)
 }
 
