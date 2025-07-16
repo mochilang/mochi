@@ -676,6 +676,12 @@ func (c *Compiler) typeName(t *parser.TypeRef) string {
 	case "float":
 		return "double"
 	default:
+		if _, ok := c.types[*t.Simple]; ok {
+			return *t.Simple
+		}
+		if c.dataClassByName(*t.Simple) != nil {
+			return *t.Simple
+		}
 		return "Object"
 	}
 }
@@ -2064,7 +2070,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 		} else {
 			elemType := listElemType(c.inferType(f.Source))
 			if strings.HasPrefix(elemType, "?") {
-				elemType = "Number"
+				elemType = "Object"
 			}
 			if strings.Contains(src, ".get(") {
 				if elemType == "" {
@@ -3469,8 +3475,7 @@ func (c *Compiler) compileQuery(q *parser.QueryExpr) (string, error) {
 			b.WriteString(fmt.Sprintf("\t\t%[1]s.add(%[2]s);\n", resVar, sel))
 		}
 		b.WriteString("\t}\n")
-		delete(c.groupKeys, gName)
-		delete(c.groupItems, gName)
+		// preserve group metadata for follow-up expressions
 	}
 	b.WriteString(fmt.Sprintf("\treturn %s;\n", resVar))
 	b.WriteString("}}).get()")
