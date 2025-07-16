@@ -255,12 +255,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					end = e
 				}
 				switch typ.(type) {
-				case types.StringType:
-					c.use("_slice_string")
-					res = fmt.Sprintf("_slice_string(%s, %s, %s)", res, start, end)
-				default:
+				case types.ListType, types.GroupType:
 					length := fmt.Sprintf("(%s) - %s", end, start)
 					res = fmt.Sprintf("Enum.slice((%s), %s, %s)", res, start, length)
+				default:
+					c.use("_slice_string")
+					res = fmt.Sprintf("_slice_string(%s, %s, %s)", res, start, end)
 				}
 			}
 		} else if op.Call != nil {
@@ -343,7 +343,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					case types.MapType:
 						res = fmt.Sprintf("map_size(%s)", args[0])
 					default:
-						res = fmt.Sprintf("length(%s)", args[0])
+						c.use("_length")
+						res = fmt.Sprintf("_length(%s)", args[0])
 					}
 				case "count":
 					c.use("_count")
@@ -562,7 +563,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			case types.MapType:
 				return fmt.Sprintf("map_size(%s)", args[0]), nil
 			default:
-				return fmt.Sprintf("length(%s)", args[0]), nil
+				c.use("_length")
+				return fmt.Sprintf("_length(%s)", args[0]), nil
 			}
 		case "count":
 			c.use("_count")

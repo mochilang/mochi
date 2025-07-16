@@ -1,0 +1,8 @@
+type: error[T003]: unknown function: parseIntStr
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cusip.mochi:33:10
+
+ 33 |   return parseIntStr(s[8:9]) == (10 - (sum % 10)) % 10
+    |          ^
+
+help:
+  Ensure the function is defined before it's called.
