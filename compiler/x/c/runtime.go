@@ -513,6 +513,24 @@ static list_group_pair_string _group_by_pair_string(list_pair_string src) {
     if (!pos) return -1;
     return pos - s;
 }`
+	helperSha256 = `#include <openssl/sha.h>
+static list_int _sha256_bytes(unsigned char* data, int len) {
+    unsigned char hash[SHA256_DIGEST_LENGTH];
+    SHA256(data, len, hash);
+    list_int r = list_int_create(SHA256_DIGEST_LENGTH);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) r.data[i] = hash[i];
+    return r;
+}
+static list_int _sha256_string(char* s) {
+    return _sha256_bytes((unsigned char*)s, strlen(s));
+}
+static list_int _sha256_list(list_int v) {
+    unsigned char* data = malloc(v.len);
+    for (int i = 0; i < v.len; i++) data[i] = (unsigned char)v.data[i];
+    list_int r = _sha256_bytes(data, v.len);
+    free(data);
+    return r;
+}`
 	helperContainsListListInt = `static int contains_list_list_int(list_list_int v, list_int item) {
     for (int i = 0; i < v.len; i++) if (equal_list_int(v.data[i], item)) return 1;
     return 0;
@@ -785,6 +803,7 @@ var helperCode = map[string]string{
 	needInput:                helperInput,
 	needStr:                  helperStr,
 	needNow:                  helperNow,
+	needSHA256:               helperSha256,
 	needJSON:                 helperJSON,
 	needJSONMapString:        helperJSONMapString,
 	needJSONMapStringInt:     helperJSONMapStringInt,
@@ -870,6 +889,7 @@ var helperOrder = []string{
 	needInput,
 	needStr,
 	needNow,
+	needSHA256,
 	needJSON,
 	needJSONMapString,
 	needJSONMapStringInt,
