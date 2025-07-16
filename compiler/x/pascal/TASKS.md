@@ -10,6 +10,8 @@
 - [2025-07-28 15:50] Added Pascal compiler support for TPCH queries q11-q22 and updated dataset tests.
 - [2025-07-15 06:32] Generated Pascal code and outputs for TPC-DS queries q50-q99 with new golden test and compile script.
 - [2025-08-30 10:00] Added `values` builtin and golden tests for `tests/vm/valid` programs.
+- [2025-09-01 09:15] Added VM golden tests and moved helper emission before
+  variable declarations to reduce Pascal `.error` files.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.

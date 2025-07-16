@@ -120,6 +120,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.writeln("generic TArray<T> = array of T;")
 	c.indent--
 	c.emitFuncTypes()
+	// helpers may define types referenced below
+	c.emitHelpers()
 
 	// Package imports
 	for _, s := range prog.Statements {
@@ -165,9 +167,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.indent--
 		c.writeln("")
 	}
-
-	// Helpers before function definitions.
-	c.emitHelpers()
 
 	// Function declarations.
 	c.buf.Write(funcBuf.Bytes())
