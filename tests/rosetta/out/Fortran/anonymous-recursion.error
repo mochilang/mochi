@@ -1,5 +1,5 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/anonymous-recursion.f90:8:3:
+gfortran: exit status 1
+/tmp/anonymous-recursion.f90:8:3:
 
     8 |   main()
       |   1

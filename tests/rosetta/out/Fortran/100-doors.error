@@ -1,1 +1,21 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/100-doors.f90:12:14:
+
+   12 |   doors = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/100-doors.f90:16:26:
+
+   16 |     app0(size(doors)+1) = .false.
+      |                          1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/100-doors.f90:22:30:
+
+   22 |       doors(((idx)+1)) = .not. doors(((idx)+1))
+      |                              1
+Error: Operand of .not. operator at (1) is INTEGER(4)
+/tmp/100-doors.f90:30:10:
+
+   30 |       if (doors(((idx)+1))) then
+      |          1
+Error: IF clause at (1) requires a scalar LOGICAL expression

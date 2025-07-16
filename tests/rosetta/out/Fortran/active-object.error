@@ -1,5 +1,5 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/active-object.f90:21:7:
+gfortran: exit status 1
+/tmp/active-object.f90:21:7:
 
    21 |   k1 = sinApprox(0)
       |       1

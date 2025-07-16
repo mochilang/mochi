@@ -1,1 +1,96 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/array-concatenation.f90:39:14:
+
+   39 |     out = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/array-concatenation.f90:60:14:
+
+   60 |     out = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/array-concatenation.f90:57:40:
+
+   57 |   recursive integer function concatAny(a,b) result(res)
+      |                                        1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/array-concatenation.f90:57:42:
+
+   57 |   recursive integer function concatAny(a,b) result(res)
+      |                                          1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
+/tmp/array-concatenation.f90:36:41:
+
+   36 |   recursive integer function concatInts(a,b) result(res)
+      |                                         1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/array-concatenation.f90:36:43:
+
+   36 |   recursive integer function concatInts(a,b) result(res)
+      |                                           1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
+/tmp/array-concatenation.f90:61:20:
+
+   61 |     do i7 = 1, size(a)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/array-concatenation.f90:68:20:
+
+   68 |     do i9 = 1, size(b)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/array-concatenation.f90:75:4:
+
+   75 |     res = out
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/array-concatenation.f90:40:20:
+
+   40 |     do i3 = 1, size(a)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/array-concatenation.f90:47:20:
+
+   47 |     do i5 = 1, size(b)
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/array-concatenation.f90:54:4:
+
+   54 |     res = out
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/array-concatenation.f90:25:30:
+
+   25 |   write(s0,'(G0)') concatInts(a,b)
+      |                              1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/array-concatenation.f90:25:32:
+
+   25 |   write(s0,'(G0)') concatInts(a,b)
+      |                                1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
+/tmp/array-concatenation.f90:28:26:
+
+   28 |   j = (/'Crosby','Stills','Nash','Young'/)
+      |                          1
+Error: Different CHARACTER lengths (6/4) in array constructor at (1)
+/tmp/array-concatenation.f90:29:29:
+
+   29 |   write(s1,'(G0)') concatAny(i,j)
+      |                             1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/array-concatenation.f90:29:31:
+
+   29 |   write(s1,'(G0)') concatAny(i,j)
+      |                               1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
+/tmp/array-concatenation.f90:33:30:
+
+   33 |   write(s2,'(G0)') concatInts(l,m)
+      |                              1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/array-concatenation.f90:33:32:
+
+   33 |   write(s2,'(G0)') concatInts(l,m)
+      |                                1
+Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)

@@ -1,10 +1,10 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/csv-to-html-translation-3.f90:10:132:
+gfortran: exit status 1
+/tmp/csv-to-html-translation-3.f90:10:132:
 
    10 |   print *, '      <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>'
       |                                                                                                                                    1
 Error: Line truncated at (1) [-Werror=line-truncation]
-/workspace/mochi/tests/rosetta/out/Fortran/csv-to-html-translation-3.f90:10:13:
+/tmp/csv-to-html-translation-3.f90:10:13:
 
    10 |   print *, '      <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>'
       |             1

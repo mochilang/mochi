@@ -1,1 +1,66 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/chaos-game.f90:25:13:
+
+   25 |   grid = (//)
+      |             1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chaos-game.f90:28:15:
+
+   28 |     line = (//)
+      |               1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chaos-game.f90:51:16:
+
+   51 |     idx = int(r(((1)+1)))
+      |                1
+Error: Syntax error in argument list at (1)
+/tmp/chaos-game.f90:53:24:
+
+   53 |     px = int(((((px + v(((0)+1)))) / 2)))
+      |                        1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/chaos-game.f90:54:24:
+
+   54 |     py = int(((((py + v(((1)+1)))) / 2)))
+      |                        1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/chaos-game.f90:76:4:
+
+   76 |     res = (/next,mod(next,n)/)
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chaos-game.f90:33:27:
+
+   33 |       app0(size(line)+1) = ' '
+      |                           1
+Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
+/tmp/chaos-game.f90:39:4:
+
+   39 |     app1(size(grid)+1) = line
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chaos-game.f90:52:16:
+
+   52 |     v = vertices(((idx)+1))
+      |                1
+Error: Rank mismatch in array reference at (1) (1/2)
+/tmp/chaos-game.f90:55:29:
+
+   55 |     if ((((((((px >= 0) .and. px) < width) .and. py) >= 0) .and. py) < height)) then
+      |                             1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/chaos-game.f90:56:10:
+
+   56 |       grid(((py)+1),((px)+1)) = '*'
+      |          1
+Error: Rank mismatch in array reference at (1) (2/1)
+/tmp/chaos-game.f90:62:11:
+
+   62 |     line = ''
+      |           1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/tmp/chaos-game.f90:65:25:
+
+   65 |       line = (line + grid(((y)+1),((x)+1)))
+      |                         1
+Error: Rank mismatch in array reference at (1) (2/1)

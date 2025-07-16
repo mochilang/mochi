@@ -1,200 +1,200 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:4:13:
+gfortran: exit status 1
+/tmp/chowla-numbers.f90:4:13:
 
     4 |   print *, 'chowla( 1) = 0
       |             1
 Error: Unterminated character constant beginning at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:52:3:
+/tmp/chowla-numbers.f90:52:3:
 
    52 | 8,128 is a perfect number
       |   1
 Error: Non-numeric character in statement label at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:53:4:
+/tmp/chowla-numbers.f90:53:4:
 
    53 | 33,550,336 is a perfect number
       |    1
 Error: Non-numeric character in statement label at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:53:8:
+/tmp/chowla-numbers.f90:53:8:
 
    53 | 33,550,336 is a perfect number
       |        1
 Error: Non-numeric character in statement label at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:5:0:
+/tmp/chowla-numbers.f90:5:0:
 
     5 | chowla( 2) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:6:0:
+/tmp/chowla-numbers.f90:6:0:
 
     6 | chowla( 3) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:7:0:
+/tmp/chowla-numbers.f90:7:0:
 
     7 | chowla( 4) = 2
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:8:0:
+/tmp/chowla-numbers.f90:8:0:
 
     8 | chowla( 5) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:9:0:
+/tmp/chowla-numbers.f90:9:0:
 
     9 | chowla( 6) = 5
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:10:0:
+/tmp/chowla-numbers.f90:10:0:
 
    10 | chowla( 7) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:11:0:
+/tmp/chowla-numbers.f90:11:0:
 
    11 | chowla( 8) = 6
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:12:0:
+/tmp/chowla-numbers.f90:12:0:
 
    12 | chowla( 9) = 3
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:13:0:
+/tmp/chowla-numbers.f90:13:0:
 
    13 | chowla(10) = 7
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:14:0:
+/tmp/chowla-numbers.f90:14:0:
 
    14 | chowla(11) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:15:0:
+/tmp/chowla-numbers.f90:15:0:
 
    15 | chowla(12) = 15
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:16:0:
+/tmp/chowla-numbers.f90:16:0:
 
    16 | chowla(13) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:17:0:
+/tmp/chowla-numbers.f90:17:0:
 
    17 | chowla(14) = 9
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:18:0:
+/tmp/chowla-numbers.f90:18:0:
 
    18 | chowla(15) = 8
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:19:0:
+/tmp/chowla-numbers.f90:19:0:
 
    19 | chowla(16) = 14
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:20:0:
+/tmp/chowla-numbers.f90:20:0:
 
    20 | chowla(17) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:21:0:
+/tmp/chowla-numbers.f90:21:0:
 
    21 | chowla(18) = 20
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:22:0:
+/tmp/chowla-numbers.f90:22:0:
 
    22 | chowla(19) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:23:0:
+/tmp/chowla-numbers.f90:23:0:
 
    23 | chowla(20) = 21
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:24:0:
+/tmp/chowla-numbers.f90:24:0:
 
    24 | chowla(21) = 10
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:25:0:
+/tmp/chowla-numbers.f90:25:0:
 
    25 | chowla(22) = 13
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:26:0:
+/tmp/chowla-numbers.f90:26:0:
 
    26 | chowla(23) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:27:0:
+/tmp/chowla-numbers.f90:27:0:
 
    27 | chowla(24) = 35
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:28:0:
+/tmp/chowla-numbers.f90:28:0:
 
    28 | chowla(25) = 5
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:29:0:
+/tmp/chowla-numbers.f90:29:0:
 
    29 | chowla(26) = 15
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:30:0:
+/tmp/chowla-numbers.f90:30:0:
 
    30 | chowla(27) = 12
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:31:0:
+/tmp/chowla-numbers.f90:31:0:
 
    31 | chowla(28) = 27
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:32:0:
+/tmp/chowla-numbers.f90:32:0:
 
    32 | chowla(29) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:33:0:
+/tmp/chowla-numbers.f90:33:0:
 
    33 | chowla(30) = 41
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:34:0:
+/tmp/chowla-numbers.f90:34:0:
 
    34 | chowla(31) = 0
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:35:0:
+/tmp/chowla-numbers.f90:35:0:
 
    35 | chowla(32) = 30
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:36:0:
+/tmp/chowla-numbers.f90:36:0:
 
    36 | chowla(33) = 14
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:37:0:
+/tmp/chowla-numbers.f90:37:0:
 
    37 | chowla(34) = 19
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:38:0:
+/tmp/chowla-numbers.f90:38:0:
 
    38 | chowla(35) = 12
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:39:0:
+/tmp/chowla-numbers.f90:39:0:
 
    39 | chowla(36) = 54
       | 
 Error: Function ‘chowla’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/chowla-numbers.f90:40:0:
+/tmp/chowla-numbers.f90:40:0:
 
    40 | chowla(37) = 0
       | 

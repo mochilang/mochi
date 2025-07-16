@@ -1,31 +1,21 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:15:3:
+gfortran: exit status 1
+/tmp/additive-primes.f90:15:3:
 
    15 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:86:24:
-
-   86 |           print *, line(0+1:(size(line) - 2))
-      |                        1
-Error: Syntax error in PRINT statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:98:20:
-
-   98 |       print *, line(0+1:(size(line) - 2))
-      |                    1
-Error: Syntax error in PRINT statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:77:11:
-
-   77 |     line = ''
-      |           1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:83:16:
+/tmp/additive-primes.f90:83:16:
 
    83 |         line = (line + pad(i)) // '  '
       |                1
-Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
-/workspace/mochi/tests/rosetta/out/Fortran/additive-primes.f90:87:17:
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/additive-primes.f90:86:34:
 
-   87 |           line = ''
-      |                 1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+   86 |           print *, line(0+1:(size(line) - 2))
+      |                                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/additive-primes.f90:98:30:
+
+   98 |       print *, line(0+1:(size(line) - 2))
+      |                              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

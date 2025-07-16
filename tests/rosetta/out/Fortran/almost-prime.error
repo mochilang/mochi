@@ -1,1 +1,31 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/almost-prime.f90:10:3:
+
+   10 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/almost-prime.f90:34:12:
+
+   34 |     r = (//)
+      |            1
+Error: Empty array constructor at (1) is not allowed
+/tmp/almost-prime.f90:49:5:
+
+   49 |     k = 1
+      |     1
+Error: Symbol ‘k’ at (1) has no IMPLICIT type
+/tmp/almost-prime.f90:35:5:
+
+   35 |     n = 2
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/almost-prime.f90:45:4:
+
+   45 |     res = r
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/almost-prime.f90:24:8:
+
+   24 |         n = (n / i)
+      |        1
+Error: Dummy argument ‘n’ with INTENT(IN) in variable definition context (assignment) at (1)

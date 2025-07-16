@@ -1,1 +1,46 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/amicable-pairs.f90:11:3:
+
+   11 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/amicable-pairs.f90:38:15:
+
+   38 |     sums = (//)
+      |               1
+Error: Empty array constructor at (1) is not allowed
+/tmp/amicable-pairs.f90:39:5:
+
+   39 |     i = 0
+      |     1
+Error: Symbol ‘i’ at (1) has no IMPLICIT type
+/tmp/amicable-pairs.f90:53:5:
+
+   53 |     n = 2
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/amicable-pairs.f90:30:8:
+
+   30 |     s = s0
+      |        1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/amicable-pairs.f90:32:10:
+
+   32 |       s = ' ' // s
+      |          1
+Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
+/tmp/amicable-pairs.f90:31:20:
+
+   31 |     do while ((size(s) < width))
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/amicable-pairs.f90:34:10:
+
+   34 |     res = s
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/tmp/amicable-pairs.f90:17:15:
+
+   17 |     do while (((p <= i) / 2))
+      |               1
+Error: Operands of binary numeric operator ‘/’ at (1) are LOGICAL(4)/INTEGER(4)

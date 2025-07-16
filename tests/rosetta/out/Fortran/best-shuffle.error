@@ -1,1 +1,76 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/best-shuffle.f90:22:3:
+
+   22 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/best-shuffle.f90:32:16:
+
+   32 |     chars = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/best-shuffle.f90:66:14:
+
+   66 |     arr = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/best-shuffle.f90:108:8:
+
+  108 |     seed = 1
+      |        1
+Error: Symbol ‘seed’ at (1) has no IMPLICIT type
+/tmp/best-shuffle.f90:107:25:
+
+  107 |     ts = (/'abracadabra','seesaw','elk','grrrrrr','up','a'/)
+      |                         1
+Error: Different CHARACTER lengths (11/6) in array constructor at (1)
+/tmp/best-shuffle.f90:116:35:
+
+  116 |       print *, trim(trim(trim(trim(ts(((i)+1)) // ' -> ') // shuf) // ' (') // s2) // ')'
+      |                                   1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
+/tmp/best-shuffle.f90:37:28:
+
+   37 |       app0(size(chars)+1) = s(i+1:(i + 1))
+      |                            1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/best-shuffle.f90:34:24:
+
+   34 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/best-shuffle.f90:51:10:
+
+   51 |     res = ''
+      |          1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/tmp/best-shuffle.f90:57:4:
+
+   57 |     res = (/res,sd/)
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/best-shuffle.f90:68:24:
+
+   68 |     do while ((i < size(t)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/best-shuffle.f90:79:30:
+
+   79 |         if ((((((i /= j) .and. arr(((i)+1))) /= s(j+1:(j + 1))) .and. arr(((j)+1))) /= s(i+1:(i + 1)))) then
+      |                              1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/best-shuffle.f90:92:11:
+
+   92 |       if ((arr(((i)+1)) == s(i+1:(i + 1)))) then
+      |           1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(*)
+/tmp/best-shuffle.f90:100:13:
+
+  100 |       out = (out + arr(((i)+1)))
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/best-shuffle.f90:103:16:
+
+  103 |     res = (/out,sd,count/)
+      |                1
+Error: Element in CHARACTER(100) array constructor at (1) is INTEGER(4)

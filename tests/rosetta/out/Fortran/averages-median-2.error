@@ -1,50 +1,50 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:45:25:
+gfortran: exit status 1
+/tmp/averages-median-2.f90:45:25:
 
    45 |       res = (((med + arr((((half - 1))+1)))) / 2)
       |                         1
 Error: Expected a right parenthesis in expression at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:18:34:
+/tmp/averages-median-2.f90:18:34:
 
    18 |   recursive real function sel(list,k) result(res)
       |                                  1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘list’ at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:42:22:
+/tmp/averages-median-2.f90:42:22:
 
    42 |     half = int(((size(arr) / 2)))
       |                      1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:43:14:
+/tmp/averages-median-2.f90:43:14:
 
    43 |     med = sel(arr,half)
       |              1
 Error: Expected a procedure for argument ‘list’ at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:25:26:
+/tmp/averages-median-2.f90:25:26:
 
    25 |       do while ((j < size(list)))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:32:6:
+/tmp/averages-median-2.f90:32:6:
 
    32 |       list(((i)+1)) = list(((minIndex)+1))
       |      1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:33:6:
+/tmp/averages-median-2.f90:33:6:
 
    33 |       list(((minIndex)+1)) = tmp
       |      1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:44:18:
+/tmp/averages-median-2.f90:44:18:
 
    44 |     if ((mod(size(arr),2) == 0)) then
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:13:26:
+/tmp/averages-median-2.f90:13:26:
 
    13 |   write(s0,'(G0)') median((/3,1,4,1/))
       |                          1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/workspace/mochi/tests/rosetta/out/Fortran/averages-median-2.f90:15:26:
+/tmp/averages-median-2.f90:15:26:
 
    15 |   write(s1,'(G0)') median((/3,1,4,1,5/))
       |                          1

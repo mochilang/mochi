@@ -1,1 +1,67 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/average-loop-length.f90:23:3:
+
+   23 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/average-loop-length.f90:103:20:
+
+  103 |       visited = (//)
+      |                    1
+Error: Empty array constructor at (1) is not allowed
+/tmp/average-loop-length.f90:147:132:
+
+  147 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/average-loop-length.f90:147:132:
+
+  147 |       line = trim(trim(trim(trim(trim(trim(padInt(n,3) // '  ') // padFloat(a,9)) // '  ') // padFloat(b,12)) // '  (') // padFloat(err,6)) // '%)'
+      |                                                                                                                                    1
+Error: Syntax error in argument list at (1)
+/tmp/average-loop-length.f90:142:5:
+
+  142 |     n = 1
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/average-loop-length.f90:112:7:
+
+  112 |       x = 0
+      |       1
+Error: Symbol ‘x’ at (1) has no IMPLICIT type
+/tmp/average-loop-length.f90:89:5:
+
+   89 |     s = fmtF(x)
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/average-loop-length.f90:79:5:
+
+   79 |     s = s1
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/average-loop-length.f90:57:5:
+
+   57 |     s = s0
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/average-loop-length.f90:146:18:
+
+  146 |       err = ((absf((a - b)) / b) * 100)
+      |                  1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/average-loop-length.f90:108:32:
+
+  108 |         app2(size(visited)+1) = .false.
+      |                                1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/average-loop-length.f90:59:9:
+
+   59 |     if (((dot == 0) - 1)) then
+      |         1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/average-loop-length.f90:43:24:
+
+   43 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+f951: some warnings being treated as errors

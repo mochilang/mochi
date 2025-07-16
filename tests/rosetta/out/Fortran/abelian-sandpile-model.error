@@ -1,1 +1,126 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/abelian-sandpile-model.f90:17:3:
+
+   17 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/abelian-sandpile-model.f90:21:12:
+
+   21 |     b = (//)
+      |            1
+Error: Empty array constructor at (1) is not allowed
+/tmp/abelian-sandpile-model.f90:24:16:
+
+   24 |       row = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/abelian-sandpile-model.f90:51:15:
+
+   51 |           pile = handlePile(pile,x,(y - 1))
+      |               1
+Error: ‘pile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:57:15:
+
+   57 |           pile = handlePile(pile,(x - 1),y)
+      |               1
+Error: ‘pile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:63:15:
+
+   63 |           pile = handlePile(pile,x,(y + 1))
+      |               1
+Error: ‘pile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:69:15:
+
+   69 |           pile = handlePile(pile,(x + 1),y)
+      |               1
+Error: ‘pile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:72:11:
+
+   72 |       pile = handlePile(pile,x,y)
+      |           1
+Error: ‘pile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:74:14:
+
+   74 |     res = pile
+      |              1
+Error: Function ‘pile’ requires an argument list at (1)
+/tmp/abelian-sandpile-model.f90:102:13:
+
+  102 |     drawPile(pile,16)
+      |             1
+Error: ‘drawpile’ at (1) is not a variable
+/tmp/abelian-sandpile-model.f90:98:8:
+
+   98 |     pile = newPile(16)
+      |        1
+Error: Symbol ‘pile’ at (1) has no IMPLICIT type
+/tmp/abelian-sandpile-model.f90:77:42:
+
+   77 |   recursive integer function drawPile(pile,d) result(res)
+      |                                          1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘pile’ at (1)
+/tmp/abelian-sandpile-model.f90:42:44:
+
+   42 |   recursive integer function handlePile(pile,x,y) result(res)
+      |                                            1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘pile’ at (1)
+/tmp/abelian-sandpile-model.f90:35:6:
+
+   35 |       app1(size(b)+1) = row
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/abelian-sandpile-model.f90:39:4:
+
+   39 |     res = b
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/abelian-sandpile-model.f90:80:18:
+
+   80 |     chars = (/' ','░','▓','█'/)
+      |                  1
+Error: Different CHARACTER lengths (1/3) in array constructor at (1)
+/tmp/abelian-sandpile-model.f90:90:16:
+
+   90 |         line = (line + chars(((v)+1)))
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/abelian-sandpile-model.f90:82:14:
+
+   82 |     do while ((row < d))
+      |              1
+Error: Exit condition of DO WHILE loop at (1) must be a scalar LOGICAL expression
+/tmp/abelian-sandpile-model.f90:47:6:
+
+   47 |       pile(((y)+1),((x)+1)) = (pile(((y)+1),((x)+1)) - 4)
+      |      1
+Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
+/tmp/abelian-sandpile-model.f90:49:8:
+
+   49 |         pile((((y - 1))+1),((x)+1)) = (pile((((y - 1))+1),((x)+1)) + 1)
+      |        1
+Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
+/tmp/abelian-sandpile-model.f90:55:8:
+
+   55 |         pile(((y)+1),(((x - 1))+1)) = (pile(((y)+1),(((x - 1))+1)) + 1)
+      |        1
+Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
+/tmp/abelian-sandpile-model.f90:60:11:
+
+   60 |       if (((y < dim) - 1)) then
+      |           1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/abelian-sandpile-model.f90:61:8:
+
+   61 |         pile((((y + 1))+1),((x)+1)) = (pile((((y + 1))+1),((x)+1)) + 1)
+      |        1
+Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
+/tmp/abelian-sandpile-model.f90:66:11:
+
+   66 |       if (((x < dim) - 1)) then
+      |           1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/abelian-sandpile-model.f90:67:8:
+
+   67 |         pile(((y)+1),(((x + 1))+1)) = (pile(((y)+1),(((x + 1))+1)) + 1)
+      |        1
+Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.

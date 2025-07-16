@@ -1,10 +1,10 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/anonymous-recursion-1.f90:12:3:
+gfortran: exit status 1
+/tmp/anonymous-recursion-1.f90:12:3:
 
    12 |   main()
       |   1
 Error: Unclassifiable statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/anonymous-recursion-1.f90:34:7:
+/tmp/anonymous-recursion-1.f90:34:7:
 
    34 |       n = arr0(i0)
       |       1

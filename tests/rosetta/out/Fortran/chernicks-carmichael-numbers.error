@@ -1,1 +1,181 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/chernicks-carmichael-numbers.f90:19:3:
+
+   19 |   ccNumbers(3,9)
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/chernicks-carmichael-numbers.f90:55:8:
+
+   55 |       a = a(1:(n - 1))
+      |        1
+Error: ‘a’ at (1) is not a variable
+/tmp/chernicks-carmichael-numbers.f90:58:11:
+
+   58 |     res = a
+      |           1
+Error: Function ‘a’ requires an argument list at (1)
+/tmp/chernicks-carmichael-numbers.f90:67:17:
+
+   67 |     digits = (//)
+      |                 1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chernicks-carmichael-numbers.f90:86:14:
+
+   86 |     res = (//)
+      |              1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chernicks-carmichael-numbers.f90:136:16:
+
+  136 |       res = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chernicks-carmichael-numbers.f90:142:16:
+
+  142 |       res = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chernicks-carmichael-numbers.f90:150:18:
+
+  150 |         res = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/chernicks-carmichael-numbers.f90:164:7:
+
+  164 |       m = 1
+      |       1
+Error: Symbol ‘m’ at (1) has no IMPLICIT type
+/tmp/chernicks-carmichael-numbers.f90:162:5:
+
+  162 |     n = start
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/chernicks-carmichael-numbers.f90:108:53:
+
+  108 |   recursive character(len=100) function bigToString(a) result(res)
+      |                                                     1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:79:42:
+
+   79 |   recursive integer function bigMulSmall(a,m) result(res)
+      |                                          1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:68:5:
+
+   68 |     n = x
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/chernicks-carmichael-numbers.f90:51:38:
+
+   51 |   recursive integer function bigTrim(a) result(res)
+      |                                      1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:53:5:
+
+   53 |     n = size(a)
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/chernicks-carmichael-numbers.f90:170:18:
+
+  170 |         if ((size(num) > 0)) then
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:172:67:
+
+  172 |           print *, trim(trim('a(' // s4) // ') = ') // bigToString(num)
+      |                                                                   1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:111:14:
+
+  111 |     i = (size(a) - 1)
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:114:11:
+
+  114 |       s = (s + s3)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/chernicks-carmichael-numbers.f90:64:6:
+
+   64 |       res = (/0/)
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chernicks-carmichael-numbers.f90:76:4:
+
+   76 |     res = digits
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chernicks-carmichael-numbers.f90:145:23:
+
+  145 |     prod = bigMulSmall(prod,p)
+      |                       1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:83:6:
+
+   83 |       res = (/0/)
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chernicks-carmichael-numbers.f90:91:25:
+
+   91 |       allocate(app1(size(res)+1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:92:18:
+
+   92 |       app1(1:size(res)) = res
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:93:16:
+
+   93 |       app1(size(res)+1) = mod(prod,10)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:94:6:
+
+   94 |       res = app1
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chernicks-carmichael-numbers.f90:89:24:
+
+   89 |     do while ((i < size(a)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:99:25:
+
+   99 |       allocate(app2(size(res)+1))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:100:18:
+
+  100 |       app2(1:size(res)) = res
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:101:16:
+
+  101 |       app2(size(res)+1) = mod(carry,10)
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:102:6:
+
+  102 |       res = app2
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/chernicks-carmichael-numbers.f90:105:18:
+
+  105 |     res = bigTrim(res)
+      |                  1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:53:13:
+
+   53 |     n = size(a)
+      |             1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/chernicks-carmichael-numbers.f90:153:25:
+
+  153 |       prod = bigMulSmall(prod,p)
+      |                         1
+Error: Expected a procedure for argument ‘a’ at (1)
+/tmp/chernicks-carmichael-numbers.f90:147:15:
+
+  147 |     do while (((i <= n) - 2))
+      |               1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)

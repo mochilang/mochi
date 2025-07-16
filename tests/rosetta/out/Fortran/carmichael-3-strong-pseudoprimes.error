@@ -1,40 +1,40 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:13:13:
+gfortran: exit status 1
+/tmp/carmichael-3-strong-pseudoprimes.f90:13:13:
 
    13 |   print *, 'The following are Carmichael munbers for p1 <= 61:
       |             1
 Error: Unterminated character constant beginning at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:14:1:
+/tmp/carmichael-3-strong-pseudoprimes.f90:14:1:
 
    14 | '
       | 1
 Error: Invalid character in name at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:74:66:
+/tmp/carmichael-3-strong-pseudoprimes.f90:74:66:
 
    74 |         if (mod((((mod(((((h3 + p1)) * ((p1 - 1)))),d) == 0) .and. mod((-p1 * p1),h3)) == d),h3)) then
       |                                                                  1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:63:8:
+/tmp/carmichael-3-strong-pseudoprimes.f90:63:8:
 
    63 |     s = s0
       |        1
 Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:65:10:
+/tmp/carmichael-3-strong-pseudoprimes.f90:65:10:
 
    65 |       s = ' ' // s
       |          1
 Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:64:20:
+/tmp/carmichael-3-strong-pseudoprimes.f90:64:20:
 
    64 |     do while ((size(s) < width))
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:67:10:
+/tmp/carmichael-3-strong-pseudoprimes.f90:67:10:
 
    67 |     res = s
       |          1
 Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:43:9:
+/tmp/carmichael-3-strong-pseudoprimes.f90:43:9:
 
    43 |     d = 5
       |         1
@@ -42,7 +42,7 @@ Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
    76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:49:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:49:17:
 
    49 |       d = (d + 2)
       |                 1
@@ -50,7 +50,7 @@ Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called
    76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:54:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:54:17:
 
    54 |       d = (d + 4)
       |                 1
@@ -58,7 +58,7 @@ Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called
    76 |           if (.not. isPrime(p2)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:43:9:
+/tmp/carmichael-3-strong-pseudoprimes.f90:43:9:
 
    43 |     d = 5
       |         1
@@ -66,7 +66,7 @@ Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called
    80 |           if (.not. isPrime(p3)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:49:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:49:17:
 
    49 |       d = (d + 2)
       |                 1
@@ -74,7 +74,7 @@ Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called
    80 |           if (.not. isPrime(p3)) then
       |                   2
 Error: Index variable ‘d’ redefined at (1) in procedure ‘isprime’ called from within DO loop at (2)
-/workspace/mochi/tests/rosetta/out/Fortran/carmichael-3-strong-pseudoprimes.f90:54:17:
+/tmp/carmichael-3-strong-pseudoprimes.f90:54:17:
 
    54 |       d = (d + 4)
       |                 1

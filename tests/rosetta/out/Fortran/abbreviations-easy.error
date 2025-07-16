@@ -1,1 +1,262 @@
-panic: runtime error: index out of range [0] with length 0
+gfortran: exit status 1
+/tmp/abbreviations-easy.f90:30:3:
+
+   30 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/tmp/abbreviations-easy.f90:34:16:
+
+   34 |     words = (//)
+      |                1
+Error: Empty array constructor at (1) is not allowed
+/tmp/abbreviations-easy.f90:39:39:
+
+   39 |       if ((((((ch == ' ') .or. ch) == '
+      |                                       1
+Error: Unterminated character constant beginning at (1)
+/tmp/abbreviations-easy.f90:40:2:
+
+   40 | ') .or. ch) == '        ')) then
+      |  1
+Error: Invalid character in name at (1)
+/tmp/abbreviations-easy.f90:48:10:
+
+   48 |       else
+      |          1
+Error: Unexpected ELSE statement at (1)
+/tmp/abbreviations-easy.f90:50:9:
+
+   50 |       end if
+      |         1
+Error: Expecting END DO statement at (1)
+/tmp/abbreviations-easy.f90:93:18:
+
+   93 |     results = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/abbreviations-easy.f90:109:17:
+
+  109 |           if ((c(0+1:wlen) == ww)) then
+      |                 1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/abbreviations-easy.f90:117:11:
+
+  117 |         end if
+      |           1
+Error: Expecting END DO statement at (1)
+/tmp/abbreviations-easy.f90:132:132:
+
+  132 |     table = trim(trim(trim(trim(trim('Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy ' // 'COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ') // 'NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ') // ' Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ') // 'MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ') // 'READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ') // 'RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp '
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/abbreviations-easy.f90:132:123:
+
+  132 |     table = trim(trim(trim(trim(trim('Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy ' // 'COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ') // 'NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ') // ' Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ') // 'MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ') // 'READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ') // 'RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp '
+      |                                                                                                                           1
+Error: Unterminated character constant beginning at (1)
+/tmp/abbreviations-easy.f90:134:15:
+
+  134 |     mins = (//)
+      |               1
+Error: Empty array constructor at (1) is not allowed
+/tmp/abbreviations-easy.f90:133:12:
+
+  133 |     commands = fields(table)
+      |            1
+Error: Symbol ‘commands’ at (1) has no IMPLICIT type
+/tmp/abbreviations-easy.f90:147:29:
+
+  147 |       allocate(app4(size(mins)+1))
+      |                             1
+Error: Symbol ‘mins’ at (1) has no IMPLICIT type; did you mean ‘main’?
+/tmp/abbreviations-easy.f90:89:46:
+
+   89 |   recursive integer function validate(commands,words,mins) result(res)
+      |                                              1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘commands’ at (1)
+/tmp/abbreviations-easy.f90:89:57:
+
+   89 |   recursive integer function validate(commands,words,mins) result(res)
+      |                                                         1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘mins’ at (1)
+/tmp/abbreviations-easy.f90:89:52:
+
+   89 |   recursive integer function validate(commands,words,mins) result(res)
+      |                                                    1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘words’ at (1)
+/tmp/abbreviations-easy.f90:74:47:
+
+   74 |   recursive character(len=100) function join(xs,sep) result(res)
+      |                                               1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/tmp/abbreviations-easy.f90:38:11:
+
+   38 |       ch = s(i+1:(i + 1))
+      |           1
+Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:41:18:
+
+   41 |         if ((size(cur) > 0)) then
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:44:32:
+
+   44 |           app0(size(words)+1) = cur
+      |                                1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:49:15:
+
+   49 |         cur = (cur + ch)
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/abbreviations-easy.f90:37:24:
+
+   37 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:53:14:
+
+   53 |     if ((size(cur) > 0)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:56:28:
+
+   56 |       app1(size(words)+1) = cur
+      |                            1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:59:4:
+
+   59 |     res = words
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/abbreviations-easy.f90:142:15:
+
+  142 |         if ((((ch >= 'A') .and. ch) <= 'Z')) then
+      |               1
+Error: Operands of comparison operator ‘>=’ at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/abbreviations-easy.f90:140:26:
+
+  140 |       do while ((j < size(cmd)))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:159:50:
+
+  159 |       out1 = (out1 + padRight(words(((k)+1)),size(results(((k)+1))))) // ' '
+      |                                                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:163:37:
+
+  163 |     print *, 'full words:  ' // join(results,' ')
+      |                                     1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/tmp/abbreviations-easy.f90:163:45:
+
+  163 |     print *, 'full words:  ' // join(results,' ')
+      |                                             1
+Warning: Character length of actual argument shorter than of dummy argument ‘sep’ (1/100) at (1)
+/tmp/abbreviations-easy.f90:81:15:
+
+   81 |         res = (res + sep)
+      |               1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/abbreviations-easy.f90:83:13:
+
+   83 |       res = (res + xs(((i)+1)))
+      |             1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
+/tmp/abbreviations-easy.f90:79:24:
+
+   79 |     do while ((i < size(xs)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:94:14:
+
+   94 |     if ((size(words) == 0)) then
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:95:6:
+
+   95 |       res = results
+      |      1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/abbreviations-easy.f90:101:14:
+
+  101 |       found = .false.
+      |              1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:102:18:
+
+  102 |       wlen = size(w)
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:106:89:
+
+  106 |         if ((((((mins(((ci)+1)) /= 0) .and. wlen) >= mins(((ci)+1))) .and. wlen) <= size(cmd))) then
+      |                                                                                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:106:43:
+
+  106 |         if ((((((mins(((ci)+1)) /= 0) .and. wlen) >= mins(((ci)+1))) .and. wlen) <= size(cmd))) then
+      |                                           1
+Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/INTEGER(4)
+/tmp/abbreviations-easy.f90:107:14:
+
+  107 |           c = upper(cmd)
+      |              1
+Error: Function ‘upper’ at (1) has no IMPLICIT type
+/tmp/abbreviations-easy.f90:108:15:
+
+  108 |           ww = upper(w)
+      |               1
+Error: Function ‘upper’ at (1) has no IMPLICIT type
+/tmp/abbreviations-easy.f90:114:20:
+
+  114 |             found = .true.
+      |                    1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:104:27:
+
+  104 |       do while ((ci < size(commands)))
+      |                           1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:120:15:
+
+  120 |       if (.not. found) then
+      |               1
+Error: Operand of .not. operator at (1) is INTEGER(4)
+/tmp/abbreviations-easy.f90:123:32:
+
+  123 |         app3(size(results)+1) = '*error*'
+      |                                1
+Error: Cannot convert CHARACTER(7) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:99:25:
+
+   99 |     do while ((wi < size(words)))
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:128:4:
+
+  128 |     res = results
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/abbreviations-easy.f90:65:10:
+
+   65 |     out = s
+      |          1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/tmp/abbreviations-easy.f90:66:13:
+
+   66 |     i = size(s)
+      |             1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/abbreviations-easy.f90:68:12:
+
+   68 |       out = out // ' '
+      |            1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/abbreviations-easy.f90:71:10:
+
+   71 |     res = out
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+f951: some warnings being treated as errors

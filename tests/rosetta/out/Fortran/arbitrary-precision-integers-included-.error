@@ -1,41 +1,8 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:6:17:
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:73
 
-    6 |   type(t_bigint) :: base
-      |                 1
-Error: Derived type ‘t_bigint’ at (1) is being used before it is defined
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:7:17:
+ 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
+    |                                                                         ^
 
-    7 |   type(t_bigint) :: x
-      |                 1
-Error: Derived type ‘t_bigint’ at (1) is being used before it is defined
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:38:19:
-
-   38 |     type(t_bigint), intent(in) :: base
-      |                   1
-Error: Derived type ‘t_bigint’ at (1) is being used before it is defined
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:37:2:
-
-   37 |   recursive type(t_bigint) function pow_big(base,exp) result(res)
-      |  1
-Error: The type for function ‘pow_big’ at (1) is not accessible
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:37:65:
-
-   37 |   recursive type(t_bigint) function pow_big(base,exp) result(res)
-      |                                                                 1
-Error: Function result ‘res’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:37:48:
-
-   37 |   recursive type(t_bigint) function pow_big(base,exp) result(res)
-      |                                                1
-Error: Symbol ‘base’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:15:6:
-
-   15 |   base = 5
-      |      1
-Error: Symbol ‘base’ at (1) has no IMPLICIT type
-/workspace/mochi/tests/rosetta/out/Fortran/arbitrary-precision-integers-included-.f90:16:3:
-
-   16 |   x = pow_big(base,e2)
-      |   1
-Error: Symbol ‘x’ at (1) has no IMPLICIT type
+help:
+  Ensure the argument type matches the function’s signature.

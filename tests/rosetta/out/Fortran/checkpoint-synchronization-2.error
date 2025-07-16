@@ -1,101 +1,96 @@
-gfortran error: exit status 1
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:31:46:
+gfortran: exit status 1
+/tmp/checkpoint-synchronization-2.f90:31:46:
 
    31 |   recursive character(len=100) function lower(ch) result(res)
       |                                              1
 Error: Procedure ‘lower’ at (1) has an explicit interface from a previous declaration
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:32:40:
+/tmp/checkpoint-synchronization-2.f90:32:40:
 
    32 |     character(len=100), intent(in) :: ch
       |                                        1
 Error: Unexpected data declaration statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:33:40:
+/tmp/checkpoint-synchronization-2.f90:33:40:
 
    33 |     upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
       |                                        1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:34:40:
+/tmp/checkpoint-synchronization-2.f90:34:40:
 
    34 |     lower = 'abcdefghijklmnopqrstuvwxyz'
       |                                        1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:35:9:
+/tmp/checkpoint-synchronization-2.f90:35:9:
 
    35 |     i = 0
       |         1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:36:32:
+/tmp/checkpoint-synchronization-2.f90:36:32:
 
    36 |     do while ((i < size(upper)))
       |                                1
 Error: Unexpected DO statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:37:27:
+/tmp/checkpoint-synchronization-2.f90:37:27:
 
    37 |       if ((ch == upper(i+1:(i + 1)))) then
       |                           1
 Error: Syntax error in argument list at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:38:24:
+/tmp/checkpoint-synchronization-2.f90:38:24:
 
    38 |         res = lower(i+1:(i + 1))
       |                        1
 Error: Syntax error in argument list at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:39:14:
+/tmp/checkpoint-synchronization-2.f90:39:14:
 
    39 |         return
       |              1
 Error: Unexpected RETURN statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:40:9:
+/tmp/checkpoint-synchronization-2.f90:40:9:
 
    40 |       end if
       |         1
 Error: Expecting END PROGRAM statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:41:17:
+/tmp/checkpoint-synchronization-2.f90:41:17:
 
    41 |       i = (i + 1)
       |                 1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:42:7:
+/tmp/checkpoint-synchronization-2.f90:42:7:
 
    42 |     end do
       |       1
 Error: Expecting END PROGRAM statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:43:12:
+/tmp/checkpoint-synchronization-2.f90:43:12:
 
    43 |     res = ch
       |            1
 Error: Unexpected assignment statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:44:10:
+/tmp/checkpoint-synchronization-2.f90:44:10:
 
    44 |     return
       |          1
 Error: Unexpected RETURN statement in CONTAINS section at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:45:5:
+/tmp/checkpoint-synchronization-2.f90:45:5:
 
    45 |   end function lower
       |     1
 Error: Expecting END PROGRAM statement at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:15:13:
+/tmp/checkpoint-synchronization-2.f90:15:13:
 
    15 |   partList = (/'A','B','C','D'/)
       |             1
 Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:20:8:
-
-   20 |     a = ''
-      |        1
-Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:23:14:
+/tmp/checkpoint-synchronization-2.f90:23:14:
 
    23 |       print *, p // ' worker begins part'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(19)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:24:20:
+/tmp/checkpoint-synchronization-2.f90:24:20:
 
    24 |       print *, trim(p // ' worker completed ') // lower(p)
       |                    1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(18)
-/workspace/mochi/tests/rosetta/out/Fortran/checkpoint-synchronization-2.f90:28:23:
+/tmp/checkpoint-synchronization-2.f90:25:11:
 
-   28 |     print *, trim(trim(a // ' assembled.  cycle ') // s2) // ' complete'
-      |                       1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(19)
+   25 |       a = (a + lower(p))
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)

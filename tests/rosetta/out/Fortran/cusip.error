@@ -1,4 +1,4 @@
-type error: error[T003]: unknown function: indexOf
+type: error[T003]: unknown function: indexOf
   --> /workspace/mochi/tests/rosetta/x/Mochi/cusip.mochi:4:13
 
   4 |   var idx = indexOf(upper, ch)
