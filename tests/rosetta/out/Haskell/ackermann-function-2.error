@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/ackermann-function-2.hs:116:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/ackermann-function-2.hs:112:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/ackermann-function-2.hs:116:1
+    |
+116 | main = do
+    | ^^^^

@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/cartesian-product-of-two-or-more-lists-2.hs:122:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/cartesian-product-of-two-or-more-lists-2.hs:118:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/cartesian-product-of-two-or-more-lists-2.hs:122:1
+    |
+122 | main = do
+    | ^^^^

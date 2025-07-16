@@ -1,0 +1,170 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:43:18: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+43 |          in case Map.lookup k m of
+   |                  ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:44:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+   |
+44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:45:33: error:
+    Not in scope: ‘Map.insert’
+    NB: no module named ‘Map’ is imported.
+   |
+45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
+   |                                 ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:46:27: error:
+    Not in scope: ‘Map.empty’
+    NB: no module named ‘Map’ is imported.
+   |
+46 |       (m, order) = go src Map.empty []
+   |                           ^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:47:32: error:
+    Not in scope: ‘Map.lookup’
+    NB: no module named ‘Map’ is imported.
+   |
+47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
+   |                                ^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:83:41: error:
+    Not in scope: type constructor or class ‘Map.Map’
+    NB: no module named ‘Map’ is imported.
+   |
+83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
+   |                                         ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:96:21: error:
+    Not in scope: ‘Map.fromList’
+    NB: no module named ‘Map’ is imported.
+   |
+96 |                  in Map.fromList
+   |                     ^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:18: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+103 | mod n m = (((((n `mod` m)) + m)) `mod` m)
+    |                  ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:34: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+103 | mod n m = (((((n `mod` m)) + m)) `mod` m)
+    |                                  ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:107:103: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+107 |   case if (_asInt (n) < 2) then Just (False) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 2) == 0) then Just ((_asInt (n) == 2)) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 3) == 0) then Just ((_asInt (n) == 3)) else Nothing of Just v -> Just v; Nothing -> (let d = 5 in case whileLoop (\() -> ((d * d) <= n)) (\() -> case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 2) in case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 4) in Nothing))) of Just v -> Just v; Nothing -> Just (True))
+    |                                                                                                       ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:107:205: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+107 |   case if (_asInt (n) < 2) then Just (False) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 2) == 0) then Just ((_asInt (n) == 2)) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 3) == 0) then Just ((_asInt (n) == 3)) else Nothing of Just v -> Just v; Nothing -> (let d = 5 in case whileLoop (\() -> ((d * d) <= n)) (\() -> case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 2) in case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 4) in Nothing))) of Just v -> Just v; Nothing -> Just (True))
+    |                                                                                                                                                                                                             ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:107:368: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+107 |   case if (_asInt (n) < 2) then Just (False) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 2) == 0) then Just ((_asInt (n) == 2)) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 3) == 0) then Just ((_asInt (n) == 3)) else Nothing of Just v -> Just v; Nothing -> (let d = 5 in case whileLoop (\() -> ((d * d) <= n)) (\() -> case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 2) in case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 4) in Nothing))) of Just v -> Just v; Nothing -> Just (True))
+    |                                                                                                                                                                                                                                                                                                                                                                                ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:107:487: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+107 |   case if (_asInt (n) < 2) then Just (False) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 2) == 0) then Just ((_asInt (n) == 2)) else Nothing of Just v -> Just v; Nothing -> case if ((n `mod` 3) == 0) then Just ((_asInt (n) == 3)) else Nothing of Just v -> Just v; Nothing -> (let d = 5 in case whileLoop (\() -> ((d * d) <= n)) (\() -> case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 2) in case if ((n `mod` d) == 0) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let d = (_asInt (d) + 4) in Nothing))) of Just v -> Just v; Nothing -> Just (True))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:117:101: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+117 |     forLoop 2 p1 (\h3 -> forLoop 1 ((h3 + p1)) (\d -> if (((((((((h3 + p1)) * ((_asInt (p1) - 1)))) `mod` d) == 0) && mod ((-(_asInt (p1))) * p1) h3) == d) `mod` h3) then (let p2 = (1 + _asInt ((((((_asInt (p1) - 1)) * ((h3 + p1))) / d)))) in case if not isPrime p2 then Nothing else Nothing of Just v -> Just v; Nothing -> (let p3 = (1 + _asInt ((((p1 * p2) / h3)))) in case if not isPrime p3 then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((((p2 * p3)) `mod` ((_asInt (p1) - 1))) /= 1) then Nothing else Nothing of Just v -> Just v; Nothing -> (let c = ((p1 * p2) * p3) in (let _ = putStrLn (((((((pad p1 2 ++ "   ") ++ pad p2 4) ++ "   ") ++ pad p3 5) ++ "     ") ++ show c)) in Nothing)))) else Nothing))
+    |                                                                                                     ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:117:119: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+117 |     forLoop 2 p1 (\h3 -> forLoop 1 ((h3 + p1)) (\d -> if (((((((((h3 + p1)) * ((_asInt (p1) - 1)))) `mod` d) == 0) && mod ((-(_asInt (p1))) * p1) h3) == d) `mod` h3) then (let p2 = (1 + _asInt ((((((_asInt (p1) - 1)) * ((h3 + p1))) / d)))) in case if not isPrime p2 then Nothing else Nothing of Just v -> Just v; Nothing -> (let p3 = (1 + _asInt ((((p1 * p2) / h3)))) in case if not isPrime p3 then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((((p2 * p3)) `mod` ((_asInt (p1) - 1))) /= 1) then Nothing else Nothing of Just v -> Just v; Nothing -> (let c = ((p1 * p2) * p3) in (let _ = putStrLn (((((((pad p1 2 ++ "   ") ++ pad p2 4) ++ "   ") ++ pad p3 5) ++ "     ") ++ show c)) in Nothing)))) else Nothing))
+    |                                                                                                                       ^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:117:157: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+117 |     forLoop 2 p1 (\h3 -> forLoop 1 ((h3 + p1)) (\d -> if (((((((((h3 + p1)) * ((_asInt (p1) - 1)))) `mod` d) == 0) && mod ((-(_asInt (p1))) * p1) h3) == d) `mod` h3) then (let p2 = (1 + _asInt ((((((_asInt (p1) - 1)) * ((h3 + p1))) / d)))) in case if not isPrime p2 then Nothing else Nothing of Just v -> Just v; Nothing -> (let p3 = (1 + _asInt ((((p1 * p2) / h3)))) in case if not isPrime p3 then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((((p2 * p3)) `mod` ((_asInt (p1) - 1))) /= 1) then Nothing else Nothing of Just v -> Just v; Nothing -> (let c = ((p1 * p2) * p3) in (let _ = putStrLn (((((((pad p1 2 ++ "   ") ++ pad p2 4) ++ "   ") ++ pad p3 5) ++ "     ") ++ show c)) in Nothing)))) else Nothing))
+    |                                                                                                                                                             ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:117:475: error:
+    Ambiguous occurrence ‘mod’
+    It could refer to
+       either ‘Prelude.mod’,
+              imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:5:8-11
+              (and originally defined in ‘GHC.Real’)
+           or ‘Main.mod’,
+              defined at /workspace/mochi/tests/rosetta/out/Haskell/carmichael-3-strong-pseudoprimes.hs:103:1
+    |
+117 |     forLoop 2 p1 (\h3 -> forLoop 1 ((h3 + p1)) (\d -> if (((((((((h3 + p1)) * ((_asInt (p1) - 1)))) `mod` d) == 0) && mod ((-(_asInt (p1))) * p1) h3) == d) `mod` h3) then (let p2 = (1 + _asInt ((((((_asInt (p1) - 1)) * ((h3 + p1))) / d)))) in case if not isPrime p2 then Nothing else Nothing of Just v -> Just v; Nothing -> (let p3 = (1 + _asInt ((((p1 * p2) / h3)))) in case if not isPrime p3 then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((((p2 * p3)) `mod` ((_asInt (p1) - 1))) /= 1) then Nothing else Nothing of Just v -> Just v; Nothing -> (let c = ((p1 * p2) * p3) in (let _ = putStrLn (((((((pad p1 2 ++ "   ") ++ pad p2 4) ++ "   ") ++ pad p3 5) ++ "     ") ++ show c)) in Nothing)))) else Nothing))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^

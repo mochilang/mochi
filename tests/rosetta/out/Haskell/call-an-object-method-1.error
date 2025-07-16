@@ -1,0 +1,37 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:20:3: error:
+    Data constructor not in scope: ValueMethod :: Foo -> t5 -> IO a4
+   |
+20 |   ValueMethod (myValue) 0
+   |   ^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:21:3: error:
+    Data constructor not in scope: PointerMethod :: Foo -> t4 -> IO a3
+   |
+21 |   PointerMethod (myPointer) 0
+   |   ^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:22:3: error:
+    Data constructor not in scope: ValueMethod :: Foo -> t3 -> IO a2
+   |
+22 |   ValueMethod (myPointer) 0
+   |   ^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:23:3: error:
+    Data constructor not in scope: PointerMethod :: Foo -> t2 -> IO a1
+   |
+23 |   PointerMethod (myValue) 0
+   |   ^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:24:3: error:
+    Data constructor not in scope: ValueMethod :: Foo -> t1 -> IO a0
+   |
+24 |   ValueMethod (myValue) 0
+   |   ^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-1.hs:25:3: error:
+    Data constructor not in scope: PointerMethod :: Foo -> t0 -> IO ()
+   |
+25 |   PointerMethod (myPointer) 0
+   |   ^^^^^^^^^^^^^

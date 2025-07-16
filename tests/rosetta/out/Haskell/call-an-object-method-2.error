@@ -1,0 +1,7 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-an-object-method-2.hs:12:5: error:
+    parse error on input ‘Contents’
+   |
+12 |     Contents :: String,
+   |     ^^^^^^^^

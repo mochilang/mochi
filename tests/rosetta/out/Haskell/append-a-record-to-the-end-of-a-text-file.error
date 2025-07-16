@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/append-a-record-to-the-end-of-a-text-file.hs:21:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/append-a-record-to-the-end-of-a-text-file.hs:16:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/append-a-record-to-the-end-of-a-text-file.hs:21:1
+   |
+21 | main = do
+   | ^^^^

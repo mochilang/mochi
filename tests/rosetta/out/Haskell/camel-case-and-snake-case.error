@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/camel-case-and-snake-case.hs:157:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/camel-case-and-snake-case.hs:150:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/camel-case-and-snake-case.hs:157:1
+    |
+157 | main = do
+    | ^^^^

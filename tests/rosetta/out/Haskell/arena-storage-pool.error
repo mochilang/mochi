@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/arena-storage-pool.hs:50:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/arena-storage-pool.hs:45:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/arena-storage-pool.hs:50:1
+   |
+50 | main = do
+   | ^^^^

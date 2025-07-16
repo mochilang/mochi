@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/boyer-moore-string-search.hs:156:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/boyer-moore-string-search.hs:148:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/boyer-moore-string-search.hs:156:1
+    |
+156 | main = do
+    | ^^^^
