@@ -1,4 +1,8 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-17 09:00)
+- Refactored VM golden tests to strip compiler headers and update README.
+- Removed obsolete `compiler_test.go` and `tpch_test.go` duplicates.
+
 ## Recent Updates (2025-07-16 15:45)
 - Added golden tests for `tests/vm/valid` verifying generated C# code and output.
 

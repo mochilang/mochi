@@ -2,7 +2,7 @@
 
 This directory holds C# source generated from the Mochi programs in `tests/vm/valid`. Each compiled program has a `.cs` file and the expected output in a matching `.out`. If the compiler failed a `.error` file will be present instead.
 
-Compiled programs: 101/101
+Compiled programs: 100/100
 
 Checklist:
 
@@ -79,7 +79,6 @@ Checklist:
 - [x] python_auto
 - [x] python_math
 - [x] query_sum_select
-- [x] tpch_q1
 - [x] record_assign
 - [x] right_join
 - [x] save_jsonl_stdout
@@ -107,10 +106,3 @@ Checklist:
 - [x] values_builtin
 - [x] var_assignment
 - [x] while_loop
-
-
-## Remaining tasks
-
-- [ ] Compile remaining TPC-H queries in C# (q2-q22)
-- [ ] Verify dictionary mode across grouped queries
-- [ ] Refine formatting to mirror manual translations
