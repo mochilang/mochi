@@ -250,6 +250,8 @@ out
 !tests/rosetta/out/Go/*
 !tests/rosetta/out/TypeScript
 !tests/rosetta/out/TypeScript/*
+!tests/rosetta/out/Erlang
+!tests/rosetta/out/Erlang/*
 
 # Nuxt.js build / generate output
 .nuxt

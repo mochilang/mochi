@@ -1,0 +1,34 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:12:5: variable 'Res1' is unbound
+%   12|     Res1.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:27:175: variable 'P1' is unbound
+%   27|     (fun Loop3(R, S) -> case (R < 3) of true -> C0 = 0, (fun Loop2(S, C) -> case (C < 3) of true -> S1 = (S + lists:flatten(io_lib:format("~p", [lists:nth((((3 * R) + C))+1, P1)]))) ++ " ", C1 = (C + 1), Loop2(S1, C1); _ -> ok end end(S, C0)), S2 = S1 ++ "\n", R1 = (R + 1), Loop3(R1, S2); _ -> ok end end(R0, S0)),
+%     |                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:27:250: variable 'S1' is unbound
+%   27|     (fun Loop3(R, S) -> case (R < 3) of true -> C0 = 0, (fun Loop2(S, C) -> case (C < 3) of true -> S1 = (S + lists:flatten(io_lib:format("~p", [lists:nth((((3 * R) + C))+1, P1)]))) ++ " ", C1 = (C + 1), Loop2(S1, C1); _ -> ok end end(S, C0)), S2 = S1 ++ "\n", R1 = (R + 1), Loop3(R1, S2); _ -> ok end end(R0, S0)),
+%     |                                                                                                                                                                                                                                                          ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:28:5: variable 'S2' is unbound
+%   28|     S2.
+%     |     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:21:213: Warning: variable 'P1' is unused
+%   21|     (fun Loop1(I) -> case (I < length(P)) of true -> (case (lists:nth((I)+1, P) > 3) of true -> P0 = lists:sublist(P, I) ++ [(lists:nth((I)+1, P) - 4)] ++ lists:nthtail((I)+1, P), Nbs = mochi_get(I, Neighbors), {P1} = lists:foldl(fun(J, {P}) -> P1 = lists:sublist(P, J) ++ [(lists:nth((J)+1, P) + 1)] ++ lists:nthtail((J)+1, P), {P1} end, {P0}, Nbs), 0; _ -> ok end), I3 = (I + 1), Loop1(I3); _ -> ok end end(I2)),
+%     |                                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:21:239: Warning: variable 'P' shadowed in 'fun'
+%   21|     (fun Loop1(I) -> case (I < length(P)) of true -> (case (lists:nth((I)+1, P) > 3) of true -> P0 = lists:sublist(P, I) ++ [(lists:nth((I)+1, P) - 4)] ++ lists:nthtail((I)+1, P), Nbs = mochi_get(I, Neighbors), {P1} = lists:foldl(fun(J, {P}) -> P1 = lists:sublist(P, J) ++ [(lists:nth((J)+1, P) + 1)] ++ lists:nthtail((J)+1, P), {P1} end, {P0}, Nbs), 0; _ -> ok end), I3 = (I + 1), Loop1(I3); _ -> ok end end(I2)),
+%     |                                                                                                                                                                                                                                               ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:24:12: Warning: variable 'P' is unused
+%   24| pileString(P) ->
+%     |            ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abelian-sandpile-model-identity.erl:27:68: Warning: variable 'S' shadowed in 'fun'
+%   27|     (fun Loop3(R, S) -> case (R < 3) of true -> C0 = 0, (fun Loop2(S, C) -> case (C < 3) of true -> S1 = (S + lists:flatten(io_lib:format("~p", [lists:nth((((3 * R) + C))+1, P1)]))) ++ " ", C1 = (C + 1), Loop2(S1, C1); _ -> ok end end(S, C0)), S2 = S1 ++ "\n", R1 = (R + 1), Loop3(R1, S2); _ -> ok end end(R0, S0)),
+%     |                                                                    ^
+
+escript: There were compilation errors.

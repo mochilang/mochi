@@ -1,0 +1,34 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:6:45: variable '_' is unbound
+%    6|     (case B of #{"__name" := "Dog", k := K, _ := _} -> K; #{"__name" := "Cat", k := K, _ := _} -> K end).
+%     |                                             ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:6:88: variable '_' is unbound
+%    6|     (case B of #{"__name" := "Dog", k := K, _ := _} -> K; #{"__name" := "Cat", k := K, _ := _} -> K end).
+%     |                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:9:37: variable '_' is unbound
+%    9|     (case B of #{"__name" := "Dog", _ := _, n := N} -> N; #{"__name" := "Cat", _ := _, n := N} -> N end).
+%     |                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:9:80: variable '_' is unbound
+%    9|     (case B of #{"__name" := "Dog", _ := _, n := N} -> N; #{"__name" := "Cat", _ := _, n := N} -> N end).
+%     |                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:12:37: variable '_' is unbound
+%   12|     (case B of #{"__name" := "Dog", _ := _, _ := _} -> "Woof"; #{"__name" := "Cat", _ := _, _ := _} -> "Meow" end).
+%     |                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:12:45: variable '_' is unbound
+%   12|     (case B of #{"__name" := "Dog", _ := _, _ := _} -> "Woof"; #{"__name" := "Cat", _ := _, _ := _} -> "Meow" end).
+%     |                                             ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:12:85: variable '_' is unbound
+%   12|     (case B of #{"__name" := "Dog", _ := _, _ := _} -> "Woof"; #{"__name" := "Cat", _ := _, _ := _} -> "Meow" end).
+%     |                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/abstract-type.erl:12:93: variable '_' is unbound
+%   12|     (case B of #{"__name" := "Dog", _ := _, _ := _} -> "Woof"; #{"__name" := "Cat", _ := _, _ := _} -> "Meow" end).
+%     |                                                                                             ^
+
+escript: There were compilation errors.
