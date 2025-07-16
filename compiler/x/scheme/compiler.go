@@ -961,6 +961,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 	rights := []*parser.PostfixExpr{}
 	strFlags := []bool{c.isStringUnary(b.Left)}
 	listFlags := []bool{isListUnary(b.Left)}
+	floatFlags := []bool{c.isFloatUnary(b.Left)}
 	for _, part := range b.Right {
 		r, err := c.compilePostfix(part.Right)
 		if err != nil {
@@ -975,6 +976,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 		rights = append(rights, part.Right)
 		strFlags = append(strFlags, c.isStringPostfix(part.Right))
 		listFlags = append(listFlags, isListPostfix(part.Right))
+		floatFlags = append(floatFlags, c.isFloatPostfix(part.Right))
 	}
 
 	prec := [][]string{{"*", "/", "%"}, {"+", "-"}, {"<", "<=", ">", ">="}, {"==", "!=", "in"}, {"union", "union_all", "except", "intersect"}, {"&&"}, {"||"}}
@@ -999,8 +1001,14 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 					} else {
 						expr = fmt.Sprintf("(+ %s %s)", l, r)
 					}
-				case "-", "*", "/":
+				case "-", "*":
 					expr = fmt.Sprintf("(%s %s %s)", op, l, r)
+				case "/":
+					if floatFlags[i] || floatFlags[i+1] {
+						expr = fmt.Sprintf("(/ %s %s)", l, r)
+					} else {
+						expr = fmt.Sprintf("(quotient %s %s)", l, r)
+					}
 				case "%":
 					expr = fmt.Sprintf("(modulo %s %s)", l, r)
 				case "==":
@@ -1037,9 +1045,11 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				operands[i] = expr
 				strFlags[i] = strFlags[i] || strFlags[i+1]
 				listFlags[i] = listFlags[i] || listFlags[i+1]
+				floatFlags[i] = floatFlags[i] || floatFlags[i+1]
 				operands = append(operands[:i+1], operands[i+2:]...)
 				strFlags = append(strFlags[:i+1], strFlags[i+2:]...)
 				listFlags = append(listFlags[:i+1], listFlags[i+2:]...)
+				floatFlags = append(floatFlags[:i+1], floatFlags[i+2:]...)
 				rights = append(rights[:i], rights[i+1:]...)
 				ops = append(ops[:i], ops[i+1:]...)
 			} else {
