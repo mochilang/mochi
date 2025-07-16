@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq311790709408/001/main.go:285:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:65:3: undefined: Ca_county
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:66:3: undefined: D_year
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:67:3: undefined: Web_q1_q2_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:68:3: undefined: Store_q1_q2_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:69:3: undefined: Web_q2_q3_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:70:3: undefined: Store_q2_q3_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:231:5: undefined: Ca_county
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:232:5: undefined: D_year
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:233:5: undefined: Web_q1_q2_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:234:5: undefined: Store_q1_q2_increase
+/tmp/TestGoCompiler_TPCDSq31939768675/001/main.go:234:5: too many errors

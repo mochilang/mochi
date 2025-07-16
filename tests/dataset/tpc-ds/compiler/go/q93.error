@@ -1,3 +1,12 @@
 go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq934109884797/001/main.go:600:2: syntax error: unexpected name ny after top level declaration
+[{"ss_customer_sk":1,"sumsales":40}]
+panic: expect failed
+
+goroutine 1 [running]:
+main.expect(...)
+	/tmp/TestGoCompiler_TPCDSq93257990264/001/main.go:67
+main.test_TPCDS_Q93_active_sales()
+	/tmp/TestGoCompiler_TPCDSq93257990264/001/main.go:97 +0xc5
+main.main()
+	/tmp/TestGoCompiler_TPCDSq93257990264/001/main.go:308 +0xfa5
+exit status 2

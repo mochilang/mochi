@@ -1,3 +1,11 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq73565354590/001/main.go:372:4: syntax error: unexpected keyword return after top level declaration
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:224:15: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:228:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:232:15: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:236:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:240:15: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:244:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:248:15: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:252:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq71374959176/001/main.go:268:9: undefined: _sum

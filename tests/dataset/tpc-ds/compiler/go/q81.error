@@ -1,4 +1,4 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq812939312692/001/main.go:216:2: syntax error: unexpected { after top level declaration
-/tmp/TestGoCompiler_TPCDSq812939312692/001/main.go:219:3: syntax error: non-declaration statement outside function body
+/tmp/TestGoCompiler_TPCDSq812919737016/001/main.go:99:37: cannot use func() []Avg_list {…}() (value of type []Avg_list) as []v value in argument to _convSlice[v, Avg_list]
+/tmp/TestGoCompiler_TPCDSq812919737016/001/main.go:130:36: cannot use func() []any {…}() (value of type []any) as []Avg_list value in argument to _firstSlice[Avg_list]

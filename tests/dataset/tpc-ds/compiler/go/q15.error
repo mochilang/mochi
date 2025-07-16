@@ -1,3 +1,4 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq152880735926/001/main.go:313:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq152786417884/001/main.go:104:3: undefined: Ca_zip
+/tmp/TestGoCompiler_TPCDSq152786417884/001/main.go:105:3: undefined: Sum_sales

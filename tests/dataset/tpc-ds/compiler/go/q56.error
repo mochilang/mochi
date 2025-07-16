@@ -1,3 +1,6 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq563146875894/001/main.go:359:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq564025918724/001/main.go:115:24: cannot use func() []S {…}() (value of type []S) as []v value in argument to _convSlice[v, S]
+/tmp/TestGoCompiler_TPCDSq564025918724/001/main.go:146:24: cannot use func() []C {…}() (value of type []C) as []v value in argument to _convSlice[v, C]
+/tmp/TestGoCompiler_TPCDSq564025918724/001/main.go:177:24: cannot use func() []W {…}() (value of type []W) as []v value in argument to _convSlice[v, W]
+/tmp/TestGoCompiler_TPCDSq564025918724/001/main.go:228:22: any does not satisfy constraints.Integer | constraints.Float

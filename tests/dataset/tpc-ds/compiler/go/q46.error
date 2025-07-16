@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq463306917396/001/main.go:740:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:119:3: undefined: C_last_name
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:120:3: undefined: C_first_name
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:121:3: undefined: Ca_city
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:122:3: undefined: Bought_city
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:123:3: undefined: Ss_ticket_number
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:124:3: undefined: Amt
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:125:3: undefined: Profit
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:235:14: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:239:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:247:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq463466185238/001/main.go:247:45: too many errors

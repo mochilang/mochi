@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq39312200643/001/main.go:335:2: syntax error: unexpected name nterface after top level declaration
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:87:3: undefined: W_warehouse_sk
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:88:3: undefined: I_item_sk
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:89:3: undefined: Cov
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:196:4: undefined: W
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:197:4: undefined: I
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:219:17: invalid operation: cannot index g (variable of interface type any)
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:221:34: invalid operation: cannot index g (variable of interface type any)
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:224:38: invalid operation: cannot index g (variable of interface type any)
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:228:5: undefined: W_warehouse_sk
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:229:5: undefined: I_item_sk
+/tmp/TestGoCompiler_TPCDSq392849097597/001/main.go:229:5: too many errors

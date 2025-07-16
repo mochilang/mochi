@@ -2759,11 +2759,13 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	srcType := c.inferExprType(q.Source)
 	var elemType types.Type = types.AnyType{}
 	directRange := false
+	groupSource := false
 	if lt, ok := srcType.(types.ListType); ok {
 		elemType = lt.Elem
 		directRange = true
 	} else if gt, ok := srcType.(types.GroupType); ok {
 		elemType = gt.Elem
+		groupSource = true
 	}
 	_ = isStringMapLike(elemType)
 	original := c.env
@@ -2818,15 +2820,10 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		if keyType == nil {
 			keyType = c.inferExprTypeHint(q.Group.Exprs[0], types.StructType{})
 		}
-		// When the query includes FROM or JOIN clauses, group items
-		// are represented as maps composed from all variables. In that
-		// case use map[string]any as the element type so subsequent
-		// expressions treat group values as maps rather than the
-		// original element type.
+		// Group element type mirrors the primary source element. Using
+		// the typed element allows aggregate functions to operate on
+		// concrete fields instead of untyped maps.
 		gElem := elemType
-		if len(q.Froms) > 0 || len(q.Joins) > 0 {
-			gElem = types.MapType{Key: types.StringType{}, Value: types.AnyType{}}
-		}
 		gtype := types.GroupType{Key: keyType, Elem: gElem}
 		c.env = keyEnv
 		var err error
@@ -3345,6 +3342,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 		switch srcType.(type) {
 		case types.GroupType:
 			src = fmt.Sprintf("%s.Items", src)
+			groupSource = true
 		default:
 			c.use("_toAnySlice")
 			src = fmt.Sprintf("_toAnySlice(%s)", src)
@@ -3467,12 +3465,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr, hint types.Type) (strin
 	if srcElemGo == "" {
 		srcElemGo = "any"
 	}
-	if srcElemGo == "any" && elemGo != "any" {
+	if groupSource || (srcElemGo == "any" && elemGo != "any") {
 		iterVar = loopVar + "Raw"
 	}
 	buf.WriteString(fmt.Sprintf(indent+"for _, %s := range %s {\n", iterVar, src))
 	indent += "\t"
-	if srcElemGo == "any" && elemGo != "any" {
+	if groupSource || (srcElemGo == "any" && elemGo != "any") {
 		buf.WriteString(fmt.Sprintf(indent+"%s := %s.(%s)\n", loopVar, iterVar, elemGo))
 	} else if iterVar != loopVar {
 		buf.WriteString(fmt.Sprintf(indent+"%s := %s\n", loopVar, iterVar))

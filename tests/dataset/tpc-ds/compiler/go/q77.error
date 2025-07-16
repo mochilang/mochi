@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq774058874885/001/main.go:787:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:227:24: cannot use func() []S {…}() (value of type []S) as []v value in argument to _convSlice[v, S]
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:254:16: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:258:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:262:17: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:266:45: x.Ss undefined (type Store_sale has no field or method Ss)
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:274:25: cannot use func() []Sr {…}() (value of type []Sr) as []v value in argument to _convSlice[v, Sr]
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:301:18: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:305:45: x.Sr undefined (type Store_return has no field or method Sr)
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:309:22: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:313:45: x.Sr undefined (type Store_return has no field or method Sr)
+/tmp/TestGoCompiler_TPCDSq771358123225/001/main.go:309:22: too many errors

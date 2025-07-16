@@ -1,3 +1,9 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq351051539095/001/main.go:279:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:101:3: undefined: Ca_state
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:102:3: undefined: Cd_gender
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:103:3: undefined: Cd_marital_status
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:104:3: undefined: Cd_dep_count
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:105:3: undefined: Cd_dep_employed_count
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:106:3: undefined: Cd_dep_college_count
+/tmp/TestGoCompiler_TPCDSq352239349339/001/main.go:107:3: undefined: Cnt

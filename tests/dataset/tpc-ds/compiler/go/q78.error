@@ -1,3 +1,1 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq78317589054/001/main.go:569:2: syntax error: unexpected name ny after top level declaration
+vm run error: expect condition failed at /workspace/mochi/tests/dataset/tpc-ds/q78.mochi:34: expect result == [

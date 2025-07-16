@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq491399901589/001/main.go:525:2: syntax error: unexpected := after top level declaration
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:76:4: undefined: Channel
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:77:4: undefined: Item
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:78:4: undefined: Return_ratio
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:79:4: undefined: Return_rank
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:80:4: undefined: Currency_rank
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:83:4: undefined: Channel
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:84:4: undefined: Item
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:85:4: undefined: Return_ratio
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:86:4: undefined: Return_rank
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:87:4: undefined: Currency_rank
+/tmp/TestGoCompiler_TPCDSq493886040997/001/main.go:87:4: too many errors

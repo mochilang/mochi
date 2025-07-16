@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq743669649504/001/main.go:466:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:84:3: undefined: Customer_id
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:85:3: undefined: Customer_first_name
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:86:3: undefined: Customer_last_name
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:171:5: undefined: Customer_id
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:172:5: undefined: Customer_first_name
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:173:5: undefined: Customer_last_name
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:174:5: undefined: Year
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:175:5: undefined: Year_total
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:183:5: undefined: Sale_type
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:187:7: cannot use func() []v {…}() (value of type []v) as []any value in argument to append
+/tmp/TestGoCompiler_TPCDSq74384033320/001/main.go:183:5: too many errors

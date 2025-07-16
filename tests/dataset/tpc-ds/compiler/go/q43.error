@@ -1,3 +1,11 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq43288285215/001/main.go:389:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:95:3: undefined: S_store_name
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:96:3: undefined: S_store_id
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:97:3: undefined: Sun_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:98:3: undefined: Mon_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:99:3: undefined: Tue_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:100:3: undefined: Wed_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:101:3: undefined: Thu_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:102:3: undefined: Fri_sales
+/tmp/TestGoCompiler_TPCDSq432456513700/001/main.go:103:3: undefined: Sat_sales

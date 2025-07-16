@@ -1,3 +1,8 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq113470432974/001/main.go:224:2: syntax error: unexpected name at64 after top level declaration
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:82:3: undefined: Customer_id
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:83:3: undefined: Customer_first_name
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:84:3: undefined: Customer_last_name
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:171:5: undefined: Customer_id
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:172:5: undefined: Customer_first_name
+/tmp/TestGoCompiler_TPCDSq111783778158/001/main.go:173:5: undefined: Customer_last_name

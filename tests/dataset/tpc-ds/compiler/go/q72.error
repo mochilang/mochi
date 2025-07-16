@@ -1,3 +1,5 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq721931451507/001/main.go:353:2: syntax error: unexpected name TypeOf after top level declaration
+vm mismatch
+-- go --
+[{"i_item_desc":"ItemA","w_warehouse_name":"Main","d_week_seq":10,"no_promo":1,"promo":0,"total_cnt":1}]
+-- vm --
+[{"d_week_seq":10,"i_item_desc":"ItemA","no_promo":1,"promo":0,"total_cnt":1,"w_warehouse_name":"Main"}]

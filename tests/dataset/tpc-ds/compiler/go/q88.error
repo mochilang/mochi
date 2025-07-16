@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq88476348488/001/main.go:298:4: syntax error: unexpected keyword return after top level declaration
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:205:27: cannot use store_sales (variable of type []Store_sale) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:205:40: cannot use time_dim (variable of type []Time_dim) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:206:27: cannot use store_sales (variable of type []Store_sale) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:206:40: cannot use time_dim (variable of type []Time_dim) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:207:28: cannot use store_sales (variable of type []Store_sale) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:207:41: cannot use time_dim (variable of type []Time_dim) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:208:29: cannot use store_sales (variable of type []Store_sale) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:208:42: cannot use time_dim (variable of type []Time_dim) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:209:29: cannot use store_sales (variable of type []Store_sale) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:209:42: cannot use time_dim (variable of type []Time_dim) as []any value in argument to count_range
+/tmp/TestGoCompiler_TPCDSq88857710083/001/main.go:209:42: too many errors

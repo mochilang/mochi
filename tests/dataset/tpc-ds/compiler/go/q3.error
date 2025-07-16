@@ -1,3 +1,6 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq32706482361/001/main.go:287:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq31206096201/001/main.go:169:81: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq31206096201/001/main.go:173:34: x.Ss_ext_sales_price undefined (type Date_dim has no field or method Ss_ext_sales_price)
+/tmp/TestGoCompiler_TPCDSq31206096201/001/main.go:210:18: any does not satisfy constraints.Integer | constraints.Float
+/tmp/TestGoCompiler_TPCDSq31206096201/001/main.go:214:35: x.Ss_ext_sales_price undefined (type Date_dim has no field or method Ss_ext_sales_price)

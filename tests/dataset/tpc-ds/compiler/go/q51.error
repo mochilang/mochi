@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq513735640864/001/main.go:472:2: syntax error: unexpected name ny after top level declaration
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:70:18: x.Price undefined (type v has no field or method Price)
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:72:4: undefined: Date
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:73:4: undefined: Cum
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:76:9: cannot use out (variable of type []any) as []v value in return statement
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:81:3: undefined: Item_sk
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:82:3: undefined: D_date
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:84:3: undefined: Item_sk
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:85:3: undefined: D_date
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:127:5: undefined: Date
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:128:5: undefined: Price
+/tmp/TestGoCompiler_TPCDSq512514805035/001/main.go:128:5: too many errors

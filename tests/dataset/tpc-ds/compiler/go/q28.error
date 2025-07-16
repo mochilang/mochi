@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq28992717689/001/main.go:227:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:66:3: undefined: B1_LP
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:67:3: undefined: B1_CNT
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:68:3: undefined: B1_CNTD
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:69:3: undefined: B2_LP
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:70:3: undefined: B2_CNT
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:71:3: undefined: B2_CNTD
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:120:3: undefined: B1_LP
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:127:3: undefined: B1_CNT
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:128:3: undefined: B1_CNTD
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:149:3: undefined: B2_LP
+/tmp/TestGoCompiler_TPCDSq284099058470/001/main.go:149:3: too many errors

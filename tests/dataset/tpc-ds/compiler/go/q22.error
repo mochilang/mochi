@@ -1,3 +1,13 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq22898225332/001/main.go:284:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:91:3: undefined: I_product_name
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:92:3: undefined: I_brand
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:93:3: undefined: I_class
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:94:3: undefined: I_category
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:95:3: Qoh (type) is not an expression
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:97:3: undefined: I_product_name
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:98:3: undefined: I_brand
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:99:3: undefined: I_class
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:100:3: undefined: I_category
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:101:3: Qoh (type) is not an expression
+/tmp/TestGoCompiler_TPCDSq221595642518/001/main.go:101:3: too many errors

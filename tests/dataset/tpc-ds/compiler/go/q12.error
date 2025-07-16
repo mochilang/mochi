@@ -1,3 +1,5 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq122469024577/001/main.go:658:2: syntax error: unexpected name ny after top level declaration
+vm mismatch
+-- go --
+[{"i_item_id":"ITEM1","i_item_desc":"Item One","i_category":"A","i_class":"C1","i_current_price":10,"itemrevenue":200,"revenueratio":50},{"i_item_id":"ITEM2","i_item_desc":"Item Two","i_category":"A","i_class":"C1","i_current_price":20,"itemrevenue":200,"revenueratio":50}]
+-- vm --
+[{"i_category":"A","i_class":"C1","i_current_price":10,"i_item_desc":"Item One","i_item_id":"ITEM1","itemrevenue":200,"revenueratio":50},{"i_category":"A","i_class":"C1","i_current_price":20,"i_item_desc":"Item Two","i_item_id":"ITEM2","itemrevenue":200,"revenueratio":50}]

@@ -1,3 +1,8 @@
 go run error: exit status 1
 # command-line-arguments
-/tmp/TestGoCompiler_TPCDSq58360338914/001/main.go:120:2: syntax error: unexpected name TypeOf after top level declaration
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:68:3: unknown field Ss_item_rev in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:72:3: unknown field Cs_item_rev in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:76:3: unknown field Ws_item_rev in struct literal of type v
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:78:20: ss_items.Ss_item_rev undefined (type v has no field or method Ss_item_rev)
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:78:43: cs_items.Cs_item_rev undefined (type v has no field or method Cs_item_rev)
+/tmp/TestGoCompiler_TPCDSq582271742428/001/main.go:78:67: ws_items.Ws_item_rev undefined (type v has no field or method Ws_item_rev)

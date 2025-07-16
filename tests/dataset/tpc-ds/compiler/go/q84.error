@@ -1,3 +1,0 @@
-go run error: exit status 1
-# command-line-arguments
-/tmp/TestGoCompiler_TPCDSq841853422033/001/main.go:200:2: syntax error: unexpected name at64 after top level declaration
