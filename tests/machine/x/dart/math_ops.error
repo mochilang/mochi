@@ -1,0 +1,4 @@
+line 7: exit status 255
+  print((6 * 7) as int);
+  print((7 / 2) as int);
+  print((7 % 2) as int);

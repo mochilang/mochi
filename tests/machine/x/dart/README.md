@@ -2,7 +2,7 @@
 
 This directory contains Dart code generated from Mochi programs. Successful runs have a .out file, failures a .error file.
 
-Compiled programs: 93/100
+Compiled programs: 89/100
 
 Checklist:
 
@@ -19,8 +19,8 @@ Checklist:
 - [x] cross_join
 - [x] cross_join_filter
 - [x] cross_join_triple
-- [x] dataset_sort_take_limit
-- [x] dataset_where_filter
+- [ ] dataset_sort_take_limit
+- [ ] dataset_where_filter
 - [x] exists_builtin
 - [x] for_list_collection
 - [x] for_loop
@@ -28,13 +28,13 @@ Checklist:
 - [x] fun_call
 - [x] fun_expr_in_let
 - [x] fun_three_args
-- [x] go_auto
+- [ ] go_auto
 - [x] group_by
-- [ ] group_by_conditional_sum
+- [x] group_by_conditional_sum
 - [x] group_by_having
 - [x] group_by_join
-- [x] group_by_left_join
-- [x] group_by_multi_join
+- [ ] group_by_left_join
+- [ ] group_by_multi_join
 - [x] group_by_multi_join_sort
 - [x] group_by_sort
 - [ ] group_items_iteration
@@ -66,7 +66,7 @@ Checklist:
 - [x] map_nested_assign
 - [x] match_expr
 - [ ] match_full
-- [ ] math_ops
+- [x] math_ops
 - [x] membership
 - [x] min_max_builtin
 - [x] nested_function
@@ -76,8 +76,8 @@ Checklist:
 - [x] print_hello
 - [x] pure_fold
 - [x] pure_global_fold
-- [x] python_auto
-- [x] python_math
+- [ ] python_auto
+- [ ] python_math
 - [x] query_sum_select
 - [x] record_assign
 - [x] right_join
@@ -97,7 +97,7 @@ Checklist:
 - [x] tail_recursion
 - [x] test_block
 - [ ] tree_sum
-- [ ] two-sum
+- [x] two-sum
 - [x] typed_let
 - [x] typed_var
 - [x] unary_neg

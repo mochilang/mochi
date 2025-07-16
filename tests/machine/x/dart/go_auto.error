@@ -1,0 +1,4 @@
+line 13: exit status 254
+void main() {
+  print(testpkg['Add'](2, 3));
+  print(testpkg['Pi']);

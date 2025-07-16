@@ -1,0 +1,3 @@
+line 9: exit status 254
+
+var area = math['pi'] * math['pow'](r, 2);
