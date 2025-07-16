@@ -1,4 +1,6 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-16 15:45)
+- Added golden tests for `tests/vm/valid` verifying generated C# code and output.
 
 ## Recent Updates (2025-07-13 10:17)
 - Auto-enable `DictMode` only when grouped queries use anonymous structs or maps.
