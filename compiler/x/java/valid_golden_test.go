@@ -90,6 +90,10 @@ func TestJavaCompiler_VMValidPrograms(t *testing.T) {
 		outWant := filepath.Join(outDir, name+".out")
 		errPath := filepath.Join(outDir, name+".error")
 		t.Run(name, func(t *testing.T) {
+			os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+			os.Setenv("SOURCE_DATE_EPOCH", "0")
+			defer os.Unsetenv("MOCHI_HEADER_TIME")
+			defer os.Unsetenv("SOURCE_DATE_EPOCH")
 			os.Remove(errPath)
 			prog, err := parser.Parse(src)
 			if err != nil {

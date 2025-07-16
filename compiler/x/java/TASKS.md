@@ -13,6 +13,7 @@
 - 2025-07-15 05:05 - generated outputs for remaining TPC-DS queries with error tracking.
 - 2025-07-15 06:32 - added concat builtin and regenerated TPC-DS outputs.
 - 2025-07-15 07:20 - improved casting for doubles and underscore variable handling for TPC-DS queries.
+- 2025-07-16 17:34 - froze header time for VM valid golden tests and regenerated Java outputs.
 
 ## Remaining work
 - [ ] Improve query loop readability
