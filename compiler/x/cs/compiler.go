@@ -1339,7 +1339,12 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if len(args) != 1 {
 					return "", fmt.Errorf("len() expects 1 arg")
 				}
-				expr = fmt.Sprintf("%s.Length", args[0])
+				t := c.inferExprType(op.Call.Args[0])
+				if isListType(t) || isMapType(t) {
+					expr = fmt.Sprintf("%s.Count", args[0])
+				} else {
+					expr = fmt.Sprintf("%s.Length", args[0])
+				}
 			} else {
 				expr = fmt.Sprintf("%s(%s)", expr, argStr)
 			}
@@ -3106,7 +3111,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("len() expects 1 arg")
 		}
 		t := c.inferExprType(call.Args[0])
-		if _, ok := t.(types.MapType); ok {
+		if isListType(t) || isMapType(t) {
 			return fmt.Sprintf("%s.Count", args[0]), nil
 		}
 		return fmt.Sprintf("%s.Length", args[0]), nil

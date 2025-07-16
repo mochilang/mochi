@@ -13,9 +13,12 @@
 ## Recent Updates (2025-07-15 05:46)
 - Regenerated TPC-DS q1 golden with dynamic sort fix.
 ## Recent Updates (2025-07-15 08:17)
-- Expanded TPCH golden test to cover queries `q1`-`q22` and added
+  - Expanded TPCH golden test to cover queries `q1`-`q22` and added
   `compile_tpch_cs.go` script to generate golden outputs.
-- Fixed dynamic string comparison in the C# backend.
+  - Fixed dynamic string comparison in the C# backend.
+## Recent Updates (2025-07-16 11:32)
+  - Updated Rosetta golden outputs and fixed `len` builtin to return
+    `.Count` for lists and maps. This resolves several failed tasks.
 
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.

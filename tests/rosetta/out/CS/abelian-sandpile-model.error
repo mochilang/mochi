@@ -1,6 +1,6 @@
-run error: exit status 1
-/tmp/TestMochiToCSabelian-sandpile-model753868590/001/Program.cs(47,22): error CS0103: The name 'dim' does not exist in the current context [/tmp/TestMochiToCSabelian-sandpile-model753868590/001/app.csproj]
-/tmp/TestMochiToCSabelian-sandpile-model753868590/001/Program.cs(55,22): error CS0103: The name 'dim' does not exist in the current context [/tmp/TestMochiToCSabelian-sandpile-model753868590/001/app.csproj]
-/tmp/TestMochiToCSabelian-sandpile-model753868590/001/Program.cs(102,13): warning CS0219: The variable 'dim' is assigned but its value is never used [/tmp/TestMochiToCSabelian-sandpile-model753868590/001/app.csproj]
+run: exit status 1
+/tmp/TestMochiToCSabelian-sandpile-model/Program.cs(47,22): error CS0103: The name 'dim' does not exist in the current context [/tmp/TestMochiToCSabelian-sandpile-model/app.csproj]
+/tmp/TestMochiToCSabelian-sandpile-model/Program.cs(55,22): error CS0103: The name 'dim' does not exist in the current context [/tmp/TestMochiToCSabelian-sandpile-model/app.csproj]
+/tmp/TestMochiToCSabelian-sandpile-model/Program.cs(102,13): warning CS0219: The variable 'dim' is assigned but its value is never used [/tmp/TestMochiToCSabelian-sandpile-model/app.csproj]
 
 The build failed. Fix the build errors and run again.
