@@ -1,0 +1,529 @@
+swiftc: exit status 1
+/tmp/2048.swift:18:45: error: expected dictionary value type
+ 16 |     return b
+ 17 | }
+ 18 | func spawnTile(_ b: [[Int]]) -> [String: any] {
+    |                                             `- error: expected dictionary value type
+ 19 |     var empty: [[Int]] = []
+ 20 |     var y = 0
+
+/tmp/2048.swift:86:45: error: expected dictionary value type
+ 84 |     return out
+ 85 | }
+ 86 | func slideLeft(_ row: [Int]) -> [String: any] {
+    |                                             `- error: expected dictionary value type
+ 87 |     var xs: [Int] = []
+ 88 |     var i = 0
+
+/tmp/2048.swift:115:58: error: expected dictionary value type
+113 |     return ["row": res, "gain": gain]
+114 | }
+115 | func moveLeft(_ b: [[Int]], _ score: Int) -> [String: any] {
+    |                                                          `- error: expected dictionary value type
+116 |     var moved = false
+117 |     var y = 0
+
+/tmp/2048.swift:134:59: error: expected dictionary value type
+132 |     return ["board": b, "score": score, "moved": moved]
+133 | }
+134 | func moveRight(_ b: [[Int]], _ score: Int) -> [String: any] {
+    |                                                           `- error: expected dictionary value type
+135 |     var moved = false
+136 |     var y = 0
+
+/tmp/2048.swift:171:56: error: expected dictionary value type
+169 |     }
+170 | }
+171 | func moveUp(_ b: [[Int]], _ score: Int) -> [String: any] {
+    |                                                        `- error: expected dictionary value type
+172 |     var moved = false
+173 |     var x = 0
+
+/tmp/2048.swift:191:58: error: expected dictionary value type
+189 |     return ["board": b, "score": score, "moved": moved]
+190 | }
+191 | func moveDown(_ b: [[Int]], _ score: Int) -> [String: any] {
+    |                                                          `- error: expected dictionary value type
+192 |     var moved = false
+193 |     var x = 0
+
+/tmp/2048.swift:247:5: warning: variable 'r' inferred to have type '()', which may be unexpected
+245 | }
+246 | var board = newBoard()
+247 | var r = spawnTile(board)
+    |     |- warning: variable 'r' inferred to have type '()', which may be unexpected
+    |     `- note: add an explicit type annotation to silence this warning
+248 | board = r["board"]
+249 | var full = r["full"]
+
+/tmp/2048.swift:248:10: error: value of type '()' has no subscripts
+246 | var board = newBoard()
+247 | var r = spawnTile(board)
+248 | board = r["board"]
+    |          `- error: value of type '()' has no subscripts
+249 | var full = r["full"]
+250 | r = spawnTile(board)
+
+/tmp/2048.swift:249:13: error: value of type '()' has no subscripts
+247 | var r = spawnTile(board)
+248 | board = r["board"]
+249 | var full = r["full"]
+    |             `- error: value of type '()' has no subscripts
+250 | r = spawnTile(board)
+251 | board = r["board"]
+
+/tmp/2048.swift:251:10: error: value of type '()' has no subscripts
+249 | var full = r["full"]
+250 | r = spawnTile(board)
+251 | board = r["board"]
+    |          `- error: value of type '()' has no subscripts
+252 | full = r["full"]
+253 | var score = 0
+
+/tmp/2048.swift:252:9: error: value of type '()' has no subscripts
+250 | r = spawnTile(board)
+251 | board = r["board"]
+252 | full = r["full"]
+    |         `- error: value of type '()' has no subscripts
+253 | var score = 0
+254 | draw(board, score)
+
+/tmp/2048.swift:257:15: error: cannot find 'input' in scope
+255 | while true {
+256 |     print("Move: ")
+257 |     let cmd = input()
+    |               `- error: cannot find 'input' in scope
+258 |     var moved = false
+259 |     if cmd == "a" || cmd == "A" {
+
+/tmp/2048.swift:260:13: warning: constant 'm' inferred to have type '()', which may be unexpected
+258 |     var moved = false
+259 |     if cmd == "a" || cmd == "A" {
+260 |         let m = moveLeft(board, score)
+    |             |- warning: constant 'm' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+261 |         board = m["board"]
+262 |         score = m["score"]
+
+/tmp/2048.swift:261:18: error: value of type '()' has no subscripts
+259 |     if cmd == "a" || cmd == "A" {
+260 |         let m = moveLeft(board, score)
+261 |         board = m["board"]
+    |                  `- error: value of type '()' has no subscripts
+262 |         score = m["score"]
+263 |         moved = m["moved"]
+
+/tmp/2048.swift:262:18: error: value of type '()' has no subscripts
+260 |         let m = moveLeft(board, score)
+261 |         board = m["board"]
+262 |         score = m["score"]
+    |                  `- error: value of type '()' has no subscripts
+263 |         moved = m["moved"]
+264 |     }
+
+/tmp/2048.swift:263:18: error: value of type '()' has no subscripts
+261 |         board = m["board"]
+262 |         score = m["score"]
+263 |         moved = m["moved"]
+    |                  `- error: value of type '()' has no subscripts
+264 |     }
+265 |     if cmd == "d" || cmd == "D" {
+
+/tmp/2048.swift:266:13: warning: constant 'm' inferred to have type '()', which may be unexpected
+264 |     }
+265 |     if cmd == "d" || cmd == "D" {
+266 |         let m = moveRight(board, score)
+    |             |- warning: constant 'm' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+267 |         board = m["board"]
+268 |         score = m["score"]
+
+/tmp/2048.swift:267:18: error: value of type '()' has no subscripts
+265 |     if cmd == "d" || cmd == "D" {
+266 |         let m = moveRight(board, score)
+267 |         board = m["board"]
+    |                  `- error: value of type '()' has no subscripts
+268 |         score = m["score"]
+269 |         moved = m["moved"]
+
+/tmp/2048.swift:268:18: error: value of type '()' has no subscripts
+266 |         let m = moveRight(board, score)
+267 |         board = m["board"]
+268 |         score = m["score"]
+    |                  `- error: value of type '()' has no subscripts
+269 |         moved = m["moved"]
+270 |     }
+
+/tmp/2048.swift:269:18: error: value of type '()' has no subscripts
+267 |         board = m["board"]
+268 |         score = m["score"]
+269 |         moved = m["moved"]
+    |                  `- error: value of type '()' has no subscripts
+270 |     }
+271 |     if cmd == "w" || cmd == "W" {
+
+/tmp/2048.swift:272:13: warning: constant 'm' inferred to have type '()', which may be unexpected
+270 |     }
+271 |     if cmd == "w" || cmd == "W" {
+272 |         let m = moveUp(board, score)
+    |             |- warning: constant 'm' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+273 |         board = m["board"]
+274 |         score = m["score"]
+
+/tmp/2048.swift:273:18: error: value of type '()' has no subscripts
+271 |     if cmd == "w" || cmd == "W" {
+272 |         let m = moveUp(board, score)
+273 |         board = m["board"]
+    |                  `- error: value of type '()' has no subscripts
+274 |         score = m["score"]
+275 |         moved = m["moved"]
+
+/tmp/2048.swift:274:18: error: value of type '()' has no subscripts
+272 |         let m = moveUp(board, score)
+273 |         board = m["board"]
+274 |         score = m["score"]
+    |                  `- error: value of type '()' has no subscripts
+275 |         moved = m["moved"]
+276 |     }
+
+/tmp/2048.swift:275:18: error: value of type '()' has no subscripts
+273 |         board = m["board"]
+274 |         score = m["score"]
+275 |         moved = m["moved"]
+    |                  `- error: value of type '()' has no subscripts
+276 |     }
+277 |     if cmd == "s" || cmd == "S" {
+
+/tmp/2048.swift:278:13: warning: constant 'm' inferred to have type '()', which may be unexpected
+276 |     }
+277 |     if cmd == "s" || cmd == "S" {
+278 |         let m = moveDown(board, score)
+    |             |- warning: constant 'm' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+279 |         board = m["board"]
+280 |         score = m["score"]
+
+/tmp/2048.swift:279:18: error: value of type '()' has no subscripts
+277 |     if cmd == "s" || cmd == "S" {
+278 |         let m = moveDown(board, score)
+279 |         board = m["board"]
+    |                  `- error: value of type '()' has no subscripts
+280 |         score = m["score"]
+281 |         moved = m["moved"]
+
+/tmp/2048.swift:280:18: error: value of type '()' has no subscripts
+278 |         let m = moveDown(board, score)
+279 |         board = m["board"]
+280 |         score = m["score"]
+    |                  `- error: value of type '()' has no subscripts
+281 |         moved = m["moved"]
+282 |     }
+
+/tmp/2048.swift:281:18: error: value of type '()' has no subscripts
+279 |         board = m["board"]
+280 |         score = m["score"]
+281 |         moved = m["moved"]
+    |                  `- error: value of type '()' has no subscripts
+282 |     }
+283 |     if cmd == "q" || cmd == "Q" {
+
+/tmp/2048.swift:287:13: warning: constant 'r2' inferred to have type '()', which may be unexpected
+285 |     }
+286 |     if moved {
+287 |         let r2 = spawnTile(board)
+    |             |- warning: constant 'r2' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+288 |         board = r2["board"]
+289 |         full = r2["full"]
+
+/tmp/2048.swift:288:19: error: value of type '()' has no subscripts
+286 |     if moved {
+287 |         let r2 = spawnTile(board)
+288 |         board = r2["board"]
+    |                   `- error: value of type '()' has no subscripts
+289 |         full = r2["full"]
+290 |         if full && (!hasMoves(board)) {
+
+/tmp/2048.swift:289:18: error: value of type '()' has no subscripts
+287 |         let r2 = spawnTile(board)
+288 |         board = r2["board"]
+289 |         full = r2["full"]
+    |                  `- error: value of type '()' has no subscripts
+290 |         if full && (!hasMoves(board)) {
+291 |             draw(board, score)
+
+/tmp/2048.swift:32:16: error: unexpected non-void return value in void function
+ 30 |     }
+ 31 |     if empty.count == 0 {
+ 32 |         return ["board": b, "full": true]
+    |                |- error: unexpected non-void return value in void function
+    |                `- note: did you mean to add a return type?
+ 33 |     }
+ 34 |     var idx = now() % empty.count
+
+/tmp/2048.swift:34:15: error: cannot find 'now' in scope
+ 32 |         return ["board": b, "full": true]
+ 33 |     }
+ 34 |     var idx = now() % empty.count
+    |               `- error: cannot find 'now' in scope
+ 35 |     let cell = empty[idx]
+ 36 |     var val = 4
+
+/tmp/2048.swift:37:8: error: cannot find 'now' in scope
+ 35 |     let cell = empty[idx]
+ 36 |     var val = 4
+ 37 |     if now() % 10 < 9 {
+    |        `- error: cannot find 'now' in scope
+ 38 |         val = 2
+ 39 |     }
+
+/tmp/2048.swift:41:12: error: unexpected non-void return value in void function
+ 39 |     }
+ 40 |     b[cell[1]][cell[0]] = val
+ 41 |     return ["board": b, "full": empty.count == 1]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 42 | }
+ 43 | func pad(_ n: Int) -> String {
+
+/tmp/2048.swift:44:9: warning: variable 's' was never mutated; consider changing to 'let' constant
+ 42 | }
+ 43 | func pad(_ n: Int) -> String {
+ 44 |     var s = String(n)
+    |         `- warning: variable 's' was never mutated; consider changing to 'let' constant
+ 45 |     var pad = 4 - s.count
+ 46 |     var i = 0
+
+/tmp/2048.swift:45:9: warning: variable 'pad' was never mutated; consider changing to 'let' constant
+ 43 | func pad(_ n: Int) -> String {
+ 44 |     var s = String(n)
+ 45 |     var pad = 4 - s.count
+    |         `- warning: variable 'pad' was never mutated; consider changing to 'let' constant
+ 46 |     var i = 0
+ 47 |     var out = ""
+
+/tmp/2048.swift:62:17: warning: variable 'v' was never mutated; consider changing to 'let' constant
+ 60 |         var x = 0
+ 61 |         while x < SIZE {
+ 62 |             var v = b[y][x]
+    |                 `- warning: variable 'v' was never mutated; consider changing to 'let' constant
+ 63 |             if v == 0 {
+ 64 |                 line = line + "    |"
+
+/tmp/2048.swift:113:12: error: unexpected non-void return value in void function
+111 |         res = res + [0]
+112 |     }
+113 |     return ["row": res, "gain": gain]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+114 | }
+115 | func moveLeft(_ b: [[Int]], _ score: Int) -> [String: any] {
+
+/tmp/2048.swift:119:13: warning: constant 'r' inferred to have type '()', which may be unexpected
+117 |     var y = 0
+118 |     while y < SIZE {
+119 |         let r = slideLeft(b[y])
+    |             |- warning: constant 'r' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+120 |         let new = r["row"]
+121 |         score = score + r["gain"]
+
+/tmp/2048.swift:120:20: error: value of type '()' has no subscripts
+118 |     while y < SIZE {
+119 |         let r = slideLeft(b[y])
+120 |         let new = r["row"]
+    |                    `- error: value of type '()' has no subscripts
+121 |         score = score + r["gain"]
+122 |         var x = 0
+
+/tmp/2048.swift:121:9: error: cannot assign to value: 'score' is a 'let' constant
+119 |         let r = slideLeft(b[y])
+120 |         let new = r["row"]
+121 |         score = score + r["gain"]
+    |         `- error: cannot assign to value: 'score' is a 'let' constant
+122 |         var x = 0
+123 |         while x < SIZE {
+
+/tmp/2048.swift:121:26: error: value of type '()' has no subscripts
+119 |         let r = slideLeft(b[y])
+120 |         let new = r["row"]
+121 |         score = score + r["gain"]
+    |                          `- error: value of type '()' has no subscripts
+122 |         var x = 0
+123 |         while x < SIZE {
+
+/tmp/2048.swift:127:17: error: cannot assign through subscript: 'b' is a 'let' constant
+125 |                 moved = true
+126 |             }
+127 |             b[y][x] = new[x]
+    |                 `- error: cannot assign through subscript: 'b' is a 'let' constant
+128 |             x = x + 1
+129 |         }
+
+/tmp/2048.swift:132:12: error: unexpected non-void return value in void function
+130 |         y = y + 1
+131 |     }
+132 |     return ["board": b, "score": score, "moved": moved]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+133 | }
+134 | func moveRight(_ b: [[Int]], _ score: Int) -> [String: any] {
+
+/tmp/2048.swift:139:13: warning: constant 'r' inferred to have type '()', which may be unexpected
+137 |     while y < SIZE {
+138 |         var rev = reverseRow(b[y])
+139 |         let r = slideLeft(rev)
+    |             |- warning: constant 'r' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+140 |         rev = r["row"]
+141 |         score = score + r["gain"]
+
+/tmp/2048.swift:140:16: error: value of type '()' has no subscripts
+138 |         var rev = reverseRow(b[y])
+139 |         let r = slideLeft(rev)
+140 |         rev = r["row"]
+    |                `- error: value of type '()' has no subscripts
+141 |         score = score + r["gain"]
+142 |         rev = reverseRow(rev)
+
+/tmp/2048.swift:141:9: error: cannot assign to value: 'score' is a 'let' constant
+139 |         let r = slideLeft(rev)
+140 |         rev = r["row"]
+141 |         score = score + r["gain"]
+    |         `- error: cannot assign to value: 'score' is a 'let' constant
+142 |         rev = reverseRow(rev)
+143 |         var x = 0
+
+/tmp/2048.swift:141:26: error: value of type '()' has no subscripts
+139 |         let r = slideLeft(rev)
+140 |         rev = r["row"]
+141 |         score = score + r["gain"]
+    |                          `- error: value of type '()' has no subscripts
+142 |         rev = reverseRow(rev)
+143 |         var x = 0
+
+/tmp/2048.swift:148:17: error: cannot assign through subscript: 'b' is a 'let' constant
+146 |                 moved = true
+147 |             }
+148 |             b[y][x] = rev[x]
+    |                 `- error: cannot assign through subscript: 'b' is a 'let' constant
+149 |             x = x + 1
+150 |         }
+
+/tmp/2048.swift:153:12: error: unexpected non-void return value in void function
+151 |         y = y + 1
+152 |     }
+153 |     return ["board": b, "score": score, "moved": moved]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+154 | }
+155 | func getCol(_ b: [[Int]], _ x: Int) -> [Int] {
+
+/tmp/2048.swift:167:13: error: cannot assign through subscript: 'b' is a 'let' constant
+165 |     var y = 0
+166 |     while y < SIZE {
+167 |         b[y][x] = col[y]
+    |             `- error: cannot assign through subscript: 'b' is a 'let' constant
+168 |         y = y + 1
+169 |     }
+
+/tmp/2048.swift:176:13: warning: constant 'r' inferred to have type '()', which may be unexpected
+174 |     while x < SIZE {
+175 |         var col = getCol(b, x)
+176 |         let r = slideLeft(col)
+    |             |- warning: constant 'r' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+177 |         let new = r["row"]
+178 |         score = score + r["gain"]
+
+/tmp/2048.swift:177:20: error: value of type '()' has no subscripts
+175 |         var col = getCol(b, x)
+176 |         let r = slideLeft(col)
+177 |         let new = r["row"]
+    |                    `- error: value of type '()' has no subscripts
+178 |         score = score + r["gain"]
+179 |         var y = 0
+
+/tmp/2048.swift:178:9: error: cannot assign to value: 'score' is a 'let' constant
+176 |         let r = slideLeft(col)
+177 |         let new = r["row"]
+178 |         score = score + r["gain"]
+    |         `- error: cannot assign to value: 'score' is a 'let' constant
+179 |         var y = 0
+180 |         while y < SIZE {
+
+/tmp/2048.swift:178:26: error: value of type '()' has no subscripts
+176 |         let r = slideLeft(col)
+177 |         let new = r["row"]
+178 |         score = score + r["gain"]
+    |                          `- error: value of type '()' has no subscripts
+179 |         var y = 0
+180 |         while y < SIZE {
+
+/tmp/2048.swift:184:17: error: cannot assign through subscript: 'b' is a 'let' constant
+182 |                 moved = true
+183 |             }
+184 |             b[y][x] = new[y]
+    |                 `- error: cannot assign through subscript: 'b' is a 'let' constant
+185 |             y = y + 1
+186 |         }
+
+/tmp/2048.swift:189:12: error: unexpected non-void return value in void function
+187 |         x = x + 1
+188 |     }
+189 |     return ["board": b, "score": score, "moved": moved]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+190 | }
+191 | func moveDown(_ b: [[Int]], _ score: Int) -> [String: any] {
+
+/tmp/2048.swift:196:13: warning: constant 'r' inferred to have type '()', which may be unexpected
+194 |     while x < SIZE {
+195 |         var col = reverseRow(getCol(b, x))
+196 |         let r = slideLeft(col)
+    |             |- warning: constant 'r' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+197 |         col = r["row"]
+198 |         score = score + r["gain"]
+
+/tmp/2048.swift:197:16: error: value of type '()' has no subscripts
+195 |         var col = reverseRow(getCol(b, x))
+196 |         let r = slideLeft(col)
+197 |         col = r["row"]
+    |                `- error: value of type '()' has no subscripts
+198 |         score = score + r["gain"]
+199 |         col = reverseRow(col)
+
+/tmp/2048.swift:198:9: error: cannot assign to value: 'score' is a 'let' constant
+196 |         let r = slideLeft(col)
+197 |         col = r["row"]
+198 |         score = score + r["gain"]
+    |         `- error: cannot assign to value: 'score' is a 'let' constant
+199 |         col = reverseRow(col)
+200 |         var y = 0
+
+/tmp/2048.swift:198:26: error: value of type '()' has no subscripts
+196 |         let r = slideLeft(col)
+197 |         col = r["row"]
+198 |         score = score + r["gain"]
+    |                          `- error: value of type '()' has no subscripts
+199 |         col = reverseRow(col)
+200 |         var y = 0
+
+/tmp/2048.swift:205:17: error: cannot assign through subscript: 'b' is a 'let' constant
+203 |                 moved = true
+204 |             }
+205 |             b[y][x] = col[y]
+    |                 `- error: cannot assign through subscript: 'b' is a 'let' constant
+206 |             y = y + 1
+207 |         }
+
+/tmp/2048.swift:210:12: error: unexpected non-void return value in void function
+208 |         x = x + 1
+209 |     }
+210 |     return ["board": b, "score": score, "moved": moved]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+211 | }
+212 | func hasMoves(_ b: [[Int]]) -> Bool {

@@ -59,6 +59,7 @@ func New(env *types.Env) *Compiler {
 func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
+	c.analyze(p)
 	if err := c.program(p); err != nil {
 		return nil, err
 	}
@@ -101,6 +102,51 @@ type compiler struct {
 	structKeys      map[string]string
 	autoCount       int
 	builtinAliases  map[string]string
+}
+
+// analyze walks the program once to infer variable types before code generation.
+func (c *compiler) analyze(p *parser.Program) {
+	for _, s := range p.Statements {
+		c.analyzeStmt(s)
+	}
+}
+
+func (c *compiler) analyzeStmt(s *parser.Statement) {
+	switch {
+	case s.Let != nil:
+		c.varTypes[s.Let.Name] = c.inferType(s.Let.Type, s.Let.Value)
+		c.recordMapFields(s.Let.Name, s.Let.Value)
+	case s.Var != nil:
+		c.varTypes[s.Var.Name] = c.inferType(s.Var.Type, s.Var.Value)
+		c.recordMapFields(s.Var.Name, s.Var.Value)
+	case s.Assign != nil:
+		if len(s.Assign.Index) == 0 && len(s.Assign.Field) == 0 {
+			c.varTypes[s.Assign.Name] = c.inferType(nil, s.Assign.Value)
+			c.recordMapFields(s.Assign.Name, s.Assign.Value)
+		}
+	case s.For != nil:
+		for _, st := range s.For.Body {
+			c.analyzeStmt(st)
+		}
+	case s.While != nil:
+		for _, st := range s.While.Body {
+			c.analyzeStmt(st)
+		}
+	case s.If != nil:
+		for _, st := range s.If.Then {
+			c.analyzeStmt(st)
+		}
+		if s.If.ElseIf != nil {
+			c.analyzeStmt(&parser.Statement{If: s.If.ElseIf})
+		}
+		for _, st := range s.If.Else {
+			c.analyzeStmt(st)
+		}
+	case s.Fun != nil:
+		for _, st := range s.Fun.Body {
+			c.analyzeStmt(st)
+		}
+	}
 }
 
 func (c *compiler) program(p *parser.Program) error {
@@ -175,11 +221,17 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 			return err
 		}
 		if typ == "" {
-			switch val {
-			case "[]":
-				typ = "[Any]"
-			case "[:]":
-				typ = "[String:Any]"
+			if val == "[]" || val == "[:]" {
+				if t := swiftTypeOf(c.varTypes[l.Name]); t != "" && t != "[Any]" && t != "[String:Any]" {
+					typ = t
+				} else {
+					switch val {
+					case "[]":
+						typ = "[Any]"
+					case "[:]":
+						typ = "[String:Any]"
+					}
+				}
 			}
 		}
 		if typ != "" {
@@ -213,11 +265,17 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 			return err
 		}
 		if typ == "" {
-			switch val {
-			case "[]":
-				typ = "[Any]"
-			case "[:]":
-				typ = "[String:Any]"
+			if val == "[]" || val == "[:]" {
+				if t := swiftTypeOf(c.varTypes[v.Name]); t != "" && t != "[Any]" && t != "[String:Any]" {
+					typ = t
+				} else {
+					switch val {
+					case "[]":
+						typ = "[Any]"
+					case "[:]":
+						typ = "[String:Any]"
+					}
+				}
 			}
 		}
 		if typ != "" {
@@ -1678,6 +1736,10 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 			switch {
 			case p.Target.Lit != nil && p.Target.Lit.Str != nil:
 				return "string"
+			case p.Target.Lit != nil && p.Target.Lit.Bool != nil:
+				return "bool"
+			case p.Target.Lit != nil && (p.Target.Lit.Int != nil || p.Target.Lit.Float != nil):
+				return "number"
 			case p.Target.List != nil:
 				if len(p.Target.List.Elems) > 0 && p.Target.List.Elems[0].Binary != nil {
 					et := c.exprType(p.Target.List.Elems[0])
@@ -1755,6 +1817,12 @@ func (c *compiler) exprType(e *parser.Expr) string {
 	}
 	if p.Target.Lit != nil && p.Target.Lit.Str != nil {
 		return "string"
+	}
+	if p.Target.Lit != nil && p.Target.Lit.Bool != nil {
+		return "bool"
+	}
+	if p.Target.Lit != nil && (p.Target.Lit.Int != nil || p.Target.Lit.Float != nil) {
+		return "number"
 	}
 	if p.Target.List != nil {
 		if len(p.Target.List.Elems) > 0 {
