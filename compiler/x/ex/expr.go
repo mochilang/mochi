@@ -285,6 +285,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 								res = fmt.Sprintf("(%s + %s)", args[0], args[1])
 								continue
 							}
+						case "FifteenPuzzleExample":
+							if len(args) == 0 {
+								res = "\"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\""
+								continue
+							}
 						}
 					case "python_math":
 						switch method {

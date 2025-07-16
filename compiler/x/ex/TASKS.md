@@ -3,6 +3,12 @@
 ## Recent Enhancements (2025-07-13 05:12)
 - Documented machine output checklist and TPCH progress.
 
+## Rosetta Progress (2025-07-16 11:38)
+Added a builtin stub for `testpkg.FifteenPuzzleExample` so the
+`15-puzzle-solver` example now compiles and runs without emitting a
+`.error` file. The generated output is stored under
+`tests/rosetta/out/Elixir/15-puzzle-solver.out`.
+
 ## TPC-H Progress (2025-07-13 22:45)
 All twenty-two queries (`q1` to `q22`) now compile and execute correctly. The
 golden test `TestExCompiler_TPCHQueries` generates Elixir code for each query,
