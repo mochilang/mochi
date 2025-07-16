@@ -6,7 +6,8 @@
 * Rosetta Code golden tests across compilers with VM runner
 * Deterministic `now` builtin for reproducible timestamps
 * `sha256` builtin for the C backend
-* Virtual machine global variable support
+* Virtual machine global variable support and entry aliasing
+* Struct literals supported in the Smalltalk backend
 
 ### Changed
 
