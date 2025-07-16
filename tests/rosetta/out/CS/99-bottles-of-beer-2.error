@@ -1,0 +1,10 @@
+run error: exit status 1
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(16,46): error CS1525: Invalid expression term '||' [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(16,62): error CS1002: ; expected [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(22,15): error CS8641: 'else' cannot start a statement. [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(22,15): error CS1003: Syntax error, '(' expected [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(22,15): error CS1525: Invalid expression term 'else' [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(22,15): error CS1026: ) expected [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/Program.cs(22,15): error CS1002: ; expected [/tmp/TestMochiToCS99-bottles-of-beer-24083469199/001/app.csproj]
+
+The build failed. Fix the build errors and run again.
