@@ -1,8 +1,9 @@
 # Rust Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-16 13:13 - Added stub for `FifteenPuzzleExample` in `testpkg` allowing Rosetta task `15-puzzle-solver` to compile and run.
 - 2025-07-17 00:20 - Added `compile_rosetta_rust.go` and golden test for Rosetta tasks. Initialized mutable
-  string variables with `String::new()` or `String::from` to avoid `+=` errors.
+ string variables with `String::new()` or `String::from` to avoid `+=` errors.
 - 2025-07-13 05:07 - Added `_json` helper to print values using `Debug` trait and generate constant strings for simple map literals.
 - 2025-07-13 05:08 - Generated Rust code for TPC-H queries q1 through q6 and extended golden tests.
 - 2025-07-13 16:54 - Added golden output for `tpc-h` query q7 and updated tests to compile and run it.
