@@ -1,3 +1,22 @@
-line 9: exit status 254
-
+exit status 254
+../../../tests/machine/x/dart/python_math.dart:9:12: Error: A prefix can't be used as an expression.
 var area = math['pi'] * math['pow'](r, 2);
+           ^^^^
+../../../tests/machine/x/dart/python_math.dart:9:25: Error: A prefix can't be used as an expression.
+var area = math['pi'] * math['pow'](r, 2);
+                        ^^^^
+../../../tests/machine/x/dart/python_math.dart:11:12: Error: A prefix can't be used as an expression.
+var root = math['sqrt'](49);
+           ^^^^
+../../../tests/machine/x/dart/python_math.dart:13:13: Error: A prefix can't be used as an expression.
+var sin45 = math['sin'](math['pi'] / 4);
+            ^^^^
+../../../tests/machine/x/dart/python_math.dart:13:25: Error: A prefix can't be used as an expression.
+var sin45 = math['sin'](math['pi'] / 4);
+                        ^^^^
+../../../tests/machine/x/dart/python_math.dart:15:13: Error: A prefix can't be used as an expression.
+var log_e = math['log'](math['e']);
+            ^^^^
+../../../tests/machine/x/dart/python_math.dart:15:25: Error: A prefix can't be used as an expression.
+var log_e = math['log'](math['e']);
+                        ^^^^

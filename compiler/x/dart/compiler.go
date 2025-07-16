@@ -40,6 +40,19 @@ void _json(dynamic v) {
     print(jsonEncode(v));
 }
 
+void _print(List<dynamic> args) {
+    for (var i = 0; i < args.length; i++) {
+        if (i > 0) stdout.write(' ');
+        var v = args[i];
+        if (v is List) {
+            stdout.write(v.join(' '));
+        } else {
+            stdout.write(v);
+        }
+    }
+    stdout.writeln();
+}
+
 
 dynamic _min(dynamic v) {
     List<dynamic>? list;
@@ -1882,10 +1895,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	// additional support libraries
 	switch call.Func {
 	case "print":
-		if len(args) == 1 {
-			return fmt.Sprintf("print(%s)", args[0]), nil
-		}
-		return fmt.Sprintf("print([%s].join(' '))", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("_print([%s])", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
