@@ -86,6 +86,7 @@ func TestFSCompiler(t *testing.T) {
 			return nil, fmt.Errorf("fsharpc error: %w", err)
 		}
 		os.Remove(filepath.Join(outDir, name+".error"))
+		defer os.Remove(exePath)
 
 		run := exec.Command("mono", exePath)
 		var stdout bytes.Buffer

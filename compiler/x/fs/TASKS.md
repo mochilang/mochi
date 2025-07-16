@@ -5,6 +5,9 @@
 - 2025-07-17 00:00 UTC - Added golden tests for `tests/vm/valid` verifying
   generated F# code and improved type inference on assignments so more
   examples compile without errors.
+- 2025-07-21 00:00 UTC - Golden tests now execute F# programs and compare
+  runtime output under `tests/machine/x/fs`. Type inference for function
+  expressions and cast targets improved so fewer `.error` files are generated.
 - 2025-07-17 12:34 UTC - Simplified dataset tests to check only program output
   and corrected TPC-DS output paths.
 

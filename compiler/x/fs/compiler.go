@@ -284,13 +284,11 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			typ = c.inferType(l.Value)
 		}
 		// infer type from cast expression
-		if typ == "" {
-			if p := rootPostfix(l.Value); p != nil {
-				for _, op := range p.Ops {
-					if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-						typ = *op.Cast.Type.Simple
-						break
-					}
+		if p := rootPostfix(l.Value); p != nil {
+			for _, op := range p.Ops {
+				if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+					typ = *op.Cast.Type.Simple
+					break
 				}
 			}
 		}
@@ -299,6 +297,9 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 			return fmt.Errorf("let without value at line %d", l.Pos.Line)
 		}
 		val = defaultValue(typ)
+	}
+	if typ == "obj" {
+		typ = ""
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let %s: %s = %s", l.Name, typ, val))
@@ -374,18 +375,19 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 		if typ == "" {
 			typ = c.inferType(v.Value)
 		}
-		if typ == "" {
-			if p := rootPostfix(v.Value); p != nil {
-				for _, op := range p.Ops {
-					if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
-						typ = *op.Cast.Type.Simple
-						break
-					}
+		if p := rootPostfix(v.Value); p != nil {
+			for _, op := range p.Ops {
+				if op.Cast != nil && op.Cast.Type != nil && op.Cast.Type.Simple != nil {
+					typ = *op.Cast.Type.Simple
+					break
 				}
 			}
 		}
 	} else if typ != "" {
 		val = defaultValue(typ)
+	}
+	if typ == "obj" {
+		typ = ""
 	}
 	if typ != "" {
 		c.writeln(fmt.Sprintf("let mutable %s: %s = %s", v.Name, typ, val))
@@ -1768,29 +1770,45 @@ func (c *Compiler) gatherHints(stmts []*parser.Statement) {
 		switch {
 		case st.Assign != nil:
 			a := st.Assign
-                       if len(a.Index) > 0 {
-                               t := c.inferType(a.Value)
-                               if t != "obj" {
-                                       if _, ok := c.hints[a.Name]; !ok {
-                                               c.hints[a.Name] = t
-                                       }
-                               }
-                       } else if p := rootPrimary(a.Value); p != nil && p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2 {
-                               if name, ok := c.simpleIdentifier(p.Call.Args[0]); ok && name == a.Name {
-                                       t := c.inferType(p.Call.Args[1])
-                                       if t != "obj" {
-                                               if _, ok := c.hints[a.Name]; !ok {
-                                                       c.hints[a.Name] = t
-                                               }
-                                       }
-                               }
-                       } else {
-                               if t := c.inferType(a.Value); t != "obj" {
-                                       if _, ok := c.hints[a.Name]; !ok {
-                                               c.hints[a.Name] = t
-                                       }
-                               }
-                       }
+			if len(a.Index) > 0 {
+				t := c.inferType(a.Value)
+				if t != "obj" {
+					if _, ok := c.hints[a.Name]; !ok {
+						c.hints[a.Name] = t
+					}
+				}
+			} else if p := rootPrimary(a.Value); p != nil && p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2 {
+				if name, ok := c.simpleIdentifier(p.Call.Args[0]); ok && name == a.Name {
+					t := c.inferType(p.Call.Args[1])
+					if t != "obj" {
+						if _, ok := c.hints[a.Name]; !ok {
+							c.hints[a.Name] = t
+						}
+					}
+				}
+			} else {
+				if t := c.inferType(a.Value); t != "obj" {
+					if _, ok := c.hints[a.Name]; !ok {
+						c.hints[a.Name] = t
+					}
+				}
+			}
+		case st.Let != nil:
+			if st.Let.Value != nil {
+				if t := c.inferType(st.Let.Value); t != "obj" && t != "" {
+					if _, ok := c.hints[st.Let.Name]; !ok {
+						c.hints[st.Let.Name] = t
+					}
+				}
+			}
+		case st.Var != nil:
+			if st.Var.Value != nil {
+				if t := c.inferType(st.Var.Value); t != "obj" && t != "" {
+					if _, ok := c.hints[st.Var.Name]; !ok {
+						c.hints[st.Var.Name] = t
+					}
+				}
+			}
 		case st.For != nil:
 			c.gatherHints(st.For.Body)
 		case st.While != nil:
@@ -1950,6 +1968,10 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			if t := c.mapLiteralType(p.Map); t != "" {
 				return t
 			}
+		}
+
+		if p.FunExpr != nil {
+			return ""
 		}
 
 		if p.Selector != nil {
