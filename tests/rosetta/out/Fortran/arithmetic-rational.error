@@ -1,0 +1,26 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-rational.f90:19:3:
+
+   19 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-rational.f90:68:7:
+
+   68 |       n = nums(i0)
+      |       1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-rational.f90:72:18:
+
+   72 |         perfect = ''
+      |                  1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-rational.f90:74:20:
+
+   74 |           perfect = 'perfect!'
+      |                    1
+Error: Cannot convert CHARACTER(8) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-rational.f90:78:16:
+
+   78 |         print *, trim(trim(trim(trim('Sum of recipr. factors of ' // s1) // ' = ') // s2) // ' exactly ') // perfect
+      |                1
+Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)

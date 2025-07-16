@@ -1,0 +1,16 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/catalan-numbers-1.f90:8:3:
+
+    8 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/catalan-numbers-1.f90:13:22:
+
+   13 |     if ((((k < 0) .or. k) > n)) then
+      |                      1
+Error: Operands of logical operator ‘.or.’ at (1) are LOGICAL(4)/INTEGER(4)
+/workspace/mochi/tests/rosetta/out/Fortran/catalan-numbers-1.f90:18:9:
+
+   18 |     if (((kk > n) - kk)) then
+      |         1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)

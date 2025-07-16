@@ -1,0 +1,31 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:10:3:
+
+   10 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:46:42:
+
+   46 |     write(s0,'(G0)') agm(1,(1 / sqrtApprox(2)))
+      |                                          1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:46:20:
+
+   46 |     write(s0,'(G0)') agm(1,(1 / sqrtApprox(2)))
+      |                    1
+Error: Type mismatch in argument ‘a’ at (1); passed INTEGER(4) to REAL(4)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:39:6:
+
+   39 |       a = newA
+      |      1
+Error: Dummy argument ‘a’ with INTENT(IN) in variable definition context (assignment) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:40:6:
+
+   40 |       g = newG
+      |      1
+Error: Dummy argument ‘g’ with INTENT(IN) in variable definition context (assignment) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean.f90:36:15:
+
+   36 |     do while (((abs((a - g)) > abs(a)) * eps))
+      |               1
+Error: Operands of binary numeric operator ‘*’ at (1) are LOGICAL(4)/INTEGER(4)

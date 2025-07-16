@@ -1,0 +1,46 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:15:3:
+
+   15 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:94:11:
+
+   94 |     line = ''
+      |           1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:62:8:
+
+   62 |         n = (n / f)
+      |        1
+Error: Dummy argument ‘n’ with INTENT(IN) in variable definition context (assignment) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:82:8:
+
+   82 |     s = s0
+      |        1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:84:10:
+
+   84 |       s = ' ' // s
+      |          1
+Error: Operands of string concatenation operator at (1) are CHARACTER(1)/INTEGER(4)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:83:20:
+
+   83 |     do while ((size(s) < 4))
+      |                    1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:86:10:
+
+   86 |     res = s
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:100:16:
+
+  100 |         line = (line + pad4(i))
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
+/workspace/mochi/tests/rosetta/out/Fortran/attractive-numbers.f90:105:17:
+
+  105 |           line = ''
+      |                 1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)

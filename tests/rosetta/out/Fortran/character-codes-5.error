@@ -1,0 +1,6 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/character-codes-5.f90:6:12:
+
+    6 |   print *, (chr(97) + chr(960))
+      |            1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)

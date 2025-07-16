@@ -1,0 +1,26 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/anti-primes.f90:10:3:
+
+   10 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/anti-primes.f90:33:5:
+
+   33 |     n = 1
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/anti-primes.f90:34:11:
+
+   34 |     line = ''
+      |           1
+Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/anti-primes.f90:39:16:
+
+   39 |         line = (line + s0) // ' '
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
+/workspace/mochi/tests/rosetta/out/Fortran/anti-primes.f90:20:15:
+
+   20 |     do while (((i <= n) / 2))
+      |               1
+Error: Operands of binary numeric operator ‘/’ at (1) are LOGICAL(4)/INTEGER(4)

@@ -1,0 +1,12 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/100-doors-3.f90:2:8:
+
+    2 | program 100_doors_3
+      |        1
+Error: Invalid form of PROGRAM statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/100-doors-3.f90:20:13:
+
+   20 | end program 100_doors_3
+      |             1
+Error: Expected terminating name at (1)
+f951: Error: Unexpected end of file in ‘/workspace/mochi/tests/rosetta/out/Fortran/100-doors-3.f90’

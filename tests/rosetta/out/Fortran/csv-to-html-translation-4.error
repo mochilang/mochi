@@ -1,0 +1,12 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/csv-to-html-translation-4.f90:7:132:
+
+    7 |   print *, '    <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>'
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/workspace/mochi/tests/rosetta/out/Fortran/csv-to-html-translation-4.f90:7:13:
+
+    7 |   print *, '    <tr><td>Brians mother</td><td>&lt;angry&gt;Now you listen here! He&#39;s not the messiah; he&#39;s a very naughty boy! Now go away!&lt;/angry&gt;</td></tr>'
+      |             1
+Error: Unterminated character constant beginning at (1)
+f951: some warnings being treated as errors

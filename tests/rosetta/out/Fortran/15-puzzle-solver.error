@@ -1,0 +1,17 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/15-puzzle-solver.f90:2:8:
+
+    2 | program 15_puzzle_solver
+      |        1
+Error: Invalid form of PROGRAM statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/15-puzzle-solver.f90:6:20:
+
+    6 |   print *, testpkg%FifteenPuzzleExample()
+      |                    1
+Error: Symbol ‘testpkg’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/15-puzzle-solver.f90:13:13:
+
+   13 | end program 15_puzzle_solver
+      |             1
+Error: Expected terminating name at (1)
+f951: Error: Unexpected end of file in ‘/workspace/mochi/tests/rosetta/out/Fortran/15-puzzle-solver.f90’
