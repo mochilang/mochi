@@ -412,12 +412,9 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch name {
 	case "print":
 		if len(call.Args) == 1 {
-			if isList(c.inferExprType(call.Args[0])) {
-				a := args[0]
-				return fmt.Sprintf("print(table.concat(%s, \" \"))", a), nil
-			}
+			c.helpers["str"] = true
 			if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-				return fmt.Sprintf("print(%s)", args[0]), nil
+				return fmt.Sprintf("print(__str(%s))", args[0]), nil
 			}
 		}
 		if len(args) > 1 {
@@ -426,23 +423,27 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if n, ok := identName(call.Args[i]); ok && c.uninitVars[n] {
 					parts[i] = "\"<nil>\""
 				} else {
-					parts[i] = fmt.Sprintf("tostring(%s)", a)
+					c.helpers["str"] = true
+					parts[i] = fmt.Sprintf("__str(%s)", a)
 				}
 			}
 			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
 		}
 		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-			return fmt.Sprintf("print(%s)", args[0]), nil
+			c.helpers["str"] = true
+			return fmt.Sprintf("print(__str(%s))", args[0]), nil
 		}
-		return fmt.Sprintf("print(tostring(%s))", args[0]), nil
+		c.helpers["str"] = true
+		return fmt.Sprintf("print(__str(%s))", args[0]), nil
 	case "str":
+		c.helpers["str"] = true
 		if len(args) == 1 {
 			if v, ok := literalValue(call.Args[0]); ok {
 				return strconv.Quote(fmt.Sprint(v)), nil
 			}
-			return fmt.Sprintf("tostring(%s)", args[0]), nil
+			return fmt.Sprintf("__str(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("tostring(%s)", argStr), nil
+		return fmt.Sprintf("__str(%s)", argStr), nil
 	case "input":
 		c.helpers["input"] = true
 		return "__input()", nil
@@ -492,6 +493,11 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("lower expects 1 arg")
 		}
 		return fmt.Sprintf("string.lower(%s)", args[0]), nil
+	case "upper":
+		if len(args) != 1 {
+			return "", fmt.Errorf("upper expects 1 arg")
+		}
+		return fmt.Sprintf("string.upper(%s)", args[0]), nil
 	case "substr":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substr expects 3 args")
