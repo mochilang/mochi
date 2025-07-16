@@ -804,8 +804,20 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					args[j] = s
 				}
 				name := op.Field.Name
-				if c.isStringPrimary(p.Target) && name == "contains" {
-					name = "Contains"
+				if c.isStringPrimary(p.Target) {
+					if name == "contains" {
+						name = "Contains"
+					} else if name == "padStart" && len(args) == 2 {
+						ch := args[1]
+						if strings.HasPrefix(ch, "\"") && strings.HasSuffix(ch, "\"") && len([]rune(ch[1:len(ch)-1])) == 1 {
+							ch = fmt.Sprintf("'%s'", ch[1:len(ch)-1])
+						} else {
+							ch = fmt.Sprintf("char (%s.[0])", ch)
+						}
+						val = fmt.Sprintf("%s.PadLeft(%s, %s)", val, args[0], ch)
+						i++
+						continue
+					}
 				}
 				val = fmt.Sprintf("%s.%s(%s)", val, sanitizeIdent(name), strings.Join(args, ", "))
 				i++
@@ -1055,6 +1067,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	case "min":
 		if len(args) == 1 {
 			return fmt.Sprintf("List.min %s", args[0]), nil
+		}
+	case "pow":
+		if len(args) == 2 {
+			return fmt.Sprintf("pown %s %s", args[0], args[1]), nil
 		}
 	case "str":
 		if len(args) == 1 {
