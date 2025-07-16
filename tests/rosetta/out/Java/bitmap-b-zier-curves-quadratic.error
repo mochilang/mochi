@@ -1,0 +1,110 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:25: error: cannot find symbol
+    static Map<String,any> b = newBitmap(400, 300);
+                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:32: error: cannot find symbol
+    static Map<String,any> newBitmap(int cols, int rows) {
+                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:47: error: cannot find symbol
+    static void setPx(Map<String,any> b, int x, int y, Pixel p) {
+                                 ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:54: error: cannot find symbol
+    static void fill(Map<String,any> b, Pixel p) {
+                                ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:67: error: cannot find symbol
+    static void fillRgb(Map<String,any> b, int rgb) {
+                                   ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:70: error: cannot find symbol
+    static void line(Map<String,any> b, int x0, int y0, int x1, int y1, Pixel p) {
+                                ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:104: error: cannot find symbol
+    static void bezier2(Map<String,any> b, int x1, int y1, int x2, int y2, int x3, int y3, Pixel p) {
+                                   ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:27: error: incompatible types: int cannot be converted to String
+        int r = Integer.parseInt(((rgb / 65536) % 256));
+                                                ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:28: error: incompatible types: int cannot be converted to String
+        int g = Integer.parseInt(((rgb / 256) % 256));
+                                              ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:29: error: incompatible types: int cannot be converted to String
+        int b = Integer.parseInt((rgb % 256));
+                                      ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:45: error: cannot find symbol
+        return new ColsRowsData(cols, rows, d);
+                   ^
+  symbol:   class ColsRowsData
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:48: error: cannot find symbol
+        int cols = Integer.parseInt(((any)b.get("cols")));
+                                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:49: error: cannot find symbol
+        int rows = Integer.parseInt(((any)b.get("rows")));
+                                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:51: error: cannot find symbol
+            ((Map<?,?>)((any)b.get("data")).y).put(x, p);
+                         ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:51: error: incompatible types: int cannot be converted to CAP#1
+            ((Map<?,?>)((any)b.get("data")).y).put(x, p);
+                                                   ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:55: error: cannot find symbol
+        int cols = Integer.parseInt(((any)b.get("cols")));
+                                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:56: error: cannot find symbol
+        int rows = Integer.parseInt(((any)b.get("rows")));
+                                      ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:61: error: cannot find symbol
+                ((Map<?,?>)((any)b.get("data")).y).put(x, p);
+                             ^
+  symbol:   class any
+  location: class BitmapBZierCurvesQuadratic
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:61: error: incompatible types: int cannot be converted to CAP#1
+                ((Map<?,?>)((any)b.get("data")).y).put(x, p);
+                                                       ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:126: error: incompatible types: double cannot be converted to String
+            px.set(i, Integer.parseInt((a2 * fx1 + b2 * fx2 + c2 * fx3)));
+                                                            ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:127: error: incompatible types: double cannot be converted to String
+            py.set(i, Integer.parseInt((a2 * fy1 + b2 * fy2 + c2 * fy3)));
+                                                            ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:130: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> x0 = px.get(0);
+                                 ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:131: error: incompatible types: Integer cannot be converted to List<Integer>
+        List<Integer> y0 = py.get(0);
+                                 ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:134: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> x = px.get(i);
+                                    ^
+/tmp/TestMochiToJavabitmap-b-zier-curves-quadratic1110334316/001/BitmapBZierCurvesQuadratic.java:135: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> y = py.get(i);
+                                    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+25 errors

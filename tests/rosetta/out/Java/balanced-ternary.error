@@ -1,0 +1,49 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:13: error: cannot find symbol
+    static Map<String,any> btString(String s) {
+                      ^
+  symbol:   class any
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:31: error: cannot find symbol
+                        return new BtOk(Arrays.asList(), false);
+                                   ^
+  symbol:   class BtOk
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:37: error: cannot find symbol
+        return new BtOk(b, true);
+                   ^
+  symbol:   class BtOk
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:46: error: incompatible types: Integer cannot be converted to List<Integer>
+            List<Integer> d = b.get(i);
+                                   ^
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:70: error: incompatible types: int cannot be converted to String
+            n = (int)(Integer.parseInt((n / 3)));
+                                          ^
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:90: error: bad operand types for binary operator '*'
+            r = (int)(r + ((Number)((Number)b.get(i)).doubleValue() * pt).doubleValue());
+                                                                    ^
+  first type:  Number
+  second type: int
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:125: error: cannot find symbol
+        Map<String,any> ares = btString("+-0++0+");
+                   ^
+  symbol:   class any
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:126: error: cannot find symbol
+        Map<String,any> a = ares.get("bt");
+                   ^
+  symbol:   class any
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:128: error: cannot find symbol
+        Map<String,any> cres = btString("+-++-");
+                   ^
+  symbol:   class any
+  location: class BalancedTernary
+/tmp/TestMochiToJavabalanced-ternary980477885/001/BalancedTernary.java:129: error: cannot find symbol
+        Map<String,any> c = cres.get("bt");
+                   ^
+  symbol:   class any
+  location: class BalancedTernary
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+10 errors

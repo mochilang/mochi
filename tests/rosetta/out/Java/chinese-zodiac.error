@@ -1,0 +1,18 @@
+javac error: exit status 1
+/tmp/TestMochiToJavachinese-zodiac215204401/001/ChineseZodiac.java:35: error: incompatible types: String cannot be converted to Number
+        int sb = ((Number)sc.get(stem)).doubleValue() + ((Number)bc.get(branch)).doubleValue();
+                                ^
+/tmp/TestMochiToJavachinese-zodiac215204401/001/ChineseZodiac.java:35: error: incompatible types: String cannot be converted to Number
+        int sb = ((Number)sc.get(stem)).doubleValue() + ((Number)bc.get(branch)).doubleValue();
+                                                                       ^
+/tmp/TestMochiToJavachinese-zodiac215204401/001/ChineseZodiac.java:36: error: incompatible types: int cannot be converted to String
+        return new Info(String.valueOf(((List)animal.get(branch))), String.valueOf(((List)yinYang.get(stem % 2))), String.valueOf(((List)element.get(Integer.parseInt((stem / 2))))), sb, y % 60 + 1);
+                                                                                                                                                                            ^
+/tmp/TestMochiToJavachinese-zodiac215204401/001/ChineseZodiac.java:36: error: incompatible types: String cannot be converted to List
+        return new Info(String.valueOf(((List)animal.get(branch))), String.valueOf(((List)yinYang.get(stem % 2))), String.valueOf(((List)element.get(Integer.parseInt((stem / 2))))), sb, y % 60 + 1);
+                                                                                                     ^
+/tmp/TestMochiToJavachinese-zodiac215204401/001/ChineseZodiac.java:36: error: incompatible types: String cannot be converted to List
+        return new Info(String.valueOf(((List)animal.get(branch))), String.valueOf(((List)yinYang.get(stem % 2))), String.valueOf(((List)element.get(Integer.parseInt((stem / 2))))), sb, y % 60 + 1);
+                                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+5 errors

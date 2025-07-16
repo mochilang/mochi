@@ -1,0 +1,14 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3319666583/001/BitmapReadAPpmFile.java:119: error: not a statement
+        0123456789 digits = new 0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3319666583/001/BitmapReadAPpmFile.java:119: error: ';' expected
+        0123456789 digits = new 0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3319666583/001/BitmapReadAPpmFile.java:119: error: <identifier> expected
+        0123456789 digits = new 0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                               ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3319666583/001/BitmapReadAPpmFile.java:119: error: '(' or '[' expected
+        0123456789 digits = new 0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                                ^
+4 errors

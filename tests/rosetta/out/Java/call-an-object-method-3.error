@@ -1,0 +1,7 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacall-an-object-method-33828163121/001/CallAnObjectMethod3.java:28: error: cannot find symbol
+    box.TellSecret();
+       ^
+  symbol:   method TellSecret()
+  location: variable box of type Box
+1 error

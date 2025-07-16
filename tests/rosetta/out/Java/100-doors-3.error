@@ -1,0 +1,5 @@
+javac error: exit status 1
+/tmp/TestMochiToJava100-doors-32316783378/001/100Doors3.java:5: error: <identifier> expected
+public class 100Doors3 {
+            ^
+1 error

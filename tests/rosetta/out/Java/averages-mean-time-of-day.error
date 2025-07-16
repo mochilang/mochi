@@ -1,0 +1,15 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaverages-mean-time-of-day3287246883/001/AveragesMeanTimeOfDay.java:101: error: incompatible types: double cannot be converted to String
+        int si = Integer.parseInt(total);
+                                  ^
+/tmp/TestMochiToJavaaverages-mean-time-of-day3287246883/001/AveragesMeanTimeOfDay.java:102: error: incompatible types: int cannot be converted to String
+        int h = Integer.parseInt((si / 3600));
+                                     ^
+/tmp/TestMochiToJavaaverages-mean-time-of-day3287246883/001/AveragesMeanTimeOfDay.java:103: error: incompatible types: int cannot be converted to String
+        int m = Integer.parseInt(((si % 3600) / 60));
+                                              ^
+/tmp/TestMochiToJavaaverages-mean-time-of-day3287246883/001/AveragesMeanTimeOfDay.java:104: error: incompatible types: int cannot be converted to String
+        int s = Integer.parseInt((si % 60));
+                                     ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+4 errors

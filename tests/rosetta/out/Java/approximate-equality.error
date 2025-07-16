@@ -1,0 +1,12 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaapproximate-equality1749670874/001/ApproximateEquality.java:37: error: incompatible types: Double cannot be converted to List<Double>
+            List<Double> a = pair.get(0);
+                                     ^
+/tmp/TestMochiToJavaapproximate-equality1749670874/001/ApproximateEquality.java:38: error: incompatible types: Double cannot be converted to List<Double>
+            List<Double> b = pair.get(1);
+                                     ^
+/tmp/TestMochiToJavaapproximate-equality1749670874/001/ApproximateEquality.java:39: error: incompatible types: List<Double> cannot be converted to double
+            Object s = (isClose(a, b) ? "≈" : "≉");
+                                ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+3 errors

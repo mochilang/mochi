@@ -1,0 +1,11 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaapply-a-callback-to-an-array-22004470197/001/ApplyACallbackToAnArray2.java:9: error: cannot find symbol
+            f(x);
+            ^
+  symbol:   method f(Integer)
+  location: class ApplyACallbackToAnArray2
+/tmp/TestMochiToJavaapply-a-callback-to-an-array-22004470197/001/ApplyACallbackToAnArray2.java:21: error: incompatible types: Object is not a functional interface
+        each(s, i -> System.out.println(String.valueOf(i * i)));
+        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

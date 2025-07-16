@@ -1,0 +1,7 @@
+javac error: exit status 1
+/tmp/TestMochiToJavamd53804266452/001/Md5.java:13: error: cannot find symbol
+        Object sum = testpkg.MD5Hex(pair.get(1));
+                            ^
+  symbol:   method MD5Hex(String)
+  location: class testpkg
+1 error

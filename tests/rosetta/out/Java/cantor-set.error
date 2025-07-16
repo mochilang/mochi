@@ -1,0 +1,70 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:46: error: incompatible types: inference variable T has incompatible bounds
+    List<Map<String,Integer>> stack = Arrays.asList(new StartLenIndex(0, width, 1));
+                                                   ^
+    equality constraints: Map<String,Integer>
+    lower bounds: StartLenIndex
+  where T is a type-variable:
+    T extends Object declared in method <T>asList(T...)
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:48: error: incompatible types: Map<String,Integer> cannot be converted to List<Map<String,Integer>>
+        List<Map<String,Integer>> frame = stack.get(stack.size() - 1);
+                                                   ^
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:50: error: incompatible types: String cannot be converted to int
+        List<Map<String,Integer>> start = frame.get("start");
+                                                    ^
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:51: error: incompatible types: String cannot be converted to int
+        List<Map<String,Integer>> lenSeg = frame.get("len");
+                                                     ^
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:52: error: incompatible types: String cannot be converted to int
+        List<Map<String,Integer>> index = frame.get("index");
+                                                    ^
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:53: error: bad operand types for binary operator '/'
+        int seg = Integer.parseInt((lenSeg / 3));
+                                           ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:58: error: bad operand types for binary operator '<'
+        while (i < height) {
+                 ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:59: error: bad operand types for binary operator '+'
+            int j = start + seg;
+                          ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:60: error: bad operand types for binary operator '+'
+            while (j < start + 2 * seg) {
+                             ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:61: error: incompatible types: List<Map<String,Integer>> cannot be converted to int
+                lines.set(i, setChar(lines.get(i), j, " "));
+                                               ^
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:64: error: bad operand types for binary operator '+'
+            i = i + 1;
+                  ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:66: error: bad operand types for binary operator '+'
+        stack.add(new StartLenIndex(start, seg, index + 1));
+                                                      ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:67: error: bad operand types for binary operator '+'
+        stack.add(new StartLenIndex(start + seg * 2, seg, index + 1));
+                                          ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:67: error: bad operand types for binary operator '+'
+        stack.add(new StartLenIndex(start + seg * 2, seg, index + 1));
+                                                                ^
+  first type:  List<Map<String,Integer>>
+  second type: int
+/tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java:67: error: incompatible types: StartLenIndex cannot be converted to Map<String,Integer>
+        stack.add(new StartLenIndex(start + seg * 2, seg, index + 1));
+                  ^
+Note: /tmp/TestMochiToJavacantor-set3969052500/001/CantorSet.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+15 errors

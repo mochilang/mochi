@@ -1,0 +1,48 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:20: error: bad operand types for binary operator '>'
+        while (j > 1) {
+                 ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:21: error: incompatible types: Object cannot be converted to int
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                                    ^
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:21: error: bad operand types for binary operator '-'
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                                                                         ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:21: error: incompatible types: Object cannot be converted to int
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                  ^
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:22: error: bad operand types for binary operator '-'
+            j = j - 1;
+                  ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:26: error: bad operand types for binary operator '>'
+        while (j > 1) {
+                 ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:27: error: incompatible types: Object cannot be converted to int
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                                    ^
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:27: error: bad operand types for binary operator '-'
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                                                                         ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:27: error: incompatible types: Object cannot be converted to int
+            t.set(j, ((Number)t.get(j)).doubleValue() + ((Number)t.get(j - 1)).doubleValue());
+                  ^
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:28: error: bad operand types for binary operator '-'
+            j = j - 1;
+                  ^
+  first type:  Object
+  second type: int
+/tmp/TestMochiToJavacatalan-numbers-pascals-triangle3311833381/001/CatalanNumbersPascalsTriangle.java:30: error: incompatible types: possible lossy conversion from double to int
+        int cat = ((Number)t.get(i + 1)).doubleValue() - ((Number)t.get(i)).doubleValue();
+                                                       ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+11 errors

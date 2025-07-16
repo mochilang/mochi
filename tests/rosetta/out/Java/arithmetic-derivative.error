@@ -1,0 +1,35 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:11: error: incompatible types: int cannot be converted to String
+            x = (int)(Integer.parseInt((x / 2)));
+                                          ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:17: error: incompatible types: int cannot be converted to String
+                x = (int)(Integer.parseInt((x / p)));
+                                              ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:44: error: incompatible types: double cannot be converted to String
+            factors = primeFactors(Integer.parseInt((n)));
+                                                     ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:47: error: incompatible types: double cannot be converted to String
+            int g = Integer.parseInt((n / 100.000000));
+                                        ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:61: error: incompatible types: Integer cannot be converted to List
+        double d = n / ((Number)(Double.parseDouble(String.valueOf(((List)factors.get(0)))))).doubleValue();
+                                                                                     ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:62: error: incompatible types: Integer cannot be converted to List
+        return ((Number)D(d) * ((Number)(Double.parseDouble(String.valueOf(((List)factors.get(0)))))).doubleValue()).doubleValue() + d;
+                                                                                             ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:62: error: bad operand types for binary operator '*'
+        return ((Number)D(d) * ((Number)(Double.parseDouble(String.valueOf(((List)factors.get(0)))))).doubleValue()).doubleValue() + d;
+                             ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:75: error: incompatible types: double cannot be converted to String
+            vals.add(Integer.parseInt((D(Double.parseDouble(String.valueOf(n))))));
+                                        ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:83: error: incompatible types: String cannot be converted to Number
+                line = line + ((Number)pad(vals.get(i + j))).doubleValue();
+                                          ^
+/tmp/TestMochiToJavaarithmetic-derivative1014451449/001/ArithmeticDerivative.java:100: error: incompatible types: String cannot be converted to int
+            int res = String.valueOf(m) + repeat("0", m - 1);
+                                        ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+10 errors
