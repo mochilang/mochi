@@ -238,7 +238,11 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln("^" + val)
+		// Returning from top-level script blocks using '^' triggers
+		// "return from a dead method context" errors under GNU
+		// Smalltalk. Simply emit the value expression so the last
+		// evaluated statement becomes the result.
+		c.writeln(val)
 		return nil
 	case st.If != nil:
 		return c.compileIf(st.If)
