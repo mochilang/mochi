@@ -321,6 +321,7 @@ type Compiler struct {
 	tmpCount       int
 	mainStmts      []*parser.Statement
 	tests          []testInfo
+	pythonMath     map[string]bool
 }
 
 type testInfo struct {
@@ -378,7 +379,7 @@ func hasLoopCtrlIf(ifst *parser.IfStmt) bool {
 
 // New creates a new Scheme compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, needTime: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}}
+	return &Compiler{env: env, vars: map[string]string{}, loops: []loopCtx{}, needDataset: false, needListOps: false, needSlice: false, needGroup: false, needJSON: false, needStringLib: false, needTime: false, tmpCount: 0, mainStmts: nil, tests: []testInfo{}, pythonMath: map[string]bool{}}
 }
 
 func (c *Compiler) writeIndent() {
@@ -407,6 +408,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.needTime = false
 	c.mainStmts = nil
 	c.tests = nil
+	c.pythonMath = map[string]bool{}
 	// Declarations and tests
 	for _, s := range prog.Statements {
 		switch {
@@ -736,7 +738,8 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 	if alias == "" {
 		alias = parser.AliasFromPath(im.Path)
 	}
-	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" && im.Auto {
+	if im.Lang != nil && *im.Lang == "python" && strings.Trim(im.Path, "\"") == "math" {
+		c.pythonMath[alias] = true
 		c.writeln(fmt.Sprintf("(define %s (list (cons 'pi 3.141592653589793) (cons 'e 2.718281828459045) (cons 'sqrt (lambda (x) (sqrt x))) (cons 'pow (lambda (x y) (expt x y))) (cons 'sin (lambda (x) (sin x))) (cons 'log (lambda (x) (log x)))))", sanitizeName(alias)))
 		return nil
 	}
@@ -859,6 +862,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 	case s.ExternVar != nil:
 		name := sanitizeName(s.ExternVar.Name())
 		c.writeln(fmt.Sprintf("(define %s '())", name))
+		if len(s.ExternVar.Tail) > 0 {
+			root := sanitizeName(s.ExternVar.Root)
+			if !c.pythonMath[root] {
+				field := sanitizeName(s.ExternVar.Tail[len(s.ExternVar.Tail)-1])
+				c.needMapHelpers = true
+				c.writeln(fmt.Sprintf("(set! %s (map-set %s '%s %s))", root, root, field, name))
+			}
+		}
 	case s.ExternFun != nil:
 		name := sanitizeName(s.ExternFun.Name())
 		params := make([]string, len(s.ExternFun.Params))
@@ -866,6 +877,14 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 			params[i] = sanitizeName(p.Name)
 		}
 		c.writeln(fmt.Sprintf("(define (%s %s) (error \"extern function\"))", name, strings.Join(params, " ")))
+		if len(s.ExternFun.Tail) > 0 {
+			root := sanitizeName(s.ExternFun.Root)
+			if !c.pythonMath[root] {
+				field := sanitizeName(s.ExternFun.Tail[len(s.ExternFun.Tail)-1])
+				c.needMapHelpers = true
+				c.writeln(fmt.Sprintf("(set! %s (map-set %s '%s %s))", root, root, field, name))
+			}
+		}
 	case s.Update != nil:
 		return c.compileUpdate(s.Update)
 	case s.Fun != nil:
