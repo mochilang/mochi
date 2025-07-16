@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToCSabelian-sandpile-model-identity3192871242/001/Program.cs(16,22): error CS1061: 'List<int>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<int>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabelian-sandpile-model-identity3192871242/001/app.csproj]
-/tmp/TestMochiToCSabelian-sandpile-model-identity3192871242/001/Program.cs(40,22): error CS1061: 'List<int>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<int>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabelian-sandpile-model-identity3192871242/001/app.csproj]
+run: exit status 1
+/tmp/TestMochiToCSabelian-sandpile-model-identity/Program.cs(16,22): error CS1061: 'List<int>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<int>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabelian-sandpile-model-identity/app.csproj]
+/tmp/TestMochiToCSabelian-sandpile-model-identity/Program.cs(40,22): error CS1061: 'List<int>' does not contain a definition for 'Length' and no accessible extension method 'Length' accepting a first argument of type 'List<int>' could be found (are you missing a using directive or an assembly reference?) [/tmp/TestMochiToCSabelian-sandpile-model-identity/app.csproj]
 
 The build failed. Fix the build errors and run again.
