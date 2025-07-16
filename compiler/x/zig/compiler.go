@@ -3090,7 +3090,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				return fmt.Sprintf("_sum_float(%s)", arg), nil
 			}
 		}
-		if c.isFloatListExpr(call.Args[0]) {
+		if c.isFloatListExpr(call.Args[0]) || c.isFloatQuerySelect(call.Args[0]) {
 			c.needsSumFloat = true
 			return fmt.Sprintf("_sum_float(%s)", arg), nil
 		}
@@ -3114,7 +3114,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		b.WriteString("defer " + tmp + ".deinit(); ")
 		b.WriteString(tmp + ".appendSlice(" + listArg + ")" + c.catchHandler() + "; ")
 		b.WriteString(tmp + ".append(" + elemArg + ")" + c.catchHandler() + "; ")
-		b.WriteString("break :" + lbl + " " + tmp + ".items; }")
+		b.WriteString("const res = " + tmp + ".toOwnedSlice()" + c.catchHandler() + "; break :" + lbl + " res; }")
 		return b.String(), nil
 	}
 	if name == "min" && len(call.Args) == 1 {
@@ -3222,12 +3222,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	}
 	if name == "print" {
 		if len(call.Args) == 1 {
-			if _, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
+			if lt, ok := c.inferExprType(call.Args[0]).(types.ListType); ok {
 				arg, err := c.compileExpr(call.Args[0], false)
 				if err != nil {
 					return "", err
 				}
-				return fmt.Sprintf("std.debug.print(\"{any}\\n\", .{%s})", arg), nil
+				c.needsPrintList = true
+				return fmt.Sprintf("_print_list(%s, %s)", zigTypeOf(lt.Elem), arg), nil
 			}
 			if c.isStringLiteralExpr(call.Args[0]) {
 				lit := call.Args[0].Binary.Left.Value.Target.Lit.Str
@@ -4182,6 +4183,16 @@ func (c *Compiler) isFloatListExpr(e *parser.Expr) bool {
 				}
 			}
 		}
+	}
+	return false
+}
+
+func (c *Compiler) isFloatQuerySelect(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || e.Binary.Left == nil {
+		return false
+	}
+	if q := e.Binary.Left.Value.Target.Query; q != nil {
+		return c.isFloatExpr(q.Select)
 	}
 	return false
 }
