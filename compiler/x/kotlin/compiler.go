@@ -343,11 +343,16 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	case s.Let != nil:
 		var val, typ string
 		if s.Let.Value != nil {
-			v, err := c.expr(s.Let.Value)
-			if err != nil {
-				return err
+			// Preserve explicit type when assigning an empty list or map literal.
+			if s.Let.Type != nil && (isEmptyListLiteral(s.Let.Value) || isEmptyMapLiteral(s.Let.Value)) {
+				val = c.zeroValue(s.Let.Type)
+			} else {
+				v, err := c.expr(s.Let.Value)
+				if err != nil {
+					return err
+				}
+				val = v
 			}
-			val = v
 			if s.Let.Type != nil {
 				typ = ": " + c.typeName(s.Let.Type)
 			}
@@ -382,11 +387,15 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 	case s.Var != nil:
 		var val, typ string
 		if s.Var.Value != nil {
-			v, err := c.expr(s.Var.Value)
-			if err != nil {
-				return err
+			if s.Var.Type != nil && (isEmptyListLiteral(s.Var.Value) || isEmptyMapLiteral(s.Var.Value)) {
+				val = c.zeroValue(s.Var.Type)
+			} else {
+				v, err := c.expr(s.Var.Value)
+				if err != nil {
+					return err
+				}
+				val = v
 			}
-			val = v
 			if s.Var.Type != nil {
 				typ = ": " + c.typeName(s.Var.Type)
 			}
@@ -2585,4 +2594,44 @@ func (c *Compiler) inferListLike(e *parser.Expr) types.Type {
 		}
 	}
 	return types.ListType{Elem: types.MapType{Key: types.StringType{}, Value: types.AnyType{}}}
+}
+
+// isEmptyListLiteral reports whether the expression is a direct list literal
+// with no elements.
+func isEmptyListLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	if ll := p.Target.List; ll != nil {
+		return len(ll.Elems) == 0
+	}
+	return false
+}
+
+// isEmptyMapLiteral reports whether the expression is a direct map literal with
+// no elements.
+func isEmptyMapLiteral(e *parser.Expr) bool {
+	if e == nil || e.Binary == nil || len(e.Binary.Right) != 0 {
+		return false
+	}
+	u := e.Binary.Left
+	if u == nil || len(u.Ops) != 0 {
+		return false
+	}
+	p := u.Value
+	if p == nil || len(p.Ops) != 0 {
+		return false
+	}
+	if ml := p.Target.Map; ml != nil {
+		return len(ml.Items) == 0
+	}
+	return false
 }

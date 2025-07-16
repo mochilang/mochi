@@ -1,25 +1,5 @@
 kotlinc: exit status 1
 OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
-/tmp/21-game.kt:20:22: error: type mismatch: inferred type is Int? but Int was expected
+/tmp/21-game.kt:22:22: error: type mismatch: inferred type is Int? but Int was expected
         n = n * 10 + digits[str.substring(i, i + 1)]
                      ^
-/tmp/21-game.kt:32:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 21-game.kt, public fun main(): Unit defined in root package in file 21-game.kt
-fun main(): Unit {
-^
-/tmp/21-game.kt:34:20: error: unresolved reference: now
-    var computer = now() % 2 == 0
-                   ^
-/tmp/21-game.kt:52:30: error: unresolved reference: now
-                    choice = now() % 3 + 1
-                             ^
-/tmp/21-game.kt:68:32: error: unresolved reference: input
-                    val line = input()
-                               ^
-/tmp/21-game.kt:105:1: error: conflicting overloads: public fun main(): Unit defined in root package in file 21-game.kt, public fun main(): Unit defined in root package in file 21-game.kt
-fun main() {
-^
-/tmp/21-game.kt:106:5: error: overload resolution ambiguity: 
-public fun main(): Unit defined in root package in file 21-game.kt
-public fun main(): Unit defined in root package in file 21-game.kt
-    main()
-    ^
