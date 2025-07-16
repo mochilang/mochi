@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenboolean-values2539325252/001/prog.zig:29:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenboolean-values2539325252/001/prog.zig:12:1: note: other declaration here
+/tmp/TestMochiZigGoldenboolean-values2539325252/001/prog.zig:25:11: error: unused local constant

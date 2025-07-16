@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenboyer-moore-string-search3224790235/001/prog.zig:94:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenboyer-moore-string-search3224790235/001/prog.zig:63:1: note: other declaration here
+/tmp/TestMochiZigGoldenboyer-moore-string-search3224790235/001/prog.zig:20:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenboyer-moore-string-search3224790235/001/prog.zig:38:32: error: use of undeclared identifier 'substring'

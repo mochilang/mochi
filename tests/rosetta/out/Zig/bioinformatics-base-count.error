@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbioinformatics-base-count141842894/001/prog.zig:22:9: error: local variable shadows declaration of 'i'
+/tmp/TestMochiZigGoldenbioinformatics-base-count141842894/001/prog.zig:35:1: note: declared here
+/tmp/TestMochiZigGoldenbioinformatics-base-count141842894/001/prog.zig:29:19: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenbioinformatics-base-count141842894/001/prog.zig:36:1: note: declared here
+/tmp/TestMochiZigGoldenbioinformatics-base-count141842894/001/prog.zig:63:20: error: use of undeclared identifier 'substring'

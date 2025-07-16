@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencall-a-foreign-language-function1565282695/001/prog.zig:18:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldencall-a-foreign-language-function1565282695/001/prog.zig:12:1: note: other declaration here
+/tmp/TestMochiZigGoldencall-a-foreign-language-function1565282695/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'

@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbioinformatics-sequence-mutation3320445623/001/prog.zig:222:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenbioinformatics-sequence-mutation3320445623/001/prog.zig:196:1: note: other declaration here
+/tmp/TestMochiZigGoldenbioinformatics-sequence-mutation3320445623/001/prog.zig:80:35: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-sequence-mutation3320445623/001/prog.zig:101:180: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-sequence-mutation3320445623/001/prog.zig:163:20: error: use of undeclared identifier 'substring'

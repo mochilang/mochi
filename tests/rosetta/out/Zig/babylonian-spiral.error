@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbabylonian-spiral42823732/001/prog.zig:185:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenbabylonian-spiral42823732/001/prog.zig:168:1: note: other declaration here
+/tmp/TestMochiZigGoldenbabylonian-spiral42823732/001/prog.zig:8:70: error: function parameter shadows declaration of 'step'
+/tmp/TestMochiZigGoldenbabylonian-spiral42823732/001/prog.zig:45:1: note: declared here

@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencantor-set819344071/001/prog.zig:47:42: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldencantor-set819344071/001/prog.zig:51:24: error: unused capture
+/tmp/TestMochiZigGoldencantor-set819344071/001/prog.zig:61:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencantor-set819344071/001/prog.zig:61:13: note: consider using 'const'

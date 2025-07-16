@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbrilliant-numbers3322960782/001/prog.zig:209:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenbrilliant-numbers3322960782/001/prog.zig:181:1: note: other declaration here
+/tmp/TestMochiZigGoldenbrilliant-numbers3322960782/001/prog.zig:143:21: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbrilliant-numbers3322960782/001/prog.zig:143:21: note: consider using 'const'
+/tmp/TestMochiZigGoldenbrilliant-numbers3322960782/001/prog.zig:197:28: error: use of undeclared identifier 'pow'

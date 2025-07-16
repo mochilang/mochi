@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencarmichael-3-strong-pseudoprimes1379873614/001/prog.zig:75:21: error: expected type 'i32', found 'usize'
+/tmp/TestMochiZigGoldencarmichael-3-strong-pseudoprimes1379873614/001/prog.zig:75:21: note: signed 32-bit int cannot represent all possible unsigned 64-bit values
+/tmp/TestMochiZigGoldencarmichael-3-strong-pseudoprimes1379873614/001/prog.zig:16:15: note: parameter type declared here

@@ -1,0 +1,2 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencharacter-codes-52465292131/001/prog.zig:20:41: error: invalid operands to binary expression: 'Pointer' and 'Pointer'

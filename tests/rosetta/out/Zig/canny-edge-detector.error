@@ -1,0 +1,15 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:195:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:152:1: note: other declaration here
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:96:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:96:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:95:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:95:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:94:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:94:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:93:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:93:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:115:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:115:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:114:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencanny-edge-detector4160454872/001/prog.zig:114:9: note: consider using 'const'

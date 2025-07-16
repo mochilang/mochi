@@ -1,0 +1,8 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:24:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:17:1: note: other declaration here
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:11:9: error: mutable 'store' not accessible from here
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:9:9: note: declared mutable here
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:10:18: note: crosses namespace boundary here
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:9:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaccumulator-factory493851868/001/prog.zig:9:9: note: consider using 'const'

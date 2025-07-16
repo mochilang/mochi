@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencall-an-object-method-2724580328/001/prog.zig:5:12: error: use of undeclared identifier 'secret'
+/tmp/TestMochiZigGoldencall-an-object-method-2724580328/001/prog.zig:18:11: error: local constant shadows declaration of 'New'
+/tmp/TestMochiZigGoldencall-an-object-method-2724580328/001/prog.zig:13:1: note: declared here

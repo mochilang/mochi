@@ -1,0 +1,2 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbitmap-read-a-ppm-file883189187/001/prog.zig:159:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

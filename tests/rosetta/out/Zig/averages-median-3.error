@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenaverages-median-32168356606/001/prog.zig:33:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaverages-median-32168356606/001/prog.zig:33:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenaverages-median-32168356606/001/prog.zig:67:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaverages-median-32168356606/001/prog.zig:67:9: note: consider using 'const'

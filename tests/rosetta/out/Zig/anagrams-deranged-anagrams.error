@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenanagrams-deranged-anagrams1863891137/001/prog.zig:108:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenanagrams-deranged-anagrams1863891137/001/prog.zig:77:1: note: other declaration here
+/tmp/TestMochiZigGoldenanagrams-deranged-anagrams1863891137/001/prog.zig:40:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenanagrams-deranged-anagrams1863891137/001/prog.zig:40:9: note: consider using 'const'

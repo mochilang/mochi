@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenarena-storage-pool3929408360/001/prog.zig:94:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenarena-storage-pool3929408360/001/prog.zig:60:1: note: other declaration here
+/tmp/TestMochiZigGoldenarena-storage-pool3929408360/001/prog.zig:56:14: error: unused function parameter
