@@ -1,85 +1,109 @@
-func main (regs=53)
+func main (regs=60)
   // let nums = [1, 2]
   Const        r0, [1, 2]
+  Move         r1, r0
   // let letters = ["A", "B"]
-  Const        r1, ["A", "B"]
+  Const        r2, ["A", "B"]
+  Move         r3, r2
   // let bools = [true, false]
-  Const        r2, [true, false]
+  Const        r4, [true, false]
+  Move         r5, r4
   // let combos = from n in nums
-  Const        r3, []
+  Const        r6, []
   // select {n: n, l: l, b: b}
-  Const        r4, "n"
-  Const        r5, "l"
-  Const        r6, "b"
+  Const        r7, "n"
+  Const        r8, "l"
+  Const        r9, "b"
   // let combos = from n in nums
-  IterPrep     r7, r0
-  Len          r8, r7
-  Const        r10, 0
-  Move         r9, r10
+  Const        r10, [1, 2]
+  IterPrep     r11, r10
+  Len          r12, r11
+  Const        r14, 0
+  Move         r13, r14
 L5:
-  LessInt      r11, r9, r8
-  JumpIfFalse  r11, L0
-  Index        r13, r7, r9
+  LessInt      r15, r13, r12
+  JumpIfFalse  r15, L0
+  Index        r16, r11, r13
+  Move         r17, r16
   // from l in letters
-  IterPrep     r14, r1
-  Len          r15, r14
-  Move         r16, r10
+  Const        r18, ["A", "B"]
+  IterPrep     r19, r18
+  Len          r20, r19
+  Const        r14, 0
+  Move         r21, r14
 L4:
-  LessInt      r17, r16, r15
-  JumpIfFalse  r17, L1
-  Index        r19, r14, r16
+  LessInt      r22, r21, r20
+  JumpIfFalse  r22, L1
+  Index        r23, r19, r21
+  Move         r24, r23
   // from b in bools
-  IterPrep     r20, r2
-  Len          r21, r20
-  Move         r22, r10
+  Const        r25, [true, false]
+  IterPrep     r26, r25
+  Len          r27, r26
+  Const        r14, 0
+  Move         r28, r14
 L3:
-  LessInt      r23, r22, r21
-  JumpIfFalse  r23, L2
-  Index        r25, r20, r22
+  LessInt      r29, r28, r27
+  JumpIfFalse  r29, L2
+  Index        r30, r26, r28
+  Move         r31, r30
   // select {n: n, l: l, b: b}
-  Move         r26, r4
-  Move         r27, r5
-  Move         r28, r6
-  Move         r29, r26
-  Move         r30, r13
-  Move         r31, r27
-  Move         r32, r19
-  Move         r33, r28
-  Move         r34, r25
-  MakeMap      r35, 3, r29
+  Const        r32, "n"
+  Const        r33, "l"
+  Const        r34, "b"
+  Move         r35, r32
+  Move         r36, r17
+  Move         r37, r33
+  Move         r38, r24
+  Move         r39, r34
+  Move         r40, r31
+  MakeMap      r41, 3, r35
   // let combos = from n in nums
-  Append       r3, r3, r35
+  Append       r42, r6, r41
+  Move         r6, r42
   // from b in bools
-  Const        r37, 1
-  AddInt       r22, r22, r37
+  Const        r43, 1
+  AddInt       r28, r28, r43
   Jump         L3
 L2:
   // from l in letters
-  AddInt       r16, r16, r37
+  Const        r43, 1
+  AddInt       r21, r21, r43
   Jump         L4
 L1:
   // let combos = from n in nums
-  AddInt       r9, r9, r37
+  Const        r43, 1
+  AddInt       r13, r13, r43
   Jump         L5
 L0:
+  Move         r44, r6
   // print("--- Cross Join of three lists ---")
-  Const        r38, "--- Cross Join of three lists ---"
-  Print        r38
+  Const        r45, "--- Cross Join of three lists ---"
+  Print        r45
   // for c in combos {
-  IterPrep     r39, r3
-  Len          r40, r39
-  Move         r41, r10
+  IterPrep     r46, r44
+  Len          r47, r46
+  Const        r48, 0
 L7:
-  Less         r42, r41, r40
-  JumpIfFalse  r42, L6
-  Index        r44, r39, r41
+  LessInt      r49, r48, r47
+  JumpIfFalse  r49, L6
+  Index        r50, r46, r48
+  Move         r51, r50
   // print(c.n, c.l, c.b)
-  Index        r45, r44, r4
-  Index        r46, r44, r5
-  Index        r47, r44, r6
-  PrintN       r45, 3, r45
+  Const        r7, "n"
+  Index        r55, r51, r7
+  Move         r52, r55
+  Const        r8, "l"
+  Index        r56, r51, r8
+  Move         r53, r56
+  Const        r9, "b"
+  Index        r57, r51, r9
+  Move         r54, r57
+  PrintN       r52, 3, r52
   // for c in combos {
-  Add          r41, r41, r37
+  Const        r58, 1
+  AddInt       r59, r48, r58
+  Move         r48, r59
   Jump         L7
 L6:
   Return       r0

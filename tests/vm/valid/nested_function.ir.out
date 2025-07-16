@@ -1,6 +1,7 @@
 func main (regs=3)
   // print(outer(3))  // 8
-  Const        r0, 3
+  Const        r1, 3
+  Move         r0, r1
   Call         r2, outer, r0
   Print        r2
   Return       r0
@@ -11,7 +12,8 @@ func outer (regs=6)
   Move         r1, r0
   MakeClosure  r2, inner, 1, r1
   // return inner(5)
-  Const        r3, 5
+  Const        r4, 5
+  Move         r3, r4
   CallV        r5, r2, 1, r3
   Return       r5
 

@@ -4,12 +4,14 @@ func main (regs=6)
   Const        r1, 4
   Move         r2, r0
 L1:
-  Less         r3, r2, r1
+  LessInt      r3, r2, r1
   JumpIfFalse  r3, L0
   // print(i)
   Print        r2
   // for i in 1..4 {
-  Add          r2, r2, r0
+  Const        r4, 1
+  AddInt       r5, r2, r4
+  Move         r2, r5
   Jump         L1
 L0:
   Return       r0

@@ -1,12 +1,15 @@
-func main (regs=5)
+func main (regs=8)
   // let nums = [1, 2, 3]
   Const        r0, [1, 2, 3]
+  Move         r1, r0
   // print(2 in nums)
-  Const        r1, 2
-  In           r2, r1, r0
-  Print        r2
-  // print(4 in nums)
-  Const        r3, 4
-  In           r4, r3, r0
+  Const        r2, 2
+  Const        r3, [1, 2, 3]
+  In           r4, r2, r3
   Print        r4
+  // print(4 in nums)
+  Const        r5, 4
+  Const        r6, [1, 2, 3]
+  In           r7, r5, r6
+  Print        r7
   Return       r0

@@ -1,15 +1,18 @@
-func main (regs=6)
+func main (regs=7)
   // let add5 = add(5)
-  Const        r0, 5
+  Const        r1, 5
+  Move         r0, r1
   Call         r2, add, r0
+  Move         r3, r2
   // print(add5(3))
-  Const        r3, 3
-  CallV        r5, r2, 1, r3
-  Print        r5
+  Const        r5, 3
+  Move         r4, r5
+  CallV        r6, r3, 1, r4
+  Print        r6
   Return       r0
 
   // fun add(a: int, b: int): int {
-func add (regs=3)
+func add (regs=4)
   // return a + b
-  Add          r2, r0, r1
-  Return       r2
+  Add          r3, r0, r1
+  Return       r3

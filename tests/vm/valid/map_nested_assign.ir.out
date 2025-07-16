@@ -1,12 +1,17 @@
 func main (regs=8)
   // var data = {"outer": {"inner": 1}}
   Const        r0, {"outer": {"inner": 1}}
+  Move         r1, r0
   // data["outer"]["inner"] = 2
-  Const        r3, {"inner": 1}
-  Const        r4, "inner"
-  Const        r5, 2
-  SetIndex     r3, r4, r5
+  Const        r2, "outer"
+  Index        r3, r1, r2
+  Const        r4, 2
+  Const        r5, "inner"
+  SetIndex     r3, r5, r4
   // print(data["outer"]["inner"])
-  Const        r7, 1
+  Const        r2, "outer"
+  Index        r6, r1, r2
+  Const        r5, "inner"
+  Index        r7, r6, r5
   Print        r7
   Return       r0

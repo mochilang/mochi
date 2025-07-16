@@ -1,7 +1,13 @@
-func main (regs=3)
+func main (regs=5)
   // let a = 10
   Const        r0, 10
+  Move         r1, r0
+  // let b: int = 20
+  Const        r2, 20
+  Move         r3, r2
   // print(a + b)
-  Const        r2, 30
-  Print        r2
+  Const        r0, 10
+  Const        r2, 20
+  AddInt       r4, r0, r2
+  Print        r4
   Return       r0

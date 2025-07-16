@@ -1,5 +1,5 @@
 func main (regs=1)
   // print(sum([1,2,3]))
-  Const        r0, 6
+  Const        r0, 6.0
   Print        r0
   Return       r0

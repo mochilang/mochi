@@ -3,10 +3,11 @@ func main (regs=5)
   Const        r0, {"alice": 1}
   Move         r1, r0
   // scores["bob"] = 2
-  Const        r2, "bob"
-  Const        r3, 2
-  SetIndex     r1, r2, r3
+  Const        r2, 2
+  Const        r3, "bob"
+  SetIndex     r1, r3, r2
   // print(scores["bob"])
-  Const        r4, nil
+  Const        r3, "bob"
+  Index        r4, r1, r3
   Print        r4
   Return       r0

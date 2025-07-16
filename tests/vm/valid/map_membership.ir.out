@@ -1,12 +1,15 @@
-func main (regs=5)
+func main (regs=8)
   // let m = {"a": 1, "b": 2}
   Const        r0, {"a": 1, "b": 2}
+  Move         r1, r0
   // print("a" in m)
-  Const        r1, "a"
-  In           r2, r1, r0
-  Print        r2
-  // print("c" in m)
-  Const        r3, "c"
-  In           r4, r3, r0
+  Const        r2, "a"
+  Const        r3, {"a": 1, "b": 2}
+  In           r4, r2, r3
   Print        r4
+  // print("c" in m)
+  Const        r5, "c"
+  Const        r6, {"a": 1, "b": 2}
+  In           r7, r5, r6
+  Print        r7
   Return       r0

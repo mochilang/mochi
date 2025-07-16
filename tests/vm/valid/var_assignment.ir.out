@@ -1,8 +1,10 @@
 func main (regs=3)
   // var x = 1
   Const        r0, 1
+  Move         r1, r0
   // x = 2
-  Const        r1, 2
+  Const        r2, 2
+  Move         r1, r2
   // print(x)
   Print        r1
   Return       r0

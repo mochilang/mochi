@@ -1,12 +1,13 @@
-func main (regs=5)
+func main (regs=6)
   // let s = "catch"
   Const        r0, "catch"
+  Move         r1, r0
   // print(s.contains("cat"))
-  Const        r1, "cat"
-  In           r2, r1, r0
-  Print        r2
+  Const        r2, "cat"
+  In           r3, r2, r1
+  Print        r3
   // print(s.contains("dog"))
-  Const        r3, "dog"
-  In           r4, r3, r0
-  Print        r4
+  Const        r4, "dog"
+  In           r5, r4, r1
+  Print        r5
   Return       r0

@@ -1,8 +1,39 @@
-func main (regs=11)
+func main (regs=13)
   // let x = 2
   Const        r0, 2
+  Move         r1, r0
+  // let label = match x {
+  Const        r0, 2
+  // 1 => "one"
+  Const        r4, 1
+  Equal        r3, r0, r4
+  JumpIfFalse  r3, L0
+  Const        r5, "one"
+  Move         r2, r5
+  Jump         L1
+L0:
   // 2 => "two"
-  Const        r1, "two"
+  Const        r0, 2
+  Equal        r6, r0, r0
+  JumpIfFalse  r6, L2
+  Const        r7, "two"
+  Move         r2, r7
+  Jump         L1
+L2:
+  // 3 => "three"
+  Const        r9, 3
+  Equal        r8, r0, r9
+  JumpIfFalse  r8, L3
+  Const        r10, "three"
+  Move         r2, r10
+  Jump         L1
+L3:
+  // _ => "unknown"
+  Const        r11, "unknown"
+  Move         r2, r11
+L1:
+  // let label = match x {
+  Move         r12, r2
   // print(label)
-  Print        r1
+  Print        r12
   Return       r0

@@ -3,7 +3,8 @@ func main (regs=14)
   Const        r0, 3
   Move         r1, r0
   // var y = 4
-  Const        r3, 4
+  Const        r2, 4
+  Move         r3, r2
   // var m = {"a": x, "b": y}
   Const        r4, "a"
   Const        r5, "b"
@@ -11,9 +12,12 @@ func main (regs=14)
   Move         r7, r1
   Move         r8, r5
   Move         r9, r3
-  MakeMap      r11, 2, r6
+  MakeMap      r10, 2, r6
+  Move         r11, r10
   // print(m["a"], m["b"])
+  Const        r4, "a"
   Index        r12, r11, r4
+  Const        r5, "b"
   Index        r13, r11, r5
   Print2       r12, r13
   Return       r0

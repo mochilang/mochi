@@ -1,0 +1,63 @@
+func main (regs=39)
+  // let r = 3.0
+  Const        r0, 3.0
+  Move         r1, r0
+  // let area = math.pi * math.pow(r, 2.0)
+  Const        r3, "math"
+  Const        r4, "pi"
+  PyCall       r2, r3, r4, 0, r0
+  Const        r0, 3.0
+  Move         r5, r0
+  Const        r7, 2.0
+  Move         r6, r7
+  Const        r3, "math"
+  Const        r9, "pow"
+  PyCall       r8, r3, r9, 2, r5
+  Mul          r10, r2, r8
+  Move         r11, r10
+  // let root = math.sqrt(49.0)
+  Const        r13, 49.0
+  Move         r12, r13
+  Const        r3, "math"
+  Const        r15, "sqrt"
+  PyCall       r14, r3, r15, 1, r12
+  Move         r16, r14
+  // let sin45 = math.sin(math.pi / 4.0)
+  Const        r3, "math"
+  Const        r4, "pi"
+  PyCall       r18, r3, r4, 0, r0
+  Const        r19, 4.0
+  DivFloat     r20, r18, r19
+  Move         r17, r20
+  Const        r3, "math"
+  Const        r22, "sin"
+  PyCall       r21, r3, r22, 1, r17
+  Move         r23, r21
+  // let log_e = math.log(math.e)
+  Const        r3, "math"
+  Const        r26, "e"
+  PyCall       r25, r3, r26, 0, r0
+  Move         r24, r25
+  Const        r3, "math"
+  Const        r28, "log"
+  PyCall       r27, r3, r28, 1, r24
+  Move         r29, r27
+  // print("Circle area with r =", r, "=>", area)
+  Const        r34, "Circle area with r ="
+  Move         r30, r34
+  Const        r0, 3.0
+  Move         r31, r0
+  Const        r35, "=>"
+  Move         r32, r35
+  Move         r33, r11
+  PrintN       r30, 4, r30
+  // print("Square root of 49:", root)
+  Const        r36, "Square root of 49:"
+  Print2       r36, r16
+  // print("sin(π/4):", sin45)
+  Const        r37, "sin(π/4):"
+  Print2       r37, r23
+  // print("log(e):", log_e)
+  Const        r38, "log(e):"
+  Print2       r38, r29
+  Return       r0

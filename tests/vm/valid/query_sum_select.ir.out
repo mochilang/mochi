@@ -1,24 +1,31 @@
-func main (regs=13)
+func main (regs=16)
   // let nums = [1,2,3]
   Const        r0, [1, 2, 3]
+  Move         r1, r0
   // let result = from n in nums where n > 1 select sum(n)
-  Const        r1, []
-  IterPrep     r2, r0
-  Len          r3, r2
-  Const        r4, 0
+  Const        r2, []
+  Const        r3, [1, 2, 3]
+  IterPrep     r4, r3
+  Len          r5, r4
+  Const        r7, 0
+  Move         r6, r7
 L2:
-  LessInt      r6, r4, r3
-  JumpIfFalse  r6, L0
-  Index        r8, r2, r4
-  Const        r9, 1
-  Less         r10, r9, r8
-  JumpIfFalse  r10, L1
-  Append       r1, r1, r8
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r9, r4, r6
+  Move         r10, r9
+  Const        r11, 1
+  Less         r12, r11, r10
+  JumpIfFalse  r12, L1
+  Append       r13, r2, r10
+  Move         r2, r13
 L1:
-  AddInt       r4, r4, r9
+  Const        r11, 1
+  AddInt       r6, r6, r11
   Jump         L2
 L0:
-  Sum          r12, r1
+  Sum          r14, r2
+  Move         r15, r14
   // print(result)
-  Print        r12
+  Print        r15
   Return       r0

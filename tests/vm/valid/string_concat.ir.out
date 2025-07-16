@@ -1,6 +1,7 @@
 func main (regs=3)
   // print("hello " + "world")
   Const        r0, "hello "
+  Const        r1, "world"
   Const        r2, "hello world"
   Print        r2
   Return       r0

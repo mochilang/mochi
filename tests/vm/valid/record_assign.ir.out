@@ -17,11 +17,12 @@ func main (regs=11)
   Return       r0
 
   // fun inc(c: Counter) {
-func inc (regs=5)
+func inc (regs=6)
   // c.n = c.n + 1
-  Const        r1, "n"
-  Index        r2, r0, r1
-  Const        r3, 1
-  Add          r4, r2, r3
-  SetIndex     r0, r1, r4
+  Const        r2, "n"
+  Index        r3, r0, r2
+  Const        r4, 1
+  Add          r5, r3, r4
+  Const        r2, "n"
+  SetIndex     r0, r2, r5
   Return       r0

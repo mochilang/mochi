@@ -1,7 +1,9 @@
 func main (regs=5)
   // print(sum_rec(10, 0))
-  Const        r0, 10
-  Const        r1, 0
+  Const        r2, 10
+  Move         r0, r2
+  Const        r3, 0
+  Move         r1, r3
   Call2        r4, sum_rec, r0, r1
   Print        r4
   Return       r0
@@ -17,7 +19,9 @@ func sum_rec (regs=10)
 L0:
   // return sum_rec(n - 1, acc + n)
   Const        r6, 1
-  Sub          r4, r0, r6
-  Add          r5, r1, r0
+  Sub          r7, r0, r6
+  Move         r4, r7
+  Add          r8, r1, r0
+  Move         r5, r8
   Call2        r9, sum_rec, r4, r5
   Return       r9

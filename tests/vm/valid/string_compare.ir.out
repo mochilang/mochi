@@ -1,15 +1,22 @@
 func main (regs=6)
   // print("a" < "b")
   Const        r0, "a"
-  Const        r2, true
+  Const        r1, "b"
+  Less         r2, r0, r1
   Print        r2
   // print("a" <= "a")
-  Move         r3, r2
+  Const        r0, "a"
+  Const        r0, "a"
+  LessEq       r3, r0, r0
   Print        r3
   // print("b" > "a")
-  Move         r4, r2
+  Const        r1, "b"
+  Const        r0, "a"
+  Less         r4, r0, r1
   Print        r4
   // print("b" >= "b")
-  Move         r5, r4
+  Const        r1, "b"
+  Const        r1, "b"
+  LessEq       r5, r1, r1
   Print        r5
   Return       r0

@@ -1,12 +1,26 @@
 func main (regs=17)
   // print([1,2,3][1:3])
   Const        r0, [1, 2, 3]
-  Const        r5, [2, 3]
+  Const        r2, 1
+  Move         r1, r2
+  Const        r4, 3
+  Move         r3, r4
+  Slice        r5, r0, r1, r3
   Print        r5
   // print([1,2,3][0:2])
+  Const        r6, [1, 2, 3]
+  Const        r8, 0
+  Move         r7, r8
+  Const        r10, 2
+  Move         r9, r10
   Const        r11, [1, 2]
   Print        r11
   // print("hello"[1:4])
-  Const        r16, "ell"
+  Const        r12, "hello"
+  Const        r2, 1
+  Move         r13, r2
+  Const        r15, 4
+  Move         r14, r15
+  Slice        r16, r12, r13, r14
   Print        r16
   Return       r0
