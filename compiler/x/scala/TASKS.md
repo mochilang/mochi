@@ -9,6 +9,7 @@
 - 2025-07-15 05:01 - Added script to compile TPC-DS queries and golden tests
 - 2025-07-15 05:02 - Attempted to compile all TPC-DS queries; current compiler fails on q1 and others
 - 2025-07-15 05:44 - Archive script now captures `.error` files when `scalac` or runtime fails
+- 2025-07-17 05:20 - `substring` now accepts `bigint` indices to avoid false type errors during Rosetta tests
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements

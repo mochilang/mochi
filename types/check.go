@@ -2701,10 +2701,14 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 			}
 		}
 		for i := 1; i < 3; i++ {
-			if _, ok := args[i].(IntType); !ok {
-				if _, ok := args[i].(AnyType); !ok {
-					return errArgTypeMismatch(pos, i, IntType{}, args[i])
-				}
+			switch args[i].(type) {
+			case IntType, AnyType:
+				// ok
+			case BigIntType:
+				// allow bigint indices, treat as int
+				args[i] = IntType{}
+			default:
+				return errArgTypeMismatch(pos, i, IntType{}, args[i])
 			}
 		}
 		return nil
