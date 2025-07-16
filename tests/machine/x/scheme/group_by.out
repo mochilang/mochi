@@ -1,2 +1,4 @@
-WARNING: reference to undefined variable: _to_string
+WARNING: importing already defined binding: equal?
+WARNING: importing already defined binding: let-syntax
+WARNING: importing already defined binding: letrec-syntax
 --- People grouped by city ---
