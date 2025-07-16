@@ -607,16 +607,34 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	return fmt.Sprintf("(case %s of undefined -> %s; false -> %s; _ -> %s end)", cond, elseCode, elseCode, thenCode), nil
 }
 
-func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
-	mutated := map[string]bool{}
-	for _, st := range fr.Body {
+func collectMutations(sts []*parser.Statement, mutated map[string]bool) {
+	for _, st := range sts {
 		if st.Assign != nil {
 			mutated[st.Assign.Name] = true
 		}
 		if st.Update != nil {
 			mutated[st.Update.Target] = true
 		}
+		if st.If != nil {
+			collectMutations(st.If.Then, mutated)
+			collectMutations(st.If.Else, mutated)
+			if st.If.ElseIf != nil {
+				collectMutations(st.If.ElseIf.Then, mutated)
+				collectMutations(st.If.ElseIf.Else, mutated)
+			}
+		}
+		if st.For != nil {
+			collectMutations(st.For.Body, mutated)
+		}
+		if st.While != nil {
+			collectMutations(st.While.Body, mutated)
+		}
 	}
+}
+
+func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
+	mutated := map[string]bool{}
+	collectMutations(fr.Body, mutated)
 
 	hasBC := hasBreakOrContinue(fr.Body)
 
@@ -1199,7 +1217,7 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 				opStr, _ := c.mapBinOp(op)
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, opStr, r.expr)
 			case "%":
-				expr = fmt.Sprintf("rem(%s, %s)", l.expr, r.expr)
+				expr = fmt.Sprintf("(%s rem %s)", l.expr, r.expr)
 			case "==", "!=":
 				opStr, _ := c.mapBinOp(op)
 				expr = fmt.Sprintf("(%s %s %s)", l.expr, opStr, r.expr)
