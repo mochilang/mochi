@@ -1542,7 +1542,7 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 				if lt, ok2 := vt.(types.ListType); ok2 {
 					if _, any := lt.Elem.(types.AnyType); any {
 						elemT := c.namedType(types.ExprType(call.Args[1], c.env))
-						c.env.SetVar(name, types.ListType{Elem: elemT}, true)
+						c.env.SetVarDeep(name, types.ListType{Elem: elemT}, true)
 					}
 				}
 			}
