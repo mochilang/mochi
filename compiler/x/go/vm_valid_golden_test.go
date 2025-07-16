@@ -18,14 +18,14 @@ import (
 )
 
 func TestGoCompiler_VMValid_Golden(t *testing.T) {
-	if _, err := exec.LookPath("go"); err != nil {
-		t.Skip("go toolchain not installed")
-	}
-	root := findRepoRootVM(t)
-	outDir := filepath.Join(root, "tests", "machine", "x", "go")
-	os.MkdirAll(outDir, 0o755)
+        if _, err := exec.LookPath("go"); err != nil {
+                t.Skip("go toolchain not installed")
+        }
+        root := findRepoRootVM(t)
+        outDir := filepath.Join(root, "tests", "machine", "x", "go")
+        os.MkdirAll(outDir, 0o755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+        golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".go")
 		outPath := filepath.Join(outDir, base+".out")
