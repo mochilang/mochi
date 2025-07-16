@@ -1,0 +1,16 @@
+** (SyntaxError) invalid syntax found on /tmp/q49.exs:11:216:
+    error: unexpected expression after keyword list. Keyword lists must always come as the last argument. Therefore, this is not allowed:
+
+        function_call(1, some: :option, 2)
+
+    Instead, wrap the keyword in brackets:
+
+        function_call(1, [some: :option], 2)
+
+    Syntax error after: ','
+    │
+ 11 │ 		tmp = _concat(_concat(for w <- web, ((w.return_rank <= 10) || (w.currency_rank <= 10)), do: %{channel: "web", item: w.item, return_ratio: w.return_ratio, return_rank: w.return_rank, currency_rank: w.currency_rank}, for c <- catalog, ((c.return_rank <= 10) || (c.currency_rank <= 10)), do: %{channel: "catalog", item: c.item, return_ratio: c.return_ratio, return_rank: c.return_rank, currency_rank: c.currency_rank}), for s <- store, ((s.return_rank <= 10) || (s.currency_rank <= 10)), do: %{channel: "store", item: s.item, return_ratio: s.return_ratio, return_rank: s.return_rank, currency_rank: s.currency_rank})
+    │                                                                                                                                                                                                                        ^
+    │
+    └─ /tmp/q49.exs:11:216
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

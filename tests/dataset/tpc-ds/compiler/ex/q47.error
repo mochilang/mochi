@@ -1,0 +1,8 @@
+error: imported Kernel.abs/1 conflicts with local function
+    │
+  6 │   def abs(x) do
+    │       ^
+    │
+    └─ /tmp/q47.exs:6:7: Main (module)
+
+** (CompileError) /tmp/q47.exs: cannot compile module Main (errors have been logged)

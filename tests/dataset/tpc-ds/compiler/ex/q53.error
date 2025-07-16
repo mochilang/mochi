@@ -1,0 +1,29 @@
+warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 39 │                %{items: date_dim, on: fn ss, i, d -> ss.date == d.d_date_sk end}
+    │                                              ~
+    │
+    └─ /tmp/q53.exs:39:46: Main.main/0
+
+    warning: variable "d" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 48 │          groups = _group_by(rows, fn %{ss: ss, i: i, d: d} -> i.i_manufact_id end)
+    │                                                         ~
+    │
+    └─ /tmp/q53.exs:48:57: Main.main/0
+
+    warning: variable "ss" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 48 │          groups = _group_by(rows, fn %{ss: ss, i: i, d: d} -> i.i_manufact_id end)
+    │                                            ~
+    │
+    └─ /tmp/q53.exs:48:44: Main.main/0
+
+    error: imported Kernel.abs/1 conflicts with local function
+    │
+  4 │   def abs(x) do
+    │       ^
+    │
+    └─ /tmp/q53.exs:4:7: Main (module)
+
+** (CompileError) /tmp/q53.exs: cannot compile module Main (errors have been logged)

@@ -1,0 +1,21 @@
+warning: default values for the optional arguments in _query/3 are never used
+     │
+ 208 │   defp _query(src, joins, opts \\ %{}) do
+     │        ~
+     │
+     └─ /tmp/q76.exs:208:8: Main (module)
+
+** (KeyError) key :r not found in: %{
+  d_year: 1998,
+  d_qoy: 1,
+  i_category: "CatC",
+  channel: "catalog",
+  col_name: nil,
+  ext_sales_price: 20
+}
+    /tmp/q76.exs:106: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/q76.exs:106: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/q76.exs:98: Main.main/0
+    /tmp/q76.exs:335: (file)

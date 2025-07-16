@@ -1,0 +1,16 @@
+** (SyntaxError) invalid syntax found on /tmp/q14.exs:23:211:
+    error: unexpected expression after keyword list. Keyword lists must always come as the last argument. Therefore, this is not allowed:
+
+        function_call(1, some: :option, 2)
+
+    Instead, wrap the keyword in brackets:
+
+        function_call(1, [some: :option], 2)
+
+    Syntax error after: ','
+    │
+ 23 │ 	], %{select: fn ss, d -> Map.merge(Map.merge(ss, d), %{ ss: ss, d: d }) end, where: fn [ss, d] -> (if is_map(for ci <- cross_items, do: ci.ss_item_sk), do: Map.has_key?(for ci <- cross_items, do: ci.ss_item_sk, ss.ss_item_sk), else: Enum.member?(for ci <- cross_items, do: ci.ss_item_sk, ss.ss_item_sk)) end })
+    │                                                                                                                                                                                                                   ^
+    │
+    └─ /tmp/q14.exs:23:211
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

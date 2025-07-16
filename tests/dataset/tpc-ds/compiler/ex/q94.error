@@ -1,0 +1,15 @@
+error: undefined variable "contains"
+    │
+ 11 │           if !contains.(out, x) do
+    │               ^^^^^^^^
+    │
+    └─ /tmp/q94.exs:11:15: Main.distinct/1
+
+    warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 12 │             out = out ++ [x]
+    │             ~
+    │
+    └─ /tmp/q94.exs:12:13: Main.distinct/1
+
+** (CompileError) /tmp/q94.exs: cannot compile module Main (errors have been logged)

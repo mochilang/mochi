@@ -18,6 +18,10 @@ the expected `.out` file. The generated sources live under
   without errors.
 - [x] `load` now maps rows to structs when a target type is provided, so
   `load_yaml.mochi` executes without runtime errors.
+- [x] Fixed map membership compilation so `"a" in m` correctly checks maps with
+  `Map.has_key?/2`, reducing `.error` files in VM tests.
+- [x] Renamed TPC-DS generated sources from `.ex.out` to `.ex` and dropped code
+  comparisons in golden tests.
 - [ ] Improve formatting of generated code.
 
 ## TPC-DS Progress (2025-07-15 04:45)
