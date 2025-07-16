@@ -1,0 +1,51 @@
+output mismatch
+-- got --
+warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+  9 │       Enum.reduce(0..(100 - 1), {doors}, fn i, {doors} ->
+    │                                             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/out/Elixir/100-doors.exs:9:45: Main.main/0
+
+    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 55 │             line = line <> "0"
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/out/Elixir/100-doors.exs:55:13: Main.main/0
+
+    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 53 │             line = line <> "1"
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/out/Elixir/100-doors.exs:53:13: Main.main/0
+
+    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 59 │             line = line <> " "
+    │             ~
+    │
+    └─ /workspace/mochi/tests/rosetta/out/Elixir/100-doors.exs:59:13: Main.main/0
+
+""
+""
+""
+""
+""
+""
+""
+""
+""
+""
+-- want --
+1 0 0 1 0 0 0 0 1 0
+0 0 0 0 0 1 0 0 0 0
+0 0 0 0 1 0 0 0 0 0
+0 0 0 0 0 1 0 0 0 0
+0 0 0 0 0 0 0 0 1 0
+0 0 0 0 0 0 0 0 0 0
+0 0 0 1 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0
+1 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 1

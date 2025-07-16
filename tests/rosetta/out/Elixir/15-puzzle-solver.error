@@ -1,0 +1,17 @@
+run error: exit status 1
+** (SyntaxError) invalid syntax found on /workspace/mochi/tests/rosetta/out/Elixir/15-puzzle-solver.exs:4:42:
+    error: unexpected ( after alias FifteenPuzzleExample. Function names and identifiers in Elixir start with lowercase characters or underscore. For example:
+
+        hello_world()
+        _starting_with_underscore()
+        numb3rs_are_allowed()
+        may_finish_with_question_mark?()
+        may_finish_with_exclamation_mark!()
+
+    Unexpected token: (
+    │
+  4 │ 		IO.inspect(testpkg.FifteenPuzzleExample())
+    │                                          ^
+    │
+    └─ /workspace/mochi/tests/rosetta/out/Elixir/15-puzzle-solver.exs:4:42
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2
