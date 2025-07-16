@@ -12,6 +12,7 @@
 - 2025-07-17 05:20 - `substring` now accepts `bigint` indices to avoid false type errors during Rosetta tests
 - 2025-07-18 12:14 - Added `padStart` builtin and Scala code generation support to reduce Rosetta compile errors
 - 2025-07-19 00:30 - Handle `padStart` as string method and keep string type during concatenation to reduce `.error` files
+- 2025-07-20 00:10 - Added golden tests for `tests/vm/valid` and propagated list element types with `SetVarDeep`
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements

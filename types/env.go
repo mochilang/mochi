@@ -163,6 +163,18 @@ func (e *Env) SetVar(name string, typ Type, mutable bool) {
 	e.mut[name] = mutable
 }
 
+// SetVarDeep updates the type of an existing variable in the current
+// environment or any parent scope. If the variable is not already defined,
+// it is created in the current scope.
+func (e *Env) SetVarDeep(name string, typ Type, mutable bool) {
+	if _, ok := e.types[name]; ok || e.parent == nil {
+		e.types[name] = typ
+		e.mut[name] = mutable
+		return
+	}
+	e.parent.SetVarDeep(name, typ, mutable)
+}
+
 // GetVar looks up a variable's static type.
 func (e *Env) GetVar(name string) (Type, error) {
 	if t, ok := e.types[name]; ok {
