@@ -10,7 +10,13 @@ const runtimeHelpers = `(define (_date_number s)
            (string->number (list-ref parts 2)))
         #f)))
 
-(define (_to_string v) (format "~a" v))
+(define (_to_string v)
+  (cond
+    [(eq? v #t) "true"]
+    [(eq? v #f) "false"]
+    [(void? v) "<nil>"]
+    [(list? v) (string-join (map _to_string v) " ")]
+    [else (format "~a" v)]))
 
 (define (_lt a b)
   (cond
