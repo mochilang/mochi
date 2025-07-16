@@ -80,3 +80,4 @@ TPC-H progress:
 - 2025-07-15 13:25 - Began adjusting group item generation for TPCDS q1; compile still fails
 
 - 2025-07-16 00:58 - Regenerated TPCDS Go code; numerous queries still skip due to runtime mismatches
+- 2025-07-16 01:32 - Added rosetta_golden_test.go and enabled `#` comments in the parser so more Rosetta tasks compile

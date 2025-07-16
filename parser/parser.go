@@ -23,7 +23,7 @@ func (b *boolLit) Capture(values []string) error {
 
 // --- Mochi Lexer ---
 var mochiLexer = lexer.MustSimple([]lexer.SimpleRule{
-	{Name: "Comment", Pattern: `//[^\n]*|/\*([^*]|\*+[^*/])*\*+/`},
+	{Name: "Comment", Pattern: `//[^\n]*|#[^\n]*|/\*([^*]|\*+[^*/])*\*/`},
 	{Name: "Bool", Pattern: `\b(true|false)\b`},
 	{Name: "Keyword", Pattern: `\b(test|expect|agent|intent|on|stream|emit|type|fun|extern|import|return|break|continue|let|var|if|else|then|for|while|in|generate|match|fetch|load|save|package|export|fact|rule|all|null)\b`},
 	{Name: "Ident", Pattern: `[\p{L}\p{So}_][\p{L}\p{So}\p{N}_]*`},
