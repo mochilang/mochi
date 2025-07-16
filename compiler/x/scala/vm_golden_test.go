@@ -16,11 +16,30 @@ import (
 	"mochi/types"
 )
 
+func repoRootVM(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
+	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found")
+	return ""
+}
+
 func TestScalaCompilerVMValid(t *testing.T) {
 	if _, err := exec.LookPath("scalac"); err != nil {
 		t.Skip("scalac not installed")
 	}
-	root := findRepoRoot(t)
+	root := repoRootVM(t)
 	outDir := filepath.Join(root, "tests", "machine", "x", "scala")
 	os.MkdirAll(outDir, 0o755)
 
