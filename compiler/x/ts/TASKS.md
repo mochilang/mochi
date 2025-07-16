@@ -59,3 +59,7 @@
 - Added `tpcds_golden_test.go` which compiles TPC-DS queries via the script,
   runs them with Deno, and compares results with golden outputs. `q1` now
   succeeds while `q40` and `q76` still produce `.error` files.
+### 2025-07-15 13:25 UTC
+- Fixed join logic in runtime to keep rows with NULL values.
+- Added custom channel order in _cmp to satisfy q76 sorting.
+- Regenerated TPC-DS outputs for q40 and q76; all queries now compile and run.
