@@ -1,0 +1,312 @@
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:15:12: error: ‘o’ was not declared in this scope
+   15 |   decltype(o) o;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:15:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
+   16 |   decltype(c) c;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:16:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:19:12: error: ‘c’ was not declared in this scope
+   19 |   decltype(c.name) key;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:19:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:23: error: no match for ‘operator==’ (operand types are ‘int’ and ‘std::__cxx11::basic_string<char>’)
+   39 |           if (__g.key == __key) {
+      |               ~~~~~~~ ^~ ~~~~~
+      |                   |      |
+      |                   int    std::__cxx11::basic_string<char>
+In file included from /usr/include/x86_64-linux-gnu/c++/13/bits/c++allocator.h:33,
+                 from /usr/include/c++/13/bits/allocator.h:46,
+                 from /usr/include/c++/13/string:43,
+                 from /usr/include/c++/13/bits/locale_classes.h:40,
+                 from /usr/include/c++/13/bits/ios_base.h:41,
+                 from /usr/include/c++/13/ios:44,
+                 from /usr/include/c++/13/ostream:40,
+                 from /usr/include/c++/13/iostream:41,
+                 from /tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:2:
+/usr/include/c++/13/bits/new_allocator.h:215:9: note: candidate: ‘template<class _Up> bool std::operator==(const __new_allocator<char>&, const __new_allocator<_Tp>&)’
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+/usr/include/c++/13/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘const std::__new_allocator<_Tp>’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/iosfwd:42,
+                 from /usr/include/c++/13/ios:40:
+/usr/include/c++/13/bits/postypes.h:192:5: note: candidate: ‘template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)’
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::fpos<_StateT>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note: candidate: ‘template<class _T1, class _T2> bool std::operator==(const allocator<_CharT>&, const allocator<_T2>&)’
+  237 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:237:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::allocator<_CharT>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/string:48:
+/usr/include/c++/13/bits/stl_iterator.h:448:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_Iterator>&)’
+  448 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:448:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:493:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_Iterator>&, const reverse_iterator<_IteratorR>&)’
+  493 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:493:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::reverse_iterator<_Iterator>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note: candidate: ‘template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&)’
+ 1678 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1678:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note: candidate: ‘template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)’
+ 1748 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_iterator.h:1748:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::move_iterator<_IteratorL>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/stl_algobase.h:64,
+                 from /usr/include/c++/13/string:51:
+/usr/include/c++/13/bits/stl_pair.h:812:5: note: candidate: ‘template<class _T1, class _T2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_T1, _T2>&)’
+  812 |     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_pair.h:812:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/basic_string.h:47,
+                 from /usr/include/c++/13/string:54:
+/usr/include/c++/13/string_view:609:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, basic_string_view<_CharT, _Traits>)’
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:609:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/string_view:616:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, __type_identity_t<basic_string_view<_CharT, _Traits> >)’
+  616 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:616:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘std::basic_string_view<_CharT, _Traits>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/string_view:642:5: note: candidate: ‘template<class _CharT, class _Traits> constexpr bool std::operator==(__type_identity_t<basic_string_view<_CharT, _Traits> >, basic_string_view<_CharT, _Traits>)’
+  642 |     operator==(__type_identity_t<basic_string_view<_CharT, _Traits>> __x,
+      |     ^~~~~~~~
+/usr/include/c++/13/string_view:642:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   ‘std::__cxx11::basic_string<char>’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3710 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3710:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)’
+ 3727 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3727:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/basic_string.h:3774:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const _CharT*, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
+ 3774 |     operator==(const _CharT* __lhs,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/basic_string.h:3774:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const _CharT*’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/memory_resource.h:47,
+                 from /usr/include/c++/13/string:58:
+/usr/include/c++/13/tuple:1919:5: note: candidate: ‘template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_UTypes ...>&)’
+ 1919 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+/usr/include/c++/13/tuple:1919:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::tuple<_UTypes ...>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/bits/locale_facets.h:48,
+                 from /usr/include/c++/13/bits/basic_ios.h:37,
+                 from /usr/include/c++/13/ios:46:
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note: candidate: ‘template<class _CharT, class _Traits> bool std::operator==(const istreambuf_iterator<_CharT, _Traits>&, const istreambuf_iterator<_CharT, _Traits>&)’
+  234 |     operator==(const istreambuf_iterator<_CharT, _Traits>& __a,
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/streambuf_iterator.h:234:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::istreambuf_iterator<_CharT, _Traits>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:4:
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note: candidate: ‘template<class _Tp, class _Alloc> bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)’
+ 2040 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+/usr/include/c++/13/bits/stl_vector.h:2040:5: note:   template argument deduction/substitution failed:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:39:26: note:   mismatched types ‘const std::vector<_Tp, _Alloc>’ and ‘int’
+   39 |           if (__g.key == __key) {
+      |                          ^~~~~
+/usr/include/c++/13/bits/allocator.h:216:7: note: candidate: ‘bool std::operator==(const allocator<char>&, const allocator<char>&)’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+/usr/include/c++/13/bits/allocator.h:216:18: note:   no known conversion for argument 1 from ‘int’ to ‘const std::allocator<char>&’
+  216 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/bits/ios_base.h:46:
+/usr/include/c++/13/system_error:449:3: note: candidate: ‘bool std::operator==(const error_code&, const error_code&)’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:449:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  449 |   operator==(const error_code& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:465:3: note: candidate: ‘bool std::operator==(const error_code&, const error_condition&)’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:465:32: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_code&’
+  465 |   operator==(const error_code& __lhs, const error_condition& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:480:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_condition&)’
+  480 |   operator==(const error_condition& __lhs,
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:480:37: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  480 |   operator==(const error_condition& __lhs,
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/usr/include/c++/13/system_error:517:3: note: candidate: ‘bool std::operator==(const error_condition&, const error_code&)’
+  517 |   operator==(const error_condition& __lhs, const error_code& __rhs) noexcept
+      |   ^~~~~~~~
+/usr/include/c++/13/system_error:517:37: note:   no known conversion for argument 1 from ‘int’ to ‘const std::error_condition&’
+  517 |   operator==(const error_condition& __lhs, const error_code& __rhs) noexcept
+      |              ~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:40:38: error: cannot convert ‘Order’ to ‘int’ in initialization
+   40 |             __g.items.push_back(Stat{o, c});
+      |                                      ^
+      |                                      |
+      |                                      Order
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:46:70: error: cannot convert ‘Order’ to ‘int’ in initialization
+   46 |           __groups.push_back(__struct4{__key, std::vector<Stat>{Stat{o, c}}});
+      |                                                                      ^
+      |                                                                      |
+      |                                                                      Order
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:46:75: error: no matching function for call to ‘std::vector<Stat>::vector(<brace-enclosed initializer list>)’
+   46 |           __groups.push_back(__struct4{__key, std::vector<Stat>{Stat{o, c}}});
+      |                                                                           ^
+/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Stat; _Alloc = std::allocator<Stat>]’
+  707 |         vector(_InputIterator __first, _InputIterator __last,
+      |         ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
+/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>]’
+  678 |       vector(initializer_list<value_type> __l,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; std::__type_identity_t<_Alloc> = std::allocator<Stat>]’
+  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>; std::false_type = std::integral_constant<bool, false>]’
+  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>; std::true_type = std::integral_constant<bool, true>]’
+  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; std::__type_identity_t<_Alloc> = std::allocator<Stat>]’
+  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
+  620 |       vector(vector&&) noexcept = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
+  601 |       vector(const vector& __x)
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; size_type = long unsigned int; value_type = Stat; allocator_type = std::allocator<Stat>]’
+  569 |       vector(size_type __n, const value_type& __value,
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
+/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; size_type = long unsigned int; allocator_type = std::allocator<Stat>]’
+  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = Stat; _Alloc = std::allocator<Stat>; allocator_type = std::allocator<Stat>]’
+  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
+/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = Stat; _Alloc = std::allocator<Stat>]’
+  531 |       vector() = default;
+      |       ^~~~~~
+/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:55:5: error: conversion from ‘vector<__struct5>’ to non-scalar type ‘vector<Stat>’ requested
+   30 |   std::vector<Stat> stats = ([&]() {
+      |                             ~~~~~~~~
+   31 |     std::vector<__struct4> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   32 |     for (auto o : orders) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~
+   33 |       for (auto c : customers) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   34 |         if (!((o.customerId == c.id)))
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   35 |           continue;
+      |           ~~~~~~~~~
+   36 |         auto __key = c.name;
+      |         ~~~~~~~~~~~~~~~~~~~~
+   37 |         bool __found = false;
+      |         ~~~~~~~~~~~~~~~~~~~~~
+   38 |         for (auto &__g : __groups) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   39 |           if (__g.key == __key) {
+      |           ~~~~~~~~~~~~~~~~~~~~~~~
+   40 |             __g.items.push_back(Stat{o, c});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   41 |             __found = true;
+      |             ~~~~~~~~~~~~~~~
+   42 |             break;
+      |             ~~~~~~
+   43 |           }
+      |           ~
+   44 |         }
+      |         ~
+   45 |         if (!__found) {
+      |         ~~~~~~~~~~~~~~~
+   46 |           __groups.push_back(__struct4{__key, std::vector<Stat>{Stat{o, c}}});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   47 |         }
+      |         ~
+   48 |       }
+      |       ~
+   49 |     }
+      |     ~
+   50 |     std::vector<__struct5> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   51 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   52 |       __items.push_back(__struct5{g.key, ((int)g.items.size())});
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   53 |     }
+      |     ~
+   54 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+   55 |   })();
+      |   ~~^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:59:22: error: ‘struct Stat’ has no member named ‘name’
+   59 |       std::cout << s.name;
+      |                      ^~~~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_join4207379038/001/prog.cpp:63:22: error: ‘struct Stat’ has no member named ‘count’
+   63 |       std::cout << s.count;
+      |                      ^~~~~

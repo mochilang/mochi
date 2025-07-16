@@ -1,0 +1,18 @@
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:22:12: error: ‘n’ was not declared in this scope
+   22 |   decltype(n) n;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:22:12: error: ‘n’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:23:12: error: ‘l’ was not declared in this scope
+   23 |   decltype(l) l;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:23:12: error: ‘l’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:24:12: error: ‘b’ was not declared in this scope
+   24 |   decltype(b) b;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:24:12: error: ‘b’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldencross_join_triple579859085/001/prog.cpp:35:38: error: cannot convert ‘std::any’ to ‘int’ in initialization
+   35 |           __items.push_back(Combo{n, l, b});
+      |                                      ^
+      |                                      |
+      |                                      std::any

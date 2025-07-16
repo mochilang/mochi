@@ -1,0 +1,23 @@
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
+   16 |   decltype(o.id) orderId;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
+   17 |   decltype(c) customer;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
+   18 |   decltype(o.total) total;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:33:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
+   33 |           __items.push_back(Result{o.id, c, o.total});
+      |                                          ^
+      |                                          |
+      |                                          Customer
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join884846892/001/prog.cpp:37:42: error: cannot convert ‘Customer’ to ‘int’ in initialization
+   37 |           __items.push_back(Result{o.id, c, o.total});
+      |                                          ^
+      |                                          |
+      |                                          Customer

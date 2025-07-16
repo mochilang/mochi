@@ -28,6 +28,9 @@
 - Extended TPCH golden tests to compile q1-q22 and capture build errors.
 - Added `__any_eq` helper and improved type tracking for loop variables and
   list literals to reduce `std::any` usage (2025-07-16 11:41 UTC).
+- Added golden tests for `tests/vm/valid` programs to ensure C++ output stays
+  in sync and to automatically regenerate `.cpp` and `.out` files (2025-07-16
+  15:24 UTC).
 
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.

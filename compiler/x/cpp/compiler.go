@@ -845,6 +845,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 				c.vars[st.Name] = "string"
 			} else if et == "int" || et == "double" || et == "bool" {
 				c.vars[st.Name] = et
+			} else if et == "std::any" {
+				c.vars[st.Name] = "any"
 			}
 		}
 	}
@@ -1407,6 +1409,12 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						if (ops[i] == "==" || ops[i] == "!=") &&
 							(c.isAnyExpr(l) || c.isAnyExpr(r)) {
 							c.usesAny = true
+							if !c.isAnyExpr(l) {
+								l = fmt.Sprintf("std::any{%s}", l)
+							}
+							if !c.isAnyExpr(r) {
+								r = fmt.Sprintf("std::any{%s}", r)
+							}
 							if ops[i] == "==" {
 								combined = fmt.Sprintf("__any_eq(%s, %s)", l, r)
 							} else {
@@ -2385,6 +2393,8 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 			c.vars[q.Var] = "int"
 		case et == "bool":
 			c.vars[q.Var] = "bool"
+		case et == "std::any":
+			c.vars[q.Var] = "any"
 		case c.isStructName(et):
 			c.varStruct[q.Var] = et
 		}
@@ -3480,6 +3490,12 @@ func (c *Compiler) inferType(expr string) string {
 // It is used when generating struct field declarations.
 func inferExprType(expr string) string {
 	trimmed := strings.TrimSpace(expr)
+	if _, err := strconv.Atoi(trimmed); err == nil {
+		return "int"
+	}
+	if _, err := strconv.ParseFloat(trimmed, 64); err == nil && strings.Contains(trimmed, ".") {
+		return "double"
+	}
 	if strings.Contains(trimmed, "true") || strings.Contains(trimmed, "false") {
 		return "bool"
 	}

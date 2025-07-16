@@ -1,0 +1,82 @@
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:69:12: error: ‘ps’ was not declared in this scope
+   69 |   decltype(ps.part) part;
+      |            ^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:69:12: error: ‘ps’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:70:13: error: ‘ps’ was not declared in this scope
+   70 |   decltype((ps.cost * ps.qty)) value;
+      |             ^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:70:23: error: ‘ps’ was not declared in this scope
+   70 |   decltype((ps.cost * ps.qty)) value;
+      |                       ^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:70:13: error: ‘ps’ was not declared in this scope
+   70 |   decltype((ps.cost * ps.qty)) value;
+      |             ^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:70:23: error: ‘ps’ was not declared in this scope
+   70 |   decltype((ps.cost * ps.qty)) value;
+      |                       ^~
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2316581243/001/prog.cpp:219:5: error: conversion from ‘vector<Grouped>’ to non-scalar type ‘vector<Filtered>’ requested
+  188 |   std::vector<Filtered> grouped = ([&]() {
+      |                                   ~~~~~~~~
+  189 |     std::vector<__struct5> __groups;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  190 |     for (auto x : filtered) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~
+  191 |       auto __key = x.part;
+      |       ~~~~~~~~~~~~~~~~~~~~
+  192 |       bool __found = false;
+      |       ~~~~~~~~~~~~~~~~~~~~~
+  193 |       for (auto &__g : __groups) {
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  194 |         if (__g.key == __key) {
+      |         ~~~~~~~~~~~~~~~~~~~~~~~
+  195 |           __g.items.push_back(Filtered{x});
+      |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  196 |           __found = true;
+      |           ~~~~~~~~~~~~~~~
+  197 |           break;
+      |           ~~~~~~
+  198 |         }
+      |         ~
+  199 |       }
+      |       ~
+  200 |       if (!__found) {
+      |       ~~~~~~~~~~~~~~~
+  201 |         __groups.push_back(
+      |         ~~~~~~~~~~~~~~~~~~~
+  202 |             __struct5{__key, std::vector<Filtered>{Filtered{x}}});
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  203 |       }
+      |       ~
+  204 |     }
+      |     ~
+  205 |     std::vector<Grouped> __items;
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  206 |     for (auto &g : __groups) {
+      |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  207 |       __items.push_back(Grouped{
+      |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+  208 |           g.key, ([&](auto v) {
+      |           ~~~~~~~~~~~~~~~~~~~~~
+  209 |             return std::accumulate(v.begin(), v.end(), 0.0);
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  210 |           })(([&]() {
+      |           ~~~~~~~~~~~
+  211 |             std::vector<decltype(std::declval<Filtered>().value)> __items;
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  212 |             for (auto r : g.items) {
+      |             ~~~~~~~~~~~~~~~~~~~~~~~~
+  213 |               __items.push_back(r.value);
+      |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  214 |             }
+      |             ~
+  215 |             return __items;
+      |             ~~~~~~~~~~~~~~~
+  216 |           })())});
+      |           ~~~~~~~~
+  217 |     }
+      |     ~
+  218 |     return __items;
+      |     ~~~~~~~~~~~~~~~
+  219 |   })();
+      |   ~~^~
