@@ -1,0 +1,5 @@
+Object: 'a:   ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+optimized [] in UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bitwise-operations.st:106)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bitwise-operations.st:122)

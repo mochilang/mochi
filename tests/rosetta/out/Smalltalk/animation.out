@@ -1,0 +1,4 @@
+Object: 0 error: did not understand #%
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Object)>>doesNotUnderstand: #% (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/animation.st:13)

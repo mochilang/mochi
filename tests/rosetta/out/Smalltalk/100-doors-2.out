@@ -1,0 +1,4 @@
+Object: 'Door ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/100-doors-2.st:7)

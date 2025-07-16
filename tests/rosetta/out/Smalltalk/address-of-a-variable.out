@@ -1,0 +1,11 @@
+value as float: Object: 1 error: The program attempted to divide a number by zero
+ZeroDivide(Exception)>>signal (ExcHandling.st:254)
+SmallInteger(Number)>>zeroDivide (SysExcept.st:1426)
+Fraction>>setNumerator:setDenominator: (Fraction.st:485)
+Fraction class>>numerator:denominator: (Fraction.st:66)
+Fraction>>- (Fraction.st:151)
+FloatD(Float)>>printOn:special: (Float.st:533)
+FloatD(Float)>>printOn: (Float.st:436)
+FloatD(Object)>>printString (Object.st:534)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/address-of-a-variable.st:5)
+address: <not available>

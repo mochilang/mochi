@@ -1,0 +1,30 @@
+Object: '' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:12)
+SEQUENCE:
+
+BASE COUNT:
+Object: '    A: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:52)
+Object: '    C: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:53)
+Object: '    G: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String("Global garbage collection... done"
+Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:54)
+Object: '    T: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:55)
+    ------
+Object: '    Σ: ' error: did not understand #+
+MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
+String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
+UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/bioinformatics-base-count.st:57)
+    ======
