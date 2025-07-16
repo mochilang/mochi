@@ -1,4 +1,4 @@
-//go:build slow
+//go:build slow && compilec
 
 package main
 
