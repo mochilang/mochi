@@ -1,0 +1,11 @@
+output mismatch
+-- got --
+░        
+      ▓░▓       
+     ░░ ░░      
+      ▓░▓       
+       ░
+-- want --
+░        
+      ▓         
+     ░
