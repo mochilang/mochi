@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/abc-problem.rkt:109:11: lower: unbound identifier
+  in: lower
+  location...:
+   /tmp/abc-problem.rkt:109:11

@@ -1,0 +1,9 @@
+run: exit status 1
+/tmp/arithmetic-derivative.rkt:139:0: define: not allowed in an expression context
+  in: (define g (string->number (/ n 100)))
+  location...:
+   /tmp/arithmetic-derivative.rkt:139:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

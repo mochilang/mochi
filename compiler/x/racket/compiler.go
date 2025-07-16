@@ -440,6 +440,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				tname := *op.Cast.Type.Simple
 				if tname == "int" {
 					val = fmt.Sprintf("(string->number %s)", val)
+				} else if tname == "float" {
+					val = fmt.Sprintf("(exact->inexact (if (string? %s) (string->number %s) %s))", val, val, val)
 				} else if fields, ok := c.structs[tname]; ok {
 					parts := make([]string, len(fields))
 					for i, f := range fields {

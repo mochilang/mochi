@@ -1,0 +1,9 @@
+run: exit status 1
+/tmp/anagrams-deranged-anagrams.rkt:91:0: define: not allowed in an expression context
+  in: (define tmp (cond ((string? arr) (string-ref arr j)) ((hash? arr) (hash-ref arr j)) (else (list-ref arr j))))
+  location...:
+   /tmp/anagrams-deranged-anagrams.rkt:91:0
+  context...:
+   /usr/share/racket/collects/racket/private/norm-define.rkt:9:4: normalize-definition/mk-rhs
+   /usr/share/racket/collects/racket/private/norm-define.rkt:165:4: normalize-definition
+   /usr/share/racket/collects/racket/private/kw.rkt:1171:2

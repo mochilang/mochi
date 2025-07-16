@@ -1,0 +1,5 @@
+run: exit status 1
+/tmp/2048.rkt:125:24: now: unbound identifier
+  in: now
+  location...:
+   /tmp/2048.rkt:125:24

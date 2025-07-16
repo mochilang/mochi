@@ -1,0 +1,13 @@
+run: exit status 1
+string->number: contract violation
+  expected: string?
+  given: 1
+  context...:
+   /tmp/aks-test-for-primes.rkt:78:6
+   /tmp/aks-test-for-primes.rkt:75:0
+   /tmp/aks-test-for-primes.rkt:65:2
+   /tmp/aks-test-for-primes.rkt:147:6
+   /tmp/aks-test-for-primes.rkt:144:0
+   /tmp/aks-test-for-primes.rkt:142:2
+   body of "/tmp/aks-test-for-primes.rkt"
+0:  1

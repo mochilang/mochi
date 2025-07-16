@@ -1,0 +1,14 @@
+run: exit status 1
+remainder: contract violation
+  expected: integer?
+  given: 1/10
+  context...:
+   /tmp/9-billion-names-of-god-the-integer.rkt:92:6
+   /tmp/9-billion-names-of-god-the-integer.rkt:89:0
+   /tmp/9-billion-names-of-god-the-integer.rkt:80:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:193:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:220:2
+   /tmp/9-billion-names-of-god-the-integer.rkt:241:6
+   /tmp/9-billion-names-of-god-the-integer.rkt:238:0
+   body of "/tmp/9-billion-names-of-god-the-integer.rkt"
+rows:

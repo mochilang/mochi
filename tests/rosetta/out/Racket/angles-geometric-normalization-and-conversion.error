@@ -1,0 +1,14 @@
+run: exit status 1
+remainder: contract violation
+  expected: integer?
+  given: 6.2831853
+  context...:
+   /tmp/angles-geometric-normalization-and-conversion.rkt:4:2
+   /tmp/angles-geometric-normalization-and-conversion.rkt:68:2
+   body of "/tmp/angles-geometric-normalization-and-conversion.rkt"
+degrees normalized_degs gradians mils radians
+-2 -2 -20/9 -320/9 -0.03490658503988659
+-1 -1 -10/9 -160/9 -0.017453292519943295
+0 0 0 0 0
+1 1 10/9 160/9 0.017453292519943295
+2 2 20/9 320/9 0.03490658503988659
