@@ -1644,11 +1644,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 			if i > 0 && p.Ops[i-1].Field != nil {
 				name := p.Ops[i-1].Field.Name
 				if name == "contains" && len(args) == 1 {
-					if _, ok := types.TypeOfPrimary(p.Target, c.env).(types.StringType); ok {
-						expr = fmt.Sprintf("(Pos(%s, %s) > 0)", args[0], prev)
-					} else {
-						expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
-					}
+					expr = fmt.Sprintf("(Pos(%s, %s) > 0)", args[0], prev)
 				} else {
 					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 				}
