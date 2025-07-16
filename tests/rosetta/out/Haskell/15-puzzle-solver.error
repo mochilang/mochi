@@ -1,0 +1,7 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/15-puzzle-solver.hs:36:87: error:
+    Variable not in scope: testpkg :: Map.Map String AnyValue
+   |
+36 |   putStrLn (_showAny (fromMaybe (error "missing") (Map.lookup "FifteenPuzzleExample" (testpkg))))
+   |                                                                                       ^^^^^^^

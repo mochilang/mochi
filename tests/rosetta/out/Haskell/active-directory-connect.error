@@ -1,0 +1,7 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/active-directory-connect.hs:37:5: error:
+    parse error on input ‘Base’
+   |
+37 |     Base :: String,
+   |     ^^^^

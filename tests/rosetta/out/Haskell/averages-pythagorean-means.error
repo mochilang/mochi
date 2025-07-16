@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/averages-pythagorean-means.hs:118:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/averages-pythagorean-means.hs:113:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/averages-pythagorean-means.hs:118:1
+    |
+118 | main = do
+    | ^^^^

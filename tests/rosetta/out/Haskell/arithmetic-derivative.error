@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/arithmetic-derivative.hs:126:1: error:
+    Invalid type signature: D :: ...
+    Suggested fix:
+      A type signature should be of form <variables> :: <type>
+    |
+126 | D :: Double -> Double
+    | ^

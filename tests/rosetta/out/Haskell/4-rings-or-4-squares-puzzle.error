@@ -1,0 +1,309 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:130:155: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(&&)’, namely ‘square2’
+      In the first argument of ‘(==)’, namely
+        ‘((square1 == square2) && square2)’
+      In the first argument of ‘(&&)’, namely
+        ‘(((square1 == square2) && square2) == square3)’
+    |
+130 |     (let square1 = (a + b) in (let square2 = ((b + c) + d) in (let square3 = ((d + e) + f) in (let square4 = (f + g) in Just ((((((square1 == square2) && square2) == square3) && square3) == square4))))))
+    |                                                                                                                                                           ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:130:167: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(==)’, namely ‘square3’
+      In the first argument of ‘(&&)’, namely
+        ‘(((square1 == square2) && square2) == square3)’
+      In the first argument of ‘(==)’, namely
+        ‘((((square1 == square2) && square2) == square3) && square3)’
+    |
+130 |     (let square1 = (a + b) in (let square2 = ((b + c) + d) in (let square3 = ((d + e) + f) in (let square4 = (f + g) in Just ((((((square1 == square2) && square2) == square3) && square3) == square4))))))
+    |                                                                                                                                                                       ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:130:179: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(&&)’, namely ‘square3’
+      In the first argument of ‘(==)’, namely
+        ‘((((square1 == square2) && square2) == square3) && square3)’
+      In the first argument of ‘Just’, namely
+        ‘((((((square1 == square2) && square2) == square3) && square3)
+             == square4))’
+    |
+130 |     (let square1 = (a + b) in (let square2 = ((b + c) + d) in (let square3 = ((d + e) + f) in (let square4 = (f + g) in Just ((((((square1 == square2) && square2) == square3) && square3) == square4))))))
+    |                                                                                                                                                                                   ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:130:191: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(==)’, namely ‘square4’
+      In the first argument of ‘Just’, namely
+        ‘((((((square1 == square2) && square2) == square3) && square3)
+             == square4))’
+      In the expression:
+        Just
+          ((((((square1 == square2) && square2) == square3) && square3)
+              == square4))
+    |
+130 |     (let square1 = (a + b) in (let square2 = ((b + c) + d) in (let square3 = ((d + e) + f) in (let square4 = (f + g) in Just ((((((square1 == square2) && square2) == square3) && square3) == square4))))))
+    |                                                                                                                                                                                               ^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:140:176: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(<)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) < length nums
+    |
+140 |     (let nums = [a, b, c, d, e, f, g] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length nums)) (\() -> (let j = (_asInt (i) + 1) in case whileLoop (\() -> (_asInt (j) < length nums)) (\() -> case if ((nums !! i) == (nums !! j)) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (True)))
+    |                                                                                                                                                                                ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:140:221: error:
+    • Couldn't match expected type ‘Int’ with actual type ‘AnyValue’
+    • In the second argument of ‘(!!)’, namely ‘i’
+      In the first argument of ‘(==)’, namely ‘(nums !! i)’
+      In the expression: (nums !! i) == (nums !! j)
+    |
+140 |     (let nums = [a, b, c, d, e, f, g] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length nums)) (\() -> (let j = (_asInt (i) + 1) in case whileLoop (\() -> (_asInt (j) < length nums)) (\() -> case if ((nums !! i) == (nums !! j)) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (True)))
+    |                                                                                                                                                                                                                             ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:140:321: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(j)’
+      In the first argument of ‘(+)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) + 1
+    |
+140 |     (let nums = [a, b, c, d, e, f, g] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length nums)) (\() -> (let j = (_asInt (i) + 1) in case whileLoop (\() -> (_asInt (j) < length nums)) (\() -> case if ((nums !! i) == (nums !! j)) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (True)))
+    |                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:140:392: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(i)’
+      In the first argument of ‘(+)’, namely ‘_asInt (i)’
+      In the expression: _asInt (i) + 1
+    |
+140 |     (let nums = [a, b, c, d, e, f, g] in (let i = 0 in case whileLoop (\() -> (_asInt (i) < length nums)) (\() -> (let j = (_asInt (i) + 1) in case whileLoop (\() -> (_asInt (j) < length nums)) (\() -> case if ((nums !! i) == (nums !! j)) then Just (False) else Nothing of Just v -> Just v; Nothing -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> (let i = (_asInt (i) + 1) in Nothing))) of Just v -> Just v; Nothing -> Just (True)))
+    |                                                                                                                                                                                                                                                                                                                                                                                                        ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:144:14: error:
+    • Couldn't match expected type ‘Map.Map String ()’
+                  with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘(())’
+      In the first argument of ‘($)’, namely ‘fromMaybe (())’
+      In the expression:
+        fromMaybe (())
+          $ (let valid = []
+             in
+               (let count = 0
+                in
+                  case
+                      forLoop
+                        low ((_asInt (high) + 1))
+                        (\ b
+                           -> forLoop
+                                low ((_asInt (high) + 1))
+                                (\ c
+                                   -> forLoop
+                                        low ((_asInt (high) + 1))
+                                        (\ d
+                                           -> (let ...
+                                               in
+                                                 forLoop
+                                                   low ((_asInt (high) + 1))
+                                                   (\ e
+                                                      -> forLoop
+                                                           low ((_asInt (high) + 1))
+                                                           (\ f -> ...))))))
+                  of
+                    Just v -> Just v
+                    Nothing
+                      -> Just
+                           (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |
+144 |   fromMaybe (()) $
+    |              ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:69: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(high)’
+      In the first argument of ‘(+)’, namely ‘_asInt (high)’
+      In the second argument of ‘forLoop’, namely ‘((_asInt (high) + 1))’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                     ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:110: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(high)’
+      In the first argument of ‘(+)’, namely ‘_asInt (high)’
+      In the second argument of ‘forLoop’, namely ‘((_asInt (high) + 1))’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                              ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:151: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(high)’
+      In the first argument of ‘(+)’, namely ‘_asInt (high)’
+      In the second argument of ‘forLoop’, namely ‘((_asInt (high) + 1))’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                       ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:218: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(high)’
+      In the first argument of ‘(+)’, namely ‘_asInt (high)’
+      In the second argument of ‘forLoop’, namely ‘((_asInt (high) + 1))’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                          ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:259: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Int’
+    • In the first argument of ‘_asInt’, namely ‘(high)’
+      In the first argument of ‘(+)’, namely ‘_asInt (high)’
+      In the second argument of ‘forLoop’, namely ‘((_asInt (high) + 1))’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                   ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:341: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(||)’, namely ‘a’
+      In the first argument of ‘(>)’, namely ‘((a < low) || a)’
+      In the expression: ((a < low) || a) > high
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:346: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(>)’, namely ‘high’
+      In the expression: ((a < low) || a) > high
+      In the expression:
+        if (((a < low) || a) > high) then Nothing else Nothing
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                          ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:433: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(||)’, namely ‘g’
+      In the first argument of ‘(>)’, namely ‘((g < low) || g)’
+      In the expression: ((g < low) || g) > high
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:438: error:
+    • Couldn't match expected type ‘Bool’ with actual type ‘Int’
+    • In the second argument of ‘(>)’, namely ‘high’
+      In the expression: ((g < low) || g) > high
+      In the expression:
+        if (((g < low) || g) > high) then Nothing else Nothing
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:683: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘Bool’
+    • In the first argument of ‘_asBool’, namely
+        ‘((not unique || isUnique a b c d e f g))’
+      In the expression: _asBool ((not unique || isUnique a b c d e f g))
+      In the expression:
+        if _asBool ((not unique || isUnique a b c d e f g)) then
+            (let valid = (valid ++ [...])
+             in (let count = (count + 1) in Nothing))
+        else
+            Nothing
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:899: error:
+    • Couldn't match expected type ‘()’ with actual type ‘AnyValue’
+    • In the expression: VString (count)
+      In the expression: ("count", VString (count))
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("count", VString (count)), ("list", valid)]’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:145:926: error:
+    • Couldn't match expected type ‘()’ with actual type ‘[a0]’
+    • In the expression: valid
+      In the expression: ("list", valid)
+      In the first argument of ‘Map.fromList’, namely
+        ‘[("count", VString (count)), ("list", valid)]’
+    |
+145 |     (let valid = [] in (let count = 0 in case forLoop low ((_asInt (high) + 1)) (\b -> forLoop low ((_asInt (high) + 1)) (\c -> forLoop low ((_asInt (high) + 1)) (\d -> (let s = ((b + c) + d) in forLoop low ((_asInt (high) + 1)) (\e -> forLoop low ((_asInt (high) + 1)) (\f -> (let a = (s - b) in (let g = (s - f) in case if (((a < low) || a) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((g < low) || g) > high) then Nothing else Nothing of Just v -> Just v; Nothing -> case if (((d + e) + f) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> case if ((f + g) /= s) then Nothing else Nothing of Just v -> Just v; Nothing -> if _asBool ((not unique || isUnique a b c d e f g)) then (let valid = (valid ++ [[a, b, c, d, e, f, g]]) in (let count = (count + 1) in Nothing)) else Nothing)))))))) of Just v -> Just v; Nothing -> Just (Map.fromList [("count", VString (count)), ("list", valid)])))
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:155:14: error:
+    • Couldn't match expected type: t0 -> Maybe () -> [Char]
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a1 -> Maybe a1 -> a1) -> [Char]’ has only one
+      In the first argument of ‘(++)’, namely
+        ‘show fromMaybe (error "missing") (Map.lookup "count" r1)’
+      In the first argument of ‘putStrLn’, namely
+        ‘((show fromMaybe (error "missing") (Map.lookup "count" r1)
+             ++ " unique solutions in 1 to 7"))’
+    |
+155 |   putStrLn ((show fromMaybe (error "missing") (Map.lookup "count" r1) ++ " unique solutions in 1 to 7"))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:156:70: error:
+    • Couldn't match type ‘()’ with ‘AnyValue’
+      Expected: Map.Map String AnyValue
+        Actual: Map.Map String ()
+    • In the second argument of ‘Map.lookup’, namely ‘r1’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "list" r1)’
+      In the first argument of ‘_showAny’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "list" r1))’
+    |
+156 |   putStrLn (_showAny (fromMaybe (error "missing") (Map.lookup "list" r1)))
+    |                                                                      ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:157:14: error:
+    • Couldn't match expected type: t1 -> Maybe () -> [Char]
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a2 -> Maybe a2 -> a2) -> [Char]’ has only one
+      In the first argument of ‘(++)’, namely
+        ‘show fromMaybe (error "missing") (Map.lookup "count" r2)’
+      In the first argument of ‘putStrLn’, namely
+        ‘((show fromMaybe (error "missing") (Map.lookup "count" r2)
+             ++ " unique solutions in 3 to 9"))’
+    |
+157 |   putStrLn ((show fromMaybe (error "missing") (Map.lookup "count" r2) ++ " unique solutions in 3 to 9"))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:158:70: error:
+    • Couldn't match type ‘()’ with ‘AnyValue’
+      Expected: Map.Map String AnyValue
+        Actual: Map.Map String ()
+    • In the second argument of ‘Map.lookup’, namely ‘r2’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "list" r2)’
+      In the first argument of ‘_showAny’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "list" r2))’
+    |
+158 |   putStrLn (_showAny (fromMaybe (error "missing") (Map.lookup "list" r2)))
+    |                                                                      ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/4-rings-or-4-squares-puzzle.hs:159:14: error:
+    • Couldn't match expected type: t2 -> Maybe () -> [Char]
+                  with actual type: [Char]
+    • The function ‘show’ is applied to three value arguments,
+        but its type ‘(a3 -> Maybe a3 -> a3) -> [Char]’ has only one
+      In the first argument of ‘(++)’, namely
+        ‘show fromMaybe (error "missing") (Map.lookup "count" r3)’
+      In the first argument of ‘putStrLn’, namely
+        ‘((show fromMaybe (error "missing") (Map.lookup "count" r3)
+             ++ " non-unique solutions in 0 to 9"))’
+    |
+159 |   putStrLn ((show fromMaybe (error "missing") (Map.lookup "count" r3) ++ " non-unique solutions in 0 to 9"))
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

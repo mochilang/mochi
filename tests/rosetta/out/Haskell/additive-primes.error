@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/additive-primes.hs:120:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/additive-primes.hs:116:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/additive-primes.hs:120:1
+    |
+120 | main = do
+    | ^^^^

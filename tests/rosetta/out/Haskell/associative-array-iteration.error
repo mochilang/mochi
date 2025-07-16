@@ -1,0 +1,8 @@
+parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/associative-array-iteration.mochi:3:3: lexer: invalid input text "# iterating over..."
+  --> /workspace/mochi/tests/rosetta/x/Mochi/associative-array-iteration.mochi:3:3
+
+  3 |   # iterating over key-value pairs
+    |   ^
+
+help:
+  String literals must be properly closed with a `"`.

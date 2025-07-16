@@ -1,0 +1,21 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/biorhythms.hs:214:1: error:
+    Not in scope: data constructor ‘PI’
+    |
+214 | PI = 3.141592653589793
+    | ^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/biorhythms.hs:216:1: error:
+    Not in scope: data constructor ‘TWO_PI’
+    |
+216 | TWO_PI = 6.283185307179586
+    | ^^^^^^
+
+/workspace/mochi/tests/rosetta/out/Haskell/biorhythms.hs:219:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/biorhythms.hs:208:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/biorhythms.hs:219:1
+    |
+219 | main = do
+    | ^^^^

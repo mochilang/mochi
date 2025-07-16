@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/ascii-art-diagram-converter.hs:14:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/ascii-art-diagram-converter.hs:10:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/ascii-art-diagram-converter.hs:14:1
+   |
+14 | main = do
+   | ^^^^

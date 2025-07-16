@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/aks-test-for-primes.hs:141:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/aks-test-for-primes.hs:136:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/aks-test-for-primes.hs:141:1
+    |
+141 | main = do
+    | ^^^^

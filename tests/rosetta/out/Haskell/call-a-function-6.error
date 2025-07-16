@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/call-a-function-6.hs:21:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/call-a-function-6.hs:16:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/call-a-function-6.hs:21:1
+   |
+21 | main = do
+   | ^^^^

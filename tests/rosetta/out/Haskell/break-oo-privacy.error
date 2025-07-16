@@ -1,0 +1,7 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/break-oo-privacy.hs:13:5: error:
+    parse error on input ‘Exported’
+   |
+13 |     Exported :: Int,
+   |     ^^^^^^^^

@@ -1,0 +1,9 @@
+run error: exit status 1
+
+/workspace/mochi/tests/rosetta/out/Haskell/abbreviations-easy.hs:155:1: error:
+    Multiple declarations of ‘main’
+    Declared at: /workspace/mochi/tests/rosetta/out/Haskell/abbreviations-easy.hs:147:1
+                 /workspace/mochi/tests/rosetta/out/Haskell/abbreviations-easy.hs:155:1
+    |
+155 | main = do
+    | ^^^^
