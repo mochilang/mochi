@@ -16,6 +16,8 @@ the expected `.out` file. The generated sources live under
 - [ ] Finish YAML loader support for `load_yaml.mochi`.
 - [x] Added basic YAML parsing in `_load` helper so `load_yaml.mochi` runs
   without errors.
+- [x] `load` now maps rows to structs when a target type is provided, so
+  `load_yaml.mochi` executes without runtime errors.
 - [ ] Improve formatting of generated code.
 
 ## TPC-DS Progress (2025-07-15 04:45)

@@ -20,4 +20,4 @@ many
  62 │            false -> "denied"
     │            ~~~~~~~~~~~~~~~~~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/match_full.exs:62: Main.main/0
+    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:62: Main.main/0

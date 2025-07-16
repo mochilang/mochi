@@ -3,14 +3,14 @@ warning: variable "a" is unused (if the variable is not meant to be used, prefix
   4 │   def boom(a, b) do
     │            ~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/short_circuit.exs:4:12: Main.boom/2
+    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:4:12: Main.boom/2
 
     warning: variable "b" is unused (if the variable is not meant to be used, prefix it with an underscore)
     │
   4 │   def boom(a, b) do
     │               ~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/short_circuit.exs:4:15: Main.boom/2
+    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:4:15: Main.boom/2
 
 false
 true

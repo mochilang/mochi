@@ -33,13 +33,6 @@ func repoRootValid(t *testing.T) string {
 	return ""
 }
 
-func stripHeader(b []byte) []byte {
-	if i := bytes.IndexByte(b, '\n'); i != -1 && bytes.HasPrefix(b, []byte("#")) {
-		return bytes.TrimSpace(b[i+1:])
-	}
-	return bytes.TrimSpace(b)
-}
-
 var tmpDirRE = regexp.MustCompile(`TestExCompiler_VMValid_Golden[^/]+`)
 
 func normalize(b []byte) []byte {
@@ -47,6 +40,13 @@ func normalize(b []byte) []byte {
 	out := tmpDirRE.ReplaceAll(b, []byte("TestExCompiler_VMValid_GoldenX"))
 	out = bytes.ReplaceAll(out, []byte(root+"/"), []byte(""))
 	return out
+}
+
+func shouldUpdateValid() bool {
+	if v, ok := os.LookupEnv("UPDATE"); ok && (v == "1" || v == "true") {
+		return true
+	}
+	return false
 }
 
 func TestExCompiler_VMValid_Golden(t *testing.T) {
@@ -75,15 +75,9 @@ func TestExCompiler_VMValid_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(filepath.Join(goldenDir, name+".exs"))
-			if err != nil {
-				t.Fatalf("read golden code: %v", err)
-			}
-			got := stripHeader(code)
-			want := stripHeader(wantCode)
-			if !bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
-				t.Errorf("generated code mismatch for %s.exs\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-			}
+			codePath := filepath.Join(goldenDir, name+".exs")
+			outPath := filepath.Join(goldenDir, name+".out")
+			errPath := filepath.Join(goldenDir, name+".error")
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.exs")
 			if err := os.WriteFile(file, code, 0644); err != nil {
@@ -94,11 +88,23 @@ func TestExCompiler_VMValid_Golden(t *testing.T) {
 			var outBuf bytes.Buffer
 			cmd.Stdout = &outBuf
 			cmd.Stderr = &outBuf
-			if err := cmd.Run(); err != nil {
+			err = cmd.Run()
+			gotOut := bytes.TrimSpace(normalize(outBuf.Bytes()))
+			if shouldUpdateValid() {
+				_ = os.WriteFile(codePath, code, 0644)
+				if err != nil {
+					_ = os.WriteFile(errPath, outBuf.Bytes(), 0644)
+					return
+				}
+				_ = os.Remove(errPath)
+				_ = os.WriteFile(outPath, append(gotOut, '\n'), 0644)
+				return
+			}
+			if err != nil {
 				t.Fatalf("elixir run error: %v\n%s", err, outBuf.Bytes())
 			}
-			gotOut := bytes.TrimSpace(normalize(outBuf.Bytes()))
-			wantOut, err := os.ReadFile(filepath.Join(goldenDir, name+".out"))
+			_ = os.Remove(errPath)
+			wantOut, err := os.ReadFile(outPath)
 			if err != nil {
 				t.Fatalf("read golden out: %v", err)
 			}

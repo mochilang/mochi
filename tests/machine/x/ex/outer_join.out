@@ -3,7 +3,7 @@ warning: default values for the optional arguments in _query/3 are never used
  67 │   defp _query(src, joins, opts \\ %{}) do
     │        ~
     │
-    └─ /workspace/mochi/tests/machine/x/ex/outer_join.exs:67:8: Main (module)
+    └─ /tmp/TestExCompiler_VMValid_GoldenX/001/main.exs:67:8: Main (module)
 
 --- Outer Join using syntax ---
 "Order" 100 "by" "Alice" "- $" 250

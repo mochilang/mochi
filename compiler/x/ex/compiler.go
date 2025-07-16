@@ -790,10 +790,15 @@ func (c *Compiler) compileVar(stmt *parser.VarStmt) error {
 	if c.env != nil {
 		if t, err := c.env.GetVar(stmt.Name); err == nil {
 			c.writeln(fmt.Sprintf("# %s :: %s", name, c.typeSpec(t)))
-			if st, ok := t.(types.StructType); ok {
-				c.ensureStruct(st)
+			switch tt := t.(type) {
+			case types.StructType:
+				c.ensureStruct(tt)
 				c.use("_structify")
-				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(st.Name), value)
+				value = fmt.Sprintf("_structify(%s, %s)", sanitizeName(tt.Name), value)
+			case types.ListType:
+				if st, ok := tt.Elem.(types.StructType); ok {
+					c.ensureStruct(st)
+				}
 			}
 		}
 	}
@@ -1533,7 +1538,13 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	c.use("_parse_csv")
 	c.use("_parse_yaml")
 	c.use("_yaml_value")
-	return fmt.Sprintf("_load(%s, %s)", path, opts), nil
+	expr := fmt.Sprintf("_load(%s, %s)", path, opts)
+	if l.Type != nil && l.Type.Simple != nil {
+		name := sanitizeName(*l.Type.Simple)
+		c.use("_structify")
+		expr = fmt.Sprintf("Enum.map(%s, &_structify(%s, &1))", expr, name)
+	}
+	return expr, nil
 }
 
 func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
