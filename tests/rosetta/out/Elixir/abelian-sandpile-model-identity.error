@@ -1,0 +1,8 @@
+run: exit status 1
+** (ArithmeticError) bad argument in arithmetic expression: "" + "4"
+    :erlang.+("", "4")
+    /tmp/abelian-sandpile-model-identity.exs:133: anonymous fn/5 in Main.pileString/1
+    /tmp/abelian-sandpile-model-identity.exs:145: anonymous fn/4 in Main.pileString/1
+    /tmp/abelian-sandpile-model-identity.exs:160: Main.pileString/1
+    /tmp/abelian-sandpile-model-identity.exs:174: Main.main/0
+    /tmp/abelian-sandpile-model-identity.exs:315: (file)

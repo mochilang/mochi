@@ -38,6 +38,8 @@ defp _json(v), do: IO.puts(_to_json(v))
 
 	helperReverse = "defp _reverse(v) do\n  cond do\n    is_list(v) -> Enum.reverse(v)\n    is_binary(v) -> String.graphemes(v) |> Enum.reverse() |> Enum.join()\n    true -> raise \"reverse expects list or string\"\n  end\nend\n"
 
+	helperNow = "defp _now() do\n  System.os_time(:millisecond)\nend\n"
+
 	helperConcat = "defp _concat(a, b) do\n  if is_list(a) and is_list(b) do\n    a ++ b\n  else\n    raise \"concat expects lists\"\n  end\nend\n"
 
 	helperGroup = "defmodule Group do\n  defstruct key: nil, items: []\n" +
@@ -173,6 +175,7 @@ var helperMap = map[string]string{
 	"_max":          helperMax,
 	"_first":        helperFirst,
 	"_reverse":      helperReverse,
+	"_now":          helperNow,
 	"_concat":       helperConcat,
 	"_json":         helperJson,
 	"_group":        helperGroup,

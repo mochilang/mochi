@@ -1,0 +1,77 @@
+run: exit status 1
+    warning: variable "grid" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 92 │       grid = List.update_at(grid, iy, fn it -> List.replace_at(it, ix, "*") end)
+    │       ~
+    │
+    └─ /tmp/barnsley-fern.exs:92:7: Main.main/0
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 125 │                 x = 0
+     │                 ~
+     │
+     └─ /tmp/barnsley-fern.exs:125:17: Main.main/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 126 │                 y = 0.16 * y
+     │                 ~
+     │
+     └─ /tmp/barnsley-fern.exs:126:17: Main.main/0
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 122 │                 x = nx
+     │                 ~
+     │
+     └─ /tmp/barnsley-fern.exs:122:17: Main.main/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 123 │                 y = ny
+     │                 ~
+     │
+     └─ /tmp/barnsley-fern.exs:123:17: Main.main/0
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 116 │               x = nx
+     │               ~
+     │
+     └─ /tmp/barnsley-fern.exs:116:15: Main.main/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │               y = ny
+     │               ~
+     │
+     └─ /tmp/barnsley-fern.exs:117:15: Main.main/0
+
+     warning: variable "x" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 110 │             x = nx
+     │             ~
+     │
+     └─ /tmp/barnsley-fern.exs:110:13: Main.main/0
+
+     warning: variable "y" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │             y = ny
+     │             ~
+     │
+     └─ /tmp/barnsley-fern.exs:111:13: Main.main/0
+
+     warning: variable "grid" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 135 │             grid = List.update_at(grid, iy, fn it -> List.replace_at(it, ix, "*") end)
+     │             ~
+     │
+     └─ /tmp/barnsley-fern.exs:135:13: Main.main/0
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(124.00223241969492)
+    /tmp/barnsley-fern.exs:202: (file)

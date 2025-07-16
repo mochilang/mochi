@@ -1,0 +1,8 @@
+run: exit status 1
+** (ArithmeticError) bad argument in arithmetic expression: rem(-118.1184, 360)
+    :erlang.rem(-118.1184, 360)
+    /tmp/angle-difference-between-two-bearings-2.exs:7: Main.angleDiff/2
+    /tmp/angle-difference-between-two-bearings-2.exs:33: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/angle-difference-between-two-bearings-2.exs:38: (file)

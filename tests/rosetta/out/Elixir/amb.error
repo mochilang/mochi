@@ -1,0 +1,20 @@
+run: exit status 1
+    warning: variable "prev" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │         prev = Enum.at(res, idx - 1)
+    │         ~
+    │
+    └─ /tmp/amb.exs:14:9: Main.amb/3
+
+     warning: this clause for main/0 cannot match because a previous clause at line 55 always matches
+     │
+ 122 │   def main do
+     │       ~
+     │
+     └─ /tmp/amb.exs:122:7
+
+** (BadMapError) expected a map, got: ["", "", "", ""]
+    /tmp/amb.exs:27: anonymous fn/5 in Main.amb/3
+    /tmp/amb.exs:45: Main.amb/3
+    /tmp/amb.exs:88: Main.main/0
+    /tmp/amb.exs:138: (file)

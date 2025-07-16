@@ -1,0 +1,23 @@
+run: exit status 1
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"aa" => 1, "cl" => "R", "le" => nil, "ri" => nil}
+    
+        # 2
+        "le"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/algebraic-data-types.exs:198: Main.insert/2
+    /tmp/algebraic-data-types.exs:215: anonymous fn/3 in Main.main/0
+    /tmp/algebraic-data-types.exs:227: Main.main/0
+    /tmp/algebraic-data-types.exs:234: (file)

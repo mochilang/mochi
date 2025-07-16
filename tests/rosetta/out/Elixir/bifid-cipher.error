@@ -1,0 +1,17 @@
+run: exit status 1
+    error: undefined variable "upper"
+    │
+ 65 │       s = upper.(text)
+    │           ^^^^^
+    │
+    └─ /tmp/bifid-cipher.exs:65:11: Main.remove_space/2
+
+    warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 78 │               out = out + ch
+    │               ~
+    │
+    └─ /tmp/bifid-cipher.exs:78:15: Main.remove_space/2
+
+** (CompileError) /tmp/bifid-cipher.exs: cannot compile module Main (errors have been logged)
+

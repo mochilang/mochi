@@ -1,0 +1,9 @@
+run: exit status 1
+** (ArithmeticError) bad argument in arithmetic expression: "1" + ""
+    :erlang.+("1", "")
+    /tmp/binary-digits.exs:18: anonymous fn/3 in Main.toBin/1
+    /tmp/binary-digits.exs:30: Main.toBin/1
+    /tmp/binary-digits.exs:41: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map_range/4
+    (elixir 1.18.3) lib/enum.ex:4484: Enum.map/2
+    /tmp/binary-digits.exs:46: (file)

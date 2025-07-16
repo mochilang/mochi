@@ -1,0 +1,40 @@
+run: exit status 1
+    warning: variable "v" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 22 │               %Dog{kind: k, name: v} -> k
+    │                                   ~
+    │
+    └─ /tmp/abstract-type.exs:22:35: Main.beastKind/1
+
+    warning: variable "v" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 23 │               %Cat{kind: k, name: v} -> k
+    │                                   ~
+    │
+    └─ /tmp/abstract-type.exs:23:35: Main.beastKind/1
+
+    warning: variable "v" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 42 │               %Dog{kind: v, name: n} -> n
+    │                          ~
+    │
+    └─ /tmp/abstract-type.exs:42:26: Main.beastName/1
+
+    warning: variable "v" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 43 │               %Cat{kind: v, name: n} -> n
+    │                          ~
+    │
+    └─ /tmp/abstract-type.exs:43:26: Main.beastName/1
+
+    warning: this clause for main/0 cannot match because a previous clause at line 86 always matches
+    │
+ 97 │   def main do
+    │       ~
+    │
+    └─ /tmp/abstract-type.exs:97:7
+
+** (ArgumentError) construction of binary failed: segment 5 of type 'binary': expected a binary but got: nil
+    /tmp/abstract-type.exs:77: Main.bprint/1
+    /tmp/abstract-type.exs:90: Main.main/0
+    /tmp/abstract-type.exs:102: (file)

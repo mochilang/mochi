@@ -1,0 +1,20 @@
+run: exit status 1
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 77 │       b = %{b | pixels: rows}
+    │       ~
+    │
+    └─ /tmp/bitmap-write-a-ppm-file.exs:77:7: Main.setPixel/4
+
+     error: invalid alias: "p.R". If you wanted to define an alias, an alias must expand to an atom at compile time but it did not, you may use Module.concat/2 to build it at runtime. If instead you wanted to invoke a function or access a field, wrap the function or field name in double quotes
+     │
+ 177 │                   if p.R > maxv do
+     │                       ^
+     │
+     └─ /tmp/bitmap-write-a-ppm-file.exs:177:23: Main.writePPMP3/1
+
+** (CompileError) /tmp/bitmap-write-a-ppm-file.exs: cannot compile module Main (errors have been logged)
+    (elixir 1.18.3) expanding macro: Kernel.if/2
+    /tmp/bitmap-write-a-ppm-file.exs:177: Main.writePPMP3/1
+    (elixir 1.18.3) expanding macro: Kernel.if/2
+    /tmp/bitmap-write-a-ppm-file.exs:174: Main.writePPMP3/1

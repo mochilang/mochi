@@ -1,0 +1,82 @@
+run: exit status 1
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 14 │         s = s + to_string(coef)
+    │         ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:14:9: Main.poly/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 23 │               s = (s <> "^") <> to_string(i)
+    │               ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:23:15: Main.poly/1
+
+    warning: variable "d" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 31 │               d = -d
+    │               ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:31:15: Main.poly/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │               s = (s <> " + ") <> to_string(d)
+    │               ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:37:15: Main.poly/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 35 │               s = (s <> " - ") <> to_string(-d)
+    │               ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:35:15: Main.poly/1
+
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 57 │         s = "1"
+    │         ~
+    │
+    └─ /tmp/aks-test-for-primes.exs:57:9: Main.poly/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 144 │                 line = (line <> " ") <> to_string(p)
+     │                 ~
+     │
+     └─ /tmp/aks-test-for-primes.exs:144:17: Main.main/0
+
+     warning: variable "first" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 142 │                 first = false
+     │                 ~
+     │
+     └─ /tmp/aks-test-for-primes.exs:142:17: Main.main/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 141 │                 line = line + to_string(p)
+     │                 ~
+     │
+     └─ /tmp/aks-test-for-primes.exs:141:17: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 107 always matches
+     │
+ 169 │   def main do
+     │       ~
+     │
+     └─ /tmp/aks-test-for-primes.exs:169:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(1.0)
+    /tmp/aks-test-for-primes.exs:26: anonymous fn/5 in Main.poly/1
+    /tmp/aks-test-for-primes.exs:51: Main.poly/1
+    /tmp/aks-test-for-primes.exs:115: anonymous fn/2 in Main.main/0
+    /tmp/aks-test-for-primes.exs:117: anonymous fn/2 in Main.main/0
+    /tmp/aks-test-for-primes.exs:127: Main.main/0
+    /tmp/aks-test-for-primes.exs:174: (file)

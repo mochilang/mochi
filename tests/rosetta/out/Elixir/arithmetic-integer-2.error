@@ -1,0 +1,22 @@
+run: exit status 1
+    warning: the call to binary_to_integer/1 will fail with a 'badarg' exception
+    │
+ 14 │           to_string(String.to_integer(a / b))
+    │                            ~
+    │
+    └─ /tmp/arithmetic-integer-2.exs:14:28
+
+    warning: this clause for main/0 cannot match because a previous clause at line 4 always matches
+    │
+ 23 │   def main do
+    │       ~
+    │
+    └─ /tmp/arithmetic-integer-2.exs:23:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(125.00053662734774)
+    /tmp/arithmetic-integer-2.exs:14: Main.main/0
+    /tmp/arithmetic-integer-2.exs:28: (file)

@@ -1,0 +1,52 @@
+run: exit status 1
+    warning: variable "av" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 86 │               av = Enum.at(a, i)
+    │               ~
+    │
+    └─ /tmp/9-billion-names-of-god-the-integer.exs:86:15: Main.bigAdd/2
+
+    warning: variable "bv" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 93 │               bv = Enum.at(b, i)
+    │               ~
+    │
+    └─ /tmp/9-billion-names-of-god-the-integer.exs:93:15: Main.bigAdd/2
+
+     warning: variable "bv" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 140 │               bv = Enum.at(b, i)
+     │               ~
+     │
+     └─ /tmp/9-billion-names-of-god-the-integer.exs:140:15: Main.bigSub/2
+
+     warning: variable "borrow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │               borrow = 0
+     │               ~
+     │
+     └─ /tmp/9-billion-names-of-god-the-integer.exs:150:15: Main.bigSub/2
+
+     warning: variable "borrow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 148 │               borrow = 1
+     │               ~
+     │
+     └─ /tmp/9-billion-names-of-god-the-integer.exs:148:15: Main.bigSub/2
+
+     warning: variable "diff" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │               diff = diff + 10
+     │               ~
+     │
+     └─ /tmp/9-billion-names-of-god-the-integer.exs:147:15: Main.bigSub/2
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(0.1, 10)
+    :erlang.rem(0.1, 10)
+    /tmp/9-billion-names-of-god-the-integer.exs:48: anonymous fn/3 in Main.bigFromInt/1
+    /tmp/9-billion-names-of-god-the-integer.exs:50: anonymous fn/3 in Main.bigFromInt/1
+    /tmp/9-billion-names-of-god-the-integer.exs:60: Main.bigFromInt/1
+    /tmp/9-billion-names-of-god-the-integer.exs:223: Main.cumu/1
+    /tmp/9-billion-names-of-god-the-integer.exs:281: Main.row/1
+    /tmp/9-billion-names-of-god-the-integer.exs:321: anonymous fn/2 in Main.main/0
+    /tmp/9-billion-names-of-god-the-integer.exs:357: Main.main/0

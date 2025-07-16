@@ -1,0 +1,17 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/bitmap.exs:30:17:
+    error: unexpected ( after alias NewBitmap. Function names and identifiers in Elixir start with lowercase characters or underscore. For example:
+
+        hello_world()
+        _starting_with_underscore()
+        numb3rs_are_allowed()
+        may_finish_with_question_mark?()
+        may_finish_with_exclamation_mark!()
+
+    Unexpected token: (
+    │
+ 30 │ 	@spec NewBitmap(integer(), integer()) :: Bitmap
+    │                 ^
+    │
+    └─ /tmp/bitmap.exs:30:17
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

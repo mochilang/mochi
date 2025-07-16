@@ -1,0 +1,108 @@
+run: exit status 1
+    warning: variable "tot" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │               tot = tot - tot / i
+    │               ~
+    │
+    └─ /tmp/achilles-numbers.exs:65:15: Main.totient/1
+
+    warning: variable "i" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 69 │               i = 1
+    │               ~
+    │
+    └─ /tmp/achilles-numbers.exs:69:15: Main.totient/1
+
+    warning: variable "tot" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 89 │         tot = tot - tot / nn
+    │         ~
+    │
+    └─ /tmp/achilles-numbers.exs:89:9: Main.totient/1
+
+     error: undefined variable "pps"
+     │
+ 146 │       {_, i, pps} = t4.(t4, i, pps)
+     │                                ^^^
+     │
+     └─ /tmp/achilles-numbers.exs:146:32: Main.getPerfectPowers/1
+
+     error: undefined variable "pps"
+     │
+ 183 │                     if !if(is_map(pps), do: Map.has_key?(pps, p), else: Enum.member?(pps, p)) do
+     │                                   ^^^
+     │
+     └─ /tmp/achilles-numbers.exs:183:35: Main.getAchilles/2
+
+     error: undefined variable "pps"
+     │
+ 183 │                     if !if(is_map(pps), do: Map.has_key?(pps, p), else: Enum.member?(pps, p)) do
+     │                                                                                      ^^^
+     │
+     └─ /tmp/achilles-numbers.exs:183:86: Main.getAchilles/2
+
+     error: undefined variable "pps"
+     │
+ 183 │                     if !if(is_map(pps), do: Map.has_key?(pps, p), else: Enum.member?(pps, p)) do
+     │                                                          ^^^
+     │
+     └─ /tmp/achilles-numbers.exs:183:58: Main.getAchilles/2
+
+     warning: variable "achilles" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │                       achilles = Map.put(achilles, p, true)
+     │                       ~
+     │
+     └─ /tmp/achilles-numbers.exs:184:23: Main.getAchilles/2
+
+     warning: variable "idx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 246 │                     idx = i
+     │                     ~
+     │
+     └─ /tmp/achilles-numbers.exs:246:21: Main.sortInts/1
+
+     warning: variable "min" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 245 │                     min = Enum.at(tmp, i)
+     │                     ~
+     │
+     └─ /tmp/achilles-numbers.exs:245:21: Main.sortInts/1
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 274 │                     out = out ++ [Enum.at(tmp, j)]
+     │                     ~
+     │
+     └─ /tmp/achilles-numbers.exs:274:21: Main.sortInts/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 374 │                     line = line <> " "
+     │                     ~
+     │
+     └─ /tmp/achilles-numbers.exs:374:21: Main.main/0
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 422 │               count = count + 1
+     │               ~
+     │
+     └─ /tmp/achilles-numbers.exs:422:15: Main.main/0
+
+     warning: variable "strong" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 421 │               strong = strong ++ [Enum.at(ach, idx)]
+     │               ~
+     │
+     └─ /tmp/achilles-numbers.exs:421:15: Main.main/0
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 456 │                     line = line <> " "
+     │                     ~
+     │
+     └─ /tmp/achilles-numbers.exs:456:21: Main.main/0
+
+** (CompileError) /tmp/achilles-numbers.exs: cannot compile module Main (errors have been logged)
+

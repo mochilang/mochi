@@ -1,0 +1,78 @@
+run: signal: killed
+    warning: variable "spf" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 45 │                         spf = Map.put(spf, j, i)
+    │                         ~
+    │
+    └─ /tmp/arithmetic-numbers.exs:45:25: Main.sieve/1
+
+    warning: variable "primes" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │               primes = primes ++ [i]
+    │               ~
+    │
+    └─ /tmp/arithmetic-numbers.exs:97:15: Main.primesFrom/2
+
+     warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 167 │               out = "," <> out
+     │               ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:167:15: Main.commatize/1
+
+     warning: variable "hi" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │               hi = mid
+     │               ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:208:15: Main.primeCount/3
+
+     warning: variable "lo" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 206 │               lo = mid + 1
+     │               ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:206:15: Main.primeCount/3
+
+     warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 229 │         count = count - 1
+     │         ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:229:9: Main.primeCount/3
+
+     warning: variable "p" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 266 │                       p = x
+     │                       ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:266:23: Main.arithmeticNumbers/2
+
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 317 │                 arr = arr ++ [n]
+     │                 ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:317:17: Main.arithmeticNumbers/2
+
+     warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 250 │               arr = arr ++ [n]
+     │               ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:250:15: Main.arithmeticNumbers/2
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 366 │                     line = line <> " "
+     │                     ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:366:21: Main.main/0
+
+     warning: this clause for main/0 cannot match because a previous clause at line 342 always matches
+     │
+ 415 │   def main do
+     │       ~
+     │
+     └─ /tmp/arithmetic-numbers.exs:415:7
+

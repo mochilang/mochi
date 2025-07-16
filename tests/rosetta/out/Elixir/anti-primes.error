@@ -1,0 +1,41 @@
+run: exit status 1
+    warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 20 │               count = count + 1
+    │               ~
+    │
+    └─ /tmp/anti-primes.exs:20:15: Main.countDivisors/1
+
+    warning: variable "count" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │               count = count + 1
+    │               ~
+    │
+    └─ /tmp/anti-primes.exs:65:15: Main.main/0
+
+    warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 63 │               line = (line + to_string(n)) <> " "
+    │               ~
+    │
+    └─ /tmp/anti-primes.exs:63:15: Main.main/0
+
+    warning: variable "maxDiv" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 64 │               maxDiv = d
+    │               ~
+    │
+    └─ /tmp/anti-primes.exs:64:15: Main.main/0
+
+    warning: this clause for main/0 cannot match because a previous clause at line 44 always matches
+    │
+ 91 │   def main do
+    │       ~
+    │
+    └─ /tmp/anti-primes.exs:91:7
+
+** (ArithmeticError) bad argument in arithmetic expression: "" + "1"
+    :erlang.+("", "1")
+    /tmp/anti-primes.exs:63: anonymous fn/5 in Main.main/0
+    /tmp/anti-primes.exs:79: Main.main/0
+    /tmp/anti-primes.exs:107: (file)

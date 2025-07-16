@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/biorhythms.exs:3:6:
+    error: syntax error before: "3.141592653589793"
+    │
+  3 │ 	@PI 3.141592653589793
+    │      ^
+    │
+    └─ /tmp/biorhythms.exs:3:6
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

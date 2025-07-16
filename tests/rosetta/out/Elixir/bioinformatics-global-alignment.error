@@ -1,0 +1,89 @@
+run: exit status 1
+     warning: variable "found" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 117 │                     found = true
+     │                     ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:117:21: Main.distinct/1
+
+     warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 131 │               res = res ++ [s]
+     │               ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:131:15: Main.distinct/1
+
+     warning: variable "rest" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 172 │                     rest = rest ++ [Enum.at(xs, j)]
+     │                     ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:172:21: Main.permutations/1
+
+     warning: variable "within" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 302 │                     within = true
+     │                     ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:302:21: Main.deduplicate/1
+
+     warning: variable "filtered" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 322 │               filtered = filtered ++ [s1]
+     │               ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:322:15: Main.deduplicate/1
+
+     warning: variable "shortest" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 407 │               shortest = sup
+     │               ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:407:15: Main.shortestCommonSuperstring/1
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 459 │                     t = t + 1
+     │                     ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:459:21: Main.printCounts/1
+
+     warning: variable "g" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 456 │                   g = g + 1
+     │                   ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:456:19: Main.printCounts/1
+
+     warning: variable "c" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 453 │                 c = c + 1
+     │                 ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:453:17: Main.printCounts/1
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 450 │               a = a + 1
+     │               ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:450:15: Main.printCounts/1
+
+     warning: this clause for main/0 cannot match because a previous clause at line 497 always matches
+     │
+ 529 │   def main do
+     │       ~
+     │
+     └─ /tmp/bioinformatics-global-alignment.exs:529:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length(nil)
+    /tmp/bioinformatics-global-alignment.exs:406: anonymous fn/5 in Main.shortestCommonSuperstring/1
+    /tmp/bioinformatics-global-alignment.exs:421: Main.shortestCommonSuperstring/1
+    /tmp/bioinformatics-global-alignment.exs:521: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/bioinformatics-global-alignment.exs:520: Main.main/0
+    /tmp/bioinformatics-global-alignment.exs:553: (file)

@@ -1,0 +1,17 @@
+run: exit status 1
+    error: undefined variable "int"
+    │
+  6 │       a = int.(_input())
+    │           ^^^
+    │
+    └─ /tmp/a+b.exs:6:11: Main.main/0
+
+    error: undefined variable "int"
+    │
+  7 │       b = int.(_input())
+    │           ^^^
+    │
+    └─ /tmp/a+b.exs:7:11: Main.main/0
+
+** (CompileError) /tmp/a+b.exs: cannot compile module Main (errors have been logged)
+

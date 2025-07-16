@@ -1,0 +1,43 @@
+run: exit status 1
+    warning: variable "out" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 37 │                 out = out <> ", "
+    │                 ~
+    │
+    └─ /tmp/active-directory-search-for-a-user.exs:37:17: Main.main/0
+
+    warning: variable "client" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 15 │       client = %{
+    │       ~
+    │
+    └─ /tmp/active-directory-search-for-a-user.exs:15:7: Main.main/0
+
+    warning: this clause for main/0 cannot match because a previous clause at line 13 always matches
+    │
+ 64 │   def main do
+    │       ~
+    │
+    └─ /tmp/active-directory-search-for-a-user.exs:64:7
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"john" => ["users"], "username" => ["admins", "users"]}
+    
+        # 2
+        "username"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/active-directory-search-for-a-user.exs:6: Main.search_user/2
+    /tmp/active-directory-search-for-a-user.exs:23: Main.main/0
+    /tmp/active-directory-search-for-a-user.exs:69: (file)

@@ -1,0 +1,22 @@
+run: exit status 1
+    warning: variable "arr" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 25 │                     arr = Map.put(arr, j + 1, tmp)
+    │                     ~
+    │
+    └─ /tmp/averages-median-1.exs:25:21: Main.sortFloat/1
+
+    warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 72 │         m = (m + Enum.at(arr, half - 1)) / 2
+    │         ~
+    │
+    └─ /tmp/averages-median-1.exs:72:9: Main.median/1
+
+** (BadMapError) expected a map, got: [3, 1, 4, 1]
+    /tmp/averages-median-1.exs:24: anonymous fn/4 in Main.sortFloat/1
+    /tmp/averages-median-1.exs:39: anonymous fn/4 in Main.sortFloat/1
+    /tmp/averages-median-1.exs:53: Main.sortFloat/1
+    /tmp/averages-median-1.exs:65: Main.median/1
+    /tmp/averages-median-1.exs:82: Main.main/0
+    /tmp/averages-median-1.exs:87: (file)

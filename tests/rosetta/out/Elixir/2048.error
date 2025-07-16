@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/2048.exs:3:8:
+    error: syntax error before: "4"
+    │
+  3 │ 	@SIZE 4
+    │        ^
+    │
+    └─ /tmp/2048.exs:3:8
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

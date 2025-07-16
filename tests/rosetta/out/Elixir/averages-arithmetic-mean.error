@@ -1,0 +1,30 @@
+run: exit status 1
+    warning: this clause for main/0 cannot match because a previous clause at line 41 always matches
+    │
+ 71 │   def main do
+    │       ~
+    │
+    └─ /tmp/averages-arithmetic-mean.exs:71:7
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"ok" => false}
+    
+        # 2
+        "ok"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/averages-arithmetic-mean.exs:55: anonymous fn/1 in Main.main/0
+    (elixir 1.18.3) lib/enum.ex:1714: Enum."-map/2-lists^map/1-1-"/2
+    /tmp/averages-arithmetic-mean.exs:51: Main.main/0
+    /tmp/averages-arithmetic-mean.exs:84: (file)

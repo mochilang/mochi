@@ -1,0 +1,21 @@
+run: exit status 1
+    warning: variable "clicks" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 51 │             clicks = clicks + 1
+    │             ~
+    │
+    └─ /tmp/animation.exs:51:13: Main.main/0
+
+    warning: variable "inc" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 50 │             inc = String.length(@msg) - inc
+    │             ~
+    │
+    └─ /tmp/animation.exs:50:13: Main.main/0
+
+** (ArithmeticError) bad argument in arithmetic expression: "" + "H"
+    :erlang.+("", "H")
+    /tmp/animation.exs:30: anonymous fn/4 in Main.main/0
+    /tmp/animation.exs:42: anonymous fn/5 in Main.main/0
+    /tmp/animation.exs:64: Main.main/0
+    /tmp/animation.exs:83: (file)

@@ -1,0 +1,16 @@
+run: exit status 1
+    warning: variable "minIndex" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 21 │                     minIndex = j
+    │                     ~
+    │
+    └─ /tmp/averages-median-2.exs:21:21: Main.sel/2
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(2.0)
+    /tmp/averages-median-2.exs:66: Main.median/1
+    /tmp/averages-median-2.exs:80: Main.main/0
+    /tmp/averages-median-2.exs:85: (file)

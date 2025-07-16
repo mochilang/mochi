@@ -1,0 +1,21 @@
+run: exit status 1
+    warning: variable "s" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 18 │               s = s ++ " "
+    │               ~
+    │
+    └─ /tmp/arrays.exs:18:15: Main.listStr/1
+
+    warning: variable "i" is unused (if the variable is not meant to be used, prefix it with an underscore)
+    │
+ 77 │       Enum.reduce(0..(8 - 1), {s}, fn i, {s} ->
+    │                                       ~
+    │
+    └─ /tmp/arrays.exs:77:39: Main.main/0
+
+** (ArgumentError) argument error
+    :erlang.++("[", "0")
+    /tmp/arrays.exs:15: anonymous fn/4 in Main.listStr/1
+    /tmp/arrays.exs:32: Main.listStr/1
+    /tmp/arrays.exs:47: Main.main/0
+    /tmp/arrays.exs:89: (file)

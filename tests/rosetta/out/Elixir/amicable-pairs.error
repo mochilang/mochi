@@ -1,0 +1,15 @@
+run: signal: killed
+    warning: variable "sum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │               sum = sum + p
+    │               ~
+    │
+    └─ /tmp/amicable-pairs.exs:16:15: Main.pfacSum/1
+
+     warning: this clause for main/0 cannot match because a previous clause at line 68 always matches
+     │
+ 144 │   def main do
+     │       ~
+     │
+     └─ /tmp/amicable-pairs.exs:144:7
+

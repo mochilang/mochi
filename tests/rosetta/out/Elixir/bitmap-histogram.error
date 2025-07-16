@@ -1,0 +1,81 @@
+run: exit status 1
+    warning: variable "bins" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 16 │         bins = length(Enum.at(g, 0))
+    │         ~
+    │
+    └─ /tmp/bitmap-histogram.exs:16:9: Main.histogram/2
+
+     warning: variable "uSum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 114 │               uSum = uSum + Enum.at(h, ub)
+     │               ~
+     │
+     └─ /tmp/bitmap-histogram.exs:114:15: Main.medianThreshold/1
+
+     warning: variable "ub" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 115 │               ub = ub - 1
+     │               ~
+     │
+     └─ /tmp/bitmap-histogram.exs:115:15: Main.medianThreshold/1
+
+     warning: variable "lSum" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 111 │               lSum = lSum + Enum.at(h, lb)
+     │               ~
+     │
+     └─ /tmp/bitmap-histogram.exs:111:15: Main.medianThreshold/1
+
+     warning: variable "lb" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 112 │               lb = lb + 1
+     │               ~
+     │
+     └─ /tmp/bitmap-histogram.exs:112:15: Main.medianThreshold/1
+
+     warning: variable "newRow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │                     newRow = newRow ++ [65535]
+     │                     ~
+     │
+     └─ /tmp/bitmap-histogram.exs:163:21: Main.threshold/2
+
+     warning: variable "newRow" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 161 │                     newRow = newRow ++ [0]
+     │                     ~
+     │
+     └─ /tmp/bitmap-histogram.exs:161:21: Main.threshold/2
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 223 │                     line = line <> "1"
+     │                     ~
+     │
+     └─ /tmp/bitmap-histogram.exs:223:21: Main.printImage/1
+
+     warning: variable "line" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 221 │                     line = line <> "0"
+     │                     ~
+     │
+     └─ /tmp/bitmap-histogram.exs:221:21: Main.printImage/1
+
+     warning: this clause for main/0 cannot match because a previous clause at line 260 always matches
+     │
+ 274 │   def main do
+     │       ~
+     │
+     └─ /tmp/bitmap-histogram.exs:274:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(0.0)
+    /tmp/bitmap-histogram.exs:58: anonymous fn/5 in Main.histogram/2
+    /tmp/bitmap-histogram.exs:72: anonymous fn/5 in Main.histogram/2
+    /tmp/bitmap-histogram.exs:86: Main.histogram/2
+    /tmp/bitmap-histogram.exs:263: Main.main/0
+    /tmp/bitmap-histogram.exs:279: (file)

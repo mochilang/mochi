@@ -1,0 +1,73 @@
+run: exit status 1
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 24 │               cur = cur + ch
+    │               ~
+    │
+    └─ /tmp/99-bottles-of-beer-2.exs:24:15: Main.fields/1
+
+    warning: variable "cur" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 21 │                 cur = ""
+    │                 ~
+    │
+    └─ /tmp/99-bottles-of-beer-2.exs:21:17: Main.fields/1
+
+    warning: variable "words" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 20 │                 words = words ++ [cur]
+    │                 ~
+    │
+    └─ /tmp/99-bottles-of-beer-2.exs:20:17: Main.fields/1
+
+    warning: variable "words" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 44 │         words = words ++ [cur]
+    │         ~
+    │
+    └─ /tmp/99-bottles-of-beer-2.exs:44:9: Main.fields/1
+
+    warning: variable "res" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 65 │               res = res + sep
+    │               ~
+    │
+    └─ /tmp/99-bottles-of-beer-2.exs:65:15: Main.join/2
+
+     warning: variable "t" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 143 │           t = (t <> " ") <> Enum.at(small, s)
+     │           ~
+     │
+     └─ /tmp/99-bottles-of-beer-2.exs:143:11: Main.numberName/1
+
+     warning: variable "w" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 165 │         w = Map.put(w, 0, Enum.at(w, 0) <> "s")
+     │         ~
+     │
+     └─ /tmp/99-bottles-of-beer-2.exs:165:9: Main.pluralizeFirst/2
+
+     warning: variable "a" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 228 │               a = Map.put(a, j, tmp)
+     │               ~
+     │
+     └─ /tmp/99-bottles-of-beer-2.exs:228:15: Main.slur/2
+
+     warning: this clause for main/0 cannot match because a previous clause at line 278 always matches
+     │
+ 324 │   def main do
+     │       ~
+     │
+     └─ /tmp/99-bottles-of-beer-2.exs:324:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a binary
+
+    :erlang.binary_to_integer(9.9)
+    /tmp/99-bottles-of-beer-2.exs:137: Main.numberName/1
+    /tmp/99-bottles-of-beer-2.exs:287: anonymous fn/2 in Main.main/0
+    /tmp/99-bottles-of-beer-2.exs:317: Main.main/0
+    /tmp/99-bottles-of-beer-2.exs:340: (file)

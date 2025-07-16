@@ -1,0 +1,9 @@
+run: exit status 1
+** (SyntaxError) invalid syntax found on /tmp/aliquot-sequence-classifications.exs:3:13:
+    error: syntax error before: "140737488355328"
+    │
+  3 │ 	@THRESHOLD 140737488355328
+    │             ^
+    │
+    └─ /tmp/aliquot-sequence-classifications.exs:3:13
+    (elixir 1.18.3) lib/code.ex:1525: Code.require_file/2

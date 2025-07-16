@@ -1,0 +1,88 @@
+run: exit status 1
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 52 │                   b = b ++ [0 - 1]
+    │                   ~
+    │
+    └─ /tmp/balanced-ternary.exs:52:19: Main.btString/1
+
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 49 │                 b = b ++ [0]
+    │                 ~
+    │
+    └─ /tmp/balanced-ternary.exs:49:17: Main.btString/1
+
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 46 │               b = b ++ [1]
+    │               ~
+    │
+    └─ /tmp/balanced-ternary.exs:46:15: Main.btString/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 102 │                 r = r <> "+"
+     │                 ~
+     │
+     └─ /tmp/balanced-ternary.exs:102:17: Main.btToString/1
+
+     warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 100 │                 r = r <> "0"
+     │                 ~
+     │
+     └─ /tmp/balanced-ternary.exs:100:17: Main.btToString/1
+
+    warning: variable "r" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 97 │               r = r <> "-"
+    │               ~
+    │
+    └─ /tmp/balanced-ternary.exs:97:15: Main.btToString/1
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 150 │                 m = 1
+     │                 ~
+     │
+     └─ /tmp/balanced-ternary.exs:150:17: Main.btInt/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 151 │                 n = n - 1
+     │                 ~
+     │
+     └─ /tmp/balanced-ternary.exs:151:17: Main.btInt/1
+
+     warning: variable "m" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 146 │               m = 0 - 1
+     │               ~
+     │
+     └─ /tmp/balanced-ternary.exs:146:15: Main.btInt/1
+
+     warning: variable "n" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 147 │               n = n + 1
+     │               ~
+     │
+     └─ /tmp/balanced-ternary.exs:147:15: Main.btInt/1
+
+     warning: this clause for main/0 cannot match because a previous clause at line 302 always matches
+     │
+ 318 │   def main do
+     │       ~
+     │
+     └─ /tmp/balanced-ternary.exs:318:7
+
+** (ArgumentError) errors were found at the given arguments:
+
+  * 1st argument: not a list
+
+    :erlang.length("+-0++0+")
+    /tmp/balanced-ternary.exs:11: anonymous fn/3 in Main.trimLeftZeros/1
+    /tmp/balanced-ternary.exs:23: Main.trimLeftZeros/1
+    /tmp/balanced-ternary.exs:34: Main.btString/1
+    /tmp/balanced-ternary.exs:304: Main.main/0
+    /tmp/balanced-ternary.exs:334: (file)

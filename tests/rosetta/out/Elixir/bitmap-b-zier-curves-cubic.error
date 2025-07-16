@@ -1,0 +1,70 @@
+run: exit status 1
+    warning: variable "b" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+    │
+ 84 │         b =
+    │         ~
+    │
+    └─ /tmp/bitmap-b-zier-curves-cubic.exs:84:9: Main.setPx/4
+
+     warning: variable "dx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 163 │         dx = -dx
+     │         ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:163:9: Main.line/6
+
+     warning: variable "dy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 170 │         dy = -dy
+     │         ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:170:9: Main.line/6
+
+     warning: variable "sx" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 177 │         sx = 1
+     │         ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:177:9: Main.line/6
+
+     warning: variable "sy" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 184 │         sy = 1
+     │         ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:184:9: Main.line/6
+
+     warning: variable "err" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 202 │               err = err - dy
+     │               ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:202:15: Main.line/6
+
+     warning: variable "x0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 203 │               x0 = x0 + sx
+     │               ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:203:15: Main.line/6
+
+     warning: variable "err" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 207 │               err = err + dx
+     │               ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:207:15: Main.line/6
+
+     warning: variable "y0" is unused (there is a variable with the same name in the context, use the pin operator (^) to match on it or prefix this variable with underscore if it is not meant to be used)
+     │
+ 208 │               y0 = y0 + sy
+     │               ~
+     │
+     └─ /tmp/bitmap-b-zier-curves-cubic.exs:208:15: Main.line/6
+
+** (ArithmeticError) bad argument in arithmetic expression: rem(255.93650817871094, 256)
+    :erlang.rem(255.93650817871094, 256)
+    /tmp/bitmap-b-zier-curves-cubic.exs:12: Main.pixelFromRgb/1
+    /tmp/bitmap-b-zier-curves-cubic.exs:150: Main.fillRgb/2
+    /tmp/bitmap-b-zier-curves-cubic.exs:354: Main.main/0
+    /tmp/bitmap-b-zier-curves-cubic.exs:359: (file)

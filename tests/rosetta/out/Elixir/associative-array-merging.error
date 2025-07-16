@@ -1,0 +1,31 @@
+run: exit status 1
+    warning: this clause for main/0 cannot match because a previous clause at line 31 always matches
+    │
+ 42 │   def main do
+    │       ~
+    │
+    └─ /tmp/associative-array-merging.exs:42:7
+
+** (FunctionClauseError) no function clause matching in Enum.at/3    
+    
+    The following arguments were given to Enum.at/3:
+    
+        # 1
+        %{"color" => "yellow", "name" => "Rocket Skates", "price" => 12.75}
+    
+        # 2
+        "color"
+    
+        # 3
+        nil
+    
+    Attempted function clauses (showing 1 out of 1):
+    
+        def at(+enumerable+, +index+, +default+) when -is_integer(index)-
+    
+    (elixir 1.18.3) lib/enum.ex:478: Enum.at/3
+    /tmp/associative-array-merging.exs:11: anonymous fn/3 in Main.merge/2
+    (elixir 1.18.3) lib/enum.ex:2546: Enum."-reduce/3-lists^foldl/2-0-"/3
+    /tmp/associative-array-merging.exs:10: Main.merge/2
+    /tmp/associative-array-merging.exs:35: Main.main/0
+    /tmp/associative-array-merging.exs:55: (file)

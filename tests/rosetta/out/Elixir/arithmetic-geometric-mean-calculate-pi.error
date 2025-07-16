@@ -1,0 +1,10 @@
+run: exit status 1
+    error: imported Kernel.abs/1 conflicts with local function
+    │
+  4 │   def abs(x) do
+    │       ^
+    │
+    └─ /tmp/arithmetic-geometric-mean-calculate-pi.exs:4:7: Main (module)
+
+** (CompileError) /tmp/arithmetic-geometric-mean-calculate-pi.exs: cannot compile module Main (errors have been logged)
+
