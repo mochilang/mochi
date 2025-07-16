@@ -72,11 +72,40 @@ function getCombs($low, $high, $unique) {
     return ["count" => $count, "list" => $valid];
 }
 $r1 = getCombs(1, 7, true);
-echo strval($r1["count"]) . " unique solutions in 1 to 7", "\n";
-echo $r1["list"], "\n";
+_print(strval($r1["count"]) . " unique solutions in 1 to 7");
+_print($r1["list"]);
 $r2 = getCombs(3, 9, true);
-echo strval($r2["count"]) . " unique solutions in 3 to 9", "\n";
-echo $r2["list"], "\n";
+_print(strval($r2["count"]) . " unique solutions in 3 to 9");
+_print($r2["list"]);
 $r3 = getCombs(0, 9, false);
-echo strval($r3["count"]) . " non-unique solutions in 0 to 9", "\n";
+_print(strval($r3["count"]) . " non-unique solutions in 0 to 9");
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
 ?>
