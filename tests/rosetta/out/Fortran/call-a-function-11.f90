@@ -8,7 +8,7 @@ program call_a_function_11
     character(len=100) :: s1
     integer, dimension(1) :: box
     character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive integer function zeroval(ival) result(res)
     integer, intent(in) :: ival
@@ -17,11 +17,11 @@ program call_a_function_11
     res = x
     return
   end function zeroval
-  recursive integer function zeroptr(ref) result(res)
+  recursive subroutine zeroptr(ref)
     integer, intent(in) :: ref
     ref(((0)+1)) = 0
-  end function zeroptr
-  recursive integer function main() result(res)
+  end subroutine zeroptr
+  recursive subroutine main()
     i = 1
     write(s0,'(G0)') i
     print *, 'initial: ' // s0
@@ -29,10 +29,10 @@ program call_a_function_11
     write(s1,'(G0)') i
     print *, 'zeroval: ' // s1
     box = (/i/)
-    zeroptr(box)
+    call zeroptr(box)
     i = box(((0)+1))
     write(s2,'(G0)') i
     print *, 'zeroptr: ' // s2
     print *, 'pointer: 0'
-  end function main
+  end subroutine main
 end program call_a_function_11

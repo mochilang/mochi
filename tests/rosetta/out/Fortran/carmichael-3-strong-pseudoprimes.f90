@@ -10,13 +10,12 @@ program carmichael_3_strong_pseudoprimes
           integer :: p3
           integer :: c
           character(len=100) :: s1
-  print *, 'The following are Carmichael munbers for p1 <= 61:
-'
+  print *, 'The following are Carmichael munbers for p1 <= 61:'//char(10)//''
   print *, 'p1     p2      p3     product'
   print *, '==     ==      ==     ======='
   do p1 = 2, 62
     if (isPrime(p1)) then
-      carmichael(p1)
+      call carmichael(p1)
     end if
   end do
   contains
@@ -67,7 +66,7 @@ program carmichael_3_strong_pseudoprimes
     res = s
     return
   end function pad
-  recursive integer function carmichael(p1) result(res)
+  recursive subroutine carmichael(p1)
     integer, intent(in) :: p1
     do h3 = 2, p1
       do d = 1, ((h3 + p1))
@@ -89,5 +88,5 @@ program carmichael_3_strong_pseudoprimes
         end if
       end do
     end do
-  end function carmichael
+  end subroutine carmichael
 end program carmichael_3_strong_pseudoprimes

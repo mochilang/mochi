@@ -7,7 +7,7 @@ program ackermann_function_2
     character(len=100) :: s1
     character(len=100) :: s2
     character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive integer function pow(base,exp) result(res)
     integer, intent(in) :: base
@@ -47,7 +47,7 @@ program ackermann_function_2
     res = ackermann2((m - 1),ackermann2(m,(n - 1)))
     return
   end function ackermann2
-  recursive integer function main() result(res)
+  recursive subroutine main()
     write(s0,'(G0)') ackermann2(0,0)
     print *, 'A(0, 0) = ' // s0
     write(s1,'(G0)') ackermann2(1,2)
@@ -56,5 +56,5 @@ program ackermann_function_2
     print *, 'A(2, 4) = ' // s2
     write(s3,'(G0)') ackermann2(3,4)
     print *, 'A(3, 4) = ' // s3
-  end function main
+  end subroutine main
 end program ackermann_function_2

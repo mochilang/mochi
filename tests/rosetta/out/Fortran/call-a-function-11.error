@@ -1,11 +1,11 @@
 gfortran: exit status 1
-/tmp/call-a-function-11.f90:11:3:
+/tmp/call-a-function-11.f90:22:5:
 
-   11 |   main()
-      |   1
+   22 |     ref(((0)+1)) = 0
+      |     1
 Error: Unclassifiable statement at (1)
-/tmp/call-a-function-11.f90:32:12:
+/tmp/call-a-function-11.f90:32:17:
 
-   32 |     zeroptr(box)
-      |            1
-Error: ‘zeroptr’ at (1) is not a variable
+   32 |     call zeroptr(box)
+      |                 1
+Error: Rank mismatch in argument ‘ref’ at (1) (scalar and rank-1)

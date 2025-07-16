@@ -1,8 +1,56 @@
-type: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
+gfortran: exit status 1
+/tmp/averages-mean-time-of-day.f90:154:5:
 
- 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
-    |                ^
+  154 |     s = int((mod(si,60)))
+      |     1
+Error: Symbol ‘s’ at (1) has no IMPLICIT type
+/tmp/averages-mean-time-of-day.f90:133:54:
 
-help:
-  Ensure the argument type matches the function’s signature.
+  133 |   recursive character(len=100) function meanTime(times) result(res)
+      |                                                      1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘times’ at (1)
+/tmp/averages-mean-time-of-day.f90:159:13:
+
+  159 |     inputs = (/'23:00:17','23:40:20','00:12:45','00:17:19'/)
+      |             1
+Error: Cannot convert CHARACTER(8) to INTEGER(4) at (1)
+/tmp/averages-mean-time-of-day.f90:160:22:
+
+  160 |     print *, meanTime(inputs)
+      |                      1
+Error: Rank mismatch in argument ‘times’ at (1) (scalar and rank-1)
+/tmp/averages-mean-time-of-day.f90:139:12:
+
+  139 |       sec = parseSec(times(((i)+1)))
+      |            1
+Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
+/tmp/averages-mean-time-of-day.f90:98:24:
+
+   98 |     do while ((i < size(digits)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/averages-mean-time-of-day.f90:141:30:
+
+  141 |       ssum = (ssum + sinApprox(ang))
+      |                              1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/averages-mean-time-of-day.f90:142:30:
+
+  142 |       csum = (csum + cosApprox(ang))
+      |                              1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/averages-mean-time-of-day.f90:138:24:
+
+  138 |     do while ((i < size(times)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/averages-mean-time-of-day.f90:145:12:
+
+  145 |     theta = atan2Approx(ssum,csum)
+      |            1
+Error: Type mismatch in argument ‘y’ at (1); passed INTEGER(4) to REAL(4)
+/tmp/averages-mean-time-of-day.f90:145:12:
+
+  145 |     theta = atan2Approx(ssum,csum)
+      |            1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)

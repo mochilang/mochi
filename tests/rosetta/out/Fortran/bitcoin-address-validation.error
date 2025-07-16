@@ -1,8 +1,71 @@
-type: error[T003]: unknown function: sha256
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
+gfortran: exit status 1
+/tmp/bitcoin-address-validation.f90:53:18:
 
- 43 |   let first = sha256(bs)
-    |               ^
+   53 |         res = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/bitcoin-address-validation.f90:64:18:
 
-help:
-  Ensure the function is defined before it's called.
+   64 |         res = (//)
+      |                  1
+Error: Empty array constructor at (1) is not allowed
+/tmp/bitcoin-address-validation.f90:80:28:
+
+   80 |     hash = doubleSHA256(a(1:21))
+      |                            1
+Error: Syntax error in argument list at (1)
+/tmp/bitcoin-address-validation.f90:98:36:
+
+   98 |       if ((a((((21 + i))+1)) /= sum(((i)+1)))) then
+      |                                    1
+Error: Expected a right parenthesis in expression at (1)
+/tmp/bitcoin-address-validation.f90:101:9:
+
+  101 |       end if
+      |         1
+Error: Expecting END DO statement at (1)
+/tmp/bitcoin-address-validation.f90:50:8:
+
+   50 |       ch = addr((idx)+1:(idx + 1))
+      |        1
+Error: Symbol ‘ch’ at (1) has no IMPLICIT type
+/tmp/bitcoin-address-validation.f90:49:26:
+
+   49 |     do while ((idx < size(addr)))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/bitcoin-address-validation.f90:69:4:
+
+   69 |     res = a
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/tmp/bitcoin-address-validation.f90:95:26:
+
+   95 |     sum = computeChecksum(a)
+      |                          1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/tmp/bitcoin-address-validation.f90:74:12:
+
+   74 |     first = sha256(bs)
+      |            1
+Error: Function ‘sha256’ at (1) has no IMPLICIT type; did you mean ‘doublesha256’?
+/tmp/bitcoin-address-validation.f90:75:10:
+
+   75 |     res = sha256(first)
+      |          1
+Error: Function ‘sha256’ at (1) has no IMPLICIT type; did you mean ‘doublesha256’?
+/tmp/bitcoin-address-validation.f90:25:24:
+
+   25 |     do while ((i < size(s)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/bitcoin-address-validation.f90:16:28:
+
+   16 |   write(s0,'(G0)') validA58('1AGNa15ZQXAZUgFiqJ3i7Z2DPU2J6hW62i')
+      |                            1
+Warning: Character length of actual argument shorter than of dummy argument ‘addr’ (34/100) at (1)
+/tmp/bitcoin-address-validation.f90:18:28:
+
+   18 |   write(s1,'(G0)') validA58('17NdbrSGoUotzeGCcMMCqnFkEvLymoou9j')
+      |                            1
+Warning: Character length of actual argument shorter than of dummy argument ‘addr’ (34/100) at (1)

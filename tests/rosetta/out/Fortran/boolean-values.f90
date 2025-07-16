@@ -7,7 +7,7 @@ program boolean_values
     integer :: y
     character(len=100) :: str1
     integer :: bolStr
-  main()
+  call main()
   contains
   recursive logical function parseBool(s) result(res)
     character(len=100), intent(in) :: s
@@ -19,7 +19,7 @@ program boolean_values
     res = .false.
     return
   end function parseBool
-  recursive integer function main() result(res)
+  recursive subroutine main()
     n = .true.
     print *, n
     print *, 'bool'
@@ -29,12 +29,10 @@ program boolean_values
     y = 8
     print *, 'x == y:', (x == y)
     print *, 'x < y:', (x < y)
-    print *, '
-Convert String into Boolean Data type
-'
+    print *, ''//char(10)//'Convert String into Boolean Data type'//char(10)//''
     str1 = 'japan'
     print *, 'Before :', 'string'
     bolStr = parseBool(str1)
     print *, 'After :', 'bool'
-  end function main
+  end subroutine main
 end program boolean_values

@@ -1,14 +1,9 @@
 gfortran: exit status 1
-/tmp/atomic-updates.f90:33:3:
+/tmp/atomic-updates.f90:78:7:
 
-   33 |   main()
-      |   1
+   78 |       seedOrder = r(((0)+1))
+      |       1
 Error: Unclassifiable statement at (1)
-/tmp/atomic-updates.f90:52:18:
-
-   52 |     buckets = (//)
-      |                  1
-Error: Empty array constructor at (1) is not allowed
 /tmp/atomic-updates.f90:39:4:
 
    39 |     res = (/next,mod(next,n)/)

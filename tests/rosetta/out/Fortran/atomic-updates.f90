@@ -4,7 +4,7 @@ program atomic_updates
     integer :: next
     integer :: nBuckets
     integer :: initialSum
-    integer, dimension(0) :: buckets
+    integer, allocatable, dimension(:) :: buckets
     integer :: i
       integer, allocatable, dimension(:) :: app0
     integer :: dist
@@ -30,7 +30,7 @@ program atomic_updates
       character(len=100) :: s3
       character(len=100) :: s4
       character(len=100) :: s5
-  main()
+  call main()
   contains
   recursive integer function randOrder(seed,n) result(res)
     integer, intent(in) :: seed
@@ -46,11 +46,12 @@ program atomic_updates
     res = (/next,mod(next,n)/)
     return
   end function randChaos
-  recursive integer function main() result(res)
+  recursive subroutine main()
     nBuckets = 10
     initialSum = 1000
-    buckets = (//)
+    allocate(buckets(0))
     do i = 0, nBuckets
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(buckets)+1))
       app0(1:size(buckets)) = buckets
       app0(size(buckets)+1) = 0
@@ -126,5 +127,5 @@ program atomic_updates
       tc1 = 0
       t = (t + 1)
     end do
-  end function main
+  end subroutine main
 end program atomic_updates

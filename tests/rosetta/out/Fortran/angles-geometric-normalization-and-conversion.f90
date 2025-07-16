@@ -27,7 +27,7 @@ program angles_geometric_normalization_and_conversion
       character(len=100) :: s21
       character(len=100) :: s22
       character(len=100) :: s23
-  main()
+  call main()
   contains
   recursive real function d2d(d) result(res)
     real, intent(in) :: d
@@ -109,7 +109,7 @@ program angles_geometric_normalization_and_conversion
     res = ((r2r(r) * 3200) / 3.141592653589793)
     return
   end function r2m
-  recursive integer function main() result(res)
+  recursive subroutine main()
     angles = (/-2,-1,0,1,2,6.2831853,16,57.2957795,359,399,6399,1e+06/)
     print *, 'degrees normalized_degs gradians mils radians'
     do i0 = 1, size(angles)
@@ -121,8 +121,7 @@ program angles_geometric_normalization_and_conversion
       write(s5,'(G0)') d2r(a)
       print *, trim(trim(trim(trim(trim(trim(trim(s1 // ' ') // s2) // ' ') // s3) // ' ') // s4) // ' ') // s5
     end do
-    print *, '
-gradians normalized_grds degrees mils radians'
+    print *, ''//char(10)//'gradians normalized_grds degrees mils radians'
     do i6 = 1, size(angles)
       a = angles(i6)
       write(s7,'(G0)') a
@@ -132,8 +131,7 @@ gradians normalized_grds degrees mils radians'
       write(s11,'(G0)') g2r(a)
       print *, trim(trim(trim(trim(trim(trim(trim(s7 // ' ') // s8) // ' ') // s9) // ' ') // s10) // ' ') // s11
     end do
-    print *, '
-mils normalized_mils degrees gradians radians'
+    print *, ''//char(10)//'mils normalized_mils degrees gradians radians'
     do i12 = 1, size(angles)
       a = angles(i12)
       write(s13,'(G0)') a
@@ -143,8 +141,7 @@ mils normalized_mils degrees gradians radians'
       write(s17,'(G0)') m2r(a)
       print *, trim(trim(trim(trim(trim(trim(trim(s13 // ' ') // s14) // ' ') // s15) // ' ') // s16) // ' ') // s17
     end do
-    print *, '
-radians normalized_rads degrees gradians mils'
+    print *, ''//char(10)//'radians normalized_rads degrees gradians mils'
     do i18 = 1, size(angles)
       a = angles(i18)
       write(s19,'(G0)') a
@@ -154,5 +151,5 @@ radians normalized_rads degrees gradians mils'
       write(s23,'(G0)') r2m(a)
       print *, trim(trim(trim(trim(trim(trim(trim(s19 // ' ') // s20) // ' ') // s21) // ' ') // s22) // ' ') // s23
     end do
-  end function main
+  end subroutine main
 end program angles_geometric_normalization_and_conversion

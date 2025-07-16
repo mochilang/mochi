@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/arithmetic-rational.f90:19:3:
-
-   19 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/arithmetic-rational.f90:68:7:
 
    68 |       n = nums(i0)

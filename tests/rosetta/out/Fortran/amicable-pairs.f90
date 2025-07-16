@@ -5,10 +5,10 @@ program amicable_pairs
     integer :: p
     integer :: s
     character(len=100) :: s0
-    integer, dimension(0) :: sums
+    integer, allocatable, dimension(:) :: sums
       integer, allocatable, dimension(:) :: app1
       integer :: m
-  main()
+  call main()
   contains
   recursive integer function pfacSum(i) result(res)
     integer, intent(in) :: i
@@ -34,10 +34,11 @@ program amicable_pairs
     res = s
     return
   end function pad
-  recursive integer function main() result(res)
-    sums = (//)
+  recursive subroutine main()
+    allocate(sums(0))
     i = 0
     do while ((i < 20000))
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(sums)+1))
       app1(1:size(sums)) = sums
       app1(size(sums)+1) = 0
@@ -58,5 +59,5 @@ program amicable_pairs
       end if
       n = (n + 1)
     end do
-  end function main
+  end subroutine main
 end program amicable_pairs

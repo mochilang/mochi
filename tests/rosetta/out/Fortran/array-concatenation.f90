@@ -10,7 +10,7 @@ program array_concatenation
   character(len=100) :: s0
   character(len=100) :: s1
   character(len=100) :: s2
-    integer, dimension(0) :: out
+    integer, allocatable, dimension(:) :: out
     integer :: v
     integer :: i3
       integer, allocatable, dimension(:) :: app4
@@ -36,9 +36,10 @@ program array_concatenation
   recursive integer function concatInts(a,b) result(res)
     integer, intent(in) :: a
     integer, intent(in) :: b
-    out = (//)
+    allocate(out(0))
     do i3 = 1, size(a)
       v = a(i3)
+      if (allocated(app4)) deallocate(app4)
       allocate(app4(size(out)+1))
       app4(1:size(out)) = out
       app4(size(out)+1) = v
@@ -46,6 +47,7 @@ program array_concatenation
     end do
     do i5 = 1, size(b)
       v = b(i5)
+      if (allocated(app6)) deallocate(app6)
       allocate(app6(size(out)+1))
       app6(1:size(out)) = out
       app6(size(out)+1) = v
@@ -57,9 +59,10 @@ program array_concatenation
   recursive integer function concatAny(a,b) result(res)
     integer, intent(in) :: a
     integer, intent(in) :: b
-    out = (//)
+    allocate(out(0))
     do i7 = 1, size(a)
       v = a(i7)
+      if (allocated(app8)) deallocate(app8)
       allocate(app8(size(out)+1))
       app8(1:size(out)) = out
       app8(size(out)+1) = v
@@ -67,6 +70,7 @@ program array_concatenation
     end do
     do i9 = 1, size(b)
       v = b(i9)
+      if (allocated(app10)) deallocate(app10)
       allocate(app10(size(out)+1))
       app10(1:size(out)) = out
       app10(size(out)+1) = v

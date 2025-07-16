@@ -3,16 +3,16 @@ program call_a_foreign_language_function
   implicit none
     character(len=100) :: go1
     integer :: c2
-  main()
+  call main()
   contains
   recursive character(len=100) function strdup(s) result(res)
     character(len=100), intent(in) :: s
     res = s // ''
     return
   end function strdup
-  recursive integer function main() result(res)
+  recursive subroutine main()
     go1 = 'hello C'
     c2 = strdup(go1)
     print *, c2
-  end function main
+  end subroutine main
 end program call_a_foreign_language_function

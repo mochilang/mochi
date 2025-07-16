@@ -1,22 +1,22 @@
 gfortran: exit status 1
-/tmp/averages-simple-moving-average.f90:17:3:
+/tmp/averages-simple-moving-average.f90:44:9:
 
-   17 |   main()
-      |   1
+   44 |         s = s(0+1:(dot + 4))
+      |         1
 Error: Unclassifiable statement at (1)
-/tmp/averages-simple-moving-average.f90:68:14:
+/tmp/averages-simple-moving-average.f90:68:13:
 
-   68 |     res = (//)
-      |              1
-Error: Empty array constructor at (1) is not allowed
-/tmp/averages-simple-moving-average.f90:96:40:
+   68 |     allocate(res(0))
+      |             1
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/averages-simple-moving-average.f90:97:40:
 
-   96 |       line = trim(trim(trim(pad(fmt3(xs(((i)+1))),5) // '  ') // pad(fmt3(sma3(((i)+1))),5)) // '  ') // pad(fmt3(sma5(((i)+1))),5)
+   97 |       line = trim(trim(trim(pad(fmt3(xs(((i)+1))),5) // '  ') // pad(fmt3(sma3(((i)+1))),5)) // '  ') // pad(fmt3(sma5(((i)+1))),5)
       |                                        1
 Error: Syntax error in argument list at (1)
-/tmp/averages-simple-moving-average.f90:90:6:
+/tmp/averages-simple-moving-average.f90:91:6:
 
-   90 |     xs = (/1,2,3,4,5,5,4,3,2,1/)
+   91 |     xs = (/1,2,3,4,5,5,4,3,2,1/)
       |      1
 Error: Symbol ‘xs’ at (1) has no IMPLICIT type
 /tmp/averages-simple-moving-average.f90:65:41:
@@ -29,24 +29,24 @@ Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
    37 |     s = s0
       |     1
 Error: Symbol ‘s’ at (1) has no IMPLICIT type
-/tmp/averages-simple-moving-average.f90:80:25:
+/tmp/averages-simple-moving-average.f90:81:25:
 
-   80 |       allocate(app1(size(res)+1))
+   81 |       allocate(app1(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-simple-moving-average.f90:81:18:
+/tmp/averages-simple-moving-average.f90:82:18:
 
-   81 |       app1(1:size(res)) = res
+   82 |       app1(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-simple-moving-average.f90:82:16:
+/tmp/averages-simple-moving-average.f90:83:16:
 
-   82 |       app1(size(res)+1) = (sum / (real(denom)))
+   83 |       app1(size(res)+1) = (sum / (real(denom)))
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-simple-moving-average.f90:83:6:
+/tmp/averages-simple-moving-average.f90:84:6:
 
-   83 |       res = app1
+   84 |       res = app1
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
 /tmp/averages-simple-moving-average.f90:71:24:

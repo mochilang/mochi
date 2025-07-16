@@ -4,17 +4,17 @@ program cholesky_decomposition
     integer :: guess
     integer :: i
     integer :: n
-    integer, dimension(0) :: l
-      integer, dimension(0) :: row
+    integer, allocatable, dimension(:) :: l
+      integer, allocatable, dimension(:) :: row
       integer :: j
-        integer, allocatable, dimension(:) :: app0
+        real, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
         integer :: sum
         integer :: k
       character(len=100) :: line
         character(len=100) :: s2
-  demo((/(/25,15,-5/),(/15,18,0/),(/-5,0,11/)/))
-  demo((/(/18,22,54,42/),(/22,70,86,62/),(/54,86,174,134/),(/42,62,134,106/)/))
+  call demo((/(/25,15,-5/),(/15,18,0/),(/-5,0,11/)/))
+  call demo((/(/18,22,54,42/),(/22,70,86,62/),(/54,86,174,134/),(/42,62,134,106/)/))
   contains
   recursive real function sqrtApprox(x) result(res)
     real, intent(in) :: x
@@ -30,18 +30,20 @@ program cholesky_decomposition
   recursive integer function cholesky(a) result(res)
     integer, intent(in) :: a
     n = size(a)
-    l = (//)
+    allocate(l(0))
     i = 0
     do while ((i < n))
-      row = (//)
+      allocate(row(0))
       j = 0
       do while ((j < n))
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(row)+1))
         app0(1:size(row)) = row
         app0(size(row)+1) = 0
         row = app0
         j = (j + 1)
       end do
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(l)+1))
       app1(1:size(l)) = l
       app1(size(l)+1) = row
@@ -70,7 +72,7 @@ program cholesky_decomposition
     res = l
     return
   end function cholesky
-  recursive integer function printMat(m) result(res)
+  recursive subroutine printMat(m)
     integer, intent(in) :: m
     i = 0
     do while ((i < size(m)))
@@ -87,13 +89,13 @@ program cholesky_decomposition
       print *, line
       i = (i + 1)
     end do
-  end function printMat
-  recursive integer function demo(a) result(res)
+  end subroutine printMat
+  recursive subroutine demo(a)
     integer, intent(in) :: a
     print *, 'A:'
-    printMat(a)
+    call printMat(a)
     l = cholesky(a)
     print *, 'L:'
-    printMat(l)
-  end function demo
+    call printMat(l)
+  end subroutine demo
 end program cholesky_decomposition

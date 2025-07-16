@@ -6,7 +6,7 @@ program bitmap_midpoint_circle_algorithm
   integer :: i0
     integer :: y
       integer :: x
-        integer, allocatable, dimension(:) :: app1
+        character(len=100), allocatable, dimension(:) :: app1
       integer, allocatable, dimension(:) :: app2
     integer :: err
     integer :: end
@@ -20,18 +20,20 @@ program bitmap_midpoint_circle_algorithm
   contains
   recursive integer function initGrid(size) result(res)
     integer, intent(in) :: size
-    g = (//)
+    allocate(g(0))
     y = 0
     do while ((y < size))
-      row = (//)
+      allocate(row(0))
       x = 0
       do while ((x < size))
+        if (allocated(app1)) deallocate(app1)
         allocate(app1(size(row)+1))
         app1(1:size(row)) = row
         app1(size(row)+1) = ' '
         row = app1
         x = (x + 1)
       end do
+      if (allocated(app2)) deallocate(app2)
       allocate(app2(size(g)+1))
       app2(1:size(g)) = g
       app2(size(g)+1) = row
@@ -41,14 +43,14 @@ program bitmap_midpoint_circle_algorithm
     res = g
     return
   end function initGrid
-  recursive integer function set(g,x,y) result(res)
+  recursive subroutine set(g,x,y)
     integer, intent(in) :: g
     integer, intent(in) :: x
     integer, intent(in) :: y
     if ((((((((x >= 0) .and. x) < size(g(((0)+1)))) .and. y) >= 0) .and. y) < size(g))) then
       g(((y)+1),((x)+1)) = '#'
     end if
-  end function set
+  end subroutine set
   recursive integer function circle(r) result(res)
     integer, intent(in) :: r
     size = ((r * 2) + 1)
@@ -57,14 +59,14 @@ program bitmap_midpoint_circle_algorithm
     y = 0
     err = (1 - r)
     do while ((y <= x))
-      set(g,(r + x),(r + y))
-      set(g,(r + y),(r + x))
-      set(g,(r - x),(r + y))
-      set(g,(r - y),(r + x))
-      set(g,(r - x),(r - y))
-      set(g,(r - y),(r - x))
-      set(g,(r + x),(r - y))
-      set(g,(r + y),(r - x))
+      call set(g,(r + x),(r + y))
+      call set(g,(r + y),(r + x))
+      call set(g,(r - x),(r + y))
+      call set(g,(r - y),(r + x))
+      call set(g,(r - x),(r - y))
+      call set(g,(r - y),(r - x))
+      call set(g,(r + x),(r - y))
+      call set(g,(r + y),(r - x))
       y = (y + 1)
       if ((err < 0)) then
         err = (((err + 2) * y) + 1)

@@ -12,7 +12,7 @@ program attractive_numbers
     integer :: lineCount
     integer :: i
       integer :: c
-  main()
+  call main()
   contains
   recursive logical function isPrime(n) result(res)
     integer, intent(in) :: n
@@ -86,7 +86,7 @@ program attractive_numbers
     res = s
     return
   end function pad4
-  recursive integer function main() result(res)
+  recursive subroutine main()
     max = 120
     write(s1,'(G0)') max
     print *, trim('The attractive numbers up to and including ' // s1) // ' are:'
@@ -111,5 +111,5 @@ program attractive_numbers
     if ((lineCount > 0)) then
       print *, line
     end if
-  end function main
+  end subroutine main
 end program attractive_numbers

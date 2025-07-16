@@ -12,7 +12,7 @@ program arithmetic_geometric_mean_calculate_pi
       integer :: diff
     integer :: pi
     character(len=100) :: s0
-  main()
+  call main()
   contains
   recursive real function abs(x) result(res)
     real, intent(in) :: x
@@ -52,8 +52,8 @@ program arithmetic_geometric_mean_calculate_pi
     res = pi
     return
   end function agmPi
-  recursive integer function main() result(res)
+  recursive subroutine main()
     write(s0,'(G0)') agmPi()
     print *, s0
-  end function main
+  end subroutine main
 end program arithmetic_geometric_mean_calculate_pi

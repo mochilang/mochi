@@ -3,49 +3,49 @@ program adfgvx_cipher
   implicit none
   character(len=100) :: adfgvx
   character(len=100) :: alphabet
-    integer, dimension(0) :: arr
+    integer, allocatable, dimension(:) :: arr
     integer :: i
     integer :: j
       integer :: k
       integer :: tmp
     character(len=100) :: out
     integer :: shuffled
-    integer, dimension(0) :: p
+    integer, allocatable, dimension(:) :: p
       integer :: row
       character(len=100) :: line
     character(len=100) :: pool
     character(len=100) :: key
       integer :: idx
-    integer, dimension(0) :: pairs
+    logical, allocatable, dimension(:) :: pairs
     integer :: m
-    integer, dimension(0) :: res
+    logical, allocatable, dimension(:) :: res
     character(len=100) :: temp
       integer :: r
         integer :: c
     integer :: colLen
-    integer, dimension(0) :: table
+    integer, allocatable, dimension(:) :: table
     integer :: rIdx
       integer :: col
     integer :: order
-    integer, dimension(0) :: cols
+    integer, allocatable, dimension(:) :: cols
     integer :: ci
       character(len=100) :: colStr
       integer :: ri
     character(len=100) :: result
-    integer, dimension(0) :: colStrs
+    integer, allocatable, dimension(:) :: colStrs
     integer :: start
     integer :: maxColLen
-      integer, dimension(0) :: ls
-        integer, dimension(0) :: pad
+      integer, allocatable, dimension(:) :: ls
+        integer, allocatable, dimension(:) :: pad
       integer :: cIdx
     integer :: plainText2
   adfgvx = 'ADFGVX'
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-  main()
+  call main()
   contains
   recursive character(len=100) function shuffleStr(s) result(res)
     character(len=100), intent(in) :: s
-    arr = (//)
+    allocate(arr(0))
     i = 0
     do while ((i < size(s)))
       arr = (arr + (/s(((i)+1))/))
@@ -70,11 +70,10 @@ program adfgvx_cipher
   end function shuffleStr
   recursive integer function createPolybius() result(res)
     shuffled = shuffleStr(alphabet)
-    print *, '6 x 6 Polybius square:
-'
+    print *, '6 x 6 Polybius square:'//char(10)//''
     print *, '  | A D F G V X'
     print *, '---------------'
-    p = (//)
+    allocate(p(0))
     i = 0
     do while ((i < 6))
       row = shuffled(((i * 6))+1:(((i + 1)) * 6))
@@ -105,14 +104,13 @@ program adfgvx_cipher
       pool = (pool(1:idx) + pool(((idx + 1))+1:size(pool)))
       i = (i + 1)
     end do
-    print *, '
-The key is ' // key
+    print *, ''//char(10)//'The key is ' // key
     res = key
     return
   end function createKey
   recursive integer function orderKey(key) result(res)
     character(len=100), intent(in) :: key
-    pairs = (//)
+    allocate(pairs(0))
     i = 0
     do while ((i < size(key)))
       pairs = (pairs + (/(/key(((i)+1)),i/)/))
@@ -132,7 +130,7 @@ The key is ' // key
       end do
       m = (m + 1)
     end do
-    res = (//)
+    allocate(res(0))
     i = 0
     do while ((i < n))
       res = (res + (/int(pairs(((i)+1),((1)+1)))/))
@@ -165,10 +163,10 @@ The key is ' // key
     if ((mod(size(temp),size(key)) > 0)) then
       colLen = (colLen + 1)
     end if
-    table = (//)
+    allocate(table(0))
     rIdx = 0
     do while ((rIdx < colLen))
-      row = (//)
+      allocate(row(0))
       j = 0
       do while ((j < size(key)))
         row = (row + (/''/))
@@ -185,7 +183,7 @@ The key is ' // key
       idx = (idx + 1)
     end do
     order = orderKey(key)
-    cols = (//)
+    allocate(cols(0))
     ci = 0
     do while ((ci < size(key)))
       colStr = ''
@@ -227,7 +225,7 @@ The key is ' // key
     integer, intent(in) :: polybius
     character(len=100), intent(in) :: key
     character(len=100), intent(in) :: cipherText
-    colStrs = (//)
+    allocate(colStrs(0))
     start = 0
     i = 0
     do while ((i <= size(cipherText)))
@@ -245,18 +243,18 @@ The key is ' // key
       end if
       i = (i + 1)
     end do
-    cols = (//)
+    allocate(cols(0))
     i = 0
     do while ((i < size(colStrs)))
       s = colStrs(((i)+1))
-      ls = (//)
+      allocate(ls(0))
       j = 0
       do while ((j < size(s)))
         ls = (ls + (/s(((j)+1))/))
         j = (j + 1)
       end do
       if ((size(s) < maxColLen)) then
-        pad = (//)
+        allocate(pad(0))
         k = 0
         do while ((k < maxColLen))
           if ((k < size(ls))) then
@@ -272,10 +270,10 @@ The key is ' // key
       end if
       i = (i + 1)
     end do
-    table = (//)
+    allocate(table(0))
     r = 0
     do while ((r < maxColLen))
-      row = (//)
+      allocate(row(0))
       c = 0
       do while ((c < size(key)))
         row = (row + (/''/))
@@ -315,17 +313,14 @@ The key is ' // key
     res = plainText
     return
   end function decrypt
-  recursive integer function main() result(res)
+  recursive subroutine main()
     plainText = 'ATTACKAT1200AM'
     polybius = createPolybius()
     key = createKey(9)
-    print *, '
-Plaintext : ' // plainText
+    print *, ''//char(10)//'Plaintext : ' // plainText
     cipherText = encrypt(polybius,key,plainText)
-    print *, '
-Encrypted : ' // cipherText
+    print *, ''//char(10)//'Encrypted : ' // cipherText
     plainText2 = decrypt(polybius,key,cipherText)
-    print *, '
-Decrypted : ' // plainText2
-  end function main
+    print *, ''//char(10)//'Decrypted : ' // plainText2
+  end subroutine main
 end program adfgvx_cipher

@@ -14,7 +14,7 @@ program approximate_equality
       character(len=100) :: tmp1
       character(len=100) :: s2
       character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive real function abs(x) result(res)
     real, intent(in) :: x
@@ -55,7 +55,7 @@ program approximate_equality
     res = guess
     return
   end function sqrtApprox
-  recursive integer function main() result(res)
+  recursive subroutine main()
     root2 = sqrtApprox(2)
     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0,(root2 * root2),2,((-root2) * root2),-2,1e+17,1e+17,3.141592653589793,3.141592653589793/),(/9,2/))
     do i0 = 1, size(pairs)
@@ -72,5 +72,5 @@ program approximate_equality
       write(s3,'(G0)') b
       print *, trim(trim(trim(s2 // ' ') // s) // ' ') // s3
     end do
-  end function main
+  end subroutine main
 end program approximate_equality

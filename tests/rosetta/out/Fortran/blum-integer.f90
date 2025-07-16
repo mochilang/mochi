@@ -9,7 +9,7 @@ program blum_integer
     character(len=100) :: s1
     integer :: idx
     integer :: need
-    integer, dimension(0) :: blum
+    integer, allocatable, dimension(:) :: blum
     integer, dimension(4) :: counts
     integer, dimension(4) :: digits
     integer :: bc
@@ -18,7 +18,7 @@ program blum_integer
             integer, allocatable, dimension(:) :: app2
               character(len=100) :: line
               integer :: j
-  main()
+  call main()
   contains
   recursive logical function isPrime(n) result(res)
     integer, intent(in) :: n
@@ -121,8 +121,8 @@ program blum_integer
     res = s
     return
   end function formatFloat
-  recursive integer function main() result(res)
-    blum = (//)
+  recursive subroutine main()
+    allocate(blum(0))
     counts = (/0,0,0,0/)
     digits = (/1,3,7,9/)
     i = 1
@@ -133,6 +133,7 @@ program blum_integer
         q = int(((i / p)))
         if (((mod(((q /= p) .and. q),4) == 3) .and. isPrime(q))) then
           if ((bc < 50)) then
+            if (allocated(app2)) deallocate(app2)
             allocate(app2(size(blum)+1))
             app2(1:size(blum)) = blum
             app2(size(blum)+1) = i
@@ -172,5 +173,5 @@ program blum_integer
         i = (i + 2)
       end if
     end do
-  end function main
+  end subroutine main
 end program blum_integer

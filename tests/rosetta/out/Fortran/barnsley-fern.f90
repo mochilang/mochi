@@ -10,7 +10,7 @@ program barnsley_fern
   real :: dx
   real :: dy
   integer :: height
-  integer, dimension(0) :: grid
+  integer, allocatable, dimension(:) :: grid
   integer :: row
   integer :: seed
   real :: x
@@ -18,9 +18,9 @@ program barnsley_fern
   integer :: ix
   integer :: iy
   integer :: i
-    integer, dimension(0) :: line
+    integer, allocatable, dimension(:) :: line
     integer :: col
-      integer, allocatable, dimension(:) :: app0
+      character(len=100), allocatable, dimension(:) :: app0
     integer, allocatable, dimension(:) :: app1
     integer :: res
     integer :: r
@@ -36,18 +36,20 @@ program barnsley_fern
   dx = (xMax - xMin)
   dy = (yMax - yMin)
   height = int((((width * dy) / dx)))
-  grid = (//)
+  allocate(grid(0))
   row = 0
   do while ((row < height))
-    line = (//)
+    allocate(line(0))
     col = 0
     do while ((col < width))
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(line)+1))
       app0(1:size(line)) = line
       app0(size(line)+1) = ' '
       line = app0
       col = (col + 1)
     end do
+    if (allocated(app1)) deallocate(app1)
     allocate(app1(size(grid)+1))
     app1(1:size(grid)) = grid
     app1(size(grid)+1) = line

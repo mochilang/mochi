@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/additive-primes.f90:15:3:
-
-   15 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/additive-primes.f90:83:16:
 
    83 |         line = (line + pad(i)) // '  '

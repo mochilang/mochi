@@ -12,8 +12,8 @@ program call_a_function_1
     res = 0
     return
   end function g
-  recursive integer function h(s,nums) result(res)
+  recursive subroutine h(s,nums)
     character(len=100), intent(in) :: s
     integer, intent(in) :: nums
-  end function h
+  end subroutine h
 end program call_a_function_1

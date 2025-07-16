@@ -4,308 +4,214 @@ gfortran: exit status 1
    25 |         character(len=100) :: s3
       |                                1
 Error: Symbol ‘s3’ at (1) already has basic type of INTEGER
-/tmp/abelian-sandpile-model-identity.f90:26:13:
+/tmp/abelian-sandpile-model-identity.f90:44:132:
 
-   26 |   print *, 'Avalanche of topplings:
+   44 |   print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/abelian-sandpile-model-identity.f90:44:132:
+
+   44 |   print *, trim(trim(trim(pileString(s1) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s2)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s3_a)
+      |                                                                                                                                    1
+Error: Unterminated character constant beginning at (1)
+/tmp/abelian-sandpile-model-identity.f90:45:132:
+
+   45 |   print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/abelian-sandpile-model-identity.f90:45:132:
+
+   45 |   print *, trim(trim(trim(trim('and'//char(10)//''//char(10)//'' // pileString(s2)) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s1)) // ''//char(10)//'also equals'//char(10)//''//char(10)//'') // pileString(s3_b)
+      |                                                                                                                                    1
+Error: Syntax error in argument list at (1)
+/tmp/abelian-sandpile-model-identity.f90:53:132:
+
+   53 |   print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/abelian-sandpile-model-identity.f90:53:132:
+
+   53 |   print *, trim(trim(trim(pileString(s3) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s4b)
+      |                                                                                                                                    1
+Error: Syntax error in argument list at (1)
+/tmp/abelian-sandpile-model-identity.f90:59:132:
+
+   59 |   print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/abelian-sandpile-model-identity.f90:59:132:
+
+   59 |   print *, trim(trim(trim(pileString(s3_id) // ''//char(10)//'plus'//char(10)//''//char(10)//'') // pileString(s3_id)) // ''//char(10)//'equals'//char(10)//''//char(10)//'') // pileString(s5)
+      |                                                                                                                                    1
+Error: Syntax error in argument list at (1)
+/tmp/abelian-sandpile-model-identity.f90:68:13:
+
+   68 |     allocate(res(0))
       |             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:27:1:
+Error: Allocate-object at (1) is neither a data pointer nor an allocatable variable
+/tmp/abelian-sandpile-model-identity.f90:113:52:
 
-   27 | '
-      | 1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:34:13:
-
-   34 |   print *, 'Commutative additions:
-      |             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:35:1:
-
-   35 | '
-      | 1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:46:45:
-
-   46 |   print *, trim(trim(trim(pileString(s1) // '
-      |                                             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:47:4:
-
-   47 | plus
-      |    1
-Error: ‘plus’ at (1) is not a variable
-/tmp/abelian-sandpile-model-identity.f90:49:2:
-
-   49 | ') // pileString(s2)) // '
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:52:2:
-
-   52 | ') // pileString(s3_a)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:53:33:
-
-   53 |   print *, trim(trim(trim(trim('and
-      |                                 1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:55:2:
-
-   55 | ' // pileString(s2)) // '
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:56:4:
-
-   56 | plus
-      |    1
-Error: ‘plus’ at (1) is not a variable
-/tmp/abelian-sandpile-model-identity.f90:58:2:
-
-   58 | ') // pileString(s1)) // '
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:61:2:
-
-   61 | ') // pileString(s3_b)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:62:13:
-
-   62 |   print *, 'Addition of identity sandpile:
-      |             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:63:1:
-
-   63 | '
-      | 1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:70:45:
-
-   70 |   print *, trim(trim(trim(pileString(s3) // '
-      |                                             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:71:4:
-
-   71 | plus
-      |    1
-Error: ‘plus’ at (1) is not a variable
-/tmp/abelian-sandpile-model-identity.f90:73:2:
-
-   73 | ') // pileString(s3_id)) // '
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:76:2:
-
-   76 | ') // pileString(s4b)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:77:13:
-
-   77 |   print *, 'Addition of identities:
-      |             1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:78:1:
-
-   78 | '
-      | 1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:83:48:
-
-   83 |   print *, trim(trim(trim(pileString(s3_id) // '
-      |                                                1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:84:4:
-
-   84 | plus
-      |    1
-Error: ‘plus’ at (1) is not a variable
-/tmp/abelian-sandpile-model-identity.f90:86:2:
-
-   86 | ') // pileString(s3_id)) // '
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:89:2:
-
-   89 | ') // pileString(s5)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:98:14:
-
-   98 |     res = (//)
-      |              1
-Error: Empty array constructor at (1) is not allowed
-/tmp/abelian-sandpile-model-identity.f90:153:16:
-
-  153 |       s = s // '
-      |                1
-Error: Unterminated character constant beginning at (1)
-/tmp/abelian-sandpile-model-identity.f90:154:1:
-
-  154 | '
-      | 1
-Error: Invalid character in name at (1)
-/tmp/abelian-sandpile-model-identity.f90:142:52:
-
-  142 |   recursive character(len=100) function pileString(p) result(res)
+  113 |   recursive character(len=100) function pileString(p) result(res)
       |                                                    1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:122:37:
+/tmp/abelian-sandpile-model-identity.f90:93:37:
 
-  122 |   recursive integer function topple(p) result(res)
+   93 |   recursive integer function topple(p) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:110:39:
+/tmp/abelian-sandpile-model-identity.f90:81:39:
 
-  110 |   recursive logical function isStable(p) result(res)
+   81 |   recursive logical function isStable(p) result(res)
       |                                       1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:95:35:
+/tmp/abelian-sandpile-model-identity.f90:65:35:
 
-   95 |   recursive integer function plus(a,b) result(res)
+   65 |   recursive integer function plus(a,b) result(res)
       |                                   1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘a’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:95:37:
+/tmp/abelian-sandpile-model-identity.f90:65:37:
 
-   95 |   recursive integer function plus(a,b) result(res)
+   65 |   recursive integer function plus(a,b) result(res)
       |                                     1
 Error: PROCEDURE attribute conflicts with INTENT attribute in ‘b’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:149:14:
+/tmp/abelian-sandpile-model-identity.f90:120:14:
 
-  149 |         write(s3,'(G0)') p(((((3 * r) + c))+1))
+  120 |         write(s3,'(G0)') p(((((3 * r) + c))+1))
       |              1
 Error: External IO UNIT cannot be an array at (1)
-/tmp/abelian-sandpile-model-identity.f90:150:13:
+/tmp/abelian-sandpile-model-identity.f90:121:13:
 
-  150 |         s = (s + s3) // ' '
+  121 |         s = (s + s3) // ' '
       |             1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/abelian-sandpile-model-identity.f90:92:4:
+/tmp/abelian-sandpile-model-identity.f90:62:4:
 
-   92 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
+   62 |     res = (/(/1,3/),(/0,2,4/),(/1,5/),(/0,4,6/),(/1,3,5,7/),(/2,4,8/),(/3,7/),(/4,6,8/),(/5,7/)/)
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:128:8:
+/tmp/abelian-sandpile-model-identity.f90:99:8:
 
-  128 |         p(((i)+1)) = (p(((i)+1)) - 4)
+   99 |         p(((i)+1)) = (p(((i)+1)) - 4)
       |        1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:132:10:
+/tmp/abelian-sandpile-model-identity.f90:103:10:
 
-  132 |           p(((j)+1)) = (p(((j)+1)) + 1)
+  103 |           p(((j)+1)) = (p(((j)+1)) + 1)
       |          1
 Error: The function result on the lhs of the assignment at (1) must have the pointer attribute.
-/tmp/abelian-sandpile-model-identity.f90:130:24:
+/tmp/abelian-sandpile-model-identity.f90:101:24:
 
-  130 |         do i2 = 1, size(nbs)
+  101 |         do i2 = 1, size(nbs)
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:126:24:
+/tmp/abelian-sandpile-model-identity.f90:97:24:
 
-  126 |     do while ((i < size(p)))
+   97 |     do while ((i < size(p)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:112:20:
+/tmp/abelian-sandpile-model-identity.f90:83:20:
 
-  112 |     do i1 = 1, size(p)
+   83 |     do i1 = 1, size(p)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:101:25:
+/tmp/abelian-sandpile-model-identity.f90:72:25:
 
-  101 |       allocate(app0(size(res)+1))
+   72 |       allocate(app0(size(res)+1))
       |                         1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:102:18:
+/tmp/abelian-sandpile-model-identity.f90:73:18:
 
-  102 |       app0(1:size(res)) = res
+   73 |       app0(1:size(res)) = res
       |                  1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:103:16:
+/tmp/abelian-sandpile-model-identity.f90:74:16:
 
-  103 |       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
+   74 |       app0(size(res)+1) = (a(((i)+1)) + b(((i)+1)))
       |                1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:104:6:
+/tmp/abelian-sandpile-model-identity.f90:75:6:
 
-  104 |       res = app0
+   75 |       res = app0
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abelian-sandpile-model-identity.f90:100:24:
+/tmp/abelian-sandpile-model-identity.f90:70:24:
 
-  100 |     do while ((i < size(a)))
+   70 |     do while ((i < size(a)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abelian-sandpile-model-identity.f90:29:22:
+/tmp/abelian-sandpile-model-identity.f90:28:22:
 
-   29 |   print *, pileString(s4)
+   28 |   print *, pileString(s4)
       |                      1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:32:24:
+/tmp/abelian-sandpile-model-identity.f90:31:24:
 
-   32 |     print *, pileString(s4)
+   31 |     print *, pileString(s4)
       |                        1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:30:27:
+/tmp/abelian-sandpile-model-identity.f90:29:27:
 
-   30 |   do while (.not. isStable(s4))
+   29 |   do while (.not. isStable(s4))
       |                           1
 Error: Rank mismatch in argument ‘p’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:38:14:
+/tmp/abelian-sandpile-model-identity.f90:36:14:
 
-   38 |   s3_a = plus(s1,s2)
+   36 |   s3_a = plus(s1,s2)
       |              1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:38:17:
+/tmp/abelian-sandpile-model-identity.f90:36:17:
 
-   38 |   s3_a = plus(s1,s2)
+   36 |   s3_a = plus(s1,s2)
       |                 1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:39:27:
+/tmp/abelian-sandpile-model-identity.f90:37:27:
 
-   39 |   do while (.not. isStable(s3_a))
+   37 |   do while (.not. isStable(s3_a))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:42:14:
+/tmp/abelian-sandpile-model-identity.f90:40:14:
 
-   42 |   s3_b = plus(s2,s1)
+   40 |   s3_b = plus(s2,s1)
       |              1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:42:17:
+/tmp/abelian-sandpile-model-identity.f90:40:17:
 
-   42 |   s3_b = plus(s2,s1)
+   40 |   s3_b = plus(s2,s1)
       |                 1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:43:27:
+/tmp/abelian-sandpile-model-identity.f90:41:27:
 
-   43 |   do while (.not. isStable(s3_b))
+   41 |   do while (.not. isStable(s3_b))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:66:13:
+/tmp/abelian-sandpile-model-identity.f90:49:13:
 
-   66 |   s4b = plus(s3,s3_id)
+   49 |   s4b = plus(s3,s3_id)
       |             1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:66:16:
+/tmp/abelian-sandpile-model-identity.f90:49:16:
 
-   66 |   s4b = plus(s3,s3_id)
+   49 |   s4b = plus(s3,s3_id)
       |                1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:67:27:
+/tmp/abelian-sandpile-model-identity.f90:50:27:
 
-   67 |   do while (.not. isStable(s4b))
+   50 |   do while (.not. isStable(s4b))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
-/tmp/abelian-sandpile-model-identity.f90:79:12:
+/tmp/abelian-sandpile-model-identity.f90:55:12:
 
-   79 |   s5 = plus(s3_id,s3_id)
+   55 |   s5 = plus(s3_id,s3_id)
       |            1
 Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:79:18:
+/tmp/abelian-sandpile-model-identity.f90:55:18:
 
-   79 |   s5 = plus(s3_id,s3_id)
+   55 |   s5 = plus(s3_id,s3_id)
       |                  1
 Error: Rank mismatch in argument ‘b’ at (1) (scalar and rank-1)
-/tmp/abelian-sandpile-model-identity.f90:80:27:
+/tmp/abelian-sandpile-model-identity.f90:56:27:
 
-   80 |   do while (.not. isStable(s5))
+   56 |   do while (.not. isStable(s5))
       |                           1
 Error: Expected a procedure for argument ‘p’ at (1)
+f951: some warnings being treated as errors

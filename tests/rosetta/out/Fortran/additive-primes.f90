@@ -12,7 +12,7 @@ program additive_primes
     integer :: lineCount
     integer :: i
     character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive logical function isPrime(n) result(res)
     integer, intent(in) :: n
@@ -71,7 +71,7 @@ program additive_primes
     res = s2
     return
   end function pad
-  recursive integer function main() result(res)
+  recursive subroutine main()
     print *, 'Additive primes less than 500:'
     count = 0
     line = ''
@@ -99,5 +99,5 @@ program additive_primes
     end if
     write(s3,'(G0)') count
     print *, s3 // ' additive primes found.'
-  end function main
+  end subroutine main
 end program additive_primes

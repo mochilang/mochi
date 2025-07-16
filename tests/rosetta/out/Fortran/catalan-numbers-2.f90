@@ -7,7 +7,7 @@ program catalan_numbers_2
     integer :: t5
     integer :: i
       character(len=100) :: s0
-  main()
+  call main()
   contains
   recursive integer function catalanRec(n) result(res)
     integer, intent(in) :: n
@@ -22,10 +22,10 @@ program catalan_numbers_2
     res = int(((t5 / ((n + 1)))))
     return
   end function catalanRec
-  recursive integer function main() result(res)
+  recursive subroutine main()
     do i = 1, 16
       write(s0,'(G0)') catalanRec(i)
       print *, s0
     end do
-  end function main
+  end subroutine main
 end program catalan_numbers_2

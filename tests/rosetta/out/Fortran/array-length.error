@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/array-length.f90:7:3:
-
-    7 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/array-length.f90:10:20:
 
    10 |     arr = (/'apple','orange','pear'/)

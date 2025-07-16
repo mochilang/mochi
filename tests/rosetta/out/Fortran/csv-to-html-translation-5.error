@@ -1,161 +1,122 @@
 gfortran: exit status 1
-/tmp/csv-to-html-translation-5.f90:21:28:
+/tmp/csv-to-html-translation-5.f90:21:132:
 
-   21 |   c = trim(trim(trim(trim('Character,Speech
-      |                            1
+   21 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/tmp/csv-to-html-translation-5.f90:21:132:
+
+   21 |   c = trim(trim(trim(trim('Character,Speech'//char(10)//'' // 'The multitude,The messiah! Show us the messiah!'//char(10)//'') // 'Brians mother,<angry>Now you listen here! He''s not the messiah; he''s a very naughty boy! Now go away!</angry>'//char(10)//'') // 'The multitude,Who are you?'//char(10)//'') // 'Brians mother,I''m his mother; that''s who!'//char(10)//'') // 'The multitude,Behold his mother! Behold his mother!'
+      |                                                                                                                                    1
 Error: Unterminated character constant beginning at (1)
-/tmp/csv-to-html-translation-5.f90:22:2:
+/tmp/csv-to-html-translation-5.f90:24:21:
 
-   22 | ' // 'The multitude,The messiah! Show us the messiah!
-      |  1
+   24 |     line = split(c,''//char(10)//'')(i0)
+      |                     1
 Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:23:2:
+/tmp/csv-to-html-translation-5.f90:73:10:
 
-   23 | ') // 'Brians mother,<angry>Now you listen here! He's not the messiah; he's a very naughty boy! Now go away!</angry>
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:24:2:
-
-   24 | ') // 'The multitude,Who are you?
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:25:2:
-
-   25 | ') // 'Brians mother,I'm his mother; that's who!
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:26:2:
-
-   26 | ') // 'The multitude,Behold his mother! Behold his mother!'
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:27:13:
-
-   27 |   rows = (//)
-      |             1
-Error: Empty array constructor at (1) is not allowed
-/tmp/csv-to-html-translation-5.f90:28:27:
-
-   28 |   do i0 = 1, size(split(c,'
-      |                           1
-Error: Missing ‘)’ in statement at or before (1)
-/tmp/csv-to-html-translation-5.f90:29:2:
-
-   29 | '))
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:30:20:
-
-   30 |     line = split(c,'
-      |                    1
-Error: Unterminated character constant beginning at (1)
-/tmp/csv-to-html-translation-5.f90:31:2:
-
-   31 | ')(i0)
-      |  1
-Error: Invalid character in name at (1)
-/tmp/csv-to-html-translation-5.f90:36:5:
-
-   36 |   end do
-      |     1
-Error: Expecting END PROGRAM statement at (1)
-/tmp/csv-to-html-translation-5.f90:52:14:
-
-   52 |     out = (//)
-      |              1
-Error: Empty array constructor at (1) is not allowed
-/tmp/csv-to-html-translation-5.f90:77:10:
-
-   77 |     out = ''
+   73 |     out = ''
       |          1
 Error: Cannot convert CHARACTER(0) to INTEGER(4) at (1)
-/tmp/csv-to-html-translation-5.f90:80:11:
+/tmp/csv-to-html-translation-5.f90:76:11:
 
-   80 |       ch = s(i+1:(i + 1))
+   76 |       ch = s(i+1:(i + 1))
       |           1
 Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
-/tmp/csv-to-html-translation-5.f90:81:11:
+/tmp/csv-to-html-translation-5.f90:77:11:
 
-   81 |       if ((ch == '&')) then
+   77 |       if ((ch == '&')) then
       |           1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/csv-to-html-translation-5.f90:78:14:
+
+   78 |         out = out // '&amp;'
+      |              1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(5)
+/tmp/csv-to-html-translation-5.f90:79:16:
+
+   79 |       else if ((ch == '<')) then
+      |                1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
+/tmp/csv-to-html-translation-5.f90:80:14:
+
+   80 |         out = out // '&lt;'
+      |              1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
+/tmp/csv-to-html-translation-5.f90:81:16:
+
+   81 |       else if ((ch == '>')) then
+      |                1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
 /tmp/csv-to-html-translation-5.f90:82:14:
 
-   82 |         out = out // '&amp;'
-      |              1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(5)
-/tmp/csv-to-html-translation-5.f90:83:16:
-
-   83 |       else if ((ch == '<')) then
-      |                1
-Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/csv-to-html-translation-5.f90:84:14:
-
-   84 |         out = out // '&lt;'
+   82 |         out = out // '&gt;'
       |              1
 Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
-/tmp/csv-to-html-translation-5.f90:85:16:
+/tmp/csv-to-html-translation-5.f90:75:24:
 
-   85 |       else if ((ch == '>')) then
-      |                1
-Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/csv-to-html-translation-5.f90:86:14:
-
-   86 |         out = out // '&gt;'
-      |              1
-Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(4)
-/tmp/csv-to-html-translation-5.f90:79:24:
-
-   79 |     do while ((i < size(s)))
+   75 |     do while ((i < size(s)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:92:4:
+/tmp/csv-to-html-translation-5.f90:88:4:
 
-   92 |     res = out
+   88 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/csv-to-html-translation-5.f90:55:13:
+/tmp/csv-to-html-translation-5.f90:49:13:
 
-   55 |     n = size(sep)
+   49 |     n = size(sep)
       |             1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:60:28:
+/tmp/csv-to-html-translation-5.f90:55:28:
 
-   60 |         app4(size(out)+1) = s(start+1:i)
+   55 |         app4(size(out)+1) = s(start+1:i)
       |                            1
 Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
-/tmp/csv-to-html-translation-5.f90:56:26:
+/tmp/csv-to-html-translation-5.f90:50:26:
 
-   56 |     do while (((i <= size(s)) - n))
+   50 |     do while (((i <= size(s)) - n))
       |                          1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:70:39:
+/tmp/csv-to-html-translation-5.f90:66:39:
 
-   70 |     app5(size(out)+1) = s(start+1:size(s))
+   66 |     app5(size(out)+1) = s(start+1:size(s))
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/csv-to-html-translation-5.f90:72:4:
+/tmp/csv-to-html-translation-5.f90:68:4:
 
-   72 |     res = out
+   68 |     res = out
       |    1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/csv-to-html-translation-5.f90:34:25:
+/tmp/csv-to-html-translation-5.f90:28:25:
 
-   34 |     app1(size(rows)+1) = split(line,',')
+   28 |     app1(size(rows)+1) = split(line,',')
       |                         1
 Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/tmp/csv-to-html-translation-5.f90:34:36:
+/tmp/csv-to-html-translation-5.f90:28:36:
 
-   34 |     app1(size(rows)+1) = split(line,',')
+   28 |     app1(size(rows)+1) = split(line,',')
       |                                    1
 Warning: Character length of actual argument shorter than of dummy argument ‘sep’ (1/100) at (1)
-/tmp/csv-to-html-translation-5.f90:43:43:
+/tmp/csv-to-html-translation-5.f90:23:26:
 
-   43 |       cells = trim(trim(cells // '<td>') // htmlEscape(cell)) // '</td>'
+   23 |   do i0 = 1, size(split(c,''//char(10)//''))
+      |                          1
+Warning: Character length of actual argument shorter than of dummy argument ‘sep’ (1/100) at (1)
+/tmp/csv-to-html-translation-5.f90:23:18:
+
+   23 |   do i0 = 1, size(split(c,''//char(10)//''))
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/csv-to-html-translation-5.f90:37:43:
+
+   37 |       cells = trim(trim(cells // '<td>') // htmlEscape(cell)) // '</td>'
       |                                           1
 Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
-/tmp/csv-to-html-translation-5.f90:41:20:
+/tmp/csv-to-html-translation-5.f90:35:20:
 
-   41 |     do i3 = 1, size(row)
+   35 |     do i3 = 1, size(row)
       |                    1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+f951: some warnings being treated as errors

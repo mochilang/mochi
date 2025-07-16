@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/chaocipher.f90:11:3:
-
-   11 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/chaocipher.f90:51:8:
 
    51 |       ch = text((i)+1:(i + 1))

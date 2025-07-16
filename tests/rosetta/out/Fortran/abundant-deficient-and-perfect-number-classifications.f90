@@ -10,7 +10,7 @@ program abundant_deficient_and_perfect_number_classifications
     character(len=100) :: s0
     character(len=100) :: s1
     character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive integer function pfacSum(i) result(res)
     integer, intent(in) :: i
@@ -25,7 +25,7 @@ program abundant_deficient_and_perfect_number_classifications
     res = sum
     return
   end function pfacSum
-  recursive integer function main() result(res)
+  recursive subroutine main()
     d = 0
     a = 0
     pnum = 0
@@ -49,5 +49,5 @@ program abundant_deficient_and_perfect_number_classifications
     print *, trim('There are ' // s1) // ' abundant numbers  between 1 and 20000'
     write(s2,'(G0)') pnum
     print *, trim('There are ' // s2) // ' perfect numbers between 1 and 20000'
-  end function main
+  end subroutine main
 end program abundant_deficient_and_perfect_number_classifications

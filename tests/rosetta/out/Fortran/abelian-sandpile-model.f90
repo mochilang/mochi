@@ -2,9 +2,9 @@
 program abelian_sandpile_model
   implicit none
   integer :: dim
-    integer, dimension(0) :: b
+    integer, allocatable, dimension(:) :: b
     integer :: y
-      integer, dimension(0) :: row
+      integer, allocatable, dimension(:) :: row
       integer :: x
         integer, allocatable, dimension(:) :: app0
       integer, allocatable, dimension(:) :: app1
@@ -14,22 +14,24 @@ program abelian_sandpile_model
         integer :: v
     integer :: hdim
   dim = 16
-  main()
+  call main()
   contains
   recursive integer function newPile(d) result(res)
     integer, intent(in) :: d
-    b = (//)
+    allocate(b(0))
     y = 0
     do while ((y < d))
-      row = (//)
+      allocate(row(0))
       x = 0
       do while ((x < d))
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(row)+1))
         app0(1:size(row)) = row
         app0(size(row)+1) = 0
         row = app0
         x = (x + 1)
       end do
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(b)+1))
       app1(1:size(b)) = b
       app1(size(b)+1) = row
@@ -74,7 +76,7 @@ program abelian_sandpile_model
     res = pile
     return
   end function handlePile
-  recursive integer function drawPile(pile,d) result(res)
+  recursive subroutine drawPile(pile,d)
     integer, intent(in) :: pile
     integer, intent(in) :: d
     chars = (/' ','░','▓','█'/)
@@ -93,12 +95,12 @@ program abelian_sandpile_model
       print *, line
       row = (row + 1)
     end do
-  end function drawPile
-  recursive integer function main() result(res)
+  end subroutine drawPile
+  recursive subroutine main()
     pile = newPile(16)
     hdim = 7
     pile(((hdim)+1),((hdim)+1)) = 16
     pile = handlePile(pile,hdim,hdim)
-    drawPile(pile,16)
-  end function main
+    call drawPile(pile,16)
+  end subroutine main
 end program abelian_sandpile_model

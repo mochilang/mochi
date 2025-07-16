@@ -1,8 +1,21 @@
-type: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/anti-primes.mochi:27:10
+gfortran: exit status 1
+/tmp/anti-primes.f90:33:5:
 
- 27 |   line = substring(line, 0, len(line) - 1)
-    |          ^
+   33 |     n = 1
+      |     1
+Error: Symbol ‘n’ at (1) has no IMPLICIT type
+/tmp/anti-primes.f90:39:16:
 
-help:
-  Ensure the argument type matches the function’s signature.
+   39 |         line = (line + s0) // ' '
+      |                1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/tmp/anti-primes.f90:45:26:
+
+   45 |     line = line(0+1:(size(line) - 1))
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/tmp/anti-primes.f90:20:15:
+
+   20 |     do while (((i <= n) / 2))
+      |               1
+Error: Operands of binary numeric operator ‘/’ at (1) are LOGICAL(4)/INTEGER(4)

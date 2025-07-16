@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/arithmetic-geometric-mean-calculate-pi.f90:15:3:
-
-   15 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/arithmetic-geometric-mean-calculate-pi.f90:39:23:
 
    39 |     g = (1 / sqrtApprox(2))

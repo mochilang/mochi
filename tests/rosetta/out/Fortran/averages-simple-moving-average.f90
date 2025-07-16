@@ -7,14 +7,14 @@ program averages_simple_moving_average
     integer :: dot
       integer :: decs
     integer :: out
-    integer, dimension(0) :: res
+    integer, allocatable, dimension(:) :: res
     integer :: sum
       integer :: denom
       integer, allocatable, dimension(:) :: app1
     integer :: sma3
     integer :: sma5
       integer :: line
-  main()
+  call main()
   contains
   recursive integer function indexOf(s,ch) result(res)
     character(len=100), intent(in) :: s
@@ -65,7 +65,7 @@ program averages_simple_moving_average
   recursive integer function smaSeries(xs,period) result(res)
     integer, intent(in) :: xs
     integer, intent(in) :: period
-    res = (//)
+    allocate(res(0))
     sum = 0
     i = 0
     do while ((i < size(xs)))
@@ -77,6 +77,7 @@ program averages_simple_moving_average
       if ((denom > period)) then
         denom = period
       end if
+      if (allocated(app1)) deallocate(app1)
       allocate(app1(size(res)+1))
       app1(1:size(res)) = res
       app1(size(res)+1) = (sum / (real(denom)))
@@ -86,7 +87,7 @@ program averages_simple_moving_average
     res = res
     return
   end function smaSeries
-  recursive integer function main() result(res)
+  recursive subroutine main()
     xs = (/1,2,3,4,5,5,4,3,2,1/)
     sma3 = smaSeries(xs,3)
     sma5 = smaSeries(xs,5)
@@ -97,5 +98,5 @@ program averages_simple_moving_average
       print *, line
       i = (i + 1)
     end do
-  end function main
+  end subroutine main
 end program averages_simple_moving_average

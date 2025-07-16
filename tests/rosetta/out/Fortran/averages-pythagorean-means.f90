@@ -18,7 +18,7 @@ program averages_pythagorean_means
     character(len=100) :: s1
     character(len=100) :: s2
     character(len=100) :: s3
-  main()
+  call main()
   contains
   recursive real function powf(base,exp) result(res)
     real, intent(in) :: base
@@ -50,7 +50,7 @@ program averages_pythagorean_means
     res = low
     return
   end function nthRoot
-  recursive integer function main() result(res)
+  recursive subroutine main()
     sum = 0
     sumRecip = 0
     prod = 1
@@ -72,5 +72,5 @@ program averages_pythagorean_means
     print *, trim(trim(trim(trim('A: ' // s0) // ' G: ') // s1) // ' H: ') // s2
     write(s3,'(G0)') (((a >= g) .and. g) >= h)
     print *, 'A >= G >= H: ' // s3
-  end function main
+  end subroutine main
 end program averages_pythagorean_means

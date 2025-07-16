@@ -9,7 +9,7 @@ program brazilian_numbers
       integer :: c
           character(len=100) :: s1
     character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive logical function sameDigits(n,b) result(res)
     integer, intent(in) :: n
@@ -77,7 +77,7 @@ program brazilian_numbers
     res = .true.
     return
   end function isPrime
-  recursive integer function main() result(res)
+  recursive subroutine main()
     kinds = (/' ',' odd ',' prime '/)
     do i0 = 1, size(kinds)
       kind = kinds(i0)
@@ -90,8 +90,7 @@ program brazilian_numbers
           print *, s1 // ' '
           c = (c + 1)
           if ((c == 20)) then
-            print *, '
-'
+            print *, ''//char(10)//''
             exit
           end if
         end if
@@ -119,5 +118,5 @@ program brazilian_numbers
     end do
     write(s2,'(G0)') (n - 1)
     print *, 'The 100,000th Brazilian number: ' // s2
-  end function main
+  end subroutine main
 end program brazilian_numbers

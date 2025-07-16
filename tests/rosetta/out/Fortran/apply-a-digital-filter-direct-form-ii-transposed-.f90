@@ -6,7 +6,7 @@ program apply_a_digital_filter_direct_form_ii_transposed_
   integer, dimension(20) :: sig
   integer :: res
   integer :: k
-    integer, dimension(0) :: out
+    integer, allocatable, dimension(:) :: out
     integer :: scale
     integer :: i
       integer :: tmp
@@ -26,7 +26,7 @@ program apply_a_digital_filter_direct_form_ii_transposed_
     integer, intent(in) :: input
     integer, intent(in) :: a
     integer, intent(in) :: b
-    out = (//)
+    allocate(out(0))
     scale = (1 / a(((0)+1)))
     i = 0
     do while ((i < size(input)))
@@ -41,6 +41,7 @@ program apply_a_digital_filter_direct_form_ii_transposed_
         tmp = ((tmp - a((((j + 1))+1))) * out(((((i - j) - 1))+1)))
         j = (j + 1)
       end do
+      if (allocated(app0)) deallocate(app0)
       allocate(app0(size(out)+1))
       app0(1:size(out)) = out
       app0(size(out)+1) = (tmp * scale)

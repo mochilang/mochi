@@ -1,6 +1,0 @@
-gfortran: exit status 1
-/tmp/99-bottles-of-beer.f90:6:3:
-
-    6 |   main()
-      |   1
-Error: Unclassifiable statement at (1)

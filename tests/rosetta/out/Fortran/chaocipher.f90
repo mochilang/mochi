@@ -8,7 +8,7 @@ program chaocipher
       integer :: idx
     character(len=100) :: plain
     integer :: cipher
-  main()
+  call main()
   contains
   recursive integer function indexOf(s,ch) result(res)
     character(len=100), intent(in) :: s
@@ -66,11 +66,11 @@ program chaocipher
     res = out
     return
   end function chao
-  recursive integer function main() result(res)
+  recursive subroutine main()
     plain = 'WELLDONEISBETTERTHANWELLSAID'
     cipher = chao(plain,.true.)
     print *, plain
     print *, cipher
     print *, chao(cipher,.false.)
-  end function main
+  end subroutine main
 end program chaocipher

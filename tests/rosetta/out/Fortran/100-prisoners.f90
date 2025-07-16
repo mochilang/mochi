@@ -7,7 +7,7 @@ program p_100_prisoners
       integer :: tmp
     integer :: pardoned
     integer :: t
-      integer, dimension(0) :: drawers
+      integer, allocatable, dimension(:) :: drawers
         integer, allocatable, dimension(:) :: app0
       integer :: p
       integer :: success
@@ -15,9 +15,9 @@ program p_100_prisoners
           integer :: prev
           integer :: d
             integer :: this
-          integer, dimension(0) :: opened
+          integer, allocatable, dimension(:) :: opened
           integer :: k
-            integer, allocatable, dimension(:) :: app1
+            logical, allocatable, dimension(:) :: app1
             integer :: n
     integer :: rf
     character(len=100) :: s2
@@ -29,7 +29,7 @@ program p_100_prisoners
       integer :: strat
       integer, dimension(2) :: arr7 = (/'random','optimal'/)
       integer :: i7
-  main()
+  call main()
   contains
   recursive integer function shuffle(xs) result(res)
     integer, intent(in) :: xs
@@ -45,16 +45,17 @@ program p_100_prisoners
     res = arr
     return
   end function shuffle
-  recursive integer function doTrials(trials,np,strategy) result(res)
+  recursive subroutine doTrials(trials,np,strategy)
     integer, intent(in) :: trials
     integer, intent(in) :: np
     character(len=100), intent(in) :: strategy
     pardoned = 0
     t = 0
     do while ((t < trials))
-      drawers = (//)
+      allocate(drawers(0))
       i = 0
       do while ((i < 100))
+        if (allocated(app0)) deallocate(app0)
         allocate(app0(size(drawers)+1))
         app0(1:size(drawers)) = drawers
         app0(size(drawers)+1) = i
@@ -79,9 +80,10 @@ program p_100_prisoners
             d = (d + 1)
           end do
         else
-          opened = (//)
+          allocate(opened(0))
           k = 0
           do while ((k < 100))
+            if (allocated(app1)) deallocate(app1)
             allocate(app1(size(opened)+1))
             app1(1:size(opened)) = opened
             app1(size(opened)+1) = .false.
@@ -117,19 +119,18 @@ program p_100_prisoners
     write(s2,'(G0)') pardoned
     write(s3,'(G0)') rf
     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
-  end function doTrials
-  recursive integer function main() result(res)
+  end subroutine doTrials
+  recursive subroutine main()
     trials = 1000
     do i4 = 1, 2
       np = arr4(i4)
       write(s5,'(G0)') trials
       write(s6,'(G0)') np
-      print *, trim(trim(trim('Results from ' // s5) // ' trials with ') // s6) // ' prisoners:
-'
+      print *, trim(trim(trim('Results from ' // s5) // ' trials with ') // s6) // ' prisoners:'//char(10)//''
       do i7 = 1, 2
         strat = arr7(i7)
-        doTrials(trials,np,strat)
+        call doTrials(trials,np,strat)
       end do
     end do
-  end function main
+  end subroutine main
 end program p_100_prisoners

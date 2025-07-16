@@ -13,7 +13,7 @@ program caesar_cipher_2
         character(len=100) :: s1
       integer :: ct
       character(len=100) :: s2
-  main()
+  call main()
   contains
   recursive integer function indexOf(s,ch) result(res)
     character(len=100), intent(in) :: s
@@ -93,7 +93,7 @@ program caesar_cipher_2
     res = encipher(s,mod((mod((26 - k),26)),26))
     return
   end function decipher
-  recursive integer function main() result(res)
+  recursive subroutine main()
     pt = 'The five boxing wizards jump quickly'
     print *, 'Plaintext: ' // pt
     do i0 = 1, 5
@@ -109,5 +109,5 @@ program caesar_cipher_2
       print *, '  Enciphered: ' // ct
       print *, '  Deciphered: ' // decipher(ct,key)
     end do
-  end function main
+  end subroutine main
 end program caesar_cipher_2

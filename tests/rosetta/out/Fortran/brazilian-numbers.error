@@ -1,19 +1,4 @@
 gfortran: exit status 1
-/tmp/brazilian-numbers.f90:12:3:
-
-   12 |   main()
-      |   1
-Error: Unclassifiable statement at (1)
-/tmp/brazilian-numbers.f90:93:22:
-
-   93 |             print *, '
-      |                      1
-Error: Unterminated character constant beginning at (1)
-/tmp/brazilian-numbers.f90:94:1:
-
-   94 | '
-      | 1
-Error: Invalid character in name at (1)
 /tmp/brazilian-numbers.f90:86:7:
 
    86 |       n = 7
@@ -34,14 +19,14 @@ Error: Different CHARACTER lengths (1/5) in array constructor at (1)
    84 |       print *, trim('First 20' // kind) // 'Brazilian numbers:'
       |                    1
 Error: Operands of string concatenation operator at (1) are CHARACTER(8)/INTEGER(4)
-/tmp/brazilian-numbers.f90:98:13:
+/tmp/brazilian-numbers.f90:97:13:
 
-   98 |         if ((kind == ' ')) then
+   97 |         if ((kind == ' ')) then
       |             1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/brazilian-numbers.f90:100:18:
+/tmp/brazilian-numbers.f90:99:18:
 
-  100 |         else if ((kind == ' odd ')) then
+   99 |         else if ((kind == ' odd ')) then
       |                  1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(5)
 /tmp/brazilian-numbers.f90:35:31:

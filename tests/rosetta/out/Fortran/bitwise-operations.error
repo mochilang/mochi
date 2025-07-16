@@ -1,9 +1,4 @@
 gfortran: exit status 1
-/tmp/bitwise-operations.f90:17:3:
-
-   17 |   bitwise(-460,6)
-      |   1
-Error: Unclassifiable statement at (1)
 /tmp/bitwise-operations.f90:53:38:
 
    53 |       if ((mod(((mod(ua,2) == 1) .and. ub),2) == 1)) then

@@ -38,14 +38,17 @@ program arrays
   s(((0)+1)) = 22
   print *, 'a = ' // listStr(a)
   print *, 's = ' // listStr(s)
+  if (allocated(app4)) deallocate(app4)
   allocate(app4(size(s)+1))
   app4(1:size(s)) = s
   app4(size(s)+1) = 4
   s = app4
+  if (allocated(app5)) deallocate(app5)
   allocate(app5(size(s)+1))
   app5(1:size(s)) = s
   app5(size(s)+1) = 5
   s = app5
+  if (allocated(app6)) deallocate(app6)
   allocate(app6(size(s)+1))
   app6(1:size(s)) = s
   app6(size(s)+1) = 6
@@ -60,6 +63,7 @@ program arrays
   print *, 's = ' // listStr(s)
   s = (//)
   do i = 0, 8
+    if (allocated(app9)) deallocate(app9)
     allocate(app9(size(s)+1))
     app9(1:size(s)) = s
     app9(size(s)+1) = 0

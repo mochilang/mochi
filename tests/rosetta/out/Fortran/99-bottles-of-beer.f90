@@ -3,7 +3,7 @@ program p_99_bottles_of_beer
   implicit none
     character(len=100) :: s0
     integer :: i
-  main()
+  call main()
   contains
   recursive character(len=100) function bottles(n) result(res)
     integer, intent(in) :: n
@@ -19,7 +19,7 @@ program p_99_bottles_of_beer
     res = s0 // ' bottles'
     return
   end function bottles
-  recursive integer function main() result(res)
+  recursive subroutine main()
     i = 99
     do while ((i > 0))
       print *, bottles(i) // ' of beer on the wall'
@@ -28,5 +28,5 @@ program p_99_bottles_of_beer
       print *, bottles((i - 1)) // ' of beer on the wall'
       i = (i - 1)
     end do
-  end function main
+  end subroutine main
 end program p_99_bottles_of_beer

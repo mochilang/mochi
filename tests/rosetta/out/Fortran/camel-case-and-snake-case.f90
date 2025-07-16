@@ -15,7 +15,7 @@ program camel_case_and_snake_case
     integer, dimension(12) :: samples
     integer :: i0
     integer :: i1
-  main()
+  call main()
   contains
   recursive character(len=100) function trimSpace(s) result(res)
     character(len=100), intent(in) :: s
@@ -141,7 +141,7 @@ program camel_case_and_snake_case
     res = res
     return
   end function camelToSnake
-  recursive integer function main() result(res)
+  recursive subroutine main()
     samples = (/'snakeCase','snake_case','snake-case','snake case','snake CASE','snake.case','variable_10_case','variable10Case','ɛrgo rE tHis','hurry-up-joe!','c://my-docs/happy_Flag-Day/12.doc',' spaces '/)
     print *, '=== To snake_case ==='
     do i0 = 1, size(samples)
@@ -154,5 +154,5 @@ program camel_case_and_snake_case
       s = samples(i1)
       print *, trim(padLeft(s,34) // ' => ') // snakeToCamel(s)
     end do
-  end function main
+  end subroutine main
 end program camel_case_and_snake_case

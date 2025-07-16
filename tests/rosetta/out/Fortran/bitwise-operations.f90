@@ -14,7 +14,7 @@ program bitwise_operations
     integer :: val
     integer :: left
     integer :: right
-  bitwise(-460,6)
+  call bitwise(-460,6)
   contains
   recursive integer function toUnsigned16(n) result(res)
     integer, intent(in) :: n
@@ -168,7 +168,7 @@ program bitwise_operations
     res = toUnsigned16((left + right))
     return
   end function ror
-  recursive integer function bitwise(a,b) result(res)
+  recursive subroutine bitwise(a,b)
     integer, intent(in) :: a
     integer, intent(in) :: b
     print *, 'a:   ' // bin16(a)
@@ -188,5 +188,5 @@ program bitwise_operations
     print *, 'ras: ' // bin16(ras(a,b))
     print *, 'rol: ' // bin16(rol(a,b))
     print *, 'ror: ' // bin16(ror(a,b))
-  end function bitwise
+  end subroutine bitwise
 end program bitwise_operations

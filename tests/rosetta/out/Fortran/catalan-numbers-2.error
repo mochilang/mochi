@@ -1,6 +1,0 @@
-gfortran: exit status 1
-/tmp/catalan-numbers-2.f90:10:3:
-
-   10 |   main()
-      |   1
-Error: Unclassifiable statement at (1)

@@ -2,14 +2,14 @@
 program assertions
   implicit none
     integer :: x
-  main()
+  call main()
   contains
-  recursive integer function main() result(res)
+  recursive subroutine main()
     x = 43
     if ((x /= 42)) then
       print *, 'Assertion failed'
     else
       print *, 'Assertion passed'
     end if
-  end function main
+  end subroutine main
 end program assertions
