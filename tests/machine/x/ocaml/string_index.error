@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_index3375940617/001/string_index.ml", line 23, characters 34-35:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_index1805063739/001/string_index.ml", line 23, characters 34-35:
 23 |   print_endline (__show (List.nth s 1));
                                        ^
 Error: This expression has type string but an expression was expected of type

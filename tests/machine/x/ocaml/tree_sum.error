@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldentree_sum3647031895/001/tree_sum.ml", line 24, characters 8-12:
+File "/tmp/TestOCamlCompiler_VMValid_Goldentree_sum3936982021/001/tree_sum.ml", line 24, characters 8-12:
 24 | let t : node = Node (Leaf, 1, Node (Leaf, 2, Leaf))
              ^^^^
 Error: Unbound type constructor node

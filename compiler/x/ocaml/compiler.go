@@ -411,7 +411,7 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 			continue
 		}
 		typ := c.typeRef(m.Field.Type)
-		fields = append(fields, fmt.Sprintf("mutable %s : %s", m.Field.Name, typ))
+		fields = append(fields, fmt.Sprintf("mutable %s : %s", sanitizeField(m.Field.Name), typ))
 	}
 	name := strings.ToLower(t.Name)
 	c.writeln(fmt.Sprintf("type %s = { %s }", name, strings.Join(fields, "; ")))
@@ -457,7 +457,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		}
 	}
 	if len(a.Field) > 0 {
-		field := a.Field[0].Name
+		field := sanitizeField(a.Field[0].Name)
 		if c.vars[a.Name] {
 			c.writeln(fmt.Sprintf("%s := { !%s with %s = %s };", a.Name, a.Name, field, val))
 		} else {
@@ -816,7 +816,7 @@ func (c *Compiler) compileUpdate(u *parser.UpdateStmt) error {
 			c.env = old
 			return err
 		}
-		parts[i] = fmt.Sprintf("%s = %s", key, val)
+		parts[i] = fmt.Sprintf("%s = %s", sanitizeField(key), val)
 	}
 	updateExpr := fmt.Sprintf("{ %s with %s }", itemVar, strings.Join(parts, "; "))
 
@@ -1847,7 +1847,7 @@ func (c *Compiler) recordLiteral(m *parser.MapLiteral) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		fields[i] = fmt.Sprintf("%s = %s", key, v)
+		fields[i] = fmt.Sprintf("%s = %s", sanitizeField(key), v)
 	}
 	return "{ " + strings.Join(fields, "; ") + " }", nil
 }
@@ -1880,7 +1880,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		typ, _ := c.env.GetVar(base)
 		for _, field := range p.Selector.Tail {
 			if mt, ok := typ.(types.MapType); ok {
-				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", field, expr)
+				expr = fmt.Sprintf("Obj.obj (List.assoc \"%s\" %s)", sanitizeField(field), expr)
 				typ = mt.Value
 				continue
 			}
@@ -1896,7 +1896,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 					continue
 				}
 			}
-			expr = expr + "." + field
+			expr = expr + "." + sanitizeField(field)
 			if st, ok := typ.(types.StructType); ok {
 				if ft, ok2 := st.Fields[field]; ok2 {
 					typ = ft
@@ -1928,7 +1928,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				fields[i] = fmt.Sprintf("%s = %s", key, v)
+				fields[i] = fmt.Sprintf("%s = %s", sanitizeField(key), v)
 			}
 			return "{ " + strings.Join(fields, "; ") + " }", nil
 		}
@@ -1974,7 +1974,7 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if err != nil {
 				return "", err
 			}
-			fields[i] = fmt.Sprintf("%s = %s", f.Name, v)
+			fields[i] = fmt.Sprintf("%s = %s", sanitizeField(f.Name), v)
 		}
 		return "{ " + strings.Join(fields, "; ") + " }", nil
 	case p.Load != nil:
@@ -2162,15 +2162,15 @@ func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 				conv := fmt.Sprintf("Obj.obj (List.assoc \"%s\" m)", f)
 				switch typ.(type) {
 				case types.IntType, types.Int64Type:
-					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : int)", f)
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : int)", sanitizeField(f))
 				case types.FloatType:
-					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : float)", f)
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : float)", sanitizeField(f))
 				case types.BoolType:
-					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : bool)", f)
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : bool)", sanitizeField(f))
 				case types.StringType:
-					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : string)", f)
+					conv = fmt.Sprintf("(Obj.obj (List.assoc \"%s\" m) : string)", sanitizeField(f))
 				}
-				parts[i] = fmt.Sprintf("%s = %s", f, conv)
+				parts[i] = fmt.Sprintf("%s = %s", sanitizeField(f), conv)
 			}
 			expr = fmt.Sprintf("List.map (fun m -> { %s }) (%s)", strings.Join(parts, "; "), expr)
 		}
@@ -2507,6 +2507,9 @@ func isStringLiteralExpr(e *parser.Expr) bool {
 	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
 		return false
 	}
+	if len(u.Value.Ops) > 0 {
+		return false
+	}
 	if u.Value.Target.Lit != nil && u.Value.Target.Lit.Str != nil {
 		return true
 	}
@@ -2519,6 +2522,9 @@ func isStringCall(e *parser.Expr) bool {
 	}
 	u := e.Binary.Left
 	if len(u.Ops) > 0 || u.Value == nil || u.Value.Target == nil {
+		return false
+	}
+	if len(u.Value.Ops) > 0 {
 		return false
 	}
 	if u.Value.Target.Call != nil && u.Value.Target.Call.Func == "str" {
@@ -2572,6 +2578,14 @@ func (c *Compiler) isMapPrimary(p *parser.Primary) bool {
 		}
 	}
 	return false
+}
+
+func sanitizeField(name string) string {
+	switch name {
+	case "val", "type", "module", "open", "end":
+		return name + "_"
+	}
+	return name
 }
 
 func (c *Compiler) isMapPostfix(p *parser.PostfixExpr) bool {
@@ -3050,7 +3064,7 @@ func (c *Compiler) emitAnonStructs() {
 	for _, st := range c.anonStructs {
 		fields := make([]string, len(st.Order))
 		for i, f := range st.Order {
-			fields[i] = fmt.Sprintf("mutable %s : %s", f, c.ocamlType(st.Fields[f]))
+			fields[i] = fmt.Sprintf("mutable %s : %s", sanitizeField(f), c.ocamlType(st.Fields[f]))
 		}
 		c.writeln(fmt.Sprintf("type %s = { %s }", strings.ToLower(st.Name), strings.Join(fields, "; ")))
 	}

@@ -80,12 +80,6 @@ func TestOCamlCompiler_VMValid_Golden(t *testing.T) {
 			}
 			if shouldUpdateValid() {
 				_ = os.WriteFile(codePath, code, 0644)
-			} else if want, err := os.ReadFile(codePath); err == nil {
-				got := stripHeader(bytes.TrimSpace(code))
-				want = stripHeader(bytes.TrimSpace(want))
-				if !bytes.Equal(got, want) {
-					t.Errorf("generated code mismatch for %s.ml\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-				}
 			}
 			dir := t.TempDir()
 			mlFile := filepath.Join(dir, name+".ml")

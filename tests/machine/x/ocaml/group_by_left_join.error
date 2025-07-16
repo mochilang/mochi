@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_left_join3348425507/001/group_by_left_join.ml", line 45, characters 11-12:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_left_join3835620109/001/group_by_left_join.ml", line 45, characters 11-12:
 45 |       if r.o then
                 ^
 Error: Unbound record field o

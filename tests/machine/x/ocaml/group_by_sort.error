@@ -1,4 +1,6 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_sort4140979483/001/group_by_sort.ml", line 23, characters 47-50:
-23 | type record1 = { mutable cat : string; mutable val : int }
-                                                    ^^^
-Error: Syntax error
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_by_sort2082586037/001/group_by_sort.ml", line 41, characters 0-16:
+41 | List.rev !__res1)
+     ^^^^^^^^^^^^^^^^
+Error: This expression has type int list
+       but an expression was expected of type float list
+       Type int is not compatible with type float 
