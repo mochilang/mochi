@@ -112,3 +112,4 @@ should compile and run successfully.
 - 2025-09-01 09:00 – Added indexOf and sha256 built-ins to reduce Rosetta compile errors; regenerated C golden files.
 - 2025-09-02 12:00 - Added sha256 built-in and rosetta golden tests for C compiler
 - 2025-09-03 10:00 - Fixed append assignment to drop constant list tracking so loops like `100-doors.mochi` compile and run
+- 2025-09-05 15:10 - Renamed runtime entry to `_mochi_main` and aliased user `main` functions to avoid duplicate symbols in Rosetta tests

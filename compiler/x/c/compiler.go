@@ -90,6 +90,7 @@ type Compiler struct {
 	baseDir          string
 	allocs           []string
 	equalListStructs map[string]bool
+	funcAliases      map[string]string
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -125,6 +126,7 @@ func New(env *types.Env) *Compiler {
 		baseDir:          "",
 		allocs:           []string{},
 		equalListStructs: map[string]bool{},
+		funcAliases:      map[string]string{},
 	}
 }
 
@@ -424,8 +426,8 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 			}
 		}
 	}
-	// main function
-	c.writeln("int main() {")
+	// entry function
+	c.writeln("int _mochi_main() {")
 	c.indent++
 	for _, name := range c.externObjects {
 		c.writeln(fmt.Sprintf("if (%s == NULL) { fprintf(stderr, \"extern object not registered: %s\\n\"); return 1; }", name, name))
@@ -457,6 +459,7 @@ func (c *Compiler) compileProgram(prog *parser.Program) ([]byte, error) {
 	c.writeln("return 0;")
 	c.indent--
 	c.writeln("}")
+	c.writeln("int main() { return _mochi_main(); }")
 	body := c.buf.String()
 	if len(c.lambdas) > 0 {
 		body = strings.Join(c.lambdas, "\n") + "\n" + body
@@ -661,14 +664,21 @@ func (c *Compiler) compileFun(fun *parser.FunStmt) error {
 		c.need(needListInt)
 	}
 	var retSuffix string
+	fname := sanitizeName(fun.Name)
+	if fun.Name == "main" {
+		fname = "mochi_main"
+		if c.funcAliases != nil {
+			c.funcAliases["main"] = fname
+		}
+	}
 	if strings.Contains(ret, "(*") {
 		idx := strings.Index(ret, "(*")
 		prefix := ret[:idx+2]
 		retSuffix = ret[idx+2:]
-		c.buf.WriteString(prefix + sanitizeName(fun.Name))
+		c.buf.WriteString(prefix + fname)
 	} else {
 		c.buf.WriteString(ret + " ")
-		c.buf.WriteString(sanitizeName(fun.Name))
+		c.buf.WriteString(fname)
 	}
 	c.buf.WriteByte('(')
 	for i, p := range fun.Params {
@@ -5522,7 +5532,11 @@ func (c *Compiler) compilePrimary(p *parser.Primary) string {
 				return fmt.Sprintf("(%s)", strings.Join(assigns, ", "))
 			}
 		}
-		return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), strings.Join(args, ", "))
+		name := sanitizeName(p.Call.Func)
+		if alias, ok := c.funcAliases[name]; ok {
+			name = alias
+		}
+		return fmt.Sprintf("%s(%s)", name, strings.Join(args, ", "))
 	case p.If != nil:
 		return c.compileIfExpr(p.If)
 	case p.Match != nil:
