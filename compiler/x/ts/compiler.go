@@ -1656,6 +1656,13 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("%s(%s)", expr, strings.Join(args, ", "))
 					typ = c.inferPostfixType(&parser.PostfixExpr{Target: &parser.Primary{Call: nil}})
 				}
+			} else if op.Field != nil {
+				expr = fmt.Sprintf("%s.%s", expr, sanitizeName(op.Field.Name))
+				typ = fieldType(typ, op.Field.Name)
+			} else if op.Cast != nil {
+				t := c.resolveTypeRef(op.Cast.Type)
+				expr = fmt.Sprintf("(%s as %s)", expr, tsType(t))
+				typ = t
 			}
 			continue
 		}
