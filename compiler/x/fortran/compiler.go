@@ -325,10 +325,12 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 	if !c.declared[l.Name] {
 		typ := c.typeName(l.Type)
 		if l.Type == nil {
-			if t, err := c.env.GetVar(l.Name); err == nil {
+			if t, err := c.env.GetVar(l.Name); err == nil && !types.ContainsAny(t) {
 				typ = c.typeNameFromTypes(t)
 			} else if types.IsStringExpr(l.Value, c.env) {
 				typ = "character(len=100)"
+			} else if lst := listLiteral(l.Value); lst != nil && len(lst.Elems) == 0 {
+				typ = "logical"
 			}
 		}
 		if lst := listLiteral(l.Value); lst != nil {
@@ -340,7 +342,7 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 					c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
 				}
 			} else {
-				c.writelnDecl(fmt.Sprintf("%s, dimension(0) :: %s", typ, l.Name))
+				c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:) :: %s", typ, l.Name))
 			}
 		} else {
 			c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
@@ -370,6 +372,10 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 					return nil
 				}
 			}
+			if len(lst.Elems) == 0 {
+				c.writeln(fmt.Sprintf("allocate(%s(0))", l.Name))
+				return nil
+			}
 			elems := make([]string, len(lst.Elems))
 			for i, e := range lst.Elems {
 				v, err := c.compileExpr(e)
@@ -396,10 +402,12 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 	}
 	typ := c.typeName(l.Type)
 	if l.Type == nil {
-		if t, err := c.env.GetVar(l.Name); err == nil {
+		if t, err := c.env.GetVar(l.Name); err == nil && !types.ContainsAny(t) {
 			typ = c.typeNameFromTypes(t)
 		} else if types.IsStringExpr(l.Value, c.env) {
 			typ = "character(len=100)"
+		} else if lst := listLiteral(l.Value); lst != nil && len(lst.Elems) == 0 {
+			typ = "logical"
 		}
 	}
 	if lst := listLiteral(l.Value); lst != nil {
@@ -411,7 +419,7 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 				c.writelnDecl(fmt.Sprintf("%s, dimension(%d) :: %s", typ, len(lst.Elems), l.Name))
 			}
 		} else {
-			c.writelnDecl(fmt.Sprintf("%s, dimension(0) :: %s", typ, l.Name))
+			c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:) :: %s", typ, l.Name))
 		}
 	} else {
 		c.writelnDecl(fmt.Sprintf("%s :: %s", typ, l.Name))
@@ -1110,7 +1118,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		elem := args[1]
 		tmp := fmt.Sprintf("app%d", c.tmpIndex)
 		c.tmpIndex++
-		c.writelnDecl(fmt.Sprintf("integer, allocatable, dimension(:) :: %s", tmp))
+		elemType := "integer"
+		if types.IsBoolExpr(call.Args[1], c.env) {
+			elemType = "logical"
+		} else if types.IsStringExpr(call.Args[1], c.env) {
+			elemType = "character(len=100)"
+		} else if types.IsFloatExpr(call.Args[1], c.env) {
+			elemType = "real"
+		}
+		c.writelnDecl(fmt.Sprintf("%s, allocatable, dimension(:) :: %s", elemType, tmp))
+		c.writeln(fmt.Sprintf("if (allocated(%s)) deallocate(%s)", tmp, tmp))
 		c.writeln(fmt.Sprintf("allocate(%s(size(%s)+1))", tmp, arr))
 		c.writeln(fmt.Sprintf("%s(1:size(%s)) = %s", tmp, arr, arr))
 		c.writeln(fmt.Sprintf("%s(size(%s)+1) = %s", tmp, arr, elem))
