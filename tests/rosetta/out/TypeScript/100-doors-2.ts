@@ -1,0 +1,21 @@
+// Source: /workspace/mochi/tests/rosetta/x/Mochi/100-doors-2.mochi
+
+var door: number;
+var incrementer: number;
+
+function main(): void {
+  door = 1;
+  incrementer = 0;
+  for (let current: number = 1; current < 101; current++) {
+    var line = `Door ${String(current)} `;
+    if ((current == door)) {
+      line = `${line}Open`;
+      incrementer = incrementer + 1;
+      door = (door + (2 * incrementer)) + 1;
+    } else {
+      line = `${line}Closed`;
+    }
+    console.log(line);
+  }
+}
+main();
