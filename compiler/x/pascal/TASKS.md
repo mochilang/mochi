@@ -3,6 +3,8 @@
 ## Recent Enhancements
 - [2025-07-16 11:30] Fixed lambda compilation to preserve variable mappings and
   allowed `append` on untyped lists to reduce `.error` files for Rosetta tasks.
+- [2025-07-16 12:10] Reordered global variable emission and helper placement so
+  Pascal sources compile cleanly; deterministic headers for Rosetta tests.
 - [2025-07-13 05:05] Installed FPC in CI environment and regenerated Pascal outputs.
 - [2025-07-13 05:05] Fixed element type inference for grouped query results.
 - [2025-07-28 15:50] Added Pascal compiler support for TPCH queries q11-q22 and updated dataset tests.

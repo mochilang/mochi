@@ -55,6 +55,53 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.replacements = make(map[string]string)
 	c.funcTypes = make(map[string]string)
 	collectFuncTypes(prog.Statements, c)
+
+	// First compile functions to a buffer so helper usage is known.
+	var funcBuf bytes.Buffer
+	prevBuf := c.buf
+	prevIndent := c.indent
+	c.buf = funcBuf
+	for _, s := range prog.Statements {
+		if s.Fun != nil {
+			if err := c.compileFun(s.Fun); err != nil {
+				return nil, err
+			}
+			c.writeln("")
+		}
+	}
+	funcBuf = c.buf
+	c.buf = prevBuf
+	c.indent = prevIndent
+
+	// Compile main body to gather temporaries.
+	var body bytes.Buffer
+	c.buf = bytes.Buffer{}
+	c.indent = 1
+	for _, s := range prog.Statements {
+		if s.Fun != nil || s.Type != nil || s.Test != nil {
+			continue
+		}
+		if err := c.compileStmt(s); err != nil {
+			c.buf = prevBuf
+			c.indent = prevIndent
+			return nil, err
+		}
+	}
+	body = c.buf
+	c.buf = prevBuf
+	c.indent = prevIndent
+
+	// Collect global vars including temporaries.
+	vars := map[string]string{}
+	collectVars(prog.Statements, c.env, vars)
+	for n, t := range c.tempVars {
+		if t == "" {
+			t = "integer"
+		}
+		vars[n] = t
+	}
+	c.varTypes = vars
+
 	name := "main"
 	if prog.Package != "" {
 		name = sanitizeName(prog.Package)
@@ -74,7 +121,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.indent--
 	c.emitFuncTypes()
 
-	// Compile package imports first
+	// Package imports
 	for _, s := range prog.Statements {
 		if s.Import != nil {
 			if s.Import.Lang == nil {
@@ -82,7 +129,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 					return nil, err
 				}
 			} else {
-				// Allow builtin foreign packages like strings and math
 				p := strings.Trim(s.Import.Path, "\"")
 				if p != "strings" && p != "math" {
 					return nil, fmt.Errorf("foreign imports not supported")
@@ -91,7 +137,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	// Emit user-defined types
+	// User-defined types
 	for _, s := range prog.Statements {
 		if s.Type != nil {
 			if err := c.compileTypeDecl(s.Type); err != nil {
@@ -100,63 +146,6 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 	c.writeln("")
-
-	// Emit function declarations first.
-	for _, s := range prog.Statements {
-		if s.Fun != nil {
-			if err := c.compileFun(s.Fun); err != nil {
-				return nil, err
-			}
-			c.writeln("")
-		}
-	}
-
-	// Collect variable types for the main body so selectors can be
-	// resolved correctly during the first pass.
-	globalVars := map[string]string{}
-	collectVars(prog.Statements, c.env, globalVars)
-	c.varTypes = globalVars
-
-	// Compile main body first to gather temporaries
-	var body bytes.Buffer
-	prevBuf := c.buf
-	prevIndent := c.indent
-	c.buf = bytes.Buffer{}
-	c.indent = 1
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil || s.Test != nil {
-			continue
-		}
-		if err := c.compileStmt(s); err != nil {
-			c.buf = prevBuf
-			c.indent = prevIndent
-			return nil, err
-		}
-	}
-	body = c.buf
-	c.buf = prevBuf
-	c.indent = prevIndent
-
-	// Emit generated lambda functions
-	for _, code := range c.lambdas {
-		c.buf.WriteString(code)
-		if !strings.HasSuffix(code, "\n") {
-			c.writeln("")
-		}
-		c.writeln("")
-	}
-
-	c.emitHelpers()
-
-	// Collect global vars and compiler-generated temporaries.
-	vars := map[string]string{}
-	collectVars(prog.Statements, c.env, vars)
-	for n, t := range c.tempVars {
-		if t == "" {
-			t = "integer"
-		}
-		vars[n] = t
-	}
 
 	if len(vars) > 0 {
 		c.writeln("var")
@@ -177,7 +166,22 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		c.writeln("")
 	}
 
-	// Emit test blocks as procedures after variables.
+	// Helpers before function definitions.
+	c.emitHelpers()
+
+	// Function declarations.
+	c.buf.Write(funcBuf.Bytes())
+
+	// Generated lambdas.
+	for _, code := range c.lambdas {
+		c.buf.WriteString(code)
+		if !strings.HasSuffix(code, "\n") {
+			c.writeln("")
+		}
+		c.writeln("")
+	}
+
+	// Test blocks
 	for _, s := range prog.Statements {
 		if s.Test != nil {
 			if err := c.compileTestBlock(s.Test); err != nil {
