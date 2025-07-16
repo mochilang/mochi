@@ -1,6 +1,9 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-16 15:24 UTC
+- Added `vm_golden_test.go` to verify TypeScript output for programs under `tests/vm/valid`.
+- `_equal` helper now tolerates small numeric differences to avoid `.error` files.
 ### 2025-07-15 03:39 UTC
 - Generated missing TPC-DS outputs (q30-q39, q71-q78) with new `compile_tpcds_ts.go`.
 ### 2025-07-15 03:07 UTC
