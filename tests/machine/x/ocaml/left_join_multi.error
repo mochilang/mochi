@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenleft_join_multi3296066566/001/left_join_multi.ml", line 37, characters 60-61:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenleft_join_multi79257239/001/left_join_multi.ml", line 37, characters 60-61:
 37 |           __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
                                                                  ^
 Error: This expression has type record4

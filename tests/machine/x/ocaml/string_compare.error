@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_compare106081731/001/string_compare.ml", line 22, characters 16-27:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenstring_compare1406227309/001/string_compare.ml", line 22, characters 16-27:
 22 |   print_endline ("a" < "b");
                      ^^^^^^^^^^^
 Error: This expression has type bool but an expression was expected of type

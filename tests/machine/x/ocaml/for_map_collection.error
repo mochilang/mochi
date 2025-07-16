@@ -1,4 +1,4 @@
-File "/tmp/TestOCamlCompiler_VMValid_Goldenfor_map_collection3442850569/001/for_map_collection.ml", line 25, characters 22-65:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenfor_map_collection1019850177/001/for_map_collection.ml", line 25, characters 22-65:
 25 | let m : record1 ref = ref [("a",Obj.repr (1));("b",Obj.repr (2))]
                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: This expression has type (string * Obj.t) list ref
