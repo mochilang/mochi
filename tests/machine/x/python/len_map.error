@@ -1,4 +1,4 @@
-  File "/workspace/mochi/tests/machine/x/python/len_map.py", line 29
+  File "/workspace/mochi/tests/machine/x/python/len_map.py", line 33
     print(_fmt(len(Auto1(_=1, _=2))))
                               ^^^
 SyntaxError: keyword argument repeated: _

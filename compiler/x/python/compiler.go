@@ -956,7 +956,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		return "time.time_ns()", nil
 	case "json":
 		c.imports["json"] = "json"
-		return fmt.Sprintf("print(json.dumps(%s, default=lambda o: vars(o)))", argStr), nil
+		return fmt.Sprintf("print(json.dumps(%s, indent=2, default=lambda o: vars(o)))", argStr), nil
 	case "str":
 		return fmt.Sprintf("str(%s)", argStr), nil
 	case "int":

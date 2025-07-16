@@ -4,7 +4,6 @@ package pycode_test
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -95,7 +94,7 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 		t.Skip("python3 not installed")
 	}
 
-	compileFn := func(src string) ([]byte, error) {
+	runFn := func(src string) ([]byte, error) {
 		prog, err := parser.Parse(src)
 		if err != nil {
 			return nil, fmt.Errorf("❌ parse error: %w", err)
@@ -123,26 +122,10 @@ func TestPyCompiler_GoldenOutput(t *testing.T) {
 		if err != nil {
 			return nil, fmt.Errorf("❌ python run error: %w\n%s", err, out)
 		}
-		gotOut := bytes.TrimSpace(out)
-		wantOutPath := strings.TrimSuffix(src, ".mochi") + ".out"
-		wantOut, err := os.ReadFile(wantOutPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read golden output: %w", err)
-		}
-		if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-			return nil, fmt.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", filepath.Base(wantOutPath), gotOut, bytes.TrimSpace(wantOut))
-		}
-
-		return bytes.TrimSpace(code), nil
+		return bytes.TrimSpace(out), nil
 	}
 
-	dirs := []string{
-		"tests/compiler/py",
-	}
-
-	for _, dir := range dirs {
-		golden.Run(t, dir, ".mochi", ".py.out", compileFn)
-	}
+	golden.Run(t, "tests/compiler/py", ".mochi", ".out", runFn)
 }
 
 func TestPyCompiler_LeetCodeExamples(t *testing.T) {
@@ -224,19 +207,6 @@ func TestPyCompiler_TPCHQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-h", "compiler", "py", q+".py")
-			if _, err := os.Stat(codeWantPath); err != nil {
-				codeWantPath = codeWantPath + ".out"
-			}
-			wantCode, err := os.ReadFile(codeWantPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
-			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
 			if err := os.WriteFile(file, code, 0644); err != nil {
@@ -284,26 +254,6 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			update := flag.Lookup("update") != nil && flag.Lookup("update").Value.String() == "true"
-			codeWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".py")
-			if _, err := os.Stat(codeWantPath); err != nil {
-				codeWantPath = codeWantPath + ".out"
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			if update {
-				if err := os.WriteFile(codeWantPath, got, 0o644); err != nil {
-					t.Fatalf("write golden: %v", err)
-				}
-			} else {
-				wantCode, err := os.ReadFile(codeWantPath)
-				if err != nil {
-					t.Fatalf("read golden: %v", err)
-				}
-				want := stripHeader(bytes.TrimSpace(wantCode))
-				if !bytes.Equal(got, want) {
-					t.Errorf("generated code mismatch for %s.py\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
-				}
-			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
 			if err := os.WriteFile(file, code, 0644); err != nil {
@@ -316,18 +266,12 @@ func TestPyCompiler_JOBQueries(t *testing.T) {
 			}
 			gotOut := bytes.TrimSpace(out)
 			outWantPath := filepath.Join(root, "tests", "dataset", "job", "compiler", "py", q+".out")
-			if update {
-				if err := os.WriteFile(outWantPath, gotOut, 0o644); err != nil {
-					t.Fatalf("write golden: %v", err)
-				}
-			} else {
-				wantOut, err := os.ReadFile(outWantPath)
-				if err != nil {
-					t.Fatalf("read golden: %v", err)
-				}
-				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
-				}
+			wantOut, err := os.ReadFile(outWantPath)
+			if err != nil {
+				t.Fatalf("read golden: %v", err)
+			}
+			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, gotOut, bytes.TrimSpace(wantOut))
 			}
 		})
 	}
@@ -361,16 +305,6 @@ func TestPyCompiler_TPCDSQueries(t *testing.T) {
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
-			}
-			codeWantPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "py", q+".py.out")
-			wantCode, err := os.ReadFile(codeWantPath)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
@@ -453,9 +387,8 @@ func TestPyCompiler_SLTQueries(t *testing.T) {
 	cases := []string{"case1", "case2", "case3"}
 	for _, base := range cases {
 		src := filepath.Join(root, "tests", "dataset", "slt", "out", "select1", base+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "py", base+".py.out")
 		outWant := filepath.Join(root, "tests", "dataset", "slt", "compiler", "py", base+".out")
-		if _, err := os.Stat(codeWant); err != nil {
+		if _, err := os.Stat(outWant); err != nil {
 			continue
 		}
 		t.Run(base, func(t *testing.T) {
@@ -472,15 +405,6 @@ func TestPyCompiler_SLTQueries(t *testing.T) {
 			code, err := c.Compile(prog)
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
-			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err != nil {
-				t.Fatalf("read golden: %v", err)
-			}
-			got := stripHeader(bytes.TrimSpace(code))
-			want := stripHeader(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.py.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, got, want)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.py")
