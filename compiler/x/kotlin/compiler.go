@@ -250,6 +250,13 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
+	hasMain := false
+	for _, s := range prog.Statements {
+		if s.Fun != nil && s.Fun.Name == "main" {
+			hasMain = true
+		}
+	}
+
 	// emit type declarations first
 	for _, s := range prog.Statements {
 		if s.Type != nil {
@@ -299,22 +306,24 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	c.writeln("fun main() {")
-	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Type != nil || s.Import != nil {
-			continue
+	if !hasMain {
+		c.writeln("fun main() {")
+		c.indent++
+		for _, s := range prog.Statements {
+			if s.Fun != nil || s.Type != nil || s.Import != nil {
+				continue
+			}
+			if s.Let != nil || s.Var != nil {
+				// already emitted as global variable
+				continue
+			}
+			if err := c.stmt(s); err != nil {
+				return nil, err
+			}
 		}
-		if s.Let != nil || s.Var != nil {
-			// already emitted as global variable
-			continue
-		}
-		if err := c.stmt(s); err != nil {
-			return nil, err
-		}
+		c.indent--
+		c.writeln("}")
 	}
-	c.indent--
-	c.writeln("}")
 
 	body := c.buf.Bytes()
 	rt := buildRuntime(c.used)
@@ -349,7 +358,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 				val = c.zeroValue(s.Let.Type)
 			}
 		}
-		c.writeln(fmt.Sprintf("val %s%s = %s", s.Let.Name, typ, val))
+		c.writeln(fmt.Sprintf("val %s%s = %s", escapeIdent(s.Let.Name), typ, val))
 		var t types.Type
 		if s.Let.Type != nil {
 			t = types.ResolveTypeRef(s.Let.Type, c.env)
@@ -388,7 +397,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 				val = c.zeroValue(s.Var.Type)
 			}
 		}
-		c.writeln(fmt.Sprintf("var %s%s = %s", s.Var.Name, typ, val))
+		c.writeln(fmt.Sprintf("var %s%s = %s", escapeIdent(s.Var.Name), typ, val))
 		var t types.Type
 		if s.Var.Type != nil {
 			t = types.ResolveTypeRef(s.Var.Type, c.env)
@@ -414,7 +423,7 @@ func (c *Compiler) stmt(s *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		target := s.Assign.Name
+		target := escapeIdent(s.Assign.Name)
 		for i, idx := range s.Assign.Index {
 			idxVal, err := c.expr(idx.Start)
 			if err != nil {
@@ -609,7 +618,7 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", f.Name, start, end))
+		c.writeln(fmt.Sprintf("for (%s in %s until %s) {", escapeIdent(f.Name), start, end))
 		elem = types.IntType{}
 	} else {
 		src, err := c.expr(f.Source)
@@ -618,12 +627,12 @@ func (c *Compiler) forStmt(f *parser.ForStmt) error {
 		}
 		t := types.TypeOfExprBasic(f.Source, c.env)
 		if types.IsMapType(t) {
-			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", f.Name, src))
+			c.writeln(fmt.Sprintf("for (%s in %s.keys) {", escapeIdent(f.Name), src))
 			if mt, ok := t.(types.MapType); ok {
 				elem = mt.Key
 			}
 		} else {
-			c.writeln(fmt.Sprintf("for (%s in %s) {", f.Name, src))
+			c.writeln(fmt.Sprintf("for (%s in %s) {", escapeIdent(f.Name), src))
 			if lt, ok := t.(types.ListType); ok {
 				elem = lt.Elem
 			}
@@ -1137,7 +1146,7 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 	case p.Lit != nil:
 		return c.literal(p.Lit), nil
 	case p.Selector != nil:
-		name := p.Selector.Root
+		name := escapeIdent(p.Selector.Root)
 		t, _ := c.env.GetVar(p.Selector.Root)
 		for i, part := range p.Selector.Tail {
 			if i == 0 {
@@ -1380,7 +1389,7 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 		}
 	case "now":
 		if len(args) == 0 {
-			return "System.nanoTime()", true
+			return "System.nanoTime().toInt()", true
 		}
 	case "append":
 		if len(args) == 2 {
@@ -2419,6 +2428,7 @@ var kotlinKeywords = map[string]bool{
 	"val":    true,
 	"var":    true,
 	"when":   true,
+	"this":   true,
 }
 
 var identRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
