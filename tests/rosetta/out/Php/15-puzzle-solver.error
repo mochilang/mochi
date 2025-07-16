@@ -1,8 +1,0 @@
-run error: exit status 255
-
-Warning: Undefined array key "FifteenPuzzleExample" in /workspace/mochi/tests/rosetta/out/Php/15-puzzle-solver.php on line 3
-
-Fatal error: Uncaught Error: Value of type null is not callable in /workspace/mochi/tests/rosetta/out/Php/15-puzzle-solver.php:3
-Stack trace:
-#0 {main}
-  thrown in /workspace/mochi/tests/rosetta/out/Php/15-puzzle-solver.php on line 3

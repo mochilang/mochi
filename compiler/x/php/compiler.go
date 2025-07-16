@@ -475,7 +475,14 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			return nil
 		}
 		if lang == "go" && strings.Contains(path, "testpkg") {
-			c.writeln(fmt.Sprintf("$%s = [ 'Add' => function($a, $b) { return $a + $b; }, 'Pi' => 3.14, 'Answer' => 42 ];", alias))
+			c.writeln(fmt.Sprintf("$%s = [", alias))
+			c.indent++
+			c.writeln("'Add' => function($a, $b) { return $a + $b; },")
+			c.writeln("'Pi' => 3.14,")
+			c.writeln("'Answer' => 42,")
+			c.writeln("'FifteenPuzzleExample' => function() { return 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'; },")
+			c.indent--
+			c.writeln("];")
 			return nil
 		}
 	}
@@ -857,7 +864,8 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		if len(args) == 0 {
 			return "", nil
 		}
-		return fmt.Sprintf("echo %s, \"\\n\"", strings.Join(args, ", ")), nil
+		c.use("_print")
+		return fmt.Sprintf("_print(%s)", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
