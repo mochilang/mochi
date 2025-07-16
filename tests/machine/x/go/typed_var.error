@@ -2,5 +2,5 @@ Error on line 0: output mismatch
 -- got --
 0
 -- want --
-<nil>
+undefined
 1: //go:build ignore

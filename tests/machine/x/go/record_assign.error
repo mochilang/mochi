@@ -1,6 +1,6 @@
 Error on line 0: output mismatch
 -- got --
-0
+1
 -- want --
-undefined
+0
 1: //go:build ignore

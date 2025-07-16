@@ -40,6 +40,12 @@ func TestGoCompiler_ValidPrograms(t *testing.T) {
 }
 
 func runGoCompile(t *testing.T, srcPath, name, outDir string) {
+       os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
+       os.Setenv("SOURCE_DATE_EPOCH", "0")
+       defer func() {
+               os.Unsetenv("MOCHI_HEADER_TIME")
+               os.Unsetenv("SOURCE_DATE_EPOCH")
+       }()
 	data, err := os.ReadFile(srcPath)
 	if err != nil {
 		t.Fatalf("read: %v", err)
