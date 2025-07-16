@@ -338,7 +338,7 @@ func (c *Compiler) compileFor(fs *parser.ForStmt) error {
 			}
 			return err
 		}
-		c.writeln(fmt.Sprintf("for (%s = %s; %s <= %s; %s++) {", name, start, name, end, name))
+		c.writeln(fmt.Sprintf("for (%s = %s; %s < %s; %s++) {", name, start, name, end, name))
 	} else {
 		src, err := c.compileExpr(fs.Source)
 		if err != nil {
@@ -854,7 +854,10 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	}
 	switch call.Func {
 	case "print":
-		return fmt.Sprintf("var_dump(%s)", strings.Join(args, ", ")), nil
+		if len(args) == 0 {
+			return "", nil
+		}
+		return fmt.Sprintf("echo %s, \"\\n\"", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")
