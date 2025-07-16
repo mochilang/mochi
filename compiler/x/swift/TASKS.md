@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-18 10:00 – simplified golden tests to only check runtime output and
+  added summary reporting. Duplicate compile tests were removed.
 - 2025-07-17 14:30 – added golden tests for `tests/vm/valid` and switched
   to running code with `swiftc` which reduces failing `.error` files.
 - 2025-07-16 13:17 – implemented `now()` built-in to return nanoseconds using

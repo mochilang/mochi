@@ -1,4 +1,4 @@
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_join1349869410/001/main.swift:28:4: error: consecutive statements on a line must be separated by ';'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_join3962490269/001/main.swift:28:4: error: consecutive statements on a line must be separated by ';'
 26 | 	}
 27 | 	return _tmp.map { g in ["name": g.key, "count": g.items.count] }
 28 | }())
@@ -6,7 +6,7 @@
 29 | print("--- Orders per customer ---")
 30 | for s in stats as! [[String:Any]] {
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_join1349869410/001/main.swift:28:4: error: expected expression
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_join3962490269/001/main.swift:28:4: error: expected expression
 26 | 	}
 27 | 	return _tmp.map { g in ["name": g.key, "count": g.items.count] }
 28 | }())

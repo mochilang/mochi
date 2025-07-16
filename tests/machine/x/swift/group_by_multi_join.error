@@ -1,4 +1,4 @@
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1079348219/001/main.swift:52:32: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1846153003/001/main.swift:52:32: error: cannot convert value of type 'Double' to expected argument type 'Int'
 50 | var nations = [Nation(id: 1, name: "A"), Nation(id: 2, name: "B")]
 51 | var suppliers = [Supplier(id: 1, nation: 1), Supplier(id: 2, nation: 2)]
 52 | var partsupp = [Partsupp(cost: 10.0, part: 100, qty: 2, supplier: 1), Partsupp(cost: 20.0, part: 100, qty: 1, supplier: 2), Partsupp(cost: 5.0, part: 200, qty: 3, supplier: 1)]
@@ -6,7 +6,7 @@
 53 | var filtered = ({
 54 | 	var _res: [(part: Int, value: Int)] = []
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1079348219/001/main.swift:52:86: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1846153003/001/main.swift:52:86: error: cannot convert value of type 'Double' to expected argument type 'Int'
 50 | var nations = [Nation(id: 1, name: "A"), Nation(id: 2, name: "B")]
 51 | var suppliers = [Supplier(id: 1, nation: 1), Supplier(id: 2, nation: 2)]
 52 | var partsupp = [Partsupp(cost: 10.0, part: 100, qty: 2, supplier: 1), Partsupp(cost: 20.0, part: 100, qty: 1, supplier: 2), Partsupp(cost: 5.0, part: 200, qty: 3, supplier: 1)]
@@ -14,7 +14,7 @@
 53 | var filtered = ({
 54 | 	var _res: [(part: Int, value: Int)] = []
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1079348219/001/main.swift:52:140: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join1846153003/001/main.swift:52:140: error: cannot convert value of type 'Double' to expected argument type 'Int'
 50 | var nations = [Nation(id: 1, name: "A"), Nation(id: 2, name: "B")]
 51 | var suppliers = [Supplier(id: 1, nation: 1), Supplier(id: 2, nation: 2)]
 52 | var partsupp = [Partsupp(cost: 10.0, part: 100, qty: 2, supplier: 1), Partsupp(cost: 20.0, part: 100, qty: 1, supplier: 2), Partsupp(cost: 5.0, part: 200, qty: 3, supplier: 1)]

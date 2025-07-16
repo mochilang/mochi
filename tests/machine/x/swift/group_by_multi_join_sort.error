@@ -1,4 +1,4 @@
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:92:4: error: consecutive statements on a line must be separated by ';'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:92:4: error: consecutive statements on a line must be separated by ';'
 90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }) }
 91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }), "c_acctbal": (g.key["c_acctbal"] as! Int), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
 92 | }())
@@ -6,7 +6,7 @@
 93 | print(result)
 94 | 
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:92:4: error: expected expression
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:92:4: error: expected expression
 90 | 	_tmp.sort { _sum($0.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }) > _sum($1.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }) }
 91 | 	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }), "c_acctbal": (g.key["c_acctbal"] as! Int), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
 92 | }())
@@ -14,7 +14,7 @@
 93 | print(result)
 94 | 
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:57:37: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:57:37: error: cannot convert value of type 'Double' to expected argument type 'Int'
 55 | 
 56 | var nation = [Nation(n_name: "BRAZIL", n_nationkey: 1)]
 57 | var customer = [Customer(c_acctbal: 100.0, c_address: "123 St", c_comment: "Loyal", c_custkey: 1, c_name: "Alice", c_nationkey: 1, c_phone: "123-456")]
@@ -22,7 +22,7 @@
 58 | var orders = [Order(o_custkey: 1, o_orderdate: "1993-10-15", o_orderkey: 1000), Order(o_custkey: 1, o_orderdate: "1994-01-02", o_orderkey: 2000)]
 59 | var lineitem = [Lineitem(l_discount: 0.1, l_extendedprice: 1000.0, l_orderkey: 1000, l_returnflag: "R"), Lineitem(l_discount: 0.0, l_extendedprice: 500.0, l_orderkey: 2000, l_returnflag: "N")]
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:59:38: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:59:38: error: cannot convert value of type 'Double' to expected argument type 'Int'
 57 | var customer = [Customer(c_acctbal: 100.0, c_address: "123 St", c_comment: "Loyal", c_custkey: 1, c_name: "Alice", c_nationkey: 1, c_phone: "123-456")]
 58 | var orders = [Order(o_custkey: 1, o_orderdate: "1993-10-15", o_orderkey: 1000), Order(o_custkey: 1, o_orderdate: "1994-01-02", o_orderkey: 2000)]
 59 | var lineitem = [Lineitem(l_discount: 0.1, l_extendedprice: 1000.0, l_orderkey: 1000, l_returnflag: "R"), Lineitem(l_discount: 0.0, l_extendedprice: 500.0, l_orderkey: 2000, l_returnflag: "N")]
@@ -30,7 +30,7 @@
 60 | let start_date = "1993-10-01"
 61 | let end_date = "1994-01-01"
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:59:60: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:59:60: error: cannot convert value of type 'Double' to expected argument type 'Int'
 57 | var customer = [Customer(c_acctbal: 100.0, c_address: "123 St", c_comment: "Loyal", c_custkey: 1, c_name: "Alice", c_nationkey: 1, c_phone: "123-456")]
 58 | var orders = [Order(o_custkey: 1, o_orderdate: "1993-10-15", o_orderkey: 1000), Order(o_custkey: 1, o_orderdate: "1994-01-02", o_orderkey: 2000)]
 59 | var lineitem = [Lineitem(l_discount: 0.1, l_extendedprice: 1000.0, l_orderkey: 1000, l_returnflag: "R"), Lineitem(l_discount: 0.0, l_extendedprice: 500.0, l_orderkey: 2000, l_returnflag: "N")]
@@ -38,7 +38,7 @@
 60 | let start_date = "1993-10-01"
 61 | let end_date = "1994-01-01"
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:59:127: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:59:127: error: cannot convert value of type 'Double' to expected argument type 'Int'
 57 | var customer = [Customer(c_acctbal: 100.0, c_address: "123 St", c_comment: "Loyal", c_custkey: 1, c_name: "Alice", c_nationkey: 1, c_phone: "123-456")]
 58 | var orders = [Order(o_custkey: 1, o_orderdate: "1993-10-15", o_orderkey: 1000), Order(o_custkey: 1, o_orderdate: "1994-01-02", o_orderkey: 2000)]
 59 | var lineitem = [Lineitem(l_discount: 0.1, l_extendedprice: 1000.0, l_orderkey: 1000, l_returnflag: "R"), Lineitem(l_discount: 0.0, l_extendedprice: 500.0, l_orderkey: 2000, l_returnflag: "N")]
@@ -46,7 +46,7 @@
 60 | let start_date = "1993-10-01"
 61 | let end_date = "1994-01-01"
 
-/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort550694233/001/main.swift:59:149: error: cannot convert value of type 'Double' to expected argument type 'Int'
+/tmp/TestSwiftCompiler_VMValid_Goldengroup_by_multi_join_sort2431655873/001/main.swift:59:149: error: cannot convert value of type 'Double' to expected argument type 'Int'
 57 | var customer = [Customer(c_acctbal: 100.0, c_address: "123 St", c_comment: "Loyal", c_custkey: 1, c_name: "Alice", c_nationkey: 1, c_phone: "123-456")]
 58 | var orders = [Order(o_custkey: 1, o_orderdate: "1993-10-15", o_orderkey: 1000), Order(o_custkey: 1, o_orderdate: "1994-01-02", o_orderkey: 2000)]
 59 | var lineitem = [Lineitem(l_discount: 0.1, l_extendedprice: 1000.0, l_orderkey: 1000, l_returnflag: "R"), Lineitem(l_discount: 0.0, l_extendedprice: 500.0, l_orderkey: 2000, l_returnflag: "N")]
