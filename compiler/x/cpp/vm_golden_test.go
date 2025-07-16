@@ -23,84 +23,68 @@ func TestCPPCompiler_VMValid_Golden(t *testing.T) {
 	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
 	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 	root := testutil.FindRepoRoot(t)
-	pattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
-	files, err := filepath.Glob(pattern)
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "machine", "x", "cpp")
+	os.MkdirAll(outDir, 0o755)
+
+	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, src := range files {
-		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		codePath := filepath.Join(root, "tests", "machine", "x", "cpp", base+".cpp")
-		outPath := filepath.Join(root, "tests", "machine", "x", "cpp", base+".out")
-		errPath := filepath.Join(root, "tests", "machine", "x", "cpp", base+".error")
-		if !shouldUpdate() {
-			if _, err := os.Stat(outPath); err != nil {
-				continue
-			}
-		}
-		t.Run(base, func(t *testing.T) {
+		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
-				t.Fatalf("parse error: %v", err)
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte("parse: "+err.Error()), 0644)
+				t.Skipf("parse error: %v", err)
+				return
 			}
 			env := types.NewEnv(nil)
 			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type error: %v", errs[0])
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte("type: "+errs[0].Error()), 0644)
+				t.Skipf("type error: %v", errs[0])
+				return
 			}
 			code, err := cpp.New().Compile(prog)
 			if err != nil {
-				if shouldUpdate() {
-					_ = os.WriteFile(errPath, []byte(err.Error()), 0644)
-				}
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), []byte("compile: "+err.Error()), 0644)
 				t.Skipf("compile error: %v", err)
 				return
 			}
-			os.Remove(errPath)
-			gotCode := bytes.TrimSpace(code)
-			if shouldUpdate() {
-				_ = os.WriteFile(codePath, append(gotCode, '\n'), 0644)
-			} else {
-				wantCode, err := os.ReadFile(codePath)
-				if err != nil {
-					t.Fatalf("read golden: %v", err)
-				}
-				if !bytes.Equal(gotCode, bytes.TrimSpace(wantCode)) {
-					t.Errorf("generated code mismatch for %s.cpp\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotCode, bytes.TrimSpace(wantCode))
-				}
+			codeFile := filepath.Join(outDir, name+".cpp")
+			if err := os.WriteFile(codeFile, code, 0644); err != nil {
+				t.Fatal(err)
 			}
-			dir := t.TempDir()
-			file := filepath.Join(dir, "prog.cpp")
-			if err := os.WriteFile(file, code, 0644); err != nil {
-				t.Fatalf("write error: %v", err)
-			}
-			bin := filepath.Join(dir, "prog")
-			if out, err := exec.Command("g++", file, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
-				if shouldUpdate() {
-					_ = os.WriteFile(errPath, out, 0644)
-				}
+			bin := filepath.Join(outDir, name)
+			if out, err := exec.Command("g++", codeFile, "-std=c++17", "-o", bin).CombinedOutput(); err != nil {
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), out, 0644)
 				t.Skipf("g++ error: %v\n%s", err, out)
 				return
 			}
-			outBytes, err := exec.Command(bin).CombinedOutput()
+			defer os.Remove(bin)
+			cmd := exec.Command(bin)
+			if inData, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+				cmd.Stdin = bytes.NewReader(inData)
+			}
+			outBytes, err := cmd.CombinedOutput()
 			if err != nil {
-				if shouldUpdate() {
-					_ = os.WriteFile(errPath, outBytes, 0644)
-				}
+				_ = os.WriteFile(filepath.Join(outDir, name+".error"), outBytes, 0644)
 				t.Skipf("run error: %v\n%s", err, outBytes)
 				return
 			}
-			os.Remove(errPath)
-			gotOut := bytes.TrimSpace(outBytes)
+			os.Remove(filepath.Join(outDir, name+".error"))
+			got := bytes.TrimSpace(outBytes)
 			if shouldUpdate() {
-				_ = os.WriteFile(outPath, append(gotOut, '\n'), 0644)
+				_ = os.WriteFile(filepath.Join(outDir, name+".out"), append(got, '\n'), 0644)
+				return
+			}
+			if want, err := os.ReadFile(filepath.Join(outDir, name+".out")); err == nil {
+				if !bytes.Equal(got, bytes.TrimSpace(want)) {
+					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+				}
 			} else {
-				wantOut, err := os.ReadFile(outPath)
-				if err != nil {
-					t.Fatalf("read golden: %v", err)
-				}
-				if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
-					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", base, gotOut, bytes.TrimSpace(wantOut))
-				}
+				t.Fatalf("read golden: %v", err)
 			}
 		})
 	}

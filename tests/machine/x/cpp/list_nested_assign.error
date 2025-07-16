@@ -1,7 +1,7 @@
-/tmp/TestCPPCompiler_VMValid_Goldenlist_nested_assign1871326212/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldenlist_nested_assign1871326212/001/prog.cpp:23:12: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp:23:12: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
    23 |   matrix[1][0] = 5;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldenlist_nested_assign1871326212/001/prog.cpp:24:25: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
+/workspace/mochi/tests/machine/x/cpp/list_nested_assign.cpp:24:25: error: no match for ‘operator[]’ (operand types are ‘__gnu_cxx::__alloc_traits<std::allocator<std::any>, std::any>::value_type’ {aka ‘std::any’} and ‘int’)
    24 |   std::cout << matrix[1][0] << std::endl;
       |                         ^

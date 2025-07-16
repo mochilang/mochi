@@ -1,30 +1,30 @@
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:77:12: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:77:12: error: ‘i’ was not declared in this scope
    77 |   decltype(i) i;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:77:12: error: ‘i’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:80:35: error: ‘struct Result’ has no member named ‘cat’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:77:12: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:80:35: error: ‘struct Result’ has no member named ‘cat’
    80 |   decltype(std::declval<Result>().cat) key;
       |                                   ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:80:35: error: ‘struct Result’ has no member named ‘cat’
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:139:22: error: ‘class std::any’ has no member named ‘cat’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:80:35: error: ‘struct Result’ has no member named ‘cat’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:139:22: error: ‘class std::any’ has no member named ‘cat’
   139 |       auto __key = i.cat;
       |                      ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:143:38: error: cannot convert ‘std::any’ to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:143:38: error: cannot convert ‘std::any’ to ‘int’ in initialization
   143 |           __g.items.push_back(Result{i});
       |                                      ^
       |                                      |
       |                                      std::any
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:149:72: error: cannot convert ‘std::any’ to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:149:72: error: cannot convert ‘std::any’ to ‘int’ in initialization
   149 |         __groups.push_back(__struct3{__key, std::vector<Result>{Result{i}}});
       |                                                                        ^
       |                                                                        |
       |                                                                        std::any
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:149:74: error: no matching function for call to ‘std::vector<Result>::vector(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:149:74: error: no matching function for call to ‘std::vector<Result>::vector(<brace-enclosed initializer list>)’
   149 |         __groups.push_back(__struct3{__key, std::vector<Result>{Result{i}}});
       |                                                                          ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:10:
+                 from /workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:10:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = Result; _Alloc = std::allocator<Result>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
@@ -73,65 +73,65 @@ In file included from /usr/include/c++/13/vector:66,
   531 |       vector() = default;
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:162:64: error: ‘struct Result’ has no member named ‘flag’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:162:64: error: ‘struct Result’ has no member named ‘flag’
   162 |                   std::vector<decltype((std::declval<Result>().flag
       |                                                                ^~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:163:70: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:163:70: error: ‘struct Result’ has no member named ‘val’
   163 |                                             ? std::declval<Result>().val
       |                                                                      ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:162:64: error: ‘struct Result’ has no member named ‘flag’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:162:64: error: ‘struct Result’ has no member named ‘flag’
   162 |                   std::vector<decltype((std::declval<Result>().flag
       |                                                                ^~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:163:70: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:163:70: error: ‘struct Result’ has no member named ‘val’
   163 |                                             ? std::declval<Result>().val
       |                                                                      ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:164:50: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:164:50: error: template argument 1 is invalid
   164 |                                             : 0))>
       |                                                  ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:164:50: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:167:29: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:164:50: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:167:29: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   167 |                     __items.push_back((x.flag ? x.val : 0));
       |                             ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:167:42: error: ‘struct Result’ has no member named ‘flag’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:167:42: error: ‘struct Result’ has no member named ‘flag’
   167 |                     __items.push_back((x.flag ? x.val : 0));
       |                                          ^~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:167:51: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:167:51: error: ‘struct Result’ has no member named ‘val’
   167 |                     __items.push_back((x.flag ? x.val : 0));
       |                                                   ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:161:19:   required from here
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:160:44: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:161:19:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:160:44: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   160 |                   return std::accumulate(v.begin(), v.end(), 0.0);
       |                                          ~~^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:160:55: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:160:55: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   160 |                   return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                     ~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:174:63: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:174:63: error: ‘struct Result’ has no member named ‘val’
   174 |                   std::vector<decltype(std::declval<Result>().val)> __items;
       |                                                               ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:174:63: error: ‘struct Result’ has no member named ‘val’
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:174:67: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:174:63: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:174:67: error: template argument 1 is invalid
   174 |                   std::vector<decltype(std::declval<Result>().val)> __items;
       |                                                                   ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:174:67: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:176:29: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:174:67: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:176:29: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   176 |                     __items.push_back(x.val);
       |                             ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:176:41: error: ‘struct Result’ has no member named ‘val’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:176:41: error: ‘struct Result’ has no member named ‘val’
   176 |                     __items.push_back(x.val);
       |                                         ^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:173:19:   required from here
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:172:44: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:173:19:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:172:44: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   172 |                   return std::accumulate(v.begin(), v.end(), 0.0);
       |                                          ~~^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:172:55: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:172:55: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   172 |                   return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                     ~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:155:24: error: no matching function for call to ‘std::vector<std::pair<int, __struct4> >::push_back(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:155:24: error: no matching function for call to ‘std::vector<std::pair<int, __struct4> >::push_back(<brace-enclosed initializer list>)’
   155 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~^
   156 |           {g.key,
@@ -194,8 +194,8 @@ In file included from /usr/include/c++/13/vector:66,
 /usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<int, __struct4> >::value_type&&’ {aka ‘std::pair<int, __struct4>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_conditional_sum2886837094/001/prog.cpp:187:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Result>’ requested
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/group_by_conditional_sum.cpp:187:5: error: conversion from ‘vector<__struct4>’ to non-scalar type ‘vector<Result>’ requested
   136 |   std::vector<Result> result = ([&]() {
       |                                ~~~~~~~~
   137 |     std::vector<__struct3> __groups;

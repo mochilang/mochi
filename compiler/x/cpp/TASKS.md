@@ -36,6 +36,12 @@
 - Added fallback scalar type inference for struct fields referencing query
   variables when their struct information is missing.
 
+## Recent Enhancements (2025-07-16 17:29 UTC)
+- Simplified VM golden tests to check only runtime output and always emit
+  generated `.cpp` and `.out` files.
+- Improved `defineStruct` to replace field types referencing variables using
+  either `varStruct` or `elemType` information.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.
