@@ -46,7 +46,7 @@ func repoRoot(t *testing.T) string {
 // runVMGolden compiles a Mochi program from tests/vm/valid to C#, executes it
 // with dotnet and compares the output with the golden file under
 // tests/machine/x/cs. Generated source is written for reference.
-func runVMGolden(t *testing.T, src string) {
+func runVMGolden(t *testing.T, src string) bool {
 	root := repoRoot(t)
 	name := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
 
@@ -72,7 +72,7 @@ func runVMGolden(t *testing.T, src string) {
 	code, err := cscode.New(env).Compile(prog)
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte("compile: "+err.Error()), 0644)
-		return
+		return false
 	}
 
 	if shouldUpdateVM() {
@@ -100,7 +100,7 @@ func runVMGolden(t *testing.T, src string) {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		_ = os.WriteFile(errPath, []byte(fmt.Sprintf("run: %v\n%s", err, out)), 0644)
-		return
+		return false
 	}
 	got := bytes.TrimSpace(out)
 	_ = os.Remove(errPath)
@@ -109,13 +109,15 @@ func runVMGolden(t *testing.T, src string) {
 		if err := os.WriteFile(outPath, append(got, '\n'), 0644); err != nil {
 			t.Fatalf("write golden out: %v", err)
 		}
-		return
+		return true
 	}
 	if want, err := os.ReadFile(outPath); err == nil {
 		if !bytes.Equal(got, bytes.TrimSpace(want)) {
 			t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, bytes.TrimSpace(want))
+			return false
 		}
 	}
+	return true
 }
 
 func TestCSCompiler_VMValid_Golden(t *testing.T) {
@@ -129,10 +131,16 @@ func TestCSCompiler_VMValid_Golden(t *testing.T) {
 		t.Fatal(err)
 	}
 	sort.Strings(files)
+	passed := 0
 	for _, f := range files {
 		name := filepath.Base(f)
-		t.Run(name, func(t *testing.T) { runVMGolden(t, f) })
+		t.Run(name, func(t *testing.T) {
+			if runVMGolden(t, f) {
+				passed++
+			}
+		})
 	}
+	t.Logf("passed %d/%d programs", passed, len(files))
 }
 
 func TestMain(m *testing.M) {

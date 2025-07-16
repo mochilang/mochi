@@ -31,6 +31,10 @@
   - Updated Rosetta golden outputs and fixed `len` builtin to return
     `.Count` for lists and maps. This resolves several failed tasks.
 
+## Recent Updates (2025-07-16 17:30)
+- Added VM valid golden test harness for C# and fixed map-to-struct casting
+  to use literal field names. Removed the `cast_struct.error` artifact.
+
 ## Remaining Work
 - [ ] Verify dictionary generation for grouped query results across queries.
 - [ ] Ensure property ordering matches golden outputs.
