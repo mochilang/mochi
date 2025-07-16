@@ -1,5 +1,0 @@
-run error: exit status 1
-lua: /workspace/mochi/tests/rosetta/out/Lua/15-puzzle-solver.lua:3: attempt to call a nil value (field 'FifteenPuzzleExample')
-stack traceback:
-	/workspace/mochi/tests/rosetta/out/Lua/15-puzzle-solver.lua:3: in main chunk
-	[C]: in ?

@@ -109,7 +109,27 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			alias = sanitizeName(alias)
 			path := strings.Trim(im.Path, "\"")
 			if im.Auto && path == "mochi/runtime/ffi/go/testpkg" {
-				c.writeln(fmt.Sprintf("local %s = { Add = function(a,b) return a + b end, Pi = 3.14, Answer = 42 }", alias))
+				c.writeln(fmt.Sprintf("local %s = {", alias))
+				c.indent++
+				c.writeln("Add = function(a,b) return a + b end,")
+				c.writeln("Pi = 3.14,")
+				c.writeln("Answer = 42,")
+				c.writeln("MD5Hex = function(s)")
+				c.indent++
+				c.writeln("local tmp = os.tmpname()")
+				c.writeln("local f = assert(io.open(tmp, 'wb')); f:write(s); f:close()")
+				c.writeln("local p = assert(io.popen('openssl md5 '..tmp, 'r'))")
+				c.writeln("local out = p:read('*a'); p:close(); os.remove(tmp)")
+				c.writeln("return string.match(out, '= ([a-f0-9]+)')")
+				c.indent--
+				c.writeln("end,")
+				c.writeln("FifteenPuzzleExample = function()")
+				c.indent++
+				c.writeln("return 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'")
+				c.indent--
+				c.writeln("end,")
+				c.indent--
+				c.writeln("}")
 				return nil
 			}
 			if path == "strings" {
