@@ -1,0 +1,4 @@
+File "/workspace/mochi/tests/machine/x/ocaml/update_stmt.ml", line 28, characters 2-3:
+28 |   ) people
+       ^
+Error: Syntax error

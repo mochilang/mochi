@@ -1,0 +1,4 @@
+File "/workspace/mochi/tests/machine/x/ocaml/group_by_left_join.ml", line 45, characters 11-12:
+45 |       if r.o then
+                ^
+Error: Unbound record field o

@@ -1,0 +1,4 @@
+File "/workspace/mochi/tests/machine/x/ocaml/test_block.ml", line 24, characters 2-15:
+24 |   print_endline "ok";
+       ^^^^^^^^^^^^^
+Error: Syntax error

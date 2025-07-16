@@ -1,0 +1,6 @@
+File "/workspace/mochi/tests/machine/x/ocaml/right_join.ml", line 52, characters 13-24:
+52 |           if entry.order then (
+                  ^^^^^^^^^^^
+Error: This expression has type record2
+       but an expression was expected of type bool
+       because it is in the condition of an if-statement

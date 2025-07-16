@@ -1,0 +1,5 @@
+File "/workspace/mochi/tests/machine/x/ocaml/string_compare.ml", line 22, characters 16-27:
+22 |   print_endline ("a" < "b");
+                     ^^^^^^^^^^^
+Error: This expression has type bool but an expression was expected of type
+         string
