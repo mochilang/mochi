@@ -1,6 +1,10 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-16 16:48 UTC
+- Simplified `vm_golden_test.go` to only verify runtime output. Generated
+  TypeScript files are still written for reference but no longer compared to
+  golden code.
 ### 2025-07-16 16:20 UTC
 - Updated `vm_golden_test.go` to keep TypeScript outputs under
   `tests/machine/x/ts` without touching `tests/vm/valid`.
