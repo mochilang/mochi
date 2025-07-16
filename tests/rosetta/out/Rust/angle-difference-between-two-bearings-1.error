@@ -1,0 +1,29 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustangle-difference-between-two-bearings-1335078182/001/prog.rs:5:12
+  |
+5 |         if ((d < 0 as f64 as f64) as f64) - 180.0 {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `f64`
+
+error[E0606]: casting `bool` as `f64` is invalid
+ --> /tmp/TestMochiToRustangle-difference-between-two-bearings-1335078182/001/prog.rs:5:12
+  |
+5 |         if ((d < 0 as f64 as f64) as f64) - 180.0 {
+  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = help: cast through an integer first
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiToRustangle-difference-between-two-bearings-1335078182/001/prog.rs:13:9
+   |
+13 |     let mut testCases = vec![vec![20.0, 45.0], vec![((0 as f64) as f64) - 45.0, 45.0], vec![((0 as f64) as f64) - 85.0, 90.0], vec![((0 a...
+   |         ----^^^^^^^^^
+   |         |
+   |         help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.

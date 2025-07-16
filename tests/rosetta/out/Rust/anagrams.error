@@ -1,0 +1,146 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:12:50
+   |
+12 |             arr = append(arr, &s[i as usize..i + 1 as usize]);
+   |                                                  ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:12:46
+   |
+12 |             arr = append(arr, &s[i as usize..i + 1 as usize]);
+   |                                              ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:12:48
+   |
+12 |             arr = append(arr, &s[i as usize..i + 1 as usize]);
+   |                                                ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:20:46
+   |
+20 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:20:44
+   |
+20 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                            ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:20:42
+   |
+20 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[&'static str]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<&'static str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:22:47
+   |
+22 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                               ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:22:45
+   |
+22 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                             ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:22:43
+   |
+22 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                           ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[&'static str]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<&'static str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:23:29
+   |
+23 |                     arr[j + 1 as usize] = tmp;
+   |                             ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:23:27
+   |
+23 |                     arr[j + 1 as usize] = tmp;
+   |                           ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:23:25
+   |
+23 |                     arr[j + 1 as usize] = tmp;
+   |                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[&'static str]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<&'static str>` to implement `Index<i32>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:32:13
+   |
+32 |             out += arr[i as usize];
+   |             ---^^^^^^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:66:135
+   |
+66 |         let mut groups: std::collections::HashMap<&'static str, Vec<&'static str>> = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                                                                                                       ^ expected `HashMap<&str, Vec<&str>>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, Vec<&'static str>>`
+              found struct `BTreeMap<_, _>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustanagrams168194234/001/prog.rs:79:123
+   |
+79 |         let mut printed: std::collections::HashMap<&'static str, bool> = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                                                                                           ^ expected `HashMap<&str, bool>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, bool>`
+              found struct `BTreeMap<_, _>`
+
+error: aborting due to 15 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

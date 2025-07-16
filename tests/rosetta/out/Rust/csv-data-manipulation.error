@@ -1,0 +1,71 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:46:53
+   |
+46 |         rows[i as usize] = append(rows[i as usize], sum.to_string());
+   |                            ------                   ^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+help: the return type of this call is `String` due to the type of the argument passed
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:46:28
+   |
+46 |         rows[i as usize] = append(rows[i as usize], sum.to_string());
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^---------------^
+   |                                                     |
+   |                                                     this argument influences the return type of `append`
+note: function defined here
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:2:4
+   |
+2  | fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
+   |    ^^^^^^                          -------
+help: consider borrowing here
+   |
+46 |         rows[i as usize] = append(rows[i as usize], &sum.to_string());
+   |                                                     +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:13:17
+   |
+13 |                 res += sep;
+   |                 ---^^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:15:13
+   |
+15 |             res += xs[i as usize];
+   |             ---^^^^^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:30:55
+   |
+30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:30:51
+   |
+30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustcsv-data-manipulation3839069020/001/prog.rs:30:53
+   |
+30 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                     ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error: aborting due to 6 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

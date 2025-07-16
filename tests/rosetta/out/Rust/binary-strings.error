@@ -1,0 +1,91 @@
+rustc error: exit status 1
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:26:22
+   |
+26 |     println!("{}", b.to_string());
+   |                      ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:28:22
+   |
+28 |     println!("{}", c.to_string());
+   |                      ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:29:27
+   |
+29 |     println!("{}", b == c.to_string());
+   |                           ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:40:38
+   |
+40 |     println!("{}", b.len() as i32 == 0.to_string());
+   |                    --------------    ^^^^^^^^^^^^^ expected `i32`, found `String`
+   |                    |
+   |                    expected because this is `i32`
+   |
+help: try removing the method call
+   |
+40 -     println!("{}", b.len() as i32 == 0.to_string());
+40 +     println!("{}", b.len() as i32 == 0);
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:14:45
+   |
+14 |         return &letters[idx as usize..idx + 1 as usize];
+   |                                             ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:14:39
+   |
+14 |         return &letters[idx as usize..idx + 1 as usize];
+   |                                       ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:14:43
+   |
+14 |         return &letters[idx as usize..idx + 1 as usize];
+   |                                           ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbinary-strings834350845/001/prog.rs:20:13
+   |
+20 |             s += char(bs[i as usize]);
+   |             -^^^^^^^^^^^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0599.
+For more information about an error, try `rustc --explain E0277`.

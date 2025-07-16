@@ -1,0 +1,269 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:109:30
+    |
+109 |         while r.len() as i32 < w {
+    |                              ^ --- interpreted as generic arguments
+    |                              |
+    |                              not interpreted as comparison
+    |
+help: try comparing the cast value
+    |
+109 |         while (r.len() as i32) < w {
+    |               +              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:10:56
+   |
+10 |         while i < s.len() as i32 && &s[i as usize..i + 1 as usize] == "0" {
+   |                                                        ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:10:52
+   |
+10 |         while i < s.len() as i32 && &s[i as usize..i + 1 as usize] == "0" {
+   |                                                    ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:10:54
+   |
+10 |         while i < s.len() as i32 && &s[i as usize..i + 1 as usize] == "0" {
+   |                                                      ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:16:13
+   |
+16 |         s = trimLeftZeros(s);
+   |             ^^^^^^^^^^^^^^^^ types differ in mutability
+   |
+   = note: expected mutable reference `&mut &'static _`
+                      found reference `&'static _`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+16 |         *s = trimLeftZeros(s);
+   |         +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:20:41
+   |
+20 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:20:37
+   |
+20 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:20:39
+   |
+20 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:30:120
+   |
+30 |                         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", vec![]); m.insert("ok", false); m };
+   |                                                                                 -              ------     ------       ^^^^^ expected `Vec<_>`, found `bool`
+   |                                                                                 |              |          |
+   |                                                                                 |              |          arguments to this method are incorrect
+   |                                                                                 |              this argument has type `Vec<_>`...
+   |                                                                                 ... which causes `m` to have type `BTreeMap<&str, Vec<_>>`
+   |
+   = note: expected struct `Vec<_>`
+                found type `bool`
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:30:105
+   |
+30 |                         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", vec![]); m.insert("ok", false); m };
+   |                                                                                                         ^^^^^^^^^^^^^^^-----^
+   |                                                                                                                        |
+   |                                                                                                                        this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:30:128
+   |
+15 |     fn btString(s: &mut &'static str) -> std::collections::HashMap<&'static str, i32> {
+   |                                          -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+30 |                         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", vec![]); m.insert("ok", false); m };
+   |                                                                                                                                ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, Vec<_>>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, Vec<_>>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:36:99
+   |
+36 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", b); m.insert("ok", true); m };
+   |                                                                 -              -     ------       ^^^^ expected `Vec<i32>`, found `bool`
+   |                                                                 |              |     |
+   |                                                                 |              |     arguments to this method are incorrect
+   |                                                                 |              this argument has type `Vec<i32>`...
+   |                                                                 ... which causes `m` to have type `BTreeMap<&str, Vec<i32>>`
+   |
+   = note: expected struct `Vec<i32>`
+                found type `bool`
+help: the return type of this call is `bool` due to the type of the argument passed
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:36:84
+   |
+36 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", b); m.insert("ok", true); m };
+   |                                                                                    ^^^^^^^^^^^^^^^----^
+   |                                                                                                   |
+   |                                                                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:36:106
+   |
+15 |     fn btString(s: &mut &'static str) -> std::collections::HashMap<&'static str, i32> {
+   |                                          -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+36 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bt", b); m.insert("ok", true); m };
+   |                                                                                                          ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, Vec<i32>>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, Vec<i32>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:47:17
+   |
+47 |                 r += "-";
+   |                 -^^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:50:21
+   |
+50 |                     r += "0";
+   |                     -^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:52:21
+   |
+52 |                     r += "+";
+   |                     -^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:67:43
+   |
+67 |             n = ((n as f64) / (3 as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:110:17
+    |
+110 |             r = format!("{}{}", " ", r);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:117:26
+    |
+117 |         let is = padLeft(btToInt(b).to_string(), 7);
+    |                  ------- ^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                  |
+    |                  arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:107:8
+    |
+107 |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+117 |         let is = padLeft(&btToInt(b).to_string(), 7);
+    |                          +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:126:20
+    |
+126 |         show("a:", a);
+    |         ----       ^ expected `Vec<i32>`, found `i32`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<i32>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:114:8
+    |
+114 |     fn show(label: &'static str, b: Vec<i32>) -> () {
+    |        ^^^^                      -----------
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:128:20
+    |
+128 |         show("c:", c);
+    |         ----       ^ expected `Vec<i32>`, found `i32`
+    |         |
+    |         arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<i32>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:114:8
+    |
+114 |     fn show(label: &'static str, b: Vec<i32>) -> () {
+    |        ^^^^                      -----------
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:129:49
+    |
+129 |         show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
+    |                                           ----- ^ expected `Vec<i32>`, found `i32`
+    |                                           |
+    |                                           arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<i32>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:92:8
+    |
+92  |     fn btNeg(b: Vec<i32>) -> Vec<i32> {
+    |        ^^^^^ -----------
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:129:31
+    |
+129 |         show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
+    |                         ----- ^ expected `Vec<i32>`, found `i32`
+    |                         |
+    |                         arguments to this function are incorrect
+    |
+    = note: expected struct `Vec<i32>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbalanced-ternary851792985/001/prog.rs:104:8
+    |
+104 |     fn btMul(a: Vec<i32>, b: Vec<i32>) -> Vec<i32> {
+    |        ^^^^^ -----------
+
+error: aborting due to 22 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0599.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,31 @@
+rustc error: exit status 1
+error[E0425]: cannot find function `split` in this scope
+  --> /tmp/TestMochiToRustcsv-to-html-translation-12335773486/001/prog.rs:15:17
+   |
+15 |     for line in split(c, "
+   |                 ^^^^^ not found in this scope
+   |
+help: use the `.` operator to call the method `split` on `&str`
+   |
+15 ~     for line in c.split("
+16 ~ ") {
+   |
+
+error[E0425]: cannot find function `split` in this scope
+  --> /tmp/TestMochiToRustcsv-to-html-translation-12335773486/001/prog.rs:17:29
+   |
+17 |         rows = append(rows, split(line, ","));
+   |                             ^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-12335773486/001/prog.rs:23:21
+   |
+23 |             cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), cell), "</td>");
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.

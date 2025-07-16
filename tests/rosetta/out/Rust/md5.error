@@ -1,0 +1,19 @@
+rustc error: exit status 1
+error[E0425]: cannot find function, tuple struct or tuple variant `MD5Hex` in module `testpkg`
+ --> /tmp/TestMochiToRustmd54089367521/001/prog.rs:9:28
+  |
+9 |         let sum = testpkg::MD5Hex(pair[1]);
+  |                            ^^^^^^ not found in `testpkg`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustmd54089367521/001/prog.rs:8:445
+  |
+8 | ...2e2107b67a", format!("{}{}", "12345678901234567890", "123456789012345678901234567890123456789012345678901234567890")], vec!["e38ca1d92...
+  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+  |
+  = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 2 previous errors
+
+Some errors have detailed explanations: E0308, E0425.
+For more information about an error, try `rustc --explain E0308`.

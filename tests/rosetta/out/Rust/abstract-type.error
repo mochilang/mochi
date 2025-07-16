@@ -1,0 +1,13 @@
+rustc error: exit status 1
+error: mismatched closing delimiter: `}`
+  --> /tmp/TestMochiToRustabstract-type3956437219/001/prog.rs:19:31
+   |
+18 |     fn bprint(b: &Beast) -> () {
+   |                                - closing delimiter possibly meant for this
+19 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", beastName(&b), ", who's a "), beas...
+   |                               ^ unclosed delimiter
+20 |     }
+   |     ^ mismatched closing delimiter
+
+error: aborting due to 1 previous error
+

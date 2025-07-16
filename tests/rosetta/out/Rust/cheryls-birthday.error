@@ -1,0 +1,129 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:47:25
+   |
+47 |         if !monthUnique(&bd.clone(), choices) {
+   |             ----------- ^^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |             |
+   |             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:14:8
+   |
+14 |     fn monthUnique(b: Birthday, list: Vec<Birthday>) -> bool {
+   |        ^^^^^^^^^^^ -----------
+help: consider removing the borrow
+   |
+47 -         if !monthUnique(&bd.clone(), choices) {
+47 +         if !monthUnique(bd.clone(), choices) {
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:53:32
+   |
+53 |         if !monthWithUniqueDay(&bd.clone(), filtered) {
+   |             ------------------ ^^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |             |
+   |             arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:32:8
+   |
+32 |     fn monthWithUniqueDay(b: Birthday, list: Vec<Birthday>) -> bool {
+   |        ^^^^^^^^^^^^^^^^^^ -----------
+help: consider removing the borrow
+   |
+53 -         if !monthWithUniqueDay(&bd.clone(), filtered) {
+53 +         if !monthWithUniqueDay(bd.clone(), filtered) {
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:59:22
+   |
+59 |         if dayUnique(&bd.clone(), filtered2) {
+   |            --------- ^^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |            |
+   |            arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:23:8
+   |
+23 |     fn dayUnique(b: Birthday, list: Vec<Birthday>) -> bool {
+   |        ^^^^^^^^^ -----------
+help: consider removing the borrow
+   |
+59 -         if dayUnique(&bd.clone(), filtered2) {
+59 +         if dayUnique(bd.clone(), filtered2) {
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:65:24
+   |
+65 |         if monthUnique(&bd.clone(), filtered3) {
+   |            ----------- ^^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |            |
+   |            arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:14:8
+   |
+14 |     fn monthUnique(b: Birthday, list: Vec<Birthday>) -> bool {
+   |        ^^^^^^^^^^^ -----------
+help: consider removing the borrow
+   |
+65 -         if monthUnique(&bd.clone(), filtered3) {
+65 +         if monthUnique(bd.clone(), filtered3) {
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:70:70
+   |
+70 |         println!("{}", format!("{}{}", "Cheryl's birthday is ", bstr(&filtered4[0])));
+   |                                                                 ---- ^^^^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |                                                                 |
+   |                                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:40:8
+   |
+40 |     fn bstr(b: Birthday) -> &'static str {
+   |        ^^^^ -----------
+help: consider removing the borrow
+   |
+70 -         println!("{}", format!("{}{}", "Cheryl's birthday is ", bstr(&filtered4[0])));
+70 +         println!("{}", format!("{}{}", "Cheryl's birthday is ", bstr(filtered4[0])));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:34:48
+   |
+34 |             if x.month == b.month && dayUnique(&x.clone(), list) {
+   |                                      --------- ^^^^^^^^^^ expected `Birthday`, found `&Birthday`
+   |                                      |
+   |                                      arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:23:8
+   |
+23 |     fn dayUnique(b: Birthday, list: Vec<Birthday>) -> bool {
+   |        ^^^^^^^^^ -----------
+help: consider removing the borrow
+   |
+34 -             if x.month == b.month && dayUnique(&x.clone(), list) {
+34 +             if x.month == b.month && dayUnique(x.clone(), list) {
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcheryls-birthday2601259647/001/prog.rs:42:16
+   |
+40 |     fn bstr(b: Birthday) -> &'static str {
+   |                             ------------ expected `&str` because of return type
+41 |         let months = vec!["", "January", "February", "March", "April", "May", "June", "July", "...
+42 |         return format!("{}{}", format!("{}{}", months[b.month as usize], " "), b.day.to_string());
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 7 previous errors
+
+For more information about this error, try `rustc --explain E0308`.

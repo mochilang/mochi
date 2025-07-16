@@ -1,0 +1,20 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRust100-doors-33361913871/001/prog.rs:10:13
+   |
+10 |             result += "O";
+   |             ------^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRust100-doors-33361913871/001/prog.rs:12:13
+   |
+12 |             result += "-";
+   |             ------^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0368`.

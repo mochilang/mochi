@@ -1,0 +1,93 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:75:27
+   |
+75 |         if s.len() as i32 < 2 {
+   |                           ^ --- interpreted as generic arguments
+   |                           |
+   |                           not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+75 |         if (s.len() as i32) < 2 {
+   |            +              +
+
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:59:9
+   |
+59 |         while true {
+   |         ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:13:41
+   |
+13 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:13:37
+   |
+13 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:13:39
+   |
+13 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:21:17
+   |
+21 |                 cur += ch;
+   |                 ---^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:43:117
+   |
+43 |         let mut m: std::collections::HashMap<&'static str, bool> = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                                                                                     ^ expected `HashMap<&str, bool>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, bool>`
+              found struct `BTreeMap<_, _>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:76:20
+   |
+73 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&str` because of return type
+...
+76 |             return format!("{}{}", " ", s);
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabbreviations-automatic175626202/001/prog.rs:78:16
+   |
+73 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+78 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+78 |         return &s;
+   |                +
+
+error: aborting due to 8 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

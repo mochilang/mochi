@@ -1,0 +1,107 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:41:13
+   |
+41 |             out += " ";
+   |             ---^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:44:16
+   |
+35 |     fn padLeft(n: i32, width: i32) -> &'static str {
+   |                                       ------------ expected `&str` because of return type
+...
+44 |         return format!("{}{}", out, s);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:51:134
+   |
+51 | ...{}", format!("{}{}", ">= ", padLeft(limits[i - 1 as usize], 3)), " and < "), padLeft(limits[i as usize], 3)), " = "), padLeft(bins[i a...
+   |                                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:51:132
+   |
+51 | ..."{}{}", format!("{}{}", ">= ", padLeft(limits[i - 1 as usize], 3)), " and < "), padLeft(limits[i as usize], 3)), " = "), padLeft(bins[...
+   |                                                    ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:51:130
+   |
+51 | ...!("{}{}", ">= ", padLeft(limits[i - 1 as usize], 3)), " and < "), padLeft(limits[i as usize], 3)), " = "), padLeft(bins[i as usize], 2...
+   |                                    ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:54:98
+   |
+54 | ...{}", format!("{}{}", ">= ", padLeft(limits[n - 1 as usize], 3)), "           = "), padLeft(bins[n as usize], 2)));
+   |                                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:54:96
+   |
+54 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", ">= ", padLeft(limits[n - 1 as usize], 3)), "           = "), padLef...
+   |                                                                                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:54:94
+   |
+54 | ...!("{}{}", ">= ", padLeft(limits[n - 1 as usize], 3)), "           = "), padLeft(bins[n as usize], 2)));
+   |                                    ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0277]: cannot add `String` to `i32`
+  --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:62:74
+   |
+62 |             println!("{}", format!("{}{}", format!("{}{}", "Example ", i + 1.to_string()), "
+   |                                                                          ^ no implementation for `i32 + String`
+   |
+   = help: the trait `Add<String>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+warning: variable does not need to be mutable
+ --> /tmp/TestMochiToRustbin-given-limits420629867/001/prog.rs:9:13
+  |
+9 |         let mut n = limits.len() as i32;
+  |             ----^
+  |             |
+  |             help: remove this `mut`
+  |
+  = note: `#[warn(unused_mut)]` on by default
+
+error: aborting due to 9 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

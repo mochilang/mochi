@@ -1,0 +1,181 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:36:13
+   |
+36 |             row += "*";
+   |             ---^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:46:52
+   |
+46 |         let mut frame = stack[stack.len() as i32 - 1 as usize];
+   |                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:46:50
+   |
+46 |         let mut frame = stack[stack.len() as i32 - 1 as usize];
+   |                                                  ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[Stack]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:46:31
+   |
+46 |         let mut frame = stack[stack.len() as i32 - 1 as usize];
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[Stack]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<Stack>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:47:56
+   |
+47 |         stack = stack[0 as usize..stack.len() as i32 - 1 as usize].to_vec();
+   |                                                        ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:47:35
+   |
+47 |         stack = stack[0 as usize..stack.len() as i32 - 1 as usize].to_vec();
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:47:54
+   |
+47 |         stack = stack[0 as usize..stack.len() as i32 - 1 as usize].to_vec();
+   |                                                      ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:64:31
+   |
+64 |         stack = append(stack, Item { start: start, len: seg, index: index + 1 as f64 });
+   |                 ------        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Stack`, found `Item`
+   |                 |
+   |                 arguments to this function are incorrect
+   |
+help: the return type of this call is `Item` due to the type of the argument passed
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:64:17
+   |
+64 |         stack = append(stack, Item { start: start, len: seg, index: index + 1 as f64 });
+   |                 ^^^^^^^^^^^^^^--------------------------------------------------------^
+   |                               |
+   |                               this argument influences the return type of `append`
+note: function defined here
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:23:4
+   |
+23 | fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
+   |    ^^^^^^                          -------
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:65:31
+   |
+65 |         stack = append(stack, Item1 { start: start + seg * 2, len: seg, index: index + 1 as f64 });
+   |                 ------        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Stack`, found `Item1`
+   |                 |
+   |                 arguments to this function are incorrect
+   |
+help: the return type of this call is `Item1` due to the type of the argument passed
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:65:17
+   |
+65 |         stack = append(stack, Item1 { start: start + seg * 2, len: seg, index: index + 1 as f64 });
+   |                 ^^^^^^^^^^^^^^-------------------------------------------------------------------^
+   |                               |
+   |                               this argument influences the return type of `append`
+note: function defined here
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:23:4
+   |
+23 | fn append<T: Clone>(mut v: Vec<T>, item: T) -> Vec<T> {
+   |    ^^^^^^                          -------
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:48:35
+   |
+48 |         let start = frame.clone()["start" as usize];
+   |                                   ^^^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:49:36
+   |
+49 |         let lenSeg = frame.clone()["len" as usize];
+   |                                    ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:50:35
+   |
+50 |         let index = frame.clone()["index" as usize];
+   |                                   ^^^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:42:92
+   |
+42 |         return format!("{}{}", format!("{}{}", &s[0 as usize..idx as usize], ch), &s[idx + 1 as usize..s.len() as i32 as usize]);
+   |                                                                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:42:90
+   |
+42 |         return format!("{}{}", format!("{}{}", &s[0 as usize..idx as usize], ch), &s[idx + 1 as usize..s.len() as i32 as usize]);
+   |                                                                                          ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:42:104
+   |
+42 |         return format!("{}{}", format!("{}{}", &s[0 as usize..idx as usize], ch), &s[idx + 1 as usize..s.len() as i32 as usize]);
+   |                                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:42:86
+   |
+42 |         return format!("{}{}", format!("{}{}", &s[0 as usize..idx as usize], ch), &s[idx + 1 as usize..s.len() as i32 as usize]);
+   |                                                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcantor-set2618981395/001/prog.rs:42:16
+   |
+41 |     fn setChar(s: &'static str, idx: i32, ch: &'static str) -> &'static str {
+   |                                                                ------------ expected `&str` because of return type
+42 |         return format!("{}{}", format!("{}{}", &s[0 as usize..idx as usize], ch), &s[idx + 1 as usize..s.len() as i32 as usize]);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 17 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0606.
+For more information about an error, try `rustc --explain E0277`.

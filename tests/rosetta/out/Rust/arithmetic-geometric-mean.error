@@ -1,0 +1,89 @@
+rustc error: exit status 1
+error[E0369]: cannot subtract `&mut f64` from `&mut f64`
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:20:21
+   |
+20 |         while abs(a - g) > abs(a) * eps {
+   |                   - ^ - &mut f64
+   |                   |
+   |                   &mut f64
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:20:32
+   |
+20 |         while abs(a - g) > abs(a) * eps {
+   |                            --- ^ expected `f64`, found `&mut f64`
+   |                            |
+   |                            arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:3:8
+   |
+3  |     fn abs(x: f64) -> f64 {
+   |        ^^^ ------
+help: consider dereferencing the borrow
+   |
+20 |         while abs(a - g) > abs(*a) * eps {
+   |                                +
+
+error[E0369]: cannot add `&mut f64` to `&mut f64`
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:21:27
+   |
+21 |             let newA = (a + g) / 2.0;
+   |                         - ^ - &mut f64
+   |                         |
+   |                         &mut f64
+
+error[E0369]: cannot multiply `&mut f64` by `&mut f64`
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:22:37
+   |
+22 |             let newG = sqrtApprox(a * g);
+   |                                   - ^ - &mut f64
+   |                                   |
+   |                                   &mut f64
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:24:17
+   |
+18 |     fn agm(a: &mut f64, g: &mut f64) -> f64 {
+   |                            -------- expected due to this parameter type
+...
+24 |             g = newG;
+   |                 ^^^^ expected `&mut f64`, found `f64`
+   |
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+24 |             *g = newG;
+   |             +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:26:16
+   |
+18 |     fn agm(a: &mut f64, g: &mut f64) -> f64 {
+   |                                         --- expected `f64` because of return type
+...
+26 |         return a;
+   |                ^ expected `f64`, found `&mut f64`
+   |
+help: consider dereferencing the borrow
+   |
+26 |         return *a;
+   |                +
+
+error[E0369]: cannot divide `&mut {float}` by `f64`
+  --> /tmp/TestMochiToRustarithmetic-geometric-mean504877471/001/prog.rs:29:47
+   |
+29 |         println!("{}", agm(&mut 1.0, &mut 1.0 / sqrtApprox(2.0)).to_string());
+   |                                      -------- ^ --------------- f64
+   |                                      |
+   |                                      &mut {float}
+   |
+   = note: an implementation for `&{float} / f64` exists
+help: consider reborrowing this side
+   |
+29 |         println!("{}", agm(&mut 1.0, &*&mut 1.0 / sqrtApprox(2.0)).to_string());
+   |                                      ++
+
+error: aborting due to 7 previous errors
+
+Some errors have detailed explanations: E0308, E0369.
+For more information about an error, try `rustc --explain E0308`.

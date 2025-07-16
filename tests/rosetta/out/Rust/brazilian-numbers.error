@@ -1,0 +1,108 @@
+rustc error: exit status 1
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:59:13
+   |
+59 |             while true {
+   |             ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0369]: cannot calculate the remainder of `&mut i32` divided by `i32`
+ --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:4:23
+  |
+4 |         let mut f = n % b;
+  |                     - ^ - i32
+  |                     |
+  |                     &mut i32
+  |
+help: `%` can be used on `i32` if you dereference the left-hand side
+  |
+4 |         let mut f = *n % b;
+  |                     +
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+ --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:5:39
+  |
+5 |         n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
+  |                                       ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:6:19
+  |
+6 |         while n > 0 {
+  |                   ^ expected `&mut i32`, found integer
+  |
+help: consider dereferencing the borrow
+  |
+6 |         while *n > 0 {
+  |               +
+
+error[E0369]: cannot calculate the remainder of `&mut i32` divided by `i32`
+ --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:7:18
+  |
+7 |             if n % b != f {
+  |                - ^ - i32
+  |                |
+  |                &mut i32
+  |
+help: `%` can be used on `i32` if you dereference the left-hand side
+  |
+7 |             if *n % b != f {
+  |                +
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:10:43
+   |
+10 |             n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error[E0606]: casting `&mut i32` as `f64` is invalid
+ --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:5:14
+  |
+5 |         n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
+  |              ^^^^^^^^^^
+  |
+help: dereference the expression
+  |
+5 |         n = ((*n as f64) / (b as f64)).parse::<i32>().unwrap();
+  |               +
+
+error[E0606]: casting `&mut i32` as `f64` is invalid
+  --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:10:18
+   |
+10 |             n = ((n as f64) / (b as f64)).parse::<i32>().unwrap();
+   |                  ^^^^^^^^^^
+   |
+help: dereference the expression
+   |
+10 |             n = ((*n as f64) / (b as f64)).parse::<i32>().unwrap();
+   |                   +
+
+error[E0277]: cannot subtract `String` from `i32`
+  --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:81:78
+   |
+81 |         println!("{}", format!("{}{}", "The 100,000th Brazilian number: ", n - 1.to_string()));
+   |                                                                              ^ no implementation for `i32 - String`
+   |
+   = help: the trait `Sub<String>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0596]: cannot borrow `n` as mutable, as it is not declared as mutable
+  --> /tmp/TestMochiToRustbrazilian-numbers1626945575/001/prog.rs:23:27
+   |
+23 |             if sameDigits(&mut n, b) {
+   |                           ^^^^^^ cannot borrow as mutable
+   |
+help: consider changing this to be mutable
+   |
+14 |     fn isBrazilian(mut n: i32) -> bool {
+   |                    +++
+
+error: aborting due to 9 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0369, E0596, E0599, E0606.
+For more information about an error, try `rustc --explain E0277`.

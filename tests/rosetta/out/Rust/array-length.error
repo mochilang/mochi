@@ -1,0 +1,27 @@
+rustc error: exit status 1
+error: cast cannot be followed by a method call
+ --> /tmp/TestMochiToRustarray-length526680158/001/prog.rs:5:129
+  |
+5 | ..., format!("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."));
+  |                                                               ^^^^^^^^^^^^^^^^
+  |
+help: try surrounding the expression in parentheses
+  |
+5 |         println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", "Length of ", arr.to_string()), " is "), (arr.len() as i32).to_string()), "."));
+  |                                                                                                                                 +                +
+
+error[E0599]: the method `to_string` exists for struct `Vec<&str>`, but its trait bounds were not satisfied
+ --> /tmp/TestMochiToRustarray-length526680158/001/prog.rs:5:106
+  |
+5 | ...("{}{}", "Length of ", arr.to_string()), " is "), arr.len() as i32.to_string()), "."));
+  |                               ^^^^^^^^^ method cannot be called on `Vec<&str>` due to unsatisfied trait bounds
+  |
+  = note: the following trait bounds were not satisfied:
+          `Vec<&str>: std::fmt::Display`
+          which is required by `Vec<&str>: ToString`
+          `[&str]: std::fmt::Display`
+          which is required by `[&str]: ToString`
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0599`.

@@ -1,0 +1,10 @@
+rustc error: exit status 1
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustcatalan-numbers-24068901128/001/prog.rs:11:49
+   |
+11 |         return ((t5 as f64) / ((n + 1) as f64)).parse::<i32>().unwrap();
+   |                                                 ^^^^^ method not found in `f64`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0599`.

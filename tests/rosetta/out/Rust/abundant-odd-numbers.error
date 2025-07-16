@@ -1,0 +1,138 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:51:27
+   |
+51 |         if s.len() as i32 < 2 {
+   |                           ^ --- interpreted as generic arguments
+   |                           |
+   |                           not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+51 |         if (s.len() as i32) < 2 {
+   |            +              +
+
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:58:30
+   |
+58 |         while s.len() as i32 < 5 {
+   |                              ^ --- interpreted as generic arguments
+   |                              |
+   |                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+58 |         while (s.len() as i32) < 5 {
+   |               +              +
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:18:51
+   |
+18 |                 let j = ((n as f64) / (i as f64)).parse::<i32>().unwrap();
+   |                                                   ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:44:17
+   |
+44 |             s = format!("{}{}", format!("{}{}", s, xs[i as usize].to_string()), " + ");
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:47:48
+   |
+47 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                                                ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:47:31
+   |
+47 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:47:46
+   |
+47 |         return &s[0 as usize..s.len() as i32 - 3 as usize];
+   |                                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:52:20
+   |
+49 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&str` because of return type
+...
+52 |             return format!("{}{}", " ", s);
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:54:16
+   |
+49 |     fn pad2(n: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+54 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+54 |         return &s;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:61:16
+   |
+56 |     fn pad5(n: i32) -> &'static str {
+   |                        ------------ expected `&'static str` because of return type
+...
+61 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+61 |         return &s;
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:68:27
+   |
+68 |             let tot = sum(&divs);
+   |                       --- ^^^^^ expected `Vec<i32>`, found `&Vec<i32>`
+   |                       |
+   |                       arguments to this function are incorrect
+   |
+   = note: expected struct `Vec<_>`
+           found reference `&Vec<_>`
+note: function defined here
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:33:8
+   |
+33 |     fn sum(xs: Vec<i32>) -> i32 {
+   |        ^^^ ------------
+help: consider removing the borrow
+   |
+68 -             let tot = sum(&divs);
+68 +             let tot = sum(divs);
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustabundant-odd-numbers2009730081/001/prog.rs:69:22
+   |
+69 |             if tot > n as f64 {
+   |                ---   ^^^^^^^^ expected `i32`, found `f64`
+   |                |
+   |                expected because this is `i32`
+
+error: aborting due to 12 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,89 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:44:23
+   |
+44 |     for line in split(c, "
+   |                 ----- ^ expected `&str`, found `String`
+   |                 |
+   |                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:8:8
+   |
+8  |     fn split(s: &'static str, sep: &'static str) -> Vec<&'static str> {
+   |        ^^^^^ ---------------
+help: consider borrowing here
+   |
+44 |     for line in split(&c, "
+   |                       +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:52:21
+   |
+52 |             cells = format!("{}{}", format!("{}{}", format!("{}{}", cells, "<td>"), htmlEscape(cell)), "</td>");
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:14:35
+   |
+14 |             if &s[i as usize..i + n as usize] == sep {
+   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:14:31
+   |
+14 |             if &s[i as usize..i + n as usize] == sep {
+   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:14:33
+   |
+14 |             if &s[i as usize..i + n as usize] == sep {
+   |                                 ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:29:41
+   |
+29 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:29:37
+   |
+29 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:29:39
+   |
+29 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcsv-to-html-translation-5105174490/001/prog.rs:31:17
+   |
+31 |                 out += "&amp;";
+   |                 ---^^^^^^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error: aborting due to 9 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

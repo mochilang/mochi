@@ -1,0 +1,53 @@
+rustc error: exit status 1
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:16:22
+   |
+16 |     fn pow_big(base: bigint, exp: i32) -> bigint {
+   |                      ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:16:43
+   |
+16 |     fn pow_big(base: bigint, exp: i32) -> bigint {
+   |                                           ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:17:25
+   |
+17 |         let mut result: bigint = 1;
+   |                         ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:18:20
+   |
+18 |         let mut b: bigint = base;
+   |                    ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:31:19
+   |
+31 |     let mut base: bigint = 5;
+   |                   ^^^^^^ not found in this scope
+
+error[E0412]: cannot find type `bigint` in this scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:32:16
+   |
+32 |     let mut x: bigint = pow_big(base, e2);
+   |                ^^^^^^ not found in this scope
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:12:43
+   |
+12 |             e = ((e as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustarbitrary-precision-integers-included-2257073265/001/prog.rs:25:43
+   |
+25 |             e = ((e as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                           ^^^^^ method not found in `f64`
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0412, E0599.
+For more information about an error, try `rustc --explain E0412`.

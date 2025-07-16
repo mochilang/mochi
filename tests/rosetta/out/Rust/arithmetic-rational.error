@@ -1,0 +1,50 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-rational389492733/001/prog.rs:14:24
+   |
+3  |     fn intSqrt(x: i32) -> i32 {
+   |                           --- expected `i32` because of return type
+...
+14 |                 return mid;
+   |                        ^^^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-rational389492733/001/prog.rs:17:24
+   |
+7  |         let mut left = 1;
+   |                        - expected due to this value
+...
+17 |                 left = mid + 1 as f64 as f64 as f64 as f64 as f64;
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected integer, found `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarithmetic-rational389492733/001/prog.rs:18:23
+   |
+9  |         let mut ans = 0;
+   |                       - expected due to this value
+...
+18 |                 ans = mid;
+   |                       ^^^ expected integer, found `f64`
+
+error[E0277]: cannot add `f64` to `{integer}`
+  --> /tmp/TestMochiToRustarithmetic-rational389492733/001/prog.rs:31:24
+   |
+31 |                 s = (s + n as f64) / (f as f64);
+   |                        ^ no implementation for `{integer} + f64`
+   |
+   = help: the trait `Add<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&f128` implements `Add<f128>`
+             `&f128` implements `Add`
+             `&f16` implements `Add<f16>`
+             `&f16` implements `Add`
+             `&f32` implements `Add<f32>`
+             `&f32` implements `Add`
+             `&f64` implements `Add<f64>`
+             `&f64` implements `Add`
+           and 56 others
+
+error: aborting due to 4 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

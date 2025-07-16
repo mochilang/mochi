@@ -1,0 +1,47 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcholesky-decomposition3653734949/001/prog.rs:58:17
+   |
+58 |                 line += m[i as usize][j as usize].to_string();
+   |                 ----^--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |                 |    |
+   |                 |    `+` cannot be used to concatenate a `&str` with a `String`
+   |                 cannot use `+=` on type `&str`
+   |
+   = note: string concatenation requires an owned `String` on the left
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustcholesky-decomposition3653734949/001/prog.rs:60:21
+   |
+60 |                     line += " ";
+   |                     ----^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0382]: use of moved value: `a`
+  --> /tmp/TestMochiToRustcholesky-decomposition3653734949/001/prog.rs:71:26
+   |
+68 |     fn demo(a: Vec<Vec<f64>>) -> () {
+   |             - move occurs because `a` has type `Vec<Vec<f64>>`, which does not implement the `Copy` trait
+69 |         println!("A:");
+70 |         printMat(a);
+   |                  - value moved here
+71 |         let l = cholesky(a);
+   |                          ^ value used here after move
+   |
+note: consider changing this parameter type in function `printMat` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustcholesky-decomposition3653734949/001/prog.rs:52:20
+   |
+52 |     fn printMat(m: Vec<Vec<f64>>) -> () {
+   |        --------    ^^^^^^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+70 |         printMat(a.clone());
+   |                   ++++++++
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0368, E0382.
+For more information about an error, try `rustc --explain E0368`.

@@ -1,0 +1,316 @@
+rustc error: exit status 1
+error: bare CR not allowed in string, use `\r` instead
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:72:49
+   |
+72 |             if ch == " " || ch == "    " || ch == "␍" || ch == "
+   |                                                    ^
+   |
+help: escape the character
+   |
+72 |             if ch == " " || ch == "    " || ch == "\r" || ch == "
+   |                                                    ++
+
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:128:30
+    |
+128 |         if toks.len() as i32 < 4 {
+    |                              ^ --- interpreted as generic arguments
+    |                              |
+    |                              not interpreted as comparison
+    |
+help: try comparing the cast value
+    |
+128 |         if (toks.len() as i32) < 4 {
+    |            +                 +
+
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:179:30
+    |
+179 |         while s.len() as i32 < w {
+    |                              ^ --- interpreted as generic arguments
+    |                              |
+    |                              not interpreted as comparison
+    |
+help: try comparing the cast value
+    |
+179 |         while (s.len() as i32) < w {
+    |               +              +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:220:25
+    |
+220 |     let mut bm = readP3(ppmtxt);
+    |                  ------ ^^^^^^ expected `&str`, found `String`
+    |                  |
+    |                  arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:126:8
+    |
+126 |     fn readP3(text: &'static str) -> Bitmap {
+    |        ^^^^^^ ------------------
+help: consider borrowing here
+    |
+220 |     let mut bm = readP3(&ppmtxt);
+    |                         +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:223:23
+    |
+223 |     let out = writeP3(&bm.clone());
+    |               ------- ^^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
+    |               |
+    |               arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:184:8
+    |
+184 |     fn writeP3(b: Bitmap) -> &'static str {
+    |        ^^^^^^^ ---------
+help: consider removing the borrow
+    |
+223 -     let out = writeP3(&bm.clone());
+223 +     let out = writeP3(bm.clone());
+    |
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:53:22
+   |
+53 |             let ch = substr(s, i, i + 1);
+   |                      ^^^^^^ not found in this scope
+
+error[E0425]: cannot find function `substr` in this scope
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:71:22
+   |
+71 |             let ch = substr(s, i, i + 1);
+   |                      ^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:98:55
+   |
+98 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:98:51
+   |
+98 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:98:53
+   |
+98 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                     ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0425]: cannot find function `substr` in this scope
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:112:41
+    |
+112 |             if line.len() as i32 > 0 && substr(line, 0, 1) == "#" {
+    |                                         ^^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:146:46
+    |
+146 |                 setPx(&mut bm.clone(), x, y, &Pixel { R: r, G: g, B: b });
+    |                 -----                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
+    |                 |
+    |                 arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:38:8
+    |
+38  |     fn setPx(b: &mut Bitmap, x: i32, y: i32, p: Pixel) -> () {
+    |        ^^^^^                                 --------
+help: consider removing the borrow
+    |
+146 -                 setPx(&mut bm.clone(), x, y, &Pixel { R: r, G: g, B: b });
+146 +                 setPx(&mut bm.clone(), x, y, Pixel { R: r, G: g, B: b });
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:162:31
+    |
+162 |                 let p = getPx(&b.clone(), x, y);
+    |                         ----- ^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
+    |                         |
+    |                         arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:45:8
+    |
+45  |     fn getPx(b: Bitmap, x: i32, y: i32) -> Pixel {
+    |        ^^^^^ ---------
+help: consider removing the borrow
+    |
+162 -                 let p = getPx(&b.clone(), x, y);
+162 +                 let p = getPx(b.clone(), x, y);
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:165:25
+    |
+163 |                 let mut l = ((p.R * 2126 + p.G * 7152 + p.B * 722) as f64) / (10000 as f64);
+    |                             --------------------------------------------------------------- expected due to this value
+164 |                 if l > b.max as f64 {
+165 |                     l = b.max;
+    |                         ^^^^^ expected `f64`, found `i32`
+    |
+help: you can convert an `i32` to an `f64`, producing the floating point representation of the integer
+    |
+165 |                     l = b.max.into();
+    |                              +++++++
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:167:57
+    |
+167 |                 setPx(&mut b.clone(), x, y, &Pixel { R: l, G: l, B: l });
+    |                                                         ^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:167:63
+    |
+167 |                 setPx(&mut b.clone(), x, y, &Pixel { R: l, G: l, B: l });
+    |                                                               ^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:167:69
+    |
+167 |                 setPx(&mut b.clone(), x, y, &Pixel { R: l, G: l, B: l });
+    |                                                                     ^ expected `i32`, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:167:45
+    |
+167 |                 setPx(&mut b.clone(), x, y, &Pixel { R: l, G: l, B: l });
+    |                 -----                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
+    |                 |
+    |                 arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:38:8
+    |
+38  |     fn setPx(b: &mut Bitmap, x: i32, y: i32, p: Pixel) -> () {
+    |        ^^^^^                                 --------
+help: consider removing the borrow
+    |
+167 -                 setPx(&mut b.clone(), x, y, &Pixel { R: l, G: l, B: l });
+167 +                 setPx(&mut b.clone(), x, y, Pixel { R: l, G: l, B: l });
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:169:25
+    |
+157 |         let mut m = 0;
+    |                     - expected due to this value
+...
+169 |                     m = l;
+    |                         ^ expected integer, found `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:182:16
+    |
+177 |     fn pad(n: i32, w: i32) -> &'static str {
+    |                               ------------ expected `&'static str` because of return type
+...
+182 |         return s;
+    |                ^ expected `&str`, found `String`
+    |
+help: consider borrowing here
+    |
+182 |         return &s;
+    |                +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:199:31
+    |
+199 |                 let p = getPx(&b.clone(), x, y);
+    |                         ----- ^^^^^^^^^^ expected `Bitmap`, found `&Bitmap`
+    |                         |
+    |                         arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:45:8
+    |
+45  |     fn getPx(b: Bitmap, x: i32, y: i32) -> Pixel {
+    |        ^^^^^ ---------
+help: consider removing the borrow
+    |
+199 -                 let p = getPx(&b.clone(), x, y);
+199 +                 let p = getPx(b.clone(), x, y);
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:200:24
+    |
+200 | ... = format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", format!("{}{}", line, "   "), pad(p.R, digits)), " "), pad(p.G, digits)), " "), pad(p.B, digits));
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:207:16
+    |
+184 |     fn writeP3(b: Bitmap) -> &'static str {
+    |                              ------------ expected `&'static str` because of return type
+...
+207 |         return out;
+    |                ^^^ expected `&str`, found `String`
+    |
+help: consider borrowing here
+    |
+207 |         return &out;
+    |                +
+
+error[E0507]: cannot move out of `b.data` which is behind a mutable reference
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:39:24
+   |
+39 |         let mut rows = b.data;
+   |                        ^^^^^^ move occurs because `b.data` has type `Vec<Vec<Pixel>>`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+39 |         let mut rows = &b.data;
+   |                        +
+help: consider cloning the value if the performance cost is acceptable
+   |
+39 |         let mut rows = b.data.clone();
+   |                              ++++++++
+
+error[E0507]: cannot move out of index of `Vec<Vec<Pixel>>`
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:40:23
+   |
+40 |         let mut row = rows[y as usize];
+   |                       ^^^^^^^^^^^^^^^^ move occurs because value has type `Vec<Pixel>`, which does not implement the `Copy` trait
+   |
+help: consider borrowing here
+   |
+40 |         let mut row = &rows[y as usize];
+   |                       +
+help: consider cloning the value if the performance cost is acceptable
+   |
+40 |         let mut row = rows[y as usize].clone();
+   |                                       ++++++++
+
+error[E0507]: cannot move out of index of `Vec<Pixel>`
+  --> /tmp/TestMochiToRustbitmap-read-a-ppm-file2866409342/001/prog.rs:46:16
+   |
+46 |         return b.data[y as usize][x as usize];
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ move occurs because value has type `Pixel`, which does not implement the `Copy` trait
+   |
+help: consider cloning the value if the performance cost is acceptable
+   |
+46 |         return b.data[y as usize][x as usize].clone();
+   |                                              ++++++++
+
+error: aborting due to 26 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0425, E0507.
+For more information about an error, try `rustc --explain E0277`.

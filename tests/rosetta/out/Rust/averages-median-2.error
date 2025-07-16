@@ -1,0 +1,10 @@
+rustc error: exit status 1
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustaverages-median-23040915028/001/prog.rs:23:61
+   |
+23 |         let half = ((arr.len() as i32 as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                                             ^^^^^ method not found in `f64`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0599`.

@@ -1,0 +1,83 @@
+rustc error: exit status 1
+error[E0277]: cannot add `String` to `{integer}`
+ --> /tmp/TestMochiToRustarithmetic-integer-11557638699/001/prog.rs:6:137
+  |
+6 | ..._string(), " + "), b.to_string()), " = "), a + b.to_string()));
+  |                                                 ^ no implementation for `{integer} + String`
+  |
+  = help: the trait `Add<String>` is not implemented for `{integer}`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&f128` implements `Add<f128>`
+            `&f128` implements `Add`
+            `&f16` implements `Add<f16>`
+            `&f16` implements `Add`
+            `&f32` implements `Add<f32>`
+            `&f32` implements `Add`
+            `&f64` implements `Add<f64>`
+            `&f64` implements `Add`
+          and 56 others
+
+error[E0277]: cannot subtract `String` from `{integer}`
+ --> /tmp/TestMochiToRustarithmetic-integer-11557638699/001/prog.rs:7:137
+  |
+7 | ..._string(), " - "), b.to_string()), " = "), a - b.to_string()));
+  |                                                 ^ no implementation for `{integer} - String`
+  |
+  = help: the trait `Sub<String>` is not implemented for `{integer}`
+  = help: the following other types implement trait `Sub<Rhs>`:
+            `&f128` implements `Sub<f128>`
+            `&f128` implements `Sub`
+            `&f16` implements `Sub<f16>`
+            `&f16` implements `Sub`
+            `&f32` implements `Sub<f32>`
+            `&f32` implements `Sub`
+            `&f64` implements `Sub<f64>`
+            `&f64` implements `Sub`
+          and 56 others
+
+error[E0277]: cannot multiply `{integer}` by `String`
+ --> /tmp/TestMochiToRustarithmetic-integer-11557638699/001/prog.rs:8:137
+  |
+8 | ..._string(), " * "), b.to_string()), " = "), a * b.to_string()));
+  |                                                 ^ no implementation for `{integer} * String`
+  |
+  = help: the trait `Mul<String>` is not implemented for `{integer}`
+  = help: the following other types implement trait `Mul<Rhs>`:
+            `&f128` implements `Mul<f128>`
+            `&f128` implements `Mul`
+            `&f16` implements `Mul<f16>`
+            `&f16` implements `Mul`
+            `&f32` implements `Mul<f32>`
+            `&f32` implements `Mul`
+            `&f64` implements `Mul<f64>`
+            `&f64` implements `Mul`
+          and 57 others
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+ --> /tmp/TestMochiToRustarithmetic-integer-11557638699/001/prog.rs:9:161
+  |
+9 | ... b.to_string()), " = "), ((a as f64) / (b as f64)).parse::<i32>().unwrap().to_string()));
+  |                                                       ^^^^^ method not found in `f64`
+
+error[E0277]: cannot calculate the remainder of `{integer}` divided by `String`
+  --> /tmp/TestMochiToRustarithmetic-integer-11557638699/001/prog.rs:10:137
+   |
+10 | ..._string(), " % "), b.to_string()), " = "), a % b.to_string()));
+   |                                                 ^ no implementation for `{integer} % String`
+   |
+   = help: the trait `Rem<String>` is not implemented for `{integer}`
+   = help: the following other types implement trait `Rem<Rhs>`:
+             `&f128` implements `Rem<f128>`
+             `&f128` implements `Rem`
+             `&f16` implements `Rem<f16>`
+             `&f16` implements `Rem`
+             `&f32` implements `Rem<f32>`
+             `&f32` implements `Rem`
+             `&f64` implements `Rem<f64>`
+             `&f64` implements `Rem`
+           and 62 others
+
+error: aborting due to 5 previous errors
+
+Some errors have detailed explanations: E0277, E0599.
+For more information about an error, try `rustc --explain E0277`.

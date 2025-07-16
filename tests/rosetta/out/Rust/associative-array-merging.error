@@ -1,0 +1,110 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:4:121
+  |
+4 |         let mut result: std::collections::HashMap<&'static str, i32> = { let mut m = std::collections::BTreeMap::new(); m };
+  |                                                                                                                         ^ expected `HashMap<&str, i32>`, found `BTreeMap<_, _>`
+  |
+  = note: expected struct `HashMap<&'static str, i32>`
+             found struct `BTreeMap<_, _>`
+
+error[E0277]: the trait bound `&'static str: Borrow<&&str>` is not satisfied
+ --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:6:35
+  |
+6 |             result.insert(k, base[&k]);
+  |                                   ^^ the trait `Borrow<&&str>` is not implemented for `&'static str`
+  |
+  = help: the trait `Borrow<str>` is implemented for `String`
+  = note: required for `HashMap<&'static str, i32>` to implement `Index<&&&str>`
+
+error[E0277]: the trait bound `&'static str: Borrow<&&str>` is not satisfied
+ --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:9:37
+  |
+9 |             result.insert(k, update[&k]);
+  |                                     ^^ the trait `Borrow<&&str>` is not implemented for `&'static str`
+  |
+  = help: the trait `Borrow<str>` is implemented for `String`
+  = note: required for `HashMap<&'static str, i32>` to implement `Index<&&&str>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:14:168
+   |
+14 | ...reeMap::new(); m.insert("name", "Rocket Skates"); m.insert("price", 12.75); m.insert("color", "yellow"); m };
+   |                   -                ---------------     ------          ^^^^^ expected `&str`, found floating-point number
+   |                   |                |                   |
+   |                   |                |                   arguments to this method are incorrect
+   |                   |                this argument has type `&str`...
+   |                   ... which causes `m` to have type `BTreeMap<&str, &str>`
+   |
+help: the return type of this call is `{float}` due to the type of the argument passed
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:14:150
+   |
+14 | ...rt("name", "Rocket Skates"); m.insert("price", 12.75); m.insert("color", "yellow"); m };
+   |                                 ^^^^^^^^^^^^^^^^^^-----^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:14:205
+   |
+14 | ...2.75); m.insert("color", "yellow"); m };
+   |                                        ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &str>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, &str>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:15:161
+   |
+15 | ...s::BTreeMap::new(); m.insert("price", 15.25); m.insert("color", "red"); m.insert("year", 1974); m };
+   |                        -                 -----     ------          ^^^^^ expected floating-point number, found `&str`
+   |                        |                 |         |
+   |                        |                 |         arguments to this method are incorrect
+   |                        |                 this argument has type `{float}`...
+   |                        ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `&'static str` due to the type of the argument passed
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:15:143
+   |
+15 | ...); m.insert("price", 15.25); m.insert("color", "red"); m.insert("year", 1974); m };
+   |                                 ^^^^^^^^^^^^^^^^^^-----^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:15:186
+   |
+15 | ...new(); m.insert("price", 15.25); m.insert("color", "red"); m.insert("year", 1974); m };
+   |           -                 -----                               ------         ^^^^ expected floating-point number, found integer
+   |           |                 |                                   |
+   |           |                 |                                   arguments to this method are incorrect
+   |           |                 this argument has type `{float}`...
+   |           ... which causes `m` to have type `BTreeMap<&str, {float}>`
+   |
+help: the return type of this call is `{integer}` due to the type of the argument passed
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:15:169
+   |
+15 | ...5); m.insert("color", "red"); m.insert("year", 1974); m };
+   |                                  ^^^^^^^^^^^^^^^^^----^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustassociative-array-merging1189525382/001/prog.rs:15:193
+   |
+15 | ...", "red"); m.insert("year", 1974); m };
+   |                                       ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, {float}>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, {float}>`
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

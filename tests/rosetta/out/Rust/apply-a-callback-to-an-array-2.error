@@ -1,0 +1,39 @@
+rustc error: exit status 1
+error[E0277]: cannot multiply `i32` by `String`
+  --> /tmp/TestMochiToRustapply-a-callback-to-an-array-22190146958/001/prog.rs:22:57
+   |
+22 |         each(s, Box::new(move |i: i32| println!("{}", i * i.to_string())));
+   |                                                         ^ no implementation for `i32 * String`
+   |
+   = help: the trait `Mul<String>` is not implemented for `i32`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             `&i32` implements `Mul<i32>`
+             `&i32` implements `Mul`
+             `i32` implements `Mul<&i32>`
+             `i32` implements `Mul`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustapply-a-callback-to-an-array-22190146958/001/prog.rs:22:40
+   |
+22 |         each(s, Box::new(move |i: i32| println!("{}", i * i.to_string())));
+   |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `()`
+   |
+   = note: this error originates in the macro `println` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustapply-a-callback-to-an-array-22190146958/001/prog.rs:23:62
+   |
+23 |         println!("{}", Map(s, Box::new(move |i: i32| i * i)).to_string());
+   |                                                              ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error: aborting due to 3 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,456 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:6:54
+  |
+6 |             if s.chars().nth(i as usize).unwrap() == ch {
+  |                ----------------------------------    ^^ expected `char`, found `&str`
+  |                |
+  |                expected because this is `char`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:16:67
+   |
+16 |         if str.len() as i32 > 0 && str.chars().nth(0).unwrap() == "-" {
+   |                                    ---------------------------    ^^^ expected `char`, found `&str`
+   |                                    |
+   |                                    expected because this is `char`
+   |
+help: if you meant to write a `char` literal, use single quotes
+   |
+16 -         if str.len() as i32 > 0 && str.chars().nth(0).unwrap() == "-" {
+16 +         if str.len() as i32 > 0 && str.chars().nth(0).unwrap() == '-' {
+   |
+
+error[E0277]: the trait bound `&str: Borrow<char>` is not satisfied
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:23:33
+   |
+23 |             n = n * 10 + digits[&str.chars().nth(i as usize).unwrap()];
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `Borrow<char>` is not implemented for `&str`
+   |
+   = help: the trait `Borrow<str>` is implemented for `String`
+   = note: required for `BTreeMap<&str, {integer}>` to implement `Index<&char>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:63:31
+   |
+63 |             return &upper[n - 65 as usize..n - 64 as usize];
+   |                               ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:63:29
+   |
+63 |             return &upper[n - 65 as usize..n - 64 as usize];
+   |                             ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:63:48
+   |
+63 |             return &upper[n - 65 as usize..n - 64 as usize];
+   |                                                ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:63:46
+   |
+63 |             return &upper[n - 65 as usize..n - 64 as usize];
+   |                                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:63:27
+   |
+63 |             return &upper[n - 65 as usize..n - 64 as usize];
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:66:31
+   |
+66 |             return &lower[n - 97 as usize..n - 96 as usize];
+   |                               ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:66:29
+   |
+66 |             return &lower[n - 97 as usize..n - 96 as usize];
+   |                             ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:66:48
+   |
+66 |             return &lower[n - 97 as usize..n - 96 as usize];
+   |                                                ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:66:46
+   |
+66 |             return &lower[n - 97 as usize..n - 96 as usize];
+   |                                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:66:27
+   |
+66 |             return &lower[n - 97 as usize..n - 96 as usize];
+   |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:70:32
+   |
+70 |             return &digits[n - 48 as usize..n - 47 as usize];
+   |                                ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:70:30
+   |
+70 |             return &digits[n - 48 as usize..n - 47 as usize];
+   |                              ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:70:49
+   |
+70 |             return &digits[n - 48 as usize..n - 47 as usize];
+   |                                                 ^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:70:47
+   |
+70 |             return &digits[n - 48 as usize..n - 47 as usize];
+   |                                               ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:70:28
+   |
+70 |             return &digits[n - 48 as usize..n - 47 as usize];
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0277]: cannot calculate the remainder of `i32` divided by `String`
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:91:37
+   |
+91 |             b = format!("{}{}", val % 2.to_string(), b);
+   |                                     ^ no implementation for `i32 % String`
+   |
+   = help: the trait `Rem<String>` is not implemented for `i32`
+   = help: the following other types implement trait `Rem<Rhs>`:
+             `&i32` implements `Rem<i32>`
+             `&i32` implements `Rem`
+             `i32` implements `Rem<&i32>`
+             `i32` implements `Rem`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:91:17
+   |
+91 |             b = format!("{}{}", val % 2.to_string(), b);
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:92:47
+   |
+92 |             val = ((val as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                               ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:101:59
+    |
+101 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+    |                                                           ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:101:55
+    |
+101 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+    |                                                       ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:101:57
+    |
+101 |             n = n * 2 + parseIntStr(&bits[i as usize..i + 1 as usize]);
+    |                                                         ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0277]: `&str` is not an iterator
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:109:19
+    |
+109 |         for ch in text {
+    |                   ^^^^ `&str` is not an iterator; try calling `.chars()` or `.bytes()`
+    |
+    = help: the trait `Iterator` is not implemented for `&str`
+    = note: required for `&str` to implement `IntoIterator`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:110:13
+    |
+110 |             bin += toBinary(ord(ch), 8);
+    |             ---^^^^^^^^^^^^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:113:13
+    |
+113 |             bin += "0";
+    |             ---^^^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:118:46
+    |
+118 |             let chunk = &bin[i as usize..i + 6 as usize];
+    |                                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:118:42
+    |
+118 |             let chunk = &bin[i as usize..i + 6 as usize];
+    |                                          ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:118:44
+    |
+118 |             let chunk = &bin[i as usize..i + 6 as usize];
+    |                                            ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:120:50
+    |
+120 |             out += &alphabet[val as usize..val + 1 as usize];
+    |                                                  ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:120:44
+    |
+120 |             out += &alphabet[val as usize..val + 1 as usize];
+    |                                            ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:120:48
+    |
+120 |             out += &alphabet[val as usize..val + 1 as usize];
+    |                                                ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:120:13
+    |
+120 |             out += &alphabet[val as usize..val + 1 as usize];
+    |             ---^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:125:71
+    |
+125 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 1 as usize], "=");
+    |                                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:125:52
+    |
+125 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 1 as usize], "=");
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:125:69
+    |
+125 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 1 as usize], "=");
+    |                                                                     ^ no implementation for `i32 - usize`
+    |
+    = help: the trait `Sub<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Sub<Rhs>`:
+              `&i32` implements `Sub<i32>`
+              `&i32` implements `Sub`
+              `i32` implements `Sub<&i32>`
+              `i32` implements `Sub`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:125:19
+    |
+125 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 1 as usize], "=");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:128:71
+    |
+128 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 2 as usize], "==");
+    |                                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:128:52
+    |
+128 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 2 as usize], "==");
+    |                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:128:69
+    |
+128 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 2 as usize], "==");
+    |                                                                     ^ no implementation for `i32 - usize`
+    |
+    = help: the trait `Sub<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Sub<Rhs>`:
+              `&i32` implements `Sub<i32>`
+              `&i32` implements `Sub`
+              `i32` implements `Sub<&i32>`
+              `i32` implements `Sub`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:128:19
+    |
+128 |             out = format!("{}{}", &out[0 as usize..out.len() as i32 - 2 as usize], "==");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |
+    = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:138:22
+    |
+138 |             if ch == "=" {
+    |                --    ^^^ expected `char`, found `&str`
+    |                |
+    |                expected because this is `char`
+    |
+help: if you meant to write a `char` literal, use single quotes
+    |
+138 -             if ch == "=" {
+138 +             if ch == '=' {
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:141:41
+    |
+141 |             let idx = indexOf(alphabet, ch);
+    |                       -------           ^^ expected `&str`, found `char`
+    |                       |
+    |                       arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:3:8
+    |
+3   |     fn indexOf(s: &'static str, ch: &'static str) -> i32 {
+    |        ^^^^^^^                  ----------------
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:142:13
+    |
+142 |             bin += toBinary(idx, 6);
+    |             ---^^^^^^^^^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:148:46
+    |
+148 |             let chunk = &bin[i as usize..i + 8 as usize];
+    |                                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:148:42
+    |
+148 |             let chunk = &bin[i as usize..i + 8 as usize];
+    |                                          ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:148:44
+    |
+148 |             let chunk = &bin[i as usize..i + 8 as usize];
+    |                                            ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiToRustbase64-decode-data1052175658/001/prog.rs:150:13
+    |
+150 |             out += chr(val);
+    |             ---^^^^^^^^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error: aborting due to 49 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0599.
+For more information about an error, try `rustc --explain E0277`.

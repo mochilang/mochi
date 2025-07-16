@@ -1,0 +1,342 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:9:124
+  |
+9 |         let mut emap: std::collections::HashMap<&'static str, Vec<i32>> = { let mut m = std::collections::BTreeMap::new(); m };
+  |                                                                                                                            ^ expected `HashMap<&str, Vec<i32>>`, found `BTreeMap<_, _>`
+  |
+  = note: expected struct `HashMap<&'static str, Vec<i32>>`
+             found struct `BTreeMap<_, _>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:10:128
+   |
+10 |         let mut dmap: std::collections::HashMap<&'static str, &'static str> = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                                                                                                ^ expected `HashMap<&str, &str>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, &'static str>`
+              found struct `BTreeMap<_, _>`
+
+error[E0425]: cannot find function `upper` in this scope
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:26:17
+   |
+26 |         let s = upper(text);
+   |                 ^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:31:34
+   |
+31 |             if emap.contains_key(&ch != " " && ch) {
+   |                     ------------ ^^^^^^^^^^^^^^^^ expected `&_`, found `bool`
+   |                     |
+   |                     arguments to this method are incorrect
+   |
+   = note: expected reference `&_`
+                   found type `bool`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/std/src/collections/hash/map.rs:1137:12
+help: consider borrowing here
+   |
+31 |             if emap.contains_key(&(&ch != " " && ch)) {
+   |                                  ++                +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:39:16
+   |
+39 |         text = remove_space(text, emap);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^ types differ in mutability
+   |
+   = note: expected mutable reference `&mut &'static _`
+                      found reference `&'static _`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+39 |         *text = remove_space(text, emap);
+   |         +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:44:44
+   |
+44 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:44:40
+   |
+44 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:44:42
+   |
+44 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                          ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:56:100
+   |
+56 |             let key = format!("{}{}", format!("{}{}", row0[j as usize].to_string(), ","), row0[j + 1 as usize].to_string());
+   |                                                                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:56:98
+   |
+56 |             let key = format!("{}{}", format!("{}{}", row0[j as usize].to_string(), ","), row0[j + 1 as usize].to_string());
+   |                                                                                                  ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:56:96
+   |
+56 |             let key = format!("{}{}", format!("{}{}", row0[j as usize].to_string(), ","), row0[j + 1 as usize].to_string());
+   |                                                                                                ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0277]: the trait bound `&'static str: Borrow<String>` is not satisfied
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:57:25
+   |
+57 |             res += dmap[&key];
+   |                         ^^^^ the trait `Borrow<String>` is not implemented for `&'static str`
+   |
+   = help: the trait `Borrow<str>` is implemented for `String`
+   = note: required for `HashMap<&'static str, &'static str>` to implement `Index<&String>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:57:13
+   |
+57 |             res += dmap[&key];
+   |             ---^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:63:16
+   |
+63 |         text = remove_space(text, emap);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^ types differ in mutability
+   |
+   = note: expected mutable reference `&mut &'static _`
+                      found reference `&'static _`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+63 |         *text = remove_space(text, emap);
+   |         +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:67:44
+   |
+67 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                            ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:67:40
+   |
+67 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                        ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:67:42
+   |
+67 |             let ch = &text[i as usize..i + 1 as usize];
+   |                                          ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the trait bound `&'static str: Borrow<String>` is not satisfied
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:89:25
+   |
+89 |             res += dmap[&key];
+   |                         ^^^^ the trait `Borrow<String>` is not implemented for `&'static str`
+   |
+   = help: the trait `Borrow<str>` is implemented for `String`
+   = note: required for `HashMap<&'static str, &'static str>` to implement `Index<&String>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:89:13
+   |
+89 |             res += dmap[&key];
+   |             ---^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:105:21
+    |
+105 |         let mut s = encrypt(&mut textRosetta, emap, dmap);
+    |                     ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:105:47
+    |
+105 |         let mut s = encrypt(&mut textRosetta, emap, dmap);
+    |                                               ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:105:53
+    |
+105 |         let mut s = encrypt(&mut textRosetta, emap, dmap);
+    |                                                     ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:38:8
+    |
+38  | ...fn encrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:107:13
+    |
+107 |         s = decrypt(&mut s, emap, dmap);
+    |             ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:107:29
+    |
+107 |         s = decrypt(&mut s, emap, dmap);
+    |                             ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:107:35
+    |
+107 |         s = decrypt(&mut s, emap, dmap);
+    |                                   ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:62:8
+    |
+62  | ...fn decrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:114:13
+    |
+114 |         s = encrypt(&mut textWikipedia, emap, dmap);
+    |             ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:114:41
+    |
+114 |         s = encrypt(&mut textWikipedia, emap, dmap);
+    |                                         ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:114:47
+    |
+114 |         s = encrypt(&mut textWikipedia, emap, dmap);
+    |                                               ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:38:8
+    |
+38  | ...fn encrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:116:13
+    |
+116 |         s = decrypt(&mut s, emap, dmap);
+    |             ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:116:29
+    |
+116 |         s = decrypt(&mut s, emap, dmap);
+    |                             ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:116:35
+    |
+116 |         s = decrypt(&mut s, emap, dmap);
+    |                                   ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:62:8
+    |
+62  | ...fn decrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:123:13
+    |
+123 |         s = encrypt(&mut textTest, emap, dmap);
+    |             ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:123:36
+    |
+123 |         s = encrypt(&mut textTest, emap, dmap);
+    |                                    ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:123:42
+    |
+123 |         s = encrypt(&mut textTest, emap, dmap);
+    |                                          ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:38:8
+    |
+38  | ...fn encrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error[E0308]: arguments to this function are incorrect
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:125:13
+    |
+125 |         s = decrypt(&mut s, emap, dmap);
+    |             ^^^^^^^
+    |
+note: expected `HashMap<&str, Vec<i32>>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:125:29
+    |
+125 |         s = decrypt(&mut s, emap, dmap);
+    |                             ^^^^
+    = note: expected struct `HashMap<&'static str, Vec<i32>>`
+                 found type `i32`
+note: expected `HashMap<&str, &str>`, found `i32`
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:125:35
+    |
+125 |         s = decrypt(&mut s, emap, dmap);
+    |                                   ^^^^
+    = note: expected struct `HashMap<&'static str, &'static str>`
+                 found type `i32`
+note: function defined here
+   --> /tmp/TestMochiToRustbifid-cipher4200168087/001/prog.rs:62:8
+    |
+62  | ...fn decrypt(text: &mut &'static str, emap: std::collections::HashMap<&'static str, Vec<i32>>, dmap: std::collections::HashMap<&'static str, &'static str>) -...
+    |       ^^^^^^^                          -------------------------------------------------------  -----------------------------------------------------------
+
+error: aborting due to 25 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0425.
+For more information about an error, try `rustc --explain E0277`.

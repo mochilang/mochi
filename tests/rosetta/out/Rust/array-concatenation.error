@@ -1,0 +1,50 @@
+rustc error: exit status 1
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustarray-concatenation3012522641/001/prog.rs:30:37
+   |
+30 |     println!("{}", concatInts(a, b).to_string());
+   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiToRustarray-concatenation3012522641/001/prog.rs:32:32
+   |
+32 |     let mut j: Vec<i32> = vec!["Crosby", "Stills", "Nash", "Young"];
+   |                                ^^^^^^^^ expected `i32`, found `&str`
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustarray-concatenation3012522641/001/prog.rs:33:36
+   |
+33 |     println!("{}", concatAny(i, j).to_string());
+   |                                    ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiToRustarray-concatenation3012522641/001/prog.rs:36:37
+   |
+36 |     println!("{}", concatInts(l, m).to_string());
+   |                                     ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error: aborting due to 4 previous errors
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.

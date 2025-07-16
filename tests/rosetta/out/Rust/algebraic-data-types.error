@@ -1,0 +1,1 @@
+compile error: unsupported cast to std::collections::HashMap<&'static str, i32>

@@ -1,0 +1,10 @@
+rustc error: exit status 1
+error[E0425]: cannot find function, tuple struct or tuple variant `FifteenPuzzleExample` in module `testpkg`
+ --> /tmp/TestMochiToRust15-puzzle-solver1661379427/001/prog.rs:8:31
+  |
+8 |     println!("{:?}", testpkg::FifteenPuzzleExample());
+  |                               ^^^^^^^^^^^^^^^^^^^^ not found in `testpkg`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0425`.

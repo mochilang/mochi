@@ -1,0 +1,270 @@
+rustc error: exit status 1
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:22:49
+   |
+22 |     println!("{}", format!("{}{}", "len(a) = ", a.len() as i32.to_string()));
+   |                                                 ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+22 |     println!("{}", format!("{}{}", "len(a) = ", (a.len() as i32).to_string()));
+   |                                                 +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:30:81
+   |
+30 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+30 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", (s.len() as i32).to_string()), "  cap(s) = "), cap_s.to_string()));
+   |                                                                                 +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:42:81
+   |
+42 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+42 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", (s.len() as i32).to_string()), "  cap(s) = "), cap_s.to_string()));
+   |                                                                                 +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:52:81
+   |
+52 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+52 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", (s.len() as i32).to_string()), "  cap(s) = "), cap_s.to_string()));
+   |                                                                                 +              +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:12:13
+   |
+12 |             s += xs[i as usize].to_string();
+   |             -^--^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |             | |
+   |             | `+` cannot be used to concatenate a `&str` with a `String`
+   |             cannot use `+=` on type `&str`
+   |
+   = note: string concatenation requires an owned `String` on the left
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:14:17
+   |
+14 |                 s += " ";
+   |                 -^^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:18:9
+   |
+18 |         s += "]";
+   |         -^^^^^^^
+   |         |
+   |         cannot use `+=` on type `&str`
+
+warning: unused variable: `i`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:47:9
+   |
+47 |     for i in 0..8 {
+   |         ^ help: if this is intentional, prefix it with an underscore: `_i`
+   |
+   = note: `#[warn(unused_variables)]` on by default
+
+error[E0382]: borrow of moved value: `a`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:24:5
+   |
+21 |     let mut a = vec![0, 0, 0, 0, 0];
+   |         ----- move occurs because `a` has type `Vec<i32>`, which does not implement the `Copy` trait
+22 |     println!("{}", format!("{}{}", "len(a) = ", a.len() as i32.to_string()));
+23 |     println!("{}", format!("{}{}", "a = ", listStr(a)));
+   |                                                    - value moved here
+24 |     a[0] = 3;
+   |     ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+23 |     println!("{}", format!("{}{}", "a = ", listStr(a.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `a`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:26:47
+   |
+21 |     let mut a = vec![0, 0, 0, 0, 0];
+   |         ----- move occurs because `a` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+25 |     println!("{}", format!("{}{}", "a = ", listStr(a)));
+   |                                                    - value moved here
+26 |     println!("{}", format!("{}{}", "a[0] = ", a[0].to_string()));
+   |                                               ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+25 |     println!("{}", format!("{}{}", "a = ", listStr(a.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `s`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:30:81
+   |
+27 |     let mut s = a[0..4].to_vec();
+   |         ----- move occurs because `s` has type `Vec<i32>`, which does not implement the `Copy` trait
+28 |     let mut cap_s = 5;
+29 |     println!("{}", format!("{}{}", "s = ", listStr(s)));
+   |                                                    - value moved here
+30 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+29 |     println!("{}", format!("{}{}", "s = ", listStr(s.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `s`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:34:5
+   |
+27 |     let mut s = a[0..4].to_vec();
+   |         ----- move occurs because `s` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+32 |     println!("{}", format!("{}{}", "s = ", listStr(s)));
+   |                                                    - value moved here
+33 |     a[0] = 22;
+34 |     s[0] = 22;
+   |     ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+32 |     println!("{}", format!("{}{}", "s = ", listStr(s.clone())));
+   |                                                     ++++++++
+
+error[E0382]: use of moved value: `s`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:37:16
+   |
+27 |     let mut s = a[0..4].to_vec();
+   |         ----- move occurs because `s` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+36 |     println!("{}", format!("{}{}", "s = ", listStr(s)));
+   |                                                    - value moved here
+37 |     s = append(s, 4);
+   |                ^ value used here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+36 |     println!("{}", format!("{}{}", "s = ", listStr(s.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `s`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:42:81
+   |
+27 |     let mut s = a[0..4].to_vec();
+   |         ----- move occurs because `s` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+41 |     println!("{}", format!("{}{}", "s = ", listStr(s)));
+   |                                                    - value moved here
+42 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+41 |     println!("{}", format!("{}{}", "s = ", listStr(s.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `a`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:43:5
+   |
+21 |     let mut a = vec![0, 0, 0, 0, 0];
+   |         ----- move occurs because `a` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+35 |     println!("{}", format!("{}{}", "a = ", listStr(a)));
+   |                                                    - value moved here
+...
+43 |     a[4] = -1;
+   |     ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+35 |     println!("{}", format!("{}{}", "a = ", listStr(a.clone())));
+   |                                                     ++++++++
+
+error[E0382]: borrow of moved value: `s`
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:52:81
+   |
+27 |     let mut s = a[0..4].to_vec();
+   |         ----- move occurs because `s` has type `Vec<i32>`, which does not implement the `Copy` trait
+...
+51 |     println!("{}", format!("{}{}", "s = ", listStr(s)));
+   |                                                    - value moved here
+52 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "len(s) = ", s.len() as i32.to_string()), "  cap(s) = "), cap_s.to_str...
+   |                                                                                 ^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `listStr` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiToRustarrays1853120291/001/prog.rs:8:20
+   |
+8  |     fn listStr(xs: Vec<i32>) -> &'static str {
+   |        -------     ^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+51 |     println!("{}", format!("{}{}", "s = ", listStr(s.clone())));
+   |                                                     ++++++++
+
+error: aborting due to 15 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0368, E0382.
+For more information about an error, try `rustc --explain E0368`.
