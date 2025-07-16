@@ -232,6 +232,11 @@ func (c *Compiler) emitAutoStructs() {
 			c.indent++
 			c.writeln("return getattr(self, key)")
 			c.indent--
+			c.writeln("")
+			c.writeln("def __contains__(self, key):")
+			c.indent++
+			c.writeln("return hasattr(self, key)")
+			c.indent--
 		}
 		c.indent--
 		c.writeln("")
@@ -916,6 +921,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if _, ok := paramTypes[i].(types.StructType); ok {
+				c.imports["dataclasses"] = "dataclasses"
+				v = fmt.Sprintf("dataclasses.replace(%s)", v)
+			}
 			args[i] = v
 			continue
 		}
@@ -1356,17 +1365,26 @@ func (c *Compiler) compileMapLiteral(m *parser.MapLiteral) (string, error) {
 	// check if this literal represents a struct type
 	expr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: &parser.PostfixExpr{Target: &parser.Primary{Map: m}}}}}
 	if st, ok := c.inferExprType(expr).(types.StructType); ok {
-		st = c.ensureStructName(st)
-		fields := make([]string, len(m.Items))
-		for i, it := range m.Items {
-			name, _ := identName(it.Key)
-			val, err := c.compileExpr(it.Value)
-			if err != nil {
-				return "", err
+		allIdent := true
+		for _, it := range m.Items {
+			if _, ok := identName(it.Key); !ok {
+				allIdent = false
+				break
 			}
-			fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
 		}
-		return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+		if allIdent {
+			st = c.ensureStructName(st)
+			fields := make([]string, len(m.Items))
+			for i, it := range m.Items {
+				name, _ := identName(it.Key)
+				val, err := c.compileExpr(it.Value)
+				if err != nil {
+					return "", err
+				}
+				fields[i] = fmt.Sprintf("%s=%s", sanitizeName(name), val)
+			}
+			return fmt.Sprintf("%s(%s)", sanitizeName(st.Name), strings.Join(fields, ", ")), nil
+		}
 	}
 	// treat as struct when all keys are identifiers even if type inference produced a map
 	keys := make([]string, len(m.Items))
@@ -1440,12 +1458,7 @@ func (c *Compiler) compileFetchExpr(f *parser.FetchExpr) (string, error) {
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
 	var pathStr string
 	if l.Path != nil {
-		p := *l.Path
-		if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
-			base := filepath.Dir(l.Pos.Filename)
-			p = filepath.Join(base, p)
-		}
-		pathStr = fmt.Sprintf("%q", p)
+		pathStr = fmt.Sprintf("%q", *l.Path)
 	} else {
 		pathStr = "None"
 	}

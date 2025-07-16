@@ -1,6 +1,13 @@
 ## Recent Enhancements (2025-07-16 18:00)
 - Removed generated code comparisons from tests to rely solely on runtime output.
 - Deprecated `.py.out` files in `tests/compiler/py`.
+## Recent Enhancements (2025-07-16 18:30)
+- Added `UNDEFINED` sentinel and updated `_fmt` so uninitialized values print `undefined`.
+- Dataclasses now define `__contains__` for membership checks.
+- Map literals with string keys remain dictionaries, fixing `len_map`.
+- `_save` JSON output no longer sorts keys and golden files updated.
+- `_load` resolves relative paths using `MOCHI_ROOT`; VM tests set this env var.
+- Struct arguments are copied using `dataclasses.replace` to preserve pass-by-value semantics.
 ## Recent Enhancements (2025-07-16 15:45)
 - Added golden tests for `tests/vm/valid` to verify compiled Python output.
 - `_save` helper now dumps JSON with sorted keys and compact separators, fixing `save_jsonl_stdout` mismatch.

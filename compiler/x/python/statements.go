@@ -201,7 +201,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) compileLet(s *parser.LetStmt) error {
 	name := sanitizeName(s.Name)
-	value := "None"
+	value := "UNDEFINED"
 	var typ types.Type
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
@@ -242,7 +242,7 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 				}
 			}
 		}
-		if value == "None" {
+		if value == "UNDEFINED" {
 			var err error
 			if typ != nil && !isAny(typ) {
 				value, err = c.compileExprHint(s.Value, typ)
@@ -299,7 +299,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 	if c.methodFields != nil && c.methodFields[s.Name] {
 		name = fmt.Sprintf("self.%s", name)
 	}
-	value := "None"
+	value := "UNDEFINED"
 	var typ types.Type
 	if c.env != nil {
 		if t, err := c.env.GetVar(s.Name); err == nil {
@@ -333,7 +333,7 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 				}
 			}
 		}
-		if value == "None" {
+		if value == "UNDEFINED" {
 			var err error
 			if typ != nil && !isAny(typ) {
 				value, err = c.compileExprHint(s.Value, typ)
@@ -761,6 +761,13 @@ func (c *Compiler) compileTypeDecl(t *parser.TypeDecl) error {
 						return err
 					}
 				}
+			}
+			if hasField {
+				c.writeln("")
+				c.writeln("def __contains__(self, key):")
+				c.indent++
+				c.writeln("return hasattr(self, key)")
+				c.indent--
 			}
 		}
 		c.indent--
