@@ -1,4 +1,9 @@
 # C# Compiler TODO
+## Recent Updates (2025-07-18 12:00)
+- Simplified VM golden tests to only verify runtime output and always write
+  generated C# files for reference.
+- Fixed TPC-DS golden test to use `.cs` not `.cs.out`.
+
 ## Recent Updates (2025-07-17 09:00)
 - Refactored VM golden tests to strip compiler headers and update README.
 - Removed obsolete `compiler_test.go` and `tpch_test.go` duplicates.
