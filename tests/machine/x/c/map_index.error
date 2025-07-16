@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/map_index.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/map_index.c:88:22: error: invalid initializer
+   88 |   map_string_int m = (tmp_item_t){.a = 1, .b = 2};
+      |                      ^

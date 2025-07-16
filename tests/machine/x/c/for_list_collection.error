@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/for_list_collection.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/for_list_collection.c:25:17: error: subscripted value is neither array nor pointer nor vector
+   25 |     int n = tmp1[tmp2];
+      |                 ^

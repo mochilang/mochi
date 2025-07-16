@@ -1,0 +1,6 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/test_block.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/test_block.c:16:27: error: ‘x’ undeclared (first use in this function)
+   16 |   test_addition_works_x = x;
+      |                           ^
+/workspace/mochi/tests/machine/x/c/test_block.c:16:27: note: each undeclared identifier is reported only once for each function it appears in

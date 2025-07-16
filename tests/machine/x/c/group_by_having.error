@@ -1,0 +1,15 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/group_by_having.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/group_by_having.c:193:21: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  193 |     tmp2.data[tmp3] = p.city;
+      |                     ^
+/workspace/mochi/tests/machine/x/c/group_by_having.c:203:26: warning: implicit declaration of function ‘people_list_t_create’ [-Wimplicit-function-declaration]
+  203 |     people_list_t tmp8 = people_list_t_create(_gp.items.len);
+      |                          ^~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/group_by_having.c:203:26: error: invalid initializer
+/workspace/mochi/tests/machine/x/c/group_by_having.c:228:20: warning: passing argument 1 of ‘_json_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  228 |     _json_string(it.city);
+      |                  ~~^~~~~
+/workspace/mochi/tests/machine/x/c/group_by_having.c:64:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   64 | static void _json_string(char *s) { printf("\"%s\"", s); }
+      |                          ~~~~~~^

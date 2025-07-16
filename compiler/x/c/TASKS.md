@@ -116,3 +116,6 @@ should compile and run successfully.
 - 2025-09-06 00:20 - Added VM golden tests for `tests/vm/valid` and included
   JSON helpers when compiling `save` expressions so `save_jsonl_stdout.mochi`
   compiles successfully.
+- 2025-09-07 - Fixed list printing for constant append results to use
+  `listItemExpr` which resolves indexing errors. Regenerated VM golden outputs
+  for the C backend.

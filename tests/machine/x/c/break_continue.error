@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/break_continue.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/break_continue.c:41:17: error: subscripted value is neither array nor pointer nor vector
+   41 |     int n = tmp1[tmp2];
+      |                 ^

@@ -1,0 +1,13 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/left_join_multi.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:92:7: warning: implicit declaration of function ‘result_item_list_t_create’ [-Wimplicit-function-declaration]
+   92 |       result_item_list_t_create(orders_len * customers_len * items_len);
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:92:7: error: invalid initializer
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:127:9: warning: implicit declaration of function ‘memcmp’ [-Wimplicit-function-declaration]
+  127 |     if (memcmp(&r.item, &(item_t){0}, sizeof(item_t)) == 0) {
+      |         ^~~~~~
+/workspace/mochi/tests/machine/x/c/left_join_multi.c:4:1: note: include ‘<string.h>’ or provide a declaration of ‘memcmp’
+    3 | #include <stdlib.h>
+  +++ |+#include <string.h>
+    4 | 
