@@ -1,0 +1,18 @@
+** (FunctionClauseError) no function clause matching in String.contains?/2    
+    
+    The following arguments were given to String.contains?/2:
+    
+        # 1
+        %{"a" => 1, "b" => 2}
+    
+        # 2
+        "a"
+    
+    Attempted function clauses (showing 2 out of 2):
+    
+        def contains?(+string+, +contents+) when -is_binary(string)- and -is_list(contents)-
+        def contains?(+string+, +contents+) when -is_binary(string)-
+    
+    (elixir 1.18.3) lib/string.ex:2831: String.contains?/2
+    /tmp/TestExCompiler_VMValid_Goldenmap_membership1908714553/001/main.exs:5: Main.main/0
+    /tmp/TestExCompiler_VMValid_Goldenmap_membership1908714553/001/main.exs:10: (file)
