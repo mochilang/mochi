@@ -84,3 +84,7 @@
 ### 2025-07-16 13:56 UTC
 - Removed auto-generated wrapper for user-defined main functions.
 - Ran limited Rosetta golden tests to regenerate TypeScript outputs.
+### 2025-07-16 17:30 UTC
+- Converted `vm_golden_test.go` to use `golden.Run` and removed the old
+  `machine_test.go` generator. Tests now only verify runtime output under
+  `tests/machine/x/ts`.
