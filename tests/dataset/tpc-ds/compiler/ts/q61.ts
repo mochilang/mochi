@@ -11,6 +11,7 @@ function test_TPCDS_Q61_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   sales = [
     {
       "promo": true,

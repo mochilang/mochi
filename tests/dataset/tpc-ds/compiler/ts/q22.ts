@@ -47,6 +47,7 @@ function test_TPCDS_Q22_average_inventory(): void {
 }
 
 function main(): void {
+  _order_init();
   inventory = [
     {
       "inv_item_sk": 1,

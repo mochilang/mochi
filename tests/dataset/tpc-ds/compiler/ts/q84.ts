@@ -14,6 +14,7 @@ function test_TPCDS_Q84_sample(): void {
 }
 
 function main(): void {
+  _order_init();
   customer = [
     {
       "id": 1,

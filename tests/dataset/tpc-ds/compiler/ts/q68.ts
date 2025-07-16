@@ -10,6 +10,7 @@ function test_TPCDS_Q68_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "item": 1,

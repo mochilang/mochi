@@ -43,6 +43,7 @@ function test_TPCDS_Q93_active_sales(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_item_sk": 1,
@@ -202,6 +203,20 @@ function _json(v: any): string {
     return x;
   }
   return JSON.stringify(_sort(v));
+}
+
+function _order_init(): void {
+  (globalThis as any)._channelOrder = undefined;
+  if (typeof Deno !== "undefined" && Deno?.env?.get) {
+    const env = Deno.env.get("CHANNEL_ORDER");
+    if (env) {
+      const m: Record<string, number> = {};
+      env.split(",").forEach((k, i) => {
+        m[k] = i;
+      });
+      (globalThis as any)._channelOrder = m;
+    }
+  }
 }
 
 function _query(src: any[], joins: any[], opts: any): any {

@@ -57,6 +57,7 @@ function test_TPCDS_Q26_demographic_averages(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "cs_sold_date_sk": 1,

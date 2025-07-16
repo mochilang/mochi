@@ -17,6 +17,7 @@ function test_TPCDS_Q1_result(): void {
 }
 
 function main(): void {
+  _order_init();
   store_returns = [
     {
       "sr_returned_date_sk": 1,

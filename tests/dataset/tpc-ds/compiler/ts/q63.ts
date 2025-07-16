@@ -10,6 +10,7 @@ function test_TPCDS_Q63_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   sales = [
     {
       "mgr": 1,

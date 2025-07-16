@@ -65,6 +65,7 @@ function test_TPCDS_Q91_returns(): void {
 }
 
 function main(): void {
+  _order_init();
   call_center = [
     {
       "cc_call_center_sk": 1,

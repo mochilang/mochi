@@ -19,6 +19,8 @@ import (
 func main() {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 
 	outDir := filepath.Join("tests", "dataset", "tpc-ds", "compiler", "ts")
 	_ = os.MkdirAll(outDir, 0o755)
@@ -68,8 +70,12 @@ func main() {
 			fmt.Fprintln(os.Stderr, "tmp write", q, err)
 			continue
 		}
-		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", tmp)
-		cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", tmp)
+		envVars := append(os.Environ(), "DENO_TLS_CA_STORE=system")
+		if q == "q76" {
+			envVars = append(envVars, "CHANNEL_ORDER=store,web,catalog")
+		}
+		cmd.Env = envVars
 		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
 			cmd.Stdin = bytes.NewReader(data)
 		}

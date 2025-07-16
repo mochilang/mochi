@@ -59,6 +59,7 @@ function test_TPCDS_Q94_shipping(): void {
 }
 
 function main(): void {
+  _order_init();
   web_sales = [
     {
       "ws_order_number": 1,

@@ -25,6 +25,7 @@ function test_TPCDS_Q70_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store = [
     {
       "s_store_sk": 1,

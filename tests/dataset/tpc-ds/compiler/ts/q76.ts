@@ -47,6 +47,7 @@ function test_TPCDS_Q76_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   date_dim = [
     {
       "d_date_sk": 1,

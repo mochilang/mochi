@@ -32,6 +32,7 @@ function test_TPCDS_Q46_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_ticket_number": 1,

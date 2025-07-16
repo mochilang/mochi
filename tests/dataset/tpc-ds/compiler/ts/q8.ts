@@ -21,6 +21,7 @@ function test_TPCDS_Q8_result(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_store_sk": 1,

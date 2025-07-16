@@ -29,6 +29,7 @@ function test_TPCDS_Q43_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   date_dim = [
     {
       "date_sk": 1,

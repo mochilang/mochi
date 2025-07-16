@@ -53,6 +53,7 @@ function test_TPCDS_Q23_cross_channel_sales(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_item_sk": 1,

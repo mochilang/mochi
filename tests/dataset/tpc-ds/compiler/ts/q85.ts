@@ -9,6 +9,7 @@ function test_TPCDS_Q85_sample(): void {
 }
 
 function main(): void {
+  _order_init();
   web_returns = [
     {
       "qty": 60,

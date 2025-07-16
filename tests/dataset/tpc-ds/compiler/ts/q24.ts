@@ -70,6 +70,7 @@ function test_TPCDS_Q24_customer_net_paid(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "ss_ticket_number": 1,

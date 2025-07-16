@@ -60,6 +60,7 @@ function test_TPCDS_Q16_shipping(): void {
 }
 
 function main(): void {
+  _order_init();
   catalog_sales = [
     {
       "cs_order_number": 1,

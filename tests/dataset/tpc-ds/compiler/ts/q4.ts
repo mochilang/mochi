@@ -23,6 +23,7 @@ function test_TPCDS_Q4_result(): void {
 }
 
 function main(): void {
+  _order_init();
   customer = [
     {
       "c_customer_sk": 1,

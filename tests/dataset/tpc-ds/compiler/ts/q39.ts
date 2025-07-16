@@ -31,6 +31,7 @@ function test_TPCDS_Q39_simplified(): void {
 }
 
 function main(): void {
+  _order_init();
   inventory = [
     {
       "inv_item_sk": 1,

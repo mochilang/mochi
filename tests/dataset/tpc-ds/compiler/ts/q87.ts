@@ -15,6 +15,7 @@ function test_TPCDS_Q87_sample(): void {
 }
 
 function main(): void {
+  _order_init();
   store_sales = [
     {
       "cust": "A",
