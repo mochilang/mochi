@@ -28,18 +28,48 @@ $orders = [
     ]
 ];
 $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($customers, $orders){return $o['customerId'] == $c['id'];}, 'left'=>true, 'right'=>true]], [ 'select' => function($o, $c) use ($customers, $orders){return ["order" => $o, "customer" => $c];} ]);
-var_dump("--- Outer Join using syntax ---");
+_print("--- Outer Join using syntax ---");
 foreach ($result as $row) {
     if ($row['order']) {
         if ($row['customer']) {
-            var_dump("Order", $row['order']['id'], "by", $row['customer']['name'], "- $", $row['order']['total']);
+            _print("Order", $row['order']['id'], "by", $row['customer']['name'], "- $", $row['order']['total']);
         } else {
-            var_dump("Order", $row['order']['id'], "by", "Unknown", "- $", $row['order']['total']);
+            _print("Order", $row['order']['id'], "by", "Unknown", "- $", $row['order']['total']);
         }
     } else {
-        var_dump("Customer", $row['customer']['name'], "has no orders");
+        _print("Customer", $row['customer']['name'], "has no orders");
     }
 }
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+
 function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }

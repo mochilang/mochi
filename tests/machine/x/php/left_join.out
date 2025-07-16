@@ -1,18 +1,3 @@
-string(17) "--- Left Join ---"
-string(5) "Order"
-int(100)
-string(8) "customer"
-array(2) {
-  ["id"]=>
-  int(1)
-  ["name"]=>
-  string(5) "Alice"
-}
-string(5) "total"
-int(250)
-string(5) "Order"
-int(101)
-string(8) "customer"
-NULL
-string(5) "total"
-int(80)
+--- Left Join ---
+Order 100 customer {"id":1,"name":"Alice"} total 250
+Order 101 customer  total 80

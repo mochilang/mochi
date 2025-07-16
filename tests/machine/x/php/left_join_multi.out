@@ -1,12 +1,3 @@
-string(23) "--- Left Join Multi ---"
-int(100)
-string(5) "Alice"
-array(2) {
-  ["orderId"]=>
-  int(100)
-  ["sku"]=>
-  string(1) "a"
-}
-int(101)
-string(3) "Bob"
-NULL
+--- Left Join Multi ---
+100 Alice {"orderId":100,"sku":"a"}
+101 Bob
