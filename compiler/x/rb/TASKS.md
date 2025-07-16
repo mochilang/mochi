@@ -13,6 +13,10 @@
 - 2025-07-16 15:30 - Added `vm_golden_test.go` for programs in `tests/vm/valid`
   to verify generated Ruby code and runtime output. Regenerated `.rb` and `.out`
   files with the `-update` flag.
+- 2025-07-18 12:00 - Tweaked `_group_by` runtime helper to always unwrap joined
+  rows which reduces `.error` files for dataset queries.
+- 2025-07-20 09:15 - Removed obsolete `compiler_test.go` in favor of
+  `vm_golden_test.go` and verified VM tests pass.
 
 ## Progress (2025-07-15 04:48)
 - Recompiled `tpc-h` queries `q4`-`q22` using the updated compiler.
