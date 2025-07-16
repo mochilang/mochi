@@ -40,7 +40,7 @@ const (
         (cond
           (.exists (java.io.File. candidate)) candidate
           (< i 5) (recur (.getParentFile dir) (inc i))
-          :else candidate))))`
+          :else candidate)))))`
 
 	helperCount = `(defn _count [v]
   (cond

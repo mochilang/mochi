@@ -16,11 +16,14 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var updateTPCH = flag.Bool("update-tpch", false, "update golden files")
 
 func shouldUpdate() bool {
-	f := flag.Lookup("update")
-	return f != nil && f.Value.String() == "true"
+	f := flag.Lookup("update-tpch")
+	if f == nil {
+		return false
+	}
+	return f.Value.String() == "true"
 }
 
 func TestCLJCompiler_TPCHQueries(t *testing.T) {

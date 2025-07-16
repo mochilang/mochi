@@ -20,6 +20,11 @@ Recent updates (2025-07-16 11:36):
 - Added VM golden tests for `tests/vm/valid` programs.
 - Fixed `_query` helper to pass correct arguments to `:select` functions.
 
+2025-07-19:
+- VM golden tests now compare output only and write results under `tests/machine/x/clj`.
+- Fixed `_rel_path` helper with missing parenthesis and removed unused JSON import in `save` handling.
+- Regenerated machine translations after fixes.
+
 Remaining work:
  - [ ] Support reading relative files for `load_yaml.mochi` during tests.
  - [ ] Expand dataset query coverage beyond TPCH Q1–Q6.
