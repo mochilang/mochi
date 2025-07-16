@@ -1,64 +1,112 @@
 <?php
-$people = [["name" => "Alice", "age" => 30, "city" => "Paris"], ["name" => "Bob", "age" => 15, "city" => "Hanoi"], ["name" => "Charlie", "age" => 65, "city" => "Paris"], ["name" => "Diana", "age" => 45, "city" => "Hanoi"], ["name" => "Eve", "age" => 70, "city" => "Paris"], ["name" => "Frank", "age" => 22, "city" => "Hanoi"]];
+$people = [
+    [
+        "name" => "Alice",
+        "age" => 30,
+        "city" => "Paris"
+    ],
+    [
+        "name" => "Bob",
+        "age" => 15,
+        "city" => "Hanoi"
+    ],
+    [
+        "name" => "Charlie",
+        "age" => 65,
+        "city" => "Paris"
+    ],
+    [
+        "name" => "Diana",
+        "age" => 45,
+        "city" => "Hanoi"
+    ],
+    [
+        "name" => "Eve",
+        "age" => 70,
+        "city" => "Paris"
+    ],
+    [
+        "name" => "Frank",
+        "age" => 22,
+        "city" => "Hanoi"
+    ]
+];
 $stats = (function() use ($people) {
-	$_src = (is_string($people) ? str_split($people) : $people);
-	$_groups = _group_by($_src, function($person) use ($people) { return $person['city']; });
-	$res = [];
-	foreach ($_groups as $g) {
-		$res[] = ["city" => $g->key, "count" => (is_array($g->Items) ? count($g->Items) : strlen($g->Items)), "avg_age" => (count((function() use ($g) {
-	$res = [];
-	foreach ((is_string($g->Items) ? str_split($g->Items) : $g->Items) as $p) {
-		$res[] = $p['age'];
-	}
-	return $res;
-})()) ? array_sum((function() use ($g) {
-	$res = [];
-	foreach ((is_string($g->Items) ? str_split($g->Items) : $g->Items) as $p) {
-		$res[] = $p['age'];
-	}
-	return $res;
-})()) / count((function() use ($g) {
-	$res = [];
-	foreach ((is_string($g->Items) ? str_split($g->Items) : $g->Items) as $p) {
-		$res[] = $p['age'];
-	}
-	return $res;
-})()) : 0)];
-	}
-	return $res;
+    $groups = [];
+    foreach ($people as $person) {
+        $_k = json_encode($person['city']);
+        $groups[$_k][] = $person;
+    }
+    $result = [];
+    foreach ($groups as $_k => $__g) {
+        $_key = json_decode($_k, true);
+        $g = ['key'=>$_key,'items'=> $__g];
+        $result[] = [
+    "city" => $g['key'],
+    "count" => count($g['items']),
+    "avg_age" => _avg((function() use ($g) {
+        $result = [];
+        foreach ($g['items'] as $p) {
+            $result[] = $p['age'];
+        }
+        return $result;
+    })())
+];
+    }
+    return $result;
 })();
 _print("--- People grouped by city ---");
-foreach ((is_string($stats) ? str_split($stats) : $stats) as $s) {
-	_print($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
+foreach ($stats as $s) {
+    _print($s['city'], ": count =", $s['count'], ", avg_age =", $s['avg_age']);
+}
+function _avg($v) {
+    if (is_array($v) && array_key_exists('items', $v)) {
+        $v = $v['items'];
+    } elseif (is_object($v) && property_exists($v, 'items')) {
+        $v = $v->items;
+    }
+    if (!is_array($v)) {
+        throw new Exception('avg() expects list or group');
+    }
+    if (!$v) return 0;
+    $sum = 0;
+    foreach ($v as $it) {
+        if (is_int($it) || is_float($it)) {
+            $sum += $it;
+        } else {
+            throw new Exception('avg() expects numbers');
+        }
+    }
+    return $sum / count($v);
 }
 
-class _Group {
-    public $key;
-    public $Items;
-    function __construct($key) { $this->key = $key; $this->Items = []; }
-}
-function _group_by($src, $keyfn) {
-    $groups = [];
-    $order = [];
-    foreach ($src as $it) {
-        $key = $keyfn($it);
-        if (is_array($key)) { $key = (object)$key; }
-        $ks = is_object($key) ? json_encode($key) : strval($key);
-        if (!isset($groups[$ks])) {
-            $groups[$ks] = new _Group($key);
-            $order[] = $ks;
-        }
-        $groups[$ks]->Items[] = $it;
-    }
-    $res = [];
-    foreach ($order as $ks) { $res[] = $groups[$ks]; }
-    return $res;
-}
 function _print(...$args) {
-    $parts = [];
+    $first = true;
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
     }
-    echo implode(' ', $parts), PHP_EOL;
+    echo PHP_EOL;
 }
+?>

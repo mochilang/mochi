@@ -1,62 +1,42 @@
 <?php
 $data = [1, 2];
-$flag = ((is_object((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()) && property_exists((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})(), 'Items')) ? count((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()->Items) : (is_array((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()) ? count((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()) : (is_string((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()) ? strlen((function() use ($data) {
-	$res = [];
-	foreach ((is_string($data) ? str_split($data) : $data) as $x) {
-		if (!(($x == 1))) { continue; }
-		$res[] = $x;
-	}
-	return $res;
-})()) : 0))) > 0;
-_print($flag);
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+$flag = count((function() use ($data) {
+    $result = [];
+    foreach ($data as $x) {
+        if ($x == 1) {
+            $result[] = $x;
+        }
     }
-    echo implode(' ', $parts), PHP_EOL;
+    return $result;
+})()) > 0;
+_print($flag);
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
 }
+?>

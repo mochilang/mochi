@@ -1,16 +1,36 @@
 <?php
-function mochi_inc($x) {
-	return ((is_array($x) && is_array($k)) ? array_merge($x, $k) : ((is_string($x) || is_string($k)) ? ($x . $k) : ($x + $k)));
-}
-
 $k = 2;
-_print(mochi_inc(3));
-
-function _print(...$args) {
-    $parts = [];
-    foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
-    }
-    echo implode(' ', $parts), PHP_EOL;
+function inc($x) {
+    return $x + $k;
 }
+_print(inc(3));
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+?>

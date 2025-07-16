@@ -1,5 +1,13 @@
 <?php
-_print((int)("1995"));
+$testpkg = [
+    'Add' => function($a, $b) { return $a + $b; },
+    'Pi' => 3.14,
+    'Answer' => 42,
+    'FifteenPuzzleExample' => function() { return 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd'; },
+];
+_print($testpkg['Add'](2, 3));
+_print($testpkg['Pi']);
+_print($testpkg['Answer']);
 function _print(...$args) {
     $first = true;
     foreach ($args as $a) {
