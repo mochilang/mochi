@@ -4,7 +4,6 @@ package zigcode_test
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,13 +16,6 @@ import (
 	"mochi/runtime/vm"
 	"mochi/types"
 )
-
-var update = flag.Bool("update", false, "update golden files")
-
-func shouldUpdate() bool {
-	f := flag.Lookup("update")
-	return f != nil && f.Value.String() == "true"
-}
 
 // TestZigCompiler_TPCH_Golden compiles TPCH queries q1 through q22,
 // compares the generated Zig code with golden files, builds the result

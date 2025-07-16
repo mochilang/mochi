@@ -1,3 +1,5 @@
+//go:build slow
+
 package racket
 
 const runtimeHelpers = `(define (_date_number s)
