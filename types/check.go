@@ -513,6 +513,11 @@ func Check(prog *parser.Program, env *Env) []error {
 		Return: StringType{},
 		Pure:   true,
 	}, false)
+	env.SetVar("padStart", FuncType{
+		Params: []Type{StringType{}, IntType{}, StringType{}},
+		Return: StringType{},
+		Pure:   true,
+	}, false)
 	env.SetVar("substr", FuncType{
 		Params: []Type{StringType{}, IntType{}, IntType{}},
 		Return: StringType{},
@@ -2444,6 +2449,7 @@ var builtinArity = map[string]int{
 	"push":      2,
 	"first":     1,
 	"substring": 3,
+	"padStart":  3,
 	"indexOf":   2,
 	"sha256":    1,
 	"num":       1,
@@ -2709,6 +2715,29 @@ func checkBuiltinCall(name string, args []Type, pos lexer.Position) error {
 				args[i] = IntType{}
 			default:
 				return errArgTypeMismatch(pos, i, IntType{}, args[i])
+			}
+		}
+		return nil
+	case "padStart":
+		if len(args) != 3 {
+			return errArgCount(pos, name, 3, len(args))
+		}
+		if _, ok := args[0].(StringType); !ok {
+			if _, ok := args[0].(AnyType); !ok {
+				return fmt.Errorf("padStart() expects string, got %v", args[0])
+			}
+		}
+		switch args[1].(type) {
+		case IntType, AnyType:
+			// ok
+		case BigIntType:
+			args[1] = IntType{}
+		default:
+			return errArgTypeMismatch(pos, 1, IntType{}, args[1])
+		}
+		if _, ok := args[2].(StringType); !ok {
+			if _, ok := args[2].(AnyType); !ok {
+				return errArgTypeMismatch(pos, 2, StringType{}, args[2])
 			}
 		}
 		return nil

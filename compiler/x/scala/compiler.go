@@ -1575,6 +1575,17 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return "", fmt.Errorf("substring expects 3 args")
 		}
 		return fmt.Sprintf("%s.substring(%s, %s)", args[0], args[1], args[2]), nil
+	case "padStart":
+		if len(args) != 3 {
+			return "", fmt.Errorf("padStart expects 3 args")
+		}
+		fill := args[2]
+		if strings.HasPrefix(fill, "\"") && strings.HasSuffix(fill, "\"") && len([]rune(fill[1:len(fill)-1])) == 1 {
+			fill = fmt.Sprintf("'%s'", fill[1:len(fill)-1])
+		} else {
+			fill = fmt.Sprintf("%s.charAt(0)", fill)
+		}
+		return fmt.Sprintf("%s.reverse.padTo(%s, %s).reverse", args[0], args[1], fill), nil
 	case "values":
 		if len(args) != 1 {
 			return "", fmt.Errorf("values expects 1 arg")
