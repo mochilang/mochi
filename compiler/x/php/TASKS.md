@@ -19,6 +19,7 @@
 - 2025-07-17 00:00 - Added golden tests for VM valid programs to ensure PHP backend parity.
 
 - 2025-07-17 12:00 - VM valid golden tests now use `tests/machine/x/php` for outputs and duplicate compiler test removed.
+- 2025-07-17 12:30 - Golden tests verify runtime output only, dropping code comparisons.
 
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
