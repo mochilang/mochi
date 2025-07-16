@@ -1,0 +1,32 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:6: error: cannot find symbol
+    static String enc = base64Encode(msg);
+                                     ^
+  symbol:   variable msg
+  location: class Base64DecodeData
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:25: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class M0123456789
+  location: class Base64DecodeData
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:25: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                                 ^
+  symbol:   class M0123456789
+  location: class Base64DecodeData
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:96: error: incompatible types: int cannot be converted to String
+            val = (int)(Integer.parseInt((val / 2)));
+                                              ^
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:113: error: for-each not applicable to expression type
+        for (Number ch : text) {
+                         ^
+  required: array or java.lang.Iterable
+  found:    String
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:114: error: incompatible types: Number cannot be converted to String
+            bin = bin + toBinary(ord(ch), 8);
+                                     ^
+/tmp/TestMochiToJavabase64-decode-data1416187134/001/Base64DecodeData.java:141: error: incompatible types: char cannot be converted to String
+            String ch = enc.charAt(i);
+                                  ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+7 errors

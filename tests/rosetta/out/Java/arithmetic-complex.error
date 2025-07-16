@@ -1,8 +1,14 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+javac error: exit status 1
+/tmp/TestMochiToJavaarithmetic-complex962223138/001/ArithmeticComplex.java:41: error: incompatible types: String cannot be converted to int
+        int s = "(" + String.valueOf(a.re);
+                    ^
+/tmp/TestMochiToJavaarithmetic-complex962223138/001/ArithmeticComplex.java:43: error: incompatible types: String cannot be converted to int
+            s = (int)(s + "+" + String.valueOf(a.im) + "i)");
+                     ^
+/tmp/TestMochiToJavaarithmetic-complex962223138/001/ArithmeticComplex.java:46: error: incompatible types: String cannot be converted to int
+            s = (int)(s + String.valueOf(a.im) + "i)");
+                     ^
+/tmp/TestMochiToJavaarithmetic-complex962223138/001/ArithmeticComplex.java:48: error: incompatible types: int cannot be converted to String
+        return s;
+               ^
+4 errors

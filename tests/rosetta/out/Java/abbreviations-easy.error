@@ -1,0 +1,52 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:44: error: incompatible types: String cannot be converted to Number
+            res = res + ((Number)xs.get(i)).doubleValue();
+                                       ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:56: error: incompatible types: String cannot be converted to List<String>
+            List<String> w = words.get(wi);
+                                      ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:61: error: incompatible types: String cannot be converted to List<String>
+                List<String> cmd = commands.get(ci);
+                                               ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:63: error: cannot find symbol
+                    Object c = upper(cmd);
+                               ^
+  symbol:   method upper(List<String>)
+  location: class AbbreviationsEasy
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:64: error: cannot find symbol
+                    Object ww = upper(w);
+                                ^
+  symbol:   method upper(List<String>)
+  location: class AbbreviationsEasy
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:65: error: cannot find symbol
+                    if (Objects.equals(c.substring(0, wlen), ww)) {
+                                        ^
+  symbol:   method substring(int,int)
+  location: variable c of type Object
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:66: error: incompatible types: Object cannot be converted to String
+                        results.add(c);
+                                    ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:81: error: incompatible types: String cannot be converted to int
+        int table = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp ";
+                    ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:82: error: incompatible types: int cannot be converted to String
+        List<String> commands = fields(table);
+                                       ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:88: error: incompatible types: String cannot be converted to List<String>
+            List<String> cmd = commands.get(i);
+                                           ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:90: error: cannot find symbol
+                String ch = cmd.substring(j, j + 1);
+                               ^
+  symbol:   method substring(int,int)
+  location: variable cmd of type List<String>
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:105: error: incompatible types: String cannot be converted to Number
+            out1 = ((Number)out1 + ((Number)padRight(words.get(k), results.get(k).size())).doubleValue()).doubleValue() + " ";
+                            ^
+/tmp/TestMochiToJavaabbreviations-easy1680860767/001/AbbreviationsEasy.java:105: error: cannot find symbol
+            out1 = ((Number)out1 + ((Number)padRight(words.get(k), results.get(k).size())).doubleValue()).doubleValue() + " ";
+                                                                                 ^
+  symbol:   method size()
+  location: class String
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+13 errors

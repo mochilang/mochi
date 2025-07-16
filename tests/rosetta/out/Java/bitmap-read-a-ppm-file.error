@@ -1,0 +1,71 @@
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:44: error: cannot find symbol
+    static Bitmap bm = readP3(ppmtxt);
+                              ^
+  symbol:   variable ppmtxt
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:63: error: incompatible types: List<Pixel> cannot be converted to List<List<Pixel>>
+        List<List<Pixel>> row = rows.get(y);
+                                        ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:64: error: incompatible types: Pixel cannot be converted to List<Pixel>
+        row.set(x, p);
+                   ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:65: error: incompatible types: List<List<Pixel>> cannot be converted to List<Pixel>
+        rows.set(y, row);
+                    ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:69: error: incompatible types: Object cannot be converted to Pixel
+        return ((List)b.data.get(y)).get(x);
+                                        ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:76: error: cannot find symbol
+            Object ch = substr(s, i, i + 1);
+                        ^
+  symbol:   method substr(String,int,int)
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:94: error: cannot find symbol
+            Object ch = substr(s, i, i + 1);
+                        ^
+  symbol:   method substr(String,int,int)
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:119: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ^
+  symbol:   class M0123456789
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:119: error: cannot find symbol
+        M0123456789 digits = new M0123456789(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+                                 ^
+  symbol:   class M0123456789
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:134: error: incompatible types: String cannot be converted to List<String>
+            List<String> line = lines.get(i);
+                                         ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:135: error: cannot find symbol
+            if (line.size() > 0 && Objects.equals(substr(line, 0, 1), "#")) {
+                                                  ^
+  symbol:   method substr(List<String>,int,int)
+  location: class BitmapReadAPpmFile
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:139: error: incompatible types: List<String> cannot be converted to String
+            List<String> parts = splitWS(line);
+                                         ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:190: error: incompatible types: possible lossy conversion from double to int
+                setPx(b, x, y, new Pixel(l, l, l));
+                                         ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:211: error: cannot find symbol
+        int digits = String.valueOf(max).size();
+                                        ^
+  symbol:   method size()
+  location: class String
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:212: error: incompatible types: String cannot be converted to int
+        int out = "P3\n# generated from Bitmap.writeppmp3\n" + String.valueOf(w) + " " + String.valueOf(h) + "\n" + String.valueOf(max) + "\n";
+                                                                                                                                        ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:222: error: incompatible types: String cannot be converted to int
+            out = (int)(out + line + "\n");
+                       ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:225: error: incompatible types: int cannot be converted to String
+        return out;
+               ^
+/tmp/TestMochiToJavabitmap-read-a-ppm-file3716752206/001/BitmapReadAPpmFile.java:233: error: incompatible types: String cannot be converted to int
+    int ppmtxt = "P3\n" + "# feep.ppm\n" + "4 4\n" + "15\n" + " 0  0  0    0  0  0    0  0  0   15  0 15\n" + " 0  0  0    0 15  7    0  0  0    0  0  0\n" + " 0  0  0    0  0  0    0 15  7    0  0  0\n" + "15  0 15    0  0  0    0  0  0    0  0  0\n";
+                 ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+18 errors

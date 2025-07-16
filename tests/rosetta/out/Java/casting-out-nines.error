@@ -1,0 +1,61 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:86: error: incompatible types: BaseBeginEndKaprekar cannot be converted to List<BaseBeginEndKaprekar>
+        List<BaseBeginEndKaprekar> tc = testCases.get(idx);
+                                                     ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: incompatible types: String cannot be converted to Number
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                        ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: incompatible types: String cannot be converted to int
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                               ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: cannot find symbol
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                     ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: incompatible types: String cannot be converted to int
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                                                      ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: bad operand types for binary operator '+'
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                                    ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: cannot find symbol
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                                                                                                          ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: incompatible types: String cannot be converted to int
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                                                                                                                                           ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:87: error: bad operand types for binary operator '+'
+        System.out.println(((Number)((Number)((Number)((Number)((Number)"\nTest case base = " + ((Number)String.valueOf(tc.get("base"))).doubleValue()).doubleValue() + ", begin = ").doubleValue() + ((Number)tc.get("begin")).doubleValue()).doubleValue() + ", end = ").doubleValue() + ((Number)tc.get("end")).doubleValue()).doubleValue() + ":");
+                                                                                                                                                                                                                                                                                         ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:88: error: incompatible types: String cannot be converted to int
+        List<String> s = subset(tc.get("base"), tc.get("begin"), tc.get("end"));
+                                       ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:88: error: incompatible types: String cannot be converted to int
+        List<String> s = subset(tc.get("base"), tc.get("begin"), tc.get("end"));
+                                                       ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:88: error: incompatible types: String cannot be converted to int
+        List<String> s = subset(tc.get("base"), tc.get("begin"), tc.get("end"));
+                                                                        ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:90: error: incompatible types: String cannot be converted to int
+        System.out.println("Kaprekar:" + ((Number)String.valueOf(tc.get("kaprekar"))).doubleValue());
+                                                                        ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:94: error: incompatible types: String cannot be converted to int
+        while (i < ((Number)tc.get("kaprekar").size()).doubleValue()) {
+                                   ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:95: error: incompatible types: String cannot be converted to int
+            List<BaseBeginEndKaprekar> k = ((Map<?,?>)((List)tc.get("kaprekar"))).get(i);
+                                                                    ^
+/tmp/TestMochiToJavacasting-out-nines753715179/001/CastingOutNines.java:95: error: incompatible types: CAP#1 cannot be converted to List<BaseBeginEndKaprekar>
+            List<BaseBeginEndKaprekar> k = ((Map<?,?>)((List)tc.get("kaprekar"))).get(i);
+                                                                                     ^
+  where CAP#1 is a fresh type-variable:
+    CAP#1 extends Object from capture of ?
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+16 errors

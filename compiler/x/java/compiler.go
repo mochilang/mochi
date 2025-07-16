@@ -2438,7 +2438,11 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				case "boolean":
 					val = fmt.Sprintf("Boolean.parseBoolean(%s)", val)
 				default:
-					return "", fmt.Errorf("unsupported cast to %s", t)
+					if strings.Contains(t, "<") && strings.HasSuffix(t, ">") {
+						val = fmt.Sprintf("(%s)%s", t, val)
+					} else {
+						return "", fmt.Errorf("unsupported cast to %s", t)
+					}
 				}
 			}
 		case op.Index != nil:

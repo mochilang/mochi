@@ -1,0 +1,42 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:18: error: cannot find symbol
+    static List<any> concatAny(List<any> a, List<any> b) {
+                                    ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:18: error: cannot find symbol
+    static List<any> concatAny(List<any> a, List<any> b) {
+                                                 ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:18: error: cannot find symbol
+    static List<any> concatAny(List<any> a, List<any> b) {
+                ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:19: error: cannot find symbol
+        List<any> out = Arrays.asList();
+             ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:20: error: cannot find symbol
+        for (any v : a) {
+             ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:23: error: cannot find symbol
+        for (any v : b) {
+             ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:35: error: cannot find symbol
+    List<any> i = Arrays.asList(1, 2, 3);
+         ^
+  symbol:   class any
+  location: class ArrayConcatenation
+/tmp/TestMochiToJavaarray-concatenation860771291/001/ArrayConcatenation.java:36: error: cannot find symbol
+    List<any> j = Arrays.asList("Crosby", "Stills", "Nash", "Young");
+         ^
+  symbol:   class any
+  location: class ArrayConcatenation
+8 errors

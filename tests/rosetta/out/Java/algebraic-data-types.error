@@ -1,1 +1,220 @@
-compile error: unsupported cast to Map<String,any>
+javac error: exit status 1
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:6: error: cannot find symbol
+    static any tr = null;
+           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:7: error: cannot find symbol
+    static Map<String,any> node(String cl, any le, int aa, any ri) {
+                                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:7: error: cannot find symbol
+    static Map<String,any> node(String cl, any le, int aa, any ri) {
+                                                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:7: error: cannot find symbol
+    static Map<String,any> node(String cl, any le, int aa, any ri) {
+                      ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:10: error: cannot find symbol
+    static String treeString(any t) {
+                             ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:17: error: cannot find symbol
+    static any balance(any t) {
+                       ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:17: error: cannot find symbol
+    static any balance(any t) {
+           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:67: error: cannot find symbol
+    static any ins(any tr, int x) {
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:67: error: cannot find symbol
+    static any ins(any tr, int x) {
+           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:79: error: cannot find symbol
+    static any insert(any tr, int x) {
+                      ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:79: error: cannot find symbol
+    static any insert(any tr, int x) {
+           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:8: error: cannot find symbol
+        return new ClLeAaRi(cl, le, aa, ri);
+                   ^
+  symbol:   class ClLeAaRi
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:14: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:14: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                                        ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: incompatible types: String cannot be converted to Number
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                              ^
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                               ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: bad operand types for binary operator '+'
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                              ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                      ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: bad operand types for binary operator '+'
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                     ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: cannot find symbol
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                                                                                                 ^
+  symbol:   method doubleValue()
+  location: class String
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:15: error: bad operand types for binary operator '+'
+        return ((Number)((Number)((Number)((Number)((Number)((Number)((Number)"T(" + ((Number)m.get("cl")).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("le"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)String.valueOf(m.get("aa"))).doubleValue()).doubleValue() + ", ").doubleValue() + ((Number)treeString(m.get("ri"))).doubleValue()).doubleValue() + ")";
+                                                                                                                                                                                                                                                                                                                                                ^
+  first type:  Number
+  second type: double
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:21: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:21: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                                        ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:25: error: cannot find symbol
+        Map<String,any> le = m.get("le");
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:26: error: cannot find symbol
+        Map<String,any> ri = m.get("ri");
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:28: error: cannot find symbol
+            Map<String,any> leMap = (Map<String,any>)le;
+                       ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:28: error: cannot find symbol
+            Map<String,any> leMap = (Map<String,any>)le;
+                                                ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:30: error: cannot find symbol
+                Map<String,any> lele = leMap.get("le");
+                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:32: error: cannot find symbol
+                    Map<String,any> leleMap = (Map<String,any>)lele;
+                               ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:32: error: cannot find symbol
+                    Map<String,any> leleMap = (Map<String,any>)lele;
+                                                          ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:37: error: cannot find symbol
+                Map<String,any> leri = leMap.get("ri");
+                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:39: error: cannot find symbol
+                    Map<String,any> leriMap = (Map<String,any>)leri;
+                               ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:39: error: cannot find symbol
+                    Map<String,any> leriMap = (Map<String,any>)leri;
+                                                          ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:47: error: cannot find symbol
+            Map<String,any> riMap = (Map<String,any>)ri;
+                       ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:47: error: cannot find symbol
+            Map<String,any> riMap = (Map<String,any>)ri;
+                                                ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:49: error: cannot find symbol
+                Map<String,any> rile = riMap.get("le");
+                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:51: error: cannot find symbol
+                    Map<String,any> rileMap = (Map<String,any>)rile;
+                               ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:51: error: cannot find symbol
+                    Map<String,any> rileMap = (Map<String,any>)rile;
+                                                          ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:56: error: cannot find symbol
+                Map<String,any> riri = riMap.get("ri");
+                           ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:58: error: cannot find symbol
+                    Map<String,any> ririMap = (Map<String,any>)riri;
+                               ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:58: error: cannot find symbol
+                    Map<String,any> ririMap = (Map<String,any>)riri;
+                                                          ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:80: error: cannot find symbol
+        any t = ins(tr, x);
+        ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:84: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                   ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+/tmp/TestMochiToJavaalgebraic-data-types3427458827/001/AlgebraicDataTypes.java:84: error: cannot find symbol
+        Map<String,any> m = (Map<String,any>)t;
+                                        ^
+  symbol:   class any
+  location: class AlgebraicDataTypes
+44 errors

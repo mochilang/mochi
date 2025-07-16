@@ -1,8 +1,13 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30
-
- 14 |   if target == repl { return }
-    |                              ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+javac error: exit status 1
+/tmp/TestMochiToJavabitmap-flood-fill821508602/001/BitmapFloodFill.java:8: error: incompatible types: Object cannot be converted to List<List<String>>
+        List<List<String>> target = ((List)grid.get(y)).get(x);
+                                                           ^
+/tmp/TestMochiToJavabitmap-flood-fill821508602/001/BitmapFloodFill.java:12: error: incompatible types: Object is not a functional interface
+        Object ff = (px, py) -> {
+                    ^
+/tmp/TestMochiToJavabitmap-flood-fill821508602/001/BitmapFloodFill.java:25: error: cannot find symbol
+        ff(x, y);
+        ^
+  symbol:   method ff(int,int)
+  location: class BitmapFloodFill
+3 errors

@@ -1,0 +1,9 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaaks-test-for-primes2037673291/001/AksTestForPrimes.java:18: error: incompatible types: int cannot be converted to String
+            coef = (int)(Integer.parseInt((coef * i / (p - i + 1))));
+                                                    ^
+/tmp/TestMochiToJavaaks-test-for-primes2037673291/001/AksTestForPrimes.java:46: error: incompatible types: int cannot be converted to String
+            c = (int)(Integer.parseInt((c * (n - i) / (i + 1))));
+                                                    ^
+Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
+2 errors

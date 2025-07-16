@@ -1,0 +1,22 @@
+javac error: exit status 1
+/tmp/TestMochiToJavacamel-case-and-snake-case394287142/001/CamelCaseAndSnakeCase.java:42: error: cannot find symbol
+                out = out + lower(ch);
+                            ^
+  symbol:   method lower(String)
+  location: class CamelCaseAndSnakeCase
+/tmp/TestMochiToJavacamel-case-and-snake-case394287142/001/CamelCaseAndSnakeCase.java:48: error: cannot find symbol
+                out = out + upper(ch);
+                            ^
+  symbol:   method upper(String)
+  location: class CamelCaseAndSnakeCase
+/tmp/TestMochiToJavacamel-case-and-snake-case394287142/001/CamelCaseAndSnakeCase.java:85: error: cannot find symbol
+                out = out + lower(ch);
+                            ^
+  symbol:   method lower(String)
+  location: class CamelCaseAndSnakeCase
+/tmp/TestMochiToJavacamel-case-and-snake-case394287142/001/CamelCaseAndSnakeCase.java:89: error: cannot find symbol
+                out = out + lower(ch);
+                            ^
+  symbol:   method lower(String)
+  location: class CamelCaseAndSnakeCase
+4 errors

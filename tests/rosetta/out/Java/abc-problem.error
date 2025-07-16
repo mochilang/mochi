@@ -1,0 +1,28 @@
+javac error: exit status 1
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:32: error: cannot find symbol
+        Object c = lower(word.substring(0, 1));
+                   ^
+  symbol:   method lower(String)
+  location: class AbcProblem
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:35: error: incompatible types: String cannot be converted to List<String>
+            List<String> b = blks.get(i);
+                                     ^
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:36: error: cannot find symbol
+            if (Objects.equals(c, lower(((List)b).subList(0, 1))) || Objects.equals(c, lower(((List)b).subList(1, 2)))) {
+                                  ^
+  symbol:   method lower(List)
+  location: class AbcProblem
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:36: error: cannot find symbol
+            if (Objects.equals(c, lower(((List)b).subList(0, 1))) || Objects.equals(c, lower(((List)b).subList(1, 2)))) {
+                                                                                       ^
+  symbol:   method lower(List)
+  location: class AbcProblem
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:55: error: incompatible types: Object is not a functional interface
+        return w -> canSpell(w, bl);
+               ^
+/tmp/TestMochiToJavaabc-problem2576131713/001/AbcProblem.java:60: error: cannot find symbol
+            System.out.println(word + " " + String.valueOf(sp(word)));
+                                                           ^
+  symbol:   method sp(String)
+  location: class AbcProblem
+6 errors
