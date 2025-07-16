@@ -67,3 +67,7 @@
 ### 2025-07-16 11:41 UTC
 - Added nil check in `compileExpr` to prevent panics on malformed ASTs. Failing
   Rosetta examples now emit `.error` files instead of crashing the test suite.
+
+### 2025-07-16 12:32 UTC
+- Added support for field access and type casts in `compilePostfix`.
+- Ran Rosetta golden tests on a subset of tasks; fewer `.error` files generated.

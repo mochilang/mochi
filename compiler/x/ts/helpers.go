@@ -352,3 +352,19 @@ func contains(sl []string, s string) bool {
 func (c *Compiler) resolveTypeRef(t *parser.TypeRef) types.Type {
 	return types.ResolveTypeRef(t, c.env)
 }
+
+func fieldType(t types.Type, field string) types.Type {
+	switch tt := t.(type) {
+	case types.StructType:
+		if ft, ok := tt.Fields[field]; ok {
+			return ft
+		}
+	case types.UnionType:
+		for _, v := range tt.Variants {
+			if ft, ok := v.Fields[field]; ok {
+				return ft
+			}
+		}
+	}
+	return types.AnyType{}
+}
