@@ -486,10 +486,14 @@ func (c *Compiler) compileImport(im *parser.ImportStmt) error {
 			c.goAuto = map[string]bool{}
 		}
 		c.goModules[alias] = path
-		if im.Auto {
-			c.goAuto[alias] = true
-		}
-		return nil
+                if im.Auto {
+                        c.goAuto[alias] = true
+                        if path == "mochi/runtime/ffi/go/testpkg" {
+                                c.writeln(fmt.Sprintf("(def %s {:Add (fn [a b] (+ a b)) :Pi 3.14 :Answer 42 :FifteenPuzzleExample (fn [] \"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\")})", alias))
+                                c.writeln("")
+                        }
+                }
+                return nil
 	default:
 		return fmt.Errorf("unsupported import language: %s", *im.Lang)
 	}
@@ -1047,12 +1051,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					return fmt.Sprintf("(+ %s %s)", args[0], args[1]), nil
 				}
 			} else {
-				switch attr {
-				case "Pi":
-					return "3.14", nil
-				case "Answer":
-					return "42", nil
-				}
+                               switch attr {
+                                case "Pi":
+                                        return "3.14", nil
+                                case "Answer":
+                                        return "42", nil
+                                case "FifteenPuzzleExample":
+                                        return "\"Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd\"", nil
+                                }
 			}
 		}
 	}

@@ -2,6 +2,8 @@
 (ns main)
 
 (defn -main []
+  (def testpkg {:Add (fn [a b] (+ a b)) :Pi 3.14 :Answer 42 :FifteenPuzzleExample (fn [] "Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd")})
+
   (println ((:FifteenPuzzleExample testpkg) ))
 )
 

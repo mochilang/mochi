@@ -30,7 +30,7 @@ fun doMove(m: int): bool {
   let r = isValidMove(m)
   if !r["ok"] { return false }
   let i = empty
-  let j = r["idx"]
+  let j = r["idx"] as int
   let tmp = board[i]
   board[i] = board[j]
   board[j] = tmp
@@ -105,7 +105,8 @@ fun playOneMove() {
 
 fun play() {
   print("Starting board:")
-  while !quit && !isSolved() {
+  while !quit {
+    if isSolved() { break }
     print("")
     printBoard()
     playOneMove()
