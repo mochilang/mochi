@@ -1,17 +1,17 @@
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
    16 |   decltype(o.id) orderId;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
    17 |   decltype(c.name) customerName;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:17:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
    18 |   decltype(o.total) total;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldeninner_join3933203797/001/prog.cpp:32:42: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:18:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldeninner_join130693007/001/prog.cpp:32:42: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    32 |         __items.push_back(Result{o.id, c.name, o.total});
       |                                        ~~^~~~
       |                                          |

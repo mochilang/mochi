@@ -1,8 +1,8 @@
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:13: error: no match for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp: In function ‘int main()’:
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:13: error: no match for ‘operator<<’ (operand types are ‘std::ostream’ {aka ‘std::basic_ostream<char>’} and ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’})
    24 |   std::cout << m[std::string("b")] << std::endl;
 In file included from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:3:
+                 from /tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:3:
 /usr/include/c++/13/ostream:110:7: note: candidate: ‘std::basic_ostream<_CharT, _Traits>::__ostream_type& std::basic_ostream<_CharT, _Traits>::operator<<(__ostream_type& (*)(__ostream_type&)) [with _CharT = char; _Traits = std::char_traits<char>; __ostream_type = std::basic_ostream<char>]’
   110 |       operator<<(__ostream_type& (*__pf)(__ostream_type&))
       |       ^~~~~~~~
@@ -122,14 +122,14 @@ In file included from /usr/include/c++/13/bits/basic_string.h:47,
   761 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
       |     ^~~~~~~~
 /usr/include/c++/13/string_view:761:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   ‘std::any’ is not derived from ‘std::basic_string_view<_CharT, _Traits>’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/bits/basic_string.h:4032:5: note: candidate: ‘template<class _CharT, class _Traits, class _Alloc> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)’
  4032 |     operator<<(basic_ostream<_CharT, _Traits>& __os,
       |     ^~~~~~~~
 /usr/include/c++/13/bits/basic_string.h:4032:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’} is not derived from ‘const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 In file included from /usr/include/c++/13/bits/memory_resource.h:38,
@@ -138,7 +138,7 @@ In file included from /usr/include/c++/13/bits/memory_resource.h:38,
   124 |     operator<<(byte __b, _IntegerType __shift) noexcept
       |     ^~~~~~~~
 /usr/include/c++/13/cstddef:124:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:8: note:   cannot convert ‘std::cout’ (type ‘std::ostream’ {aka ‘std::basic_ostream<char>’}) to type ‘std::byte’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:8: note:   cannot convert ‘std::cout’ (type ‘std::ostream’ {aka ‘std::basic_ostream<char>’}) to type ‘std::byte’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |   ~~~~~^~~~
 In file included from /usr/include/c++/13/bits/ios_base.h:46:
@@ -146,77 +146,77 @@ In file included from /usr/include/c++/13/bits/ios_base.h:46:
   339 |     operator<<(basic_ostream<_CharT, _Traits>& __os, const error_code& __e)
       |     ^~~~~~~~
 /usr/include/c++/13/system_error:339:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const std::error_code&’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const std::error_code&’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:554:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, _CharT)’
   554 |     operator<<(basic_ostream<_CharT, _Traits>& __out, _CharT __c)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:554:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::any’)
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   deduced conflicting types for parameter ‘_CharT’ (‘char’ and ‘std::any’)
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:564:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, char)’
   564 |     operator<<(basic_ostream<_CharT, _Traits>& __out, char __c)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:564:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘char’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘char’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:570:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, char)’
   570 |     operator<<(basic_ostream<char, _Traits>& __out, char __c)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:570:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘char’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘char’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:581:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, signed char)’
   581 |     operator<<(basic_ostream<char, _Traits>& __out, signed char __c)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:581:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘signed char’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘signed char’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:586:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, unsigned char)’
   586 |     operator<<(basic_ostream<char, _Traits>& __out, unsigned char __c)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:586:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘unsigned char’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘unsigned char’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:645:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const _CharT*)’
   645 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const _CharT* __s)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:645:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   mismatched types ‘const _CharT*’ and ‘std::any’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   mismatched types ‘const _CharT*’ and ‘std::any’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/bits/ostream.tcc:307:5: note: candidate: ‘template<class _CharT, class _Traits> std::basic_ostream<_CharT, _Traits>& std::operator<<(basic_ostream<_CharT, _Traits>&, const char*)’
   307 |     operator<<(basic_ostream<_CharT, _Traits>& __out, const char* __s)
       |     ^~~~~~~~
 /usr/include/c++/13/bits/ostream.tcc:307:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const char*’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const char*’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:662:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const char*)’
   662 |     operator<<(basic_ostream<char, _Traits>& __out, const char* __s)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:662:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const char*’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const char*’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:675:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const signed char*)’
   675 |     operator<<(basic_ostream<char, _Traits>& __out, const signed char* __s)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:675:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const signed char*’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const signed char*’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:680:5: note: candidate: ‘template<class _Traits> std::basic_ostream<char, _Traits>& std::operator<<(basic_ostream<char, _Traits>&, const unsigned char*)’
   680 |     operator<<(basic_ostream<char, _Traits>& __out, const unsigned char* __s)
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:680:5: note:   template argument deduction/substitution failed:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const unsigned char*’
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34: note:   cannot convert ‘m.std::unordered_map<std::__cxx11::basic_string<char>, std::any>::operator[](std::__cxx11::basic_string<char>(((const char*)"b"), std::allocator<char>()))’ (type ‘std::unordered_map<std::__cxx11::basic_string<char>, std::any>::mapped_type’ {aka ‘std::any’}) to type ‘const unsigned char*’
    24 |   std::cout << m[std::string("b")] << std::endl;
       |                                  ^
 /usr/include/c++/13/ostream:801:5: note: candidate: ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&)’
@@ -224,5 +224,5 @@ In file included from /usr/include/c++/13/bits/ios_base.h:46:
       |     ^~~~~~~~
 /usr/include/c++/13/ostream:801:5: note:   template argument deduction/substitution failed:
 /usr/include/c++/13/ostream: In substitution of ‘template<class _Ostream, class _Tp> _Ostream&& std::operator<<(_Ostream&&, const _Tp&) [with _Ostream = std::basic_ostream<char>&; _Tp = std::any]’:
-/tmp/TestCPPCompiler_VMValid_Goldenmap_index574214993/001/prog.cpp:24:34:   required from here
+/tmp/TestCPPCompiler_VMValid_Goldenmap_index134616665/001/prog.cpp:24:34:   required from here
 /usr/include/c++/13/ostream:801:5: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
