@@ -107,12 +107,5 @@ Compiled programs: 98/100 successful.
 ## Status
 2 programs failed.
 
-### TPCH Queries
-- [x] q1.mochi
-- [x] q2.mochi
-
 ## Remaining tasks
 - [ ] Fix failing examples
-- [ ] Investigate `outer_join.mochi` runtime error
-- [ ] Handle data file path for `load_yaml.mochi`
-- [ ] Compile additional TPCH queries

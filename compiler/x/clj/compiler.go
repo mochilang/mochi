@@ -1091,8 +1091,7 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					expr = fmt.Sprintf("(get %s %s)", expr, start)
 					t = mt.Value
 				} else {
-					c.use("_indexList")
-					expr = fmt.Sprintf("(_indexList %s %s)", expr, start)
+					expr = fmt.Sprintf("(get %s %s)", expr, start)
 					t = types.AnyType{}
 				}
 			}
