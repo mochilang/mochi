@@ -57,6 +57,7 @@ type Compiler struct {
 	definedLoad  bool
 	usesAppend   bool
 	usesAvg      bool
+	usesAny      bool
 
 	unions   map[string]*unionInfo
 	variants map[string]*variantInfo
@@ -96,6 +97,7 @@ func New() *Compiler {
 		placeholders:   map[string]string{},
 		usesAppend:     false,
 		usesAvg:        false,
+		usesAny:        false,
 		nextStructName: "",
 	}
 }
@@ -317,6 +319,9 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	}
 	if bytes.Contains(src, []byte("std::unique_ptr")) {
 		add("#include <memory>")
+	}
+	if bytes.Contains(src, []byte("std::any")) || c.usesAny {
+		add("#include <any>")
 	}
 
 	var out bytes.Buffer
@@ -1641,6 +1646,28 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			} else {
 				elemType = fmt.Sprintf("decltype(%s)", elems[0])
 			}
+			for _, e := range elems[1:] {
+				t := inferExprType(e)
+				if t == "" {
+					if s := c.structLiteralType(e); s != "" {
+						t = s
+					} else if v := c.varStruct[e]; v != "" {
+						if idx := strings.Index(v, "{"); idx != -1 {
+							t = v[:idx]
+						} else {
+							t = v
+						}
+					}
+				}
+				if t == "string" {
+					t = "std::string"
+				}
+				if t != elemType {
+					elemType = "std::any"
+					c.usesAny = true
+					break
+				}
+			}
 		}
 		return fmt.Sprintf("std::vector<%s>{%s}", elemType, strings.Join(elems, ", ")), nil
 	case p.Map != nil:
@@ -1800,6 +1827,30 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				valType = "std::string"
 			} else {
 				valType = fmt.Sprintf("decltype(%s)", vals[0])
+			}
+			baseType := valType
+			for _, v := range vals[1:] {
+				vt := ""
+				if strings.HasPrefix(v, "std::string") {
+					vt = "std::string"
+				} else if strings.HasPrefix(v, "std::unordered_map") || strings.HasPrefix(v, "std::map") {
+					if idx := strings.Index(v, "{"); idx != -1 {
+						vt = v[:idx]
+					} else {
+						vt = v
+					}
+				} else if t := c.structLiteralType(v); t != "" {
+					vt = t
+				} else if c.vars[v] == "string" {
+					vt = "std::string"
+				} else {
+					vt = fmt.Sprintf("decltype(%s)", v)
+				}
+				if vt != baseType {
+					valType = "std::any"
+					c.usesAny = true
+					break
+				}
 			}
 		}
 		pairs := []string{}
@@ -3328,6 +3379,9 @@ func (c *Compiler) compileType(t *parser.TypeRef) (string, error) {
 			return "int", nil
 		case "string":
 			return "std::string", nil
+		case "any":
+			c.usesAny = true
+			return "std::any", nil
 		default:
 			if _, ok := c.unions[*t.Simple]; ok {
 				return *t.Simple + "*", nil
