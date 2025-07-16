@@ -18,6 +18,8 @@
 - 2025-07-16 11:43 – empty list literals now infer `Any` type only when no
   annotation is provided. Typed variables emit plain `[]` so Swift infers the
   element type from the declaration.
+- 2025-07-16 15:30 – implemented golden tests for `tests/vm/valid` and added
+  `_toMapSlice` helper so `save` works with struct arrays.
 
 ## Remaining Work
 - [ ] Generate safer optional handling in join queries

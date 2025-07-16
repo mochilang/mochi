@@ -1,4 +1,4 @@
-line 46: exit status 1
-    }
-    return _tmp.map { g in ["part": g.key, "total": g.items.map { r in r["value"]! }.reduce(0, +)] }
-}()
+line 52: exit status 1
+var suppliers = [Supplier(id: 1, nation: 1), Supplier(id: 2, nation: 2)]
+var partsupp = [Partsupp(cost: 10.0, part: 100, qty: 2, supplier: 1), Partsupp(cost: 20.0, part: 100, qty: 1, supplier: 2), Partsupp(cost: 5.0, part: 200, qty: 3, supplier: 1)]
+var filtered = ({

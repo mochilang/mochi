@@ -1,0 +1,4 @@
+line 14: exit status 1
+			if !(n % 2 == 0) { continue }
+			_res.append(["n": n, "l": l])
+		}

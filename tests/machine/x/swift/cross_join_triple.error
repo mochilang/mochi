@@ -1,0 +1,4 @@
+line 16: exit status 1
+			for b in bools {
+				_res.append(["n": n, "l": l, "b": b])
+			}

@@ -1,0 +1,4 @@
+line 26: exit status 1
+			if !(o.customerId == c.id) { continue }
+			_res.append(["orderId": o.id, "customerName": c.name, "total": o.total])
+		}

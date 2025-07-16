@@ -1,4 +1,4 @@
 line 35: exit status 1
-	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Auto2) != nil }.count] }
+	return _tmp.map { g in ["name": g.key, "count": g.items.filter { r in (r["o"] as! Order) != nil }.count] }
 }())
 print("--- Group Left Join ---")

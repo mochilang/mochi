@@ -1,0 +1,4 @@
+line 32: exit status 1
+				if !(o.id == i.orderId) { continue }
+				_res.append(["name": c.name, "sku": i.sku])
+			}

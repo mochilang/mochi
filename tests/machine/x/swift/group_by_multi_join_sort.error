@@ -1,4 +1,4 @@
-line 81: exit status 1
-	return _tmp.map { g in ["c_custkey": g.key.c_custkey, "c_name": g.key.c_name, "revenue": g.items.map { x in ((x["l"] as! Auto4)["l_extendedprice"] as! Double) * (1 - ((x["l"] as! Auto4)["l_discount"] as! Double)) }.reduce(0, +), "c_acctbal": g.key.c_acctbal, "n_name": g.key.n_name, "c_address": g.key.c_address, "c_phone": g.key.c_phone, "c_comment": g.key.c_comment] }
+line 92: exit status 1
+	return _tmp.map { g in ["c_custkey": (g.key["c_custkey"] as! Int), "c_name": (g.key["c_name"] as! String), "revenue": _sum(g.items.map { x in ((x["l"] as! Lineitem)["l_extendedprice"] as! Int) * (1 - ((x["l"] as! Lineitem)["l_discount"] as! Int)) }), "c_acctbal": (g.key["c_acctbal"] as! Int), "n_name": (g.key["n_name"] as! String), "c_address": (g.key["c_address"] as! String), "c_phone": (g.key["c_phone"] as! String), "c_comment": (g.key["c_comment"] as! String)] }
 }())
 print(result)

@@ -3025,7 +3025,8 @@ func (c *compiler) saveExpr(s *parser.SaveExpr) (string, error) {
 		opts = v
 	}
 	c.helpers["_save"] = true
-	return fmt.Sprintf("_save(%s, path: %s, opts: %s)", src, path, opts), nil
+	c.helpers["_toMapSlice"] = true
+	return fmt.Sprintf("_save(_toMapSlice(%s) ?? [], path: %s, opts: %s)", src, path, opts), nil
 }
 
 func isVarRef(e *parser.Expr, name string) bool {
@@ -3696,6 +3697,15 @@ func (c *compiler) emitRuntime() {
 			}
 		}
 	}
+	if c.helpers["_toMapSlice"] {
+		for _, line := range strings.Split(helperToMapSlice, "\n") {
+			if line == "" {
+				c.buf.WriteByte('\n')
+			} else {
+				c.writeln(line)
+			}
+		}
+	}
 	if c.helpers["_group"] {
 		for _, line := range strings.Split(helperGroup, "\n") {
 			if line == "" {
@@ -3914,6 +3924,24 @@ const helperStructMap = `func _structMap(_ v: Any) -> [String:Any]? {
             if let k = child.label { m[k] = child.value }
         }
         return m
+    }
+    return nil
+}`
+
+const helperToMapSlice = `func _toMapSlice(_ v: Any) -> [[String:Any]]? {
+    if let arr = v as? [[String:Any]] { return arr }
+    if let arr = v as? [Any] {
+        var out: [[String:Any]] = []
+        for item in arr {
+            if let m = item as? [String:Any] {
+                out.append(m)
+            } else if let sm = _structMap(item) {
+                out.append(sm)
+            } else {
+                return nil
+            }
+        }
+        return out
     }
     return nil
 }`
