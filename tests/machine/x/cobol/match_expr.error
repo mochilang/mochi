@@ -1,4 +1,1 @@
 unsupported expression at line 3
-
-let label = match x {
-  1 => "one"

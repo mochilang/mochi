@@ -375,7 +375,7 @@ func (c *Compiler) addVar(name string, typ *parser.TypeRef, value *parser.Expr, 
 
 func (c *Compiler) addFun(fn *parser.FunStmt) error {
 	name := "FN_" + cobolName(strings.ReplaceAll(fn.Name, "-", "_"))
-	res := name + "_RES"
+	res := cobolName(name + "_RES")
 	if !c.hasVar(res) {
 		c.vars = append(c.vars, varDecl{name: res, pic: "PIC 9", val: "0"})
 	}
@@ -748,7 +748,7 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 		line += " USING " + strings.Join(args, " ")
 	}
 	c.writeln(line)
-	return name + "_RES", nil
+	return cobolName(name + "_RES"), nil
 }
 
 func isLiteralExpr(e *parser.Expr) bool {

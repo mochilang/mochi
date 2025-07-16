@@ -1,8 +1,0 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob:10: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob:11: error: 'FN_ADD_RES' is not defined
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob: in paragraph 'FN_ADD':
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob:15: error: syntax error, unexpected PROCEDURE
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob:16: error: 'A' is not defined
-/workspace/mochi/tests/machine/x/cobol/fun_call.cob:16: error: 'B' is not defined
-

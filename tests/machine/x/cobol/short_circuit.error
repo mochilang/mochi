@@ -1,9 +1,6 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:10: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:11: error: 'FN_BOOM_RES' is not defined
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:11: error: invalid conditional expression
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:16: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:17: error: invalid conditional expression
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob: in paragraph 'FN_BOOM':
-/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:25: error: syntax error, unexpected PROCEDURE
-
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob:10: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob:11: error: invalid conditional expression
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob:16: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob:17: error: invalid conditional expression
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob: in paragraph 'FN_BOOM':
+/tmp/TestCobolCompiler_VMValid_Goldenshort_circuit3895996157/001/prog.cob:25: error: syntax error, unexpected PROCEDURE

@@ -1,8 +1,6 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:13: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:14: error: 'FN_MIN_RES' is not defined
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:15: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:16: error: 'FN_MAX_RES' is not defined
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:13: error: 'FN_MIN' is not defined
-/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:15: error: 'FN_MAX' is not defined
-
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:14: error: 'FN-MIN-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:15: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:16: error: 'FN-MAX-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:13: error: 'FN_MIN' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:15: error: 'FN_MAX' is not defined

@@ -1,12 +1,10 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:7: error: syntax error, unexpected NUMBERS
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:8: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:9: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:10: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:11: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:12: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:13: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:14: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:15: error: level number must begin with 01 or 77
-/workspace/mochi/tests/machine/x/cobol/break_continue.cob:16: error: level number must begin with 01 or 77
-
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:7: error: syntax error, unexpected NUMBERS
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:8: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:9: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:10: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:11: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:12: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:13: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:14: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:15: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenbreak_continue1720821713/001/prog.cob:16: error: level number must begin with 01 or 77

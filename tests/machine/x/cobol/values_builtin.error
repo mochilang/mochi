@@ -1,5 +1,3 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:13: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:14: error: 'FN_VALUES_RES' is not defined
-/workspace/mochi/tests/machine/x/cobol/values_builtin.cob:13: error: 'FN_VALUES' is not defined
-
+/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin1520676362/001/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin1520676362/001/prog.cob:14: error: 'FN-VALUES-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenvalues_builtin1520676362/001/prog.cob:13: error: 'FN_VALUES' is not defined

@@ -1,4 +1,2 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/map_literal_dynamic.cob:10: error: syntax error, unexpected Identifier
-/workspace/mochi/tests/machine/x/cobol/map_literal_dynamic.cob:11: error: syntax error, unexpected Identifier
-
+/tmp/TestCobolCompiler_VMValid_Goldenmap_literal_dynamic3100221958/001/prog.cob:10: error: syntax error, unexpected Identifier
+/tmp/TestCobolCompiler_VMValid_Goldenmap_literal_dynamic3100221958/001/prog.cob:11: error: syntax error, unexpected Identifier
