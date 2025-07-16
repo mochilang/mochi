@@ -1,0 +1,91 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:127:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:107:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:36:13: Error: Type 'any' not found.
+Map<String, any> bwt(String s) {
+            ^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:9:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:23:50: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                                 ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:23:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                             ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:24:54: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (arr[j].toString().compareTo(arr[(j as num) + 1].toString()) > 0) {
+                                                     ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:26:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:29:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:31:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:47:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:53:61: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    last = last + table[i].toString().substring((le as num) - 1, le);
+                                                            ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:54:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:65:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:71:55: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      table[i] = r.toString().substring(i, (i as num) + 1) + table[i];
+                                                      ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:72:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:75:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:79:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    if (table[i].toString().substring((le as num) - 1, le) == etx) {
+                                                  ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:80:59: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      return table[i].toString().substring(1, (le as num) - 1);
+                                                          ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:82:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:91:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:100:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      out = (out as num) + (ch as num);
+                         ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:102:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:128:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:152:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:181:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:186:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/burrows-wheeler-transform.dart:190:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

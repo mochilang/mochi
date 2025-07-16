@@ -1,0 +1,70 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/benfords-law.dart:100:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/benfords-law.dart:96:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/benfords-law.dart:3:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return double.parse((int.parse(x)));
+                                 ^
+../../tests/rosetta/out/Dart/benfords-law.dart:3:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return double.parse((int.parse(x)));
+                           ^
+../../tests/rosetta/out/Dart/benfords-law.dart:9:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+../../tests/rosetta/out/Dart/benfords-law.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/benfords-law.dart:27:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      s = s.toString().substring(0, (dot as num) + 4);
+                                                 ^
+../../tests/rosetta/out/Dart/benfords-law.dart:53:31: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+    res = List.from(res)..add(b);
+                              ^
+../../tests/rosetta/out/Dart/benfords-law.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = (b as num) + (a as num);
+                   ^
+../../tests/rosetta/out/Dart/benfords-law.dart:57:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/benfords-law.dart:72:20: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return int.parse(x);
+                   ^
+../../tests/rosetta/out/Dart/benfords-law.dart:80:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                        ^
+../../tests/rosetta/out/Dart/benfords-law.dart:80:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                                                  ^
+../../tests/rosetta/out/Dart/benfords-law.dart:80:64: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      counts[(d as num) - 1] = (counts[(d as num) - 1] as num) + 1;
+                                                               ^
+../../tests/rosetta/out/Dart/benfords-law.dart:89:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var obs = (double.parse(counts[i])) / (double.parse(total));
+                                  ^
+../../tests/rosetta/out/Dart/benfords-law.dart:89:57: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var obs = (double.parse(counts[i])) / (double.parse(total));
+                                                        ^
+../../tests/rosetta/out/Dart/benfords-law.dart:90:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    var line = '  ' + (i as num) + 1.toString() + '  ' + padFloat3(obs, 9) + '  ' + padFloat3(preds[i], 8);
+                         ^
+../../tests/rosetta/out/Dart/benfords-law.dart:92:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/benfords-law.dart:101:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/benfords-law.dart:125:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/benfords-law.dart:154:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/benfords-law.dart:159:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/benfords-law.dart:163:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

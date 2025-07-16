@@ -1,0 +1,40 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/anti-primes.dart:36:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/anti-primes.dart:17:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/anti-primes.dart:8:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  while (i.toString().compareTo(n / 2.toString()) <= 0) {
+                                      ^
+../../tests/rosetta/out/Dart/anti-primes.dart:8:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  while (i.toString().compareTo(n / 2.toString()) <= 0) {
+                                  ^
+../../tests/rosetta/out/Dart/anti-primes.dart:10:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      count = (count as num) + 1;
+                             ^
+../../tests/rosetta/out/Dart/anti-primes.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anti-primes.dart:28:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      count = (count as num) + 1;
+                             ^
+../../tests/rosetta/out/Dart/anti-primes.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anti-primes.dart:37:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/anti-primes.dart:61:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/anti-primes.dart:90:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/anti-primes.dart:95:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/anti-primes.dart:99:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,13 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/character-codes-3.dart:62:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/character-codes-3.dart:91:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/character-codes-3.dart:96:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/character-codes-3.dart:100:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

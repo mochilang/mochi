@@ -1,0 +1,40 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:59:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:43:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:13:14: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return mid;
+             ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:16:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      left = (mid as num) + 1;
+                          ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:17:13: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      ans = mid;
+            ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:32:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s = (s as num) + (n / (f as num) as num);
+                     ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:35:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        s = (s as num) + (f as num);
+                       ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:38:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    f = (f as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:60:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:84:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:113:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:118:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/arithmetic-rational.dart:122:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

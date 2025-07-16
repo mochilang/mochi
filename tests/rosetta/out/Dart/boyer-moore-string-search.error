@@ -1,0 +1,55 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:71:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:54:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:9:63: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  while (i.toString().compareTo((hlen as num) - (nlen as num).toString()) <= 0) {
+                                                              ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:9:47: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  while (i.toString().compareTo((hlen as num) - (nlen as num).toString()) <= 0) {
+                                              ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:10:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (h.toString().substring(i, (i as num) + (nlen as num)) == n) {
+                                             ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:30:54: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      result = List.from(result)..add((start as num) + (idx as num));
+                                                     ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:31:54: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      start = ((start as num) + (idx as num) as num) + (nlen as num);
+                                                     ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:48:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:59:23: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    print('text' + (i as num) + 1.toString() + ' = ' + texts[i]);
+                      ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:60:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:66:54: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    print('Found ' + patterns[j] + ' in \'text' + (j as num) + 1.toString() + '\' at indexes ' + display(idxs));
+                                                     ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:67:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    j = (j as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:72:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:96:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:125:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:130:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/boyer-moore-string-search.dart:134:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

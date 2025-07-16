@@ -1,0 +1,213 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/achilles-numbers.dart:143:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:34: Error: String starting with ' must end with '.
+First 30 strong Achilles numbers:');
+                                 ^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:170:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:33: Error: String starting with ' must end with '.
+Number of Achilles numbers with:');
+                                ^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:170:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:143:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:181:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:119:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) * 10;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:25:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+        nn = (nn as num) / (i as num);
+                         ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:27:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      tot = (tot as num) - ((tot as num) / (i as num) as num);
+                         ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:32:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 2;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:35:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    tot = (tot as num) - ((tot as num) / (nn as num) as num);
+                       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:52:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      pps[p] = true;
+          ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:54:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:73:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          achilles[p] = true;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:76:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      a = (a as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:78:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    b = (b as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:95:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:97:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+    res = (res as num) + ([min] as num);
+                       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:102:28: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+        out = (out as num) + ([tmp[j]] as num);
+                           ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:104:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:1: Error: Expected ',' before this.
+First 30 strong Achilles numbers:');
+^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:7: Error: Expected ',' before this.
+First 30 strong Achilles numbers:');
+      ^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:10: Error: Expected ',' before this.
+First 30 strong Achilles numbers:');
+         ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:17: Error: Expected ',' before this.
+First 30 strong Achilles numbers:');
+                ^^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:26: Error: Expected ',' before this.
+First 30 strong Achilles numbers:');
+                         ^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:145:3: Error: Expected ',' before this.
+  List<int> strong = [];
+  ^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:145:11: Error: A comparison expression can't be an operand of another comparison expression.
+Try putting parentheses around one of the comparisons.
+  List<int> strong = [];
+          ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:145:13: Error: Undefined name 'strong'.
+  List<int> strong = [];
+            ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:145:20: Error: Can't assign to this.
+  List<int> strong = [];
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:1: Error: Undefined name 'First'.
+First 30 strong Achilles numbers:');
+^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:10: Error: Undefined name 'strong'.
+First 30 strong Achilles numbers:');
+         ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:144:17: Error: Undefined name 'Achilles'.
+First 30 strong Achilles numbers:');
+                ^^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:143:8: Error: Too many positional arguments: 1 allowed, but 6 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:151:17: Error: Undefined name 'strong'.
+      strong = (strong as num) + ([ach[idx]] as num);
+                ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:151:7: Error: Setter not found: 'strong'.
+      strong = (strong as num) + ([ach[idx]] as num);
+      ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:161:25: Error: Undefined name 'strong'.
+      line = line + pad(strong[i], 5);
+                        ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:1: Error: Expected ',' before this.
+Number of Achilles numbers with:');
+^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:8: Error: Expected ',' before this.
+Number of Achilles numbers with:');
+       ^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:11: Error: Expected ',' before this.
+Number of Achilles numbers with:');
+          ^^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:20: Error: Expected ',' before this.
+Number of Achilles numbers with:');
+                   ^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:28: Error: Expected ',' before this.
+Number of Achilles numbers with:');
+                           ^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:28: Error: 'with' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+Number of Achilles numbers with:');
+                           ^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:1: Error: Undefined name 'Number'.
+Number of Achilles numbers with:');
+^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:8: Error: Undefined name 'of'.
+Number of Achilles numbers with:');
+       ^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:11: Error: Undefined name 'Achilles'.
+Number of Achilles numbers with:');
+          ^^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:20: Error: Undefined name 'numbers'.
+Number of Achilles numbers with:');
+                   ^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:170:8: Error: Too many positional arguments: 1 allowed, but 5 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:171:33: Error: Expected ';' after this.
+Number of Achilles numbers with:');
+                                ^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:124:31: Error: The method 'call' isn't defined for the class 'bool?'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+  for (var k in achSet['keys']()) {
+                              ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:125:24: Error: A value of type 'num' can't be assigned to a variable of type 'List<int>'.
+ - 'List' is from 'dart:core'.
+    ach = (ach as num) + ([k] as num);
+                       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:138:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:139:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:152:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      count = (count as num) + 1;
+                             ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:154:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    idx = (idx as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:165:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:166:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:175:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var c = counts[(d as num) - 2];
+                              ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:177:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:182:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:206:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:235:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:240:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/achilles-numbers.dart:244:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

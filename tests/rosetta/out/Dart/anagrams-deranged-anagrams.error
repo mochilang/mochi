@@ -1,0 +1,69 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:82:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:52:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:12:57: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    arr = List.from(arr)..add(s.substring(i, (i as num) + 1));
+                                                        ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:19:50: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                                 ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:19:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                             ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:20:54: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (arr[j].toString().compareTo(arr[(j as num) + 1].toString()) > 0) {
+                                                     ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:22:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:23:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:25:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:27:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    m = (m as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:32:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (arr[i] as num);
+                       ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:33:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:44:35: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                                  ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:44:69: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (a.substring(i, (i as num) + 1) == b.substring(i, (i as num) + 1)) {
+                                                                    ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:47:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:77:23: Error: The argument type 'List<String>?' can't be assigned to the parameter type 'Iterable<dynamic>' because 'List<String>?' is nullable and 'Iterable<dynamic>' isn't.
+ - 'List' is from 'dart:core'.
+ - 'Iterable' is from 'dart:core'.
+    m[k] = List.from(m[k])..add(w);
+                      ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:83:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:107:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:136:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:141:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/anagrams-deranged-anagrams.dart:145:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

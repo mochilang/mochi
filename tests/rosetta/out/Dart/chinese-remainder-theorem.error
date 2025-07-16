@@ -1,0 +1,37 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:10:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [g, (y1 as num) - ((b / a) * (x1 as num) as num), x1];
+                         ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:20:23: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+    return (x as num) + m;
+                      ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:29:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    prod = (prod as num) * n[i];
+                         ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:38:33: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var inv = modInv((p as num) % (ni as num), ni);
+                                ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:39:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    x = (x as num) + (((ai as num) * (inv as num) as num) * (p as num) as num);
+                   ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:40:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:42:21: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return (x as num) % (prod as num);
+                    ^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:76:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:105:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:110:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/chinese-remainder-theorem.dart:114:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

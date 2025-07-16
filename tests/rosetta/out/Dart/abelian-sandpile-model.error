@@ -1,0 +1,37 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:79:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:71:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:12:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:15:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:63:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      line = (line as num) + (chars[v] as num);
+                           ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:64:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      col = (col as num) + 1;
+                         ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:67:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    row = (row as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:80:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:104:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:133:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:138:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model.dart:142:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

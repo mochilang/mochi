@@ -1,0 +1,26 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/associative-array-creation.dart:31:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:18:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:19:24: Error: The value 'null' can't be assigned to a variable of type 'Map<String, int>' because 'Map<String, int>' is not nullable.
+ - 'Map' is from 'dart:core'.
+  Map<String, int> x = null;
+                       ^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:32:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:56:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:85:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:90:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/associative-array-creation.dart:94:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

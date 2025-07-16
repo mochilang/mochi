@@ -1,0 +1,46 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/chaos-game.dart:4:38: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+var height = int.parse((double.parse(width) * 0.86602540378));
+                                     ^
+../../tests/rosetta/out/Dart/chaos-game.dart:4:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+var height = int.parse((double.parse(width) * 0.86602540378));
+                                            ^
+../../tests/rosetta/out/Dart/chaos-game.dart:21:27: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+var px = int.parse((width / 2));
+                          ^
+../../tests/rosetta/out/Dart/chaos-game.dart:23:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+var py = int.parse((height / 2));
+                           ^
+../../tests/rosetta/out/Dart/chaos-game.dart:14:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  return [next, (next as num) % n];
+                              ^
+../../tests/rosetta/out/Dart/chaos-game.dart:19:89: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+List<List<int>> vertices = [[0, height - 1], [width - 1, height - 1], [int.parse((width / 2)), 0]];
+                                                                                        ^
+../../tests/rosetta/out/Dart/chaos-game.dart:33:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/chaos-game.dart:41:26: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var idx = int.parse(r[1]);
+                         ^
+../../tests/rosetta/out/Dart/chaos-game.dart:43:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    px = (int.parse((((px + (v[0] as num)) as num) / 2)) as int);
+                                                   ^
+../../tests/rosetta/out/Dart/chaos-game.dart:44:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    py = (int.parse((((py + (v[1] as num)) as num) / 2)) as int);
+                                                   ^
+../../tests/rosetta/out/Dart/chaos-game.dart:56:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/chaos-game.dart:84:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/chaos-game.dart:113:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/chaos-game.dart:118:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/chaos-game.dart:122:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

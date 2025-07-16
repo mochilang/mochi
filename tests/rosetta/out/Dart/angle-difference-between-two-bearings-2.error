@@ -1,0 +1,19 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:11:23: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    print(angleDiff(tc[0], tc[1]));
+                      ^
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:11:30: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+    print(angleDiff(tc[0], tc[1]));
+                             ^
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:36:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:65:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:70:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/angle-difference-between-two-bearings-2.dart:74:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

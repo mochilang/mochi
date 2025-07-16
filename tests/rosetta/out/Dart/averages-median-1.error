@@ -1,0 +1,40 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/averages-median-1.dart:8:50: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                                 ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:8:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    while (j.toString().compareTo((n as num) - 1.toString()) < 0) {
+                                             ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:9:54: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      if (arr[j].toString().compareTo(arr[(j as num) + 1].toString()) > 0) {
+                                                     ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:11:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[j] = arr[(j as num) + 1];
+                                ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:12:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        arr[(j as num) + 1] = tmp;
+                       ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:14:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:16:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:23:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var half = int.parse((arr.length / 2));
+                                   ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:26:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    m = (((m as num) + (arr[(half as num) - 1] as num)) as num) / 2;
+                                          ^
+../../tests/rosetta/out/Dart/averages-median-1.dart:57:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/averages-median-1.dart:86:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/averages-median-1.dart:91:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/averages-median-1.dart:95:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,34 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:31:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:15:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:2:13: Error: Type 'any' not found.
+Map<String, any> mean(List<double> v) {
+            ^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:9:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + v[i];
+                       ^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:10:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:12:62: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return {'ok': true, 'mean': (sum as num) / (double.parse(v.length))};
+                                                             ^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:32:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:56:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:85:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:90:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/averages-arithmetic-mean.dart:94:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,524 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:51:15: Error: String starting with ' must end with '.
+    if (ch == '
+              ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:52:1: Error: String starting with ' must end with '.
+') {
+^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:51:8: Error: Can't find ')' to match '('.
+    if (ch == '
+       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:71:42: Error: String starting with ' must end with '.
+    if (ch == ' ' || ch == '  ' || ch == '' || ch == '
+                                         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:72:1: Error: String starting with ' must end with '.
+') {
+^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:71:8: Error: Can't find ')' to match '('.
+    if (ch == ' ' || ch == '  ' || ch == '' || ch == '
+       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:195:13: Error: String starting with ' must end with '.
+  var out = 'P3
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:199:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:209:24: Error: String starting with ' must end with '.
+    out = out + line + '
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:210:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:216:14: Error: String starting with ' must end with '.
+var ppmtxt = 'P3
+             ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:224:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  out = List.from(out)..add(cur);
+  ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:3: Error: 'return' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:3: Error: Expected ';' after this.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return out;
+         ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:63:1: Error: Expected a declaration, but got '}'.
+}
+^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:83:3: Error: 'if' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  if (cur.length > 0) {
+  ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:83:18: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  if (cur.length > 0) {
+                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:83:20: Error: Expected ')' before this.
+  if (cur.length > 0) {
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:3: Error: 'return' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:3: Error: Expected ';' after this.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return out;
+         ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:87:1: Error: Expected a declaration, but got '}'.
+}
+^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:1: Error: Expected ';' after this.
+' + '# feep.ppm
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:6: Error: Expected a declaration, but got '#'.
+' + '# feep.ppm
+     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:8: Error: A function declaration needs an explicit list of parameters.
+Try adding a parameter list to the function declaration.
+' + '# feep.ppm
+       ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:12: Error: Expected '{' before this.
+' + '# feep.ppm
+           ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:12: Error: Expected a declaration, but got '.'.
+' + '# feep.ppm
+           ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:13: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+' + '# feep.ppm
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:217:13: Error: Expected ';' after this.
+' + '# feep.ppm
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:218:1: Error: Expected a declaration, but got '' + ''.
+' + '4 4
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:218:6: Error: Expected a declaration, but got '4'.
+' + '4 4
+     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:218:8: Error: Expected a declaration, but got '4'.
+' + '4 4
+       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:219:1: Error: Expected a declaration, but got '' + ''.
+' + '15
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:219:6: Error: Expected a declaration, but got '15'.
+' + '15
+     ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:1: Error: Expected a declaration, but got '' + ''.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:7: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+      ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:10: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:13: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:18: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:21: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:24: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:29: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:32: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                               ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:35: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                                  ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:39: Error: Expected a declaration, but got '15'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                                      ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:43: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                                          ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:220:45: Error: Expected a declaration, but got '15'.
+' + ' 0  0  0    0  0  0    0  0  0   15  0 15
+                                            ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:1: Error: Expected a declaration, but got '' + ''.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:7: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+      ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:10: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:13: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:18: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:20: Error: Expected a declaration, but got '15'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                   ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:24: Error: Expected a declaration, but got '7'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:29: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:32: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                               ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:35: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                                  ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:40: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:43: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                                          ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:221:46: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0 15  7    0  0  0    0  0  0
+                                             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:1: Error: Expected a declaration, but got '' + ''.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:7: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+      ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:10: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:13: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:18: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:21: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:24: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:29: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:31: Error: Expected a declaration, but got '15'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                              ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:35: Error: Expected a declaration, but got '7'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                                  ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:40: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:43: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                                          ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:222:46: Error: Expected a declaration, but got '0'.
+' + ' 0  0  0    0  0  0    0 15  7    0  0  0
+                                             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:1: Error: Expected a declaration, but got '' + ''.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:6: Error: Expected a declaration, but got '15'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+     ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:10: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:12: Error: Expected a declaration, but got '15'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+           ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:18: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:21: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:24: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:29: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:32: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                               ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:35: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                                  ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:40: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:43: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                                          ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:223:46: Error: Expected a declaration, but got '0'.
+' + '15  0 15    0  0  0    0  0  0    0  0  0
+                                             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:224:1: Error: Expected a declaration, but got '';''.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:10: Error: 'out' is already declared in this scope.
+  return out;
+         ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:3: Context: Previous declaration of 'out'.
+  out = List.from(out)..add(cur);
+  ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:10: Error: 'out' is already declared in this scope.
+  return out;
+         ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:3: Context: Previous declaration of 'out'.
+  out = List.from(out)..add(cur);
+  ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:228:5: Error: 'out' is already declared in this scope.
+var out = writeP3(bm);
+    ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:3: Context: Previous declaration of 'out'.
+  out = List.from(out)..add(cur);
+  ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:86:3: Error: 'return' is already declared in this scope.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:62:3: Context: Previous declaration of 'return'.
+  return out;
+  ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:83:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:19: Error: Can't use 'out' because it is declared more than once.
+  out = List.from(out)..add(cur);
+                  ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:61:29: Error: Undefined name 'cur'.
+  out = List.from(out)..add(cur);
+                            ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:25:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:28:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:50:14: Error: Method not found: 'substr'.
+    var ch = substr(s, i, (i as num) + 1);
+             ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:56:5: Error: Expected an identifier, but got 'else'.
+Try inserting an identifier before 'else'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:55:5: Error: Expected ';' after this.
+    }
+    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:56:5: Error: Unexpected token ';'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:57:29: Error: Undefined name 'ch'.
+      cur = (cur as num) + (ch as num);
+                            ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:57:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:45:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+ - 'List' is from 'dart:core'.
+List<String> splitLines(String s) {
+             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:70:14: Error: Method not found: 'substr'.
+    var ch = substr(s, i, (i as num) + 1);
+             ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:78:5: Error: Expected an identifier, but got 'else'.
+Try inserting an identifier before 'else'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:77:5: Error: Expected ';' after this.
+    }
+    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:78:5: Error: Unexpected token ';'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:79:29: Error: Undefined name 'ch'.
+      cur = (cur as num) + (ch as num);
+                            ^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:79:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:81:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:65:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+ - 'List' is from 'dart:core'.
+List<String> splitWS(String s) {
+             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:83:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:84:21: Error: Can't use 'out' because it is declared more than once.
+    out = List.from(out)..add(cur);
+                    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:84:31: Error: Undefined name 'cur'.
+    out = List.from(out)..add(cur);
+                              ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:84:9: Error: Can't assign to this.
+    out = List.from(out)..add(cur);
+        ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:99:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:99:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:100:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:103:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = -(n as num);
+        ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:114:28: Error: Method not found: 'substr'.
+    if (line.length > 0 && substr(line, 0, 1) == '#') {
+                           ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:115:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:122:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:124:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:147:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      int g = parseIntStr(toks[(idx as num) + 1]);
+                                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:148:45: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      int b = parseIntStr(toks[(idx as num) + 2]);
+                                            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:149:20: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      setPx(bm, x, y, Pixel(r, g, b));
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:150:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      idx = (idx as num) + 3;
+                         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:151:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:167:21: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      var l = (((((p['R'] as num) * 2126 as num) + ((p['G'] as num) * 7152 as num) as num) + ((p['B'] as num) * 722 as num)) as num) / 10000;
+                    ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:167:55: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      var l = (((((p['R'] as num) * 2126 as num) + ((p['G'] as num) * 7152 as num) as num) + ((p['B'] as num) * 722 as num)) as num) / 10000;
+                                                      ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:167:97: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      var l = (((((p['R'] as num) * 2126 as num) + ((p['G'] as num) * 7152 as num) as num) + ((p['B'] as num) * 722 as num)) as num) / 10000;
+                                                                                                ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:169:15: Error: A value of type 'int' can't be assigned to a variable of type 'double'.
+        l = b.max;
+              ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:171:28: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
+      setPx(b, x, y, Pixel(l, l, l));
+                           ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:171:31: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
+      setPx(b, x, y, Pixel(l, l, l));
+                              ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:171:34: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
+      setPx(b, x, y, Pixel(l, l, l));
+                                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:173:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+        m = l;
+            ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:175:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:177:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:195:13: Error: Expected ';' after this.
+  var out = 'P3
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:196:3: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+  ^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:196:13: Error: 'from' isn't a type.
+# generated from Bitmap.writeppmp3
+            ^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:196:18: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+                 ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:196:24: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+# generated from Bitmap.writeppmp3
+                       ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:196:25: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+                        ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:199:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:210:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:205:27: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      var p = getPx(b, x, y);
+                          ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:206:34: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], digits) + ' ' + pad(p['G'], digits) + ' ' + pad(p['B'], digits);
+                                 ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:206:62: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], digits) + ' ' + pad(p['G'], digits) + ' ' + pad(p['B'], digits);
+                                                             ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:206:90: Error: The operator '[]' isn't defined for the class 'Pixel'.
+ - 'Pixel' is from '../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], digits) + ' ' + pad(p['G'], digits) + ' ' + pad(p['B'], digits);
+                                                                                         ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:207:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:235:9: Error: Can't use 'out' because it is declared more than once.
+  print(out);
+        ^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:259:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:288:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:293:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-read-a-ppm-file.dart:297:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

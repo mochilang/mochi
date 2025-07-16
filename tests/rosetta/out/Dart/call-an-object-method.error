@@ -1,0 +1,18 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/call-an-object-method.dart:16:7: Error: The method 'TellSecret' isn't defined for the class 'Box'.
+ - 'Box' is from '../../tests/rosetta/out/Dart/call-an-object-method.dart'.
+Try correcting the name to the name of an existing method, or defining a method named 'TellSecret'.
+  box.TellSecret();
+      ^^^^^^^^^^
+../../tests/rosetta/out/Dart/call-an-object-method.dart:40:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/call-an-object-method.dart:69:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/call-an-object-method.dart:74:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/call-an-object-method.dart:78:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

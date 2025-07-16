@@ -1,0 +1,113 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:14:28: Error: String starting with ' must end with '.
+    if (ch == ' ' || ch == '
+                           ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:15:15: Error: String starting with ' must end with '.
+' || ch == '  ') {
+              ^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:14:8: Error: Can't find ')' to match '('.
+    if (ch == ' ' || ch == '
+       ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:26:3: Error: 'if' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  if (cur.length > 0) {
+  ^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:26:18: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  if (cur.length > 0) {
+                 ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:26:20: Error: Expected ')' before this.
+  if (cur.length > 0) {
+                   ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:29:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return words;
+  ^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:29:3: Error: 'return' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  return words;
+  ^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:29:3: Error: Expected ';' after this.
+  return words;
+  ^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:29:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return words;
+         ^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:30:1: Error: Expected a declaration, but got '}'.
+}
+^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:97:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:86:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:26:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:21:5: Error: Expected an identifier, but got 'else'.
+Try inserting an identifier before 'else'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:20:5: Error: Expected ';' after this.
+    }
+    ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:21:5: Error: Unexpected token ';'.
+    else {
+    ^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:22:29: Error: Undefined name 'ch'.
+      cur = (cur as num) + (ch as num);
+                            ^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:13:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = s.toString().substring(i, (i as num) + 1);
+                                                  ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:22:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+      cur = (cur as num) + (ch as num);
+                         ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:24:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:8:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+ - 'List' is from 'dart:core'.
+List<String> fields(String s) {
+             ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:26:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:27:35: Error: Undefined name 'cur'.
+    words = List.from(words)..add(cur);
+                                  ^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:39:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    idx = (idx as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:40:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    count = (count as num) + 1;
+                           ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:68:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:73:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    l = (l as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:93:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:98:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:122:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:151:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:156:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/abbreviations-automatic.dart:160:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

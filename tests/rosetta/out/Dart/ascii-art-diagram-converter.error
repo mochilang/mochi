@@ -1,0 +1,173 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:3:9: Error: String starting with ' must end with '.
+  print('Diagram after trimming whitespace and removal of blank lines:
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:4:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:18:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:20:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:36:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:20: Error: String starting with ' must end with '.
+Test string in hex:');
+                   ^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:39:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:23: Error: String starting with ' must end with '.
+Test string in binary:');
+                      ^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:42:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:44:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:42:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:39:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:36:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:18:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:3:8: Error: Can't find ')' to match '('.
+  print('Diagram after trimming whitespace and removal of blank lines:
+       ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:62:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:2:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:5:3: Error: Expected ',' before this.
+  print('+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+');
+  ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:3:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('Diagram after trimming whitespace and removal of blank lines:
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:19:1: Error: Expected ',' before this.
+Decoded:
+^^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:21:3: Error: Expected ',' before this.
+  print('Name     Bits  Start  End');
+  ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:18:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:1: Error: Expected ',' before this.
+Test string in hex:');
+^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:6: Error: Expected ',' before this.
+Test string in hex:');
+     ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:13: Error: Expected ',' before this.
+Test string in hex:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:13: Error: 'in' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+Test string in hex:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:16: Error: Expected ',' before this.
+Test string in hex:');
+               ^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:38:3: Error: Expected ',' before this.
+  print('78477bbf5496e12e1bf169a4');
+  ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:1: Error: Undefined name 'Test'.
+Test string in hex:');
+^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:6: Error: Undefined name 'string'.
+Test string in hex:');
+     ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:37:13: Error: Undefined name 'in'.
+Test string in hex:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:36:8: Error: Too many positional arguments: 1 allowed, but 5 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:1: Error: Expected ',' before this.
+Test string in binary:');
+^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:6: Error: Expected ',' before this.
+Test string in binary:');
+     ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:13: Error: Expected ',' before this.
+Test string in binary:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:13: Error: 'in' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+Test string in binary:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:16: Error: Expected ',' before this.
+Test string in binary:');
+               ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:41:3: Error: Expected ',' before this.
+  print('011110000100011101111011101111110101010010010110111000010010111000011011111100010110100110100100');
+  ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:1: Error: Undefined name 'Test'.
+Test string in binary:');
+^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:6: Error: Undefined name 'string'.
+Test string in binary:');
+     ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:40:13: Error: Undefined name 'in'.
+Test string in binary:');
+            ^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:39:8: Error: Too many positional arguments: 1 allowed, but 5 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:43:1: Error: Expected ',' before this.
+Unpacked:
+^^^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:45:3: Error: Expected ',' before this.
+  print('Name     Size  Bit pattern');
+  ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:42:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:63:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:87:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:116:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:121:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/ascii-art-diagram-converter.dart:125:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,46 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:9:57: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse((((2 * (n as num)) as num) * (((2 * (n as num) as num) + 1) as num)));
+                                                        ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:11:24: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
+    sum = (sum as num) + (term as num);
+                       ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:12:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:22:70: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((((2 * (n as num) as num) - 1) as num) * ((2 * (n as num)) as num)));
+                                                                     ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:23:62: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    term = (((-(term as num) as num) * x as num) * x as num) / (denom as num);
+                                                             ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:24:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + (term as num);
+                       ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:27:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+  return sum;
+         ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:35:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:55:46: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    var pos = int.parse((10 * sinApprox(phi) + 0.5));
+                                             ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:57:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    t = t + dt;
+          ^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:82:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:111:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:116:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/animate-a-pendulum.dart:120:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^
