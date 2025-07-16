@@ -2,6 +2,9 @@
 
 Recent enhancements:
 
+- 2025-07-25 05:04 - Compiler now supports casts to and from `bigint`
+  and honors `SOURCE_DATE_EPOCH` for reproducible outputs.
+
 - 2025-07-21 05:04 - Added Rosetta Code golden tests and compile script
   `compile_rosetta_racket.go`.
 
