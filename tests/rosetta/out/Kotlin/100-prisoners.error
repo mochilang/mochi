@@ -1,7 +1,7 @@
 run: exit status 1
 Results from 1000 trials with 10 prisoners:
 
-Exception in thread "main" java.lang.IndexOutOfBoundsException: Index -33 out of bounds for length 100
+Exception in thread "main" java.lang.IndexOutOfBoundsException: Index -80 out of bounds for length 100
 	at java.base/jdk.internal.util.Preconditions.outOfBounds(Preconditions.java:100)
 	at java.base/jdk.internal.util.Preconditions.outOfBoundsCheckIndex(Preconditions.java:106)
 	at java.base/jdk.internal.util.Preconditions.checkIndex(Preconditions.java:302)
