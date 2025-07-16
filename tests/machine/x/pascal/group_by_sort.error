@@ -1,20 +1,23 @@
-line: 105
+line: 95
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/group_by_sort.pas
-group_by_sort.pas(86,33) Error: Identifier not found "g"
-group_by_sort.pas(88,16) Error: Identifier not found "g"
-group_by_sort.pas(90,37) Error: Illegal qualifier
-group_by_sort.pas(90,20) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-group_by_sort.pas(88,16) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_sort.pas(95,16) Error: Identifier not found "g"
-group_by_sort.pas(97,37) Error: Illegal qualifier
-group_by_sort.pas(97,20) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
-group_by_sort.pas(95,16) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_sort.pas(17,19) Error: Can't read or write variables of this type
-group_by_sort.pas(105) Fatal: There were 10 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_sort215533237/001/main.pas
+main.pas(76,31) Error: Identifier not found "g"
+main.pas(78,14) Error: Identifier not found "g"
+main.pas(80,33) Error: Illegal qualifier
+main.pas(80,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+main.pas(78,14) Error: Cannot find an enumerator for the type "<erroneous type>"
+main.pas(85,14) Error: Identifier not found "g"
+main.pas(87,33) Error: Illegal qualifier
+main.pas(87,16) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crcE41905E8", expected "{Open} Array Of Pointer"
+main.pas(85,14) Error: Cannot find an enumerator for the type "<erroneous type>"
+main.pas(31,17) Error: Can't read or write variables of this type
+main.pas(95) Fatal: There were 10 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  93:   specialize _printList<specialize TFPGMap<string, Variant>>(grouped);
+  94: end.
+  95: 

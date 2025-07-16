@@ -1,19 +1,19 @@
-line: 81
+line: 83
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/left_join_multi.pas
-left_join_multi.pas(49,11) Error: Identifier not found "c"
-left_join_multi.pas(51,46) Error: Identifier not found "c"
-left_join_multi.pas(53,15) Error: Identifier not found "i"
-left_join_multi.pas(55,42) Error: Identifier not found "i"
-left_join_multi.pas(59,42) Error: Identifier not found "c"
-left_join_multi.pas(60,42) Error: Identifier not found "i"
-left_join_multi.pas(65,15) Error: Identifier not found "i"
-left_join_multi.pas(68,42) Error: Identifier not found "c"
-left_join_multi.pas(69,42) Error: Identifier not found "i"
-left_join_multi.pas(81) Fatal: There were 9 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenleft_join_multi4222847366/001/main.pas
+main.pas(53,18) Error: identifier idents no member "customerId"
+main.pas(53,33) Error: identifier idents no member "id"
+main.pas(57,20) Error: identifier idents no member "id"
+main.pas(57,27) Error: identifier idents no member "orderId"
+main.pas(62,37) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+main.pas(71,37) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+main.pas(83) Fatal: There were 6 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  81:   end;
+  82: end.
+  83: 

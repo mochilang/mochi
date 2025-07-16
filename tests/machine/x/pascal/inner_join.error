@@ -1,0 +1,15 @@
+line: 75
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/TestPascalCompiler_VMValid_Goldeninner_join1382263833/001/main.pas
+main.pas(60,18) Error: identifier idents no member "customerId"
+main.pas(60,33) Error: identifier idents no member "id"
+main.pas(75) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+
+  73:   end;
+  74: end.
+  75: 

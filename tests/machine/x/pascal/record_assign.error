@@ -1,11 +1,14 @@
-line: 29
+line: 28
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/record_assign.pas
-record_assign.pas(16,12) Error: Incompatible types: got "Int64" expected "Counter"
-record_assign.pas(29) Fatal: There were 1 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldenrecord_assign2076103139/001/main.pas
+main.pas(19,12) Error: Incompatible types: got "Int64" expected "Counter"
+main.pas(28) Fatal: There were 1 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  26:   writeln(c.n);
+  27: end.
+  28: 

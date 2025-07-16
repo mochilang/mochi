@@ -1999,6 +1999,17 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			typ := typeString(types.TypeOfExpr(p.Call.Args[0], c.env))
 			c.use("_json")
 			return fmt.Sprintf("specialize _json<%s>(%s)", typ, args[0]), nil
+		case "values":
+			if len(args) != 1 {
+				return "", fmt.Errorf("values expects 1 argument")
+			}
+			if mt, ok := types.TypeOfExpr(p.Call.Args[0], c.env).(types.MapType); ok {
+				key := typeString(mt.Key)
+				val := typeString(mt.Value)
+				c.use("_valuesMap")
+				return fmt.Sprintf("specialize _valuesMap<%s, %s>(%s)", key, val, args[0]), nil
+			}
+			return fmt.Sprintf("values(%s)", args[0]), nil
 		default:
 			return fmt.Sprintf("%s(%s)", sanitizeName(p.Call.Func), argStr), nil
 		}
@@ -3204,6 +3215,17 @@ func (c *Compiler) emitHelpers() {
 			c.indent--
 			c.writeln("end;")
 			c.writeln("writeln();")
+			c.indent--
+			c.writeln("end;")
+			c.writeln("")
+		case "_valuesMap":
+			c.writeln("generic function _valuesMap<K,V>(m: specialize TFPGMap<K,V>): specialize TArray<V>;")
+			c.writeln("var i: Integer;")
+			c.writeln("begin")
+			c.indent++
+			c.writeln("SetLength(Result, m.Count);")
+			c.writeln("for i := 0 to m.Count - 1 do")
+			c.writeln("  Result[i] := m.Data[i];")
 			c.indent--
 			c.writeln("end;")
 			c.writeln("")

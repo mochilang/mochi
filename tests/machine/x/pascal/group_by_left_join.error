@@ -1,21 +1,23 @@
-line: 97
+line: 98
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/group_by_left_join.pas
-group_by_left_join.pas(60,11) Error: Identifier not found "o"
-group_by_left_join.pas(62,20) Error: Identifier not found "o"
-group_by_left_join.pas(65,38) Error: Identifier not found "g"
-group_by_left_join.pas(67,20) Error: Identifier not found "g"
-group_by_left_join.pas(69,25) Error: Illegal qualifier
-group_by_left_join.pas(67,20) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_left_join.pas(77,11) Error: Identifier not found "o"
-group_by_left_join.pas(79,39) Error: Identifier not found "g"
-group_by_left_join.pas(81,20) Error: Identifier not found "g"
-group_by_left_join.pas(83,25) Error: Illegal qualifier
-group_by_left_join.pas(81,20) Error: Cannot find an enumerator for the type "<erroneous type>"
-group_by_left_join.pas(97) Fatal: There were 11 errors compiling module, stopping
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_by_left_join4044647333/001/main.pas
+main.pas(63,18) Error: identifier idents no member "customerId"
+main.pas(63,33) Error: identifier idents no member "id"
+main.pas(66,34) Error: Identifier not found "g"
+main.pas(68,16) Error: Identifier not found "g"
+main.pas(70,19) Error: Illegal qualifier
+main.pas(68,16) Error: Cannot find an enumerator for the type "<erroneous type>"
+main.pas(80,35) Error: Identifier not found "g"
+main.pas(82,16) Error: Identifier not found "g"
+main.pas(84,19) Error: Illegal qualifier
+main.pas(82,16) Error: Cannot find an enumerator for the type "<erroneous type>"
+main.pas(98) Fatal: There were 10 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  96:   end;
+  97: end.
+  98: 

@@ -1,18 +1,22 @@
-line: 0
+line: 42
 error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/two-sum.pas
-two-sum.pas(16,7) Error: Identifier not found "i"
-two-sum.pas(16,7) Error: Ordinal expression expected
-two-sum.pas(16,7) Error: Illegal counter variable
-two-sum.pas(18,11) Error: Identifier not found "j"
-two-sum.pas(18,11) Error: Ordinal expression expected
-two-sum.pas(18,11) Error: Illegal counter variable
-two-sum.pas(18,16) Error: Identifier not found "i"
-two-sum.pas(20,26) Error: Identifier not found "_indexList"
-two-sum.pas(20,50) Fatal: Syntax error, ")" expected but "," found
+Compiling /tmp/TestPascalCompiler_VMValid_Goldentwo-sum2457023098/001/main.pas
+main.pas(26,7) Error: Identifier not found "i"
+main.pas(26,7) Error: Ordinal expression expected
+main.pas(26,7) Error: Illegal counter variable
+main.pas(28,9) Error: Identifier not found "j"
+main.pas(28,9) Error: Ordinal expression expected
+main.pas(28,9) Error: Illegal counter variable
+main.pas(28,14) Error: Identifier not found "i"
+main.pas(30,48) Error: Identifier not found "i"
+main.pas(30,90) Error: Identifier not found "j"
+main.pas(42) Fatal: There were 9 errors compiling module, stopping
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 
+  40:   writeln(specialize _indexList<integer>(_result, 1));
+  41: end.
+  42: 

@@ -3,10 +3,10 @@ error: fpc error: exit status 1
 Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
 Copyright (c) 1993-2021 by Florian Klaempfl and others
 Target OS: Linux for x86-64
-Compiling /workspace/mochi/tests/machine/x/pascal/group_items_iteration.pas
-group_items_iteration.pas(20,19) Warning: function result variable of a managed type does not seem to be initialized
-group_items_iteration.pas(26,65) Error: Type identifier expected
-group_items_iteration.pas(26,65) Fatal: Syntax error, ")" expected but "FUNCTION" found
+Compiling /tmp/TestPascalCompiler_VMValid_Goldengroup_items_iteration1927923106/001/main.pas
+main.pas(19,39) Error: Identifier not found "_Group"
+main.pas(19,45) Error: Type identifier expected
+main.pas(19,45) Fatal: Syntax error, "," expected but "<" found
 Fatal: Compilation aborted
 Error: /usr/bin/ppcx64 returned an error exitcode
 

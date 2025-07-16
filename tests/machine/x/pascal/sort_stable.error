@@ -1,0 +1,15 @@
+line: 65
+error: fpc error: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/TestPascalCompiler_VMValid_Goldensort_stable1392115551/001/main.pas
+main.pas(62,14) Error: Incompatible types: got "TArray$1$crcE41905E8" expected "TArray$1$crcE0B4E8C7"
+main.pas(63,41) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE0B4E8C7", expected "TArray$1$crcE41905E8"
+main.pas(65) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
+
+  63:   specialize _printList<Variant>(_result);
+  64: end.
+  65: 
