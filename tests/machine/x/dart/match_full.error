@@ -1,4 +1,4 @@
-line 59: exit status 254
-  return null;
+exit status 254
+../../../tests/machine/x/dart/match_full.dart:59:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
 })();
-}
+  ^

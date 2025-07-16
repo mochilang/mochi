@@ -13,5 +13,7 @@
 
 - [2025-07-16 15:30 UTC] Added golden tests for `tests/vm/valid` programs to verify Dart compilation output.
 - [2025-07-18 00:00 UTC] Simplified VM golden tests to check runtime output only and removed outdated `ValidPrograms` test.
+- [2025-07-16 17:28 UTC] Added `_print` helper and updated VM golden test to
+  store outputs under `tests/machine/x/dart`, reducing `.error` files.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

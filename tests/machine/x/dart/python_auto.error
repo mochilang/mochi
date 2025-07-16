@@ -1,4 +1,7 @@
-line 8: exit status 254
-void main() {
-  print(math['sqrt'](16));
-  print(math['pi']);
+exit status 254
+../../../tests/machine/x/dart/python_auto.dart:8:11: Error: A prefix can't be used as an expression.
+  _print([math['sqrt'](16)]);
+          ^^^^
+../../../tests/machine/x/dart/python_auto.dart:9:11: Error: A prefix can't be used as an expression.
+  _print([math['pi']]);
+          ^^^^
