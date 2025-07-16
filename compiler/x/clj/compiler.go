@@ -2256,9 +2256,6 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) (string, error) {
 		opts = v
 	}
 	c.use("_save")
-	if c.imports != nil {
-		c.imports["json"] = "clojure.data.json"
-	}
 	return fmt.Sprintf("(_save %s %s %s)", src, path, opts), nil
 }
 

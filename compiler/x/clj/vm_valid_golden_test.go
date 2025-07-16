@@ -2,6 +2,7 @@ package cljcode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -9,77 +10,53 @@ import (
 	"testing"
 
 	cljcode "mochi/compiler/x/clj"
+	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
 )
-
-func stripHeaderValid(b []byte) []byte {
-	if i := bytes.IndexByte(b, '\n'); i != -1 && bytes.HasPrefix(b, []byte("; Generated")) {
-		return b[i+1:]
-	}
-	return b
-}
 
 func TestClojureCompiler_VMValid_Golden(t *testing.T) {
 	if err := cljcode.EnsureClojure(); err != nil {
 		t.Skipf("clojure not installed: %v", err)
 	}
 	root := findRepoRoot(t)
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
-	goldenDir := filepath.Join(root, "tests", "machine", "x", "clj")
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob error: %v", err)
-	}
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			prog, err := parser.Parse(src)
-			if err != nil {
-				t.Fatalf("parse error: %v", err)
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				t.Fatalf("type error: %v", errs[0])
-			}
-			code, err := cljcode.New(env).Compile(prog)
-			if err != nil {
-				t.Fatalf("compile error: %v", err)
-			}
-			wantCode, err := os.ReadFile(filepath.Join(goldenDir, name+".clj"))
-			if err != nil {
-				t.Fatalf("read golden code: %v", err)
-			}
-			got := stripHeaderValid(bytes.TrimSpace(code))
-			want := stripHeaderValid(bytes.TrimSpace(wantCode))
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.clj\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-			}
-			dir := t.TempDir()
-			file := filepath.Join(dir, "main.clj")
-			if err := os.WriteFile(file, code, 0644); err != nil {
-				t.Fatalf("write error: %v", err)
-			}
-			cmd := exec.Command("clojure", file)
-			if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
-				cmd.Stdin = bytes.NewReader(data)
-			}
-			cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
-					return
-				}
-				t.Fatalf("clojure run error: %v\n%s", err, out)
-			}
-			gotOut := bytes.TrimSpace(out)
-			outWant, err := os.ReadFile(filepath.Join(goldenDir, name+".out"))
-			if err != nil {
-				t.Fatalf("read golden output: %v", err)
-			}
-			if !bytes.Equal(gotOut, bytes.TrimSpace(outWant)) {
-				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, gotOut, bytes.TrimSpace(outWant))
-			}
-		})
-	}
+	outDir := filepath.Join(root, "tests", "machine", "x", "clj")
+	os.MkdirAll(outDir, 0o755)
+
+	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		prog, err := parser.Parse(src)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("parse: "+err.Error()), 0o644)
+			return nil, fmt.Errorf("parse error: %w", err)
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("type: "+errs[0].Error()), 0o644)
+			return nil, fmt.Errorf("type error: %v", errs[0])
+		}
+		code, err := cljcode.New(env).Compile(prog)
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), []byte("compile: "+err.Error()), 0o644)
+			return nil, fmt.Errorf("compile error: %w", err)
+		}
+		cljFile := filepath.Join(outDir, base+".clj")
+		if err := os.WriteFile(cljFile, code, 0o644); err != nil {
+			return nil, err
+		}
+		cmd := exec.Command("clojure", cljFile)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		cmd.Env = append(os.Environ(), "CLASSPATH=/usr/share/java/data.json.jar:/usr/share/java/snakeyaml-engine.jar")
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			_ = os.WriteFile(filepath.Join(outDir, base+".error"), out, 0o644)
+			return nil, fmt.Errorf("run error: %w", err)
+		}
+		out = bytes.TrimSpace(out)
+		_ = os.WriteFile(filepath.Join(outDir, base+".out"), out, 0o644)
+		_ = os.Remove(filepath.Join(outDir, base+".error"))
+		return out, nil
+	})
 }
