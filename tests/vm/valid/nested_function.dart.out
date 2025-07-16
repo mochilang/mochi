@@ -3,14 +3,22 @@ import 'dart:convert';
 
 int outer(int x) {
   int inner(int y) {
-    return x + y;
+    return (x + y) as int;
   }
   
   return inner(5);
 }
 
 void main() {
-  print(outer(3));
+  _print(outer(3));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

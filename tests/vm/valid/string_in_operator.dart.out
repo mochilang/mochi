@@ -10,8 +10,16 @@ bool _in(dynamic item, dynamic col) {
 var s = 'catch';
 
 void main() {
-  print(_in('cat', s));
-  print(_in('dog', s));
+  _print(_in('cat', s));
+  _print(_in('dog', s));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

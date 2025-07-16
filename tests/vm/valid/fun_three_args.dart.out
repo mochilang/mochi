@@ -2,11 +2,19 @@ import 'dart:io';
 import 'dart:convert';
 
 int sum3(int a, int b, int c) {
-  return a + b + c;
+  return ((a + b) as int + c) as int;
 }
 
 void main() {
-  print(sum3(1, 2, 3));
+  _print(sum3(1, 2, 3));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

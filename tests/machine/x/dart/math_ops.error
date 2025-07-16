@@ -1,4 +1,7 @@
-line 7: exit status 255
-  print((6 * 7) as int);
-  print((7 / 2) as int);
-  print((7 % 2) as int);
+exit status 255
+42
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      main (file:///workspace/mochi/tests/machine/x/dart/math_ops.dart:7:18)
+#1      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#2      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

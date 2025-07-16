@@ -5,7 +5,15 @@ var matrix = [[1, 2], [3, 4]];
 
 void main() {
   matrix[1][0] = (5 as int);
-  print(matrix[1][0]);
+  _print(matrix[1][0]);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

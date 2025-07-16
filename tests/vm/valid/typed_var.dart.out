@@ -4,7 +4,15 @@ import 'dart:convert';
 int x = 0;
 
 void main() {
-  print(x);
+  _print(x);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

@@ -15,10 +15,18 @@ var expensive = (() {
 })();
 
 void main() {
-  print('--- Top products (excluding most expensive) ---');
+  _print('--- Top products (excluding most expensive) ---');
   for (var item in expensive) {
-    print([item['name'], 'costs \$', item['price']].join(' '));
+    _print([item['name'], 'costs \$', item['price']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

@@ -22,15 +22,23 @@ var result = (() {
 })();
 
 void main() {
-  print('--- Right Join using syntax ---');
+  _print('--- Right Join using syntax ---');
   for (var entry in result) {
     if (entry['order'] != null) {
-      print(['Customer', entry['customerName'], 'has order', entry['order']['id'], '- \$', entry['order']['total']].join(' '));
+      _print(['Customer', entry['customerName'], 'has order', entry['order']['id'], '- \$', entry['order']['total']].join(' '));
     }
     else {
-      print(['Customer', entry['customerName'], 'has no orders'].join(' '));
+      _print(['Customer', entry['customerName'], 'has no orders'].join(' '));
     }
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

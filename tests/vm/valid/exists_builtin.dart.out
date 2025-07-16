@@ -13,7 +13,15 @@ var flag = (() {
 })().isNotEmpty;
 
 void main() {
-  print(flag);
+  _print(flag);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

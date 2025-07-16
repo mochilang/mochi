@@ -14,10 +14,18 @@ var sin45 = math['sin'](math['pi'] / 4);
 var log_e = math['log'](math['e']);
 
 void main() {
-  print(['Circle area with r =', r, '=>', area].join(' '));
-  print(['Square root of 49:', root].join(' '));
-  print(['sin(π/4):', sin45].join(' '));
-  print(['log(e):', log_e].join(' '));
+  _print(['Circle area with r =', r, '=>', area].join(' '));
+  _print(['Square root of 49:', root].join(' '));
+  _print(['sin(π/4):', sin45].join(' '));
+  _print(['log(e):', log_e].join(' '));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

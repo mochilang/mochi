@@ -1,4 +1,16 @@
-line 13: exit status 254
-void main() {
-  print(testpkg['Add'](2, 3));
-  print(testpkg['Pi']);
+exit status 254
+tests/machine/x/dart/go_auto.dart:13:17: Error: The operator '[]' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  _print(testpkg['Add'](2, 3));
+                ^
+tests/machine/x/dart/go_auto.dart:14:17: Error: The operator '[]' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  _print(testpkg['Pi']);
+                ^
+tests/machine/x/dart/go_auto.dart:15:17: Error: The operator '[]' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  _print(testpkg['Answer']);
+                ^

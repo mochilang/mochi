@@ -22,10 +22,18 @@ var result = (() {
 })();
 
 void main() {
-  print('--- Multi Join ---');
+  _print('--- Multi Join ---');
   for (var r in result) {
-    print([r['name'], 'bought item', r['sku']].join(' '));
+    _print([r['name'], 'bought item', r['sku']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

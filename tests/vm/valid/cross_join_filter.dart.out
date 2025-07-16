@@ -9,7 +9,7 @@ var pairs = (() {
   var _q0 = <dynamic>[];
   for (var n in nums) {
     for (var l in letters) {
-      if (!(n % 2 == 0)) continue;
+      if (!((n % 2) as int == 0)) continue;
       _q0.add({'n': n, 'l': l});
     }
   }
@@ -17,10 +17,18 @@ var pairs = (() {
 })();
 
 void main() {
-  print('--- Even pairs ---');
+  _print('--- Even pairs ---');
   for (var p in pairs) {
-    print([p['n'], p['l']].join(' '));
+    _print([p['n'], p['l']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

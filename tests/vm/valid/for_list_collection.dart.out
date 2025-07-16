@@ -3,8 +3,16 @@ import 'dart:convert';
 
 void main() {
   for (var n in [1, 2, 3]) {
-    print(n);
+    _print(n);
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

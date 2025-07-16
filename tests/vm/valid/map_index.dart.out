@@ -4,7 +4,15 @@ import 'dart:convert';
 var m = {'a': 1, 'b': 2};
 
 void main() {
-  print((m as Map)['b']);
+  _print((m as Map)['b']);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

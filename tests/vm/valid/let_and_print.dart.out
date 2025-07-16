@@ -6,7 +6,15 @@ var a = 10;
 int b = 20;
 
 void main() {
-  print(a + b);
+  _print((a + b) as int);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

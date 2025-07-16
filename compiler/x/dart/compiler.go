@@ -16,6 +16,14 @@ import (
 )
 
 const dartHelpers = `
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
+}
+
 bool _equal(dynamic a, dynamic b) {
     if (a is List && b is List) {
         if (a.length != b.length) return false;
@@ -989,6 +997,14 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				if op.Index.Start == nil {
 					return "", fmt.Errorf("missing index expression")
 				}
+				// special-case imports like dart_math where index access maps to field access
+				if key, ok := c.simpleString(op.Index.Start); ok {
+					if kind, ok := c.imports[val]; ok && kind == "dart_math" {
+						val = fmt.Sprintf("%s.%s", val, key)
+						t = types.AnyType{}
+						continue
+					}
+				}
 				idx, err := c.compileExpr(op.Index.Start)
 				if err != nil {
 					return "", err
@@ -1883,9 +1899,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 	switch call.Func {
 	case "print":
 		if len(args) == 1 {
-			return fmt.Sprintf("print(%s)", args[0]), nil
+			return fmt.Sprintf("_print(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("print([%s].join(' '))", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("_print([%s].join(' '))", strings.Join(args, ", ")), nil
 	case "append":
 		if len(args) != 2 {
 			return "", fmt.Errorf("append expects 2 args")

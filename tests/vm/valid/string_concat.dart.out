@@ -2,7 +2,15 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print('hello ' + 'world');
+  _print('hello ' + 'world');
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

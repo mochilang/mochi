@@ -5,7 +5,15 @@ var x = 1;
 
 void main() {
   x = (2 as int);
-  print(x);
+  _print(x);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

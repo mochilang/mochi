@@ -2,13 +2,21 @@ import 'dart:io';
 import 'dart:convert';
 
 int add(int a, int b) {
-  return a + b;
+  return (a + b) as int;
 }
 
 var add5 = (b) => add(5, b);
 
 void main() {
-  print(add5(3));
+  _print(add5(3));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

@@ -2,7 +2,15 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print((() { var _t0 = [1, 2, 3]; return (_t0.isEmpty ? 0 : _t0.reduce((a, b) => a + b) / _t0.length); })());
+  _print((() { var _t0 = [1, 2, 3]; return (_t0.isEmpty ? 0 : _t0.reduce((a, b) => a + b) / _t0.length); })());
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

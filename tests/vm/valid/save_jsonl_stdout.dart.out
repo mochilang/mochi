@@ -7,6 +7,14 @@ void main() {
   File('-').writeAsStringSync(jsonEncode(people));
 }
 
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
+}
+
 bool _equal(dynamic a, dynamic b) {
     if (a is List && b is List) {
         if (a.length != b.length) return false;

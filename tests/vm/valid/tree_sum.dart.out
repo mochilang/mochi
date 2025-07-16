@@ -29,7 +29,15 @@ int sum_tree(Tree t) {
 var t = Node(Leaf(), 1, Node(Leaf(), 2, Leaf()));
 
 void main() {
-  print(sum_tree(t));
+  _print(sum_tree(t));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

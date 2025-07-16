@@ -12,7 +12,7 @@ var xs = [1, 2, 3];
 var ys = (() {
   var _q0 = <dynamic>[];
   for (var x in xs) {
-    if (!(x % 2 == 1)) continue;
+    if (!((x % 2) as int == 1)) continue;
     _q0.add(x);
   }
   return _q0;
@@ -23,12 +23,20 @@ var m = {'a': 1};
 var s = 'hello';
 
 void main() {
-  print(_in(1, ys));
-  print(_in(2, ys));
-  print(_in('a', m));
-  print(_in('b', m));
-  print(_in('ell', s));
-  print(_in('foo', s));
+  _print(_in(1, ys));
+  _print(_in(2, ys));
+  _print(_in('a', m));
+  _print(_in('b', m));
+  _print(_in('ell', s));
+  _print(_in('foo', s));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

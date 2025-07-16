@@ -4,7 +4,15 @@ import 'dart:convert';
 var square = (x) => x * x;
 
 void main() {
-  print(square(6));
+  _print(square(6));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

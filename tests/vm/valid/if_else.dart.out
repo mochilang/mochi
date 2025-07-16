@@ -5,11 +5,19 @@ var x = 5;
 
 void main() {
   if (x > 3) {
-    print('big');
+    _print('big');
   }
   else {
-    print('small');
+    _print('small');
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

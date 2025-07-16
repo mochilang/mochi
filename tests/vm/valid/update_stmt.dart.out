@@ -18,11 +18,19 @@ void main() {
     var status = _it1.status;
     if (age >= 18) {
       _it1.status = 'adult';
-      _it1.age = age + 1;
+      _it1.age = (age + 1) as int;
     }
     people[_i0] = _it1;
   }
-  print('ok');
+  _print('ok');
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

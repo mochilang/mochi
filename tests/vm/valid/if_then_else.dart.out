@@ -6,7 +6,15 @@ var x = 12;
 var msg = (x > 10 ? 'yes' : 'no');
 
 void main() {
-  print(msg);
+  _print(msg);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

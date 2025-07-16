@@ -9,9 +9,17 @@ class testpkg {
 }
 
 void main() {
-  print(testpkg['Add'](2, 3));
-  print(testpkg['Pi']);
-  print(testpkg['Answer']);
+  _print(testpkg['Add'](2, 3));
+  _print(testpkg['Pi']);
+  _print(testpkg['Answer']);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

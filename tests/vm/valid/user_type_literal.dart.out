@@ -16,7 +16,15 @@ class Book {
 var book = Book('Go', Person('Bob', 42));
 
 void main() {
-  print(book.author.name);
+  _print(book.author.name);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

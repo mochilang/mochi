@@ -20,10 +20,18 @@ var combos = (() {
 })();
 
 void main() {
-  print('--- Cross Join of three lists ---');
+  _print('--- Cross Join of three lists ---');
   for (var c in combos) {
-    print([c['n'], c['l'], c['b']].join(' '));
+    _print([c['n'], c['l'], c['b']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

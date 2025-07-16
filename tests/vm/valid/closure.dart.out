@@ -8,7 +8,15 @@ Function makeAdder(int n) {
 var add10 = makeAdder(10);
 
 void main() {
-  print(add10(7));
+  _print(add10(7));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

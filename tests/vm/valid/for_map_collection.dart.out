@@ -5,8 +5,16 @@ var m = {'a': 1, 'b': 2};
 
 void main() {
   for (var k in m.keys) {
-    print(k);
+    _print(k);
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

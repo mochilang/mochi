@@ -39,7 +39,15 @@ var grouped = (() {
 })();
 
 void main() {
-  print(grouped);
+  _print(grouped);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

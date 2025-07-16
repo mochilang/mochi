@@ -8,8 +8,16 @@ var s1 = 'forest';
 var s2 = 'desert';
 
 void main() {
-  print(s1.substring(0, prefix.length) == prefix);
-  print(s2.substring(0, prefix.length) == prefix);
+  _print(s1.substring(0, prefix.length) == prefix);
+  _print(s2.substring(0, prefix.length) == prefix);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

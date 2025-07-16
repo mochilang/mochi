@@ -2,11 +2,19 @@ import 'dart:io';
 import 'dart:convert';
 
 int triple(int x) {
-  return x * 3;
+  return (x * 3) as int;
 }
 
 void main() {
-  print(triple(1 + 2));
+  _print(triple((1 + 2) as int));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

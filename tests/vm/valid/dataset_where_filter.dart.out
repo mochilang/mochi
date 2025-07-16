@@ -13,10 +13,18 @@ var adults = (() {
 })();
 
 void main() {
-  print('--- Adults ---');
+  _print('--- Adults ---');
   for (var person in adults) {
-    print([person['name'], 'is', person['age'], (person['is_senior'] ? ' (senior)' : '')].join(' '));
+    _print([person['name'], 'is', person['age'], (person['is_senior'] ? ' (senior)' : '')].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

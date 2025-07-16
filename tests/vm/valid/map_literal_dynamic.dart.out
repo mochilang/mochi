@@ -8,7 +8,15 @@ var y = 4;
 var m = {'a': x, 'b': y};
 
 void main() {
-  print([(m as Map)['a'], (m as Map)['b']].join(' '));
+  _print([(m as Map)['a'], (m as Map)['b']].join(' '));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

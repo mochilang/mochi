@@ -59,11 +59,19 @@ String classify(int n) {
 }
 
 void main() {
-  print(label);
-  print(mood);
-  print(status);
-  print(classify(0));
-  print(classify(5));
+  _print(label);
+  _print(mood);
+  _print(status);
+  _print(classify(0));
+  _print(classify(5));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

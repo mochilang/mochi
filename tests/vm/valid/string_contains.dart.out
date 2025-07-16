@@ -4,8 +4,16 @@ import 'dart:convert';
 var s = 'catch';
 
 void main() {
-  print(s.contains('cat'));
-  print(s.contains('dog'));
+  _print(s.contains('cat'));
+  _print(s.contains('dog'));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

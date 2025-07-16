@@ -4,8 +4,16 @@ import 'dart:convert';
 var nums = [3, 1, 4];
 
 void main() {
-  print(_min(nums));
-  print(nums.reduce((a, b) => a > b ? a : b));
+  _print(_min(nums));
+  _print(nums.reduce((a, b) => a > b ? a : b));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

@@ -2,8 +2,16 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print(-3);
-  print(5 + (-2));
+  _print(-3);
+  _print((5 + (-2)) as int);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

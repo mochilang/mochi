@@ -1,4 +1,6 @@
-line 10: exit status 254
-  for (var p in products) {
+exit status 254
+tests/machine/x/dart/dataset_sort_take_limit.dart:10:14: Error: The operator 'unary-' isn't defined for the class 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a 'unary-' operator.
     _q0.add([-p['price'], p]);
-  }
+             ^

@@ -14,7 +14,15 @@ var sorted = (() {
 })();
 
 void main() {
-  print(sorted);
+  _print(sorted);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

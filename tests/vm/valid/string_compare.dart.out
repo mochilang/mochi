@@ -2,10 +2,18 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print('a'.compareTo('b') < 0);
-  print('a'.compareTo('a') <= 0);
-  print('b'.compareTo('a') > 0);
-  print('b'.compareTo('b') >= 0);
+  _print('a'.compareTo('b') < 0);
+  _print('a'.compareTo('a') <= 0);
+  _print('b'.compareTo('a') > 0);
+  _print('b'.compareTo('b') >= 0);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

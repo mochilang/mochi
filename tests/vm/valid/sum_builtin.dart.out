@@ -2,7 +2,15 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print((() { var _t0 = [1, 2, 3]; return _sum(_t0); })());
+  _print((() { var _t0 = [1, 2, 3]; return _sum(_t0); })());
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

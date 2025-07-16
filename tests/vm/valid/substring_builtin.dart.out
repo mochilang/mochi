@@ -2,7 +2,15 @@ import 'dart:io';
 import 'dart:convert';
 
 void main() {
-  print('mochi'.toString().substring(1, 4));
+  _print('mochi'.toString().substring(1, 4));
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

@@ -34,20 +34,28 @@ var result = (() {
 })();
 
 void main() {
-  print('--- Outer Join using syntax ---');
+  _print('--- Outer Join using syntax ---');
   for (var row in result) {
     if (row['order'] != null) {
       if (row['customer'] != null) {
-        print(['Order', row['order']['id'], 'by', row['customer']['name'], '- \$', row['order']['total']].join(' '));
+        _print(['Order', row['order']['id'], 'by', row['customer']['name'], '- \$', row['order']['total']].join(' '));
       }
       else {
-        print(['Order', row['order']['id'], 'by', 'Unknown', '- \$', row['order']['total']].join(' '));
+        _print(['Order', row['order']['id'], 'by', 'Unknown', '- \$', row['order']['total']].join(' '));
       }
     }
     else {
-      print(['Customer', row['customer']['name'], 'has no orders'].join(' '));
+      _print(['Customer', row['customer']['name'], 'has no orders'].join(' '));
     }
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

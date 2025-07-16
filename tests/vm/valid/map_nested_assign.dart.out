@@ -5,7 +5,15 @@ var data = {'outer': {'inner': 1}};
 
 void main() {
   (data['outer'] as Map)['inner'] = (2 as int);
-  print(((data as Map)['outer'] as Map)['inner']);
+  _print(((data as Map)['outer'] as Map)['inner']);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

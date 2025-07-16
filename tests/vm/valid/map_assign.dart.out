@@ -5,7 +5,15 @@ var scores = {'alice': 1};
 
 void main() {
   scores['bob'] = (2 as int);
-  print((scores as Map)['bob']);
+  _print((scores as Map)['bob']);
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

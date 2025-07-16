@@ -62,8 +62,16 @@ var adults = (() {
 
 void main() {
   for (var a in adults) {
-    print([a['name'], a['email']].join(' '));
+    _print([a['name'], a['email']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {

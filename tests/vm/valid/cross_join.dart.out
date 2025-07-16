@@ -16,10 +16,18 @@ var result = (() {
 })();
 
 void main() {
-  print('--- Cross Join: All order-customer pairs ---');
+  _print('--- Cross Join: All order-customer pairs ---');
   for (var entry in result) {
-    print(['Order', entry['orderId'], '(customerId:', entry['orderCustomerId'], ', total: \$', entry['orderTotal'], ') paired with', entry['pairedCustomerName']].join(' '));
+    _print(['Order', entry['orderId'], '(customerId:', entry['orderCustomerId'], ', total: \$', entry['orderTotal'], ') paired with', entry['pairedCustomerName']].join(' '));
   }
+}
+
+void _print(dynamic v) {
+    if (v is bool) {
+        print(v ? 'True' : 'False');
+        return;
+    }
+    print(v);
 }
 
 bool _equal(dynamic a, dynamic b) {
