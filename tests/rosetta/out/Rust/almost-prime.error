@@ -1,0 +1,69 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiRustGoldenalmost-prime2369208145/001/prog.rs:26:30
+   |
+26 |         while r.len() as i32 < count {
+   |                              ^ ------- interpreted as generic arguments
+   |                              |
+   |                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+26 |         while (r.len() as i32) < count {
+   |               +              +
+
+error[E0277]: can't compare `{integer}` with `&mut i32`
+  --> /tmp/TestMochiRustGoldenalmost-prime2369208145/001/prog.rs:11:17
+   |
+11 |         while i <= n {
+   |                 ^^ no implementation for `{integer} < &mut i32` and `{integer} > &mut i32`
+   |
+   = help: the trait `PartialOrd<&mut i32>` is not implemented for `{integer}`
+help: consider dereferencing here
+   |
+11 |         while i <= *n {
+   |                    +
+
+error[E0369]: cannot calculate the remainder of `&mut i32` divided by `{integer}`
+  --> /tmp/TestMochiRustGoldenalmost-prime2369208145/001/prog.rs:12:21
+   |
+12 |             while n % i == 0 {
+   |                   - ^ - {integer}
+   |                   |
+   |                   &mut i32
+   |
+help: `%` can be used on `i32` if you dereference the left-hand side
+   |
+12 |             while *n % i == 0 {
+   |                   +
+
+error[E0368]: binary assignment operation `/=` cannot be applied to type `&mut i32`
+  --> /tmp/TestMochiRustGoldenalmost-prime2369208145/001/prog.rs:17:17
+   |
+17 |                 n /= i;
+   |                 -^^^^^
+   |                 |
+   |                 cannot use `/=` on type `&mut i32`
+   |
+help: `/=` can be used on `i32` if you dereference the left-hand side
+   |
+17 |                 *n /= i;
+   |                 +
+
+error[E0599]: `Vec<i32>` doesn't implement `std::fmt::Display`
+  --> /tmp/TestMochiRustGoldenalmost-prime2369208145/001/prog.rs:37:92
+   |
+37 |             println!("{}", format!("{}{}", format!("{}{}", k.to_string(), " "), gen(k, 10).to_string()));
+   |                                                                                            ^^^^^^^^^ `Vec<i32>` cannot be formatted with the default formatter
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<i32>: std::fmt::Display`
+           which is required by `Vec<i32>: ToString`
+           `[i32]: std::fmt::Display`
+           which is required by `[i32]: ToString`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error: aborting due to 5 previous errors
+
+Some errors have detailed explanations: E0277, E0368, E0369, E0599.
+For more information about an error, try `rustc --explain E0277`.

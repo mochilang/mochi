@@ -1,0 +1,104 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
+ --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:8:13
+  |
+8 |             s += coef.to_string();
+  |             -^--^^^^^^^^^^^^^^^^^
+  |             | |
+  |             | `+` cannot be used to concatenate a `&str` with a `String`
+  |             cannot use `+=` on type `&'static str`
+  |
+  = note: string concatenation requires an owned `String` on the left
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:11:13
+   |
+11 |             s += "x";
+   |             -^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&'static str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:13:21
+   |
+13 |                 s = format!("{}{}", format!("{}{}", s, "^"), i.to_string());
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: cannot multiply `i32` by `f64`
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:15:27
+   |
+15 |             coef = ((coef * i as f64) / ((p - i + 1) as f64)).parse::<i32>().unwrap();
+   |                           ^ no implementation for `i32 * f64`
+   |
+   = help: the trait `Mul<f64>` is not implemented for `i32`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             `&i32` implements `Mul<i32>`
+             `&i32` implements `Mul`
+             `i32` implements `Mul<&i32>`
+             `i32` implements `Mul`
+
+error[E0600]: cannot apply unary operator `-` to type `String`
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:21:64
+   |
+21 |                 s = format!("{}{}", format!("{}{}", s, " - "), -d.to_string());
+   |                                                                ^^^^^^^^^^^^^^ cannot apply unary operator `-`
+   |
+note: the foreign item type `String` doesn't implement `Neg`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/string.rs:360:1
+   |
+   = note: not implement `Neg`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:21:21
+   |
+21 |                 s = format!("{}{}", format!("{}{}", s, " - "), -d.to_string());
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:23:21
+   |
+23 |                 s = format!("{}{}", format!("{}{}", s, " + "), d.to_string());
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: cannot multiply `i32` by `f64`
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:42:21
+   |
+42 |             c = ((c * (n - i) as f64) / ((i + 1) as f64)).parse::<i32>().unwrap();
+   |                     ^ no implementation for `i32 * f64`
+   |
+   = help: the trait `Mul<f64>` is not implemented for `i32`
+   = help: the following other types implement trait `Mul<Rhs>`:
+             `&i32` implements `Mul<i32>`
+             `&i32` implements `Mul`
+             `i32` implements `Mul<&i32>`
+             `i32` implements `Mul`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&'static str`
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:59:21
+   |
+59 |                     line += p.to_string();
+   |                     ----^--^^^^^^^^^^^^^^
+   |                     |    |
+   |                     |    `+` cannot be used to concatenate a `&str` with a `String`
+   |                     cannot use `+=` on type `&'static str`
+   |
+   = note: string concatenation requires an owned `String` on the left
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaks-test-for-primes921595730/001/prog.rs:62:28
+   |
+62 |                     line = format!("{}{}", format!("{}{}", line, " "), p.to_string());
+   |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error: aborting due to 10 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0600.
+For more information about an error, try `rustc --explain E0277`.

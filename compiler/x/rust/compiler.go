@@ -1676,15 +1676,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					break
 				}
 			}
-			switch rustTy {
-			case "i32":
-				if strings.HasPrefix(val, "&") {
-					val = val[1:]
-				}
-				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
-			default:
-				return "", fmt.Errorf("unsupported cast to %s", rustTy)
-			}
+                       switch rustTy {
+                       case "i32":
+                               if strings.HasPrefix(val, "&") {
+                                       val = val[1:]
+                               }
+                               val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
+                       case "f64":
+                               if strings.HasPrefix(val, "&") {
+                                       val = val[1:]
+                               }
+                               val = fmt.Sprintf("%s.parse::<f64>().unwrap()", val)
+                       case "bool":
+                               if strings.HasPrefix(val, "&") {
+                                       val = val[1:]
+                               }
+                               val = fmt.Sprintf("%s.parse::<bool>().unwrap()", val)
+                       default:
+                               return "", fmt.Errorf("unsupported cast to %s", rustTy)
+                       }
 		case op.Index != nil:
 			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
 			t := types.TypeOfPostfixBasic(prefix, c.env)

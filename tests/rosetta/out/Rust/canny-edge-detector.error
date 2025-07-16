@@ -1,0 +1,238 @@
+rustc error: exit status 1
+error[E0277]: cannot add `f64` to `i32`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:25:41
+   |
+25 |                         let mut yy = (y + j as f64) - half;
+   |                                         ^ no implementation for `i32 + f64`
+   |
+   = help: the trait `Add<f64>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: can't compare `{integer}` with `f64`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:26:31
+   |
+26 |                         if yy < 0 as f64 {
+   |                               ^ no implementation for `{integer} < f64` and `{integer} > f64`
+   |
+   = help: the trait `PartialOrd<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `PartialOrd<Rhs>`:
+             f128
+             f16
+             f32
+             f64
+             i128
+             i16
+             i32
+             i64
+           and 8 others
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:29:34
+   |
+29 |                         if yy >= h as f64 {
+   |                                  ^^^^^^^^ expected integer, found `f64`
+
+error[E0277]: can't compare `{integer}` with `f64`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:29:31
+   |
+29 |                         if yy >= h as f64 {
+   |                               ^^ no implementation for `{integer} < f64` and `{integer} > f64`
+   |
+   = help: the trait `PartialOrd<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `PartialOrd<Rhs>`:
+             f128
+             f16
+             f32
+             f64
+             i128
+             i16
+             i32
+             i64
+           and 8 others
+
+error[E0277]: cannot add `f64` to `i32`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:32:41
+   |
+32 |                         let mut xx = (x + i as f64) - half;
+   |                                         ^ no implementation for `i32 + f64`
+   |
+   = help: the trait `Add<f64>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: can't compare `{integer}` with `f64`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:33:31
+   |
+33 |                         if xx < 0 as f64 {
+   |                               ^ no implementation for `{integer} < f64` and `{integer} > f64`
+   |
+   = help: the trait `PartialOrd<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `PartialOrd<Rhs>`:
+             f128
+             f16
+             f32
+             f64
+             i128
+             i16
+             i32
+             i64
+           and 8 others
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:36:34
+   |
+36 |                         if xx >= w as f64 {
+   |                                  ^^^^^^^^ expected integer, found `f64`
+
+error[E0277]: can't compare `{integer}` with `f64`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:36:31
+   |
+36 |                         if xx >= w as f64 {
+   |                               ^^ no implementation for `{integer} < f64` and `{integer} > f64`
+   |
+   = help: the trait `PartialOrd<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `PartialOrd<Rhs>`:
+             f128
+             f16
+             f32
+             f64
+             i128
+             i16
+             i32
+             i64
+           and 8 others
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:101:17
+    |
+101 |                 line += m[y as usize][x as usize].to_string();
+    |                 ----^--^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |                 |    |
+    |                 |    `+` cannot be used to concatenate a `&str` with a `String`
+    |                 cannot use `+=` on type `&str`
+    |
+    = note: string concatenation requires an owned `String` on the left
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:103:21
+    |
+103 |                     line += " ";
+    |                     ----^^^^^^^
+    |                     |
+    |                     cannot use `+=` on type `&str`
+
+warning: unused variable: `PI`
+ --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:8:9
+  |
+8 |     let PI = 3.141592653589793;
+  |         ^^ help: if this is intentional, prefix it with an underscore: `_PI`
+  |
+  = note: `#[warn(unused_variables)]` on by default
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:55:13
+   |
+55 |         let mut gx = conv2d(img, hx);
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:56:13
+   |
+56 |         let mut gy = conv2d(img, hy);
+   |             ----^^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:57:13
+   |
+57 |         let mut h = img.len() as i32;
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:58:13
+   |
+58 |         let mut w = img[0].len() as i32;
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+error[E0382]: use of moved value: `img`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:56:29
+   |
+52 |     fn gradient(img: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+   |                 --- move occurs because `img` has type `Vec<Vec<f64>>`, which does not implement the `Copy` trait
+...
+55 |         let mut gx = conv2d(img, hx);
+   |                             --- value moved here
+56 |         let mut gy = conv2d(img, hy);
+   |                             ^^^ value used here after move
+   |
+note: consider changing this parameter type in function `conv2d` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:9:20
+   |
+9  |     fn conv2d(img: Vec<Vec<f64>>, k: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+   |        ------      ^^^^^^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+55 |         let mut gx = conv2d(img.clone(), hx);
+   |                                ++++++++
+
+error[E0382]: borrow of moved value: `img`
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:57:21
+   |
+52 |     fn gradient(img: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+   |                 --- move occurs because `img` has type `Vec<Vec<f64>>`, which does not implement the `Copy` trait
+...
+56 |         let mut gy = conv2d(img, hy);
+   |                             --- value moved here
+57 |         let mut h = img.len() as i32;
+   |                     ^^^ value borrowed here after move
+   |
+note: consider changing this parameter type in function `conv2d` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:9:20
+   |
+9  |     fn conv2d(img: Vec<Vec<f64>>, k: Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+   |        ------      ^^^^^^^^^^^^^ this parameter takes ownership of the value
+   |        |
+   |        in this function
+help: consider cloning the value if the performance cost is acceptable
+   |
+56 |         let mut gy = conv2d(img.clone(), hy);
+   |                                ++++++++
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:75:13
+   |
+75 |         let mut h = g.len() as i32;
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+warning: variable does not need to be mutable
+  --> /tmp/TestMochiRustGoldencanny-edge-detector4118332707/001/prog.rs:76:13
+   |
+76 |         let mut w = g[0].len() as i32;
+   |             ----^
+   |             |
+   |             help: remove this `mut`
+
+error: aborting due to 12 previous errors; 7 warnings emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0382.
+For more information about an error, try `rustc --explain E0277`.

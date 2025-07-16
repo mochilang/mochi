@@ -1,0 +1,63 @@
+rustc error: exit status 1
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:23:13
+   |
+23 |             a += lower(p);
+   |             -^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:8:45
+  |
+8 |             if ch == &upper[i as usize..i + 1 as usize] {
+  |                                             ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:8:41
+  |
+8 |             if ch == &upper[i as usize..i + 1 as usize] {
+  |                                         ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:8:43
+  |
+8 |             if ch == &upper[i as usize..i + 1 as usize] {
+  |                                           ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:9:47
+  |
+9 |                 return &lower[i as usize..i + 1 as usize];
+  |                                               ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:9:43
+  |
+9 |                 return &lower[i as usize..i + 1 as usize];
+  |                                           ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-23305323156/001/prog.rs:9:45
+  |
+9 |                 return &lower[i as usize..i + 1 as usize];
+  |                                             ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error: aborting due to 7 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

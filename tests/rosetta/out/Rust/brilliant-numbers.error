@@ -1,0 +1,111 @@
+rustc error: exit status 1
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:120:17
+    |
+120 |         let r = getBrilliant(2, 10000, false);
+    |                 ^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0434]: can't capture dynamic environment in a fn item
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:135:22
+    |
+135 |             let r2 = getBrilliant(k, limit, true);
+    |                      ^^^^^^^^^^^^
+    |
+    = help: use the `|| { ... }` closure form instead
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:114:116
+    |
+73  |     let getBrilliant = move |digits: i32, limit: i32, countOnly: bool| -> std::collections::HashMap<&'static str, i32> {
+    |                                                                           -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+114 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("bc", count); m.insert("next", next); m };
+    |                                                                                                                    ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
+    |
+    = note: expected struct `HashMap<&'static str, i32>`
+               found struct `BTreeMap<&str, i32>`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:116:109
+    |
+116 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bc", brilliant); m.insert("next", next); m };
+    |                                                                 -              ---------     ------         ^^^^ expected `Vec<i32>`, found `i32`
+    |                                                                 |              |             |
+    |                                                                 |              |             arguments to this method are incorrect
+    |                                                                 |              this argument has type `Vec<i32>`...
+    |                                                                 ... which causes `m` to have type `BTreeMap<&str, Vec<i32>>`
+    |
+    = note: expected struct `Vec<i32>`
+                 found type `i32`
+help: the return type of this call is `i32` due to the type of the argument passed
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:116:92
+    |
+116 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bc", brilliant); m.insert("next", next); m };
+    |                                                                                            ^^^^^^^^^^^^^^^^^----^
+    |                                                                                                             |
+    |                                                                                                             this argument influences the return type of `insert`
+note: method defined here
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:116:116
+    |
+73  |     let getBrilliant = move |digits: i32, limit: i32, countOnly: bool| -> std::collections::HashMap<&'static str, i32> {
+    |                                                                           -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+116 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("bc", brilliant); m.insert("next", next); m };
+    |                                                                                                                    ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, Vec<i32>>`
+    |
+    = note: expected struct `HashMap<&'static str, i32>`
+               found struct `BTreeMap<&str, Vec<i32>>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:70:16
+   |
+63 |     fn commatize(n: i32) -> &'static str {
+   |                             ------------ expected `&'static str` because of return type
+...
+70 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+70 |         return &s;
+   |                +
+
+error[E0599]: no method named `padStart` found for struct `String` in the current scope
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:125:76
+    |
+125 |             println!("{:?} {}", format!("{}{}", br[i as usize].to_string().padStart(4, " "), " "), false);
+    |                                                                            ^^^^^^^^ method not found in `String`
+
+error[E0425]: cannot find function `pow` in this scope
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:134:25
+    |
+134 |             let limit = pow(10, k);
+    |                         ^^^ not found in this scope
+
+error[E0599]: no method named `padStart` found for reference `&str` in the current scope
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:141:130
+    |
+141 | ...mat!("{}{}", format!("{}{}", "First >= ", climit.padStart(18, " ")), " is "), ctotal.padStart(14, " ")), " in the series: "), cnext.pa...
+    |                                                     ^^^^^^^^ method not found in `&str`
+
+error[E0599]: no method named `padStart` found for reference `&str` in the current scope
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:141:166
+    |
+141 | ...>= ", climit.padStart(18, " ")), " is "), ctotal.padStart(14, " ")), " in the series: "), cnext.padStart(18, " ")));
+    |                                                     ^^^^^^^^ method not found in `&str`
+
+error[E0599]: no method named `padStart` found for reference `&str` in the current scope
+   --> /tmp/TestMochiRustGoldenbrilliant-numbers3841230009/001/prog.rs:141:213
+    |
+141 | ...l.padStart(14, " ")), " in the series: "), cnext.padStart(18, " ")));
+    |                                                     ^^^^^^^^ method not found in `&str`
+
+error: aborting due to 11 previous errors
+
+Some errors have detailed explanations: E0308, E0425, E0434, E0599.
+For more information about an error, try `rustc --explain E0308`.

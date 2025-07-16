@@ -1,0 +1,22 @@
+rustc error: exit status 1
+error[E0277]: cannot multiply `{integer}` by `String`
+ --> /tmp/TestMochiRustGoldenapply-a-callback-to-an-array-13738655898/001/prog.rs:4:26
+  |
+4 |         println!("{}", i * i.to_string());
+  |                          ^ no implementation for `{integer} * String`
+  |
+  = help: the trait `Mul<String>` is not implemented for `{integer}`
+  = help: the following other types implement trait `Mul<Rhs>`:
+            `&f128` implements `Mul<f128>`
+            `&f128` implements `Mul`
+            `&f16` implements `Mul<f16>`
+            `&f16` implements `Mul`
+            `&f32` implements `Mul<f32>`
+            `&f32` implements `Mul`
+            `&f64` implements `Mul<f64>`
+            `&f64` implements `Mul`
+          and 57 others
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0277`.

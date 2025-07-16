@@ -1,0 +1,101 @@
+rustc error: exit status 1
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:111
+   |
+13 | ...   return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>()...
+   |                                                                                                             ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+13 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("mean", sum / ((v.len() as i32).parse::<f64>().unwrap())); m };
+   |                                                                                                               +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:21:92
+   |
+21 | ...   println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", v.len() as i32.to_string()), " numbers is "), r[&"mean"]...
+   |                                                                                  ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+21 |                 println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "Mean of ", (v.len() as i32).to_string()), " numbers is "), r[&"mean"].to_string()));
+   |                                                                                            +              +
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:5:92
+  |
+3 |     fn mean(v: Vec<f64>) -> std::collections::HashMap<&'static str, i32> {
+  |                             -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+4 |         if v.len() as i32 == 0 {
+5 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("ok", false); m };
+  |                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
+  |
+  = note: expected struct `HashMap<&'static str, i32>`
+             found struct `BTreeMap<&str, bool>`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:126
+   |
+13 | ...ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
+   |                                                       ^^^^^ method not found in `i32`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:104
+   |
+13 | ...p::new(); m.insert("ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
+   |              -              ----     ------         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `bool`, found `f64`
+   |              |              |        |
+   |              |              |        arguments to this method are incorrect
+   |              |              this argument has type `bool`...
+   |              ... which causes `m` to have type `BTreeMap<&str, bool>`
+   |
+help: the return type of this call is `f64` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:87
+   |
+13 | ..., true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
+   |             ^^^^^^^^^^^^^^^^^----------------------------------------------^
+   |                              |
+   |                              this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:13:153
+   |
+3  | ...-> std::collections::HashMap<&'static str, i32> {
+   |       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+13 | ...m = std::collections::BTreeMap::new(); m.insert("ok", true); m.insert("mean", sum / (v.len() as i32.parse::<f64>().unwrap())); m };
+   |                                                                                                                                   ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, bool>`
+
+error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:16:80
+   |
+16 | ...   let sets = vec![vec![], vec![3.0, 1.0, 4.0, 1.0, 5.0, 9.0], vec![1e+20.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -1e+20.0], vec![10.0, 9.0, ...
+   |                                                                              ^
+
+error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:16:120
+   |
+16 | ...   let sets = vec![vec![], vec![3.0, 1.0, 4.0, 1.0, 5.0, 9.0], vec![1e+20.0, 3.0, 1.0, 4.0, 1.0, 5.0, 9.0, -1e+20.0], vec![10.0, 9.0, ...
+   |                                                                                                                      ^
+
+error[E0599]: the method `to_string` exists for struct `Vec<{float}>`, but its trait bounds were not satisfied
+  --> /tmp/TestMochiRustGoldenaverages-arithmetic-mean2486251869/001/prog.rs:18:58
+   |
+18 |             println!("{}", format!("{}{}", "Vector: ", v.to_string()));
+   |                                                          ^^^^^^^^^ method cannot be called on `Vec<{float}>` due to unsatisfied trait bounds
+   |
+   = note: the following trait bounds were not satisfied:
+           `Vec<{float}>: std::fmt::Display`
+           which is required by `Vec<{float}>: ToString`
+           `[{float}]: std::fmt::Display`
+           which is required by `[{float}]: ToString`
+
+error: aborting due to 9 previous errors
+
+Some errors have detailed explanations: E0308, E0599, E0610.
+For more information about an error, try `rustc --explain E0308`.

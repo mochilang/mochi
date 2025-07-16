@@ -1,0 +1,53 @@
+rustc error: exit status 1
+error[E0277]: cannot add `String` to `{float}`
+  --> /tmp/TestMochiRustGoldenarchimedean-spiral4083410653/001/prog.rs:42:67
+   |
+42 |             println!("{}", format!("{}{}", format!("{}{}", centre + x.to_string(), ","), centre - y.to_string()));
+   |                                                                   ^ no implementation for `{float} + String`
+   |
+   = help: the trait `Add<String>` is not implemented for `{float}`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&f128` implements `Add<f128>`
+             `&f128` implements `Add`
+             `&f16` implements `Add<f16>`
+             `&f16` implements `Add`
+             `&f32` implements `Add<f32>`
+             `&f32` implements `Add`
+             `&f64` implements `Add<f64>`
+             `&f64` implements `Add`
+           and 56 others
+
+error[E0277]: cannot subtract `String` from `{float}`
+  --> /tmp/TestMochiRustGoldenarchimedean-spiral4083410653/001/prog.rs:42:97
+   |
+42 |             println!("{}", format!("{}{}", format!("{}{}", centre + x.to_string(), ","), centre - y.to_string()));
+   |                                                                                                 ^ no implementation for `{float} - String`
+   |
+   = help: the trait `Sub<String>` is not implemented for `{float}`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&f128` implements `Sub<f128>`
+             `&f128` implements `Sub`
+             `&f16` implements `Sub<f16>`
+             `&f16` implements `Sub`
+             `&f32` implements `Sub<f32>`
+             `&f32` implements `Sub`
+             `&f64` implements `Sub<f64>`
+             `&f64` implements `Sub`
+           and 56 others
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+ --> /tmp/TestMochiRustGoldenarchimedean-spiral4083410653/001/prog.rs:9:49
+  |
+9 |             let denom = ((2 * n) * (2 * n + 1)).parse::<f64>().unwrap();
+  |                                                 ^^^^^
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+  --> /tmp/TestMochiRustGoldenarchimedean-spiral4083410653/001/prog.rs:21:49
+   |
+21 |             let denom = ((2 * n - 1) * (2 * n)).parse::<f64>().unwrap();
+   |                                                 ^^^^^
+
+error: aborting due to 4 previous errors
+
+Some errors have detailed explanations: E0277, E0689.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,271 @@
+rustc error: exit status 1
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:12:70
+   |
+12 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", d.len() as i32.to_string()), " dogs.
+   |                                                                      ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+12 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", (d.len() as i32).to_string()), " dogs.
+   |                                                                      +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:20:70
+   |
+20 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", d.len() as i32.to_string()), " dogs.
+   |                                                                      ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+20 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", (d.len() as i32).to_string()), " dogs.
+   |                                                                      +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:28:70
+   |
+28 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", d.len() as i32.to_string()), " dogs.
+   |                                                                      ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+28 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", (d.len() as i32).to_string()), " dogs.
+   |                                                                      +              +
+
+error: cast cannot be followed by a method call
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:37:70
+   |
+37 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", d.len() as i32.to_string()), " dogs."));
+   |                                                                      ^^^^^^^^^^^^^^
+   |
+help: try surrounding the expression in parentheses
+   |
+37 |         println!("{}", format!("{}{}", format!("{}{}", "There are ", (d.len() as i32).to_string()), " dogs."));
+   |                                                                      +              +
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:9:146
+  |
+7 | ...str| -> std::collections::HashMap<&'static str, bool> {
+  |            --------------------------------------------- expected `HashMap<&'static str, bool>` because of return type
+8 | ...!("{}{}", format!("{}{}", "Package sees: ", d1), " "), d2), " "), d3));
+9 | ..._dog", true); m.insert("Dog", true); m.insert("pkg_DOG", true); m };
+  |                                                                    ^ expected `HashMap<&str, bool>`, found `BTreeMap<&str, bool>`
+  |
+  = note: expected struct `HashMap<&'static str, bool>`
+             found struct `BTreeMap<&str, bool>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:17:11
+   |
+17 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+17 |         d[&("dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:18:11
+   |
+18 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+18 |         d[&("Dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:19:11
+   |
+19 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+19 |         d[&("pkg_DOG" as usize)] = true;
+   |           ++                  +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:25:11
+   |
+25 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+25 |         d[&("dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:26:11
+   |
+26 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+26 |         d[&("Dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:27:11
+   |
+27 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+27 |         d[&("pkg_DOG" as usize)] = true;
+   |           ++                  +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:33:11
+   |
+33 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+33 |         d[&("dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:34:11
+   |
+34 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+34 |         d[&("Dog" as usize)] = true;
+   |           ++              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:35:11
+   |
+35 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+35 |         d[&("pkg_DOG" as usize)] = true;
+   |           ++                  +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:36:11
+   |
+36 |         d["DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+   |
+   = note: expected reference `&_`
+                   found type `usize`
+help: consider borrowing here
+   |
+36 |         d[&("DOG" as usize)] = true;
+   |           ++              +
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:17:11
+   |
+17 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:18:11
+   |
+18 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:19:11
+   |
+19 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:25:11
+   |
+25 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:26:11
+   |
+26 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:27:11
+   |
+27 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:33:11
+   |
+33 |         d["dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:34:11
+   |
+34 |         d["Dog" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:35:11
+   |
+35 |         d["pkg_DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+  --> /tmp/TestMochiRustGoldencase-sensitivity-of-identifiers2136829372/001/prog.rs:36:11
+   |
+36 |         d["DOG" as usize] = true;
+   |           ^^^^^^^^^^^^^^
+   |
+   = help: cast through a raw pointer first
+
+error: aborting due to 25 previous errors
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.

@@ -1,0 +1,16 @@
+rustc error: exit status 1
+error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
+  --> /tmp/TestMochiRustGoldenapproximate-equality2072373496/001/prog.rs:32:282
+   |
+32 | ...ec![root2 * root2, 2.0], vec![(-root2) * root2, -2.0], vec![1e+17.0, 1e+17.0], vec![3.141592653589793, 3.141592653589793]];
+   |                                                                      ^
+
+error[E0610]: `{float}` is a primitive type and therefore doesn't have fields
+  --> /tmp/TestMochiRustGoldenapproximate-equality2072373496/001/prog.rs:32:291
+   |
+32 | ... * root2, 2.0], vec![(-root2) * root2, -2.0], vec![1e+17.0, 1e+17.0], vec![3.141592653589793, 3.141592653589793]];
+   |                                                                      ^
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0610`.

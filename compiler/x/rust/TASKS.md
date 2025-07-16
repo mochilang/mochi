@@ -13,6 +13,7 @@
 - 2025-07-15 06:34 - Generated Rust code for additional TPC-DS queries and updated golden test to regenerate outputs automatically.
 - 2025-07-15 07:09 - Improved field access for nested structs and regenerated TPC-DS Rust outputs as `.rs` files.
 - 2025-07-15 07:24 - Mapped `any` type to `i32`, regenerated TPC-DS Rust outputs and removed obsolete `.rs.out` files.
+- 2025-07-16 02:20 - Added Rosetta golden tests and implemented `f64` and `bool` casts to reduce `.error` files.
 
 ## Remaining Enhancements
 - [ ] Inline JSON printing for variables when values are known at compile time

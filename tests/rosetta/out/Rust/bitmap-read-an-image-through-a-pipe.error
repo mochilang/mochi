@@ -1,0 +1,203 @@
+rustc error: exit status 1
+error: bare CR not allowed in string, use `\r` instead
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:33:26
+   |
+33 | " || ch == "    " || ch == "␍" {
+   |                             ^
+   |
+help: escape the character
+   |
+33 | " || ch == "    " || ch == "\r" {
+   |                             ++
+
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:50:30
+   |
+50 |         if toks.len() as i32 < 4 {
+   |                              ^ --- interpreted as generic arguments
+   |                              |
+   |                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+50 |         if (toks.len() as i32) < 4 {
+   |            +                 +
+
+error[E0609]: no field `w` on type `HashMap<&str, i32>`
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:71:82
+   |
+71 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "width=", img.w.to_string()), " height="), img.h.to_string()));
+   |                                                                                  ^ unknown field
+
+error[E0609]: no field `h` on type `HashMap<&str, i32>`
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:71:115
+   |
+71 |     println!("{}", format!("{}{}", format!("{}{}", format!("{}{}", "width=", img.w.to_string()), " height="), img.h.to_string()));
+   |                                                                                                                   ^ unknown field
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:18:55
+   |
+18 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:18:51
+   |
+18 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                   ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:18:53
+   |
+18 |             n = n * 10 + digits[&&str[i as usize..i + 1 as usize]];
+   |                                                     ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:31:41
+   |
+31 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:31:37
+   |
+31 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:31:39
+   |
+31 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:39:17
+   |
+39 |                 cur += ch;
+   |                 ---^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:51:92
+   |
+48 |     fn parsePpm(data: &'static str) -> std::collections::HashMap<&'static str, i32> {
+   |                                        -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+51 |             return { let mut m = std::collections::BTreeMap::new(); m.insert("err", true); m };
+   |                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, bool>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, bool>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:105
+   |
+63 | ...collections::BTreeMap::new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px);...
+   |                                  -                 -----     ------      ^ expected `&str`, found `i32`
+   |                                  |                 |         |
+   |                                  |                 |         arguments to this method are incorrect
+   |                                  |                 this argument has type `&str`...
+   |                                  ... which causes `m` to have type `BTreeMap<&str, &str>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:91
+   |
+63 | ...new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                                     ^^^^^^^^^^^^^^-^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:123
+   |
+63 | ...ns::BTreeMap::new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                         -                 -----                       ------      ^ expected `&str`, found `i32`
+   |                         |                 |                           |
+   |                         |                 |                           arguments to this method are incorrect
+   |                         |                 this argument has type `&str`...
+   |                         ... which causes `m` to have type `BTreeMap<&str, &str>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:109
+   |
+63 | ...agic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                                     ^^^^^^^^^^^^^^-^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:143
+   |
+63 | ...ap::new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |               -                 -----                                         ------        ^^^^ expected `&str`, found `i32`
+   |               |                 |                                             |
+   |               |                 this argument has type `&str`...              arguments to this method are incorrect
+   |               ... which causes `m` to have type `BTreeMap<&str, &str>`
+   |
+help: the return type of this call is `i32` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:127
+   |
+63 | ...rt("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                                  ^^^^^^^^^^^^^^^^----^
+   |                                                  |
+   |                                                  this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:165
+   |
+63 | ...eMap::new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                 -                 -----                                                                ------       ^^ expected `&str`, found `Vec<i32>`
+   |                 |                 |                                                                    |
+   |                 |                 this argument has type `&str`...                                     arguments to this method are incorrect
+   |                 ... which causes `m` to have type `BTreeMap<&str, &str>`
+   |
+   = note: expected reference `&str`
+                 found struct `Vec<i32>`
+help: the return type of this call is `Vec<i32>` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:150
+   |
+63 | ..."h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                                    ^^^^^^^^^^^^^^^--^
+   |                                                   |
+   |                                                   this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-read-an-image-through-a-pipe2760110153/001/prog.rs:63:170
+   |
+48 | ...-> std::collections::HashMap<&'static str, i32> {
+   |       -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+63 | ...llections::BTreeMap::new(); m.insert("magic", magic); m.insert("w", w); m.insert("h", h); m.insert("max", maxv); m.insert("px", px); m };
+   |                                                                                                                                         ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, &str>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, &str>`
+
+error: aborting due to 17 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0609.
+For more information about an error, try `rustc --explain E0277`.
