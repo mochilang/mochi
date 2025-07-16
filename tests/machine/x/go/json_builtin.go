@@ -9,17 +9,9 @@ import (
 	"fmt"
 )
 
-type M struct {
-	A int `json:"a"`
-	B int `json:"b"`
-}
-
-type v = M
+type v map[string]any
 
 func main() {
-	m := M{
-		A: 1,
-		B: 2,
-	}
+	m := map[string]int{"a": 1, "b": 2}
 	func() { b, _ := json.Marshal(m); fmt.Println(string(b)) }()
 }

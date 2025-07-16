@@ -418,10 +418,14 @@ func (c *Compiler) compileLet(s *parser.LetStmt) error {
 					c.compileStructType(st)
 				}
 			} else if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
-				if st, ok := c.inferStructFromMap(ml, s.Name); ok {
-					t = st
-					c.env.SetStruct(st.Name, st)
-					c.compileStructType(st)
+				if len(ml.Items) > 2 {
+					if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+						t = st
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					} else if mt, ok := c.inferSimpleMap(ml); ok {
+						t = mt
+					}
 				} else if mt, ok := c.inferSimpleMap(ml); ok {
 					t = mt
 				}
@@ -526,10 +530,14 @@ func (c *Compiler) compileVar(s *parser.VarStmt) error {
 					c.compileStructType(st)
 				}
 			} else if ml := s.Value.Binary.Left.Value.Target.Map; ml != nil {
-				if st, ok := c.inferStructFromMap(ml, s.Name); ok {
-					typ = st
-					c.env.SetStruct(st.Name, st)
-					c.compileStructType(st)
+				if len(ml.Items) > 2 {
+					if st, ok := c.inferStructFromMap(ml, s.Name); ok {
+						typ = st
+						c.env.SetStruct(st.Name, st)
+						c.compileStructType(st)
+					} else if mt, ok := c.inferSimpleMap(ml); ok {
+						typ = mt
+					}
 				} else if mt, ok := c.inferSimpleMap(ml); ok {
 					typ = mt
 				}
