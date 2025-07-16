@@ -1,50 +1,177 @@
 runhaskell: exit status 1
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:43:18: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-43 |          in case Map.lookup k m of
-   |                  ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:26: error:
+    • Couldn't match expected type ‘IO b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          ((let j = 1
+            in
+              case
+                  whileLoop
+                    (\ () -> (_asInt ((j * j)) < i))
+                    (\ () -> (let j = (_asInt (j) + 1) in Nothing))
+              of
+                Just v -> Just v
+                Nothing
+                  -> if (_asInt ((j * j)) == i) then
+                         (let result = ... in Nothing)
+                     else
+                         (let result = ... in Nothing)))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ i
+            -> fromMaybe
+                 ()
+                 ((let j = 1
+                   in
+                     case
+                         whileLoop
+                           (\ () -> (_asInt ((j * j)) < i)) (\ () -> (let j = ... in Nothing))
+                     of
+                       Just v -> Just v
+                       Nothing
+                         -> if (_asInt ((j * j)) == i) then
+                                (let ... in Nothing)
+                            else
+                                (let ... in Nothing))))’
+    |
+107 |   mapM_ (\i -> fromMaybe () ((let j = 1 in case whileLoop (\() -> (_asInt ((j * j)) < i)) (\() -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> if (_asInt ((j * j)) == i) then (let result = (result ++ "O") in Nothing) else (let result = (result ++ "-") in Nothing)))) [1 .. 101 - 1]
+    |                          ^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:44:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
-   |                                 ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:68: error:
+    • Found hole: _asInt :: t1 -> a0
+      Where: ‘t1’ is an ambiguous type variable
+             ‘a0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(<)’, namely ‘_asInt ((j * j))’
+      In the expression: _asInt ((j * j)) < i
+      In the first argument of ‘whileLoop’, namely
+        ‘(\ () -> (_asInt ((j * j)) < i))’
+    • Relevant bindings include
+        j :: t1
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:35)
+        i :: a0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:11)
+        main :: IO ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:106:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromRational :: forall a. Fractional a => Rational -> a
+          with fromRational @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toRational :: forall a. Real a => a -> Rational
+          with toRational @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+107 |   mapM_ (\i -> fromMaybe () ((let j = 1 in case whileLoop (\() -> (_asInt ((j * j)) < i)) (\() -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> if (_asInt ((j * j)) == i) then (let result = (result ++ "O") in Nothing) else (let result = (result ++ "-") in Nothing)))) [1 .. 101 - 1]
+    |                                                                    ^^^^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:45:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
-   |                                 ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:109: error:
+    • Found hole: _asInt :: t0 -> t0
+      Where: ‘t0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(+)’, namely ‘_asInt (j)’
+      In the expression: _asInt (j) + 1
+      In an equation for ‘j’: j = (_asInt (j) + 1)
+    • Relevant bindings include
+        j :: t0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:104)
+        i :: a0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:11)
+        main :: IO ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:106:1)
+      Valid hole fits include
+        i :: t0 -> t0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:11)
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        realToFrac :: forall a b. (Real a, Fractional b) => a -> b
+          with realToFrac @Double @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+107 |   mapM_ (\i -> fromMaybe () ((let j = 1 in case whileLoop (\() -> (_asInt ((j * j)) < i)) (\() -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> if (_asInt ((j * j)) == i) then (let result = (result ++ "O") in Nothing) else (let result = (result ++ "-") in Nothing)))) [1 .. 101 - 1]
+    |                                                                                                             ^^^^^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:46:27: error:
-    Not in scope: ‘Map.empty’
-    NB: no module named ‘Map’ is imported.
-   |
-46 |       (m, order) = go src Map.empty []
-   |                           ^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:47:32: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
-   |                                ^^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:83:41: error:
-    Not in scope: type constructor or class ‘Map.Map’
-    NB: no module named ‘Map’ is imported.
-   |
-83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
-   |                                         ^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:96:21: error:
-    Not in scope: ‘Map.fromList’
-    NB: no module named ‘Map’ is imported.
-   |
-96 |                  in Map.fromList
-   |                     ^^^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:174: error:
+    • Found hole: _asInt :: t1 -> a0
+      Where: ‘t1’ is an ambiguous type variable
+             ‘a0’ is an ambiguous type variable
+      Or perhaps ‘_asInt’ is mis-spelled, or not in scope
+    • In the first argument of ‘(==)’, namely ‘_asInt ((j * j))’
+      In the expression: _asInt ((j * j)) == i
+      In the expression:
+        if (_asInt ((j * j)) == i) then
+            (let result = (result ++ "O") in Nothing)
+        else
+            (let result = (result ++ "-") in Nothing)
+    • Relevant bindings include
+        j :: t1
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:35)
+        i :: a0
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:107:11)
+        main :: IO ()
+          (bound at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:106:1)
+      Valid hole fits include
+        fromInteger :: forall a. Num a => Integer -> a
+          with fromInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromRational :: forall a. Fractional a => Rational -> a
+          with fromRational @Double
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        negate :: forall a. Num a => a -> a
+          with negate @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Num’))
+        fromIntegral :: forall a b. (Integral a, Num b) => a -> b
+          with fromIntegral @Integer @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toInteger :: forall a. Integral a => a -> Integer
+          with toInteger @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        toRational :: forall a. Real a => a -> Rational
+          with toRational @Integer
+          (imported from ‘Prelude’ at /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:5:8-11
+           (and originally defined in ‘GHC.Real’))
+        (Some hole fits suppressed; use -fmax-valid-hole-fits=N or -fno-max-valid-hole-fits)
+    |
+107 |   mapM_ (\i -> fromMaybe () ((let j = 1 in case whileLoop (\() -> (_asInt ((j * j)) < i)) (\() -> (let j = (_asInt (j) + 1) in Nothing)) of Just v -> Just v; Nothing -> if (_asInt ((j * j)) == i) then (let result = (result ++ "O") in Nothing) else (let result = (result ++ "-") in Nothing)))) [1 .. 101 - 1]
+    |                                                                                                                                                                              ^^^^^^

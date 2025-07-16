@@ -1,5 +1,10 @@
 # Haskell Backend Progress
 
+-## Recent Updates (2025-07-18 05:00)
+- Automatically import `Data.Map` whenever runtime helpers are emitted so
+  generated programs compile cleanly.
+- Re-ran `compile_rosetta_hs.go` to refresh golden outputs after the change.
+
 ## Recent Updates (2025-07-17 05:00)
 - Added golden tests for Rosetta tasks using `compile_rosetta_hs.go`.
 - Fixed `Map` import detection so generated programs compile without manual edits.

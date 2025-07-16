@@ -6,6 +6,7 @@ module Main where
 
 import Data.List (intercalate, isInfixOf, isPrefixOf)
 import qualified Data.List as List
+import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
 
 forLoop :: Int -> Int -> (Int -> Maybe a) -> Maybe a

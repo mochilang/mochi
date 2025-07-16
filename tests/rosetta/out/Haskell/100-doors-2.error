@@ -1,50 +1,48 @@
 runhaskell: exit status 1
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:43:18: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-43 |          in case Map.lookup k m of
-   |                  ^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:133:32: error:
+    • Couldn't match expected type ‘IO b0’ with actual type ‘()’
+    • In the first argument of ‘fromMaybe’, namely ‘()’
+      In the expression:
+        fromMaybe
+          ()
+          ((let line = (("Door " ++ show current) ++ " ")
+            in
+              case
+                  if (current == door) then
+                      (let line = (line + "Open")
+                       in
+                         (let incrementer = (incrementer + 1)
+                          in (let door = (((door + 2) * incrementer) + 1) in Nothing)))
+                  else
+                      (let line = (line + "Closed") in Nothing)
+              of
+                Just v -> Just v
+                Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))
+      In the first argument of ‘mapM_’, namely
+        ‘(\ current
+            -> fromMaybe
+                 ()
+                 ((let line = (("Door " ++ show current) ++ " ")
+                   in
+                     case
+                         if (current == door) then
+                             (let line = ...
+                              in (let incrementer = ... in (let door = ... in Nothing)))
+                         else
+                             (let line = ... in Nothing)
+                     of
+                       Just v -> Just v
+                       Nothing -> (let _ = ... in Nothing))))’
+    |
+133 |   mapM_ (\current -> fromMaybe () ((let line = (("Door " ++ show current) ++ " ") in case if (current == door) then (let line = (line + "Open") in (let incrementer = (incrementer + 1) in (let door = (((door + 2) * incrementer) + 1) in Nothing))) else (let line = (line + "Closed") in Nothing) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [1 .. 101 - 1]
+    |                                ^^
 
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:44:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-44 |               Just is -> go xs (Map.insert k (is ++ [x]) m) order
-   |                                 ^^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:45:33: error:
-    Not in scope: ‘Map.insert’
-    NB: no module named ‘Map’ is imported.
-   |
-45 |               Nothing -> go xs (Map.insert k [x] m) (order ++ [k])
-   |                                 ^^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:46:27: error:
-    Not in scope: ‘Map.empty’
-    NB: no module named ‘Map’ is imported.
-   |
-46 |       (m, order) = go src Map.empty []
-   |                           ^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:47:32: error:
-    Not in scope: ‘Map.lookup’
-    NB: no module named ‘Map’ is imported.
-   |
-47 |    in [MGroup k (fromMaybe [] (Map.lookup k m)) | k <- order]
-   |                                ^^^^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:83:41: error:
-    Not in scope: type constructor or class ‘Map.Map’
-    NB: no module named ‘Map’ is imported.
-   |
-83 | _parseCSV :: String -> Bool -> Char -> [Map.Map String String]
-   |                                         ^^^^^^^
-
-/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:96:21: error:
-    Not in scope: ‘Map.fromList’
-    NB: no module named ‘Map’ is imported.
-   |
-96 |                  in Map.fromList
-   |                     ^^^^^^^^^^^^
+/workspace/mochi/tests/rosetta/out/Haskell/100-doors-2.hs:133:355: error:
+    • Couldn't match expected type ‘AnyValue’ with actual type ‘[Char]’
+    • In the first argument of ‘_showAny’, namely ‘(line)’
+      In the first argument of ‘putStrLn’, namely ‘(_showAny (line))’
+      In the expression: putStrLn (_showAny (line))
+    |
+133 |   mapM_ (\current -> fromMaybe () ((let line = (("Door " ++ show current) ++ " ") in case if (current == door) then (let line = (line + "Open") in (let incrementer = (incrementer + 1) in (let door = (((door + 2) * incrementer) + 1) in Nothing))) else (let line = (line + "Closed") in Nothing) of Just v -> Just v; Nothing -> (let _ = putStrLn (_showAny (line)) in Nothing)))) [1 .. 101 - 1]
+    |                                                                                                                                                                                                                                                                                                                                                                   ^^^^
