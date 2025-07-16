@@ -205,7 +205,7 @@ type FunStmt struct {
 
 type ReturnStmt struct {
 	Pos   lexer.Position
-	Value *Expr `parser:"'return' @@"`
+	Value *Expr `parser:"'return' @@?"`
 }
 
 type BreakStmt struct {

@@ -2577,7 +2577,10 @@ func (fc *funcCompiler) compileStmt(s *parser.Statement) error {
 		}
 		return nil
 	case s.Return != nil:
-		r := fc.compileExpr(s.Return.Value)
+		var r int
+		if s.Return.Value != nil {
+			r = fc.compileExpr(s.Return.Value)
+		}
 		fc.emit(s.Return.Pos, Instr{Op: OpReturn, A: r})
 		return nil
 	case s.Expr != nil:

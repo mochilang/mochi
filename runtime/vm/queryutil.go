@@ -169,7 +169,9 @@ func scanStmtVars(s *parser.Statement, vars map[string]struct{}) {
 	case s.Assign != nil:
 		exprVars(s.Assign.Value, vars)
 	case s.Return != nil:
-		exprVars(s.Return.Value, vars)
+		if s.Return.Value != nil {
+			exprVars(s.Return.Value, vars)
+		}
 	case s.Expr != nil:
 		exprVars(s.Expr.Expr, vars)
 	case s.For != nil:

@@ -43,9 +43,9 @@ fun ackermann2(m: bigint, n: bigint): bigint {
     }
   }
   if bit_len(n) == 0 {
-    return ackermann2(m - 1, 1 as bigint)
+    return ackermann2(m - (1 as bigint), 1 as bigint)
   }
-  return ackermann2(m - 1, ackermann2(m, n - 1))
+  return ackermann2(m - (1 as bigint), ackermann2(m, n - (1 as bigint)))
 }
 
 fun show(m: int, n: int) {

@@ -1363,6 +1363,9 @@ func applyBinaryType(pos lexer.Position, op string, left, right Type) (Type, err
 			if unify(left, FloatType{}, nil) || unify(right, FloatType{}, nil) {
 				return FloatType{}, nil
 			}
+			if unify(left, BigIntType{}, nil) || unify(right, BigIntType{}, nil) {
+				return BigIntType{}, nil
+			}
 			if unify(left, Int64Type{}, nil) || unify(right, Int64Type{}, nil) {
 				return Int64Type{}, nil
 			}
