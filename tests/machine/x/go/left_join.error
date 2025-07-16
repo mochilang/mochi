@@ -1,7 +1,7 @@
 Error on line 0: run error: exit status 1
 # command-line-arguments
-../../../tests/machine/x/go/left_join.go:54:18: cannot use &v (value of type *Customer) as Customer value in assignment
-../../../tests/machine/x/go/left_join.go:56:18: cannot use nil as Customer value in assignment
-../../../tests/machine/x/go/left_join.go:64:24: invalid operation: entry.Customer != nil (mismatched types Customer and untyped nil)
+../../../tests/machine/x/go/left_join.go:56:18: cannot use &v (value of type *Customer) as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:58:18: cannot use nil as Customer value in assignment
+../../../tests/machine/x/go/left_join.go:66:24: invalid operation: entry.Customer != nil (mismatched types Customer and untyped nil)
 
 1: //go:build ignore
