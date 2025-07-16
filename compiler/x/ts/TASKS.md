@@ -71,3 +71,6 @@
 ### 2025-07-16 12:32 UTC
 - Added support for field access and type casts in `compilePostfix`.
 - Ran Rosetta golden tests on a subset of tasks; fewer `.error` files generated.
+### 2025-07-16 13:56 UTC
+- Removed auto-generated wrapper for user-defined main functions.
+- Ran limited Rosetta golden tests to regenerate TypeScript outputs.

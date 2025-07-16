@@ -103,7 +103,4 @@ function main(): void {
   }
 }
 
-function main(): void {
-  main();
-}
 main();

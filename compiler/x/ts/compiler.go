@@ -404,39 +404,61 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		}
 	}
 
-	if needsAsync {
-		c.writeln("async function main(): Promise<void> {")
+	hasMain := false
+	for _, s := range prog.Statements {
+		if s.Fun != nil && s.Fun.Name == "main" {
+			hasMain = true
+			break
+		}
+	}
+
+	if !hasMain {
+		if needsAsync {
+			c.writeln("async function main(): Promise<void> {")
+		} else {
+			c.writeln("function main(): void {")
+		}
+		c.moduleScope = true
+		c.indent++
+		for _, s := range prog.Statements {
+			if s.Fun != nil || s.Test != nil || s.Type != nil {
+				continue
+			}
+			if err := c.compileStmt(s); err != nil {
+				return nil, err
+			}
+		}
+		for _, s := range prog.Statements {
+			if s.Test != nil {
+				name := "test_" + sanitizeName(s.Test.Name)
+				c.writeln(fmt.Sprintf("%s()", name))
+			}
+		}
+		c.indent--
+		c.writeln("}")
+		c.moduleScope = false
+		if needsAsync {
+			c.use("_waitAll")
+		}
 	} else {
-		c.writeln("function main(): void {")
-	}
-	c.moduleScope = true
-	c.indent++
-	for _, s := range prog.Statements {
-		if s.Fun != nil || s.Test != nil || s.Type != nil {
-			continue
+		c.moduleScope = false
+		for _, s := range prog.Statements {
+			if s.Fun != nil || s.Test != nil || s.Type != nil {
+				continue
+			}
+			if err := c.compileStmt(s); err != nil {
+				return nil, err
+			}
 		}
-		if err := c.compileStmt(s); err != nil {
-			return nil, err
-		}
-	}
-	for _, s := range prog.Statements {
-		if s.Test != nil {
-			name := "test_" + sanitizeName(s.Test.Name)
-			c.writeln(fmt.Sprintf("%s()", name))
-		}
-	}
-	c.indent--
-	c.writeln("}")
-	c.moduleScope = false
-	if needsAsync {
-		c.use("_waitAll")
 	}
 	c.emitRuntime()
-	if needsAsync {
-		c.writeln("await main()")
-		c.writeln("await _waitAll()")
-	} else {
-		c.writeln("main()")
+	if !hasMain {
+		if needsAsync {
+			c.writeln("await main()")
+			c.writeln("await _waitAll()")
+		} else {
+			c.writeln("main()")
+		}
 	}
 	c.writeln("")
 	code := c.buf.Bytes()
@@ -1412,7 +1434,7 @@ func (c *Compiler) compileTestBlock(t *parser.TestBlock) error {
 
 func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 	if e == nil || e.Binary == nil {
-		return "", fmt.Errorf("invalid nil expression")
+		return "undefined", nil
 	}
 	return c.compileBinaryExpr(e.Binary)
 }
