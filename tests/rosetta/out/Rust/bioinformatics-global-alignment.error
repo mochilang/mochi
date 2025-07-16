@@ -1,0 +1,392 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:141:33
+    |
+141 |             if sup.len() as i32 < shortest.len() as i32 {
+    |                                 ^ --------- interpreted as generic arguments
+    |                                 |
+    |                                 not interpreted as comparison
+    |
+help: try comparing the cast value
+    |
+141 |             if (sup.len() as i32) < shortest.len() as i32 {
+    |                +                +
+
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:86:9
+   |
+86 |         while true {
+   |         ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:12:13
+   |
+12 |             res += " ";
+   |             ---^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:15:16
+   |
+8  |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+   |                                            ------------ expected `&str` because of return type
+...
+15 |         return format!("{}{}", res, s);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:20:35
+   |
+20 |             if &s[i as usize..i + 1 as usize] == ch {
+   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:20:31
+   |
+20 |             if &s[i as usize..i + 1 as usize] == ch {
+   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:20:33
+   |
+20 |             if &s[i as usize..i + 1 as usize] == ch {
+   |                                 ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:32:35
+   |
+32 |             if &s[i as usize..i + subl as usize] == sub {
+   |                                   ^^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:32:31
+   |
+32 |             if &s[i as usize..i + subl as usize] == sub {
+   |                               ^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:32:33
+   |
+32 |             if &s[i as usize..i + subl as usize] == sub {
+   |                                 ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:92:50
+   |
+92 |             if &s2[0 as usize..s1.len() as i32 - start as usize] == &s1[start as usize..s1.len() as i32 as usize] {
+   |                                                  ^^^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:92:32
+   |
+92 |             if &s2[0 as usize..s1.len() as i32 - start as usize] == &s1[start as usize..s1.len() as i32 as usize] {
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:92:48
+   |
+92 |             if &s2[0 as usize..s1.len() as i32 - start as usize] == &s1[start as usize..s1.len() as i32 as usize] {
+   |                                                ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:86:9
+   |
+84 |       fn headTailOverlap(s1: &'static str, s2: &'static str) -> i32 {
+   |                                                                 --- expected `i32` because of return type
+85 |           let mut start = 0;
+86 | /         while true {
+87 | |             let ix = indexOfFrom(s1, &s2[0..1], start);
+88 | |             if ix == 0 - 1 {
+89 | |                 return 0;
+...  |
+95 | |             start += 1;
+96 | |         }
+   | |_________^ expected `i32`, found `()`
+   |
+   = note: `while` loops evaluate to unit type `()`
+help: consider returning a value here
+   |
+96 ~         }
+97 +         /* `i32` value */
+   |
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:123:13
+    |
+123 |             out += s;
+    |             ---^^^^^
+    |             |
+    |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:137:69
+    |
+137 |                 let ov = headTailOverlap(perm[i as usize], perm[i + 1 as usize]);
+    |                                                                     ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:137:67
+    |
+137 |                 let ov = headTailOverlap(perm[i as usize], perm[i + 1 as usize]);
+    |                                                                   ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0277]: the type `[&str]` cannot be indexed by `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:137:65
+    |
+137 |                 let ov = headTailOverlap(perm[i as usize], perm[i + 1 as usize]);
+    |                                                                 ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+    |
+    = help: the trait `SliceIndex<[&str]>` is not implemented for `i32`
+            but it is implemented for `usize`
+    = help: for that trait implementation, expected `usize`, found `i32`
+    = note: required for `Vec<&str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:34
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                                  ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:32
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                                ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0277]: the type `[&str]` cannot be indexed by `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:30
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                              ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+    |
+    = help: the trait `SliceIndex<[&str]>` is not implemented for `i32`
+            but it is implemented for `usize`
+    = help: for that trait implementation, expected `usize`, found `i32`
+    = note: required for `Vec<&str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:68
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:66
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                                                                  ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0277]: the type `[&str]` cannot be indexed by `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:138:64
+    |
+138 |                 sup += &perm[i + 1 as usize][ov as usize..perm[i + 1 as usize].len() as i32 as usize];
+    |                                                                ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+    |
+    = help: the trait `SliceIndex<[&str]>` is not implemented for `i32`
+            but it is implemented for `usize`
+    = help: for that trait implementation, expected `usize`, found `i32`
+    = note: required for `Vec<&str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:155:43
+    |
+155 |             let ch = &seq[i as usize..i + 1 as usize];
+    |                                           ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:155:39
+    |
+155 |             let ch = &seq[i as usize..i + 1 as usize];
+    |                                       ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:155:41
+    |
+155 |             let ch = &seq[i as usize..i + 1 as usize];
+    |                                         ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:177:66
+    |
+177 |         println!("{}", format!("{}{}", padLeft("A", 10), padLeft(a.to_string(), 12)));
+    |                                                          ------- ^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                                                          |
+    |                                                          arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:8:8
+    |
+8   |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+177 |         println!("{}", format!("{}{}", padLeft("A", 10), padLeft(&a.to_string(), 12)));
+    |                                                                  +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:178:66
+    |
+178 |         println!("{}", format!("{}{}", padLeft("C", 10), padLeft(c.to_string(), 12)));
+    |                                                          ------- ^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                                                          |
+    |                                                          arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:8:8
+    |
+8   |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+178 |         println!("{}", format!("{}{}", padLeft("C", 10), padLeft(&c.to_string(), 12)));
+    |                                                                  +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:179:66
+    |
+179 |         println!("{}", format!("{}{}", padLeft("G", 10), padLeft(g.to_string(), 12)));
+    |                                                          ------- ^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                                                          |
+    |                                                          arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:8:8
+    |
+8   |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+179 |         println!("{}", format!("{}{}", padLeft("G", 10), padLeft(&g.to_string(), 12)));
+    |                                                                  +
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:180:66
+    |
+180 |         println!("{}", format!("{}{}", padLeft("T", 10), padLeft(t.to_string(), 12)));
+    |                                                          ------- ^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                                                          |
+    |                                                          arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:8:8
+    |
+8   |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+180 |         println!("{}", format!("{}{}", padLeft("T", 10), padLeft(&t.to_string(), 12)));
+    |                                                                  +
+
+error[E0277]: cannot subtract `String` from `i32`
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:181:76
+    |
+181 |         println!("{}", format!("{}{}", padLeft("Other", 10), padLeft(total - (a + c + g + t).to_string(), 12)));
+    |                                                                            ^ no implementation for `i32 - String`
+    |
+    = help: the trait `Sub<String>` is not implemented for `i32`
+    = help: the following other types implement trait `Sub<Rhs>`:
+              `&i32` implements `Sub<i32>`
+              `&i32` implements `Sub`
+              `i32` implements `Sub<&i32>`
+              `i32` implements `Sub`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:183:77
+    |
+183 |         println!("{}", format!("{}{}", padLeft("Total length", 14), padLeft(total.to_string(), 8)));
+    |                                                                     ------- ^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+    |                                                                     |
+    |                                                                     arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:8:8
+    |
+8   |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+    |        ^^^^^^^ ---------------
+help: consider borrowing here
+    |
+183 |         println!("{}", format!("{}{}", padLeft("Total length", 14), padLeft(&total.to_string(), 8)));
+    |                                                                             +
+
+error[E0382]: use of moved value: `res`
+  --> /tmp/TestMochiRustGoldenbioinformatics-global-alignment2823164695/001/prog.rs:53:16
+   |
+40 |         let mut res: Vec<&'static str> = vec![];
+   |             ------- move occurs because `res` has type `Vec<&str>`, which does not implement the `Copy` trait
+41 |         for s in slist {
+   |         -------------- inside of this loop
+42 |             let mut found = false;
+43 |             for r in res {
+   |                      --- `res` moved due to this implicit call to `.into_iter()`, in previous iteration of loop
+...
+50 |                 res = append(res, s);
+   |                 --- this reinitialization might get skipped
+...
+53 |         return res;
+   |                ^^^ value used here after move
+   |
+note: `into_iter` takes ownership of the receiver `self`, which moves `res`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<&str>`'s content to avoid moving into the `for` loop
+   |
+43 |             for r in &res {
+   |                      +
+
+error: aborting due to 33 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0382.
+For more information about an error, try `rustc --explain E0277`.

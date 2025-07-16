@@ -1,0 +1,14 @@
+rustc error: exit status 1
+error: mismatched closing delimiter: `}`
+  --> /tmp/TestMochiRustGoldenactive-directory-search-for-a-user3625208373/001/prog.rs:14:46
+   |
+13 |             while i < groups.len() as i32 {
+   |                                           - closing delimiter possibly meant for this
+14 |                 out = format!("{}{}", format!("{}{}", format!("{}{}", out, """), groups[i as usize]), """);
+   |                                              ^ unclosed delimiter
+...
+19 |             }
+   |             ^ mismatched closing delimiter
+
+error: aborting due to 1 previous error
+

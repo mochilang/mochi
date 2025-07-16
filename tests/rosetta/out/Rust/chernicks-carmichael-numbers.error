@@ -1,0 +1,118 @@
+rustc error: exit status 1
+warning: denote infinite loops with `loop { ... }`
+   --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:117:13
+    |
+117 |             while true {
+    |             ^^^^^^^^^^ help: use `loop`
+    |
+    = note: `#[warn(while_true)]` on by default
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:30
+   |
+33 |         while n > 1 && a[n - 1 as usize] == 0 {
+   |                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:28
+   |
+33 |         while n > 1 && a[n - 1 as usize] == 0 {
+   |                            ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[i32]` cannot be indexed by `i32`
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:33:26
+   |
+33 |         while n > 1 && a[n - 1 as usize] == 0 {
+   |                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[i32]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<i32>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:35
+   |
+34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+   |                                   ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:31
+   |
+34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+   |                               ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:33
+   |
+34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+   |                                 ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:34:17
+   |
+31 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
+   |                   ------------- expected due to this parameter type
+...
+34 |             a = a[0 as usize..n - 1 as usize].to_vec();
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&mut Vec<i32>`, found `Vec<i32>`
+   |
+   = note: expected mutable reference `&mut Vec<_>`
+                         found struct `Vec<_>`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+34 |             *a = a[0 as usize..n - 1 as usize].to_vec();
+   |             +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:37:16
+   |
+31 |     fn bigTrim(a: &mut Vec<i32>) -> Vec<i32> {
+   |                                     -------- expected `Vec<i32>` because of return type
+...
+37 |         return a;
+   |                ^- help: try using a conversion method: `.to_vec()`
+   |                |
+   |                expected `Vec<i32>`, found `&mut Vec<i32>`
+   |
+   = note:         expected struct `Vec<_>`
+           found mutable reference `&mut Vec<_>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:61:21
+   |
+56 |         let mut carry = 0;
+   |                         - expected due to this value
+...
+61 |             carry = (prod as f64) / (10 as f64);
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `f64`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldenchernicks-carmichael-numbers3906435909/001/prog.rs:74:13
+   |
+74 |             s += a[i as usize].to_string();
+   |             -^--^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |             | |
+   |             | `+` cannot be used to concatenate a `&str` with a `String`
+   |             cannot use `+=` on type `&str`
+   |
+   = note: string concatenation requires an owned `String` on the left
+
+error: aborting due to 10 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368.
+For more information about an error, try `rustc --explain E0277`.

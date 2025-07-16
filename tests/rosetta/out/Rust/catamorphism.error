@@ -1,0 +1,45 @@
+rustc error: exit status 1
+error[E0382]: use of moved value: `n`
+  --> /tmp/TestMochiRustGoldencatamorphism708882772/001/prog.rs:23:68
+   |
+21 |     let n = vec![1, 2, 3, 4, 5];
+   |         - move occurs because `n` has type `Vec<i32>`, which does not implement the `Copy` trait
+22 |     println!("{}", fold(Box::new(move |a: i32, b: i32| add(a, b)), n));
+   |                                                                    - value moved here
+23 |     println!("{}", fold(Box::new(move |a: i32, b: i32| sub(a, b)), n));
+   |                                                                    ^ value used here after move
+   |
+note: consider changing this parameter type in function `fold` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiRustGoldencatamorphism708882772/001/prog.rs:12:50
+   |
+12 |     fn fold(f: Box<dyn Fn(i32, i32) -> i32>, xs: Vec<i32>) -> i32 {
+   |        ---- in this function                     ^^^^^^^^ this parameter takes ownership of the value
+help: consider cloning the value if the performance cost is acceptable
+   |
+22 |     println!("{}", fold(Box::new(move |a: i32, b: i32| add(a, b)), n.clone()));
+   |                                                                     ++++++++
+
+error[E0382]: use of moved value: `n`
+  --> /tmp/TestMochiRustGoldencatamorphism708882772/001/prog.rs:24:68
+   |
+21 |     let n = vec![1, 2, 3, 4, 5];
+   |         - move occurs because `n` has type `Vec<i32>`, which does not implement the `Copy` trait
+22 |     println!("{}", fold(Box::new(move |a: i32, b: i32| add(a, b)), n));
+23 |     println!("{}", fold(Box::new(move |a: i32, b: i32| sub(a, b)), n));
+   |                                                                    - value moved here
+24 |     println!("{}", fold(Box::new(move |a: i32, b: i32| mul(a, b)), n));
+   |                                                                    ^ value used here after move
+   |
+note: consider changing this parameter type in function `fold` to borrow instead if owning the value isn't necessary
+  --> /tmp/TestMochiRustGoldencatamorphism708882772/001/prog.rs:12:50
+   |
+12 |     fn fold(f: Box<dyn Fn(i32, i32) -> i32>, xs: Vec<i32>) -> i32 {
+   |        ---- in this function                     ^^^^^^^^ this parameter takes ownership of the value
+help: consider cloning the value if the performance cost is acceptable
+   |
+23 |     println!("{}", fold(Box::new(move |a: i32, b: i32| sub(a, b)), n.clone()));
+   |                                                                     ++++++++
+
+error: aborting due to 2 previous errors
+
+For more information about this error, try `rustc --explain E0382`.

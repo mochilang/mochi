@@ -1,0 +1,27 @@
+rustc error: exit status 1
+error: mismatched closing delimiter: `}`
+  --> /tmp/TestMochiRustGoldenchat-server227783774/001/prog.rs:24:22
+   |
+22 |         let add = move |name: &'static str| -> () {
+   |                                                   - closing delimiter possibly meant for this
+23 |             clients = append(clients, name);
+24 |             broadcast(format!("{}{}", format!("{}{}", "+++ "", name), "" connected +++
+   |                      ^ unclosed delimiter
+25 | "));
+26 |         };
+   |         ^ mismatched closing delimiter
+
+error: mismatched closing delimiter: `}`
+  --> /tmp/TestMochiRustGoldenchat-server227783774/001/prog.rs:33:22
+   |
+31 |         let remove = move |name: &'static str| -> () {
+   |                                                      - closing delimiter possibly meant for this
+32 |             clients = removeName(clients, name);
+33 |             broadcast(format!("{}{}", format!("{}{}", "--- "", name), "" disconnected ---
+   |                      ^ unclosed delimiter
+34 | "));
+35 |         };
+   |         ^ mismatched closing delimiter
+
+error: aborting due to 2 previous errors
+

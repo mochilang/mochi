@@ -1,0 +1,65 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:4:118
+  |
+4 |         let mut out: std::collections::HashMap<&'static str, i32> = { let mut m = std::collections::BTreeMap::new(); m };
+  |                                                                                                                      ^ expected `HashMap<&str, i32>`, found `BTreeMap<_, _>`
+  |
+  = note: expected struct `HashMap<&'static str, i32>`
+             found struct `BTreeMap<_, _>`
+
+error[E0277]: can't compare `&str` with `str`
+ --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:6:20
+  |
+6 |             if key != k {
+  |                    ^^ no implementation for `&str == str`
+  |
+  = help: the trait `PartialEq<str>` is not implemented for `&str`
+  = note: required for `&&str` to implement `PartialEq<&str>`
+help: consider dereferencing here
+  |
+6 |             if *key != k {
+  |                +
+
+error[E0277]: the trait bound `&'static str: Borrow<&&str>` is not satisfied
+ --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:7:35
+  |
+7 |                 out.insert(key, m[&key]);
+  |                                   ^^^^ the trait `Borrow<&&str>` is not implemented for `&'static str`
+  |
+  = help: the trait `Borrow<str>` is implemented for `String`
+  = note: required for `HashMap<&'static str, i32>` to implement `Index<&&&str>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:13:67
+   |
+13 |         let mut x: std::collections::HashMap<&'static str, i32> = ();
+   |                    --------------------------------------------   ^^ expected `HashMap<&str, i32>`, found `()`
+   |                    |
+   |                    expected due to this
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+           found unit type `()`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:14:62
+   |
+14 |         x = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                              ^ expected `HashMap<&str, i32>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<_, _>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenassociative-array-creation674505938/001/prog.rs:21:124
+   |
+21 |         x = { let mut m = std::collections::BTreeMap::new(); m.insert("foo", 2); m.insert("bar", 42); m.insert("baz", -1); m };
+   |                                                                                                                            ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, {integer}>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, {integer}>`
+
+error: aborting due to 6 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

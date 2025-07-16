@@ -1,0 +1,13 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencall-a-function-5475057593/001/prog.rs:11:116
+   |
+11 |         let mut p: std::collections::HashMap<&'static str, i32> = { let mut m = std::collections::BTreeMap::new(); m };
+   |                                                                                                                    ^ expected `HashMap<&str, i32>`, found `BTreeMap<_, _>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<_, _>`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0308`.

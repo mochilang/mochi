@@ -1,0 +1,64 @@
+rustc error: exit status 1
+warning: variable does not need to be mutable
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:3:9
+  |
+3 |     let mut partList = vec!["A", "B", "C", "D"];
+  |         ----^^^^^^^^
+  |         |
+  |         help: remove this `mut`
+  |
+  = note: `#[warn(unused_mut)]` on by default
+
+warning: variable does not need to be mutable
+ --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:4:9
+  |
+4 |     let mut nAssemblies = 3;
+  |         ----^^^^^^^^^^^
+  |         |
+  |         help: remove this `mut`
+
+error[E0382]: use of moved value: `partList`
+  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:7:18
+   |
+3  |     let mut partList = vec!["A", "B", "C", "D"];
+   |         ------------ move occurs because `partList` has type `Vec<&str>`, which does not implement the `Copy` trait
+4  |     let mut nAssemblies = 3;
+5  |     for cycle in 1..(nAssemblies + 1) {
+   |     --------------------------------- inside of this loop
+6  |         println!("{}", format!("{}{}", "begin assembly cycle ", cycle.to_string()));
+7  |         for p in partList {
+   |                  ^^^^^^^^ value used here after move
+...
+10 |         for p in partList {
+   |                  -------- `partList` moved due to this implicit call to `.into_iter()`, in previous iteration of loop
+   |
+note: `into_iter` takes ownership of the receiver `self`, which moves `partList`
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<&str>`'s content to avoid moving into the `for` loop
+   |
+10 |         for p in &partList {
+   |                  +
+
+error[E0382]: use of moved value: `partList`
+  --> /tmp/TestMochiRustGoldencheckpoint-synchronization-1950336444/001/prog.rs:10:18
+   |
+3  |     let mut partList = vec!["A", "B", "C", "D"];
+   |         ------------ move occurs because `partList` has type `Vec<&str>`, which does not implement the `Copy` trait
+4  |     let mut nAssemblies = 3;
+5  |     for cycle in 1..(nAssemblies + 1) {
+   |     --------------------------------- inside of this loop
+6  |         println!("{}", format!("{}{}", "begin assembly cycle ", cycle.to_string()));
+7  |         for p in partList {
+   |                  -------- `partList` moved due to this implicit call to `.into_iter()`
+...
+10 |         for p in partList {
+   |                  ^^^^^^^^ value used here after move
+   |
+help: consider iterating over a slice of the `Vec<&str>`'s content to avoid moving into the `for` loop
+   |
+7  |         for p in &partList {
+   |                  +
+
+error: aborting due to 2 previous errors; 2 warnings emitted
+
+For more information about this error, try `rustc --explain E0382`.

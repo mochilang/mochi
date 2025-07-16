@@ -1,0 +1,374 @@
+rustc error: exit status 1
+warning: denote infinite loops with `loop { ... }`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:78:9
+   |
+78 |         while true {
+   |         ^^^^^^^^^^ help: use `loop`
+   |
+   = note: `#[warn(while_true)]` on by default
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:103:22
+    |
+103 |         let fx1 = x1.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:104:22
+    |
+104 |         let fy1 = y1.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:105:22
+    |
+105 |         let fx2 = x2.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:106:22
+    |
+106 |         let fy2 = y2.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:107:22
+    |
+107 |         let fx3 = x3.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:108:22
+    |
+108 |         let fy3 = y3.parse::<f64>().unwrap();
+    |                      ^^^^^ method not found in `i32`
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:111:24
+    |
+111 |             let c = (i.parse::<f64>().unwrap()) / (b2Seg.parse::<f64>().unwrap());
+    |                        ^^^^^
+    |
+help: you must specify a type for this binding, like `i32`
+    |
+97  |         let mut i: i32 = 0;
+    |                  +++++
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{integer}`
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:111:58
+    |
+111 |             let c = (i.parse::<f64>().unwrap()) / (b2Seg.parse::<f64>().unwrap());
+    |                                                          ^^^^^
+    |
+help: you must specify a type for this binding, like `i32`
+    |
+15  |     let b2Seg: i32 = 20;
+    |              +++++
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{float}`
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:116:63
+    |
+116 |             px[i as usize] = (a2 * fx1 + b2 * fx2 + c2 * fx3).parse::<i32>().unwrap();
+    |                                                               ^^^^^
+
+error[E0689]: can't call method `parse` on ambiguous numeric type `{float}`
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:117:63
+    |
+117 |             py[i as usize] = (a2 * fy1 + b2 * fy2 + c2 * fy3).parse::<i32>().unwrap();
+    |                                                               ^^^^^
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:126:45
+    |
+126 |             line(b, &mut x0, &mut y0, x, y, &p.clone());
+    |             ----                            ^^^^^^^^^^ expected `Pixel`, found `&Pixel`
+    |             |
+    |             arguments to this function are incorrect
+    |
+note: function defined here
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:60:8
+    |
+60  |     fn line(b: std::collections::HashMap<&'static str, i32>, x0: &mut i32, y0: &mut i32, x1: i32, y1: i32, p: Pixel) -> () {
+    |        ^^^^                                                                                                --------
+help: consider removing the borrow
+    |
+126 -             line(b, &mut x0, &mut y0, x, y, &p.clone());
+126 +             line(b, &mut x0, &mut y0, x, y, p.clone());
+    |
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:134:46
+    |
+134 |     bezier2(b, 20, 150, 500, -100, 300, 280, &pixelFromRgb(4165615));
+    |     -------                                  ^^^^^^^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
+    |     |
+    |     arguments to this function are incorrect
+    |
+note: closure parameter defined here
+   --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:94:128
+    |
+94  | ...r, i32>, x1: i32, y1: i32, x2: i32, y2: i32, x3: i32, y3: i32, p: Pixel| -> () {
+    |                                                                   ^^^^^^^^
+help: consider removing the borrow
+    |
+134 -     bezier2(b, 20, 150, 500, -100, 300, 280, &pixelFromRgb(4165615));
+134 +     bezier2(b, 20, 150, 500, -100, 300, 280, pixelFromRgb(4165615));
+    |
+
+error[E0277]: cannot calculate the remainder of `f64` divided by `{integer}`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:17:50
+   |
+17 |         let r = (((rgb as f64) / (65536 as f64)) % 256).parse::<i32>().unwrap();
+   |                                                  ^ no implementation for `f64 % {integer}`
+   |
+   = help: the trait `Rem<{integer}>` is not implemented for `f64`
+   = help: the following other types implement trait `Rem<Rhs>`:
+             `&f64` implements `Rem<f64>`
+             `&f64` implements `Rem`
+             `f64` implements `Rem<&f64>`
+             `f64` implements `Rem`
+help: consider using a floating-point literal by writing it with `.0`
+   |
+17 |         let r = (((rgb as f64) / (65536 as f64)) % 256.0).parse::<i32>().unwrap();
+   |                                                       ++
+
+error[E0277]: cannot calculate the remainder of `f64` divided by `{integer}`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:18:48
+   |
+18 |         let g = (((rgb as f64) / (256 as f64)) % 256).parse::<i32>().unwrap();
+   |                                                ^ no implementation for `f64 % {integer}`
+   |
+   = help: the trait `Rem<{integer}>` is not implemented for `f64`
+   = help: the following other types implement trait `Rem<Rhs>`:
+             `&f64` implements `Rem<f64>`
+             `&f64` implements `Rem`
+             `f64` implements `Rem<&f64>`
+             `f64` implements `Rem`
+help: consider using a floating-point literal by writing it with `.0`
+   |
+18 |         let g = (((rgb as f64) / (256 as f64)) % 256.0).parse::<i32>().unwrap();
+   |                                                     ++
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:19:29
+   |
+19 |         let b = (rgb % 256).parse::<i32>().unwrap();
+   |                             ^^^^^ method not found in `i32`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:35:130
+   |
+35 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("cols", cols); m.insert("rows", rows); m.insert("data", d); m };
+   |                                                                 -                ----                             ------         ^ expected `i32`, found `Vec<Vec<Pixel>>`
+   |                                                                 |                |                                |
+   |                                                                 |                |                                arguments to this method are incorrect
+   |                                                                 |                this argument has type `i32`...
+   |                                                                 ... which causes `m` to have type `BTreeMap<&str, i32>`
+   |
+   = note: expected type `i32`
+            found struct `Vec<Vec<Pixel>>`
+help: the return type of this call is `Vec<Vec<Pixel>>` due to the type of the argument passed
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:35:113
+   |
+35 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("cols", cols); m.insert("rows", rows); m.insert("data", d); m };
+   |                                                                                                                 ^^^^^^^^^^^^^^^^^-^
+   |                                                                                                                                  |
+   |                                                                                                                                  this argument influences the return type of `insert`
+note: method defined here
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/alloc/src/collections/btree/map.rs:1023:12
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:35:134
+   |
+22 |     fn newBitmap(cols: i32, rows: i32) -> std::collections::HashMap<&'static str, i32> {
+   |                                           -------------------------------------------- expected `HashMap<&'static str, i32>` because of return type
+...
+35 |         return { let mut m = std::collections::BTreeMap::new(); m.insert("cols", cols); m.insert("rows", rows); m.insert("data", d); m };
+   |                                                                                                                                      ^ expected `HashMap<&str, i32>`, found `BTreeMap<&str, i32>`
+   |
+   = note: expected struct `HashMap<&'static str, i32>`
+              found struct `BTreeMap<&str, i32>`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:38:31
+   |
+38 |         let cols = b[&"cols"].parse::<i32>().unwrap();
+   |                               ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:39:31
+   |
+39 |         let rows = b[&"rows"].parse::<i32>().unwrap();
+   |                               ^^^^^ method not found in `i32`
+
+error[E0608]: cannot index into a value of type `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:41:22
+   |
+41 |             b["data"][y][x] = p.clone();
+   |                      ^^^
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:45:31
+   |
+45 |         let cols = b[&"cols"].parse::<i32>().unwrap();
+   |                               ^^^^^ method not found in `i32`
+
+error[E0599]: no method named `parse` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:46:31
+   |
+46 |         let rows = b[&"rows"].parse::<i32>().unwrap();
+   |                               ^^^^^ method not found in `i32`
+
+error[E0608]: cannot index into a value of type `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:51:26
+   |
+51 |                 b["data"][y][x] = p.clone();
+   |                          ^^^
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:58:22
+   |
+58 |         fill(&mut b, &pixelFromRgb(rgb));
+   |         ----         ^^^^^^^^^^^^^^^^^^ expected `Pixel`, found `&Pixel`
+   |         |
+   |         arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:44:8
+   |
+44 |     fn fill(b: &mut std::collections::HashMap<&'static str, i32>, p: Pixel) -> () {
+   |        ^^^^                                                       --------
+help: consider removing the borrow
+   |
+58 -         fill(&mut b, &pixelFromRgb(rgb));
+58 +         fill(&mut b, pixelFromRgb(rgb));
+   |
+
+error[E0277]: cannot subtract `&mut i32` from `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:61:25
+   |
+61 |         let mut dx = x1 - x0;
+   |                         ^ no implementation for `i32 - &mut i32`
+   |
+   = help: the trait `Sub<&mut i32>` is not implemented for `i32`
+help: consider dereferencing here
+   |
+61 |         let mut dx = x1 - *x0;
+   |                           +
+
+error[E0277]: cannot subtract `&mut i32` from `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:65:25
+   |
+65 |         let mut dy = y1 - y0;
+   |                         ^ no implementation for `i32 - &mut i32`
+   |
+   = help: the trait `Sub<&mut i32>` is not implemented for `i32`
+help: consider dereferencing here
+   |
+65 |         let mut dy = y1 - *y0;
+   |                           +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:70:17
+   |
+70 |         if x0 < x1 {
+   |                 ^^ expected `&mut i32`, found `i32`
+   |
+help: consider dereferencing the borrow
+   |
+70 |         if *x0 < x1 {
+   |            +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:74:17
+   |
+74 |         if y0 < y1 {
+   |                 ^^ expected `&mut i32`, found `i32`
+   |
+help: consider dereferencing the borrow
+   |
+74 |         if *y0 < y1 {
+   |            +
+
+error[E0308]: arguments to this function are incorrect
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:79:13
+   |
+79 |             setPx(&mut b, x0, y0, &p.clone());
+   |             ^^^^^         --  --  ---------- expected `Pixel`, found `&Pixel`
+   |                           |   |
+   |                           |   expected `i32`, found `&mut i32`
+   |                           expected `i32`, found `&mut i32`
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:37:8
+   |
+37 |     fn setPx(b: &mut std::collections::HashMap<&'static str, i32>, x: i32, y: i32, p: Pixel) -> () {
+   |        ^^^^^                                                       ------  ------  --------
+help: consider dereferencing the borrow
+   |
+79 |             setPx(&mut b, *x0, y0, &p.clone());
+   |                           +
+help: consider dereferencing the borrow
+   |
+79 |             setPx(&mut b, x0, *y0, &p.clone());
+   |                               +
+help: consider removing the borrow
+   |
+79 -             setPx(&mut b, x0, y0, &p.clone());
+79 +             setPx(&mut b, x0, y0, p.clone());
+   |
+
+error[E0277]: can't compare `&mut i32` with `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:80:19
+   |
+80 |             if x0 == x1 && y0 == y1 {
+   |                   ^^ no implementation for `&mut i32 == i32`
+   |
+   = help: the trait `PartialEq<i32>` is not implemented for `&mut i32`
+help: consider dereferencing here
+   |
+80 |             if *x0 == x1 && y0 == y1 {
+   |                +
+
+error[E0277]: can't compare `&mut i32` with `i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:80:31
+   |
+80 |             if x0 == x1 && y0 == y1 {
+   |                               ^^ no implementation for `&mut i32 == i32`
+   |
+   = help: the trait `PartialEq<i32>` is not implemented for `&mut i32`
+help: consider dereferencing here
+   |
+80 |             if x0 == x1 && *y0 == y1 {
+   |                            +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:86:17
+   |
+86 |                 x0 += sx;
+   |                 --^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&mut i32`
+   |
+help: `+=` can be used on `i32` if you dereference the left-hand side
+   |
+86 |                 *x0 += sx;
+   |                 +
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&mut i32`
+  --> /tmp/TestMochiRustGoldenbitmap-b-zier-curves-quadratic129239037/001/prog.rs:90:17
+   |
+90 |                 y0 += sy;
+   |                 --^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&mut i32`
+   |
+help: `+=` can be used on `i32` if you dereference the left-hand side
+   |
+90 |                 *y0 += sy;
+   |                 +
+
+error: aborting due to 33 previous errors; 1 warning emitted
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0599, E0608, E0689.
+For more information about an error, try `rustc --explain E0277`.

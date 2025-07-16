@@ -1,0 +1,256 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:36:54
+   |
+36 |     println!("{}", format!("{}{}", "a:       ", cstr(&a.clone())));
+   |                                                 ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+36 -     println!("{}", format!("{}{}", "a:       ", cstr(&a.clone())));
+36 +     println!("{}", format!("{}{}", "a:       ", cstr(a.clone())));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:37:54
+   |
+37 |     println!("{}", format!("{}{}", "b:       ", cstr(&b.clone())));
+   |                                                 ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+37 -     println!("{}", format!("{}{}", "b:       ", cstr(&b.clone())));
+37 +     println!("{}", format!("{}{}", "b:       ", cstr(b.clone())));
+   |
+
+error[E0308]: arguments to this function are incorrect
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:38:55
+   |
+38 |     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
+   |                                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
+   |                                                           |
+   |                                                           expected `Complex`, found `&Complex`
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:9:8
+   |
+9  |     fn add(a: Complex, b: Complex) -> Complex {
+   |        ^^^ ----------  ----------
+help: consider removing the borrow
+   |
+38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
+38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(a.clone(), &b.clone()))));
+   |
+help: consider removing the borrow
+   |
+38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
+38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), b.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:38:54
+   |
+38 |     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
+   |                                                 ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+38 -     println!("{}", format!("{}{}", "a + b:   ", cstr(&add(&a.clone(), &b.clone()))));
+38 +     println!("{}", format!("{}{}", "a + b:   ", cstr(add(&a.clone(), &b.clone()))));
+   |
+
+error[E0308]: arguments to this function are incorrect
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:39:55
+   |
+39 |     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
+   |                                                       ^^^ ----------  ---------- expected `Complex`, found `&Complex`
+   |                                                           |
+   |                                                           expected `Complex`, found `&Complex`
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:12:8
+   |
+12 |     fn mul(a: Complex, b: Complex) -> Complex {
+   |        ^^^ ----------  ----------
+help: consider removing the borrow
+   |
+39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
+39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(a.clone(), &b.clone()))));
+   |
+help: consider removing the borrow
+   |
+39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
+39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), b.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:39:54
+   |
+39 |     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
+   |                                                 ---- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+39 -     println!("{}", format!("{}{}", "a * b:   ", cstr(&mul(&a.clone(), &b.clone()))));
+39 +     println!("{}", format!("{}{}", "a * b:   ", cstr(mul(&a.clone(), &b.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:40:59
+   |
+40 |     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
+   |                                                       --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                       |
+   |                                                       arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:15:8
+   |
+15 |     fn neg(a: Complex) -> Complex {
+   |        ^^^ ----------
+help: consider removing the borrow
+   |
+40 -     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
+40 +     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:40:54
+   |
+40 |     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
+   |                                                 ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+40 -     println!("{}", format!("{}{}", "-a:      ", cstr(&neg(&a.clone()))));
+40 +     println!("{}", format!("{}{}", "-a:      ", cstr(neg(&a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:41:59
+   |
+41 |     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
+   |                                                       --- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                       |
+   |                                                       arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:18:8
+   |
+18 |     fn inv(a: Complex) -> Complex {
+   |        ^^^ ----------
+help: consider removing the borrow
+   |
+41 -     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
+41 +     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:41:54
+   |
+41 |     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
+   |                                                 ---- ^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+41 -     println!("{}", format!("{}{}", "1 / a:   ", cstr(&inv(&a.clone()))));
+41 +     println!("{}", format!("{}{}", "1 / a:   ", cstr(inv(&a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:42:61
+   |
+42 |     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
+   |                                                       ---- ^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                       |
+   |                                                       arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:22:8
+   |
+22 |     fn conj(a: Complex) -> Complex {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+42 -     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
+42 +     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:42:55
+   |
+42 |     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
+   |                                                 ---- ^^^^^^^^^^^^^^^^^ expected `Complex`, found `&Complex`
+   |                                                 |
+   |                                                 arguments to this function are incorrect
+   |
+note: function defined here
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:25:8
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |        ^^^^ ----------
+help: consider removing the borrow
+   |
+42 -     println!("{}", format!("{}{}", "a̅:       ", cstr(&conj(&a.clone()))));
+42 +     println!("{}", format!("{}{}", "a̅:       ", cstr(conj(&a.clone()))));
+   |
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenarithmetic-complex1860655675/001/prog.rs:32:16
+   |
+25 |     fn cstr(a: Complex) -> &'static str {
+   |                            ------------ expected `&'static str` because of return type
+...
+32 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+32 |         return &s;
+   |                +
+
+error: aborting due to 13 previous errors
+
+For more information about this error, try `rustc --explain E0308`.

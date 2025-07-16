@@ -1,0 +1,150 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:15:54
+   |
+15 |             chars = append(chars, &s[i as usize..i + 1 as usize]);
+   |                                                      ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:15:50
+   |
+15 |             chars = append(chars, &s[i as usize..i + 1 as usize]);
+   |                                                  ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:15:52
+   |
+15 |             chars = append(chars, &s[i as usize..i + 1 as usize]);
+   |                                                    ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:31:13
+   |
+31 |             res += chars[i as usize];
+   |             ---^^^^^^^^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:34:21
+   |
+34 |         return vec![res, sd];
+   |                     ^^^ expected `i32`, found `&str`
+
+error[E0599]: no method named `len` found for type `i32` in the current scope
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:42:21
+   |
+42 |         while i < t.len() as i32 {
+   |                     ^^^
+   |
+help: there is a method `le` with a similar name, but with different arguments
+  --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/cmp.rs:1400:5
+
+error[E0608]: cannot index into a value of type `i32`
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:43:33
+   |
+43 |             arr = append(arr, &t[i as usize..i + 1 as usize]);
+   |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:47:19
+   |
+47 |         while i < arr.len() as i32 {
+   |               -   ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+   |               |
+   |               expected because this is `usize`
+   |
+help: you can convert an `i32` to a `usize` and panic if the converted value doesn't fit
+   |
+47 |         while i < (arr.len() as i32).try_into().unwrap() {
+   |                   +                +++++++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:50:25
+   |
+50 |                 if i != j && arr[i as usize] != &s[j as usize..j + 1 as usize] && arr[j as usize] != &s[i as usize..i + 1 as usize] {
+   |                    -    ^ expected `usize`, found `i32`
+   |                    |
+   |                    expected because this is `usize`
+   |
+help: you can convert an `i32` to a `usize` and panic if the converted value doesn't fit
+   |
+50 |                 if i != j.try_into().unwrap() && arr[i as usize] != &s[j as usize..j + 1 as usize] && arr[j as usize] != &s[i as usize..i + 1 as usize] {
+   |                          ++++++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:50:68
+   |
+50 |                 if i != j && arr[i as usize] != &s[j as usize..j + 1 as usize] && arr[j as usize] != &s[i as usize..i + 1 as usize] {
+   |                                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:50:64
+   |
+50 |                 if i != j && arr[i as usize] != &s[j as usize..j + 1 as usize] && arr[j as usize] != &s[i as usize..i + 1 as usize] {
+   |                                                                ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:50:66
+   |
+50 |                 if i != j && arr[i as usize] != &s[j as usize..j + 1 as usize] && arr[j as usize] != &s[i as usize..i + 1 as usize] {
+   |                                                                  ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:62:19
+   |
+62 |         while i < arr.len() as i32 {
+   |               -   ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+   |               |
+   |               expected because this is `usize`
+   |
+help: you can convert an `i32` to a `usize` and panic if the converted value doesn't fit
+   |
+62 |         while i < (arr.len() as i32).try_into().unwrap() {
+   |                   +                +++++++++++++++++++++
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:70:19
+   |
+70 |         while i < arr.len() as i32 {
+   |               -   ^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+   |               |
+   |               expected because this is `usize`
+   |
+help: you can convert an `i32` to a `usize` and panic if the converted value doesn't fit
+   |
+70 |         while i < (arr.len() as i32).try_into().unwrap() {
+   |                   +                +++++++++++++++++++++
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:71:13
+   |
+71 |             out += arr[i as usize];
+   |             ---^^^^^^^^^^^^^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenbest-shuffle534225191/001/prog.rs:74:21
+   |
+74 |         return vec![out, sd, count];
+   |                     ^^^ expected `i32`, found `&str`
+
+error: aborting due to 16 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0599, E0608.
+For more information about an error, try `rustc --explain E0277`.

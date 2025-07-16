@@ -1,0 +1,29 @@
+rustc error: exit status 1
+warning: unnecessary parentheses around assigned value
+  --> /tmp/TestMochiRustGoldencatalan-numbers-11483348766/001/prog.rs:14:19
+   |
+14 |             res = (res * (n - i));
+   |                   ^             ^
+   |
+   = note: `#[warn(unused_parens)]` on by default
+help: remove these parentheses
+   |
+14 -             res = (res * (n - i));
+14 +             res = res * (n - i);
+   |
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiRustGoldencatalan-numbers-11483348766/001/prog.rs:16:47
+   |
+16 |             res = ((res as f64) / (i as f64)).parse::<i32>().unwrap();
+   |                                               ^^^^^ method not found in `f64`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiRustGoldencatalan-numbers-11483348766/001/prog.rs:21:62
+   |
+21 |         return ((binom(2 * n, n) as f64) / ((n + 1) as f64)).parse::<i32>().unwrap();
+   |                                                              ^^^^^ method not found in `f64`
+
+error: aborting due to 2 previous errors; 1 warning emitted
+
+For more information about this error, try `rustc --explain E0599`.

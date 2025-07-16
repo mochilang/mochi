@@ -1,0 +1,105 @@
+rustc error: exit status 1
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:31:44
+   |
+31 |             x = ((x as f64) / (10 as f64)).parse::<i32>().unwrap();
+   |                                            ^^^^^ method not found in `f64`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:37:20
+   |
+35 |     fn pad(n: i32) -> &'static str {
+   |                       ------------ expected `&str` because of return type
+36 |         if n < 10 {
+37 |             return format!("{}{}", "  ", n.to_string());
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:40:20
+   |
+35 |     fn pad(n: i32) -> &'static str {
+   |                       ------------ expected `&str` because of return type
+...
+40 |             return format!("{}{}", " ", n.to_string());
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:42:16
+   |
+35 |     fn pad(n: i32) -> &'static str {
+   |                       ------------ expected `&str` because of return type
+...
+42 |         return n.to_string();
+   |                ^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+42 |         return &n.to_string();
+   |                +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:53:24
+   |
+53 |                 line = format!("{}{}", format!("{}{}", line, pad(i)), "  ");
+   |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:74
+   |
+56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                                                          ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:54
+   |
+56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:56:72
+   |
+56 |                     println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                                                        ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:66
+   |
+68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                                                  ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:46
+   |
+68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenadditive-primes3959841356/001/prog.rs:68:64
+   |
+68 |             println!("{}", &line[0 as usize..line.len() as i32 - 2 as usize]);
+   |                                                                ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error: aborting due to 11 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

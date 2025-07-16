@@ -1,0 +1,101 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:46
+   |
+10 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:44
+   |
+10 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                            ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[f64]` cannot be indexed by `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:10:42
+   |
+10 |                 if arr[j as usize] > arr[j + 1 as usize] {
+   |                                          ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[f64]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<f64>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:47
+   |
+12 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                               ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:45
+   |
+12 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                             ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[f64]` cannot be indexed by `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:12:43
+   |
+12 |                     arr[j as usize] = arr[j + 1 as usize];
+   |                                           ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[f64]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<f64>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:29
+   |
+13 |                     arr[j + 1 as usize] = tmp;
+   |                             ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:27
+   |
+13 |                     arr[j + 1 as usize] = tmp;
+   |                           ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0277]: the type `[f64]` cannot be indexed by `i32`
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:13:25
+   |
+13 |                     arr[j + 1 as usize] = tmp;
+   |                         ^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[f64]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<f64>` to implement `Index<i32>`
+
+error[E0599]: no method named `parse` found for type `f64` in the current scope
+  --> /tmp/TestMochiRustGoldenaverages-median-13478243549/001/prog.rs:23:61
+   |
+23 |         let half = ((arr.len() as i32 as f64) / (2 as f64)).parse::<i32>().unwrap();
+   |                                                             ^^^^^ method not found in `f64`
+
+error: aborting due to 10 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0599.
+For more information about an error, try `rustc --explain E0277`.

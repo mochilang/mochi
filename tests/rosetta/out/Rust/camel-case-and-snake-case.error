@@ -1,0 +1,362 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:5:68
+  |
+5 |         while start < s.len() as i32 && &s[start as usize..start + 1 as usize] == " " {
+  |                                                                    ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:5:60
+  |
+5 |         while start < s.len() as i32 && &s[start as usize..start + 1 as usize] == " " {
+  |                                                            ^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:5:66
+  |
+5 |         while start < s.len() as i32 && &s[start as usize..start + 1 as usize] == " " {
+  |                                                                  ^ no implementation for `i32 + usize`
+  |
+  = help: the trait `Add<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Add<Rhs>`:
+            `&i32` implements `Add<i32>`
+            `&i32` implements `Add`
+            `i32` implements `Add<&i32>`
+            `i32` implements `Add`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:9:39
+  |
+9 |         while end > start && &s[end - 1 as usize..end as usize] == " " {
+  |                                       ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:9:37
+  |
+9 |         while end > start && &s[end - 1 as usize..end as usize] == " " {
+  |                                     ^ no implementation for `i32 - usize`
+  |
+  = help: the trait `Sub<usize>` is not implemented for `i32`
+  = help: the following other types implement trait `Sub<Rhs>`:
+            `&i32` implements `Sub<i32>`
+            `&i32` implements `Sub`
+            `i32` implements `Sub<&i32>`
+            `i32` implements `Sub`
+
+error[E0308]: mismatched types
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:9:51
+  |
+9 |         while end > start && &s[end - 1 as usize..end as usize] == " " {
+  |                                                   ^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+ --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:9:33
+  |
+9 |         while end > start && &s[end - 1 as usize..end as usize] == " " {
+  |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+  |
+  = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+  = help: the following other types implement trait `SliceIndex<T>`:
+            `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+            `std::ops::Range<usize>` implements `SliceIndex<str>`
+  = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:21:13
+   |
+21 |             res += " ";
+   |             ---^^^^^^^
+   |             |
+   |             cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:24:16
+   |
+17 |     fn padLeft(s: &'static str, w: i32) -> &'static str {
+   |                                            ------------ expected `&str` because of return type
+...
+24 |         return format!("{}{}", res, s);
+   |                ^^^^^^^^^^^^^^^^^^^^^^^ expected `&str`, found `String`
+   |
+   = note: this error originates in the macro `format` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:27:13
+   |
+27 |         s = trimSpace(s);
+   |             ^^^^^^^^^^^^ types differ in mutability
+   |
+   = note: expected mutable reference `&mut &'static _`
+                      found reference `&'static _`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+27 |         *s = trimSpace(s);
+   |         +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:32:41
+   |
+32 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:32:37
+   |
+32 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:32:39
+   |
+32 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0425]: cannot find function `lower` in this scope
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:39:24
+   |
+39 |                 out += lower(ch);
+   |                        ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `upper` in this scope
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:45:24
+   |
+45 |                 out += upper(ch);
+   |                        ^^^^^ not found in this scope
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:48:17
+   |
+48 |                 out += ch;
+   |                 ---^^^^^^
+   |                 |
+   |                 cannot use `+=` on type `&str`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:55:13
+   |
+55 |         s = trimSpace(s);
+   |             ^^^^^^^^^^^^ types differ in mutability
+   |
+   = note: expected mutable reference `&mut &'static _`
+                      found reference `&'static _`
+help: consider dereferencing here to assign to the mutably borrowed value
+   |
+55 |         *s = trimSpace(s);
+   |         +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:60:41
+   |
+60 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:60:37
+   |
+60 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                     ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:60:39
+   |
+60 |             let ch = &s[i as usize..i + 1 as usize];
+   |                                       ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:63:21
+   |
+63 |                     out += "_";
+   |                     ---^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:71:21
+   |
+71 |                     out += "_";
+   |                     ---^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:79:21
+   |
+79 |                     out += "_";
+   |                     ---^^^^^^^
+   |                     |
+   |                     cannot use `+=` on type `&str`
+
+error[E0425]: cannot find function `lower` in this scope
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:81:24
+   |
+81 |                 out += lower(ch);
+   |                        ^^^^^ not found in this scope
+
+error[E0425]: cannot find function `lower` in this scope
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:84:24
+   |
+84 |                 out += lower(ch);
+   |                        ^^^^^ not found in this scope
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:90:72
+   |
+90 |         while start < out.len() as i32 && &out[start as usize..start + 1 as usize] == "_" {
+   |                                                                        ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:90:64
+   |
+90 |         while start < out.len() as i32 && &out[start as usize..start + 1 as usize] == "_" {
+   |                                                                ^^^^^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:90:70
+   |
+90 |         while start < out.len() as i32 && &out[start as usize..start + 1 as usize] == "_" {
+   |                                                                      ^ no implementation for `i32 + usize`
+   |
+   = help: the trait `Add<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Add<Rhs>`:
+             `&i32` implements `Add<i32>`
+             `&i32` implements `Add`
+             `i32` implements `Add<&i32>`
+             `i32` implements `Add`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:94:41
+   |
+94 |         while end > start && &out[end - 1 as usize..end as usize] == "_" {
+   |                                         ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:94:39
+   |
+94 |         while end > start && &out[end - 1 as usize..end as usize] == "_" {
+   |                                       ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:94:53
+   |
+94 |         while end > start && &out[end - 1 as usize..end as usize] == "_" {
+   |                                                     ^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:94:35
+   |
+94 |         while end > start && &out[end - 1 as usize..end as usize] == "_" {
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:102:42
+    |
+102 |             let c = &out[j as usize..j + 1 as usize];
+    |                                          ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0308]: mismatched types
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:102:38
+    |
+102 |             let c = &out[j as usize..j + 1 as usize];
+    |                                      ^^^^^^^^^^^^^^ expected `usize`, found `i32`
+
+error[E0277]: cannot add `usize` to `i32`
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:102:40
+    |
+102 |             let c = &out[j as usize..j + 1 as usize];
+    |                                        ^ no implementation for `i32 + usize`
+    |
+    = help: the trait `Add<usize>` is not implemented for `i32`
+    = help: the following other types implement trait `Add<Rhs>`:
+              `&i32` implements `Add<i32>`
+              `&i32` implements `Add`
+              `i32` implements `Add<&i32>`
+              `i32` implements `Add`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:105:21
+    |
+105 |                     res += c;
+    |                     ---^^^^^
+    |                     |
+    |                     cannot use `+=` on type `&str`
+
+error[E0368]: binary assignment operation `+=` cannot be applied to type `&str`
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:109:17
+    |
+109 |                 res += c;
+    |                 ---^^^^^
+    |                 |
+    |                 cannot use `+=` on type `&str`
+
+error[E0596]: cannot borrow `s` as mutable, as it is not declared as mutable
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:120:98
+    |
+120 |             println!("{}", format!("{}{}", format!("{}{}", padLeft(s, 34), " => "), camelToSnake(&mut s)));
+    |                                                                                                  ^^^^^^ cannot borrow as mutable
+    |
+help: consider changing this to be mutable
+    |
+119 |         for mut s in samples {
+    |             +++
+
+error[E0382]: use of moved value: `samples`
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:124:18
+    |
+117 | ...   let samples = vec!["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable...
+    |           ------- move occurs because `samples` has type `Vec<&str>`, which does not implement the `Copy` trait
+118 | ...   println!("=== To snake_case ===");
+119 | ...   for s in samples {
+    |                ------- `samples` moved due to this implicit call to `.into_iter()`
+...
+124 | ...   for s in samples {
+    |                ^^^^^^^ value used here after move
+    |
+note: `into_iter` takes ownership of the receiver `self`, which moves `samples`
+   --> /rustc/17067e9ac6d7ecb70e50f92c1944e545188d2359/library/core/src/iter/traits/collect.rs:313:18
+help: consider iterating over a slice of the `Vec<&str>`'s content to avoid moving into the `for` loop
+    |
+119 |         for s in &samples {
+    |                  +
+
+error[E0596]: cannot borrow `s` as mutable, as it is not declared as mutable
+   --> /tmp/TestMochiRustGoldencamel-case-and-snake-case2305031585/001/prog.rs:125:98
+    |
+125 |             println!("{}", format!("{}{}", format!("{}{}", padLeft(s, 34), " => "), snakeToCamel(&mut s)));
+    |                                                                                                  ^^^^^^ cannot borrow as mutable
+    |
+help: consider changing this to be mutable
+    |
+124 |         for mut s in samples {
+    |             +++
+
+error: aborting due to 40 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0368, E0382, E0425, E0596.
+For more information about an error, try `rustc --explain E0277`.

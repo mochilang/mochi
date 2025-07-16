@@ -1,0 +1,64 @@
+rustc error: exit status 1
+error: `<` is interpreted as a start of generic arguments for `i32`, not a comparison
+  --> /tmp/TestMochiRustGoldenamicable-pairs32126599/001/prog.rs:21:30
+   |
+21 |         while s.len() as i32 < width {
+   |                              ^ ------- interpreted as generic arguments
+   |                              |
+   |                              not interpreted as comparison
+   |
+help: try comparing the cast value
+   |
+21 |         while (s.len() as i32) < width {
+   |               +              +
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenamicable-pairs32126599/001/prog.rs:11:21
+   |
+11 |         while (p <= i as f64) / (2 as f64) {
+   |                     ^^^^^^^^ expected integer, found `f64`
+
+error[E0277]: can't compare `{integer}` with `f64`
+  --> /tmp/TestMochiRustGoldenamicable-pairs32126599/001/prog.rs:11:18
+   |
+11 |         while (p <= i as f64) / (2 as f64) {
+   |                  ^^ no implementation for `{integer} < f64` and `{integer} > f64`
+   |
+   = help: the trait `PartialOrd<f64>` is not implemented for `{integer}`
+   = help: the following other types implement trait `PartialOrd<Rhs>`:
+             f128
+             f16
+             f32
+             f64
+             i128
+             i16
+             i32
+             i64
+           and 8 others
+
+error[E0369]: cannot divide `bool` by `f64`
+  --> /tmp/TestMochiRustGoldenamicable-pairs32126599/001/prog.rs:11:31
+   |
+11 |         while (p <= i as f64) / (2 as f64) {
+   |               --------------- ^ ---------- f64
+   |               |
+   |               bool
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenamicable-pairs32126599/001/prog.rs:24:16
+   |
+19 |     fn pad(n: i32, width: i32) -> &'static str {
+   |                                   ------------ expected `&'static str` because of return type
+...
+24 |         return s;
+   |                ^ expected `&str`, found `String`
+   |
+help: consider borrowing here
+   |
+24 |         return &s;
+   |                +
+
+error: aborting due to 5 previous errors
+
+Some errors have detailed explanations: E0277, E0308, E0369.
+For more information about an error, try `rustc --explain E0277`.

@@ -1,0 +1,72 @@
+rustc error: exit status 1
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:14:30
+   |
+14 |             prev = res[idx - 1 as usize];
+   |                              ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:14:28
+   |
+14 |             prev = res[idx - 1 as usize];
+   |                            ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0277]: the type `[&'static str]` cannot be indexed by `i32`
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:14:24
+   |
+14 |             prev = res[idx - 1 as usize];
+   |                        ^^^^^^^^^^^^^^^^ slice indices are of type `usize` or ranges of `usize`
+   |
+   = help: the trait `SliceIndex<[&'static str]>` is not implemented for `i32`
+           but it is implemented for `usize`
+   = help: for that trait implementation, expected `usize`, found `i32`
+   = note: required for `Vec<&'static str>` to implement `Index<i32>`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:19:54
+   |
+19 |             if idx == 0 || &prev[prev.len() as i32 - 1 as usize..prev.len() as i32 as usize] == &w[0..1] {
+   |                                                      ^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: cannot subtract `usize` from `i32`
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:19:52
+   |
+19 |             if idx == 0 || &prev[prev.len() as i32 - 1 as usize..prev.len() as i32 as usize] == &w[0..1] {
+   |                                                    ^ no implementation for `i32 - usize`
+   |
+   = help: the trait `Sub<usize>` is not implemented for `i32`
+   = help: the following other types implement trait `Sub<Rhs>`:
+             `&i32` implements `Sub<i32>`
+             `&i32` implements `Sub`
+             `i32` implements `Sub<&i32>`
+             `i32` implements `Sub`
+
+error[E0308]: mismatched types
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:19:66
+   |
+19 |             if idx == 0 || &prev[prev.len() as i32 - 1 as usize..prev.len() as i32 as usize] == &w[0..1] {
+   |                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected `i32`, found `usize`
+
+error[E0277]: the type `str` cannot be indexed by `std::ops::Range<i32>`
+  --> /tmp/TestMochiRustGoldenamb2006758042/001/prog.rs:19:34
+   |
+19 |             if idx == 0 || &prev[prev.len() as i32 - 1 as usize..prev.len() as i32 as usize] == &w[0..1] {
+   |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ string indices are ranges of `usize`
+   |
+   = help: the trait `SliceIndex<str>` is not implemented for `std::ops::Range<i32>`
+   = help: the following other types implement trait `SliceIndex<T>`:
+             `std::ops::Range<usize>` implements `SliceIndex<[T]>`
+             `std::ops::Range<usize>` implements `SliceIndex<str>`
+   = note: required for `str` to implement `Index<std::ops::Range<i32>>`
+
+error: aborting due to 7 previous errors
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.

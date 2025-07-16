@@ -1,0 +1,8 @@
+type error: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:73
+
+ 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
+    |                                                                         ^
+
+help:
+  Ensure the argument type matches the function’s signature.
