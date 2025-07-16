@@ -883,6 +883,9 @@ func isPrimitive(expr string, c *Compiler) bool {
 
 func (c *Compiler) exprType(expr string) string {
 	if t, ok := c.vars[expr]; ok {
+		if t == "" {
+			return "Object"
+		}
 		return t
 	}
 	if strings.Contains(expr, ".") {
@@ -895,9 +898,12 @@ func (c *Compiler) exprType(expr string) string {
 				t = c.fieldType(t, p)
 			}
 		}
+		if t == "" {
+			t = "Object"
+		}
 		return t
 	}
-	return ""
+	return "Object"
 }
 
 func (c *Compiler) inferType(e *parser.Expr) string {
