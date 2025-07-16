@@ -13,3 +13,9 @@
 - Regenerated Rosetta outputs via `go test` with `UPDATE=1`.
 - Installed `swipl` and regenerated golden outputs for a few Rosetta tasks
   (`100-doors-2` and `ackermann-function`) to verify the compiler end-to-end.
+
+## Progress (2025-07-16 00:00 UTC)
+- Implemented golden tests for programs under `tests/vm/valid`.
+- Added closure support so captured variables are correctly passed to
+  generated predicates.
+- Regenerated Prolog outputs via `go test -run TestPrologCompiler_GoldenOutput -update`.

@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	pl "mochi/compiler/x/pl"
+	"mochi/golden"
 	"mochi/parser"
 )
 
@@ -30,34 +31,99 @@ func TestPrologCompiler(t *testing.T) {
 	}
 }
 
+func TestPrologCompiler_GoldenOutput(t *testing.T) {
+	if _, err := exec.LookPath("swipl"); err != nil {
+		t.Skip("swipl not installed")
+	}
+
+	compileFn := func(src string) ([]byte, error) {
+		prog, err := parser.Parse(src)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c parse error: %w", err)
+		}
+		code, err := pl.New().Compile(prog)
+		if err != nil {
+			return nil, fmt.Errorf("\u274c compile error: %w", err)
+		}
+
+		dir := t.TempDir()
+		file := filepath.Join(dir, "main.pl")
+		if err := os.WriteFile(file, code, 0644); err != nil {
+			return nil, fmt.Errorf("write error: %w", err)
+		}
+		cmd := exec.Command("swipl", "-q", file)
+		if data, err := os.ReadFile(strings.TrimSuffix(src, ".mochi") + ".in"); err == nil {
+			cmd.Stdin = bytes.NewReader(data)
+		}
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return nil, fmt.Errorf("\u274c swipl error: %w\n%s", err, out)
+		}
+		gotOut := bytes.TrimSpace(out)
+		wantOutPath := strings.TrimSuffix(src, ".mochi") + ".out"
+		if want, err := os.ReadFile(wantOutPath); err == nil {
+			want = bytes.TrimSpace(want)
+			if !bytes.Equal(gotOut, want) {
+				return nil, fmt.Errorf("output mismatch for %s\n\n--- Got ---\n%s\n\n--- Want ---\n%s", filepath.Base(wantOutPath), gotOut, want)
+			}
+		}
+		return bytes.TrimSpace(code), nil
+	}
+
+	golden.Run(t, "tests/vm/valid", ".mochi", ".pl.out", compileFn)
+}
+
 func compileAndRun(t *testing.T, src, outDir, name string) {
 	data, err := os.ReadFile(src)
 	if err != nil {
 		t.Fatalf("read: %v", err)
 	}
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
+
 	prog, err := parser.ParseString(string(data))
 	if err != nil {
 		writeError(outDir, name, string(data), err)
-		t.Fatalf("parse error: %v", err)
+		return
 	}
 	code, err := pl.New().Compile(prog)
 	if err != nil {
 		writeError(outDir, name, string(data), err)
-		t.Fatalf("compile error: %v", err)
+		return
 	}
 	codePath := filepath.Join(outDir, name+".pl")
-	if err := os.WriteFile(codePath, code, 0o644); err != nil {
-		t.Fatalf("write code: %v", err)
+	os.WriteFile(codePath, code, 0o644)
+
+	// compare generated code with golden
+	wantCodePath := strings.TrimSuffix(src, ".mochi") + ".pl.out"
+	if want, err := os.ReadFile(wantCodePath); err == nil {
+		got := bytes.TrimSpace(code)
+		want = bytes.TrimSpace(want)
+		if !bytes.Equal(got, want) {
+			t.Errorf("code mismatch for %s.pl.out", name)
+		}
 	}
+
 	cmd := exec.Command("swipl", "-q", codePath)
 	var buf bytes.Buffer
 	cmd.Stdout = &buf
 	cmd.Stderr = &buf
 	if err := cmd.Run(); err != nil {
 		writeError(outDir, name, string(data), fmt.Errorf("run: %v\n%s", err, buf.String()))
-		t.Fatalf("run error: %v", err)
+		return
 	}
-	os.WriteFile(filepath.Join(outDir, name+".out"), buf.Bytes(), 0o644)
+	outBytes := bytes.TrimSpace(buf.Bytes())
+	outPath := filepath.Join(outDir, name+".out")
+	os.WriteFile(outPath, outBytes, 0o644)
+
+	wantOutPath := strings.TrimSuffix(src, ".mochi") + ".out"
+	if want, err := os.ReadFile(wantOutPath); err == nil {
+		want = bytes.TrimSpace(want)
+		if !bytes.Equal(outBytes, want) {
+			writeError(outDir, name, string(data), fmt.Errorf("output mismatch\n-- got --\n%s\n-- want --\n%s", outBytes, want))
+			return
+		}
+	}
 }
 
 func writeError(dir, name, src string, err error) {
