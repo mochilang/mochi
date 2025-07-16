@@ -1,0 +1,20 @@
+run: exit status 255
+
+Warning: Undefined variable $SIZE in /tmp/2048.php on line 6
+
+Warning: Undefined variable $SIZE in /tmp/2048.php on line 21
+
+Warning: Undefined variable $SIZE in /tmp/2048.php on line 21
+Score: 0
+
+Warning: Undefined variable $SIZE in /tmp/2048.php on line 60
++----+----+----+----+
+W=Up S=Down A=Left D=Right Q=Quit
+Move: 
+
+Warning: Undefined variable $input in /tmp/2048.php on line 274
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/2048.php:274
+Stack trace:
+#0 {main}
+  thrown in /tmp/2048.php on line 274

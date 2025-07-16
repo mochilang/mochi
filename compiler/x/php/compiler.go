@@ -942,6 +942,16 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("count($%s['items']) > 0", name), nil
 		}
 		return fmt.Sprintf("count(%s) > 0", args[0]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no args")
+		}
+		return "time()", nil
+	case "input":
+		if len(args) != 0 {
+			return "", fmt.Errorf("input expects no args")
+		}
+		return "trim(fgets(STDIN))", nil
 	default:
 		name := sanitizeName(call.Func)
 		if c.env != nil {

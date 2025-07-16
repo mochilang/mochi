@@ -1,0 +1,9 @@
+run: exit status 255
+
+Warning: Undefined variable $now in /tmp/21-game.php on line 33
+
+Fatal error: Uncaught Error: Value of type null is not callable in /tmp/21-game.php:33
+Stack trace:
+#0 /tmp/21-game.php(99): main()
+#1 {main}
+  thrown in /tmp/21-game.php on line 33

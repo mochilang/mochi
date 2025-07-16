@@ -13,6 +13,7 @@
   correct counts and regenerated golden outputs.
 - 2025-07-15 06:32 - Added TPC-DS support. Generated PHP outputs for queries q1-q99 (except q51) via compile_tpcds_php.go and added tpcds_golden_test.go.
 - 2025-07-16 00:10 - Added _print helper and FifteenPuzzleExample stub for Rosetta tests.
+- 2025-07-16 12:13 - Generated PHP code for select Rosetta tasks via compile_rosetta_php.go.
 
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
