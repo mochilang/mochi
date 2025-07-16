@@ -12,6 +12,8 @@
 - [2025-08-30 10:00] Added `values` builtin and golden tests for `tests/vm/valid` programs.
 - [2025-09-01 09:15] Added VM golden tests and moved helper emission before
   variable declarations to reduce Pascal `.error` files.
+- [2025-09-02 12:00] Simplified golden tests to only check runtime output and
+  implemented `contains` method lowering for strings.
 
 ## Remaining Work
 - [x] Support advanced dataset queries required for TPC-H Q1.
