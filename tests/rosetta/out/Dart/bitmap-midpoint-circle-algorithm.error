@@ -1,0 +1,88 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:10:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:31:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (x as num), r + (y as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:31:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (x as num), r + (y as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:32:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (y as num), r + (x as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:32:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (y as num), r + (x as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:33:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (x as num), r + (y as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:33:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (x as num), r + (y as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:34:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (y as num), r + (x as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:34:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (y as num), r + (x as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:35:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (x as num), r - (y as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:35:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (x as num), r - (y as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:36:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (y as num), r - (x as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:36:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r - (y as num), r - (x as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:37:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (x as num), r - (y as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:37:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (x as num), r - (y as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:38:14: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (y as num), r - (x as num));
+             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:38:30: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    set(g, r + (y as num), r - (x as num));
+                             ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:39:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:41:61: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      err = ((err as num) + (2 * (y as num) as num) as num) + 1;
+                                                            ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:44:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) - 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:45:85: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      err = ((err as num) + (2 * (((y as num) - (x as num)) as num) as num) as num) + 1;
+                                                                                    ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:53:73: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while (end.toString().compareTo(0.toString()) > 0 && row[(end as num) - 1] == ' ') {
+                                                                        ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:54:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    end = (end as num) - 1;
+                       ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:60:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:94:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:123:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:128:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-midpoint-circle-algorithm.dart:132:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,25 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:19:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:13:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:10:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  return int.parse(((t5 as num) / (n + 1)));
+                                ^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:20:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:44:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:73:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:78:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/catalan-numbers-2.dart:82:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

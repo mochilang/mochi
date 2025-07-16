@@ -1,0 +1,152 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:80:13: Error: String starting with ' must end with '.
+  var out = 'P3
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:84:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:97:19: Error: String starting with ' must end with '.
+      out = out + '
+                  ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:98:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:101:19: Error: String starting with ' must end with '.
+      out = out + '
+                  ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:102:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:119:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:109:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:24:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:27:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:42:40: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  while (yy.toString().compareTo(y + h.toString()) < 0) {
+                                       ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:42:36: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  while (yy.toString().compareTo(y + h.toString()) < 0) {
+                                   ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:44:42: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    while (xx.toString().compareTo(x + w.toString()) < 0) {
+                                         ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:44:38: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    while (xx.toString().compareTo(x + w.toString()) < 0) {
+                                     ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:46:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      xx = (xx as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:48:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    yy = (yy as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:80:13: Error: Expected ';' after this.
+  var out = 'P3
+            ^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:81:3: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+  ^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:81:13: Error: 'from' isn't a type.
+# generated from Bitmap.writeppmp3
+            ^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:81:18: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+                 ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:81:24: Error: This requires the experimental 'dot-shorthands' language feature to be enabled.
+Try passing the '--enable-experiment=dot-shorthands' command line option.
+# generated from Bitmap.writeppmp3
+                       ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:81:25: Error: Expected ';' after this.
+# generated from Bitmap.writeppmp3
+                        ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:84:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:98:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:102:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:67:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      if (p['R'].toString().compareTo(maxv.toString()) > 0) {
+           ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:68:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+        maxv = p['R'];
+                ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:70:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      if (p['G'].toString().compareTo(maxv.toString()) > 0) {
+           ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:71:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+        maxv = p['G'];
+                ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:73:12: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      if (p['B'].toString().compareTo(maxv.toString()) > 0) {
+           ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:74:17: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+        maxv = p['B'];
+                ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:76:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:78:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:92:34: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
+                                 ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:92:63: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
+                                                              ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:92:92: Error: The operator '[]' isn't defined for the class 'Colour'.
+ - 'Colour' is from '../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      line = line + '   ' + pad(p['R'], numsize) + ' ' + pad(p['G'], numsize) + ' ' + pad(p['B'], numsize);
+                                                                                           ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:93:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:95:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (out as num) + (line as num);
+                       ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:104:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) - 1;
+                   ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:120:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:144:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:173:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:178:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/bitmap-write-a-ppm-file.dart:182:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

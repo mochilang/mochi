@@ -1,0 +1,200 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:87:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:43: Error: String starting with ' must end with '.
+The one thousandth abundant odd number is:');
+                                          ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:90:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:52: Error: String starting with ' must end with '.
+The first abundant odd number above one billion is:');
+                                                   ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:90:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:87:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:95:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:83:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:8:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var j = int.parse((n / (i as num)));
+                           ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:19:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    j = (j as num) - 1;
+                   ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    tot = (tot as num) + v;
+                       ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:37:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:65:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      count = (count as num) + 1;
+                             ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:67:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        n = (n as num) + 2;
+                       ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:78:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) + 2;
+                   ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:1: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:5: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+    ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:9: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+        ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:20: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+                   ^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:29: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+                            ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:33: Error: Expected ',' before this.
+The one thousandth abundant odd number is:');
+                                ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:42: Error: Expected a type, but got ':'.
+The one thousandth abundant odd number is:');
+                                         ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:42: Error: This couldn't be parsed.
+The one thousandth abundant odd number is:');
+                                         ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:33: Error: Undefined name 'number'.
+The one thousandth abundant odd number is:');
+                                ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:1: Error: Undefined name 'The'.
+The one thousandth abundant odd number is:');
+^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:5: Error: Undefined name 'one'.
+The one thousandth abundant odd number is:');
+    ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:9: Error: Undefined name 'thousandth'.
+The one thousandth abundant odd number is:');
+        ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:20: Error: Undefined name 'abundant'.
+The one thousandth abundant odd number is:');
+                   ^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:29: Error: Undefined name 'odd'.
+The one thousandth abundant odd number is:');
+                            ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:87:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:40: Error: Expected ';' after this.
+The one thousandth abundant odd number is:');
+                                       ^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:42: Error: Expected an identifier, but got ':'.
+Try inserting an identifier before ':'.
+The one thousandth abundant odd number is:');
+                                         ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:42: Error: Unexpected token ';'.
+The one thousandth abundant odd number is:');
+                                         ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:88:43: Error: Expected ';' after this.
+The one thousandth abundant odd number is:');
+                                          ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:1: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:5: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+    ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:11: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+          ^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:20: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+                   ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:24: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+                       ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:31: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+                              ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:37: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+                                    ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:41: Error: Expected ',' before this.
+The first abundant odd number above one billion is:');
+                                        ^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:51: Error: Expected a type, but got ':'.
+The first abundant odd number above one billion is:');
+                                                  ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:51: Error: This couldn't be parsed.
+The first abundant odd number above one billion is:');
+                                                  ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:41: Error: Undefined name 'billion'.
+The first abundant odd number above one billion is:');
+                                        ^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:1: Error: Undefined name 'The'.
+The first abundant odd number above one billion is:');
+^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:5: Error: Undefined name 'first'.
+The first abundant odd number above one billion is:');
+    ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:11: Error: Undefined name 'abundant'.
+The first abundant odd number above one billion is:');
+          ^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:20: Error: Undefined name 'odd'.
+The first abundant odd number above one billion is:');
+                   ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:24: Error: Undefined name 'number'.
+The first abundant odd number above one billion is:');
+                       ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:31: Error: Undefined name 'above'.
+The first abundant odd number above one billion is:');
+                              ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:37: Error: Undefined name 'one'.
+The first abundant odd number above one billion is:');
+                                    ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:90:8: Error: Too many positional arguments: 1 allowed, but 9 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:49: Error: Expected ';' after this.
+The first abundant odd number above one billion is:');
+                                                ^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:51: Error: Expected an identifier, but got ':'.
+Try inserting an identifier before ':'.
+The first abundant odd number above one billion is:');
+                                                  ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:51: Error: Unexpected token ';'.
+The first abundant odd number above one billion is:');
+                                                  ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:91:52: Error: Expected ';' after this.
+The first abundant odd number above one billion is:');
+                                                   ^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:96:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:120:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:149:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:154:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/abundant-odd-numbers.dart:158:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

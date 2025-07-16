@@ -1,0 +1,85 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:118:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:111:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:34:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + img[yy][xx] * k[j][i];
+                                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:34:40: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + img[yy][xx] * k[j][i];
+                                       ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:34:30: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + img[yy][xx] * k[j][i];
+                             ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:35:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          i = (i as num) + 1;
+                         ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:37:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        j = (j as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:39:33: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+      row = List.from(row)..add(sum);
+                                ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:40:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:43:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:51:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+ - 'List' is from 'dart:core'.
+  var gx = conv2d(img, hx);
+                       ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:52:24: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+ - 'List' is from 'dart:core'.
+  var gy = conv2d(img, hy);
+                       ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:62:33: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
+      row = List.from(row)..add(g);
+                                ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:63:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:66:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:86:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:89:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:101:50: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      if (x.toString().compareTo(m[0].length - 1.toString()) < 0) {
+                                                 ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:101:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+      if (x.toString().compareTo(m[0].length - 1.toString()) < 0) {
+                                             ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:104:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      x = (x as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:107:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:113:20: Error: The argument type 'List<List<int>>' can't be assigned to the parameter type 'List<List<double>>'.
+ - 'List' is from 'dart:core'.
+  var g = gradient(img);
+                   ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:119:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:143:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:172:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:177:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/canny-edge-detector.dart:181:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

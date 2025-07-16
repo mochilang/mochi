@@ -1,0 +1,22 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:16:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:24:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var n = (int.parse(scaled));
+                     ^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:46:30: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    term = 1 / (double.parse(factval));
+                             ^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:76:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:105:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:110:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/calculating-the-value-of-e.dart:114:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

@@ -1,0 +1,18 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/md5.dart:11:22: Error: The operator '[]' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+    var sum = testpkg['MD5Hex'](pair[1]);
+                     ^
+../../tests/rosetta/out/Dart/md5.dart:42:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/md5.dart:71:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/md5.dart:76:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/md5.dart:80:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

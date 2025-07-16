@@ -1,0 +1,43 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:22:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:16:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:18:48: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  each(s, (i) => print((i as num) * (i as num).toString()));
+                                               ^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:23:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:32:14: Error: 'Map' isn't a type.
+    if (a is Map && b is Map) {
+             ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:32:26: Error: 'Map' isn't a type.
+    if (a is Map && b is Map) {
+                         ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:47:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:54:19: Error: 'Map' isn't a type.
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+                  ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:55:19: Error: 'Map' isn't a type.
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+                  ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:66:19: Error: 'Map' isn't a type.
+    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
+                  ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:67:19: Error: 'Map' isn't a type.
+    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
+                  ^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:76:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:81:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-2.dart:85:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

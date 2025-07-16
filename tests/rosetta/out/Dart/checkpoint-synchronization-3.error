@@ -1,0 +1,22 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:7:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (ch == up.toString().substring(i, (i as num) + 1)) {
+                                                    ^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:8:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      return low.toString().substring(i, (i as num) + 1);
+                                                    ^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:10:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:59:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:88:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:93:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/checkpoint-synchronization-3.dart:97:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

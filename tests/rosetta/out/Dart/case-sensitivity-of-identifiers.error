@@ -1,0 +1,65 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:12:46: Error: String starting with ' must end with '.
+  print('There are ' + d.length.toString() + ' dogs.
+                                             ^^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:13:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:20:46: Error: String starting with ' must end with '.
+  print('There are ' + d.length.toString() + ' dogs.
+                                             ^^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:21:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:28:46: Error: String starting with ' must end with '.
+  print('There are ' + d.length.toString() + ' dogs.
+                                             ^^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:29:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:28:8: Error: Can't find ')' to match '('.
+  print('There are ' + d.length.toString() + ' dogs.
+       ^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:20:8: Error: Can't find ')' to match '('.
+  print('There are ' + d.length.toString() + ' dogs.
+       ^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:12:8: Error: Can't find ')' to match '('.
+  print('There are ' + d.length.toString() + ' dogs.
+       ^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:40:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:2:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:13:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:22:3: Error: Expected ',' before this.
+  Dog = 'Samba';
+  ^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:20:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('There are ' + d.length.toString() + ' dogs.
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:29:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:41:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:65:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:94:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:99:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/case-sensitivity-of-identifiers.dart:103:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

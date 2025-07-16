@@ -1,0 +1,73 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/blum-integer.dart:138:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/blum-integer.dart:81:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/blum-integer.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 2;
+                   ^
+../../tests/rosetta/out/Dart/blum-integer.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    d = (d as num) + 4;
+                   ^
+../../tests/rosetta/out/Dart/blum-integer.dart:43:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + (inc[i] as num);
+                   ^
+../../tests/rosetta/out/Dart/blum-integer.dart:44:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (((i as num) + 1) as num) % inc.length;
+                                  ^
+../../tests/rosetta/out/Dart/blum-integer.dart:52:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+../../tests/rosetta/out/Dart/blum-integer.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/blum-integer.dart:76:38: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    return s.toString().substring(0, need);
+                                     ^
+../../tests/rosetta/out/Dart/blum-integer.dart:90:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      var q = int.parse(((i as num) / (p as num)));
+                                    ^
+../../tests/rosetta/out/Dart/blum-integer.dart:97:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[0] = (counts[0] as num) + 1;
+                                         ^
+../../tests/rosetta/out/Dart/blum-integer.dart:101:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[1] = (counts[1] as num) + 1;
+                                         ^
+../../tests/rosetta/out/Dart/blum-integer.dart:105:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[2] = (counts[2] as num) + 1;
+                                         ^
+../../tests/rosetta/out/Dart/blum-integer.dart:109:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          counts[3] = (counts[3] as num) + 1;
+                                         ^
+../../tests/rosetta/out/Dart/blum-integer.dart:111:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        bc = (bc as num) + 1;
+                         ^
+../../tests/rosetta/out/Dart/blum-integer.dart:120:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+              idx = (idx as num) + 1;
+                                 ^
+../../tests/rosetta/out/Dart/blum-integer.dart:121:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+              j = (j as num) + 1;
+                             ^
+../../tests/rosetta/out/Dart/blum-integer.dart:130:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 4;
+                     ^
+../../tests/rosetta/out/Dart/blum-integer.dart:133:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 2;
+                     ^
+../../tests/rosetta/out/Dart/blum-integer.dart:139:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/blum-integer.dart:163:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/blum-integer.dart:192:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/blum-integer.dart:197:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/blum-integer.dart:201:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

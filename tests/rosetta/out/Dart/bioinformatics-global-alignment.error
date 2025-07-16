@@ -1,0 +1,159 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:182:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:184:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:182:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:203:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:194:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:15:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + 1) == ch) {
+                                             ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:18:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:27:61: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  while (i.toString().compareTo((sl as num) - (subl as num).toString()) <= 0) {
+                                                            ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:27:45: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  while (i.toString().compareTo((sl as num) - (subl as num).toString()) <= 0) {
+                                            ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:28:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s.toString().substring(i, (i as num) + (subl as num)) == sub) {
+                                             ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:31:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:67:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:76:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        k = (k as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:80:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:93:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (s2.toString().substring(0, s1.length - (start as num)) == s1.toString().substring(start, s1.length)) {
+                                             ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:94:24: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+      return s1.length - (start as num);
+                       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:96:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    start = (start as num) + 1;
+                           ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:113:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:118:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:140:49: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    while (i.toString().compareTo(ss.length - 1.toString()) < 0) {
+                                                ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:140:45: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+    while (i.toString().compareTo(ss.length - 1.toString()) < 0) {
+                                            ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:141:57: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var ov = headTailOverlap(perm[i], perm[(i as num) + 1]);
+                                                        ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:142:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sup = sup + perm[(i as num) + 1].toString().substring(ov, perm[(i as num) + 1].length);
+                                  ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:142:81: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      sup = sup + perm[(i as num) + 1].toString().substring(ov, perm[(i as num) + 1].length);
+                                                                                ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:143:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:148:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    idx = (idx as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:1: Error: Expected ',' before this.
+Nucleotide counts for ' + seq + ':
+^^^^^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:12: Error: Expected ',' before this.
+Nucleotide counts for ' + seq + ':
+           ^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:1: Error: Undefined name 'Nucleotide'.
+Nucleotide counts for ' + seq + ':
+^^^^^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:12: Error: Undefined name 'counts'.
+Nucleotide counts for ' + seq + ':
+           ^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:182:8: Error: Too many positional arguments: 1 allowed, but 3 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:12: Error: Expected ';' after this.
+Nucleotide counts for ' + seq + ':
+           ^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:23: Error: Expected '(' before this.
+Nucleotide counts for ' + seq + ':
+                      ^^^^^^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:23: Error: Expected ';' after this.
+Nucleotide counts for ' + seq + ':
+                      ^^^^^^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:34: Error: Expected an identifier, but got ':'.
+Try inserting an identifier before ':'.
+Nucleotide counts for ' + seq + ':
+                                 ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:183:34: Error: Unexpected token ';'.
+Nucleotide counts for ' + seq + ':
+                                 ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:184:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:160:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    var ch = seq.toString().substring(i, (i as num) + 1);
+                                                    ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:162:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      a = (a as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:166:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        c = (c as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:170:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          g = (g as num) + 1;
+                         ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:174:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            t = (t as num) + 1;
+                           ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:179:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:189:136: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(padLeft('Other', 10) + padLeft((total as num) - (((((a as num) + (c as num) as num) + (g as num) as num) + (t as num)) as num).toString(), 12));
+                                                                                                                                       ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:189:55: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+  print(padLeft('Other', 10) + padLeft((total as num) - (((((a as num) + (c as num) as num) + (g as num) as num) + (t as num)) as num).toString(), 12));
+                                                      ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:204:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:228:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:257:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:262:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/bioinformatics-global-alignment.dart:266:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

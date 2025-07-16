@@ -1,0 +1,117 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:147:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:119:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:71:13: Error: Type 'any' not found.
+Map<String, any> getBrilliant(int digits, int limit, bool countOnly) {
+            ^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:14:15: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sieve[m] = false;
+              ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:18:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    p = (p as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:26:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    x = (x as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:43:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:52:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:63:73: Error: The operator '+' isn't defined for the class 'Object'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '+' operator.
+    s = ((s is String) ? s.substring(0, i) : (s as List).sublist(0, i)) + ',' + ((s is String) ? s.substring(i, s.length) : (s as List).sublist(i, s.length));
+                                                                        ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:64:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 3;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:80:52: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+      if (p.toString().compareTo((pow as num) * 10.toString()) >= 0) {
+                                                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:80:47: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+      if (p.toString().compareTo((pow as num) * 10.toString()) >= 0) {
+                                              ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:94:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            count = (count as num) + 1;
+                                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:97:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+            brilliant = List.from(brilliant)..add(prod);
+                                                  ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:102:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+            next = prod;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:106:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        j = (j as num) + 1;
+                       ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:108:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:110:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    pow = (pow as num) * 10;
+                       ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:111:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:135:17: Error: Method not found: 'pow'.
+    var limit = pow(10, k);
+                ^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:123:29: Error: The method 'substring' isn't defined for the class 'List<int>'.
+ - 'List' is from 'dart:core'.
+Try correcting the name to the name of an existing method, or defining a method named 'substring'.
+  br = ((br is String) ? br.substring(0, 100) : (br as List).sublist(0, 100));
+                            ^^^^^^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:126:29: Error: The method 'padStart' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'padStart'.
+    print([br[i].toString().padStart(4, ' ') + ' ', false].join(' '));
+                            ^^^^^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:130:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:140:43: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    var ctotal = commatize((total as num) + 1);
+                                          ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:32: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                               ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:43: Error: The method 'call' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                                          ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:71: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                                                                      ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:82: Error: The method 'call' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                                                                                 ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:121: Error: A value of type 'String' can't be assigned to a variable of type 'int'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                                                                                                                        ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:142:132: Error: The method 'call' isn't defined for the class 'String'.
+Try correcting the name to the name of an existing method, or defining a method named 'call'.
+    print('First >= ' + climit['padStart'](18, ' ') + ' is ' + ctotal['padStart'](14, ' ') + ' in the series: ' + cnext['padStart'](18, ' '));
+                                                                                                                                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:143:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:171:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:200:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:205:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/brilliant-numbers.dart:209:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

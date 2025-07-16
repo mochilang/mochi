@@ -1,0 +1,25 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/binary-digits.dart:9:27: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    bits = (x as num) % 2.toString() + bits;
+                          ^
+../../tests/rosetta/out/Dart/binary-digits.dart:9:40: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    bits = (x as num) % 2.toString() + bits;
+                                       ^
+../../tests/rosetta/out/Dart/binary-digits.dart:9:38: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    bits = (x as num) % 2.toString() + bits;
+                                     ^
+../../tests/rosetta/out/Dart/binary-digits.dart:10:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    x = int.parse(((x as num) / 2));
+                              ^
+../../tests/rosetta/out/Dart/binary-digits.dart:42:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/binary-digits.dart:71:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/binary-digits.dart:76:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/binary-digits.dart:80:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

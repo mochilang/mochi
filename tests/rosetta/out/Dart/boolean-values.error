@@ -1,0 +1,80 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/boolean-values.dart:20:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/boolean-values.dart:22:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:20:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/boolean-values.dart:29:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:10:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:3:11: Error: Method not found: 'lower'.
+  var l = lower(s);
+          ^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:1: Error: Expected ',' before this.
+Convert String into Boolean Data type
+^^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:9: Error: Expected ',' before this.
+Convert String into Boolean Data type
+        ^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:16: Error: Expected ',' before this.
+Convert String into Boolean Data type
+               ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:21: Error: Expected ',' before this.
+Convert String into Boolean Data type
+                    ^^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:29: Error: Expected ',' before this.
+Convert String into Boolean Data type
+                            ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:34: Error: Expected ',' before this.
+Convert String into Boolean Data type
+                                 ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:22:1: Error: Expected ',' before this.
+');
+^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:1: Error: Undefined name 'Convert'.
+Convert String into Boolean Data type
+^^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:16: Error: Undefined name 'into'.
+Convert String into Boolean Data type
+               ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:21: Error: Undefined name 'Boolean'.
+Convert String into Boolean Data type
+                    ^^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:29: Error: Undefined name 'Data'.
+Convert String into Boolean Data type
+                            ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:21:34: Error: Undefined name 'type'.
+Convert String into Boolean Data type
+                                 ^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:20:8: Error: Too many positional arguments: 1 allowed, but 8 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:22:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:30:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/boolean-values.dart:54:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:83:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:88:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/boolean-values.dart:92:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

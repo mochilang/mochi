@@ -1,0 +1,18 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/15-puzzle-solver.dart:10:16: Error: The operator '[]' isn't defined for the class 'Type'.
+ - 'Type' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+  print(testpkg['FifteenPuzzleExample']());
+               ^
+../../tests/rosetta/out/Dart/15-puzzle-solver.dart:34:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/15-puzzle-solver.dart:63:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/15-puzzle-solver.dart:68:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/15-puzzle-solver.dart:72:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

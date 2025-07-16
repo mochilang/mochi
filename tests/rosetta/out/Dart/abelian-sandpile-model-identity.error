@@ -1,0 +1,234 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:52:13: Error: String starting with ' must end with '.
+    s = s + '
+            ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:53:1: Error: String starting with ' must end with '.
+';
+^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:78:9: Error: String starting with ' must end with '.
+  print('Avalanche of topplings:
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:79:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:85:9: Error: String starting with ' must end with '.
+  print('Commutative additions:
+        ^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:86:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:93:26: Error: String starting with ' must end with '.
+  print(pileString(s1) + '
+                         ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:99:1: Error: String starting with ' must end with '.
+' + pileString(s3_a));
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:100:9: Error: String starting with ' must end with '.
+  print('and
+        ^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:108:1: Error: String starting with ' must end with '.
+' + pileString(s3_b));
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:109:9: Error: String starting with ' must end with '.
+  print('Addition of identity sandpile:
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:110:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:114:26: Error: String starting with ' must end with '.
+  print(pileString(s3) + '
+                         ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:120:1: Error: String starting with ' must end with '.
+' + pileString(s4b));
+^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:121:9: Error: String starting with ' must end with '.
+  print('Addition of identities:
+        ^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:122:1: Error: String starting with ' must end with '.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:126:29: Error: String starting with ' must end with '.
+  print(pileString(s3_id) + '
+                            ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:132:1: Error: String starting with ' must end with '.
+' + pileString(s5));
+^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:126:8: Error: Can't find ')' to match '('.
+  print(pileString(s3_id) + '
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:121:8: Error: Can't find ')' to match '('.
+  print('Addition of identities:
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:114:8: Error: Can't find ')' to match '('.
+  print(pileString(s3) + '
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:109:8: Error: Can't find ')' to match '('.
+  print('Addition of identity sandpile:
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:100:8: Error: Can't find ')' to match '('.
+  print('and
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:93:8: Error: Can't find ')' to match '('.
+  print(pileString(s1) + '
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:85:8: Error: Can't find ')' to match '('.
+  print('Commutative additions:
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:78:8: Error: Can't find ')' to match '('.
+  print('Avalanche of topplings:
+       ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:11:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:38:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:53:1: Error: Expected ';' after this.
+';
+^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:49:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      s = s + p[(3 * (r as num) as num) + (c as num)].toString() + ' ';
+                                        ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:50:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      c = (c as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:54:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    r = (r as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:80:3: Error: Expected ',' before this.
+  print(pileString(s4));
+  ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:78:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+Try removing the extra positional arguments.
+  print('Avalanche of topplings:
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:86:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:94:1: Error: Expected ',' before this.
+plus
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:96:1: Error: Expected ',' before this.
+' + pileString(s2) + '
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:97:1: Error: Expected ',' before this.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:99:1: Error: Expected ',' before this.
+' + pileString(s3_a));
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:100:3: Error: Expected ',' before this.
+  print('and
+  ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:103:1: Error: Expected ',' before this.
+plus
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:105:1: Error: Expected ',' before this.
+' + pileString(s1) + '
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:106:1: Error: Expected ',' before this.
+also equals
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:106:6: Error: Expected ',' before this.
+also equals
+     ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:108:1: Error: Expected ',' before this.
+' + pileString(s3_b));
+^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:109:3: Error: Expected ',' before this.
+  print('Addition of identity sandpile:
+  ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:106:1: Error: Undefined name 'also'.
+also equals
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:106:6: Error: Undefined name 'equals'.
+also equals
+     ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:100:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+Try removing the extra positional arguments.
+  print('and
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:97:1: Error: Undefined name 'equals'.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:93:8: Error: Too many positional arguments: 1 allowed, but 6 found.
+Try removing the extra positional arguments.
+  print(pileString(s1) + '
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:110:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:115:1: Error: Expected ',' before this.
+plus
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:117:1: Error: Expected ',' before this.
+' + pileString(s3_id) + '
+^^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:118:1: Error: Expected ',' before this.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:120:1: Error: Expected ',' before this.
+' + pileString(s4b));
+^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:121:3: Error: Expected ',' before this.
+  print('Addition of identities:
+  ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:118:1: Error: Undefined name 'equals'.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:114:8: Error: Too many positional arguments: 1 allowed, but 6 found.
+Try removing the extra positional arguments.
+  print(pileString(s3) + '
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:122:1: Error: Expected ';' after this.
+');
+^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:127:1: Error: Expected ',' before this.
+plus
+^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:129:1: Error: Expected ',' before this.
+' + pileString(s3_id) + '
+^^^^^^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:130:1: Error: Expected ',' before this.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:132:1: Error: Expected ',' before this.
+' + pileString(s5));
+^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:130:1: Error: Undefined name 'equals'.
+equals
+^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:126:8: Error: Too many positional arguments: 1 allowed, but 5 found.
+Try removing the extra positional arguments.
+  print(pileString(s3_id) + '
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:132:1: Error: Expected ';' after this.
+' + pileString(s5));
+^^^^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:156:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:185:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:190:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/abelian-sandpile-model-identity.dart:194:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

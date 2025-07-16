@@ -1,0 +1,64 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:4:67: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+  while (n.toString().compareTo(1.toString()) > 0 && a[(n as num) - 1] == 0) {
+                                                                  ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:5:33: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    a = a.sublist(0, (n as num) - 1);
+                                ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:6:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = (n as num) - 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:18:48: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    digits = List.from(digits)..add((n as num) % 10);
+                                               ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:19:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    n = (n as num) / 10;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:38:42: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add((s as num) % 10);
+                                         ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:39:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    carry = (s as num) / 10;
+                       ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:40:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:63:31: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    res = List.from(res)..add(diff);
+                              ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:64:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:74:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) - 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:95:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      var val = cache[(y as num) - x][minInt(x, (y as num) - x)];
+                                 ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:95:60: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+      var val = cache[(y as num) - x][minInt(x, (y as num) - x)];
+                                                           ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:100:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    y = (y as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:110:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    var diff = bigSub(e[(i as num) + 1], e[i]);
+                                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:112:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:127:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:161:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:190:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:195:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/9-billion-names-of-god-the-integer.dart:199:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

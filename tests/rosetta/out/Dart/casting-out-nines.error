@@ -1,0 +1,127 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/casting-out-nines.dart:62:11: Error: String starting with ' must end with '.
+    print('
+          ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:102: Error: String starting with ' must end with '.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                                     ^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:62:10: Error: Can't find ')' to match '('.
+    print('
+         ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:10:53: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                                    ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:10:87: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      if (digits.toString().substring(j, (j as num) + 1) == s.substring(i, (i as num) + 1)) {
+                                                                                      ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:14:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      j = (j as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:16:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = ((n as num) * base as num) + (v as num);
+                                   ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:31:51: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                  ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:31:65: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:31:97: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:31:111: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                              ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:31:125: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    out = (((digits is String) ? digits.substring(d, (d as num) + 1) : (digits as List).sublist(d, (d as num) + 1)) as num) + (out as num);
+                                                                                                                            ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:32:20: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    v = (v as num) / base;
+                   ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:50:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    k = (k as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:1: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:6: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+     ^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:6: Error: 'case' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+     ^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:11: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+          ^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:26: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                         ^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:30: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                             ^^^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:65: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                ^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:70: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                     ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:92: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                           ^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:95: Error: Expected ',' before this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                              ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:95: Error: Expected an identifier, but got ''] + ''.
+Try inserting an identifier before ''] + ''.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                              ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:63:102: Error: Expected ';' after this.
+Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                                     ^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:64:22: Error: The argument type 'Object?' can't be assigned to the parameter type 'int'.
+ - 'Object' is from 'dart:core'.
+    var s = subset(tc['base'], tc['begin'], tc['end']);
+                     ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:64:34: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+ - 'Object' is from 'dart:core'.
+    var s = subset(tc['base'], tc['begin'], tc['end']);
+                                 ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:64:47: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+ - 'Object' is from 'dart:core'.
+    var s = subset(tc['base'], tc['begin'], tc['end']);
+                                              ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:70:50: Error: The getter 'length' isn't defined for the class 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'length'.
+    while (i.toString().compareTo(tc['kaprekar'].length.toString()) < 0) {
+                                                 ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:71:29: Error: The operator '[]' isn't defined for the class 'Object?'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '[]' operator.
+      var k = tc['kaprekar'][i];
+                            ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:76:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sx = (sx as num) + 1;
+                           ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:79:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sx = (sx as num) + 1;
+                         ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:86:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:116:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:145:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:150:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/casting-out-nines.dart:154:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

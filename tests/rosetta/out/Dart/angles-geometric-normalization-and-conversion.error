@@ -1,0 +1,178 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:73:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:46: Error: String starting with ' must end with '.
+gradians normalized_grds degrees mils radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:79:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:46: Error: String starting with ' must end with '.
+mils normalized_mils degrees gradians radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:85:9: Error: String starting with ' must end with '.
+  print('
+        ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:46: Error: String starting with ' must end with '.
+radians normalized_rads degrees gradians mils');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:85:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:79:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:73:8: Error: Can't find ')' to match '('.
+  print('
+       ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:93:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:66:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:1: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:10: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+         ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:26: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+                         ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:34: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+                                 ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:39: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+                                      ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:46: Error: Expected ',' before this.
+gradians normalized_grds degrees mils radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:1: Error: Undefined name 'gradians'.
+gradians normalized_grds degrees mils radians');
+^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:10: Error: Undefined name 'normalized_grds'.
+gradians normalized_grds degrees mils radians');
+         ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:26: Error: Undefined name 'degrees'.
+gradians normalized_grds degrees mils radians');
+                         ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:34: Error: Undefined name 'mils'.
+gradians normalized_grds degrees mils radians');
+                                 ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:39: Error: Undefined name 'radians'.
+gradians normalized_grds degrees mils radians');
+                                      ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:73:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:74:46: Error: Expected ';' after this.
+gradians normalized_grds degrees mils radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:1: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:6: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+     ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:22: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+                     ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:30: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+                             ^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:39: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+                                      ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:46: Error: Expected ',' before this.
+mils normalized_mils degrees gradians radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:1: Error: Undefined name 'mils'.
+mils normalized_mils degrees gradians radians');
+^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:6: Error: Undefined name 'normalized_mils'.
+mils normalized_mils degrees gradians radians');
+     ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:22: Error: Undefined name 'degrees'.
+mils normalized_mils degrees gradians radians');
+                     ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:30: Error: Undefined name 'gradians'.
+mils normalized_mils degrees gradians radians');
+                             ^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:39: Error: Undefined name 'radians'.
+mils normalized_mils degrees gradians radians');
+                                      ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:79:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:80:46: Error: Expected ';' after this.
+mils normalized_mils degrees gradians radians');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:1: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:9: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+        ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:25: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+                        ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:33: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+                                ^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:42: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+                                         ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:46: Error: Expected ',' before this.
+radians normalized_rads degrees gradians mils');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:1: Error: Undefined name 'radians'.
+radians normalized_rads degrees gradians mils');
+^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:9: Error: Undefined name 'normalized_rads'.
+radians normalized_rads degrees gradians mils');
+        ^^^^^^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:25: Error: Undefined name 'degrees'.
+radians normalized_rads degrees gradians mils');
+                        ^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:33: Error: Undefined name 'gradians'.
+radians normalized_rads degrees gradians mils');
+                                ^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:42: Error: Undefined name 'mils'.
+radians normalized_rads degrees gradians mils');
+                                         ^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:85:8: Error: Too many positional arguments: 1 allowed, but 7 found.
+Try removing the extra positional arguments.
+  print('
+       ^
+org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
+void print(Object? object) {
+     ^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:86:46: Error: Expected ';' after this.
+radians normalized_rads degrees gradians mils');
+                                             ^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:94:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:118:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:147:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:152:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/angles-geometric-normalization-and-conversion.dart:156:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

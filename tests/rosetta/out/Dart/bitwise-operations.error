@@ -1,0 +1,91 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/bitwise-operations.dart:5:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    u = (u as num) + 65536;
+                   ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:7:21: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return (u as num) % 65536;
+                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:17:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      u = (u as num) - (mask as num);
+                     ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:22:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    mask = int.parse(((mask as num) / 2));
+                                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:34:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      res = (res as num) + (bit as num);
+                         ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:36:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ua = int.parse(((ua as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:37:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ub = int.parse(((ub as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:38:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bit = (bit as num) * 2;
+                       ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:50:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      res = (res as num) + (bit as num);
+                         ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:52:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ua = int.parse(((ua as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:53:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ub = int.parse(((ub as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:54:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bit = (bit as num) * 2;
+                       ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:68:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      res = (res as num) + (bit as num);
+                         ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:70:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ua = int.parse(((ua as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:71:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ub = int.parse(((ub as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:72:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    bit = (bit as num) * 2;
+                       ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:79:16: Error: A value of type 'num' can't be returned from a function with return type 'int'.
+  return 65535 - (ua as num);
+               ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:86:37: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    ua = (((ua as num) * 2) as num) % 65536;
+                                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:87:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:96:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    ua = int.parse(((ua as num) / 2));
+                                ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:97:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:111:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      val = int.parse(((val as num) / 2));
+                                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:114:52: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      val = int.parse(((((val as num) - 1) as num) / 2));
+                                                   ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:116:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:125:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return toUnsigned16((left as num) + (right as num));
+                                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:132:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  return toUnsigned16((left as num) + (right as num));
+                                    ^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:179:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:208:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:213:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/bitwise-operations.dart:217:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^

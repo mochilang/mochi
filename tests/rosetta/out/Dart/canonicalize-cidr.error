@@ -1,0 +1,88 @@
+run error: exit status 254
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:7:138: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    if (sep.length > 0 && (i as num) + sep.length.toString().compareTo(s.length.toString()) <= 0 && s.toString().substring(i, (i as num) + sep.length) == sep) {
+                                                                                                                                         ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:10:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + sep.length;
+                     ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:13:45: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+      cur = cur + s.substring(i, (i as num) + 1);
+                                            ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:14:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      i = (i as num) + 1;
+                     ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:29:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:39:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:54:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                                                       ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:54:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = ((n as num) * 10 as num) + (digits[str.substring(i, (i as num) + 1)] as num);
+                                 ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:58:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = -(n as num);
+        ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:68:26: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
+                         ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:68:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = (val as num) % 2.toString() + b;
+                                      ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:68:37: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    b = (val as num) % 2.toString() + b;
+                                    ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:69:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    val = int.parse(((val as num) / 2));
+                                  ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:70:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:79:76: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                                                           ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:79:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
+                                ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:80:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 1;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:102:114: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+  binary = ((binary is String) ? binary.substring(0, size) : (binary as List).sublist(0, size)) + repeat('0', 32 - (size as num));
+                                                                                                                 ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:102:97: Error: The operator '+' isn't defined for the class 'Object'.
+ - 'Object' is from 'dart:core'.
+Try correcting the operator to an existing operator, or defining a '+' operator.
+  binary = ((binary is String) ? binary.substring(0, size) : (binary as List).sublist(0, size)) + repeat('0', 32 - (size as num));
+                                                                                                ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:106:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                                          ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:106:153: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                                                                                                        ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:106:74: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+ - 'Object' is from 'dart:core'.
+    canonParts = List.from(canonParts)..add(binToInt(((binary is String) ? binary.substring(i, (i as num) + 8) : (binary as List).sublist(i, (i as num) + 8))).toString());
+                                                                         ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:107:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    i = (i as num) + 8;
+                   ^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:141:11: Error: Method not found: 'jsonEncode'.
+    print(jsonEncode(v));
+          ^^^^^^^^^^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:170:5: Error: Undefined name 'stdout'.
+    stdout.write('   test $name ...');
+    ^^^^^^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:175:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        ^^^^^^
+../../tests/rosetta/out/Dart/canonicalize-cidr.dart:179:9: Error: Undefined name 'stdout'.
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        ^^^^^^
