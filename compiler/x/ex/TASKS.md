@@ -14,6 +14,8 @@ the expected `.out` file. The generated sources live under
 - [x] Added `_now` helper so `now()` compiles and runs properly, reducing `.error` files in Rosetta tests.
 - [x] Introduced `_length` helper and fallback string slicing logic to better handle dynamic `len()` and slice expressions. This fixes a few Rosetta tasks that previously crashed at runtime.
 - [ ] Finish YAML loader support for `load_yaml.mochi`.
+- [x] Added basic YAML parsing in `_load` helper so `load_yaml.mochi` runs
+  without errors.
 - [ ] Improve formatting of generated code.
 
 ## TPC-DS Progress (2025-07-15 04:45)
