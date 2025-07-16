@@ -19,6 +19,13 @@ import (
 	"mochi/types"
 )
 
+func ensureGST() string {
+	if p, err := exec.LookPath("gst"); err == nil {
+		return p
+	}
+	return ""
+}
+
 func goldenShouldUpdate() bool {
 	f := flag.Lookup("update")
 	return f != nil && f.Value.String() == "true"
@@ -30,7 +37,7 @@ func TestSmalltalkCompiler_VMValid_Golden(t *testing.T) {
 	outDir := filepath.Join(root, "tests", "machine", "x", "st")
 	os.MkdirAll(outDir, 0755)
 
-	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+	golden.RunWithSummary(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
 		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codePath := filepath.Join(outDir, base+".st")
 		outPath := filepath.Join(outDir, base+".out")
@@ -69,9 +76,8 @@ func TestSmalltalkCompiler_VMValid_Golden(t *testing.T) {
 		outBytes := bytes.TrimSpace(buf.Bytes())
 		os.WriteFile(outPath, outBytes, 0644)
 		os.Remove(errPath)
-		if goldenShouldUpdate() {
-			_ = os.WriteFile(strings.TrimSuffix(src, ".mochi")+".st.out", code, 0644)
-		}
+		// Generated Smalltalk code is stored under tests/machine/x/st
+		// and not compared directly in the golden test.
 		return outBytes, nil
 	})
 }
