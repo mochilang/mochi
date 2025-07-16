@@ -114,8 +114,12 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	c.buf.Reset()
 	c.indent = 0
 	c.useIn = false
-	c.useJSON = false
-	c.useIO = false
+	// Helpers currently always reference jsonEncode and stdout even if the
+	// generated program itself does not.  Without these imports the
+	// generated code fails to compile.  Default to true so simple programs
+	// work without explicit JSON or IO usage.
+	c.useJSON = true
+	c.useIO = true
 	c.useYAML = false
 	c.useLoad = false
 	c.useSave = false
@@ -2251,7 +2255,7 @@ func defaultValue(typ string) string {
 
 func isNumericType(t types.Type) bool {
 	switch t.(type) {
-	case types.IntType, types.Int64Type, types.FloatType:
+	case types.IntType, types.Int64Type, types.FloatType, types.BigIntType, types.BigRatType, types.AnyType:
 		return true
 	default:
 		return false
