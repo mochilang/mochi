@@ -1,6 +1,9 @@
 # Smalltalk Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-16 12:20 - Fixed block syntax generation for functions without
+  parameters. This allows Rosetta examples like `active-directory-connect`
+  to compile without parse errors when executed under GNU Smalltalk.
 - 2025-07-13 05:03 - Added support for `else if` by recursively handling `IfStmt.ElseIf`.
 - 2025-07-13 05:07 - Fixed header comments so generated files run under GNU Smalltalk.
 - 2025-07-13 16:35 - Unary negation now parenthesizes expressions and grouping keys

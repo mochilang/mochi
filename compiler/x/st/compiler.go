@@ -150,7 +150,13 @@ func (c *Compiler) compileStmt(st *parser.Statement) error {
 		if err != nil {
 			return err
 		}
-		c.writeln(fmt.Sprintf("%s := [%s | %s ]", st.Fun.Name, strings.Join(params, " "), body))
+		header := strings.Join(params, " ")
+		if header != "" {
+			header += " | "
+			c.writeln(fmt.Sprintf("%s := [%s%s ]", st.Fun.Name, header, body))
+		} else {
+			c.writeln(fmt.Sprintf("%s := [ %s ]", st.Fun.Name, body))
+		}
 		return nil
 	case st.Let != nil:
 		if st.Let.Value != nil {
@@ -261,7 +267,7 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	if err != nil {
 		return err
 	}
-	c.writeln("(" + cond + ") ifTrue: [")
+	c.buf.WriteString("(" + cond + ") ifTrue: [\n")
 	c.indent++
 	for _, st := range i.Then {
 		if err := c.compileStmt(st); err != nil {
@@ -270,20 +276,20 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 	}
 	c.indent--
 	if i.ElseIf != nil {
-		c.writeln("] ifFalse: [")
+		c.buf.WriteString("] ifFalse: [\n")
 		c.indent++
 		if err := c.compileIf(i.ElseIf); err != nil {
 			return err
 		}
 		c.indent--
-		c.writeln("].")
+		c.buf.WriteString("].\n")
 		return nil
 	}
 	if len(i.Else) == 0 {
-		c.writeln("] .")
+		c.buf.WriteString("] .\n")
 		return nil
 	}
-	c.writeln("] ifFalse: [")
+	c.buf.WriteString("] ifFalse: [\n")
 	c.indent++
 	for _, st := range i.Else {
 		if err := c.compileStmt(st); err != nil {
@@ -291,7 +297,7 @@ func (c *Compiler) compileIf(i *parser.IfStmt) error {
 		}
 	}
 	c.indent--
-	c.writeln("].")
+	c.buf.WriteString("].\n")
 	return nil
 }
 
@@ -693,7 +699,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			}
 			body = b
 		}
-		return "[" + strings.Join(params, " ") + " | " + body + " ]", nil
+		header := strings.Join(params, " ")
+		if header != "" {
+			header += " | "
+			return "[" + header + body + " ]", nil
+		}
+		return "[ " + body + " ]", nil
 	case p.If != nil:
 		return c.ifExprString(p.If)
 	case p.Call != nil:
