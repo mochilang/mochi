@@ -53,6 +53,7 @@ const (
 		"    case []float64: return len(s) > 0\n" +
 		"    case []string: return len(s) > 0\n" +
 		"    case []bool: return len(s) > 0\n" +
+		"    case bool: return s\n" +
 		"    case []map[string]any: return len(s) > 0\n" +
 		"    case map[string]any: return len(s) > 0\n" +
 		"    case map[string]int: return len(s) > 0\n" +
