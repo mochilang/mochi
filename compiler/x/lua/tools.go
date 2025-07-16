@@ -16,7 +16,10 @@ import (
 // it attempts a best-effort installation on Linux or macOS.
 func EnsureLua() error {
 	if _, err := exec.LookPath("lua"); err == nil {
-		return ensureLuaJSON()
+		if err := ensureLuaJSON(); err != nil {
+			return err
+		}
+		return ensureLuaMD5()
 	}
 	switch runtime.GOOS {
 	case "linux":
@@ -63,7 +66,10 @@ func EnsureLua() error {
 		}
 	}
 	if _, err := exec.LookPath("lua"); err == nil {
-		return ensureLuaJSON()
+		if err := ensureLuaJSON(); err != nil {
+			return err
+		}
+		return ensureLuaMD5()
 	}
 	return fmt.Errorf("lua not found")
 }
@@ -112,6 +118,11 @@ func ensureLuaJSON() error {
 		return nil
 	}
 	return fmt.Errorf("lua json library not found")
+}
+
+func ensureLuaMD5() error {
+	// MD5 support is optional; fallback to openssl if the Lua module is missing.
+	return nil
 }
 
 // EnsureStylua verifies that the stylua formatter is installed. If missing,
