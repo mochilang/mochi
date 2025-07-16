@@ -18,51 +18,6 @@ import (
 	"mochi/types"
 )
 
-func TestDartCompiler_ValidPrograms(t *testing.T) {
-	root := findRepoRoot(t)
-	srcPattern := filepath.Join(root, "tests", "vm", "valid", "*.mochi")
-	files, err := filepath.Glob(srcPattern)
-	if err != nil {
-		t.Fatalf("list sources: %v", err)
-	}
-	outDir := filepath.Join(root, "tests", "machine", "x", "dart")
-	os.MkdirAll(outDir, 0755)
-
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			prog, err := parser.Parse(src)
-			if err != nil {
-				writeError(outDir, name, src, fmt.Errorf("parse error: %w", err))
-				return
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				writeError(outDir, name, src, fmt.Errorf("type error: %v", errs[0]))
-				return
-			}
-			code, err := dart.New(env).Compile(prog)
-			if err != nil {
-				writeError(outDir, name, src, fmt.Errorf("compile error: %w", err))
-				return
-			}
-			srcFile := filepath.Join(outDir, name+".dart")
-			if err := os.WriteFile(srcFile, code, 0644); err != nil {
-				writeError(outDir, name, src, fmt.Errorf("write error: %w", err))
-				return
-			}
-			cmd := exec.Command("dart", srcFile)
-			out, err := cmd.CombinedOutput()
-			if err != nil {
-				writeCompileError(outDir, name, srcFile, out, err)
-				return
-			}
-			os.WriteFile(filepath.Join(outDir, name+".out"), bytes.TrimSpace(out), 0644)
-			os.Remove(filepath.Join(outDir, name+".error"))
-		})
-	}
-}
-
 func TestDartCompiler_TPCHQueries(t *testing.T) {
 	if _, err := exec.LookPath("dart"); err != nil {
 		t.Skip("dart not installed")

@@ -12,5 +12,6 @@
 - [2025-07-16 15:21 UTC] Escaped newlines in string literals to prevent invalid Dart syntax and regenerated Rosetta outputs.
 
 - [2025-07-16 15:30 UTC] Added golden tests for `tests/vm/valid` programs to verify Dart compilation output.
+- [2025-07-18 00:00 UTC] Simplified VM golden tests to check runtime output only and removed outdated `ValidPrograms` test.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.
