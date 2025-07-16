@@ -86,3 +86,5 @@ TPC-H progress:
 - 2025-07-16 12:23 - Enabled full Rosetta golden tests for Go and expanded map
   inference using `stringKey`; mismatched map literals now unify key/value types
 - 2025-07-16 13:10 - Added VM golden tests for valid programs and removed stale `.error` files after successful runs
+- 2025-07-17 00:00 - Switched VM tests to golden framework and removed old compiler_test.go
+- 2025-07-17 01:10 - Dropped VM .go.out comparisons; runtime tests now verify ignore build tag in generated files
