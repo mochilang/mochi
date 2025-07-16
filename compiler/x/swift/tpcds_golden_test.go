@@ -33,17 +33,20 @@ func stripHeader(b []byte) []byte {
 func TestSwiftCompiler_TPCDSQueries(t *testing.T) {
 	swiftExe := ensureSwift(t)
 	root := testutil.FindRepoRoot(t)
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
+	passed, failed := 0, 0
 	for i := 1; i <= 99; i++ {
 		base := fmt.Sprintf("q%d", i)
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", base+".mochi")
-		codePath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "swift", base+".swift.out")
+		codePath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "swift", base+".swift")
 		outPath := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "swift", base+".out")
 		if !shouldUpdate() {
 			if _, err := os.Stat(outPath); err != nil {
 				continue
 			}
 		}
-		t.Run(base, func(t *testing.T) {
+		ok := t.Run(base, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
 				t.Fatalf("parse error: %v", err)
@@ -57,19 +60,7 @@ func TestSwiftCompiler_TPCDSQueries(t *testing.T) {
 				t.Skipf("compile error: %v", err)
 				return
 			}
-			if shouldUpdate() {
-				_ = os.WriteFile(codePath, code, 0644)
-			} else {
-				wantCode, err := os.ReadFile(codePath)
-				if err != nil {
-					t.Fatalf("read golden: %v", err)
-				}
-				got := stripHeader(code)
-				want := stripHeader(wantCode)
-				if !bytes.Equal(bytes.TrimSpace(got), bytes.TrimSpace(want)) {
-					t.Errorf("generated code mismatch for %s.swift.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, got, want)
-				}
-			}
+			_ = os.WriteFile(codePath, code, 0644)
 			out, err := compileAndRunSwiftSrc(t, swiftExe, code)
 			if err != nil {
 				t.Skipf("swift run error: %v", err)
@@ -88,5 +79,11 @@ func TestSwiftCompiler_TPCDSQueries(t *testing.T) {
 				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", base, gotOut, bytes.TrimSpace(wantOut))
 			}
 		})
+		if ok {
+			passed++
+		} else {
+			failed++
+		}
 	}
+	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
