@@ -1,8 +1,8 @@
-parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18: unexpected token "!" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:108:18
+type: error[T015]: index must be an integer
+  --> /workspace/mochi/tests/rosetta/x/Mochi/15-puzzle-game.mochi:36:8
 
-108 |   while !quit && !isSolved() {
-    |                  ^
+ 36 |   board[j] = tmp
+    |        ^
 
 help:
-  Parse error occurred. Check syntax near this location.
+  Use an `int` value for indexing (e.g., `list[0]`).

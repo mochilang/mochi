@@ -12,6 +12,11 @@ Recent updates (2025-07-16 11:36):
 - Added generated code for Rosetta tasks `100-prisoners` and `2048`.
 - Recorded parse/runtime errors for `15-puzzle-game` and `15-puzzle-solver`.
 
+2025-07-18 12:45:
+- Regenerated code for `100-doors`, `100-prisoners`, and `15-puzzle-solver`.
+- Started fixing `15-puzzle-game` by simplifying its while condition and typing
+  the index variable. Compilation still fails with an index type error.
+
 Remaining work:
 - [ ] Fix runtime failure in `outer_join.mochi` due to arity mismatch.
 - [ ] Support reading relative files for `load_yaml.mochi` during tests.
