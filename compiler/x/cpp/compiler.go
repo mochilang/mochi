@@ -342,6 +342,10 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 		out.WriteString("template<typename K,typename V> void __json(const std::unordered_map<K,V>& m){ std::cout<<\"{\"; bool first=true; for(const auto&kv:m){ if(!first) std::cout<<\",\"; first=false; __json(kv.first); std::cout<<\":\"; __json(kv.second);} std::cout<<\"}\"; }\n")
 		out.WriteByte('\n')
 	}
+	if c.usesAny {
+		out.WriteString("inline bool __any_eq(const std::any&a,const std::any&b){ if(a.type()!=b.type()) return false; if(a.type()==typeid(int)) return std::any_cast<int>(a)==std::any_cast<int>(b); if(a.type()==typeid(double)) return std::any_cast<double>(a)==std::any_cast<double>(b); if(a.type()==typeid(bool)) return std::any_cast<bool>(a)==std::any_cast<bool>(b); if(a.type()==typeid(std::string)) return std::any_cast<std::string>(a)==std::any_cast<std::string>(b); return false; }\n")
+		out.WriteByte('\n')
+	}
 	out.Write(src)
 	return FormatCPP(out.Bytes()), nil
 }
@@ -373,6 +377,12 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.buf.WriteString(typ)
 		c.buf.WriteByte(' ')
 		c.buf.WriteString(p.Name)
+		switch typ {
+		case "std::string":
+			c.vars[p.Name] = "string"
+		case "int", "double", "bool":
+			c.vars[p.Name] = strings.TrimPrefix(typ, "std::")
+		}
 	}
 	c.buf.WriteString(") {\n")
 	c.indent++
@@ -808,6 +818,7 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		if err != nil {
 			return err
 		}
+		c.vars[st.Name] = "int"
 		c.writeln(fmt.Sprintf("for (int %s = %s; %s < %s; %s++) {", st.Name, startExpr, st.Name, endExpr, st.Name))
 		c.indent++
 		if err := c.compileBlock(st.Body); err != nil {
@@ -832,6 +843,8 @@ func (c *Compiler) compileFor(st *parser.ForStmt) error {
 		if et := c.elemType[src]; et != "" {
 			if strings.Contains(et, "std::string") {
 				c.vars[st.Name] = "string"
+			} else if et == "int" || et == "double" || et == "bool" {
+				c.vars[st.Name] = et
 			}
 		}
 	}
@@ -1050,6 +1063,14 @@ func (c *Compiler) predictElemTypeIn(name string, stmts []*parser.Statement) str
 			if err == nil {
 				if et := c.extractVectorElemType(exprStr); et != "" {
 					return et
+				}
+				if strings.Contains(exprStr, "__append(") {
+					if idx := strings.Index(exprStr, ","); idx != -1 {
+						arg := strings.TrimSpace(exprStr[idx+1:])
+						if et := c.extractVectorElemType(arg); et != "" {
+							return et
+						}
+					}
 				}
 			}
 		case st.For != nil:
@@ -1383,7 +1404,17 @@ func (c *Compiler) compileBinary(b *parser.BinaryExpr) (string, error) {
 						}
 					}
 					if combined == "" {
-						combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
+						if (ops[i] == "==" || ops[i] == "!=") &&
+							(c.isAnyExpr(l) || c.isAnyExpr(r)) {
+							c.usesAny = true
+							if ops[i] == "==" {
+								combined = fmt.Sprintf("__any_eq(%s, %s)", l, r)
+							} else {
+								combined = fmt.Sprintf("!__any_eq(%s, %s)", l, r)
+							}
+						} else {
+							combined = fmt.Sprintf("(%s %s %s)", l, ops[i], r)
+						}
 					}
 				}
 				operands[i] = combined
@@ -1634,6 +1665,13 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				} else {
 					elemType = t
 				}
+			} else if v := c.vars[elems[0]]; v != "" {
+				switch v {
+				case "string":
+					elemType = "std::string"
+				case "int", "double", "bool":
+					elemType = v
+				}
 			} else if t := c.inferType(elems[0]); t != "" {
 				switch t {
 				case "string":
@@ -1657,6 +1695,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 						} else {
 							t = v
 						}
+					} else if vv := c.vars[e]; vv != "" {
+						t = vv
 					}
 				}
 				if t == "string" {
@@ -3612,6 +3652,19 @@ func (c *Compiler) extractVectorElemType(expr string) string {
 		return "int"
 	}
 	return ""
+}
+
+func (c *Compiler) isAnyExpr(expr string) bool {
+	if c.vars[expr] == "any" || c.elemType[expr] == "std::any" {
+		return true
+	}
+	if idx := strings.Index(expr, "["); idx != -1 {
+		base := expr[:idx]
+		if c.elemType[base] == "std::any" {
+			return true
+		}
+	}
+	return strings.Contains(expr, "std::any")
 }
 
 func (c *Compiler) structLiteralType(expr string) string {
