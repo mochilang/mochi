@@ -1,0 +1,8 @@
+parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
+  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
+
+  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
+    | ^
+
+help:
+  String literals must be properly closed with a `"`.

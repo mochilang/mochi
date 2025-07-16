@@ -1,0 +1,9 @@
+run error: exit status 1
+/workspace/mochi/tests/rosetta/out/Ruby/anagrams-deranged-anagrams.rb:61:in `block in main': undefined method `each_key' for ["constitutionalism"]:Array (NoMethodError)
+
+		m[k].each_key do |c|
+		    ^^^^^^^^^
+Did you mean?  each_entry
+	from /workspace/mochi/tests/rosetta/out/Ruby/anagrams-deranged-anagrams.rb:52:in `each'
+	from /workspace/mochi/tests/rosetta/out/Ruby/anagrams-deranged-anagrams.rb:52:in `main'
+	from /workspace/mochi/tests/rosetta/out/Ruby/anagrams-deranged-anagrams.rb:74:in `<main>'
