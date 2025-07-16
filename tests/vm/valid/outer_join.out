@@ -3,5 +3,5 @@ Order 100 by Alice - $ 250
 Order 101 by Bob - $ 125
 Order 102 by Alice - $ 300
 Order 103 by Unknown - $ 80
-Customer Charlie has no orders
-Customer Diana has no orders
+Order 3 by Unknown - $ nil
+Order 4 by Unknown - $ nil
