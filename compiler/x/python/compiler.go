@@ -957,7 +957,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		if len(args) == 1 {
 			return fmt.Sprintf("print(%s)", args[0]), nil
 		}
-		return fmt.Sprintf("print(' '.join([%s]))", strings.Join(args, ", ")), nil
+		return fmt.Sprintf("print(' '.join(x for x in [%s] if x))", strings.Join(args, ", ")), nil
 	case "len":
 		return fmt.Sprintf("len(%s)", argStr), nil
 	case "now":

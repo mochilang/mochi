@@ -8,6 +8,10 @@
 - `_save` JSON output no longer sorts keys and golden files updated.
 - `_load` resolves relative paths using `MOCHI_ROOT`; VM tests set this env var.
 - Struct arguments are copied using `dataclasses.replace` to preserve pass-by-value semantics.
+## Recent Enhancements (2025-07-16 19:00)
+- VM golden tests refreshed for `tests/vm/valid`; generated Python code lives under `tests/machine/x/python` and matches runtime output.
+- `_fmt` returns `null` for uninitialized values and integer floats print without decimals; `_save` now sorts keys for stable JSON.
+- `print` calls ignore empty arguments to avoid trailing spaces.
 ## Recent Enhancements (2025-07-16 15:45)
 - Added golden tests for `tests/vm/valid` to verify compiled Python output.
 - `_save` helper now dumps JSON with sorted keys and compact separators, fixing `save_jsonl_stdout` mismatch.
