@@ -429,11 +429,25 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 
 	// Main body
+	vars := map[string]bool{}
+	collectVars(c.mainStmts, vars)
+	names := make([]string, 0, len(vars))
+	for v := range vars {
+		names = append(names, sanitizeName(v))
+	}
+	sort.Strings(names)
+	for _, n := range names {
+		c.writeln(fmt.Sprintf("(define %s '())", n))
+	}
+	prevFun := c.inFun
+	c.inFun = true
 	for _, s := range c.mainStmts {
 		if err := c.compileStmt(s); err != nil {
+			c.inFun = prevFun
 			return nil, err
 		}
 	}
+	c.inFun = prevFun
 
 	if len(c.tests) > 0 {
 		for _, t := range c.tests {
