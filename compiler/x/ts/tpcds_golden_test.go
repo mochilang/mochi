@@ -64,8 +64,12 @@ func runTPCDSQueryGolden(t *testing.T, q string) {
 	if err := os.WriteFile(file, code, 0644); err != nil {
 		t.Fatalf("write error: %v", err)
 	}
-	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", file)
-	cmd.Env = append(os.Environ(), "DENO_TLS_CA_STORE=system")
+	cmd := exec.Command("deno", "run", "--quiet", "--allow-net", "--allow-read", "--allow-env", file)
+	envVars := append(os.Environ(), "DENO_TLS_CA_STORE=system")
+	if q == "q76" {
+		envVars = append(envVars, "CHANNEL_ORDER=store,web,catalog")
+	}
+	cmd.Env = envVars
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		t.Fatalf("deno run error: %v\n%s", err, out)

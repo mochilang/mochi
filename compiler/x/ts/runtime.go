@@ -189,6 +189,18 @@ const (
 		"  return JSON.parse(prompt) as T;\n" +
 		"}\n"
 
+	helperOrderInit = "function _order_init(): void {\n" +
+		"  (globalThis as any)._channelOrder = undefined;\n" +
+		"  if (typeof Deno !== 'undefined' && Deno?.env?.get) {\n" +
+		"    const env = Deno.env.get('CHANNEL_ORDER');\n" +
+		"    if (env) {\n" +
+		"      const m: Record<string, number> = {};\n" +
+		"      env.split(',').forEach((k, i) => { m[k] = i; });\n" +
+		"      (globalThis as any)._channelOrder = m;\n" +
+		"    }\n" +
+		"  }\n" +
+		"}\n"
+
 	helperEqual = "function _equal(a: any, b: any): boolean {\n" +
 		"  if (Array.isArray(a) && Array.isArray(b)) {\n" +
 		"    if (a.length !== b.length) return false;\n" +
@@ -215,8 +227,10 @@ const (
 		"  }\n" +
 		"  if (typeof a === 'number' && typeof b === 'number') return a - b;\n" +
 		"  if (typeof a === 'string' && typeof b === 'string') {\n" +
-		"    const order: Record<string, number> = { store: 0, web: 1, catalog: 2 };\n" +
-		"    if (order[a] !== undefined && order[b] !== undefined) return order[a] - order[b];\n" +
+		"    const order = (globalThis as any)._channelOrder as Record<string, number> | undefined;\n" +
+		"    if (order && order[a] !== undefined && order[b] !== undefined) {\n" +
+		"      return order[a] - order[b];\n" +
+		"    }\n" +
 		"    return a < b ? -1 : (a > b ? 1 : 0);\n" +
 		"  }\n" +
 		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
@@ -561,6 +575,7 @@ var helperMap = map[string]string{
 	"_gen_text":    helperGenText,
 	"_gen_embed":   helperGenEmbed,
 	"_gen_struct":  helperGenStruct,
+	"_order_init":  helperOrderInit,
 	"_cmp":         helperCmp,
 	"_equal":       helperEqual,
 	"_fetch":       helperFetch,

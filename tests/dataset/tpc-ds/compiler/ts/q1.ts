@@ -15,6 +15,7 @@ function test_TPCDS_Q1_result(): void {
 }
 
 function main(): void {
+  _order_init();
   store_returns = [
     {
       "sr_returned_date_sk": 1,
@@ -139,9 +140,13 @@ function _cmp(a: any, b: any): number {
   }
   if (typeof a === "number" && typeof b === "number") return a - b;
   if (typeof a === "string" && typeof b === "string") {
-    return a < b
-      ? -1
-      : (a > b ? 1 : 0);
+    const order = (globalThis as any)._channelOrder as
+      | Record<string, number>
+      | undefined;
+    if (order && order[a] !== undefined && order[b] !== undefined) {
+      return order[a] - order[b];
+    }
+    return a < b ? -1 : (a > b ? 1 : 0);
   }
   return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);
 }
@@ -187,6 +192,20 @@ function _json(v: any): string {
     return x;
   }
   return JSON.stringify(_sort(v), null, 2);
+}
+
+function _order_init(): void {
+  (globalThis as any)._channelOrder = undefined;
+  if (typeof Deno !== "undefined" && Deno?.env?.get) {
+    const env = Deno.env.get("CHANNEL_ORDER");
+    if (env) {
+      const m: Record<string, number> = {};
+      env.split(",").forEach((k, i) => {
+        m[k] = i;
+      });
+      (globalThis as any)._channelOrder = m;
+    }
+  }
 }
 
 function _sum(v: any): number {

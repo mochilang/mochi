@@ -18,6 +18,8 @@ import (
 func main() {
 	os.Setenv("MOCHI_HEADER_TIME", "2006-01-02T15:04:05Z")
 	defer os.Unsetenv("MOCHI_HEADER_TIME")
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
 
 	root, _ := os.Getwd()
 	for {

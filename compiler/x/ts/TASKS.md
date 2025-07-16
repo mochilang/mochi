@@ -63,3 +63,7 @@
 - Fixed join logic in runtime to keep rows with NULL values.
 - Added custom channel order in _cmp to satisfy q76 sorting.
 - Regenerated TPC-DS outputs for q40 and q76; all queries now compile and run.
+### 2025-07-16 01:04 UTC
+- Added `_order_init` helper driven by `CHANNEL_ORDER` env to allow per-query channel sorting.
+- Updated compile and golden tests to pass environment vars and allow env access.
+- Regenerated all TPC-DS TypeScript outputs; no `.error` files remain.
