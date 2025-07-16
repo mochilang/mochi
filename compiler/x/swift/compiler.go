@@ -1754,6 +1754,13 @@ func (c *compiler) inferType(t *parser.TypeRef, val *parser.Expr) string {
 				}
 				return "list"
 			case p.Target.Map != nil:
+				if len(p.Ops) == 1 && p.Ops[0].Cast != nil {
+					if typ := inferTypeRef(p.Ops[0].Cast.Type); typ != "" {
+						if _, ok := c.structs[typ]; ok {
+							return typ
+						}
+					}
+				}
 				return "map"
 			case p.Target.Query != nil:
 				t := c.exprType(p.Target.Query.Select)

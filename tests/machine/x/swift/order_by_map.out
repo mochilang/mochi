@@ -1,1 +1,1 @@
-[order_by_map.Auto1(a: 0, b: 5), order_by_map.Auto1(a: 1, b: 1), order_by_map.Auto1(a: 1, b: 2)]
+[main.Data(a: 0, b: 5), main.Data(a: 1, b: 1), main.Data(a: 1, b: 2)]

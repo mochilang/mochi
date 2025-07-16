@@ -1,0 +1,6 @@
+/tmp/TestSwiftCompiler_VMValid_Goldencast_struct3737729194/001/main.swift:6:12: error: value of type 'Todo' has no subscripts
+4 | }
+5 | let todo = Todo(title: "hi")
+6 | print((todo["title"] as! String))
+  |            `- error: value of type 'Todo' has no subscripts
+7 | 

@@ -1,14 +1,1 @@
-/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:5:15: warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
-3 | var y = 4
-4 | var m = ["a": x, "b": y]
-5 | print((m["a"] as! Any), (m["b"] as! Any))
-  |               `- warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
-6 | 
-
-/workspace/mochi/tests/machine/x/swift/map_literal_dynamic.swift:5:33: warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
-3 | var y = 4
-4 | var m = ["a": x, "b": y]
-5 | print((m["a"] as! Any), (m["b"] as! Any))
-  |                                 `- warning: forced cast from 'Int?' to 'Any' only unwraps optionals; did you mean to use '!'?
-6 | 
-Optional(3) Optional(4)
+3 4

@@ -1,3 +1,15 @@
-line 32: exit status 1
-var people = [Auto1(age: 30, name: "Alice"), Auto1(age: 25, name: "Bob")]
-_save(people, path: "-", opts: ["format": "jsonl"])
+/tmp/TestSwiftCompiler_VMValid_Goldensave_jsonl_stdout1072034746/001/main.swift:32:7: error: cannot convert value of type '[People]' to expected argument type '[[String : Any]]'
+30 | 
+31 | var people = [People(age: 30, name: "Alice"), People(age: 25, name: "Bob")]
+32 | _save(people, path: "-", opts: ["format": "jsonl"])
+   |       |- error: cannot convert value of type '[People]' to expected argument type '[[String : Any]]'
+   |       `- note: arguments to generic parameter 'Element' ('People' and '[String : Any]') are expected to be equal
+33 | 
+
+/tmp/TestSwiftCompiler_VMValid_Goldensave_jsonl_stdout1072034746/001/main.swift:11:33: warning: result of call to 'createFile(atPath:contents:attributes:)' is unused
+ 9 |             handle = FileHandle.standardOutput
+10 |         } else {
+11 |             FileManager.default.createFile(atPath: path, contents: nil)
+   |                                 `- warning: result of call to 'createFile(atPath:contents:attributes:)' is unused
+12 |             handle = FileHandle(forWritingAtPath: path)!
+13 |         }
