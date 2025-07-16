@@ -1,2 +1,2 @@
 swipl error: exit status 2
-ERROR: /tmp/pl-run4203205978/main.pl:49: user:main >=/2: Type error: `[]' expected, found `"1993-10-15"' (a string) ("x" must hold one character)
+ERROR: /tmp/TestPrologCompiler_VM_Goldengroup_by_multi_join_sort2792371025/001/main.pl:43: user:main >=/2: Type error: `[]' expected, found `"1993-10-15"' (a string) ("x" must hold one character)

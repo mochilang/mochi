@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldenmap_assign3690293214/001/main.pl:15: user:main Type error: `nonneg' expected, found `"bob"' (a string)

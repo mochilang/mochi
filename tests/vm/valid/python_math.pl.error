@@ -1,0 +1,6 @@
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldenpython_math1103065583/001/main.pl:11:
+ERROR:    Type error: `callable' expected, found `_10268 is 3,math_pi(_10280),math_pow(_10268,2,_10294),_10304 is _10280*_10294,math_sqrt(49,_10324),_10334 is _10324,math_pi(_10346),math_sin(_10346/4,_10358),_10374 is _10358,math_e(_10386),math_log(_10386,_10398),_10408 is _10398,write("Circle area with r ="),write(' '),write(_10268),write(' '),("=>"->_10472=true;_10472=false),write(_10472),write(' '),write(_10304),nl,write("Square root of 49:"),write(' '),write(_10334),nl,write("sin(π/4):"),write(' '),write(_10374),nl,write("log(e):"),write(' '),write(_10408),nl,true' (a compound)
+ERROR: /tmp/TestPrologCompiler_VM_Goldenpython_math1103065583/001/main.pl:10: user:main catch/3: Unknown procedure: main/1
+ERROR:   However, there are definitions for:
+ERROR:         main/0

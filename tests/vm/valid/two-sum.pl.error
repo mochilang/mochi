@@ -1,0 +1,4 @@
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldentwo-sum2746143981/001/main.pl:34:60: Syntax error: Operator expected
+ERROR: /tmp/TestPrologCompiler_VM_Goldentwo-sum2746143981/001/main.pl:37:43: Syntax error: Illegal start of term
+ERROR: /tmp/TestPrologCompiler_VM_Goldentwo-sum2746143981/001/main.pl:50: user:main main/0: Unknown procedure: twosum/3

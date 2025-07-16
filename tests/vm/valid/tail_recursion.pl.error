@@ -1,5 +1,4 @@
-output mismatch
--- pl --
-_3866
--- vm --
-55
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldentail_recursion199946659/001/main.pl:5:17: Syntax error: Operator expected
+ERROR: /tmp/TestPrologCompiler_VM_Goldentail_recursion199946659/001/main.pl:8:3: Syntax error: Illegal start of term
+ERROR: /tmp/TestPrologCompiler_VM_Goldentail_recursion199946659/001/main.pl:13: user:main main/0: Unknown procedure: sum_rec/3

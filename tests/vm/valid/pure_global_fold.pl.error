@@ -1,2 +1,2 @@
 swipl error: exit status 2
-ERROR: /tmp/pl-run3301029534/main.pl:12: user:main is/2: Arguments are not sufficiently instantiated
+ERROR: /tmp/TestPrologCompiler_VM_Goldenpure_global_fold469642415/001/main.pl:7: user:main string_concat/3: Arguments are not sufficiently instantiated

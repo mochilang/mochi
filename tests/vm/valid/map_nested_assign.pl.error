@@ -1,0 +1,2 @@
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldenmap_nested_assign3129499622/001/main.pl:15: user:main Type error: `integer' expected, found `"outer"' (a string)

@@ -13,3 +13,10 @@
 - Regenerated Rosetta outputs via `go test` with `UPDATE=1`.
 - Installed `swipl` and regenerated golden outputs for a few Rosetta tasks
   (`100-doors-2` and `ackermann-function`) to verify the compiler end-to-end.
+
+## Progress (2025-07-15 07:45 UTC)
+- Added `vm_golden_test.go` to validate programs under `tests/vm/valid`.
+- Fixed function declarations with zero parameters so they no longer emit
+  spurious commas in generated predicates.
+- Golden tests now emit generated code as `.pl` files and record failures
+  in `.pl.error` instead of skipping them.

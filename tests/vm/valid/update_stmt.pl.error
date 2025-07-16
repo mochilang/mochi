@@ -1,1 +1,4 @@
-update of immutable variable not supported
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldenupdate_stmt3793259039/001/main.pl:24: user:main people_update/2: Unknown procedure: get_item/3
+ERROR:   However, there are definitions for:
+ERROR:         set_item/4

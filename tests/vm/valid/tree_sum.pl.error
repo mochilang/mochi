@@ -1,1 +1,7 @@
-unsupported expression
+swipl error: exit status 2
+ERROR: /tmp/TestPrologCompiler_VM_Goldentree_sum3066455885/001/main.pl:11: user:main Stack limit (1.0Gb) exceeded
+ERROR:   Stack sizes: local: 0.9Gb, global: 59.7Mb, trail: 1Kb
+ERROR:   Stack depth: 7,817,949, last-call: 0%, Choice points: 4
+ERROR:   Probable infinite recursion (cycle):
+ERROR:     [7,817,949] user:sum_tree(_118, _120)
+ERROR:     [7,817,948] user:sum_tree(_138, _140)

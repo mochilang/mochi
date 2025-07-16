@@ -286,7 +286,11 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 			}
 		}
 	}
-	c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
+	if len(params) == 0 {
+		c.writeln(fmt.Sprintf("%s(%s) :-", sanitizeAtom(fn.Name), resVar))
+	} else {
+		c.writeln(fmt.Sprintf("%s(%s, %s) :-", sanitizeAtom(fn.Name), strings.Join(params, ", "), resVar))
+	}
 	c.indent++
 	for i, st := range fn.Body {
 		if st.Fun != nil {
@@ -1935,7 +1939,11 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, bool, error) {
 	// wrapper predicate that partially applies captured vars
 	lambdaName := fmt.Sprintf("p__lambda%d", c.tmp)
 	c.tmp++
-	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambdaName, strings.Join(makeParamNames(len(fn.Params)), ", ")))
+	if len(fn.Params) == 0 {
+		c.writeln(fmt.Sprintf("%s(_Res) :-", lambdaName))
+	} else {
+		c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambdaName, strings.Join(makeParamNames(len(fn.Params)), ", ")))
+	}
 	c.indent++
 	capturedVals := make([]string, 0, len(keys)+len(fn.Params))
 	for _, k := range keys {
@@ -1972,7 +1980,11 @@ func (c *Compiler) compilePartialCall(call *parser.CallExpr, arity int) (string,
 	oldOut := c.out
 	c.indent = 0
 	c.out = &c.lambdaBuf
-	c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambda, strings.Join(params, ", ")))
+	if len(params) == 0 {
+		c.writeln(fmt.Sprintf("%s(_Res) :-", lambda))
+	} else {
+		c.writeln(fmt.Sprintf("%s(%s, _Res) :-", lambda, strings.Join(params, ", ")))
+	}
 	c.indent++
 	args := append(captured, params...)
 	c.writeln(fmt.Sprintf("%s(%s, _Res).", sanitizeAtom(call.Func), strings.Join(args, ", ")))

@@ -1,5 +1,0 @@
-output mismatch
--- pl --
-[ {"city":"Hanoi", "num":3},  {"city":"Paris", "num":4} ]
--- vm --
-[{"city":"Paris","num":4}]
