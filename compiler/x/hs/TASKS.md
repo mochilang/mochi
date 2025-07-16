@@ -1,5 +1,12 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-21 05:00)
+- Runtime helpers now always import `Data.Maybe` when included which fixes
+  `break_continue` and similar programs. Updated VM golden tests regenerate the
+  `.out` file and remove the old `.error`.
+- Removed obsolete `compiler_test.go` and code comparisons from dataset tests so
+  only runtime output is validated.
+
 ## Recent Updates (2025-07-19 05:00)
 - Added golden tests for `tests/vm/valid` that verify both generated Haskell
   code and program output.
