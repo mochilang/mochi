@@ -1,0 +1,8 @@
+parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/cistercian-numerals.mochi:19:49: lexer: invalid input text "; while c <= c2 ..."
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cistercian-numerals.mochi:19:49
+
+ 19 | fun horiz(c1: int, c2: int, r: int) { var c = c1; while c <= c2 { n[r][c] = "x"; c = c + 1 } }
+    |                                                 ^
+
+help:
+  String literals must be properly closed with a `"`.

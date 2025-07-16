@@ -18,6 +18,9 @@ import (
 // tests/rosetta/x/Mochi to Go and verifies the generated code
 // matches the golden files in tests/rosetta/out/Go.
 func TestMochiGoGolden(t *testing.T) {
+	os.Setenv("SOURCE_DATE_EPOCH", "1136214245")
+	defer os.Unsetenv("SOURCE_DATE_EPOCH")
+
 	root := findRepoRoot(t)
 	srcDir := filepath.Join(root, "tests/rosetta/x/Mochi")
 	outDir := filepath.Join(root, "tests/rosetta/out/Go")
