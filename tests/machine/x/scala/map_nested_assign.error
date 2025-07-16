@@ -1,0 +1,8 @@
+exit status 1
+/workspace/mochi/tests/machine/x/scala/map_nested_assign.scala:3: error: identifier expected but ')' found.
+  case class Data(outer: )
+                         ^
+/workspace/mochi/tests/machine/x/scala/map_nested_assign.scala:12: error: ')' expected but '}' found.
+}
+^
+two errors found
