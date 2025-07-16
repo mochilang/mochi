@@ -1,0 +1,7 @@
+/tmp/TestSwiftCompiler_VMValid_Goldencross_join_triple3154253515/001/main.swift:16:17: error: cannot convert value of type '[String : Any]' to expected argument type '(b: Bool, l: String, n: Int)'
+14 | 		for l in letters {
+15 | 			for b in bools {
+16 | 				_res.append(["n": n, "l": l, "b": b])
+   |                 `- error: cannot convert value of type '[String : Any]' to expected argument type '(b: Bool, l: String, n: Int)'
+17 | 			}
+18 | 		}

@@ -1,7 +1,0 @@
-/workspace/mochi/tests/machine/x/swift/load_yaml.swift:45:17: warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
-43 | let people = _load(path: "../interpreter/valid/people.yaml", opts: ["format": "yaml"]).map { rec in Person(name: rec["name"] as! String, age: rec["age"] as! Int, email: rec["email"] as! String) }
-44 | var adults = people.compactMap { p in p.age >= 18 ? (["name": p.name, "email": p.email]) : nil }
-45 | for a in adults as! [[String:Any]] {
-   |                 `- warning: forced cast from '[[String : String]]' to '[[String : Any]]' always succeeds; did you mean to use 'as'?
-46 |     print(a["name"]!, a["email"]!)
-47 | }

@@ -1,0 +1,7 @@
+/tmp/TestSwiftCompiler_VMValid_Goldenleft_join_multi3462978785/001/main.swift:33:17: error: cannot convert value of type '[String : Any]' to expected argument type '(item: Item, name: String, orderId: Int)'
+31 | 			for i in items {
+32 | 				if !(o.id == i.orderId) { continue }
+33 | 				_res.append(["orderId": o.id, "name": c.name, "item": i])
+   |                 `- error: cannot convert value of type '[String : Any]' to expected argument type '(item: Item, name: String, orderId: Int)'
+34 | 			}
+35 | 		}

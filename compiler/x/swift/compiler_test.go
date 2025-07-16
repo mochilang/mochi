@@ -42,6 +42,9 @@ func ensureSwift(t *testing.T) string {
 			return p
 		}
 	}
+	if p, err := exec.LookPath("swiftc"); err == nil {
+		return p
+	}
 	if p, err := exec.LookPath("swift"); err == nil {
 		return p
 	}
@@ -86,6 +89,7 @@ func compileOne(t *testing.T, src, outDir, name, swiftExe string) {
 	if err := os.WriteFile(filepath.Join(outDir, name+".out"), out, 0644); err != nil {
 		t.Fatalf("write out: %v", err)
 	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func writeError(dir, name string, src []byte, err error) {

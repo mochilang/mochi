@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-17 14:30 – added golden tests for `tests/vm/valid` and switched
+  to running code with `swiftc` which reduces failing `.error` files.
 - 2025-07-16 13:17 – implemented `now()` built-in to return nanoseconds using
   `Date().timeIntervalSince1970`, allowing more Rosetta tasks to compile.
 - 2025-07-17 00:00 – variable declarations with empty lists now scan later
