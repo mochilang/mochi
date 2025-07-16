@@ -1428,7 +1428,12 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 }
 
 // --- Expressions ---
-func (c *Compiler) compileExpr(e *parser.Expr) (string, error) { return c.compileBinaryExpr(e.Binary) }
+func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
+	if e == nil {
+		return "", fmt.Errorf("nil expr")
+	}
+	return c.compileBinaryExpr(e.Binary)
+}
 
 func (c *Compiler) compileExprKey(e *parser.Expr) (string, error) {
 	saved := c.inKeyContext
@@ -1532,6 +1537,9 @@ func (c *Compiler) compileBinaryExpr(b *parser.BinaryExpr) (string, error) {
 }
 
 func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
+	if u == nil {
+		return "", fmt.Errorf("nil unary expr")
+	}
 	val, err := c.compilePostfix(u.Value)
 	if err != nil {
 		return "", err
@@ -1543,6 +1551,9 @@ func (c *Compiler) compileUnary(u *parser.Unary) (string, error) {
 }
 
 func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
+	if p == nil {
+		return "", fmt.Errorf("nil postfix expr")
+	}
 	expr, err := c.compilePrimary(p.Target)
 	if err != nil {
 		return "", err
@@ -1642,6 +1653,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 }
 
 func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
+	if p == nil {
+		return "", fmt.Errorf("nil primary expr")
+	}
 	switch {
 	case p.Match != nil:
 		return c.compileMatchExpr(p.Match)

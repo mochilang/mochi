@@ -1,8 +1,18 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+output mismatch
+-- got --
+/workspace/mochi/tests/rosetta/out/Ruby/arithmetic-complex.rb:2: warning: already initialized constant Complex
+a:       (1.0+1.0i)
+b:       (3.14159+1.25i)
+a + b:   (4.14159+2.25i)
+a * b:   (1.8915899999999999+4.39159i)
+-a:      (-1.0-1.0i)
+1 / a:   (0.5-0.5i)
+a̅:       (1.0-1.0i)
+-- want --
+a:       (1+1i)
+b:       (3.14159+1.25i)
+a + b:   (4.14159+2.25i)
+a * b:   (1.8915899999999999+4.39159i)
+-a:      (-1-1i)
+1 / a:   (0.5-0.5i)
+a̅:       (1-1i)
