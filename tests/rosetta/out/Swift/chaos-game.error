@@ -1,0 +1,26 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftchaos-game3689137634/001/main.swift:5:24: error: cannot assign value of type '[Any]' to type '[[String]]'
+ 3 | let height = Int((Double(width) * 0.86602540378))
+ 4 | let iterations = 5000
+ 5 | var grid: [[String]] = [Any]()
+   |                        |- error: cannot assign value of type '[Any]' to type '[[String]]'
+   |                        `- note: arguments to generic parameter 'Element' ('Any' and '[String]') are expected to be equal
+ 6 | var y = 0
+ 7 | while y < height {
+
+/tmp/TestMochiToSwiftchaos-game3689137634/001/main.swift:8:26: error: cannot assign value of type '[Any]' to type '[String]'
+ 6 | var y = 0
+ 7 | while y < height {
+ 8 |     var line: [String] = [Any]()
+   |                          |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                          `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 9 |     var x = 0
+10 |     while x < width {
+
+/tmp/TestMochiToSwiftchaos-game3689137634/001/main.swift:27:9: warning: variable 'r' was never mutated; consider changing to 'let' constant
+25 | var i = 0
+26 | while i < iterations {
+27 |     var r = randInt(seed, 3)
+   |         `- warning: variable 'r' was never mutated; consider changing to 'let' constant
+28 |     seed = r[0]
+29 |     let idx = Int(r[1])

@@ -1,0 +1,52 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:34:25: error: cannot assign value of type '[Any]' to type '[String]'
+ 32 | }
+ 33 | func distinct(_ slist: [String]) -> [String] {
+ 34 |     var res: [String] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 35 |     for s in slist {
+ 36 |         var found = false
+
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:53:27: error: cannot assign value of type '[Any]' to type '[[String]]'
+ 51 |         return [xs]
+ 52 |     }
+ 53 |     var res: [[String]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[String]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[String]') are expected to be equal
+ 54 |     var i = 0
+ 55 |     while i < xs.count {
+
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:56:30: error: cannot assign value of type '[Any]' to type '[String]'
+ 54 |     var i = 0
+ 55 |     while i < xs.count {
+ 56 |         var rest: [String] = [Any]()
+    |                              |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                              `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 57 |         var j = 0
+ 58 |         while j < xs.count {
+
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:81:34: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 79 |     var start = 0
+ 80 |     while true {
+ 81 |         let ix = indexOfFrom(s1, Array(s2[0..<1]), start)
+    |                                  `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 82 |         if ix == 0 - 1 {
+ 83 |             return 0
+
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:94:30: error: cannot assign value of type '[Any]' to type '[String]'
+ 92 | func deduplicate(_ slist: [String]) -> [String] {
+ 93 |     let arr = distinct(slist)
+ 94 |     var filtered: [String] = [Any]()
+    |                              |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                              `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 95 |     var i = 0
+ 96 |     while i < arr.count {
+
+/tmp/TestMochiToSwiftbioinformatics-global-alignment3455913567/001/main.swift:181:9: warning: variable 'tests' was never mutated; consider changing to 'let' constant
+179 | }
+180 | func main() {
+181 |     var tests: [[String]] = [["TA", "AAG", "TA", "GAA", "TA"], ["CATTAGGG", "ATTAG", "GGG", "TA"], ["AAGAUGGA", "GGAGCGCAUC", "AUCGCAAUAAGGA"], ["ATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTAT", "GGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGT", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "AACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTT", "GCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTC", "CGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATTCTGCTTATAACACTATGTTCT", "TGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CGTAAAAAATTACAACGTCCTTTGGCTATCTCTTAAACTCCTGCTAAATGCTCGTGC", "GATGGAGCGCATCGAACGCAATAAGGATCATTTGATGGGACGTTTCGTCGACAAAGTCTTGTTTCGAGAGTAACGGCTACCGTCTTCGATT", "TTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGATGGAGCGCATC", "CTATGTTCTTATGAAATGGATGTTCTGAGTTGGTCAGTCCCAATGTGCGGGGTTTCTTTTAGTACGTCGGGAGTGGTATTATA", "TCTCTTAAACTCCTGCTAAATGCTCGTGCTTTCCAATTATGTAAGCGTTCCGAGACGGGGTGGTCGATTCTGAGGACAAAGGTCAAGA"]]
+    |         `- warning: variable 'tests' was never mutated; consider changing to 'let' constant
+182 |     for seqs in tests {
+183 |         let scs = shortestCommonSuperstring(seqs)

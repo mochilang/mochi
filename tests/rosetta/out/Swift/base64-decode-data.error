@@ -1,0 +1,159 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:5:13: error: no exact matches in call to subscript 
+  3 |     var i = 0
+  4 |     while i < s.count {
+  5 |         if s[i] == ch {
+    |             `- error: no exact matches in call to subscript 
+  6 |             return i
+  7 |         }
+
+Swift.String.subscript:3:10: note: candidate expects value of type 'Range<String.Index>' for parameter #1 (got 'Int')
+1 | struct String {
+2 | @available(swift 4)
+3 |   public subscript(r: Range<String.Index>) -> Substring { get }}
+  |          `- note: candidate expects value of type 'Range<String.Index>' for parameter #1 (got 'Int')
+4 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:15:25: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 13 |     var i = 0
+ 14 |     var neg = false
+ 15 |     if str.count > 0 && str[0] == "-" {
+    |                         `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 16 |         neg = true
+ 17 |         i = 1
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:22:32: error: cannot convert value of type 'Character' to expected argument type 'String'
+ 20 |     let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 21 |     while i < str.count {
+ 22 |         n = n * 10 + digits[str[i]]!
+    |                                `- error: cannot convert value of type 'Character' to expected argument type 'String'
+ 23 |         i = i + 1
+ 24 |     }
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:100:33: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 98 |     var i = 0
+ 99 |     while i < bits.count {
+100 |         n = n * 2 + parseIntStr(Array(bits[i..<i + 1]))
+    |                                 `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+101 |         i = i + 1
+102 |     }
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:109:34: error: cannot convert value of type 'Character' to expected argument type 'String'
+107 |     var bin = ""
+108 |     for ch in text {
+109 |         bin = bin + toBinary(ord(ch), 8)
+    |                                  `- error: cannot convert value of type 'Character' to expected argument type 'String'
+110 |     }
+111 |     while bin.count % 6 != 0 {
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:117:27: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+115 |     var i = 0
+116 |     while i < bin.count {
+117 |         let chunk = Array(bin[i..<i + 6])
+    |                           `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+118 |         let val = binToInt(chunk)
+119 |         out = out + String(alphabet[alphabet.index(alphabet.startIndex, offsetBy: val)..<alphabet.index(alphabet.startIndex, offsetBy: val + 1)])
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:118:28: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+116 |     while i < bin.count {
+117 |         let chunk = Array(bin[i..<i + 6])
+118 |         let val = binToInt(chunk)
+    |                            `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+119 |         out = out + String(alphabet[alphabet.index(alphabet.startIndex, offsetBy: val)..<alphabet.index(alphabet.startIndex, offsetBy: val + 1)])
+120 |         i = i + 6
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:124:21: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+122 |     let pad = (3 - (text.count % 3)) % 3
+123 |     if pad == 1 {
+124 |         out = Array(out[0..<out.count - 1]) + "="
+    |                     `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+125 |     }
+126 |     if pad == 2 {
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:127:21: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+125 |     }
+126 |     if pad == 2 {
+127 |         out = Array(out[0..<out.count - 2]) + "=="
+    |                     `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+128 |     }
+129 |     return out
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:136:18: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+134 |     var i = 0
+135 |     while i < enc.count {
+136 |         let ch = enc[i]
+    |                  `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+137 |         if ch == "=" {
+138 |             break
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:140:37: error: cannot convert value of type 'Character' to expected argument type 'String'
+138 |             break
+139 |         }
+140 |         let idx = indexOf(alphabet, ch)
+    |                                     `- error: cannot convert value of type 'Character' to expected argument type 'String'
+141 |         bin = bin + toBinary(idx, 6)
+142 |         i = i + 1
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:147:27: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+145 |     i = 0
+146 |     while i + 8 <= bin.count {
+147 |         let chunk = Array(bin[i..<i + 8])
+    |                           `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+148 |         let val = binToInt(chunk)
+149 |         out = out + chr(val)
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbase64-decode-data958250806/001/main.swift:148:28: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+146 |     while i + 8 <= bin.count {
+147 |         let chunk = Array(bin[i..<i + 8])
+148 |         let val = binToInt(chunk)
+    |                            `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+149 |         out = out + chr(val)
+150 |         i = i + 8

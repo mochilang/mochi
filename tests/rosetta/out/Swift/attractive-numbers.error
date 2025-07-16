@@ -1,0 +1,8 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftattractive-numbers2867015939/001/main.swift:37:13: error: cannot assign to value: 'n' is a 'let' constant
+35 |         if n % f == 0 {
+36 |             count = count + 1
+37 |             n = n / f
+   |             `- error: cannot assign to value: 'n' is a 'let' constant
+38 |             if n == 1 {
+39 |                 return count

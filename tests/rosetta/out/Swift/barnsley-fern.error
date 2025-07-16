@@ -1,0 +1,26 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbarnsley-fern1235719602/001/main.swift:10:19: error: cannot convert value of type 'Int' to expected argument type 'Double'
+ 8 | let dx = xMax - xMin
+ 9 | let dy = yMax - yMin
+10 | let height = Int((width * dy / dx))
+   |                   `- error: cannot convert value of type 'Int' to expected argument type 'Double'
+11 | var grid: [[String]] = [Any]()
+12 | var row = 0
+
+/tmp/TestMochiToSwiftbarnsley-fern1235719602/001/main.swift:11:24: error: cannot assign value of type '[Any]' to type '[[String]]'
+ 9 | let dy = yMax - yMin
+10 | let height = Int((width * dy / dx))
+11 | var grid: [[String]] = [Any]()
+   |                        |- error: cannot assign value of type '[Any]' to type '[[String]]'
+   |                        `- note: arguments to generic parameter 'Element' ('Any' and '[String]') are expected to be equal
+12 | var row = 0
+13 | while row < height {
+
+/tmp/TestMochiToSwiftbarnsley-fern1235719602/001/main.swift:14:26: error: cannot assign value of type '[Any]' to type '[String]'
+12 | var row = 0
+13 | while row < height {
+14 |     var line: [String] = [Any]()
+   |                          |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                          `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+15 |     var col = 0
+16 |     while col < width {

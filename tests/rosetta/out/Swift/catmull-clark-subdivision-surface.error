@@ -1,0 +1,358 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:279:60: error: expected element type
+277 |     return String(b) + "," + String(a)
+278 | }
+279 | func cmcSubdiv(_ points: [Point], _ faces: [[Int]]) -> [any] {
+    |                                                            `- error: expected element type
+280 |     let facePoints = getFacePoints(points, faces)
+281 |     let edgesFaces = getEdgesFaces(points, faces)
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:38:9: warning: variable 'dot' was never mutated; consider changing to 'let' constant
+ 36 |     y = Double((Int(y))) / 10000.0
+ 37 |     var s = String(y)
+ 38 |     var dot = indexOf(s, ".")
+    |         `- warning: variable 'dot' was never mutated; consider changing to 'let' constant
+ 39 |     if dot == 0 - 1 {
+ 40 |         s = s + ".0000"
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:76:21: error: cannot pass immutable value as inout argument: 'sumPoint' returns immutable value
+ 74 | }
+ 75 | func centerPoint(_ p1: inout Point, _ p2: inout Point) -> Point {
+ 76 |     return divPoint(&sumPoint(&p1, &p2), 2.0)
+    |                     `- error: cannot pass immutable value as inout argument: 'sumPoint' returns immutable value
+ 77 | }
+ 78 | func getFacePoints(_ points: [Point], _ faces: [[Int]]) -> [Point] {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:79:31: error: cannot assign value of type '[Any]' to type '[Point]'
+ 77 | }
+ 78 | func getFacePoints(_ points: [Point], _ faces: [[Int]]) -> [Point] {
+ 79 |     var facePoints: [Point] = [Any]()
+    |                               |- error: cannot assign value of type '[Any]' to type '[Point]'
+    |                               `- note: arguments to generic parameter 'Element' ('Any' and 'Point') are expected to be equal
+ 80 |     var i = 0
+ 81 |     while i < faces.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:85:32: error: cannot pass immutable value as inout argument: 'points' is a 'let' constant
+ 83 |         var fp = Point(x: 0.0, y: 0.0, z: 0.0)
+ 84 |         for idx in face {
+ 85 |             fp = sumPoint(&fp, &points[idx])
+    |                                `- error: cannot pass immutable value as inout argument: 'points' is a 'let' constant
+ 86 |         }
+ 87 |         fp = divPoint(&fp, (Double(face.count)))
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:94:24: error: cannot assign value of type '[Any]' to type '[[Int]]'
+ 92 | }
+ 93 | func sortEdges(_ edges: [[Int]]) -> [[Int]] {
+ 94 |     var res: [[Int]] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+ 95 |     var tmp = edges
+ 96 |     while tmp.count > 0 {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:109:28: error: cannot assign value of type '[Any]' to type '[[Int]]'
+107 |         }
+108 |         res = res + [min]
+109 |         var out: [[Int]] = [Any]()
+    |                            |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                            `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+110 |         var k = 0
+111 |         while k < tmp.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:122:26: error: cannot assign value of type '[Any]' to type '[[Int]]'
+120 | }
+121 | func getEdgesFaces(_ points: [Point], _ faces: [[Int]]) -> [Edge] {
+122 |     var edges: [[Int]] = [Any]()
+    |                          |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                          `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+123 |     var fnum = 0
+124 |     while fnum < faces.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:148:27: error: cannot assign value of type '[Any]' to type '[[Int]]'
+146 |     }
+147 |     edges = sortEdges(edges)
+148 |     var merged: [[Int]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+149 |     var idx = 0
+150 |     while idx < edges.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:163:32: error: cannot assign value of type '[Any]' to type '[Edge]'
+161 |         idx = idx + 1
+162 |     }
+163 |     var edgesCenters: [Edge] = [Any]()
+    |                                |- error: cannot assign value of type '[Any]' to type '[Edge]'
+    |                                `- note: arguments to generic parameter 'Element' ('Any' and 'Edge') are expected to be equal
+164 |     for me in merged {
+165 |         let p1 = points[me[0]]
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:167:30: error: cannot pass immutable value as inout argument: 'p1' is a 'let' constant
+163 |     var edgesCenters: [Edge] = [Any]()
+164 |     for me in merged {
+165 |         let p1 = points[me[0]]
+    |         `- note: change 'let' to 'var' to make it mutable
+166 |         let p2 = points[me[1]]
+167 |         let cp = centerPoint(&p1, &p2)
+    |                              `- error: cannot pass immutable value as inout argument: 'p1' is a 'let' constant
+168 |         edgesCenters = edgesCenters + [Edge(pn1: me[0], pn2: me[1], fn1: me[2], fn2: me[3], cp: cp)]
+169 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:167:35: error: cannot pass immutable value as inout argument: 'p2' is a 'let' constant
+164 |     for me in merged {
+165 |         let p1 = points[me[0]]
+166 |         let p2 = points[me[1]]
+    |         `- note: change 'let' to 'var' to make it mutable
+167 |         let cp = centerPoint(&p1, &p2)
+    |                                   `- error: cannot pass immutable value as inout argument: 'p2' is a 'let' constant
+168 |         edgesCenters = edgesCenters + [Edge(pn1: me[0], pn2: me[1], fn1: me[2], fn2: me[3], cp: cp)]
+169 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:173:31: error: cannot assign value of type '[Any]' to type '[Point]'
+171 | }
+172 | func getEdgePoints(_ points: [Point], _ edgesFaces: [Edge], _ facePoints: [Point]) -> [Point] {
+173 |     var edgePoints: [Point] = [Any]()
+    |                               |- error: cannot assign value of type '[Any]' to type '[Point]'
+    |                               `- note: arguments to generic parameter 'Element' ('Any' and 'Point') are expected to be equal
+174 |     var i = 0
+175 |     while i < edgesFaces.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:183:31: error: cannot pass immutable value as inout argument: 'fp1' is a 'let' constant
+176 |         let edge = edgesFaces[i]
+177 |         let cp = edge.cp
+178 |         let fp1 = facePoints[edge.fn1]
+    |         `- note: change 'let' to 'var' to make it mutable
+179 |         var fp2 = fp1
+180 |         if edge.fn2 != 0 - 1 {
+181 |             fp2 = facePoints[edge.fn2]
+182 |         }
+183 |         let cfp = centerPoint(&fp1, &fp2)
+    |                               `- error: cannot pass immutable value as inout argument: 'fp1' is a 'let' constant
+184 |         edgePoints = edgePoints + [centerPoint(&cp, &cfp)]
+185 |         i = i + 1
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:184:48: error: cannot pass immutable value as inout argument: 'cp' is a 'let' constant
+175 |     while i < edgesFaces.count {
+176 |         let edge = edgesFaces[i]
+177 |         let cp = edge.cp
+    |         `- note: change 'let' to 'var' to make it mutable
+178 |         let fp1 = facePoints[edge.fn1]
+179 |         var fp2 = fp1
+    :
+182 |         }
+183 |         let cfp = centerPoint(&fp1, &fp2)
+184 |         edgePoints = edgePoints + [centerPoint(&cp, &cfp)]
+    |                                                `- error: cannot pass immutable value as inout argument: 'cp' is a 'let' constant
+185 |         i = i + 1
+186 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:191:27: error: cannot assign value of type '[Any]' to type '[PointEx]'
+189 | func getAvgFacePoints(_ points: [Point], _ faces: [[Int]], _ facePoints: [Point]) -> [Point] {
+190 |     var numP = points.count
+191 |     var temp: [PointEx] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[PointEx]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and 'PointEx') are expected to be equal
+192 |     var i = 0
+193 |     while i < numP {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:202:44: error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+199 |         let fp = facePoints[fnum]
+200 |         for pn in faces[fnum] {
+201 |             let tp = temp[pn]
+    |             `- note: change 'let' to 'var' to make it mutable
+202 |             temp[pn] = PointEx(p: sumPoint(&tp.p, &fp), n: tp.n + 1)
+    |                                            `- error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+203 |         }
+204 |         fnum = fnum + 1
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:202:51: error: cannot pass immutable value as inout argument: 'fp' is a 'let' constant
+197 |     var fnum = 0
+198 |     while fnum < faces.count {
+199 |         let fp = facePoints[fnum]
+    |         `- note: change 'let' to 'var' to make it mutable
+200 |         for pn in faces[fnum] {
+201 |             let tp = temp[pn]
+202 |             temp[pn] = PointEx(p: sumPoint(&tp.p, &fp), n: tp.n + 1)
+    |                                                   `- error: cannot pass immutable value as inout argument: 'fp' is a 'let' constant
+203 |         }
+204 |         fnum = fnum + 1
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:206:24: error: cannot assign value of type '[Any]' to type '[Point]'
+204 |         fnum = fnum + 1
+205 |     }
+206 |     var avg: [Point] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[Point]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and 'Point') are expected to be equal
+207 |     var j = 0
+208 |     while j < numP {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:210:31: error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+207 |     var j = 0
+208 |     while j < numP {
+209 |         let tp = temp[j]
+    |         `- note: change 'let' to 'var' to make it mutable
+210 |         avg = avg + [divPoint(&tp.p, Double(tp.n))]
+    |                               `- error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+211 |         j = j + 1
+212 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:217:27: error: cannot assign value of type '[Any]' to type '[PointEx]'
+215 | func getAvgMidEdges(_ points: [Point], _ edgesFaces: [Edge]) -> [Point] {
+216 |     var numP = points.count
+217 |     var temp: [PointEx] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[PointEx]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and 'PointEx') are expected to be equal
+218 |     var i = 0
+219 |     while i < numP {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:228:44: error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+225 |         var arr = [edge.pn1, edge.pn2]
+226 |         for pn in arr {
+227 |             let tp = temp[pn]
+    |             `- note: change 'let' to 'var' to make it mutable
+228 |             temp[pn] = PointEx(p: sumPoint(&tp.p, &cp), n: tp.n + 1)
+    |                                            `- error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+229 |         }
+230 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:228:51: error: cannot pass immutable value as inout argument: 'cp' is a 'let' constant
+222 |     }
+223 |     for edge in edgesFaces {
+224 |         let cp = edge.cp
+    |         `- note: change 'let' to 'var' to make it mutable
+225 |         var arr = [edge.pn1, edge.pn2]
+226 |         for pn in arr {
+227 |             let tp = temp[pn]
+228 |             temp[pn] = PointEx(p: sumPoint(&tp.p, &cp), n: tp.n + 1)
+    |                                                   `- error: cannot pass immutable value as inout argument: 'cp' is a 'let' constant
+229 |         }
+230 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:231:24: error: cannot assign value of type '[Any]' to type '[Point]'
+229 |         }
+230 |     }
+231 |     var avg: [Point] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[Point]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and 'Point') are expected to be equal
+232 |     var j = 0
+233 |     while j < numP {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:235:31: error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+232 |     var j = 0
+233 |     while j < numP {
+234 |         let tp = temp[j]
+    |         `- note: change 'let' to 'var' to make it mutable
+235 |         avg = avg + [divPoint(&tp.p, Double(tp.n))]
+    |                               `- error: cannot pass immutable value as inout argument: 'tp' is a 'let' constant
+236 |         j = j + 1
+237 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:241:21: error: cannot assign value of type '[Any]' to type '[Int]'
+239 | }
+240 | func getPointsFaces(_ points: [Point], _ faces: [[Int]]) -> [Int] {
+241 |     var pf: [Int] = [Any]()
+    |                     |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                     `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+242 |     var i = 0
+243 |     while i < points.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:257:27: error: cannot assign value of type '[Any]' to type '[Point]'
+255 | }
+256 | func getNewPoints(_ points: [Point], _ pf: [Int], _ afp: [Point], _ ame: [Point]) -> [Point] {
+257 |     var newPts: [Point] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[Point]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and 'Point') are expected to be equal
+258 |     var i = 0
+259 |     while i < points.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:265:27: error: cannot pass immutable value as inout argument: 'old' is a 'let' constant
+262 |         var m2 = 1.0 / n
+263 |         var m3 = 2.0 / n
+264 |         let old = points[i]
+    |         `- note: change 'let' to 'var' to make it mutable
+265 |         let p1 = mulPoint(&old, m1)
+    |                           `- error: cannot pass immutable value as inout argument: 'old' is a 'let' constant
+266 |         let p2 = mulPoint(&afp[i], m2)
+267 |         let p3 = mulPoint(&ame[i], m3)
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:266:27: error: cannot pass immutable value as inout argument: 'afp' is a 'let' constant
+264 |         let old = points[i]
+265 |         let p1 = mulPoint(&old, m1)
+266 |         let p2 = mulPoint(&afp[i], m2)
+    |                           `- error: cannot pass immutable value as inout argument: 'afp' is a 'let' constant
+267 |         let p3 = mulPoint(&ame[i], m3)
+268 |         newPts = newPts + [sumPoint(&sumPoint(&p1, &p2), &p3)]
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:267:27: error: cannot pass immutable value as inout argument: 'ame' is a 'let' constant
+265 |         let p1 = mulPoint(&old, m1)
+266 |         let p2 = mulPoint(&afp[i], m2)
+267 |         let p3 = mulPoint(&ame[i], m3)
+    |                           `- error: cannot pass immutable value as inout argument: 'ame' is a 'let' constant
+268 |         newPts = newPts + [sumPoint(&sumPoint(&p1, &p2), &p3)]
+269 |         i = i + 1
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:287:32: error: cannot assign value of type '[Any]' to type '[Int]'
+285 |     let pointsFaces = getPointsFaces(points, faces)
+286 |     var newPoints = getNewPoints(points, pointsFaces, avgFacePoints, avgMidEdges)
+287 |     var facePointNums: [Int] = [Any]()
+    |                                |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                                `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+288 |     var nextPoint = newPoints.count
+289 |     for fp in facePoints {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:294:40: error: use [:] to get an empty dictionary literal
+292 |         nextPoint = nextPoint + 1
+293 |     }
+294 |     var edgePointNums: [String: Int] = []
+    |                                        `- error: use [:] to get an empty dictionary literal
+295 |     var idx = 0
+296 |     while idx < edgesFaces.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:303:29: error: cannot assign value of type '[Any]' to type '[[Int]]'
+301 |         idx = idx + 1
+302 |     }
+303 |     var newFaces: [[Int]] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+304 |     var fnum = 0
+305 |     while fnum < faces.count {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:324:12: error: unexpected non-void return value in void function
+322 |         fnum = fnum + 1
+323 |     }
+324 |     return [newPoints, newFaces]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+325 | }
+326 | func formatPoint(_ p: inout Point) -> String {
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:349:13: warning: constant 'res' inferred to have type '()', which may be unexpected
+347 |     var i = 0
+348 |     while i < 1 {
+349 |         let res = cmcSubdiv(outputPoints, outputFaces)
+    |             |- warning: constant 'res' inferred to have type '()', which may be unexpected
+    |             `- note: add an explicit type annotation to silence this warning
+350 |         outputPoints = res[0]
+351 |         outputFaces = res[1]
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:350:27: error: value of type '()' has no subscripts
+348 |     while i < 1 {
+349 |         let res = cmcSubdiv(outputPoints, outputFaces)
+350 |         outputPoints = res[0]
+    |                           `- error: value of type '()' has no subscripts
+351 |         outputFaces = res[1]
+352 |         i = i + 1
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:351:26: error: value of type '()' has no subscripts
+349 |         let res = cmcSubdiv(outputPoints, outputFaces)
+350 |         outputPoints = res[0]
+351 |         outputFaces = res[1]
+    |                          `- error: value of type '()' has no subscripts
+352 |         i = i + 1
+353 |     }
+
+/tmp/TestMochiToSwiftcatmull-clark-subdivision-surface217827047/001/main.swift:355:27: error: cannot pass immutable value as inout argument: 'p' is a 'let' constant
+353 |     }
+354 |     for p in outputPoints {
+355 |         print(formatPoint(&p))
+    |                           `- error: cannot pass immutable value as inout argument: 'p' is a 'let' constant
+356 |     }
+357 |     print("")

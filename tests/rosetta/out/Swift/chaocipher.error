@@ -1,0 +1,63 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:5:12: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 3 |     var i = 0
+ 4 |     while i < s.count {
+ 5 |         if Array(s[i..<i + 1]) == ch {
+   |            `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 6 |             return i
+ 7 |         }
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:13:34: error: cannot convert return expression of type 'Array<String.Element>' (aka 'Array<Character>') to return type 'String'
+11 | }
+12 | func rotate(_ s: String, _ n: Int) -> String {
+13 |     return Array(s[n..<s.count]) + Array(s[0..<n])
+   |                                  `- error: cannot convert return expression of type 'Array<String.Element>' (aka 'Array<Character>') to return type 'String'
+14 | }
+15 | func scrambleLeft(_ s: String) -> String {
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:16:12: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+14 | }
+15 | func scrambleLeft(_ s: String) -> String {
+16 |     return Array(s[0..<1]) + Array(s[2..<14]) + Array(s[1..<2]) + Array(s[14..<s.count])
+   |            `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+17 | }
+18 | func scrambleRight(_ s: String) -> String {
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:19:12: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+17 | }
+18 | func scrambleRight(_ s: String) -> String {
+19 |     return Array(s[1..<3]) + Array(s[4..<15]) + Array(s[3..<4]) + Array(s[15..<s.count]) + Array(s[0..<1])
+   |            `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+20 | }
+21 | func chao(_ text: String, _ encode: Bool) -> String {
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:27:24: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+25 |     var i = 0
+26 |     while i < text.count {
+27 |         let ch = Array(text[i..<i + 1])
+   |                        `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+28 |         var idx = 0
+29 |         if encode {
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:30:34: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+28 |         var idx = 0
+29 |         if encode {
+30 |             idx = indexOf(right, ch)
+   |                                  `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+31 |             out = out + String(left[left.index(left.startIndex, offsetBy: idx)..<left.index(left.startIndex, offsetBy: idx + 1)])
+32 |         }
+
+/tmp/TestMochiToSwiftchaocipher2122855516/001/main.swift:34:33: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+32 |         }
+33 |         else {
+34 |             idx = indexOf(left, ch)
+   |                                 `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+35 |             out = out + String(right[right.index(right.startIndex, offsetBy: idx)..<right.index(right.startIndex, offsetBy: idx + 1)])
+36 |         }

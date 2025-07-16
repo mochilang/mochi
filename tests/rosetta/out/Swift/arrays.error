@@ -1,0 +1,17 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftarrays827924850/001/main.swift:40:3: error: cannot assign value of type '[Any]' to type '[Int]'
+38 | print("a = " + listStr(a))
+39 | print("s = " + listStr(s))
+40 | s = [Any]()
+   |   |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |   `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+41 | for i in 0..<8 {
+42 |     s = s + [0]
+
+/tmp/TestMochiToSwiftarrays827924850/001/main.swift:41:5: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+39 | print("s = " + listStr(s))
+40 | s = [Any]()
+41 | for i in 0..<8 {
+   |     `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+42 |     s = s + [0]
+43 | }

@@ -1,0 +1,62 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:8:27: error: cannot assign value of type '[Any]' to type '[[Double]]'
+  6 |     let n = k.count
+  7 |     let half = n / 2
+  8 |     var out: [[Double]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Double]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Double]') are expected to be equal
+  9 |     var y = 0
+ 10 |     while y < h {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:11:29: error: cannot assign value of type '[Any]' to type '[Double]'
+  9 |     var y = 0
+ 10 |     while y < h {
+ 11 |         var row: [Double] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[Double]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+ 12 |         var x = 0
+ 13 |         while x < w {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:53:27: error: cannot assign value of type '[Any]' to type '[[Double]]'
+ 51 |     var h = img.count
+ 52 |     var w = img[0].count
+ 53 |     var out: [[Double]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Double]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Double]') are expected to be equal
+ 54 |     var y = 0
+ 55 |     while y < h {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:56:29: error: cannot assign value of type '[Any]' to type '[Double]'
+ 54 |     var y = 0
+ 55 |     while y < h {
+ 56 |         var row: [Double] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[Double]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+ 57 |         var x = 0
+ 58 |         while x < w {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:71:24: error: cannot assign value of type '[Any]' to type '[[Int]]'
+ 69 |     var h = g.count
+ 70 |     var w = g[0].count
+ 71 |     var out: [[Int]] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+ 72 |     var y = 0
+ 73 |     while y < h {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:74:26: error: cannot assign value of type '[Any]' to type '[Int]'
+ 72 |     var y = 0
+ 73 |     while y < h {
+ 74 |         var row: [Int] = [Any]()
+    |                          |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 75 |         var x = 0
+ 76 |         while x < w {
+
+/tmp/TestMochiToSwiftcanny-edge-detector1013292374/001/main.swift:107:9: warning: variable 'img' was never mutated; consider changing to 'let' constant
+105 | }
+106 | func main() {
+107 |     var img = [[0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 255.0, 255.0, 255.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0]]
+    |         `- warning: variable 'img' was never mutated; consider changing to 'let' constant
+108 |     let g = gradient(img)
+109 |     let edges = threshold(g, 1020.0 * 1020.0)

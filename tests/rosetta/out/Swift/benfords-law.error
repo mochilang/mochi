@@ -1,0 +1,65 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:16:9: warning: variable 'y' was never mutated; consider changing to 'let' constant
+14 | }
+15 | func fmtF3(_ x: Double) -> String {
+16 |     var y = floorf(x * 1000.0 + 0.5) / 1000.0
+   |         `- warning: variable 'y' was never mutated; consider changing to 'let' constant
+17 |     var s = String(y)
+18 |     var dot = indexOf(s, ".")
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:18:9: warning: variable 'dot' was never mutated; consider changing to 'let' constant
+16 |     var y = floorf(x * 1000.0 + 0.5) / 1000.0
+17 |     var s = String(y)
+18 |     var dot = indexOf(s, ".")
+   |         `- warning: variable 'dot' was never mutated; consider changing to 'let' constant
+19 |     if dot == 0 - 1 {
+20 |         s = s + ".000"
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:46:25: error: cannot assign value of type '[Any]' to type '[Double]'
+44 |     var a = 0.0
+45 |     var b = 1.0
+46 |     var res: [Double] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[Double]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+47 |     var i = 0
+48 |     while i < 1000 {
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:59:9: error: cannot assign to value: 'x' is a 'let' constant
+57 | func leadingDigit(_ x: Double) -> Int {
+58 |     if x < 0.0 {
+59 |         x = -x
+   |         `- error: cannot assign to value: 'x' is a 'let' constant
+60 |     }
+61 |     while x >= 10.0 {
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:62:9: error: cannot assign to value: 'x' is a 'let' constant
+60 |     }
+61 |     while x >= 10.0 {
+62 |         x = x / 10.0
+   |         `- error: cannot assign to value: 'x' is a 'let' constant
+63 |     }
+64 |     while x > 0.0 && x < 1.0 {
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:65:9: error: cannot assign to value: 'x' is a 'let' constant
+63 |     }
+64 |     while x > 0.0 && x < 1.0 {
+65 |         x = x * 10.0
+   |         `- error: cannot assign to value: 'x' is a 'let' constant
+66 |     }
+67 |     return Int(x)
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:77:9: warning: variable 'preds' was never mutated; consider changing to 'let' constant
+75 |         }
+76 |     }
+77 |     var preds = [0.301, 0.176, 0.125, 0.097, 0.079, 0.067, 0.058, 0.051, 0.046]
+   |         `- warning: variable 'preds' was never mutated; consider changing to 'let' constant
+78 |     let total = nums.count
+79 |     print(title)
+
+/tmp/TestMochiToSwiftbenfords-law2862437153/001/main.swift:84:13: warning: variable 'line' was never mutated; consider changing to 'let' constant
+82 |     while i < 9 {
+83 |         let obs = (Double(counts[i])) / (Double(total))
+84 |         var line = "  " + String(i + 1) + "  " + padFloat3(obs, 9) + "  " + padFloat3(preds[i], 8)
+   |             `- warning: variable 'line' was never mutated; consider changing to 'let' constant
+85 |         print(line)
+86 |         i = i + 1

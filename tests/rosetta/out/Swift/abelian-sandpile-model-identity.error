@@ -1,0 +1,65 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:56:5: warning: result of call to 'topple' is unused
+54 | print(pileString(s4))
+55 | while !isStable(s4) {
+56 |     topple(s4)
+   |     `- warning: result of call to 'topple' is unused
+57 |     print(pileString(s4))
+58 | }
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:64:5: warning: result of call to 'topple' is unused
+62 | var s3_a = plus(s1, s2)
+63 | while !isStable(s3_a) {
+64 |     topple(s3_a)
+   |     `- warning: result of call to 'topple' is unused
+65 | }
+66 | var s3_b = plus(s2, s1)
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:68:5: warning: result of call to 'topple' is unused
+66 | var s3_b = plus(s2, s1)
+67 | while !isStable(s3_b) {
+68 |     topple(s3_b)
+   |     `- warning: result of call to 'topple' is unused
+69 | }
+70 | print(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a))
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:77:5: warning: result of call to 'topple' is unused
+75 | var s4b = plus(s3, s3_id)
+76 | while !isStable(s4b) {
+77 |     topple(s4b)
+   |     `- warning: result of call to 'topple' is unused
+78 | }
+79 | print(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b))
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:83:5: warning: result of call to 'topple' is unused
+81 | var s5 = plus(s3_id, s3_id)
+82 | while !isStable(s5) {
+83 |     topple(s5)
+   |     `- warning: result of call to 'topple' is unused
+84 | }
+85 | print(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5))
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:6:22: error: cannot assign value of type '[Any]' to type '[Int]'
+ 4 | }
+ 5 | func plus(_ a: [Int], _ b: [Int]) -> [Int] {
+ 6 |     var res: [Int] = [Any]()
+   |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 7 |     var i = 0
+ 8 |     while i < a.count {
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:27:14: error: cannot assign through subscript: 'p' is a 'let' constant
+25 |     while i < p.count {
+26 |         if p[i] > 3 {
+27 |             p[i] = p[i] - 4
+   |              `- error: cannot assign through subscript: 'p' is a 'let' constant
+28 |             let nbs = neighbors[i]
+29 |             for j in nbs {
+
+/tmp/TestMochiToSwiftabelian-sandpile-model-identity229265391/001/main.swift:30:18: error: cannot assign through subscript: 'p' is a 'let' constant
+28 |             let nbs = neighbors[i]
+29 |             for j in nbs {
+30 |                 p[j] = p[j] + 1
+   |                  `- error: cannot assign through subscript: 'p' is a 'let' constant
+31 |             }
+32 |             return 0

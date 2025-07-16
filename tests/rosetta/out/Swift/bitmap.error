@@ -1,0 +1,210 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:71:66: error: expected dictionary value type
+ 69 |     return SetPx(&b, x, y, &pixelFromRgb(c))
+ 70 | }
+ 71 | func GetPx(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+    |                                                                  `- error: expected dictionary value type
+ 72 |     if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
+ 73 |         return ["ok": false]
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:78:69: error: expected dictionary value type
+ 76 |     return ["ok": true, "pixel": row[x]]
+ 77 | }
+ 78 | func GetPxRgb(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+    |                                                                     `- error: expected dictionary value type
+ 79 |     let r = GetPx(&b, x, y)
+ 80 |     if !r.ok {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:22:27: error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+ 20 | }
+ 21 | func NewBitmap(_ x: Int, _ y: Int) -> Bitmap {
+ 22 |     var data: [[Pixel]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Pixel]') are expected to be equal
+ 23 |     var row = 0
+ 24 |     while row < y {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:25:26: error: cannot assign value of type '[Any]' to type '[Pixel]'
+ 23 |     var row = 0
+ 24 |     while row < y {
+ 25 |         var r: [Pixel] = [Any]()
+    |                          |- error: cannot assign value of type '[Any]' to type '[Pixel]'
+    |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Pixel') are expected to be equal
+ 26 |         var col = 0
+ 27 |         while col < x {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:55:14: error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 53 | }
+ 54 | func FillRgb(_ b: inout Bitmap, _ c: Int) {
+ 55 |     Fill(&b, &pixelFromRgb(c))
+    |              `- error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 56 | }
+ 57 | func SetPx(_ b: inout Bitmap, _ x: Int, _ y: Int, _ p: inout Pixel) -> Bool {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:69:28: error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 67 | }
+ 68 | func SetPxRgb(_ b: inout Bitmap, _ x: Int, _ y: Int, _ c: Int) -> Bool {
+ 69 |     return SetPx(&b, x, y, &pixelFromRgb(c))
+    |                            `- error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 70 | }
+ 71 | func GetPx(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:73:16: error: unexpected non-void return value in void function
+ 71 | func GetPx(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+ 72 |     if x < 0 || x >= b.cols || y < 0 || y >= b.rows {
+ 73 |         return ["ok": false]
+    |                |- error: unexpected non-void return value in void function
+    |                `- note: did you mean to add a return type?
+ 74 |     }
+ 75 |     let row = b.px[y]
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:76:12: error: unexpected non-void return value in void function
+ 74 |     }
+ 75 |     let row = b.px[y]
+ 76 |     return ["ok": true, "pixel": row[x]]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 77 | }
+ 78 | func GetPxRgb(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:79:9: warning: constant 'r' inferred to have type '()', which may be unexpected
+ 77 | }
+ 78 | func GetPxRgb(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+ 79 |     let r = GetPx(&b, x, y)
+    |         |- warning: constant 'r' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+ 80 |     if !r.ok {
+ 81 |         return ["ok": false]
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:80:11: error: value of tuple type '()' has no member 'ok'
+ 78 | func GetPxRgb(_ b: inout Bitmap, _ x: Int, _ y: Int) -> [String: any] {
+ 79 |     let r = GetPx(&b, x, y)
+ 80 |     if !r.ok {
+    |           `- error: value of tuple type '()' has no member 'ok'
+ 81 |         return ["ok": false]
+ 82 |     }
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:81:16: error: unexpected non-void return value in void function
+ 79 |     let r = GetPx(&b, x, y)
+ 80 |     if !r.ok {
+ 81 |         return ["ok": false]
+    |                |- error: unexpected non-void return value in void function
+    |                `- note: did you mean to add a return type?
+ 82 |     }
+ 83 |     return ["ok": true, "rgb": rgbFromPixel(&r.pixel)]
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:83:12: error: unexpected non-void return value in void function
+ 81 |         return ["ok": false]
+ 82 |     }
+ 83 |     return ["ok": true, "rgb": rgbFromPixel(&r.pixel)]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 84 | }
+ 85 | func ppmSize(_ b: inout Bitmap) -> Int {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:83:48: error: value of tuple type '()' has no member 'pixel'
+ 81 |         return ["ok": false]
+ 82 |     }
+ 83 |     return ["ok": true, "rgb": rgbFromPixel(&r.pixel)]
+    |                                                `- error: value of tuple type '()' has no member 'pixel'
+ 84 | }
+ 85 | func ppmSize(_ b: inout Bitmap) -> Int {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:95:5: warning: result of call to 'SetPxRgb' is unused
+ 93 |     var bm = NewBitmap(300, 240)
+ 94 |     FillRgb(&bm, 16711680)
+ 95 |     SetPxRgb(&bm, 10, 20, 255)
+    |     `- warning: result of call to 'SetPxRgb' is unused
+ 96 |     SetPxRgb(&bm, 20, 30, 0)
+ 97 |     SetPxRgb(&bm, 30, 40, 1056816)
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:96:5: warning: result of call to 'SetPxRgb' is unused
+ 94 |     FillRgb(&bm, 16711680)
+ 95 |     SetPxRgb(&bm, 10, 20, 255)
+ 96 |     SetPxRgb(&bm, 20, 30, 0)
+    |     `- warning: result of call to 'SetPxRgb' is unused
+ 97 |     SetPxRgb(&bm, 30, 40, 1056816)
+ 98 |     let c1 = GetPx(&bm, 0, 0)
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:97:5: warning: result of call to 'SetPxRgb' is unused
+ 95 |     SetPxRgb(&bm, 10, 20, 255)
+ 96 |     SetPxRgb(&bm, 20, 30, 0)
+ 97 |     SetPxRgb(&bm, 30, 40, 1056816)
+    |     `- warning: result of call to 'SetPxRgb' is unused
+ 98 |     let c1 = GetPx(&bm, 0, 0)
+ 99 |     let c2 = GetPx(&bm, 10, 20)
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:98:9: warning: constant 'c1' inferred to have type '()', which may be unexpected
+ 96 |     SetPxRgb(&bm, 20, 30, 0)
+ 97 |     SetPxRgb(&bm, 30, 40, 1056816)
+ 98 |     let c1 = GetPx(&bm, 0, 0)
+    |         |- warning: constant 'c1' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+ 99 |     let c2 = GetPx(&bm, 10, 20)
+100 |     let c3 = GetPx(&bm, 30, 40)
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:99:9: warning: constant 'c2' inferred to have type '()', which may be unexpected
+ 97 |     SetPxRgb(&bm, 30, 40, 1056816)
+ 98 |     let c1 = GetPx(&bm, 0, 0)
+ 99 |     let c2 = GetPx(&bm, 10, 20)
+    |         |- warning: constant 'c2' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+100 |     let c3 = GetPx(&bm, 30, 40)
+101 |     print("Image size: " + String(bm.cols) + " × " + String(bm.rows))
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:100:9: warning: constant 'c3' inferred to have type '()', which may be unexpected
+ 98 |     let c1 = GetPx(&bm, 0, 0)
+ 99 |     let c2 = GetPx(&bm, 10, 20)
+100 |     let c3 = GetPx(&bm, 30, 40)
+    |         |- warning: constant 'c3' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+101 |     print("Image size: " + String(bm.cols) + " × " + String(bm.rows))
+102 |     print(String(ppmSize(&bm)) + " bytes when encoded as PPM.")
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:103:11: error: value of tuple type '()' has no member 'ok'
+101 |     print("Image size: " + String(bm.cols) + " × " + String(bm.rows))
+102 |     print(String(ppmSize(&bm)) + " bytes when encoded as PPM.")
+103 |     if c1.ok {
+    |           `- error: value of tuple type '()' has no member 'ok'
+104 |         print("Pixel at (0,0) is " + pixelStr(&c1.pixel))
+105 |     }
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:104:51: error: value of tuple type '()' has no member 'pixel'
+102 |     print(String(ppmSize(&bm)) + " bytes when encoded as PPM.")
+103 |     if c1.ok {
+104 |         print("Pixel at (0,0) is " + pixelStr(&c1.pixel))
+    |                                                   `- error: value of tuple type '()' has no member 'pixel'
+105 |     }
+106 |     if c2.ok {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:106:11: error: value of tuple type '()' has no member 'ok'
+104 |         print("Pixel at (0,0) is " + pixelStr(&c1.pixel))
+105 |     }
+106 |     if c2.ok {
+    |           `- error: value of tuple type '()' has no member 'ok'
+107 |         print("Pixel at (10,20) is " + pixelStr(&c2.pixel))
+108 |     }
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:107:53: error: value of tuple type '()' has no member 'pixel'
+105 |     }
+106 |     if c2.ok {
+107 |         print("Pixel at (10,20) is " + pixelStr(&c2.pixel))
+    |                                                     `- error: value of tuple type '()' has no member 'pixel'
+108 |     }
+109 |     if c3.ok {
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:109:11: error: value of tuple type '()' has no member 'ok'
+107 |         print("Pixel at (10,20) is " + pixelStr(&c2.pixel))
+108 |     }
+109 |     if c3.ok {
+    |           `- error: value of tuple type '()' has no member 'ok'
+110 |         let p = c3.pixel
+111 |         var r16 = p.R * 257
+
+/tmp/TestMochiToSwiftbitmap679720954/001/main.swift:110:20: error: value of tuple type '()' has no member 'pixel'
+108 |     }
+109 |     if c3.ok {
+110 |         let p = c3.pixel
+    |                    `- error: value of tuple type '()' has no member 'pixel'
+111 |         var r16 = p.R * 257
+112 |         var g16 = p.G * 257

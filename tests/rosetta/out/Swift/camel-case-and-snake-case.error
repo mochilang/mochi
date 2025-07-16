@@ -1,0 +1,242 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:4:58: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+  2 | func trimSpace(_ s: String) -> String {
+  3 |     var start = 0
+  4 |     while start < s.count && Array(s[start..<start + 1]) == " " {
+    |                                                          |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                                          `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+  5 |         start = start + 1
+  6 |     }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:8:50: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+  6 |     }
+  7 |     var end = s.count
+  8 |     while end > start && Array(s[end - 1..<end]) == " " {
+    |                                                  |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                                  `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+  9 |         end = end - 1
+ 10 |     }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:11:12: error: cannot convert return expression of type 'Array<String.Element>' (aka 'Array<Character>') to return type 'String'
+  9 |         end = end - 1
+ 10 |     }
+ 11 |     return Array(s[start..<end])
+    |            `- error: cannot convert return expression of type 'Array<String.Element>' (aka 'Array<Character>') to return type 'String'
+ 12 | }
+ 13 | func isUpper(_ ch: String) -> Bool {
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:26:5: error: cannot assign to value: 's' is a 'let' constant
+ 24 | }
+ 25 | func snakeToCamel(_ s: String) -> String {
+ 26 |     s = trimSpace(s)
+    |     `- error: cannot assign to value: 's' is a 'let' constant
+ 27 |     var out = ""
+ 28 |     var up = false
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:31:24: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 29 |     var i = 0
+ 30 |     while i < s.count {
+ 31 |         let ch = Array(s[i..<i + 1])
+    |                        `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 32 |         if ch == "_" || ch == "-" || ch == " " || ch == "." {
+ 33 |             up = true
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:32:54: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 30 |     while i < s.count {
+ 31 |         let ch = Array(s[i..<i + 1])
+ 32 |         if ch == "_" || ch == "-" || ch == " " || ch == "." {
+    |                                                      |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                                      `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 33 |             up = true
+ 34 |             i = i + 1
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:32:15: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 30 |     while i < s.count {
+ 31 |         let ch = Array(s[i..<i + 1])
+ 32 |         if ch == "_" || ch == "-" || ch == " " || ch == "." {
+    |               |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |               `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 33 |             up = true
+ 34 |             i = i + 1
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:32:28: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 30 |     while i < s.count {
+ 31 |         let ch = Array(s[i..<i + 1])
+ 32 |         if ch == "_" || ch == "-" || ch == " " || ch == "." {
+    |                            |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                            `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 33 |             up = true
+ 34 |             i = i + 1
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:32:41: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 30 |     while i < s.count {
+ 31 |         let ch = Array(s[i..<i + 1])
+ 32 |         if ch == "_" || ch == "-" || ch == " " || ch == "." {
+    |                                         |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                         `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 33 |             up = true
+ 34 |             i = i + 1
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:38:25: error: cannot find 'lower' in scope
+ 36 |         }
+ 37 |         if i == 0 {
+ 38 |             out = out + lower(ch)
+    |                         `- error: cannot find 'lower' in scope
+ 39 |             up = false
+ 40 |             i = i + 1
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:44:25: error: cannot find 'upper' in scope
+ 42 |         }
+ 43 |         if up {
+ 44 |             out = out + upper(ch)
+    |                         `- error: cannot find 'upper' in scope
+ 45 |             up = false
+ 46 |         }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:55:5: error: cannot assign to value: 's' is a 'let' constant
+ 53 | }
+ 54 | func camelToSnake(_ s: String) -> String {
+ 55 |     s = trimSpace(s)
+    |     `- error: cannot assign to value: 's' is a 'let' constant
+ 56 |     var out = ""
+ 57 |     var prevUnd = false
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:60:24: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 58 |     var i = 0
+ 59 |     while i < s.count {
+ 60 |         let ch = Array(s[i..<i + 1])
+    |                        `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 61 |         if ch == " " || ch == "-" || ch == "." {
+ 62 |             if !prevUnd && out.count > 0 {
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:61:15: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 59 |     while i < s.count {
+ 60 |         let ch = Array(s[i..<i + 1])
+ 61 |         if ch == " " || ch == "-" || ch == "." {
+    |               |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |               `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 62 |             if !prevUnd && out.count > 0 {
+ 63 |                 out = out + "_"
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:61:28: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 59 |     while i < s.count {
+ 60 |         let ch = Array(s[i..<i + 1])
+ 61 |         if ch == " " || ch == "-" || ch == "." {
+    |                            |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                            `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 62 |             if !prevUnd && out.count > 0 {
+ 63 |                 out = out + "_"
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:61:41: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 59 |     while i < s.count {
+ 60 |         let ch = Array(s[i..<i + 1])
+ 61 |         if ch == " " || ch == "-" || ch == "." {
+    |                                         |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                         `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 62 |             if !prevUnd && out.count > 0 {
+ 63 |                 out = out + "_"
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:69:15: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 67 |             continue
+ 68 |         }
+ 69 |         if ch == "_" {
+    |               |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |               `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 70 |             if !prevUnd && out.count > 0 {
+ 71 |                 out = out + "_"
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:77:20: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+ 75 |             continue
+ 76 |         }
+ 77 |         if isUpper(ch) {
+    |                    `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected argument type 'String'
+ 78 |             if i > 0 && (!prevUnd) {
+ 79 |                 out = out + "_"
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:81:25: error: cannot find 'lower' in scope
+ 79 |                 out = out + "_"
+ 80 |             }
+ 81 |             out = out + lower(ch)
+    |                         `- error: cannot find 'lower' in scope
+ 82 |             prevUnd = false
+ 83 |         }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:85:25: error: cannot find 'lower' in scope
+ 83 |         }
+ 84 |         else {
+ 85 |             out = out + lower(ch)
+    |                         `- error: cannot find 'lower' in scope
+ 86 |             prevUnd = false
+ 87 |         }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:91:62: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 89 |     }
+ 90 |     var start = 0
+ 91 |     while start < out.count && Array(out[start..<start + 1]) == "_" {
+    |                                                              |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                                              `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 92 |         start = start + 1
+ 93 |     }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:95:52: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 93 |     }
+ 94 |     var end = out.count
+ 95 |     while end > start && Array(out[end - 1..<end]) == "_" {
+    |                                                    |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                                    `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 96 |         end = end - 1
+ 97 |     }
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:98:11: error: cannot assign value of type 'Array<String.Element>' (aka 'Array<Character>') to type 'String'
+ 96 |         end = end - 1
+ 97 |     }
+ 98 |     out = Array(out[start..<end])
+    |           `- error: cannot assign value of type 'Array<String.Element>' (aka 'Array<Character>') to type 'String'
+ 99 |     var res = ""
+100 |     var j = 0
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:103:23: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+101 |     var lastUnd = false
+102 |     while j < out.count {
+103 |         let c = Array(out[j..<j + 1])
+    |                       `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+104 |         if c == "_" {
+105 |             if !lastUnd {
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:104:14: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+102 |     while j < out.count {
+103 |         let c = Array(out[j..<j + 1])
+104 |         if c == "_" {
+    |              |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |              `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+105 |             if !lastUnd {
+106 |                 res = res + c
+
+/tmp/TestMochiToSwiftcamel-case-and-snake-case2700041000/001/main.swift:119:9: warning: variable 'samples' was never mutated; consider changing to 'let' constant
+117 | }
+118 | func main() {
+119 |     var samples = ["snakeCase", "snake_case", "snake-case", "snake case", "snake CASE", "snake.case", "variable_10_case", "variable10Case", "ɛrgo rE tHis", "hurry-up-joe!", "c://my-docs/happy_Flag-Day/12.doc", " spaces "]
+    |         `- warning: variable 'samples' was never mutated; consider changing to 'let' constant
+120 |     print("=== To snake_case ===")
+121 |     for s in samples {

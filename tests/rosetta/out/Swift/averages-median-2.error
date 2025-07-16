@@ -1,0 +1,24 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftaverages-median-25844766/001/main.swift:14:13: error: cannot assign through subscript: 'list' is a 'let' constant
+12 |         }
+13 |         let tmp = list[i]
+14 |         list[i] = list[minIndex]
+   |             `- error: cannot assign through subscript: 'list' is a 'let' constant
+15 |         list[minIndex] = tmp
+16 |         i = i + 1
+
+/tmp/TestMochiToSwiftaverages-median-25844766/001/main.swift:15:13: error: cannot assign through subscript: 'list' is a 'let' constant
+13 |         let tmp = list[i]
+14 |         list[i] = list[minIndex]
+15 |         list[minIndex] = tmp
+   |             `- error: cannot assign through subscript: 'list' is a 'let' constant
+16 |         i = i + 1
+17 |     }
+
+/tmp/TestMochiToSwiftaverages-median-25844766/001/main.swift:21:9: warning: variable 'arr' was never mutated; consider changing to 'let' constant
+19 | }
+20 | func median(_ a: [Double]) -> Double {
+21 |     var arr = a
+   |         `- warning: variable 'arr' was never mutated; consider changing to 'let' constant
+22 |     let half = Int((arr.count / 2))
+23 |     let med = sel(arr, half)

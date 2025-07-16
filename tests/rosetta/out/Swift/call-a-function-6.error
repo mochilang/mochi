@@ -1,0 +1,8 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcall-a-function-6729812511/001/main.swift:6:31: error: use [:] to get an empty dictionary literal
+ 4 | }
+ 5 | func main() {
+ 6 |     var args: [String: Int] = []
+   |                               `- error: use [:] to get an empty dictionary literal
+ 7 |     args["a"] = 3
+ 8 |     args["b"] = 2

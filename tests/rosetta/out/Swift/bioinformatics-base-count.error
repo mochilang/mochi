@@ -1,0 +1,15 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbioinformatics-base-count1792488681/001/main.swift:20:48: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+18 |         k = le
+19 |     }
+20 |     print(padLeft(String(i), 5) + ": " + Array(dna[i..<k]))
+   |                                                `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+21 |     i = i + 50
+22 | }
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 

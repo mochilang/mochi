@@ -1,0 +1,24 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcall-a-function-112810932809/001/main.swift:8:8: error: cannot assign through subscript: 'ref' is a 'let' constant
+ 6 | }
+ 7 | func zeroptr(_ ref: [Int]) {
+ 8 |     ref[0] = 0
+   |        `- error: cannot assign through subscript: 'ref' is a 'let' constant
+ 9 | }
+10 | func main() {
+
+/tmp/TestMochiToSwiftcall-a-function-112810932809/001/main.swift:13:9: warning: initialization of immutable value 'tmp' was never used; consider replacing with assignment to '_' or removing it
+11 |     var i = 1
+12 |     print("initial: " + String(i))
+13 |     let tmp = zeroval(i)
+   |         `- warning: initialization of immutable value 'tmp' was never used; consider replacing with assignment to '_' or removing it
+14 |     print("zeroval: " + String(i))
+15 |     var box = [i]
+
+/tmp/TestMochiToSwiftcall-a-function-112810932809/001/main.swift:15:9: warning: variable 'box' was never mutated; consider changing to 'let' constant
+13 |     let tmp = zeroval(i)
+14 |     print("zeroval: " + String(i))
+15 |     var box = [i]
+   |         `- warning: variable 'box' was never mutated; consider changing to 'let' constant
+16 |     zeroptr(box)
+17 |     i = box[0]

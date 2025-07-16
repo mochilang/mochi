@@ -1,0 +1,47 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftatomic-updates1990899023/001/main.swift:13:26: error: cannot assign value of type '[Any]' to type '[Int]'
+11 |     let nBuckets = 10
+12 |     let initialSum = 1000
+13 |     var buckets: [Int] = [Any]()
+   |                          |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+14 |     for i in 0..<nBuckets {
+15 |         buckets = buckets + [0]
+
+/tmp/TestMochiToSwiftatomic-updates1990899023/001/main.swift:78:107: error: no exact matches in call to initializer 
+76 |         total = total + tc0 + tc1
+77 |         nTicks = nTicks + 1
+78 |         print(String(sum) + " " + String(tc0) + " " + String(tc1) + " " + String(total / nTicks) + "  " + String(buckets))
+   |                                                                                                           `- error: no exact matches in call to initializer 
+79 |         tc0 = 0
+80 |         tc1 = 0
+
+Swift.String.init:2:8: note: candidate requires that the types 'Int' and 'Character' be equivalent (requirement specified as 'S.Element' == 'Character')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that the types 'Int' and 'Character' be equivalent (requirement specified as 'S.Element' == 'Character')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that the types 'String.Element' (aka 'Character') and 'Int' be equivalent (requirement specified as 'Self.Element' == 'S.Element')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that the types 'String.Element' (aka 'Character') and 'Int' be equivalent (requirement specified as 'Self.Element' == 'S.Element')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:19: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | @inlinable public init<Subject>(describing instance: Subject) where Subject : CustomStringConvertible}
+  |                   `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 

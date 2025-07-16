@@ -1,0 +1,44 @@
+run error: exit status 1
+/tmp/TestMochiToSwift9-billion-names-of-god-the-integer3468170067/001/main.swift:5:9: error: cannot assign to value: 'a' is a 'let' constant
+  3 |     var n = a.count
+  4 |     while n > 1 && a[n - 1] == 0 {
+  5 |         a = Array(a[0..<n - 1])
+    |         `- error: cannot assign to value: 'a' is a 'let' constant
+  6 |         n = n - 1
+  7 |     }
+
+/tmp/TestMochiToSwift9-billion-names-of-god-the-integer3468170067/001/main.swift:14:25: error: cannot assign value of type '[Any]' to type '[Int]'
+ 12 |         return [0]
+ 13 |     }
+ 14 |     var digits: [Int] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 15 |     var n = x
+ 16 |     while n > 0 {
+
+/tmp/TestMochiToSwift9-billion-names-of-god-the-integer3468170067/001/main.swift:23:22: error: cannot assign value of type '[Any]' to type '[Int]'
+ 21 | }
+ 22 | func bigAdd(_ a: [Int], _ b: [Int]) -> [Int] {
+ 23 |     var res: [Int] = [Any]()
+    |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 24 |     var carry = 0
+ 25 |     var i = 0
+
+/tmp/TestMochiToSwift9-billion-names-of-god-the-integer3468170067/001/main.swift:43:22: error: cannot assign value of type '[Any]' to type '[Int]'
+ 41 | }
+ 42 | func bigSub(_ a: [Int], _ b: [Int]) -> [Int] {
+ 43 |     var res: [Int] = [Any]()
+    |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 44 |     var borrow = 0
+ 45 |     var i = 0
+
+/tmp/TestMochiToSwift9-billion-names-of-god-the-integer3468170067/001/main.swift:100:25: error: cannot assign value of type '[Any]' to type '[String]'
+ 98 | func row(_ n: Int) -> [String] {
+ 99 |     let e = cumu(n)
+100 |     var out: [String] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+101 |     var i = 0
+102 |     while i < n {

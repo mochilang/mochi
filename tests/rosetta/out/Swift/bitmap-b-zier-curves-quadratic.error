@@ -1,0 +1,133 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:14:57: error: expected dictionary value type
+ 12 |     return Pixel(r: r, g: g, b: b)
+ 13 | }
+ 14 | func newBitmap(_ cols: Int, _ rows: Int) -> [String: any] {
+    |                                                         `- error: expected dictionary value type
+ 15 |     var d: [[Pixel]] = [Any]()
+ 16 |     var y = 0
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:29:29: error: expected dictionary value type
+ 27 |     return ["cols": cols, "rows": rows, "data": d]
+ 28 | }
+ 29 | func setPx(_ b: [String: any], _ x: Int, _ y: Int, _ p: inout Pixel) {
+    |                             `- error: expected dictionary value type
+ 30 |     let cols = Int(b["cols"])
+ 31 |     let rows = Int(b["rows"])
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:36:28: error: expected dictionary value type
+ 34 |     }
+ 35 | }
+ 36 | func fill(_ b: [String: any], _ p: inout Pixel) {
+    |                            `- error: expected dictionary value type
+ 37 |     let cols = Int(b["cols"])
+ 38 |     let rows = Int(b["rows"])
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:49:31: error: expected dictionary value type
+ 47 |     }
+ 48 | }
+ 49 | func fillRgb(_ b: [String: any], _ rgb: Int) {
+    |                               `- error: expected dictionary value type
+ 50 |     fill(b, &pixelFromRgb(rgb))
+ 51 | }
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:52:28: error: expected dictionary value type
+ 50 |     fill(b, &pixelFromRgb(rgb))
+ 51 | }
+ 52 | func line(_ b: [String: any], _ x0: Int, _ y0: Int, _ x1: Int, _ y1: Int, _ p: inout Pixel) {
+    |                            `- error: expected dictionary value type
+ 53 |     var dx = x1 - x0
+ 54 |     if dx < 0 {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:86:31: error: expected dictionary value type
+ 84 |     }
+ 85 | }
+ 86 | func bezier2(_ b: [String: any], _ x1: Int, _ y1: Int, _ x2: Int, _ y2: Int, _ x3: Int, _ y3: Int, _ p: inout Pixel) {
+    |                               `- error: expected dictionary value type
+ 87 |     var px: [Int] = [Any]()
+ 88 |     var py: [Int] = [Any]()
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:124:5: warning: variable 'b' inferred to have type '()', which may be unexpected
+122 |     }
+123 | }
+124 | var b = newBitmap(400, 300)
+    |     |- warning: variable 'b' inferred to have type '()', which may be unexpected
+    |     `- note: add an explicit type annotation to silence this warning
+125 | fillRgb(b, 14614575)
+126 | bezier2(b, 20, 150, 500, -100, 300, 280, &pixelFromRgb(4165615))
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:126:42: error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+124 | var b = newBitmap(400, 300)
+125 | fillRgb(b, 14614575)
+126 | bezier2(b, 20, 150, 500, -100, 300, 280, &pixelFromRgb(4165615))
+    |                                          `- error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+127 | 
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:15:24: error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+ 13 | }
+ 14 | func newBitmap(_ cols: Int, _ rows: Int) -> [String: any] {
+ 15 |     var d: [[Pixel]] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and '[Pixel]') are expected to be equal
+ 16 |     var y = 0
+ 17 |     while y < rows {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:18:28: error: cannot assign value of type '[Any]' to type '[Pixel]'
+ 16 |     var y = 0
+ 17 |     while y < rows {
+ 18 |         var row: [Pixel] = [Any]()
+    |                            |- error: cannot assign value of type '[Any]' to type '[Pixel]'
+    |                            `- note: arguments to generic parameter 'Element' ('Any' and 'Pixel') are expected to be equal
+ 19 |         var x = 0
+ 20 |         while x < cols {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:27:12: error: unexpected non-void return value in void function
+ 25 |         y = y + 1
+ 26 |     }
+ 27 |     return ["cols": cols, "rows": rows, "data": d]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 28 | }
+ 29 | func setPx(_ b: [String: any], _ x: Int, _ y: Int, _ p: inout Pixel) {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:50:13: error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 48 | }
+ 49 | func fillRgb(_ b: [String: any], _ rgb: Int) {
+ 50 |     fill(b, &pixelFromRgb(rgb))
+    |             `- error: cannot pass immutable value as inout argument: 'pixelFromRgb' returns immutable value
+ 51 | }
+ 52 | func line(_ b: [String: any], _ x0: Int, _ y0: Int, _ x1: Int, _ y1: Int, _ p: inout Pixel) {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:78:13: error: cannot assign to value: 'x0' is a 'let' constant
+ 76 |         if e2 > (0 - dy) {
+ 77 |             err = err - dy
+ 78 |             x0 = x0 + sx
+    |             `- error: cannot assign to value: 'x0' is a 'let' constant
+ 79 |         }
+ 80 |         if e2 < dx {
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:82:13: error: cannot assign to value: 'y0' is a 'let' constant
+ 80 |         if e2 < dx {
+ 81 |             err = err + dx
+ 82 |             y0 = y0 + sy
+    |             `- error: cannot assign to value: 'y0' is a 'let' constant
+ 83 |         }
+ 84 |     }
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:87:21: error: cannot assign value of type '[Any]' to type '[Int]'
+ 85 | }
+ 86 | func bezier2(_ b: [String: any], _ x1: Int, _ y1: Int, _ x2: Int, _ y2: Int, _ x3: Int, _ y3: Int, _ p: inout Pixel) {
+ 87 |     var px: [Int] = [Any]()
+    |                     |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                     `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 88 |     var py: [Int] = [Any]()
+ 89 |     var i = 0
+
+/tmp/TestMochiToSwiftbitmap-b-zier-curves-quadratic2076777844/001/main.swift:88:21: error: cannot assign value of type '[Any]' to type '[Int]'
+ 86 | func bezier2(_ b: [String: any], _ x1: Int, _ y1: Int, _ x2: Int, _ y2: Int, _ x3: Int, _ y3: Int, _ p: inout Pixel) {
+ 87 |     var px: [Int] = [Any]()
+ 88 |     var py: [Int] = [Any]()
+    |                     |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                     `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 89 |     var i = 0
+ 90 |     while i <= b2Seg {

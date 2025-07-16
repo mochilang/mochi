@@ -1,0 +1,24 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftaverages-median-33251346604/001/main.swift:5:18: error: cannot find 'now' in scope
+ 3 |     var arr = a
+ 4 |     while arr.count > 1 {
+ 5 |         var px = now() % arr.count
+   |                  `- error: cannot find 'now' in scope
+ 6 |         var pv = arr[px]
+ 7 |         let last = arr.count - 1
+
+/tmp/TestMochiToSwiftaverages-median-33251346604/001/main.swift:34:13: error: cannot assign to value: 'k' is a 'let' constant
+32 |             arr[last] = tmp2
+33 |             arr = Array(arr[(px + 1)..<arr.count])
+34 |             k = k - (px + 1)
+   |             `- error: cannot assign to value: 'k' is a 'let' constant
+35 |         }
+36 |     }
+
+/tmp/TestMochiToSwiftaverages-median-33251346604/001/main.swift:40:9: warning: variable 'arr' was never mutated; consider changing to 'let' constant
+38 | }
+39 | func median(_ list: [Double]) -> Double {
+40 |     var arr = list
+   |         `- warning: variable 'arr' was never mutated; consider changing to 'let' constant
+41 |     let half = Int((arr.count / 2))
+42 |     let med = qsel(arr, half)

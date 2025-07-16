@@ -1,0 +1,110 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:5:52: error: expected element type
+ 3 |     return (seed * 1664525 + 1013904223) % 2147483647
+ 4 | }
+ 5 | func shuffleChars(_ s: String, _ seed: Int) -> [any] {
+   |                                                    `- error: expected element type
+ 6 |     var chars: [String] = [Any]()
+ 7 |     var i = 0
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:30:51: error: expected element type
+28 |     return [res, sd]
+29 | }
+30 | func bestShuffle(_ s: String, _ seed: Int) -> [any] {
+   |                                                   `- error: expected element type
+31 |     let r = shuffleChars(s, seed)
+32 |     var t = r[0]
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:6:27: error: cannot assign value of type '[Any]' to type '[String]'
+ 4 | }
+ 5 | func shuffleChars(_ s: String, _ seed: Int) -> [any] {
+ 6 |     var chars: [String] = [Any]()
+   |                           |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                           `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 7 |     var i = 0
+ 8 |     while i < s.count {
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:28:12: error: unexpected non-void return value in void function
+26 |         i = i + 1
+27 |     }
+28 |     return [res, sd]
+   |            |- error: unexpected non-void return value in void function
+   |            `- note: did you mean to add a return type?
+29 | }
+30 | func bestShuffle(_ s: String, _ seed: Int) -> [any] {
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:31:9: warning: constant 'r' inferred to have type '()', which may be unexpected
+29 | }
+30 | func bestShuffle(_ s: String, _ seed: Int) -> [any] {
+31 |     let r = shuffleChars(s, seed)
+   |         |- warning: constant 'r' inferred to have type '()', which may be unexpected
+   |         `- note: add an explicit type annotation to silence this warning
+32 |     var t = r[0]
+33 |     var sd = r[1]
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:32:14: error: value of type '()' has no subscripts
+30 | func bestShuffle(_ s: String, _ seed: Int) -> [any] {
+31 |     let r = shuffleChars(s, seed)
+32 |     var t = r[0]
+   |              `- error: value of type '()' has no subscripts
+33 |     var sd = r[1]
+34 |     var arr: [String] = [Any]()
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:33:15: error: value of type '()' has no subscripts
+31 |     let r = shuffleChars(s, seed)
+32 |     var t = r[0]
+33 |     var sd = r[1]
+   |               `- error: value of type '()' has no subscripts
+34 |     var arr: [String] = [Any]()
+35 |     var i = 0
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:34:25: error: cannot assign value of type '[Any]' to type '[String]'
+32 |     var t = r[0]
+33 |     var sd = r[1]
+34 |     var arr: [String] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+35 |     var i = 0
+36 |     while i < t.count {
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:68:12: error: unexpected non-void return value in void function
+66 |         i = i + 1
+67 |     }
+68 |     return [out, sd, count]
+   |            |- error: unexpected non-void return value in void function
+   |            `- note: did you mean to add a return type?
+69 | }
+70 | func main() {
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:75:13: warning: constant 'r' inferred to have type '()', which may be unexpected
+73 |     var i = 0
+74 |     while i < ts.count {
+75 |         let r = bestShuffle(ts[i], seed)
+   |             |- warning: constant 'r' inferred to have type '()', which may be unexpected
+   |             `- note: add an explicit type annotation to silence this warning
+76 |         let shuf = r[0]
+77 |         seed = r[1]
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:76:21: error: value of type '()' has no subscripts
+74 |     while i < ts.count {
+75 |         let r = bestShuffle(ts[i], seed)
+76 |         let shuf = r[0]
+   |                     `- error: value of type '()' has no subscripts
+77 |         seed = r[1]
+78 |         let cnt = r[2]
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:77:17: error: value of type '()' has no subscripts
+75 |         let r = bestShuffle(ts[i], seed)
+76 |         let shuf = r[0]
+77 |         seed = r[1]
+   |                 `- error: value of type '()' has no subscripts
+78 |         let cnt = r[2]
+79 |         print(ts[i] + " -> " + shuf + " (" + String(cnt) + ")")
+
+/tmp/TestMochiToSwiftbest-shuffle1448503183/001/main.swift:78:20: error: value of type '()' has no subscripts
+76 |         let shuf = r[0]
+77 |         seed = r[1]
+78 |         let cnt = r[2]
+   |                    `- error: value of type '()' has no subscripts
+79 |         print(ts[i] + " -> " + shuf + " (" + String(cnt) + ")")
+80 |         i = i + 1

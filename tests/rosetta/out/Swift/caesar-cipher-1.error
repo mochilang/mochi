@@ -1,0 +1,8 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcaesar-cipher-11688365384/001/main.swift:49:31: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+47 |     var i = 0
+48 |     while i < s.count {
+49 |         out = out + shiftRune(Array(s[i..<i + 1]), k)
+   |                               `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+50 |         i = i + 1
+51 |     }

@@ -1,0 +1,110 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:14:27: error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+ 12 | }
+ 13 | func newBitmap(_ w: Int, _ h: Int, _ max: Int) -> Bitmap {
+ 14 |     var rows: [[Pixel]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Pixel]') are expected to be equal
+ 15 |     var y = 0
+ 16 |     while y < h {
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:17:28: error: cannot assign value of type '[Any]' to type '[Pixel]'
+ 15 |     var y = 0
+ 16 |     while y < h {
+ 17 |         var row: [Pixel] = [Any]()
+    |                            |- error: cannot assign value of type '[Any]' to type '[Pixel]'
+    |                            `- note: arguments to generic parameter 'Element' ('Any' and 'Pixel') are expected to be equal
+ 18 |         var x = 0
+ 19 |         while x < w {
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:39:25: error: cannot assign value of type '[Any]' to type '[String]'
+ 37 | }
+ 38 | func splitLines(_ s: String) -> [String] {
+ 39 |     var out: [String] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 40 |     var cur = ""
+ 41 |     var i = 0
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:43:18: error: cannot find 'substr' in scope
+ 41 |     var i = 0
+ 42 |     while i < s.count {
+ 43 |         let ch = substr(s, i, i + 1)
+    |                  `- error: cannot find 'substr' in scope
+ 44 |         if ch == "\n" {
+ 45 |             out = out + [cur]
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:57:25: error: cannot assign value of type '[Any]' to type '[String]'
+ 55 | }
+ 56 | func splitWS(_ s: String) -> [String] {
+ 57 |     var out: [String] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 58 |     var cur = ""
+ 59 |     var i = 0
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:61:18: error: cannot find 'substr' in scope
+ 59 |     var i = 0
+ 60 |     while i < s.count {
+ 61 |         let ch = substr(s, i, i + 1)
+    |                  `- error: cannot find 'substr' in scope
+ 62 |         if ch == " " || ch == "\t" || ch == "\r" || ch == "\n" {
+ 63 |             if cur.count > 0 {
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:81:43: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 79 |     var i = 0
+ 80 |     var neg = false
+ 81 |     if str.count > 0 && Array(str[0..<1]) == "-" {
+    |                                           |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                           `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 82 |         neg = true
+ 83 |         i = 1
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:88:29: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 86 |     let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 87 |     while i < str.count {
+ 88 |         n = n * 10 + digits[Array(str[i..<i + 1])]!
+    |                             `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 89 |         i = i + 1
+ 90 |     }
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:98:26: error: cannot assign value of type '[Any]' to type '[String]'
+ 96 | func tokenize(_ s: String) -> [String] {
+ 97 |     let lines = splitLines(s)
+ 98 |     var toks: [String] = [Any]()
+    |                          |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                          `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 99 |     var i = 0
+100 |     while i < lines.count {
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:102:30: error: cannot find 'substr' in scope
+100 |     while i < lines.count {
+101 |         let line = lines[i]
+102 |         if line.count > 0 && substr(line, 0, 1) == "#" {
+    |                              `- error: cannot find 'substr' in scope
+103 |             i = i + 1
+104 |             continue
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:136:30: error: cannot pass immutable value as inout argument: function call returns immutable value
+134 |             let g: Int = parseIntStr(toks[idx + 1])
+135 |             let b: Int = parseIntStr(toks[idx + 2])
+136 |             setPx(&bm, x, y, &Pixel(R: r, G: g, B: b))
+    |                              `- error: cannot pass immutable value as inout argument: function call returns immutable value
+137 |             idx = idx + 3
+138 |             x = x + 1
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:157:29: error: cannot pass immutable value as inout argument: function call returns immutable value
+155 |                 l = b.max
+156 |             }
+157 |             setPx(&b, x, y, &Pixel(R: l, G: l, B: l))
+    |                             `- error: cannot pass immutable value as inout argument: function call returns immutable value
+158 |             if l > m {
+159 |                 m = l
+
+/tmp/TestMochiToSwiftbitmap-read-a-ppm-file3375831589/001/main.swift:177:9: warning: variable 'max' was never mutated; consider changing to 'let' constant
+175 |     let h: Int = b.h
+176 |     let w: Int = b.w
+177 |     var max = b.max
+    |         `- warning: variable 'max' was never mutated; consider changing to 'let' constant
+178 |     let digits = String(max).count
+179 |     var out = "P3\n# generated from Bitmap.writeppmp3\n" + String(w) + " " + String(h) + "\n" + String(max) + "\n"
