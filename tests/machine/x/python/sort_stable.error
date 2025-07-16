@@ -1,7 +1,0 @@
-output mismatch
--- got --
-['a', 'b', 'c']
-
--- want --
-a b c
-
