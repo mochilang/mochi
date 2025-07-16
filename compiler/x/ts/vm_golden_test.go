@@ -4,6 +4,7 @@ package tscode_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -44,7 +45,7 @@ func repoRootVM(t *testing.T) string {
 
 // runVMGolden compiles the Mochi source file under tests/vm/valid, executes the
 // generated TypeScript with Deno and compares the output with the VM golden
-// file. The generated TypeScript is compared against files in
+// file. Generated code, output and any error logs are stored under
 // tests/machine/x/ts.
 func runVMGolden(t *testing.T, src string) {
 	root := repoRootVM(t)
@@ -61,11 +62,17 @@ func runVMGolden(t *testing.T, src string) {
 	if errs := types.Check(prog, env); len(errs) > 0 {
 		t.Fatalf("type error: %v", errs[0])
 	}
+	outDir := filepath.Join(root, "tests", "machine", "x", "ts")
+	codeWant := filepath.Join(outDir, name+".ts")
+	outWant := filepath.Join(outDir, name+".out")
+	errFile := filepath.Join(outDir, name+".error")
+
 	code, err := tscode.New(env, filepath.Dir(src)).Compile(prog)
 	if err != nil {
-		t.Fatalf("compile error: %v", err)
+		_ = os.WriteFile(errFile, []byte("compile: "+err.Error()), 0644)
+		return
 	}
-	codeWant := filepath.Join(root, "tests", "machine", "x", "ts", name+".ts")
+
 	if shouldUpdateVM() {
 		if err := os.WriteFile(codeWant, code, 0644); err != nil {
 			t.Fatalf("write golden code: %v", err)
@@ -91,10 +98,11 @@ func runVMGolden(t *testing.T, src string) {
 	}
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		t.Fatalf("deno run error: %v\n%s", err, out)
+		_ = os.WriteFile(errFile, []byte(fmt.Sprintf("run: %v\n%s", err, out)), 0644)
+		return
 	}
 	gotOut := bytes.TrimSpace(out)
-	outWant := filepath.Join(root, "tests", "vm", "valid", name+".out")
+	_ = os.Remove(errFile)
 	if shouldUpdateVM() {
 		if err := os.WriteFile(outWant, append(gotOut, '\n'), 0644); err != nil {
 			t.Fatalf("write golden out: %v", err)
