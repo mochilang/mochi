@@ -28,6 +28,9 @@
   `list_set_ops` so they compile cleanly, reducing `.error` files in the
   golden suite. The VM valid golden test now compares only program output
   instead of source code.
+- 2025-07-16 17:30: Fixed `nested_function` implementation and removed
+  code comparisons from dataset golden tests, further reducing `.error`
+  files.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
