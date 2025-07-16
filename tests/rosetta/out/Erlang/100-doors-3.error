@@ -1,26 +1,26 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:7:139: variable 'J1' is unbound
-%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end(J0)), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
+run: exit status 127
+/tmp/100-doors-3.erl:7:139: variable 'J1' is unbound
+%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end)(J0), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
 %     |                                                                                                                                           ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:7:144: variable 'J1' is unbound
-%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end(J0)), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
+/tmp/100-doors-3.erl:7:144: variable 'J1' is unbound
+%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end)(J0), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
 %     |                                                                                                                                                ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:7:206: variable 'Result1' is unbound
-%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end(J0)), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
+/tmp/100-doors-3.erl:7:206: variable 'Result1' is unbound
+%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end)(J0), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
 %     |                                                                                                                                                                                                              ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:8:24: variable 'Result2' is unbound
+/tmp/100-doors-3.erl:8:24: variable 'Result2' is unbound
 %    8|     io:format("~p~n", [Result2]).
 %     |                        ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:7:165: Warning: variable 'Result1' is unused
-%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end(J0)), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
+/tmp/100-doors-3.erl:7:165: Warning: variable 'Result1' is unused
+%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end)(J0), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
 %     |                                                                                                                                                                     ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-3.erl:7:196: Warning: variable 'Result2' is unused
-%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end(J0)), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
+/tmp/100-doors-3.erl:7:196: Warning: variable 'Result2' is unused
+%    7|     lists:foreach(fun(I) -> J0 = 1, (fun Loop0(J) -> case ((J * J) < I) of true -> J1 = (J + 1), Loop0(J1); _ -> ok end end)(J0), (case ((J1 * J1) == I) of true -> Result1 = Result0 ++ "O"; _ -> Result2 = Result1 ++ "-" end) end, lists:seq(1, (101)-1)),
 %     |                                                                                                                                                                                                    ^
 
 escript: There were compilation errors.
