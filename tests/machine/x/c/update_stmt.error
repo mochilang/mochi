@@ -1,0 +1,33 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/update_stmt.c:12:15: error: duplicate member ‘name’
+   12 |   const char *name;
+      |               ^~~~
+/workspace/mochi/tests/machine/x/c/update_stmt.c:13:7: error: duplicate member ‘age’
+   13 |   int age;
+      |       ^~~
+/workspace/mochi/tests/machine/x/c/update_stmt.c:14:15: error: duplicate member ‘status’
+   14 |   const char *status;
+      |               ^~~~~~
+/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘test_update_adult_status’:
+/workspace/mochi/tests/machine/x/c/update_stmt.c:39:22: error: incompatible types when initializing type ‘const char *’ using type ‘Person’ {aka ‘struct Person’}
+   39 |   person_t tmp1[] = {(Person){.name = "Alice", .age = 17, .status = "minor"},
+      |                      ^
+/workspace/mochi/tests/machine/x/c/update_stmt.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/update_stmt.c:67:7: error: incompatible types when initializing type ‘const char *’ using type ‘Person’ {aka ‘struct Person’}
+   67 |       (Person){.name = "Alice", .age = 17, .status = "minor"},
+      |       ^
+/workspace/mochi/tests/machine/x/c/update_stmt.c:72:35: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   72 |   for (int tmp4 = 0; tmp4 < people.len; tmp4++) {
+      |                                   ^
+      |                                   ->
+/workspace/mochi/tests/machine/x/c/update_stmt.c:73:27: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   73 |     person_t tmp5 = people.data[tmp4];
+      |                           ^
+      |                           ->
+/workspace/mochi/tests/machine/x/c/update_stmt.c:78:11: error: ‘(person_t *)&people’ is a pointer; did you mean to use ‘->’?
+   78 |     people.data[tmp4] = tmp5;
+      |           ^
+      |           ->
+/workspace/mochi/tests/machine/x/c/update_stmt.c:81:37: error: incompatible types when assigning to type ‘person_list_t’ from type ‘person_t *’
+   81 |   test_update_adult_status_people = people;
+      |                                     ^~~~~~

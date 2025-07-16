@@ -1,0 +1,14 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/for_map_collection.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:25:3: error: unknown type name ‘map_string_int’
+   25 |   map_string_int m = (tmp_item_t){.a = 1, .b = 2};
+      |   ^~~~~~~~~~~~~~
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:25:22: error: incompatible types when initializing type ‘int’ using type ‘tmp_item_t’
+   25 |   map_string_int m = (tmp_item_t){.a = 1, .b = 2};
+      |                      ^
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:26:30: error: request for member ‘len’ in something not a structure or union
+   26 |   for (int tmp1 = 0; tmp1 < m.len; tmp1++) {
+      |                              ^
+/workspace/mochi/tests/machine/x/c/for_map_collection.c:27:16: error: request for member ‘data’ in something not a structure or union
+   27 |     char *k = m.data[tmp1].key;
+      |                ^

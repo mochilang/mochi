@@ -1,0 +1,5 @@
+exit status 1
+/workspace/mochi/tests/machine/x/c/avg_builtin.c: In function ‘_mochi_main’:
+/workspace/mochi/tests/machine/x/c/avg_builtin.c:26:17: error: subscripted value is neither array nor pointer nor vector
+   26 |     tmp2 += tmp1[i3];
+      |                 ^
