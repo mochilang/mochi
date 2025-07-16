@@ -1,6 +1,4 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/record_assign.cob:12: error: syntax error, unexpected USING
-/workspace/mochi/tests/machine/x/cobol/record_assign.cob: in paragraph 'FN_INC':
-/workspace/mochi/tests/machine/x/cobol/record_assign.cob:18: error: syntax error, unexpected PROCEDURE
-/workspace/mochi/tests/machine/x/cobol/record_assign.cob:19: error: 'C-N' is not defined
-
+/tmp/TestCobolCompiler_VMValid_Goldenrecord_assign658426500/001/prog.cob:12: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenrecord_assign658426500/001/prog.cob: in paragraph 'FN_INC':
+/tmp/TestCobolCompiler_VMValid_Goldenrecord_assign658426500/001/prog.cob:18: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Goldenrecord_assign658426500/001/prog.cob:19: error: 'C-N' is not defined

@@ -1,5 +1,3 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/if_then_else_nested.cob:12: warning: 'literal "big"' is not a numeric value [-Wignored-error]
-/workspace/mochi/tests/machine/x/cobol/if_then_else_nested.cob:15: error: 'literal "medium"' is not a numeric value
-/workspace/mochi/tests/machine/x/cobol/if_then_else_nested.cob:17: error: 'literal "small"' is not a numeric value
-
+/tmp/TestCobolCompiler_VMValid_Goldenif_then_else_nested2347597280/001/prog.cob:12: error (ignored): '"big"' is not a numeric value
+/tmp/TestCobolCompiler_VMValid_Goldenif_then_else_nested2347597280/001/prog.cob:15: error: '"medium"' is not a numeric value
+/tmp/TestCobolCompiler_VMValid_Goldenif_then_else_nested2347597280/001/prog.cob:17: error: '"small"' is not a numeric value

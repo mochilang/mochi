@@ -1,3 +1,1 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/slice.cob:11: error: syntax error, unexpected (
-
+/tmp/TestCobolCompiler_VMValid_Goldenslice3447805380/001/prog.cob:11: error: syntax error, unexpected (

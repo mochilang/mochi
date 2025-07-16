@@ -1,3 +1,1 @@
-cobc: exit status 1
-/workspace/mochi/tests/machine/x/cobol/in_operator.cob:18: error: invalid symbol '!' - skipping word
-
+/tmp/TestCobolCompiler_VMValid_Goldenin_operator993293468/001/prog.cob:18: error: invalid symbol '!' - skipping word
