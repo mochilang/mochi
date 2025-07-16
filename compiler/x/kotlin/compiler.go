@@ -180,10 +180,11 @@ var runtimePieces = map[string]string{
     is Iterable<*> -> v.joinToString(prefix = "[", postfix = "]") { toJson(it) }
     else -> toJson(v.toString())
 }`,
-	"Group": `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
+	"Group":  `class Group<K, T>(val key: K, val items: MutableList<T>) : MutableList<T> by items`,
+	"_input": `fun _input(): String { return readLine() ?: "" }`,
 }
 
-var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group"}
+var runtimeOrder = []string{"append", "avg", "div", "count", "exists", "values", "len", "max", "min", "sum", "str", "substring", "starts_with", "toInt", "toDouble", "toBool", "union", "except", "intersect", "_load", "loadYamlSimple", "parseSimpleValue", "_save", "json", "toJson", "Group", "_input"}
 
 func buildRuntime(used map[string]bool) string {
 	var parts []string
@@ -997,8 +998,21 @@ func (c *Compiler) unary(u *parser.Unary) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	t := c.inferPostfixType(u.Value)
 	for i := len(u.Ops) - 1; i >= 0; i-- {
-		val = u.Ops[i] + val
+		op := u.Ops[i]
+		switch op {
+		case "!":
+			if _, ok := t.(types.BoolType); !ok {
+				c.use("toBool")
+				val = "!toBool(" + val + ")"
+			} else {
+				val = "!" + val
+			}
+			t = types.BoolType{}
+		default:
+			val = op + val
+		}
 	}
 	return val, nil
 }
@@ -1160,6 +1174,9 @@ func (c *Compiler) primary(p *parser.Primary) (string, error) {
 		}
 		return "(" + s + ")", nil
 	case p.List != nil:
+		if len(p.List.Elems) == 0 {
+			return "mutableListOf<Any?>()", nil
+		}
 		parts := make([]string, len(p.List.Elems))
 		for i, e := range p.List.Elems {
 			s, err := c.expr(e)
@@ -1356,9 +1373,19 @@ func (c *Compiler) builtinCall(call *parser.CallExpr, args []string) (string, bo
 			c.use("starts_with")
 			return fmt.Sprintf("starts_with(%s, %s)", args[0], args[1]), true
 		}
+	case "input":
+		if len(args) == 0 {
+			c.use("_input")
+			return "_input()", true
+		}
+	case "now":
+		if len(args) == 0 {
+			return "System.nanoTime()", true
+		}
 	case "append":
 		if len(args) == 2 {
-			return fmt.Sprintf("%s + %s", args[0], args[1]), true
+			c.use("append")
+			return fmt.Sprintf("append(%s, %s)", args[0], args[1]), true
 		}
 	}
 	return "", false
