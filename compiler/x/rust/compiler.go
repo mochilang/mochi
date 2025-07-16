@@ -924,46 +924,46 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 			return nil
 		}
 	}
-        val, err := c.compileExpr(v.Value)
-        if err != nil {
-                return err
-        }
-        if v.Type != nil {
-                typ := rustType(v.Type)
-                if typ == "&'static str" {
-                        if s, ok := c.simpleString(v.Value); ok {
-                                if s == "" {
-                                        val = "String::new()"
-                                } else {
-                                        val = fmt.Sprintf("String::from(%q)", s)
-                                }
-                                typ = "String"
-                        }
-                }
-                c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
-                if c.env != nil {
-                        c.env.SetVar(v.Name, types.ResolveTypeRef(v.Type, c.env), true)
-                }
-        } else if s, ok := c.simpleString(v.Value); ok {
-                if s == "" {
-                        c.writeln(fmt.Sprintf("let mut %s = String::new();", v.Name))
-                } else {
-                        c.writeln(fmt.Sprintf("let mut %s = String::from(%q);", v.Name, s))
-                }
-                if c.env != nil {
-                        c.env.SetVar(v.Name, types.StringType{}, true)
-                }
-        } else {
-                c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
-                if c.env != nil {
-                        t := types.TypeOfExpr(v.Value, c.env)
-                        c.env.SetVar(v.Name, t, true)
-                        if lt, ok := t.(types.ListType); ok {
-                                if st, ok2 := lt.Elem.(types.StructType); ok2 {
-                                        c.listVars[v.Name] = st.Name
-                                }
-                        }
-                }
+	val, err := c.compileExpr(v.Value)
+	if err != nil {
+		return err
+	}
+	if v.Type != nil {
+		typ := rustType(v.Type)
+		if typ == "&'static str" {
+			if s, ok := c.simpleString(v.Value); ok {
+				if s == "" {
+					val = "String::new()"
+				} else {
+					val = fmt.Sprintf("String::from(%q)", s)
+				}
+				typ = "String"
+			}
+		}
+		c.writeln(fmt.Sprintf("let mut %s: %s = %s;", v.Name, typ, val))
+		if c.env != nil {
+			c.env.SetVar(v.Name, types.ResolveTypeRef(v.Type, c.env), true)
+		}
+	} else if s, ok := c.simpleString(v.Value); ok {
+		if s == "" {
+			c.writeln(fmt.Sprintf("let mut %s = String::new();", v.Name))
+		} else {
+			c.writeln(fmt.Sprintf("let mut %s = String::from(%q);", v.Name, s))
+		}
+		if c.env != nil {
+			c.env.SetVar(v.Name, types.StringType{}, true)
+		}
+	} else {
+		c.writeln(fmt.Sprintf("let mut %s = %s;", v.Name, val))
+		if c.env != nil {
+			t := types.TypeOfExpr(v.Value, c.env)
+			c.env.SetVar(v.Name, t, true)
+			if lt, ok := t.(types.ListType); ok {
+				if st, ok2 := lt.Elem.(types.StructType); ok2 {
+					c.listVars[v.Name] = st.Name
+				}
+			}
+		}
 	}
 	if c.lastListStruct != "" {
 		c.listVars[v.Name] = c.lastListStruct
@@ -1063,7 +1063,7 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) error {
 		}
 		t := types.TypeOfPostfixBasic(prefix, c.env)
 		if types.IsMapType(t) {
-			target = fmt.Sprintf("%s[%s]", target, idxStr)
+			target = fmt.Sprintf("%s[&%s]", target, idxStr)
 		} else {
 			if isIntLiteral(idx.Start) {
 				target = fmt.Sprintf("%s[%s]", target, idxStr)
@@ -1695,25 +1695,25 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					break
 				}
 			}
-                       switch rustTy {
-                       case "i32":
-                               if strings.HasPrefix(val, "&") {
-                                       val = val[1:]
-                               }
-                               val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
-                       case "f64":
-                               if strings.HasPrefix(val, "&") {
-                                       val = val[1:]
-                               }
-                               val = fmt.Sprintf("%s.parse::<f64>().unwrap()", val)
-                       case "bool":
-                               if strings.HasPrefix(val, "&") {
-                                       val = val[1:]
-                               }
-                               val = fmt.Sprintf("%s.parse::<bool>().unwrap()", val)
-                       default:
-                               return "", fmt.Errorf("unsupported cast to %s", rustTy)
-                       }
+			switch rustTy {
+			case "i32":
+				if strings.HasPrefix(val, "&") {
+					val = val[1:]
+				}
+				val = fmt.Sprintf("%s.parse::<i32>().unwrap()", val)
+			case "f64":
+				if strings.HasPrefix(val, "&") {
+					val = val[1:]
+				}
+				val = fmt.Sprintf("%s.parse::<f64>().unwrap()", val)
+			case "bool":
+				if strings.HasPrefix(val, "&") {
+					val = val[1:]
+				}
+				val = fmt.Sprintf("%s.parse::<bool>().unwrap()", val)
+			default:
+				return "", fmt.Errorf("unsupported cast to %s", rustTy)
+			}
 		case op.Index != nil:
 			prefix := &parser.Unary{Value: &parser.PostfixExpr{Target: p.Target, Ops: p.Ops[:opIndex]}}
 			t := types.TypeOfPostfixBasic(prefix, c.env)
