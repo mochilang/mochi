@@ -411,6 +411,8 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 	}
 	c.moduleScope = true
 	c.indent++
+	c.writeln("_order_init()")
+	c.use("_order_init")
 	for _, s := range prog.Statements {
 		if s.Fun != nil || s.Test != nil || s.Type != nil {
 			continue
