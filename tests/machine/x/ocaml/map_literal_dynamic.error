@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/map_literal_dynamic.ml", line 24, characters 22-71:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenmap_literal_dynamic2503936720/001/map_literal_dynamic.ml", line 24, characters 22-71:
 24 | let m : record1 ref = ref [("a",Obj.repr ((!x)));("b",Obj.repr ((!y)))]
                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: This expression has type (string * Obj.t) list ref

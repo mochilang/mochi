@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/left_join_multi.ml", line 37, characters 60-61:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenleft_join_multi4234237550/001/left_join_multi.ml", line 37, characters 60-61:
 37 |           __res0 := { orderId = o.id; name = c.name; item = i } :: !__res0;
                                                                  ^
 Error: This expression has type record4

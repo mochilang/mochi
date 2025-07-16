@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/values_builtin.ml", line 22, characters 18-76:
+File "/tmp/TestOCamlCompiler_VMValid_Goldenvalues_builtin403438461/001/values_builtin.ml", line 22, characters 18-76:
 22 | let m : record1 = [("a",Obj.repr (1));("b",Obj.repr (2));("c",Obj.repr (3))]
                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Error: This expression should not be a list literal, the expected type is

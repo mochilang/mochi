@@ -1,4 +1,4 @@
-File "/workspace/mochi/tests/machine/x/ocaml/group_items_iteration.ml", line 24, characters 51-54:
+File "/tmp/TestOCamlCompiler_VMValid_Goldengroup_items_iteration468698401/001/group_items_iteration.ml", line 24, characters 51-54:
 24 |     type record1 = { mutable tag : string; mutable val : int }
                                                         ^^^
 Error: Syntax error
