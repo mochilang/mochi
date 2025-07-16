@@ -1,233 +1,119 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:394:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/catmull-clark-subdivision-surface.dart:397:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:371:6: Context: Previous declaration of 'main'.
+/tmp/catmull-clark-subdivision-surface.dart:374:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:304:6: Error: Type 'any' not found.
+/tmp/catmull-clark-subdivision-surface.dart:307:6: Error: Type 'any' not found.
 List<any> cmcSubdiv(List<Point> points, List<List<int>> faces) {
      ^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:27:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    if (s.toString().substring(i, (i as num) + 1) == ch) {
-                                             ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:30:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:43:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/catmull-clark-subdivision-surface.dart:46:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   y = double.parse((int.parse(y))) / 10000;
                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:43:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/catmull-clark-subdivision-surface.dart:46:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   y = double.parse((int.parse(y))) / 10000;
                         ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:52:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      s = s.toString().substring(0, (dot as num) + 5);
-                                                 ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:101:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/catmull-clark-subdivision-surface.dart:104:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     fp = divPoint(fp, (double.parse(face.length)));
                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:103:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:121:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:130:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      k = (k as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:147:53: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      if (pi.toString().compareTo((numP as num) - 1.toString()) < 0) {
-                                                    ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:147:49: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-      if (pi.toString().compareTo((numP as num) - 1.toString()) < 0) {
-                                                ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:148:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        pn2 = face[(pi as num) + 1];
-                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:159:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      pi = (pi as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:161:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    fnum = (fnum as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:168:51: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    if (idx.toString().compareTo(edges.length - 1.toString()) < 0) {
-                                                  ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:168:47: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    if (idx.toString().compareTo(edges.length - 1.toString()) < 0) {
-                                              ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:169:35: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      var e2 = edges[(idx as num) + 1];
-                                  ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:172:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        idx = (idx as num) + 2;
-                           ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:177:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    idx = (idx as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:195:18: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:198:18: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     var cp = edge['cp'];
                  ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:196:30: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:199:30: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     var fp1 = facePoints[edge['fn1']];
                              ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:198:13: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:201:13: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     if (edge['fn2'] != 0 - 1) {
             ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:199:28: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:202:28: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       fp2 = facePoints[edge['fn2']];
                            ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:203:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:214:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:221:37: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:224:37: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      temp[pn] = PointEx(sumPoint(tp['p'], fp), (tp['n'] as num) + 1);
+      temp[pn] = PointEx(sumPoint(tp['p'], fp), tp['n'] + 1);
                                     ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:221:52: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:224:51: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      temp[pn] = PointEx(sumPoint(tp['p'], fp), (tp['n'] as num) + 1);
-                                                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:221:66: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-      temp[pn] = PointEx(sumPoint(tp['p'], fp), (tp['n'] as num) + 1);
-                                                                 ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:223:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    fnum = (fnum as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:229:42: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+      temp[pn] = PointEx(sumPoint(tp['p'], fp), tp['n'] + 1);
+                                                  ^
+/tmp/catmull-clark-subdivision-surface.dart:232:42: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     avg = List.from(avg)..add(divPoint(tp['p'], double.parse(tp['n'])));
                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:229:64: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:232:64: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     avg = List.from(avg)..add(divPoint(tp['p'], double.parse(tp['n'])));
                                                                ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:230:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    j = (j as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:241:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:249:37: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:252:37: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      temp[pn] = PointEx(sumPoint(tp['p'], cp), (tp['n'] as num) + 1);
+      temp[pn] = PointEx(sumPoint(tp['p'], cp), tp['n'] + 1);
                                     ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:249:52: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:252:51: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
-      temp[pn] = PointEx(sumPoint(tp['p'], cp), (tp['n'] as num) + 1);
-                                                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:249:66: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-      temp[pn] = PointEx(sumPoint(tp['p'], cp), (tp['n'] as num) + 1);
-                                                                 ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:256:42: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+      temp[pn] = PointEx(sumPoint(tp['p'], cp), tp['n'] + 1);
+                                                  ^
+/tmp/catmull-clark-subdivision-surface.dart:259:42: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     avg = List.from(avg)..add(divPoint(tp['p'], double.parse(tp['n'])));
                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:256:64: Error: The operator '[]' isn't defined for the class 'PointEx'.
- - 'PointEx' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:259:64: Error: The operator '[]' isn't defined for the class 'PointEx'.
+ - 'PointEx' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     avg = List.from(avg)..add(divPoint(tp['p'], double.parse(tp['n'])));
                                                                ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:257:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    j = (j as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:267:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:272:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      pf[pn] = (pf[pn] as num) + 1;
-                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:274:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    fnum = (fnum as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:283:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/catmull-clark-subdivision-surface.dart:286:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var n = double.parse(pf[i]);
                            ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:292:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:318:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    nextPoint = (nextPoint as num) + 1;
-                                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:325:24: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:328:24: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     edgePointNums[key(e['pn1'], e['pn2'])] = nextPoint;
                        ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:325:34: Error: The operator '[]' isn't defined for the class 'Edge'.
- - 'Edge' is from '../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart'.
+/tmp/catmull-clark-subdivision-surface.dart:328:34: Error: The operator '[]' isn't defined for the class 'Edge'.
+ - 'Edge' is from '/tmp/catmull-clark-subdivision-surface.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     edgePointNums[key(e['pn1'], e['pn2'])] = nextPoint;
                                  ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:326:36: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    nextPoint = (nextPoint as num) + 1;
-                                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:327:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    idx = (idx as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:343:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:346:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([a, ab, fpnum, da]);
                                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:343:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:346:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([a, ab, fpnum, da]);
                                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:344:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:347:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([b, bc, fpnum, ab]);
                                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:344:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:347:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([b, bc, fpnum, ab]);
                                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:345:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:348:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([c, cd, fpnum, bc]);
                                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:345:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:348:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([c, cd, fpnum, bc]);
                                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:346:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:349:47: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([d, da, fpnum, cd]);
                                               ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:346:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+/tmp/catmull-clark-subdivision-surface.dart:349:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([d, da, fpnum, cd]);
                                                          ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:348:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    fnum = (fnum as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:365:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:381:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:395:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/catmull-clark-subdivision-surface.dart:398:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:419:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:448:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:453:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/catmull-clark-subdivision-surface.dart:457:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

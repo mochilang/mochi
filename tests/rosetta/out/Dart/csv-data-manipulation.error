@@ -1,22 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:25:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = ((n as num) * 10 as num) + (digits[str.substring(i, i + 1)] as num);
-                                 ^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:29:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = -(n as num);
-        ^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:43:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+run: exit status 254
+/tmp/csv-data-manipulation.dart:28:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+                       ^
+/tmp/csv-data-manipulation.dart:28:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+               ^
+/tmp/csv-data-manipulation.dart:46:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       sum = (sum as num) + parseIntStr(s);
                          ^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:74:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:103:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:108:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/csv-data-manipulation.dart:112:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

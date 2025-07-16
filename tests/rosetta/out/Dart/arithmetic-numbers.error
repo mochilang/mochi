@@ -1,150 +1,87 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:143:11: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/arithmetic-numbers.dart:146:11: Error: String starting with ' must end with '.
     print('
           ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:50: Error: String starting with ' must end with '.
+/tmp/arithmetic-numbers.dart:147:50: Error: String starting with ' must end with '.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                  ^^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:143:10: Error: Can't find ')' to match '('.
+/tmp/arithmetic-numbers.dart:146:10: Error: Can't find ')' to match '('.
     print('
          ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:151:6: Error: 'main' is already declared in this scope.
+/tmp/arithmetic-numbers.dart:154:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:120:6: Context: Previous declaration of 'main'.
+/tmp/arithmetic-numbers.dart:123:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:16:19: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          if (spf[j] == 0) {
-                  ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:17:17: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-            spf[j] = i;
-                ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:23:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:35:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:54:48: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    out = s.toString().substring(i, (i as num) + 1) + out;
-                                               ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:55:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    c = (c as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) - 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:68:63: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    var mid = int.parse(((((lo as num) + (hi as num)) as num) / 2));
-                                                              ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:70:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      lo = (mid as num) + 1;
-                        ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:80:10: Error: A value of type 'num' can't be returned from a function with return type 'int'.
-  return count;
-         ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:103:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-          x = (x as num) / (p as num);
-                         ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:104:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          cnt = (cnt as num) + 1;
-                             ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:105:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          sum = (sum as num) + (power as num);
-                             ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:106:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-          power = (power as num) * (p as num);
-                                 ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:108:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        sigma = (sigma as num) * (sum as num);
-                               ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:109:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        tau = (tau as num) * (((cnt as num) + 1) as num);
+/tmp/arithmetic-numbers.dart:71:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    var mid = int.parse(((lo + hi) / 2));
+                                   ^
+/tmp/arithmetic-numbers.dart:81:28: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    count = (count as num) - 1;
                            ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:115:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:1: Error: Expected ',' before this.
+/tmp/arithmetic-numbers.dart:106:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+          x = x / p;
+                ^
+/tmp/arithmetic-numbers.dart:108:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+          sum = (sum as num) + power;
+                             ^
+/tmp/arithmetic-numbers.dart:111:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+        sigma = sigma * (sum as num);
+                      ^
+/tmp/arithmetic-numbers.dart:147:1: Error: Expected ',' before this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
 ^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:5: Error: Expected ',' before this.
+/tmp/arithmetic-numbers.dart:147:5: Error: Expected ',' before this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
     ^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:25: Error: Expected ',' before this.
+/tmp/arithmetic-numbers.dart:147:25: Error: Expected ',' before this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                         ^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:28: Error: Expected ',' before this.
+/tmp/arithmetic-numbers.dart:147:28: Error: Expected ',' before this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                            ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:39: Error: Expected ',' before this.
+/tmp/arithmetic-numbers.dart:147:39: Error: Expected ',' before this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                       ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:48: Error: Expected a type, but got ':'.
+/tmp/arithmetic-numbers.dart:147:48: Error: Expected a type, but got ':'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:48: Error: This couldn't be parsed.
+/tmp/arithmetic-numbers.dart:147:48: Error: This couldn't be parsed.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:39: Error: Undefined name 'number'.
+/tmp/arithmetic-numbers.dart:147:39: Error: Undefined name 'number'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                       ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:1: Error: Undefined name 'The'.
+/tmp/arithmetic-numbers.dart:147:1: Error: Undefined name 'The'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
 ^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:25: Error: Undefined name 'th'.
+/tmp/arithmetic-numbers.dart:147:25: Error: Undefined name 'th'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                         ^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:28: Error: Undefined name 'arithmetic'.
+/tmp/arithmetic-numbers.dart:147:28: Error: Undefined name 'arithmetic'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                            ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:143:10: Error: Too many positional arguments: 1 allowed, but 6 found.
+/tmp/arithmetic-numbers.dart:146:10: Error: Too many positional arguments: 1 allowed, but 6 found.
 Try removing the extra positional arguments.
     print('
          ^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:46: Error: Expected ';' after this.
+/tmp/arithmetic-numbers.dart:147:46: Error: Expected ';' after this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                              ^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:48: Error: Expected an identifier, but got ':'.
+/tmp/arithmetic-numbers.dart:147:48: Error: Expected an identifier, but got ':'.
 Try inserting an identifier before ':'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:48: Error: Unexpected token ':'.
+/tmp/arithmetic-numbers.dart:147:48: Error: Unexpected token ':'.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:144:50: Error: Expected ';' after this.
+/tmp/arithmetic-numbers.dart:147:50: Error: Expected ';' after this.
 The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
                                                  ^^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:131:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      line = line + pad3(arr[(i as num) + (j as num)]);
-                                        ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:135:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:138:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 10;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:147:92: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    print('The count of such numbers <= ' + lastc + ' which are composite is ' + commatize(comp) + '.');
-                                                                                           ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:152:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/arithmetic-numbers.dart:155:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:176:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:205:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:210:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-numbers.dart:214:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

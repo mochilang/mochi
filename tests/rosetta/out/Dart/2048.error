@@ -1,0 +1,46 @@
+run: exit status 254
+/tmp/2048.dart:23:13: Error: Type 'any' not found.
+Map<String, any> spawnTile(List<List<int>> b) {
+            ^^^
+/tmp/2048.dart:95:13: Error: Type 'any' not found.
+Map<String, any> slideLeft(List<int> row) {
+            ^^^
+/tmp/2048.dart:125:13: Error: Type 'any' not found.
+Map<String, any> moveLeft(List<List<int>> b, int score) {
+            ^^^
+/tmp/2048.dart:145:13: Error: Type 'any' not found.
+Map<String, any> moveRight(List<List<int>> b, int score) {
+            ^^^
+/tmp/2048.dart:185:13: Error: Type 'any' not found.
+Map<String, any> moveUp(List<List<int>> b, int score) {
+            ^^^
+/tmp/2048.dart:206:13: Error: Type 'any' not found.
+Map<String, any> moveDown(List<List<int>> b, int score) {
+            ^^^
+/tmp/2048.dart:130:9: Error: 'new' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+    var new = (r as Map)['row'];
+        ^^^
+/tmp/2048.dart:134:22: Error: A literal can't be prefixed by 'new'.
+Try removing 'new'
+      if (b[y][x] != new[x]) {
+                     ^^^
+/tmp/2048.dart:137:18: Error: A literal can't be prefixed by 'new'.
+Try removing 'new'
+      b[y][x] = (new[x] as int);
+                 ^^^
+/tmp/2048.dart:191:9: Error: 'new' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+    var new = (r as Map)['row'];
+        ^^^
+/tmp/2048.dart:195:22: Error: A literal can't be prefixed by 'new'.
+Try removing 'new'
+      if (b[y][x] != new[y]) {
+                     ^^^
+/tmp/2048.dart:198:18: Error: A literal can't be prefixed by 'new'.
+Try removing 'new'
+      b[y][x] = (new[y] as int);
+                 ^^^
+/tmp/2048.dart:280:15: Error: Method not found: 'input'.
+    var cmd = input();
+              ^^^^^

@@ -1,28 +1,13 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:18:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+run: exit status 254
+/tmp/averages-root-mean-square.dart:21:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var rms = sqrtApprox(sum / (double.parse(n)));
                                          ^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:22:31: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-root-mean-square.dart:25:31: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     sum = sum + (double.parse(x)) * (double.parse(x));
                               ^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:22:51: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/averages-root-mean-square.dart:25:51: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     sum = sum + (double.parse(x)) * (double.parse(x));
                                                   ^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:22:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/averages-root-mean-square.dart:25:15: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     sum = sum + (double.parse(x)) * (double.parse(x));
               ^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:49:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:78:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:83:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/averages-root-mean-square.dart:87:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

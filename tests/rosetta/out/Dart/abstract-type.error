@@ -1,31 +1,19 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/abstract-type.dart:70:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/abstract-type.dart:73:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abstract-type.dart:63:6: Context: Previous declaration of 'main'.
+/tmp/abstract-type.dart:66:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abstract-type.dart:26:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
+/tmp/abstract-type.dart:29:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
 })();
   ^
-../../tests/rosetta/out/Dart/abstract-type.dart:41:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
+/tmp/abstract-type.dart:44:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
 })();
   ^
-../../tests/rosetta/out/Dart/abstract-type.dart:56:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
+/tmp/abstract-type.dart:59:3: Error: A value of type 'String?' can't be returned from a function with return type 'String' because 'String?' is nullable and 'String' isn't.
 })();
   ^
-../../tests/rosetta/out/Dart/abstract-type.dart:71:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/abstract-type.dart:74:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/abstract-type.dart:95:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/abstract-type.dart:124:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/abstract-type.dart:129:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/abstract-type.dart:133:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

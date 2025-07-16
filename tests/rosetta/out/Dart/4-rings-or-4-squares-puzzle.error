@@ -1,31 +1,7 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:26:13: Error: Type 'any' not found.
+run: exit status 254
+/tmp/4-rings-or-4-squares-puzzle.dart:29:13: Error: Type 'any' not found.
 Map<String, any> getCombs(int low, int high, bool unique) {
             ^^^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:16:27: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      if (nums[i] == nums[j]) {
-                          ^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:21:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:49:37: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-            if (!unique || isUnique(a, b, c, d, e, f, g)) {
-                                    ^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:49:55: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-            if (!unique || isUnique(a, b, c, d, e, f, g)) {
-                                                      ^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:51:38: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/4-rings-or-4-squares-puzzle.dart:54:38: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
               count = (count as num) + 1;
                                      ^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:96:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:125:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:130:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/4-rings-or-4-squares-puzzle.dart:134:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

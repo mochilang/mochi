@@ -1,25 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/approximate-equality.dart:45:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/approximate-equality.dart:48:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/approximate-equality.dart:33:6: Context: Previous declaration of 'main'.
+/tmp/approximate-equality.dart:36:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/approximate-equality.dart:28:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/approximate-equality.dart:46:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/approximate-equality.dart:49:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/approximate-equality.dart:70:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/approximate-equality.dart:99:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/approximate-equality.dart:104:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/approximate-equality.dart:108:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

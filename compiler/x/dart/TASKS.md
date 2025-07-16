@@ -8,6 +8,7 @@
 - [2025-07-15 04:44 UTC] Added `compile_tpcds_dart.go` and golden tests for TPC-DS queries `q1`–`q19`.
 - [2025-07-15 04:57 UTC] Regenerated TPC-DS Dart outputs for all queries. Script now records `.error` files on failures.
 - [2025-07-16 00:00 UTC] Escaped Dart reserved words and added `now()` builtin so more Rosetta tasks compile and run.
+- [2025-07-16 11:59 UTC] Installed Dart SDK and regenerated Rosetta outputs. Added fallback `as` cast in compiler, dropping failing tasks from 193 to 189.
 
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

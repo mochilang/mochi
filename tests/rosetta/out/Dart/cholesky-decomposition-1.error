@@ -1,133 +1,37 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:12:13: Error: Type 'any' not found.
+run: exit status 254
+/tmp/cholesky-decomposition-1.dart:15:13: Error: Type 'any' not found.
 Map<String, any> makeSym(int order, List<double> elements) {
             ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:16:42: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:19:42: Error: Type 'any' not found.
 List<List<double>> unpackSym(Map<String, any> m) {
                                          ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:66:27: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:69:27: Error: Type 'any' not found.
 void printSym(Map<String, any> m) {
                           ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:70:29: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:73:29: Error: Type 'any' not found.
 void printLower(Map<String, any> m) {
                             ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:94:13: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:97:13: Error: Type 'any' not found.
 Map<String, any> choleskyLower(Map<String, any> a) {
             ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:94:44: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:97:44: Error: Type 'any' not found.
 Map<String, any> choleskyLower(Map<String, any> a) {
                                            ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:137:23: Error: Type 'any' not found.
+/tmp/cholesky-decomposition-1.dart:140:23: Error: Type 'any' not found.
 void demo(Map<String, any> a) {
                       ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:7:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:16:42: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:19:42: Error: 'any' isn't a type.
 List<List<double>> unpackSym(Map<String, any> m) {
                                          ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:27:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      idx = (idx as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:28:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      c = (c as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:32:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      c = (c as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:35:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    r = (r as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:41:14: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      mat[r][c] = mat[c][r];
-             ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:41:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      mat[r][c] = mat[c][r];
-                      ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:44:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    r = (r as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:56:50: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-      if (j.toString().compareTo(m[i].length - 1.toString()) < 0) {
-                                                 ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:56:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-      if (j.toString().compareTo(m[i].length - 1.toString()) < 0) {
-                                             ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:59:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:62:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:66:27: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:69:27: Error: 'any' isn't a type.
 void printSym(Map<String, any> m) {
                           ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:70:29: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:73:29: Error: 'any' isn't a type.
 void printLower(Map<String, any> m) {
                             ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:81:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      idx = (idx as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:82:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      c = (c as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:86:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      c = (c as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:89:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    r = (r as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:94:44: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:97:44: Error: 'any' isn't a type.
 Map<String, any> choleskyLower(Map<String, any> a) {
                                            ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:101:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    idx = (idx as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:117:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        cx = (cx as num) + (ci as num);
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:118:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        ci = (ci as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:119:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
-           ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:119:21: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
-                    ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:119:32: Error: A value of type 'num' can't be assigned to a variable of type 'double'.
-        le[j] = (le[j] as num) + ((d as num) * (le[cx] as num) as num);
-                               ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:122:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      col = (col as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:123:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      dc = (dc as num) + (col as num);
-                       ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:126:37: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-      le[i] = sqrtApprox((e as num) - (le[i] as num));
-                                    ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:127:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      row = (row as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:128:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      dr = (dr as num) + (row as num);
-                       ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:132:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:137:23: Error: 'any' isn't a type.
+/tmp/cholesky-decomposition-1.dart:140:23: Error: 'any' isn't a type.
 void demo(Map<String, any> a) {
                       ^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:171:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:200:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:205:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/cholesky-decomposition-1.dart:209:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

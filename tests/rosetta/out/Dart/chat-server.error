@@ -1,70 +1,58 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/chat-server.dart:20:31: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/chat-server.dart:23:31: Error: String starting with ' must end with '.
     broadcast('+++ ' + name + ' connected +++
                               ^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:21:1: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:24:1: Error: String starting with ' must end with '.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:20:14: Error: Can't find ')' to match '('.
+/tmp/chat-server.dart:23:14: Error: Can't find ')' to match '('.
     broadcast('+++ ' + name + ' connected +++
              ^
-../../tests/rosetta/out/Dart/chat-server.dart:25:35: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:28:35: Error: String starting with ' must end with '.
     broadcast(name + '> ' + msg + '
                                   ^
-../../tests/rosetta/out/Dart/chat-server.dart:26:1: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:29:1: Error: String starting with ' must end with '.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:25:14: Error: Can't find ')' to match '('.
+/tmp/chat-server.dart:28:14: Error: Can't find ')' to match '('.
     broadcast(name + '> ' + msg + '
              ^
-../../tests/rosetta/out/Dart/chat-server.dart:31:31: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:34:31: Error: String starting with ' must end with '.
     broadcast('--- ' + name + ' disconnected ---
                               ^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:32:1: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:35:1: Error: String starting with ' must end with '.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:31:14: Error: Can't find ')' to match '('.
+/tmp/chat-server.dart:34:14: Error: Can't find ')' to match '('.
     broadcast('--- ' + name + ' disconnected ---
              ^
-../../tests/rosetta/out/Dart/chat-server.dart:41:13: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:44:13: Error: String starting with ' must end with '.
   broadcast('Server stopping!
             ^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:42:1: Error: String starting with ' must end with '.
+/tmp/chat-server.dart:45:1: Error: String starting with ' must end with '.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:41:12: Error: Can't find ')' to match '('.
+/tmp/chat-server.dart:44:12: Error: Can't find ')' to match '('.
   broadcast('Server stopping!
            ^
-../../tests/rosetta/out/Dart/chat-server.dart:45:6: Error: 'main' is already declared in this scope.
+/tmp/chat-server.dart:48:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:12:6: Context: Previous declaration of 'main'.
+/tmp/chat-server.dart:15:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:21:1: Error: Expected ';' after this.
+/tmp/chat-server.dart:24:1: Error: Expected ';' after this.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:26:1: Error: Expected ';' after this.
+/tmp/chat-server.dart:29:1: Error: Expected ';' after this.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:32:1: Error: Expected ';' after this.
+/tmp/chat-server.dart:35:1: Error: Expected ';' after this.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:42:1: Error: Expected ';' after this.
+/tmp/chat-server.dart:45:1: Error: Expected ';' after this.
 ');
 ^^^
-../../tests/rosetta/out/Dart/chat-server.dart:46:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/chat-server.dart:49:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/chat-server.dart:70:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:99:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:104:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/chat-server.dart:108:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

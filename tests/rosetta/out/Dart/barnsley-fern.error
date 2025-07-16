@@ -1,70 +1,49 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/barnsley-fern.dart:18:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+run: exit status 254
+/tmp/barnsley-fern.dart:21:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var height = int.parse((width * dy / dx));
                                    ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:35:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:38:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
                                   ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:35:56: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:38:56: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var ix = int.parse(((double.parse(width)) * (x - xMin) / dx));
                                                        ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:37:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:40:35: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
 var iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
                                   ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:37:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:40:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
 var iy = int.parse(((double.parse(height)) * (yMax - y) / dy));
                                                         ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:28:31: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-  return [next, (next as num) % n];
-                              ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:47:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      col = (col as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:62:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:65:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       x = nx;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:63:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:66:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       y = ny;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:69:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:72:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       x = nx;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:70:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:73:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       y = ny;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:76:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:79:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       x = nx;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:77:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:80:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       y = ny;
           ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:81:16: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/barnsley-fern.dart:84:16: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       y = 0.16 * y;
                ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:83:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:86:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     ix = (int.parse(((double.parse(width)) * (x - xMin) / dx)) as int);
                                    ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:83:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:86:57: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     ix = (int.parse(((double.parse(width)) * (x - xMin) / dx)) as int);
                                                         ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:84:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:87:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     iy = (int.parse(((double.parse(height)) * (yMax - y) / dy)) as int);
                                    ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:84:58: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/barnsley-fern.dart:87:58: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     iy = (int.parse(((double.parse(height)) * (yMax - y) / dy)) as int);
                                                          ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:96:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      col = (col as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:124:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:153:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:158:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/barnsley-fern.dart:162:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

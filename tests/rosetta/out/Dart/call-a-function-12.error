@@ -1,22 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/call-a-function-12.dart:22:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/call-a-function-12.dart:25:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:14:6: Context: Previous declaration of 'main'.
+/tmp/call-a-function-12.dart:17:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:23:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/call-a-function-12.dart:26:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:47:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:76:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:81:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/call-a-function-12.dart:85:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

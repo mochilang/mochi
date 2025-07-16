@@ -1,47 +1,35 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:12:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/arithmetic-integer-2.dart:15:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:2:6: Context: Previous declaration of 'main'.
+/tmp/arithmetic-integer-2.dart:5:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:5:58: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' + ' + b.toString() + ' = ' + (a as num) + (b as num).toString());
-                                                         ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:6:58: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' - ' + b.toString() + ' = ' + (a as num) - (b as num).toString());
-                                                         ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:6:66: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/arithmetic-integer-2.dart:8:55: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' + ' + b.toString() + ' = ' + a + b.toString());
+                                                      ^
+/tmp/arithmetic-integer-2.dart:9:55: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' - ' + b.toString() + ' = ' + a - b.toString());
+                                                      ^
+/tmp/arithmetic-integer-2.dart:9:57: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
-  print(a.toString() + ' - ' + b.toString() + ' = ' + (a as num) - (b as num).toString());
-                                                                 ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:7:79: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(a.toString() + ' * ' + b.toString() + ' = ' + (a as num) * (b as num).toString());
-                                                                              ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:7:66: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' * ' + b.toString() + ' = ' + (a as num) * (b as num).toString());
-                                                                 ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:8:79: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-  print(a.toString() + ' quo ' + b.toString() + ' = ' + int.parse(((a as num) / (b as num))).toString());
-                                                                              ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:9:81: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  print(a.toString() + ' rem ' + b.toString() + ' = ' + (a as num) % (b as num).toString());
-                                                                                ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:9:68: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-  print(a.toString() + ' rem ' + b.toString() + ' = ' + (a as num) % (b as num).toString());
-                                                                   ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:13:3: Error: Can't use 'main' because it is declared more than once.
+  print(a.toString() + ' - ' + b.toString() + ' = ' + a - b.toString());
+                                                        ^
+/tmp/arithmetic-integer-2.dart:10:61: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(a.toString() + ' * ' + b.toString() + ' = ' + a * b.toString());
+                                                            ^
+/tmp/arithmetic-integer-2.dart:10:57: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' * ' + b.toString() + ' = ' + a * b.toString());
+                                                        ^
+/tmp/arithmetic-integer-2.dart:11:70: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  print(a.toString() + ' quo ' + b.toString() + ' = ' + int.parse((a / b)).toString());
+                                                                     ^
+/tmp/arithmetic-integer-2.dart:12:63: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+  print(a.toString() + ' rem ' + b.toString() + ' = ' + a % b.toString());
+                                                              ^
+/tmp/arithmetic-integer-2.dart:12:59: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+  print(a.toString() + ' rem ' + b.toString() + ' = ' + a % b.toString());
+                                                          ^
+/tmp/arithmetic-integer-2.dart:16:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:37:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:66:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:71:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-integer-2.dart:75:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

@@ -1,76 +1,37 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:106:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/arithmetic-derivative.dart:109:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:71:6: Context: Previous declaration of 'main'.
+/tmp/arithmetic-derivative.dart:74:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:7:31: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    x = int.parse(((x as num) / 2));
-                              ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:13:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-      x = int.parse(((x as num) / (p as num)));
-                                ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:15:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    p = (p as num) + 2;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:28:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:42:39: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/arithmetic-derivative.dart:10:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    x = int.parse((x / 2));
+                     ^
+/tmp/arithmetic-derivative.dart:16:24: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+      x = int.parse((x / p));
+                       ^
+/tmp/arithmetic-derivative.dart:45:39: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     factors = primeFactors(int.parse((n)));
                                       ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:45:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/arithmetic-derivative.dart:48:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     var g = int.parse((n / 100));
                          ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:57:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-    return double.parse(((factors[0] as num) + (factors[1] as num)));
-                                             ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:59:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/arithmetic-derivative.dart:60:37: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    return double.parse((factors[0] + factors[1]));
+                                    ^
+/tmp/arithmetic-derivative.dart:62:36: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var d = n / (double.parse(factors[0]));
                                    ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:60:38: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  return D(d) * (double.parse(factors[0])) + (d as num);
+/tmp/arithmetic-derivative.dart:63:38: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return D(d) * (double.parse(factors[0])) + d;
                                      ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:75:59: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/arithmetic-derivative.dart:78:59: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     vals = List.from(vals)..add(int.parse((D(double.parse(n)))));
                                                           ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:75:44: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/arithmetic-derivative.dart:78:44: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     vals = List.from(vals)..add(int.parse((D(double.parse(n)))));
                                            ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:76:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:83:41: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      line = line + pad(vals[(i as num) + (j as num)]);
-                                        ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:87:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:90:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 10;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:95:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    pow = (pow as num) * 10;
-                       ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:100:53: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
-    var res = m.toString() + repeat('0', (m as num) - 1);
-                                                    ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:102:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    m = (m as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:107:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/arithmetic-derivative.dart:110:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:131:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:160:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:165:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-derivative.dart:169:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

@@ -1,43 +1,31 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/array-concatenation.dart:28:6: Error: Type 'any' not found.
+run: exit status 254
+/tmp/array-concatenation.dart:31:6: Error: Type 'any' not found.
 List<any> i = [1, 2, 3];
      ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:30:6: Error: Type 'any' not found.
+/tmp/array-concatenation.dart:33:6: Error: Type 'any' not found.
 List<any> j = ['Crosby', 'Stills', 'Nash', 'Young'];
      ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:13:6: Error: Type 'any' not found.
+/tmp/array-concatenation.dart:16:6: Error: Type 'any' not found.
 List<any> concatAny(List<any> a, List<any> b) {
      ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:13:26: Error: Type 'any' not found.
+/tmp/array-concatenation.dart:16:26: Error: Type 'any' not found.
 List<any> concatAny(List<any> a, List<any> b) {
                          ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:13:39: Error: Type 'any' not found.
+/tmp/array-concatenation.dart:16:39: Error: Type 'any' not found.
 List<any> concatAny(List<any> a, List<any> b) {
                                       ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:13:26: Error: 'any' isn't a type.
+/tmp/array-concatenation.dart:16:26: Error: 'any' isn't a type.
 List<any> concatAny(List<any> a, List<any> b) {
                          ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:13:39: Error: 'any' isn't a type.
+/tmp/array-concatenation.dart:16:39: Error: 'any' isn't a type.
 List<any> concatAny(List<any> a, List<any> b) {
                                       ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:14:8: Error: 'any' isn't a type.
+/tmp/array-concatenation.dart:17:8: Error: 'any' isn't a type.
   List<any> out = [];
        ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:28:6: Error: 'any' isn't a type.
+/tmp/array-concatenation.dart:31:6: Error: 'any' isn't a type.
 List<any> i = [1, 2, 3];
      ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:30:6: Error: 'any' isn't a type.
+/tmp/array-concatenation.dart:33:6: Error: 'any' isn't a type.
 List<any> j = ['Crosby', 'Stills', 'Nash', 'Young'];
      ^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:63:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:92:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:97:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/array-concatenation.dart:101:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

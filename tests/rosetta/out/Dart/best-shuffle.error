@@ -1,85 +1,19 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/best-shuffle.dart:87:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/best-shuffle.dart:90:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:73:6: Context: Previous declaration of 'main'.
+/tmp/best-shuffle.dart:76:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:6:6: Error: Type 'any' not found.
+/tmp/best-shuffle.dart:9:6: Error: Type 'any' not found.
 List<any> shuffleChars(String s, int seed) {
      ^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:32:6: Error: Type 'any' not found.
+/tmp/best-shuffle.dart:35:6: Error: Type 'any' not found.
 List<any> bestShuffle(String s, int seed) {
      ^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:10:72: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    chars = List.from(chars)..add(s.toString().substring(i, (i as num) + 1));
-                                                                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:11:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:19:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    chars[idx] = chars[j];
-                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:20:11: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    chars[j] = tmp;
-          ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:21:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    idx = (idx as num) - 1;
-                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:26:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    res = (res as num) + (chars[i] as num);
-                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:27:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:39:68: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    arr = List.from(arr)..add(t.toString().substring(i, (i as num) + 1));
-                                                                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:40:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:46:68: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
-                                                                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:46:123: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      if (i != j && arr[i] != s.toString().substring(j, (j as num) + 1) && arr[j] != s.toString().substring(i, (i as num) + 1)) {
-                                                                                                                          ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:52:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:54:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:59:56: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    if (arr[i] == s.toString().substring(i, (i as num) + 1)) {
-                                                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:60:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/best-shuffle.dart:63:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:62:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:67:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    out = (out as num) + (arr[i] as num);
-                       ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:68:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:83:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:88:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/best-shuffle.dart:91:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/best-shuffle.dart:112:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:141:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:146:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/best-shuffle.dart:150:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

@@ -1,43 +1,16 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:30:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/catalan-numbers-1.dart:33:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:24:6: Context: Previous declaration of 'main'.
+/tmp/catalan-numbers-1.dart:27:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:7:47: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-  if (kk.toString().compareTo(n - (kk as num).toString()) > 0) {
-                                              ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:7:33: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
-  if (kk.toString().compareTo(n - (kk as num).toString()) > 0) {
-                                ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:8:12: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    kk = n - (kk as num);
-           ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:13:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    res = ((res as num) * ((n - (i as num)) as num));
-                        ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:15:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    res = int.parse(((res as num) / (i as num)));
-                                  ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:21:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/catalan-numbers-1.dart:18:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    res = int.parse((res / i));
+                         ^
+/tmp/catalan-numbers-1.dart:24:37: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return int.parse((binom(2 * n, n) / (n + 1)));
                                     ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:31:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/catalan-numbers-1.dart:34:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:55:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:84:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:89:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/catalan-numbers-1.dart:93:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

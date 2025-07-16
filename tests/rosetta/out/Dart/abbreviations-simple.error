@@ -1,1 +1,107 @@
-compile error: casts not supported
+run: exit status 254
+/tmp/abbreviations-simple.dart:11:28: Error: String starting with ' must end with '.
+    if (ch == ' ' || ch == '
+                           ^
+/tmp/abbreviations-simple.dart:12:15: Error: String starting with ' must end with '.
+' || ch == '  ') {
+              ^^^^
+/tmp/abbreviations-simple.dart:11:8: Error: Can't find ')' to match '('.
+    if (ch == ' ' || ch == '
+       ^
+/tmp/abbreviations-simple.dart:139:18: Error: String starting with ' must end with '.
+  var sentence = 'riG   rePEAT copies  put mo   rest    types   fup.    6
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/abbreviations-simple.dart:140:8: Error: String starting with ' must end with '.
+poweRin';
+       ^^
+/tmp/abbreviations-simple.dart:23:3: Error: 'if' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  if (cur.length > 0) {
+  ^^
+/tmp/abbreviations-simple.dart:23:18: Error: Expected an identifier, but got '>'.
+Try inserting an identifier before '>'.
+  if (cur.length > 0) {
+                 ^
+/tmp/abbreviations-simple.dart:23:20: Error: Expected ')' before this.
+  if (cur.length > 0) {
+                   ^
+/tmp/abbreviations-simple.dart:26:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return words;
+  ^^^^^^
+/tmp/abbreviations-simple.dart:26:3: Error: 'return' can't be used as an identifier because it's a keyword.
+Try renaming this to be an identifier that isn't a keyword.
+  return words;
+  ^^^^^^
+/tmp/abbreviations-simple.dart:26:3: Error: Expected ';' after this.
+  return words;
+  ^^^^^^
+/tmp/abbreviations-simple.dart:26:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+Try adding the name of the type of the variable or the keyword 'var'.
+  return words;
+         ^^^^^
+/tmp/abbreviations-simple.dart:27:1: Error: Expected a declaration, but got '}'.
+}
+^
+/tmp/abbreviations-simple.dart:162:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/abbreviations-simple.dart:137:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/abbreviations-simple.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+/tmp/abbreviations-simple.dart:86:13: Error: Type 'any' not found.
+Map<String, any> readTable(String table) {
+            ^^^
+/tmp/abbreviations-simple.dart:18:5: Error: Expected an identifier, but got 'else'.
+Try inserting an identifier before 'else'.
+    else {
+    ^^^^
+/tmp/abbreviations-simple.dart:17:5: Error: Expected ';' after this.
+    }
+    ^
+/tmp/abbreviations-simple.dart:18:5: Error: Unexpected token ';'.
+    else {
+    ^^^^
+/tmp/abbreviations-simple.dart:19:19: Error: Undefined name 'ch'.
+      cur = cur + ch;
+                  ^^
+/tmp/abbreviations-simple.dart:5:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+ - 'List' is from 'dart:core'.
+List<String> fields(String s) {
+             ^
+/tmp/abbreviations-simple.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
+  if (cur.length > 0) {
+      ^^^^^^^^^^
+/tmp/abbreviations-simple.dart:24:35: Error: Undefined name 'cur'.
+    words = List.from(words)..add(cur);
+                                  ^^^
+/tmp/abbreviations-simple.dart:62:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+                       ^
+/tmp/abbreviations-simple.dart:62:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = n * 10 + digits[str.substring(i, i + 1)];
+               ^
+/tmp/abbreviations-simple.dart:119:17: Error: Method not found: 'upper'.
+        var c = upper(cmd);
+                ^^^^^
+/tmp/abbreviations-simple.dart:120:18: Error: Method not found: 'upper'.
+        var ww = upper(w);
+                 ^^^^^
+/tmp/abbreviations-simple.dart:139:18: Error: Expected ';' after this.
+  var sentence = 'riG   rePEAT copies  put mo   rest    types   fup.    6
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/abbreviations-simple.dart:140:1: Error: Expected ';' after this.
+poweRin';
+^^^^^^^
+/tmp/abbreviations-simple.dart:140:1: Error: Undefined name 'poweRin'.
+poweRin';
+^^^^^^^
+/tmp/abbreviations-simple.dart:140:8: Error: Expected ';' after this.
+poweRin';
+       ^^
+/tmp/abbreviations-simple.dart:163:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

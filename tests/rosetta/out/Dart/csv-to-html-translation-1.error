@@ -1,311 +1,299 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:2:9: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/csv-to-html-translation-1.dart:5:9: Error: String starting with ' must end with '.
 var c = 'Character,Speech
         ^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:51: Error: String starting with ' must end with '.
+/tmp/csv-to-html-translation-1.dart:7:51: Error: String starting with ' must end with '.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:22: Error: String starting with ' must end with '.
+/tmp/csv-to-html-translation-1.dart:9:22: Error: String starting with ' must end with '.
 ' + 'Brians mother,I\'m his mother; that\'s who!
                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:57: Error: String starting with ' must end with '.
+/tmp/csv-to-html-translation-1.dart:10:57: Error: String starting with ' must end with '.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                         ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:12:29: Error: String starting with ' must end with '.
+/tmp/csv-to-html-translation-1.dart:15:29: Error: String starting with ' must end with '.
   for (var line in split(c, '
                             ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:13:1: Error: String starting with ' must end with '.
+/tmp/csv-to-html-translation-1.dart:16:1: Error: String starting with ' must end with '.
 ')) {
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:12:25: Error: Can't find ')' to match '('.
+/tmp/csv-to-html-translation-1.dart:15:25: Error: Can't find ')' to match '('.
   for (var line in split(c, '
                         ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:12:7: Error: Can't find ')' to match '('.
+/tmp/csv-to-html-translation-1.dart:15:7: Error: Can't find ')' to match '('.
   for (var line in split(c, '
       ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:1: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:6:1: Error: Expected ';' after this.
 ' + 'The multitude,The messiah! Show us the messiah!
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:20: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:6:20: Error: Expected ';' after this.
 ' + 'The multitude,The messiah! Show us the messiah!
                    ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:24: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/csv-to-html-translation-1.dart:6:24: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
 ' + 'The multitude,The messiah! Show us the messiah!
                        ^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:24: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:6:24: Error: Expected ';' after this.
 ' + 'The multitude,The messiah! Show us the messiah!
                        ^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:31: Error: Expected a declaration, but got '!'.
+/tmp/csv-to-html-translation-1.dart:6:31: Error: Expected a declaration, but got '!'.
 ' + 'The multitude,The messiah! Show us the messiah!
                               ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:38: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:6:38: Error: Expected ';' after this.
 ' + 'The multitude,The messiah! Show us the messiah!
                                      ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:45: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:6:45: Error: Expected ';' after this.
 ' + 'The multitude,The messiah! Show us the messiah!
                                             ^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:52: Error: Expected a declaration, but got '!'.
+/tmp/csv-to-html-translation-1.dart:6:52: Error: Expected a declaration, but got '!'.
 ' + 'The multitude,The messiah! Show us the messiah!
                                                    ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:1: Error: Expected a declaration, but got '' + ''.
+/tmp/csv-to-html-translation-1.dart:7:1: Error: Expected a declaration, but got '' + ''.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:20: Error: Expected an identifier, but got '<'.
+/tmp/csv-to-html-translation-1.dart:7:20: Error: Expected an identifier, but got '<'.
 Try inserting an identifier before '<'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                    ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:20: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:7:20: Error: Expected ';' after this.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                    ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:21: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/csv-to-html-translation-1.dart:7:21: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                     ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:21: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:7:21: Error: Expected ';' after this.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                     ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:26: Error: Expected a declaration, but got '>'.
+/tmp/csv-to-html-translation-1.dart:7:26: Error: Expected a declaration, but got '>'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                          ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:31: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:7:31: Error: Expected ';' after this.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                               ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:42: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:7:42: Error: Expected ';' after this.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                          ^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:46: Error: Expected a declaration, but got '!'.
+/tmp/csv-to-html-translation-1.dart:7:46: Error: Expected a declaration, but got '!'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                              ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:48: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/csv-to-html-translation-1.dart:7:48: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                                ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:48: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:7:48: Error: Expected ';' after this.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                                ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:50: Error: Expected a declaration, but got '\'.
+/tmp/csv-to-html-translation-1.dart:7:50: Error: Expected a declaration, but got '\'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                                  ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:51: Error: Expected a declaration, but got ''s not the messiah; he\'s a very naughty boy! Now go away!</angry>''.
+/tmp/csv-to-html-translation-1.dart:7:51: Error: Expected a declaration, but got ''s not the messiah; he\'s a very naughty boy! Now go away!</angry>''.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:1: Error: Expected a declaration, but got '' + ''.
+/tmp/csv-to-html-translation-1.dart:8:1: Error: Expected a declaration, but got '' + ''.
 ' + 'The multitude,Who are you?
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:20: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:8:20: Error: Expected ';' after this.
 ' + 'The multitude,Who are you?
                    ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:28: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:8:28: Error: Expected ';' after this.
 ' + 'The multitude,Who are you?
                            ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:31: Error: Expected a declaration, but got '?'.
+/tmp/csv-to-html-translation-1.dart:8:31: Error: Expected a declaration, but got '?'.
 ' + 'The multitude,Who are you?
                               ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:1: Error: Expected a declaration, but got '' + ''.
+/tmp/csv-to-html-translation-1.dart:9:1: Error: Expected a declaration, but got '' + ''.
 ' + 'Brians mother,I\'m his mother; that\'s who!
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:20: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:9:20: Error: Expected ';' after this.
 ' + 'Brians mother,I\'m his mother; that\'s who!
                    ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:21: Error: Expected a declaration, but got '\'.
+/tmp/csv-to-html-translation-1.dart:9:21: Error: Expected a declaration, but got '\'.
 ' + 'Brians mother,I\'m his mother; that\'s who!
                     ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:22: Error: Expected a declaration, but got ''m his mother; that\'s who!''.
+/tmp/csv-to-html-translation-1.dart:9:22: Error: Expected a declaration, but got ''m his mother; that\'s who!''.
 ' + 'Brians mother,I\'m his mother; that\'s who!
                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:1: Error: Expected a declaration, but got '' + ''.
+/tmp/csv-to-html-translation-1.dart:10:1: Error: Expected a declaration, but got '' + ''.
 ' + 'The multitude,Behold his mother! Behold his mother!';
 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:20: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:10:20: Error: Expected ';' after this.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                    ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:31: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:10:31: Error: Expected ';' after this.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                               ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:37: Error: Expected a declaration, but got '!'.
+/tmp/csv-to-html-translation-1.dart:10:37: Error: Expected a declaration, but got '!'.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                     ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:46: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:10:46: Error: Expected ';' after this.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                              ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:50: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/csv-to-html-translation-1.dart:10:50: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                  ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:50: Error: Expected ';' after this.
+/tmp/csv-to-html-translation-1.dart:10:50: Error: Expected ';' after this.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                  ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:56: Error: Expected a declaration, but got '!'.
+/tmp/csv-to-html-translation-1.dart:10:56: Error: Expected a declaration, but got '!'.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                        ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:57: Error: Expected a declaration, but got '';''.
+/tmp/csv-to-html-translation-1.dart:10:57: Error: Expected a declaration, but got '';''.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                         ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:16:9: Error: Expected an identifier, but got ''<table>''.
+/tmp/csv-to-html-translation-1.dart:19:9: Error: Expected an identifier, but got ''<table>''.
 Try inserting an identifier before ''<table>''.
   print('<table>');
         ^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:16:19: Error: Expected a function body or '=>'.
+/tmp/csv-to-html-translation-1.dart:19:19: Error: Expected a function body or '=>'.
 Try adding {}.
   print('<table>');
                   ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:17:3: Error: 'for' can't be used as an identifier because it's a keyword.
+/tmp/csv-to-html-translation-1.dart:20:3: Error: 'for' can't be used as an identifier because it's a keyword.
 Try renaming this to be an identifier that isn't a keyword.
   for (var row in rows) {
   ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:17:16: Error: Expected ')' before this.
+/tmp/csv-to-html-translation-1.dart:20:16: Error: Expected ')' before this.
   for (var row in rows) {
                ^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:24:9: Error: Expected an identifier, but got ''</table>''.
+/tmp/csv-to-html-translation-1.dart:27:9: Error: Expected an identifier, but got ''</table>''.
 Try inserting an identifier before ''</table>''.
   print('</table>');
         ^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:24:20: Error: Expected a function body or '=>'.
+/tmp/csv-to-html-translation-1.dart:27:20: Error: Expected a function body or '=>'.
 Try adding {}.
   print('</table>');
                    ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:25:1: Error: Expected a declaration, but got '}'.
+/tmp/csv-to-html-translation-1.dart:28:1: Error: Expected a declaration, but got '}'.
 }
 ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:10: Error: 'multitude' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:8:10: Error: 'multitude' is already declared in this scope.
 ' + 'The multitude,Who are you?
          ^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:10: Context: Previous declaration of 'multitude'.
+/tmp/csv-to-html-translation-1.dart:6:10: Context: Previous declaration of 'multitude'.
 ' + 'The multitude,The messiah! Show us the messiah!
          ^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:10: Error: 'multitude' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:10:10: Error: 'multitude' is already declared in this scope.
 ' + 'The multitude,Behold his mother! Behold his mother!';
          ^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:10: Context: Previous declaration of 'multitude'.
+/tmp/csv-to-html-translation-1.dart:6:10: Context: Previous declaration of 'multitude'.
 ' + 'The multitude,The messiah! Show us the messiah!
          ^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:45: Error: 'messiah' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:6:45: Error: 'messiah' is already declared in this scope.
 ' + 'The multitude,The messiah! Show us the messiah!
                                             ^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:24: Context: Previous declaration of 'messiah'.
+/tmp/csv-to-html-translation-1.dart:6:24: Context: Previous declaration of 'messiah'.
 ' + 'The multitude,The messiah! Show us the messiah!
                        ^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:28: Error: 'you' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:8:28: Error: 'you' is already declared in this scope.
 ' + 'The multitude,Who are you?
                            ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:31: Context: Previous declaration of 'you'.
+/tmp/csv-to-html-translation-1.dart:7:31: Context: Previous declaration of 'you'.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                               ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:31: Error: 'mother' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:10:31: Error: 'mother' is already declared in this scope.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                               ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:13: Context: Previous declaration of 'mother'.
+/tmp/csv-to-html-translation-1.dart:9:13: Context: Previous declaration of 'mother'.
 ' + 'Brians mother,I\'m his mother; that\'s who!
             ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:50: Error: 'mother' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:10:50: Error: 'mother' is already declared in this scope.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                                  ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:13: Context: Previous declaration of 'mother'.
+/tmp/csv-to-html-translation-1.dart:9:13: Context: Previous declaration of 'mother'.
 ' + 'Brians mother,I\'m his mother; that\'s who!
             ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:24:3: Error: 'print' is already declared in this scope.
+/tmp/csv-to-html-translation-1.dart:27:3: Error: 'print' is already declared in this scope.
   print('</table>');
   ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:16:3: Context: Previous declaration of 'print'.
+/tmp/csv-to-html-translation-1.dart:19:3: Context: Previous declaration of 'print'.
   print('<table>');
   ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:6: Error: 'The' isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:6: Error: 'The' isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
      ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:20: Context: This isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:20: Context: This isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
                    ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:33: Error: Type 'Show' not found.
+/tmp/csv-to-html-translation-1.dart:6:33: Error: Type 'Show' not found.
 ' + 'The multitude,The messiah! Show us the messiah!
                                 ^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:41: Error: Type 'the' not found.
+/tmp/csv-to-html-translation-1.dart:6:41: Error: Type 'the' not found.
 ' + 'The multitude,The messiah! Show us the messiah!
                                         ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:6: Error: Type 'Brians' not found.
+/tmp/csv-to-html-translation-1.dart:7:6: Error: Type 'Brians' not found.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
      ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:27: Error: Type 'Now' not found.
+/tmp/csv-to-html-translation-1.dart:7:27: Error: Type 'Now' not found.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                           ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:35: Error: Type 'listen' not found.
+/tmp/csv-to-html-translation-1.dart:7:35: Error: Type 'listen' not found.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                   ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:6: Error: 'The' isn't a type.
+/tmp/csv-to-html-translation-1.dart:8:6: Error: 'The' isn't a type.
 ' + 'The multitude,Who are you?
      ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:20: Context: This isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:20: Context: This isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
                    ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:24: Error: Type 'are' not found.
+/tmp/csv-to-html-translation-1.dart:8:24: Error: Type 'are' not found.
 ' + 'The multitude,Who are you?
                        ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:6: Error: Type 'Brians' not found.
+/tmp/csv-to-html-translation-1.dart:9:6: Error: Type 'Brians' not found.
 ' + 'Brians mother,I\'m his mother; that\'s who!
      ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:6: Error: 'The' isn't a type.
+/tmp/csv-to-html-translation-1.dart:10:6: Error: 'The' isn't a type.
 ' + 'The multitude,Behold his mother! Behold his mother!';
      ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:20: Context: This isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:20: Context: This isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
                    ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:27: Error: 'his' isn't a type.
+/tmp/csv-to-html-translation-1.dart:10:27: Error: 'his' isn't a type.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                           ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:46: Context: This isn't a type.
+/tmp/csv-to-html-translation-1.dart:10:46: Context: This isn't a type.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                              ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:39: Error: 'Behold' isn't a type.
+/tmp/csv-to-html-translation-1.dart:10:39: Error: 'Behold' isn't a type.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                                       ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:7:20: Context: This isn't a type.
+/tmp/csv-to-html-translation-1.dart:10:20: Context: This isn't a type.
 ' + 'The multitude,Behold his mother! Behold his mother!';
                    ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:33: Error: 'Show' isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:33: Error: 'Show' isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
                                 ^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:3:41: Error: 'the' isn't a type.
+/tmp/csv-to-html-translation-1.dart:6:41: Error: 'the' isn't a type.
 ' + 'The multitude,The messiah! Show us the messiah!
                                         ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:27: Error: 'Now' isn't a type.
+/tmp/csv-to-html-translation-1.dart:7:27: Error: 'Now' isn't a type.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                           ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:4:35: Error: 'listen' isn't a type.
+/tmp/csv-to-html-translation-1.dart:7:35: Error: 'listen' isn't a type.
 ' + 'Brians mother,<angry>Now you listen here! He\'s not the messiah; he\'s a very naughty boy! Now go away!</angry>
                                   ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:5:24: Error: 'are' isn't a type.
+/tmp/csv-to-html-translation-1.dart:8:24: Error: 'are' isn't a type.
 ' + 'The multitude,Who are you?
                        ^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:6:6: Error: 'Brians' isn't a type.
+/tmp/csv-to-html-translation-1.dart:9:6: Error: 'Brians' isn't a type.
 ' + 'Brians mother,I\'m his mother; that\'s who!
      ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:14:5: Error: Expected ',' before this.
+/tmp/csv-to-html-translation-1.dart:17:5: Error: Expected ',' before this.
     rows = List.from(rows)..add(split(line, ','));
     ^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:14:39: Error: Undefined name 'line'.
+/tmp/csv-to-html-translation-1.dart:17:39: Error: Undefined name 'line'.
     rows = List.from(rows)..add(split(line, ','));
                                       ^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:14:33: Error: Method not found: 'split'.
+/tmp/csv-to-html-translation-1.dart:17:33: Error: Method not found: 'split'.
     rows = List.from(rows)..add(split(line, ','));
                                 ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:12:20: Error: Method not found: 'split'.
+/tmp/csv-to-html-translation-1.dart:15:20: Error: Method not found: 'split'.
   for (var line in split(c, '
                    ^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:22:5: Error: Can't use 'print' because it is declared more than once.
+/tmp/csv-to-html-translation-1.dart:25:5: Error: Can't use 'print' because it is declared more than once.
     print('    <tr>' + cells + '</tr>');
     ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:48:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:48:5: Error: Can't use 'print' because it is declared more than once.
+/tmp/csv-to-html-translation-1.dart:51:5: Error: Can't use 'print' because it is declared more than once.
     print(jsonEncode(v));
     ^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:77:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:82:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/csv-to-html-translation-1.dart:86:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

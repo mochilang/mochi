@@ -1,40 +1,16 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:41:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:44:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:37:6: Context: Previous declaration of 'main'.
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:40:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:14:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:24:25: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-  while (abs((a as num) - (g as num)) > 1e-15) {
-                        ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:26:35: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-    var u = sqrtApprox((a as num) * (g as num));
-                                  ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:27:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:30:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     a = t;
         ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:29:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    pow = (pow as num) * 2;
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:34:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + diff * pow;
                        ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:31:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + ((diff as num) * (pow as num) as num);
-                       ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:42:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/arithmetic-geometric-mean-calculate-pi.dart:45:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:66:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:95:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:100:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/arithmetic-geometric-mean-calculate-pi.dart:104:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

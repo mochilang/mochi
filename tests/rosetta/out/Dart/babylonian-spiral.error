@@ -1,1 +1,49 @@
-compile error: casts not supported
+run: exit status 254
+/tmp/babylonian-spiral.dart:120:6: Error: 'main' is already declared in this scope.
+void main() {
+     ^^^^
+/tmp/babylonian-spiral.dart:103:6: Context: Previous declaration of 'main'.
+void main() {
+     ^^^^
+/tmp/babylonian-spiral.dart:17:13: Error: Type 'any' not found.
+Map<String, any> step(List<Map<String, int>> h, int nv, List<int> dir) {
+            ^^^
+/tmp/babylonian-spiral.dart:27:30: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    v = List.from(v)..add([it['a'], it['b']]);
+                             ^
+/tmp/babylonian-spiral.dart:27:39: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    v = List.from(v)..add([it['a'], it['b']]);
+                                      ^
+/tmp/babylonian-spiral.dart:28:21: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    if (it['a'] > it['b']) {
+                    ^
+/tmp/babylonian-spiral.dart:28:17: Error: Operator '>' cannot be called on 'int?' because it is potentially null.
+    if (it['a'] > it['b']) {
+                ^
+/tmp/babylonian-spiral.dart:29:37: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                    ^
+/tmp/babylonian-spiral.dart:29:33: Error: Operator '*' cannot be called on 'int?' because it is potentially null.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                ^
+/tmp/babylonian-spiral.dart:29:54: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                                     ^
+/tmp/babylonian-spiral.dart:29:70: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                                                     ^
+/tmp/babylonian-spiral.dart:29:43: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                          ^
+/tmp/babylonian-spiral.dart:29:83: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                                                                  ^
+/tmp/babylonian-spiral.dart:29:103: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                                                                                      ^
+/tmp/babylonian-spiral.dart:29:103: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+      h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
+                                                                                                      ^
+/tmp/babylonian-spiral.dart:121:3: Error: Can't use 'main' because it is declared more than once.
+  main();
+  ^

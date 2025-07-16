@@ -1,16 +1,4 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-1.dart:4:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+run: exit status 254
+/tmp/apply-a-callback-to-an-array-1.dart:7:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
     print(i * i.toString());
                 ^
-../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-1.dart:29:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-1.dart:58:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-1.dart:63:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/apply-a-callback-to-an-array-1.dart:67:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

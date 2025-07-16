@@ -1,76 +1,34 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/average-loop-length.dart:114:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/average-loop-length.dart:117:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/average-loop-length.dart:99:6: Context: Previous declaration of 'main'.
+/tmp/average-loop-length.dart:102:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/average-loop-length.dart:10:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:13:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                                  ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:10:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:13:28: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                            ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:16:46: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    if (s.toString().substring(i, (i as num) + 1) == ch) {
-                                             ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:19:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:34:50: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      s = s.toString().substring(0, (dot as num) + 5);
-                                                 ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:72:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      i = (i as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:77:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/average-loop-length.dart:80:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       sum = (sum as num) + 1;
                          ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:78:71: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      seed = ((((seed as num) * 1664525 as num) + 1013904223) as num) % 2147483647;
-                                                                      ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:79:25: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      x = (seed as num) % n;
-                        ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:81:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    t = (t as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:83:24: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
-  return (double.parse(sum)) / (tests as num);
+/tmp/average-loop-length.dart:86:24: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return (double.parse(sum)) / tests;
                        ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:87:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+/tmp/average-loop-length.dart:90:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
   var nn = double.parse(n);
                         ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:92:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    term = (term as num) * (((i as num) / (nn as num)) as num);
-                         ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:93:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    sum = (sum as num) + (term as num);
+/tmp/average-loop-length.dart:95:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    term = term * (i / nn);
+                ^
+/tmp/average-loop-length.dart:96:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + term;
                        ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:96:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+/tmp/average-loop-length.dart:99:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return sum;
          ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:107:32: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-    var err = (absf((a as num) - (b as num)) / (b as num) as num) * 100;
-                               ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:108:97: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-    var line = padInt(n, 3) + '  ' + padFloat(a, 9) + '  ' + padFloat(b, 12) + '  (' + padFloat(err, 6) + '%)';
-                                                                                                ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:110:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:115:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/average-loop-length.dart:118:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/average-loop-length.dart:139:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/average-loop-length.dart:168:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/average-loop-length.dart:173:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/average-loop-length.dart:177:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

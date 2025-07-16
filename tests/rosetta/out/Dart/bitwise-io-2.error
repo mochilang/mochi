@@ -1,4 +1,4 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:6:26: lexer: invalid input text "; i = i + 1 }\n  ..."
+parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:6:26: lexer: invalid input text "; i = i + 1 }\n  ..."
   --> /workspace/mochi/tests/rosetta/x/Mochi/bitwise-io-2.mochi:6:26
 
   6 |   while i < n { v = v * 2; i = i + 1 }

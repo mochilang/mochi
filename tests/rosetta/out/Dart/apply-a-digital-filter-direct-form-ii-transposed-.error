@@ -1,44 +1,11 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:30:28: Error: The argument type 'List<num>' can't be assigned to the parameter type 'List<double>'.
+run: exit status 254
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:33:28: Error: The argument type 'List<num>' can't be assigned to the parameter type 'List<double>'.
  - 'List' is from 'dart:core'.
 var res = applyFilter(sig, a, b);
                            ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:10:52: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      tmp = (tmp as num) + b[j] * input[(i as num) - (j as num)];
-                                                   ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:10:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
-      tmp = (tmp as num) + b[j] * input[(i as num) - (j as num)];
-                         ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:11:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:15:42: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      tmp = (tmp as num) - (a[(j as num) + 1] * (out[((i as num) - (j as num) as num) - 1] as num) as num);
-                                         ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:15:87: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      tmp = (tmp as num) - (a[(j as num) + 1] * (out[((i as num) - (j as num) as num) - 1] as num) as num);
-                                                                                      ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:15:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      tmp = (tmp as num) - (a[(j as num) + 1] * (out[((i as num) - (j as num) as num) - 1] as num) as num);
-                         ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:16:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:18:44: Error: The argument type 'num' can't be assigned to the parameter type 'double'.
-    out = List.from(out)..add((tmp as num) * (scale as num));
-                                           ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:19:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:62:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:91:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:96:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/apply-a-digital-filter-direct-form-ii-transposed-.dart:100:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:13:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+      tmp = tmp + b[j] * input[i - j];
+                ^
+/tmp/apply-a-digital-filter-direct-form-ii-transposed-.dart:18:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+      tmp = tmp - a[j + 1] * out[i - j - 1];
+                ^

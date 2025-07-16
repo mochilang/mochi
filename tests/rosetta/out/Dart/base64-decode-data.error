@@ -1,158 +1,96 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/base64-decode-data.dart:171:9: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/base64-decode-data.dart:174:9: Error: String starting with ' must end with '.
   print('
         ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:172:12: Error: String starting with ' must end with '.
+/tmp/base64-decode-data.dart:175:12: Error: String starting with ' must end with '.
 Encoded  : ' + enc);
            ^^^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:173:9: Error: String starting with ' must end with '.
+/tmp/base64-decode-data.dart:176:9: Error: String starting with ' must end with '.
   print('
         ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:174:12: Error: String starting with ' must end with '.
+/tmp/base64-decode-data.dart:177:12: Error: String starting with ' must end with '.
 Decoded  : ' + dec);
            ^^^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:173:8: Error: Can't find ')' to match '('.
+/tmp/base64-decode-data.dart:176:8: Error: Can't find ')' to match '('.
   print('
        ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:171:8: Error: Can't find ')' to match '('.
+/tmp/base64-decode-data.dart:174:8: Error: Can't find ')' to match '('.
   print('
        ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:8:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:23:34: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = ((n as num) * 10 as num) + (digits[str[i]] as num);
-                                 ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:24:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:27:9: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = -(n as num);
-        ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:37:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
-    return 65 + (idx as num);
-              ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:41:15: Error: A value of type 'num' can't be returned from a function with return type 'int'.
-    return 97 + (idx as num);
-              ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:65:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:26:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
+    n = n * 10 + digits[str[i]];
+                       ^
+/tmp/base64-decode-data.dart:26:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    n = n * 10 + digits[str[i]];
+               ^
+/tmp/base64-decode-data.dart:68:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((upper is String) ? upper.substring(n - 65, n - 64) : (upper as List).sublist(n - 65, n - 64));
                               ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:68:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:71:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((lower is String) ? lower.substring(n - 97, n - 96) : (lower as List).sublist(n - 97, n - 96));
                               ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:72:32: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
+/tmp/base64-decode-data.dart:75:32: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((digits is String) ? digits.substring(n - 48, n - 47) : (digits as List).sublist(n - 48, n - 47));
                                ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:94:26: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = (val as num) % 2.toString() + b;
+/tmp/base64-decode-data.dart:97:17: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = val % 2.toString() + b;
+                ^
+/tmp/base64-decode-data.dart:97:30: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+    b = val % 2.toString() + b;
+                             ^
+/tmp/base64-decode-data.dart:97:28: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
+    b = val % 2.toString() + b;
+                           ^
+/tmp/base64-decode-data.dart:98:26: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    val = int.parse((val / 2));
                          ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:94:39: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
-    b = (val as num) % 2.toString() + b;
-                                      ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:94:37: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    b = (val as num) % 2.toString() + b;
-                                    ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:95:35: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
-    val = int.parse(((val as num) / 2));
-                                  ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:96:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:105:76: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
-                                                                           ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:105:33: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = ((n as num) * 2 as num) + parseIntStr(bits.substring(i, (i as num) + 1));
-                                ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:106:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:124:64: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
-                                                               ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:124:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 6) : (bin as List).sublist(i, (i as num) + 6));
-                                                                                                          ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:125:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/base64-decode-data.dart:128:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var val = binToInt(chunk);
                        ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:126:88: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
-                                                                                       ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:126:140: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
-                                                                                                                                           ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:126:24: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-    out = (out as num) + (((alphabet is String) ? alphabet.substring(val, (val as num) + 1) : (alphabet as List).sublist(val, (val as num) + 1)) as num);
-                       ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:127:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 6;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:131:107: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/base64-decode-data.dart:129:39: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+    out = out + ((alphabet is String) ? alphabet.substring(val, val + 1) : (alphabet as List).sublist(val, val + 1));
+                                      ^
+/tmp/base64-decode-data.dart:134:107: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
     out = ((out is String) ? out.substring(0, out.length - 1) : (out as List).sublist(0, out.length - 1)) + '=';
                                                                                                           ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:134:107: Error: The operator '+' isn't defined for the class 'Object'.
+/tmp/base64-decode-data.dart:137:107: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
     out = ((out is String) ? out.substring(0, out.length - 2) : (out as List).sublist(0, out.length - 2)) + '==';
                                                                                                           ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:150:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:155:64: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
-                                                               ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:155:107: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var chunk = ((bin is String) ? bin.substring(i, (i as num) + 8) : (bin as List).sublist(i, (i as num) + 8));
-                                                                                                          ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:156:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
+/tmp/base64-decode-data.dart:159:24: Error: The argument type 'Object' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var val = binToInt(chunk);
                        ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:158:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 8;
-                   ^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:172:1: Error: Expected ',' before this.
+/tmp/base64-decode-data.dart:175:1: Error: Expected ',' before this.
 Encoded  : ' + enc);
 ^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:173:3: Error: Expected ',' before this.
+/tmp/base64-decode-data.dart:176:3: Error: Expected ',' before this.
   print('
   ^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:174:1: Error: Expected ',' before this.
+/tmp/base64-decode-data.dart:177:1: Error: Expected ',' before this.
 Decoded  : ' + dec);
 ^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:174:1: Error: No named parameter with the name 'Decoded'.
+/tmp/base64-decode-data.dart:177:1: Error: No named parameter with the name 'Decoded'.
 Decoded  : ' + dec);
 ^^^^^^^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:171:8: Error: Too many positional arguments: 1 allowed, but 2 found.
+/tmp/base64-decode-data.dart:174:8: Error: Too many positional arguments: 1 allowed, but 2 found.
 Try removing the extra positional arguments.
   print('
        ^
 org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
 void print(Object? object) {
      ^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:174:12: Error: Expected ';' after this.
+/tmp/base64-decode-data.dart:177:12: Error: Expected ';' after this.
 Decoded  : ' + dec);
            ^^^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:198:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:227:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:232:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/base64-decode-data.dart:236:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

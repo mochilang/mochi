@@ -1058,7 +1058,9 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 					}
 					val = fmt.Sprintf("%s(%s)", typ, strings.Join(args, ", "))
 				} else {
-					return "", fmt.Errorf("casts not supported")
+					// Fallback to a simple Dart cast which will allow the
+					// program to compile even if the type isn't recognised.
+					val = fmt.Sprintf("(%s as %s)", val, typ)
 				}
 			}
 		}

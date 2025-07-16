@@ -1,46 +1,19 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/abc-problem.dart:63:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/abc-problem.dart:66:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:56:6: Context: Previous declaration of 'main'.
+/tmp/abc-problem.dart:59:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:7:39: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var c = s.substring(i, (i as num) + 1);
-                                      ^
-../../tests/rosetta/out/Dart/abc-problem.dart:15:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-      cur = (cur as num) + (c as num);
-                         ^
-../../tests/rosetta/out/Dart/abc-problem.dart:17:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abc-problem.dart:29:11: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:32:11: Error: Method not found: 'lower'.
   var c = lower(word.substring(0, 1));
           ^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:33:14: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:36:14: Error: Method not found: 'lower'.
     if (c == lower(((b is String) ? b.substring(0, 1) : (b as List).sublist(0, 1))) || c == lower(((b is String) ? b.substring(1, 2) : (b as List).sublist(1, 2)))) {
              ^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:33:93: Error: Method not found: 'lower'.
+/tmp/abc-problem.dart:36:93: Error: Method not found: 'lower'.
     if (c == lower(((b is String) ? b.substring(0, 1) : (b as List).sublist(0, 1))) || c == lower(((b is String) ? b.substring(1, 2) : (b as List).sublist(1, 2)))) {
                                                                                             ^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:40:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        j = (j as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/abc-problem.dart:46:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abc-problem.dart:64:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/abc-problem.dart:67:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/abc-problem.dart:88:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:117:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:122:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/abc-problem.dart:126:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

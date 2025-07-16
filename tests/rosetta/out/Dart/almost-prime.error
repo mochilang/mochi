@@ -1,34 +1,10 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/almost-prime.dart:38:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/almost-prime.dart:41:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/almost-prime.dart:30:6: Context: Previous declaration of 'main'.
+/tmp/almost-prime.dart:33:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/almost-prime.dart:10:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      nf = (nf as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/almost-prime.dart:13:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/almost-prime.dart:25:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    n = (n as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/almost-prime.dart:34:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    k = (k as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/almost-prime.dart:39:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/almost-prime.dart:42:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/almost-prime.dart:63:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/almost-prime.dart:92:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/almost-prime.dart:97:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/almost-prime.dart:101:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

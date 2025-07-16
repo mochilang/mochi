@@ -1,90 +1,66 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/bitmap.dart:100:16: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/bitmap.dart:103:16: Error: String starting with ' must end with '.
   var header = 'P6
                ^^^
-../../tests/rosetta/out/Dart/bitmap.dart:104:1: Error: String starting with ' must end with '.
+/tmp/bitmap.dart:107:1: Error: String starting with ' must end with '.
 ';
 ^^
-../../tests/rosetta/out/Dart/bitmap.dart:138:6: Error: 'main' is already declared in this scope.
+/tmp/bitmap.dart:141:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:112:6: Context: Previous declaration of 'main'.
+/tmp/bitmap.dart:115:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:83:13: Error: Type 'any' not found.
+/tmp/bitmap.dart:86:13: Error: Type 'any' not found.
 Map<String, any> GetPx(Bitmap b, int x, int y) {
             ^^^
-../../tests/rosetta/out/Dart/bitmap.dart:91:13: Error: Type 'any' not found.
+/tmp/bitmap.dart:94:13: Error: Type 'any' not found.
 Map<String, any> GetPxRgb(Bitmap b, int x, int y) {
             ^^^
-../../tests/rosetta/out/Dart/bitmap.dart:10:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/bitmap.dart:13:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var r = (int.parse((c / 65536))) % 256;
                         ^
-../../tests/rosetta/out/Dart/bitmap.dart:11:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+/tmp/bitmap.dart:14:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var g = (int.parse((c / 256))) % 256;
                         ^
-../../tests/rosetta/out/Dart/bitmap.dart:35:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      col = (col as num) + 1;
-                         ^
-../../tests/rosetta/out/Dart/bitmap.dart:38:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    row = (row as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/bitmap.dart:57:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      x = (x as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/bitmap.dart:59:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    y = (y as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/bitmap.dart:100:16: Error: Expected ';' after this.
+/tmp/bitmap.dart:103:16: Error: Expected ';' after this.
   var header = 'P6
                ^^^
-../../tests/rosetta/out/Dart/bitmap.dart:101:3: Error: Expected ';' after this.
+/tmp/bitmap.dart:104:3: Error: Expected ';' after this.
 # Creator: Rosetta Code http://rosettacode.org/
   ^^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:101:10: Error: Expected an identifier, but got ':'.
+/tmp/bitmap.dart:104:10: Error: Expected an identifier, but got ':'.
 Try inserting an identifier before ':'.
 # Creator: Rosetta Code http://rosettacode.org/
          ^
-../../tests/rosetta/out/Dart/bitmap.dart:101:10: Error: Unexpected token ';'.
+/tmp/bitmap.dart:104:10: Error: Unexpected token ';'.
 # Creator: Rosetta Code http://rosettacode.org/
          ^
-../../tests/rosetta/out/Dart/bitmap.dart:101:12: Error: 'Rosetta' isn't a type.
+/tmp/bitmap.dart:104:12: Error: 'Rosetta' isn't a type.
 # Creator: Rosetta Code http://rosettacode.org/
            ^^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:101:20: Error: Expected ';' after this.
+/tmp/bitmap.dart:104:20: Error: Expected ';' after this.
 # Creator: Rosetta Code http://rosettacode.org/
                    ^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:102:27: Error: Expected ';' after this.
+/tmp/bitmap.dart:105:27: Error: Expected ';' after this.
 ' + b.cols.toString() + ' ' + b.rows.toString() + '
                           ^^^^^^^^^^^^^^^^^^^^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:103:1: Error: Expected ';' after this.
+/tmp/bitmap.dart:106:1: Error: Expected ';' after this.
 255
 ^^^
-../../tests/rosetta/out/Dart/bitmap.dart:104:1: Error: Expected ';' after this.
+/tmp/bitmap.dart:107:1: Error: Expected ';' after this.
 ';
 ^^
-../../tests/rosetta/out/Dart/bitmap.dart:121:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
- - 'Bitmap' is from '../../tests/rosetta/out/Dart/bitmap.dart'.
+/tmp/bitmap.dart:124:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+ - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());
                            ^
-../../tests/rosetta/out/Dart/bitmap.dart:121:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
- - 'Bitmap' is from '../../tests/rosetta/out/Dart/bitmap.dart'.
+/tmp/bitmap.dart:124:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+ - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());
                                                            ^
-../../tests/rosetta/out/Dart/bitmap.dart:139:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/bitmap.dart:142:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/bitmap.dart:163:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:192:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:197:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/bitmap.dart:201:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

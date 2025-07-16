@@ -1,28 +1,4 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/averages-median-2.dart:8:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      if (list[j] < list[minIndex]) {
-               ^
-../../tests/rosetta/out/Dart/averages-median-2.dart:9:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-        minIndex = j;
-                   ^
-../../tests/rosetta/out/Dart/averages-median-2.dart:16:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/averages-median-2.dart:23:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+run: exit status 254
+/tmp/averages-median-2.dart:26:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var half = int.parse((arr.length / 2));
                                    ^
-../../tests/rosetta/out/Dart/averages-median-2.dart:26:48: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    return (((med as num) + (arr[(half as num) - 1] as num)) as num) / 2;
-                                               ^
-../../tests/rosetta/out/Dart/averages-median-2.dart:57:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/averages-median-2.dart:86:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/averages-median-2.dart:91:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/averages-median-2.dart:95:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

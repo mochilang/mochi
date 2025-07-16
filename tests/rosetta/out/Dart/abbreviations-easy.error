@@ -1,128 +1,83 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:8:28: Error: String starting with ' must end with '.
+run: exit status 254
+/tmp/abbreviations-easy.dart:11:28: Error: String starting with ' must end with '.
     if (ch == ' ' || ch == '
                            ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:9:15: Error: String starting with ' must end with '.
+/tmp/abbreviations-easy.dart:12:15: Error: String starting with ' must end with '.
 ' || ch == '  ') {
               ^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:8:8: Error: Can't find ')' to match '('.
+/tmp/abbreviations-easy.dart:11:8: Error: Can't find ')' to match '('.
     if (ch == ' ' || ch == '
        ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:20:3: Error: 'if' can't be used as an identifier because it's a keyword.
+/tmp/abbreviations-easy.dart:23:3: Error: 'if' can't be used as an identifier because it's a keyword.
 Try renaming this to be an identifier that isn't a keyword.
   if (cur.length > 0) {
   ^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:20:18: Error: Expected an identifier, but got '>'.
+/tmp/abbreviations-easy.dart:23:18: Error: Expected an identifier, but got '>'.
 Try inserting an identifier before '>'.
   if (cur.length > 0) {
                  ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:20:20: Error: Expected ')' before this.
+/tmp/abbreviations-easy.dart:23:20: Error: Expected ')' before this.
   if (cur.length > 0) {
                    ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:23:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/abbreviations-easy.dart:26:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
   return words;
   ^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:23:3: Error: 'return' can't be used as an identifier because it's a keyword.
+/tmp/abbreviations-easy.dart:26:3: Error: 'return' can't be used as an identifier because it's a keyword.
 Try renaming this to be an identifier that isn't a keyword.
   return words;
   ^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:23:3: Error: Expected ';' after this.
+/tmp/abbreviations-easy.dart:26:3: Error: Expected ';' after this.
   return words;
   ^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:23:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
+/tmp/abbreviations-easy.dart:26:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
 Try adding the name of the type of the variable or the keyword 'var'.
   return words;
          ^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:24:1: Error: Expected a declaration, but got '}'.
+/tmp/abbreviations-easy.dart:27:1: Error: Expected a declaration, but got '}'.
 }
 ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:113:6: Error: 'main' is already declared in this scope.
+/tmp/abbreviations-easy.dart:116:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:81:6: Context: Previous declaration of 'main'.
+/tmp/abbreviations-easy.dart:84:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:20:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
+/tmp/abbreviations-easy.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
   if (cur.length > 0) {
       ^^^^^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:15:5: Error: Expected an identifier, but got 'else'.
+/tmp/abbreviations-easy.dart:18:5: Error: Expected an identifier, but got 'else'.
 Try inserting an identifier before 'else'.
     else {
     ^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:14:5: Error: Expected ';' after this.
+/tmp/abbreviations-easy.dart:17:5: Error: Expected ';' after this.
     }
     ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:15:5: Error: Unexpected token ';'.
+/tmp/abbreviations-easy.dart:18:5: Error: Unexpected token ';'.
     else {
     ^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:16:29: Error: Undefined name 'ch'.
-      cur = (cur as num) + (ch as num);
-                            ^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:7:51: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-    var ch = s.toString().substring(i, (i as num) + 1);
-                                                  ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:16:26: Error: A value of type 'num' can't be assigned to a variable of type 'String'.
-      cur = (cur as num) + (ch as num);
-                         ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:18:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:2:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
+/tmp/abbreviations-easy.dart:19:19: Error: Undefined name 'ch'.
+      cur = cur + ch;
+                  ^^
+/tmp/abbreviations-easy.dart:5:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
  - 'List' is from 'dart:core'.
 List<String> fields(String s) {
              ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:20:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
+/tmp/abbreviations-easy.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
   if (cur.length > 0) {
       ^^^^^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:21:35: Error: Undefined name 'cur'.
+/tmp/abbreviations-easy.dart:24:35: Error: Undefined name 'cur'.
     words = List.from(words)..add(cur);
                                   ^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:31:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:44:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:63:17: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:66:17: Error: Method not found: 'upper'.
         var c = upper(cmd);
                 ^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:64:18: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:67:18: Error: Method not found: 'upper'.
         var ww = upper(w);
                  ^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:71:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      ci = (ci as num) + 1;
-                       ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:76:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    wi = (wi as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:91:55: Error: The argument type 'num' can't be assigned to the parameter type 'int?'.
-      var ch = cmd.toString().substring(j, (j as num) + 1);
-                                                      ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:93:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/abbreviations-easy.dart:96:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
         count = (count as num) + 1;
                                ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:95:22: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      j = (j as num) + 1;
-                     ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:98:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    i = (i as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:107:20: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-    k = (k as num) + 1;
-                   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:114:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/abbreviations-easy.dart:117:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:138:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:167:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:172:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/abbreviations-easy.dart:176:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^

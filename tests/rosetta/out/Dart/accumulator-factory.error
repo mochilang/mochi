@@ -1,37 +1,25 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/accumulator-factory.dart:19:6: Error: 'main' is already declared in this scope.
+run: exit status 254
+/tmp/accumulator-factory.dart:22:6: Error: 'main' is already declared in this scope.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:12:6: Context: Previous declaration of 'main'.
+/tmp/accumulator-factory.dart:15:6: Context: Previous declaration of 'main'.
 void main() {
      ^^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:2:22: Error: Type 'any' not found.
+/tmp/accumulator-factory.dart:5:22: Error: Type 'any' not found.
 Function accumulator(any sum) {
                      ^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:2:22: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:5:22: Error: 'any' isn't a type.
 Function accumulator(any sum) {
                      ^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:3:8: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:6:8: Error: 'any' isn't a type.
   List<any> store = [sum];
        ^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:4:3: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:7:3: Error: 'any' isn't a type.
   any add(any nv) {
   ^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:4:11: Error: 'any' isn't a type.
+/tmp/accumulator-factory.dart:7:11: Error: 'any' isn't a type.
   any add(any nv) {
           ^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:20:3: Error: Can't use 'main' because it is declared more than once.
+/tmp/accumulator-factory.dart:23:3: Error: Can't use 'main' because it is declared more than once.
   main();
   ^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:44:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:73:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:78:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/accumulator-factory.dart:82:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
