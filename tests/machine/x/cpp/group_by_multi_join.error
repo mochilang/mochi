@@ -1,21 +1,21 @@
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:69:12: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:69:12: error: ‘ps’ was not declared in this scope
    69 |   decltype(ps.part) part;
       |            ^~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:69:12: error: ‘ps’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:70:13: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:69:12: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:70:13: error: ‘ps’ was not declared in this scope
    70 |   decltype((ps.cost * ps.qty)) value;
       |             ^~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:70:23: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:70:23: error: ‘ps’ was not declared in this scope
    70 |   decltype((ps.cost * ps.qty)) value;
       |                       ^~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:70:13: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:70:13: error: ‘ps’ was not declared in this scope
    70 |   decltype((ps.cost * ps.qty)) value;
       |             ^~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:70:23: error: ‘ps’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:70:23: error: ‘ps’ was not declared in this scope
    70 |   decltype((ps.cost * ps.qty)) value;
       |                       ^~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join2501757451/001/prog.cpp:219:5: error: conversion from ‘vector<Grouped>’ to non-scalar type ‘vector<Filtered>’ requested
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join.cpp:219:5: error: conversion from ‘vector<Grouped>’ to non-scalar type ‘vector<Filtered>’ requested
   188 |   std::vector<Filtered> grouped = ([&]() {
       |                                   ~~~~~~~~
   189 |     std::vector<__struct5> __groups;

@@ -135,6 +135,7 @@ func (c *Compiler) defineStruct(info *structInfo) {
 	// underlying struct type to avoid undeclared identifiers in the
 	// generated C++ output. This is helpful when map literals are used
 	// before the variable's struct type information is fully propagated.
+	re := regexp.MustCompile(`([A-Za-z_][A-Za-z0-9_]*)\.`)
 	for i, t := range info.Types {
 		for v, st := range c.varStruct {
 			if st == "" {
@@ -142,10 +143,25 @@ func (c *Compiler) defineStruct(info *structInfo) {
 			}
 			base := strings.TrimSuffix(st, "{}")
 			if strings.Contains(t, v+".") {
-				info.Types[i] = strings.ReplaceAll(t, v+".",
+				t = strings.ReplaceAll(t, v+".",
 					fmt.Sprintf("std::declval<%s>().", base))
 			}
 		}
+		if matches := re.FindAllStringSubmatch(t, -1); matches != nil {
+			for _, m := range matches {
+				name := m[1]
+				if st := c.varStruct[name]; st != "" {
+					base := strings.TrimSuffix(st, "{}")
+					t = strings.ReplaceAll(t, name+".",
+						fmt.Sprintf("std::declval<%s>().", base))
+				} else if et := c.elemType[name]; et != "" && c.isStructName(et) {
+					base := strings.TrimSuffix(et, "{}")
+					t = strings.ReplaceAll(t, name+".",
+						fmt.Sprintf("std::declval<%s>().", base))
+				}
+			}
+		}
+		info.Types[i] = t
 	}
 	var def strings.Builder
 	def.WriteString("struct " + info.Name + " {")

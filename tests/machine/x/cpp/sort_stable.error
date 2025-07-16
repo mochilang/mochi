@@ -1,29 +1,29 @@
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:17:36: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:17:36: error: ‘i’ was not declared in this scope
    17 |     std::vector<std::pair<decltype(i.n), decltype(i.v)>> __items;
       |                                    ^
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:17:42: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:17:42: error: template argument 1 is invalid
    17 |     std::vector<std::pair<decltype(i.n), decltype(i.v)>> __items;
       |                                          ^~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:17:42: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:17:55: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:17:42: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:17:55: error: template argument 1 is invalid
    17 |     std::vector<std::pair<decltype(i.n), decltype(i.v)>> __items;
       |                                                       ^~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:17:55: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:19:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:17:55: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:19:15: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
    19 |       __items.push_back({i.n, i.v});
       |               ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:21:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:21:23: error: request for member ‘begin’ in ‘__items’, which is of non-class type ‘int’
    21 |     std::sort(__items.begin(), __items.end(),
       |                       ^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:21:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:21:40: error: request for member ‘end’ in ‘__items’, which is of non-class type ‘int’
    21 |     std::sort(__items.begin(), __items.end(),
       |                                        ^~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:23:30: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:23:30: error: template argument 1 is invalid
    23 |     std::vector<decltype(i.v)> __res;
       |                              ^
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:23:30: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:24:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:23:30: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:24:20: error: ‘begin’ was not declared in this scope; did you mean ‘std::begin’?
    24 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::begin
@@ -33,24 +33,24 @@ In file included from /usr/include/c++/13/string:53,
                  from /usr/include/c++/13/ios:44,
                  from /usr/include/c++/13/ostream:40,
                  from /usr/include/c++/13/iostream:41,
-                 from /tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:3:
+                 from /workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:3:
 /usr/include/c++/13/bits/range_access.h:114:37: note: ‘std::begin’ declared here
   114 |   template<typename _Tp> const _Tp* begin(const valarray<_Tp>&) noexcept;
       |                                     ^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:24:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:24:20: error: ‘end’ was not declared in this scope; did you mean ‘std::end’?
    24 |     for (auto &p : __items)
       |                    ^~~~~~~
       |                    std::end
 /usr/include/c++/13/bits/range_access.h:116:37: note: ‘std::end’ declared here
   116 |   template<typename _Tp> const _Tp* end(const valarray<_Tp>&) noexcept;
       |                                     ^~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:25:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:25:13: error: request for member ‘push_back’ in ‘__res’, which is of non-class type ‘int’
    25 |       __res.push_back(p.second);
       |             ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:28:33: error: request for member ‘size’ in ‘result’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:28:33: error: request for member ‘size’ in ‘result’, which is of non-class type ‘int’
    28 |   for (size_t i = 0; i < result.size(); ++i) {
       |                                 ^~~~
-/tmp/TestCPPCompiler_VMValid_Goldensort_stable1144240747/001/prog.cpp:31:24: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
+/workspace/mochi/tests/machine/x/cpp/sort_stable.cpp:31:24: error: invalid types ‘int[size_t {aka long unsigned int}]’ for array subscript
    31 |     std::cout << result[i];
       |                        ^

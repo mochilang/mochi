@@ -1,9 +1,9 @@
-/tmp/TestCPPCompiler_VMValid_Goldenvalues_builtin3349382315/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldenvalues_builtin3349382315/001/prog.cpp:29:20: error: no matching function for call to ‘std::vector<int>::push_back(std::any&)’
+/workspace/mochi/tests/machine/x/cpp/values_builtin.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/values_builtin.cpp:29:20: error: no matching function for call to ‘std::vector<int>::push_back(std::any&)’
    29 |         v.push_back(p.second);
       |         ~~~~~~~~~~~^~~~~~~~~~
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_VMValid_Goldenvalues_builtin3349382315/001/prog.cpp:6:
+                 from /workspace/mochi/tests/machine/x/cpp/values_builtin.cpp:6:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = int; _Alloc = std::allocator<int>; value_type = int]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~

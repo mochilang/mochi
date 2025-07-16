@@ -1,68 +1,68 @@
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:81:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:81:12: error: ‘c’ was not declared in this scope
    81 |   decltype(c.c_custkey) c_custkey;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:81:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:82:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:81:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:82:12: error: ‘c’ was not declared in this scope
    82 |   decltype(c.c_name) c_name;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:82:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:83:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:82:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:83:12: error: ‘c’ was not declared in this scope
    83 |   decltype(c.c_acctbal) c_acctbal;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:83:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:84:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:83:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:84:12: error: ‘c’ was not declared in this scope
    84 |   decltype(c.c_address) c_address;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:84:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:85:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:84:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:85:12: error: ‘c’ was not declared in this scope
    85 |   decltype(c.c_phone) c_phone;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:85:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:86:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:85:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:86:12: error: ‘c’ was not declared in this scope
    86 |   decltype(c.c_comment) c_comment;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:86:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:87:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:86:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:87:12: error: ‘n’ was not declared in this scope
    87 |   decltype(n.n_name) n_name;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:87:12: error: ‘n’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:90:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:87:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:90:12: error: ‘c’ was not declared in this scope
    90 |   decltype(c) c;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:90:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:91:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:90:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:91:12: error: ‘o’ was not declared in this scope
    91 |   decltype(o) o;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:91:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:92:12: error: ‘l’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:91:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:92:12: error: ‘l’ was not declared in this scope
    92 |   decltype(l) l;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:92:12: error: ‘l’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:93:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:92:12: error: ‘l’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:93:12: error: ‘n’ was not declared in this scope
    93 |   decltype(n) n;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:93:12: error: ‘n’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:347:39: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:93:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:347:39: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
   347 |                 Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
       |                                     ~~^~~~~~
       |                                       |
       |                                       std::string {aka std::__cxx11::basic_string<char>}
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:352:47: error: cannot convert ‘Customer’ to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:352:47: error: cannot convert ‘Customer’ to ‘int’ in initialization
   352 |                 __g.items.push_back(__struct6{c, o, l, n});
       |                                               ^
       |                                               |
       |                                               Customer
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:359:59: error: cannot convert ‘Customer’ to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:359:59: error: cannot convert ‘Customer’ to ‘int’ in initialization
   359 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
       |                                                           ^
       |                                                           |
       |                                                           Customer
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:359:70: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:359:70: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
   359 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
       |                                                                      ^
 In file included from /usr/include/c++/13/vector:66,
-                 from /tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:9:
+                 from /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:9:
 /usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
   707 |         vector(_InputIterator __first, _InputIterator __last,
       |         ^~~~~~
@@ -111,76 +111,76 @@ In file included from /usr/include/c++/13/vector:66,
   531 |       vector() = default;
       |       ^~~~~~
 /usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   371 |                      std::declval<__struct6>().l.l_extendedprice *
       |                                                  ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                        ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   371 |                      std::declval<__struct6>().l.l_extendedprice *
       |                                                  ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                        ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:372:70: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:70: error: template argument 1 is invalid
   372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                                      ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:372:70: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:375:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:70: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:375:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   375 |                    __items.push_back(
       |                            ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:376:29: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:376:29: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
   376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                             ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:376:57: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:376:57: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
   376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                         ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:368:80:   required from here
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:368:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:80:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                    ~~^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:368:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                               ~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   384 |                            std::declval<__struct6>().l.l_extendedprice *
       |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   384 |                            std::declval<__struct6>().l.l_extendedprice *
       |                                                        ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
   385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:385:76: error: template argument 1 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:76: error: template argument 1 is invalid
   385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                                            ^
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:385:76: error: template argument 2 is invalid
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:388:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:76: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:388:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
   388 |                          __items.push_back(
       |                                  ^~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:389:35: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:35: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
   389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                   ^~~~~~~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:389:63: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:63: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
   389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                               ^~~~~~~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:382:24:   required from here
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:381:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:382:24:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:381:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
   381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:381:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:381:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
   381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                          ~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:367:24: error: no matching function for call to ‘std::vector<std::pair<double, __struct8> >::push_back(<brace-enclosed initializer list>)’
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:367:24: error: no matching function for call to ‘std::vector<std::pair<double, __struct8> >::push_back(<brace-enclosed initializer list>)’
   367 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~^
   368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
@@ -249,8 +249,8 @@ In file included from /usr/include/c++/13/vector:66,
 /usr/include/c++/13/bits/stl_vector.h:1298:30: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘std::vector<std::pair<double, __struct8> >::value_type&&’ {aka ‘std::pair<double, __struct8>&&’}
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp: In function ‘int main()’:
-/tmp/TestCPPCompiler_VMValid_Goldengroup_by_multi_join_sort397195563/001/prog.cpp:402:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In function ‘int main()’:
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:402:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
   330 |   std::vector<__struct6> result = ([&]() {
       |                                   ~~~~~~~~
   331 |     std::vector<__struct7> __groups;

@@ -1,13 +1,13 @@
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp:19:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp:19:12: error: ‘c’ was not declared in this scope
    19 |   decltype(c.name) name;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp:19:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp:20:12: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp:19:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp:20:12: error: ‘i’ was not declared in this scope
    20 |   decltype(i.sku) sku;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp:20:12: error: ‘i’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldenjoin_multi3627900378/001/prog.cpp:37:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp:20:12: error: ‘i’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/join_multi.cpp:37:38: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    37 |           __items.push_back(Result{c.name, i.sku});
       |                                    ~~^~~~
       |                                      |

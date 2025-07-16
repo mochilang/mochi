@@ -1,21 +1,21 @@
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:16:12: error: ‘o’ was not declared in this scope
    16 |   decltype(o.id) orderId;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:16:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:16:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:17:12: error: ‘o’ was not declared in this scope
    17 |   decltype(o.customerId) orderCustomerId;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:17:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:18:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:17:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:18:12: error: ‘c’ was not declared in this scope
    18 |   decltype(c.name) pairedCustomerName;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:18:12: error: ‘c’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:19:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:18:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:19:12: error: ‘o’ was not declared in this scope
    19 |   decltype(o.total) orderTotal;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:19:12: error: ‘o’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldencross_join2429111127/001/prog.cpp:31:56: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:19:12: error: ‘o’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/cross_join.cpp:31:56: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
    31 |         __items.push_back(Result{o.id, o.customerId, c.name, o.total});
       |                                                      ~~^~~~
       |                                                        |

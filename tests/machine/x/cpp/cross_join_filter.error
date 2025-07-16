@@ -1,13 +1,13 @@
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp:22:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp:22:12: error: ‘n’ was not declared in this scope
    22 |   decltype(n) n;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp:22:12: error: ‘n’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp:23:12: error: ‘l’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp:22:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp:23:12: error: ‘l’ was not declared in this scope
    23 |   decltype(l) l;
       |            ^
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp:23:12: error: ‘l’ was not declared in this scope
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp: In lambda function:
-/tmp/TestCPPCompiler_VMValid_Goldencross_join_filter844619513/001/prog.cpp:34:35: error: cannot convert ‘std::any’ to ‘int’ in initialization
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp:23:12: error: ‘l’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp: In lambda function:
+/workspace/mochi/tests/machine/x/cpp/cross_join_filter.cpp:34:35: error: cannot convert ‘std::any’ to ‘int’ in initialization
    34 |         __items.push_back(Pair{n, l});
       |                                   ^
       |                                   |
