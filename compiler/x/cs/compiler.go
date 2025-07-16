@@ -2735,6 +2735,8 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 				field := ""
 				if n, ok := selectorName(it.Key); ok {
 					field = sanitizeName(n)
+				} else if s, ok := stringLiteral(it.Key); ok {
+					field = sanitizeName(s)
 				} else {
 					field = sanitizeName(fmt.Sprintf("f%d", i))
 				}
@@ -3413,6 +3415,22 @@ func selectorName(e *parser.Expr) (string, bool) {
 		return "", false
 	}
 	return p.Target.Selector.Root, true
+}
+
+// stringLiteral returns the string value if e is a literal string expression.
+func stringLiteral(e *parser.Expr) (string, bool) {
+	if e == nil || e.Binary == nil {
+		return "", false
+	}
+	u := e.Binary.Left
+	if len(u.Ops) != 0 {
+		return "", false
+	}
+	p := u.Value
+	if p == nil || p.Target == nil || p.Target.Lit == nil || p.Target.Lit.Str == nil {
+		return "", false
+	}
+	return *p.Target.Lit.Str, true
 }
 
 func isGroupQuery(e *parser.Expr) bool {
