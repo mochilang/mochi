@@ -38,6 +38,7 @@ type Compiler struct {
 	usesExcept    bool
 	usesIntersect bool
 	usesGroupBy   bool
+	hints         map[string]string
 }
 
 func defaultValue(typ string) string {
@@ -88,6 +89,7 @@ func New() *Compiler {
 		usesExcept:    false,
 		usesIntersect: false,
 		usesGroupBy:   false,
+		hints:         make(map[string]string),
 	}
 }
 
@@ -110,6 +112,8 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 	c.usesExcept = false
 	c.usesIntersect = false
 	c.usesGroupBy = false
+	c.hints = make(map[string]string)
+	c.gatherHints(p.Statements)
 
 	for _, s := range p.Statements {
 		if err := c.compileStmt(s); err != nil {
@@ -327,6 +331,18 @@ func (c *Compiler) compileVar(v *parser.VarStmt) error {
 					elems[i] = s
 				}
 				val = "[|" + strings.Join(elems, "; ") + "|]"
+				if typ == "" {
+					if len(p.List.Elems) > 0 {
+						elemT := c.inferType(p.List.Elems[0])
+						typ = fmt.Sprintf("%s array", elemT)
+					} else if hint, ok := c.hints[v.Name]; ok {
+						typ = fmt.Sprintf("%s array", hint)
+					} else {
+						typ = "obj array"
+					}
+				} else if !strings.HasSuffix(typ, " array") {
+					typ = typ + " array"
+				}
 			} else if p.Map != nil {
 				c.maps[v.Name] = true
 				if typ == "" {
@@ -470,7 +486,7 @@ func (c *Compiler) compileFor(f *parser.ForStmt) error {
 			c.writeln("try")
 			c.indent++
 		}
-		c.writeln(fmt.Sprintf("for %s in %s .. %s do", f.Name, start, end))
+		c.writeln(fmt.Sprintf("for %s in %s .. (%s - 1) do", f.Name, start, end))
 	} else {
 		if hasBC {
 			c.writeln("try")
@@ -1026,6 +1042,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		return fmt.Sprintf("printfn \"%%s\" (String.concat \" \" [%s])", strings.Join(conv, "; ")), nil
 	case "append":
 		if len(args) == 2 {
+			if name, ok := c.simpleIdentifier(call.Args[0]); ok {
+				if t, ok2 := c.vars[name]; ok2 && strings.HasSuffix(t, "array") {
+					return fmt.Sprintf("Array.append %s [|%s|]", args[0], args[1]), nil
+				}
+			}
 			return fmt.Sprintf("%s @ [%s]", args[0], args[1]), nil
 		}
 	case "avg":
@@ -1740,6 +1761,46 @@ func rootPostfix(e *parser.Expr) *parser.PostfixExpr {
 		return nil
 	}
 	return e.Binary.Left.Value
+}
+
+func (c *Compiler) gatherHints(stmts []*parser.Statement) {
+	for _, st := range stmts {
+		switch {
+		case st.Assign != nil:
+			a := st.Assign
+			if len(a.Index) > 0 {
+				t := c.inferType(a.Value)
+				if t != "obj" {
+					if _, ok := c.hints[a.Name]; !ok {
+						c.hints[a.Name] = t
+					}
+				}
+			} else if p := rootPrimary(a.Value); p != nil && p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2 {
+				if name, ok := c.simpleIdentifier(p.Call.Args[0]); ok && name == a.Name {
+					t := c.inferType(p.Call.Args[1])
+					if t != "obj" {
+						if _, ok := c.hints[a.Name]; !ok {
+							c.hints[a.Name] = t
+						}
+					}
+				}
+			}
+		case st.For != nil:
+			c.gatherHints(st.For.Body)
+		case st.While != nil:
+			c.gatherHints(st.While.Body)
+		case st.If != nil:
+			c.gatherHints(st.If.Then)
+			if st.If.Else != nil {
+				c.gatherHints(st.If.Else)
+			}
+			if st.If.ElseIf != nil {
+				c.gatherHints([]*parser.Statement{&parser.Statement{If: st.If.ElseIf}})
+			}
+		case st.Fun != nil:
+			c.gatherHints(st.Fun.Body)
+		}
+	}
 }
 
 func isMapLiteral(e *parser.Expr) *parser.MapLiteral {
