@@ -30,9 +30,9 @@ $stats = (function() use ($customers, $orders) {
     }
     return $result;
 })();
-var_dump("--- Group Left Join ---");
+_print("--- Group Left Join ---");
 foreach ($stats as $s) {
-    var_dump($s['name'], "orders:", $s['count']);
+    _print($s['name'], "orders:", $s['count']);
 }
 function _group_by($src, $keyfn) {
     $groups = [];
@@ -47,6 +47,36 @@ function _group_by($src, $keyfn) {
     $res = [];
     foreach ($order as $k) { $res[] = $groups[$k]; }
     return $res;
+}
+
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
 }
 
 function _query($src, $joins, $opts) {

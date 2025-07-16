@@ -1,19 +1,4 @@
-string(31) "--- Right Join using syntax ---"
-string(8) "Customer"
-string(5) "Alice"
-string(9) "has order"
-int(100)
-string(3) "- $"
-int(250)
-string(8) "Customer"
-string(3) "Bob"
-string(9) "has order"
-int(101)
-string(3) "- $"
-int(125)
-string(8) "Customer"
-string(5) "Alice"
-string(9) "has order"
-int(102)
-string(3) "- $"
-int(300)
+--- Right Join using syntax ---
+Customer Alice has order 100 - $ 250
+Customer Bob has order 101 - $ 125
+Customer Alice has order 102 - $ 300

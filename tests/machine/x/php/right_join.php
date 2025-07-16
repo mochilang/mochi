@@ -26,14 +26,44 @@ $result = _query($customers, [['items'=>$orders, 'on'=>function($c, $o) use ($cu
     "customerName" => $c['name'],
     "order" => $o
 ];} ]);
-var_dump("--- Right Join using syntax ---");
+_print("--- Right Join using syntax ---");
 foreach ($result as $entry) {
     if ($entry['order']) {
-        var_dump("Customer", $entry['customerName'], "has order", $entry['order']['id'], "- $", $entry['order']['total']);
+        _print("Customer", $entry['customerName'], "has order", $entry['order']['id'], "- $", $entry['order']['total']);
     } else {
-        var_dump("Customer", $entry['customerName'], "has no orders");
+        _print("Customer", $entry['customerName'], "has no orders");
     }
 }
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+
 function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }

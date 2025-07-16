@@ -18,6 +18,8 @@
   `this` so more Rosetta tasks compile successfully.
 - 2025-07-17 00:00 - Added golden tests for VM valid programs to ensure PHP backend parity.
 
+- 2025-07-17 12:00 - VM valid golden tests now use `tests/machine/x/php` for outputs and duplicate compiler test removed.
+
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
 - [ ] Keep machine output close to human reference implementations

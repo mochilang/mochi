@@ -20,10 +20,40 @@ $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($cu
     "customer" => $c,
     "total" => $o['total']
 ];} ]);
-var_dump("--- Left Join ---");
+_print("--- Left Join ---");
 foreach ($result as $entry) {
-    var_dump("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);
+    _print("Order", $entry['orderId'], "customer", $entry['customer'], "total", $entry['total']);
 }
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+
 function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }

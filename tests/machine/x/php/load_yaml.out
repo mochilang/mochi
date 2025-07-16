@@ -1,4 +1,3 @@
+Warning: file(/tmp/TestPHPCompiler_VMValid_GoldenX/001/../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /tmp/TestPHPCompiler_VMValid_GoldenX/001/load_yaml.php on line 36
 
-Warning: file(/workspace/mochi/tests/machine/x/php/../interpreter/valid/people.yaml): Failed to open stream: No such file or directory in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 36
-
-Warning: foreach() argument must be of type array|object, false given in /workspace/mochi/tests/machine/x/php/load_yaml.php on line 39
+Warning: foreach() argument must be of type array|object, false given in /tmp/TestPHPCompiler_VMValid_GoldenX/001/load_yaml.php on line 39

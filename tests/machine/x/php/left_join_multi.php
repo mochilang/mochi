@@ -13,10 +13,40 @@ $result = _query($orders, [['items'=>$customers, 'on'=>function($o, $c) use ($cu
     "name" => $c['name'],
     "item" => $i
 ];} ]);
-var_dump("--- Left Join Multi ---");
+_print("--- Left Join Multi ---");
 foreach ($result as $r) {
-    var_dump($r['orderId'], $r['name'], $r['item']);
+    _print($r['orderId'], $r['name'], $r['item']);
 }
+function _print(...$args) {
+    $first = true;
+    foreach ($args as $a) {
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
+    }
+    echo PHP_EOL;
+}
+
 function _query($src, $joins, $opts) {
     $items = [];
     foreach ($src as $v) { $items[] = [$v]; }
