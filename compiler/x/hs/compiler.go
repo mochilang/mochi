@@ -50,7 +50,11 @@ func (c *Compiler) hsType(t types.Type) string {
 	case types.ListType:
 		return "[" + c.hsType(tt.Elem) + "]"
 	case types.MapType:
-		c.usesMap = false
+		// Mark that map operations are required so generated code
+		// includes the Data.Map import. Previously this was set to
+		// false which prevented the import and caused "not in scope"
+		// errors when functions like Map.lookup were emitted.
+		c.usesMap = true
 		return "Map.Map " + c.hsType(tt.Key) + " " + c.hsType(tt.Value)
 	case types.VoidType:
 		return "()"

@@ -1,4 +1,4 @@
-run error: exit status 1
+runhaskell: exit status 1
 
 /workspace/mochi/tests/rosetta/out/Haskell/100-doors-3.hs:43:18: error:
     Not in scope: ‘Map.lookup’

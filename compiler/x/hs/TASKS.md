@@ -1,5 +1,9 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-17 05:00)
+- Added golden tests for Rosetta tasks using `compile_rosetta_hs.go`.
+- Fixed `Map` import detection so generated programs compile without manual edits.
+
 ## Recent Updates (2025-07-15 07:18)
 - Added `tpcds_golden_test.go` and helper script `compile_tpcds_hs.go`.
 - Generated initial Haskell outputs for TPC-DS queries q24-q26.
