@@ -680,7 +680,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 	}
 	f := &frame{fn: fn, regs: make([]Value, fn.NumRegs)}
 	for i := 0; i < len(args) && i < len(f.regs); i++ {
-		f.regs[i] = args[i]
+		f.regs[i] = copyValue(args[i])
 	}
 	stack := []*frame{f}
 	for len(stack) > 0 {
@@ -1223,18 +1223,21 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					if i > 0 {
 						sb.WriteByte(' ')
 					}
-					fmt.Fprint(&sb, x.ToAny())
+					fmt.Fprint(&sb, formatValue(x))
 				}
 				fmt.Fprintln(m.writer, sb.String())
 			} else {
-				fmt.Fprintln(m.writer, v.ToAny())
+				fmt.Fprintln(m.writer, formatValue(v))
 			}
 		case OpPrint2:
-			fmt.Fprintln(m.writer, fr.regs[ins.A].ToAny(), fr.regs[ins.B].ToAny())
+			fmt.Fprintln(m.writer, formatValue(fr.regs[ins.A]), formatValue(fr.regs[ins.B]))
 		case OpPrintN:
 			var sb strings.Builder
 			for i := 0; i < ins.B; i++ {
-				fmt.Fprintf(&sb, "%v ", fr.regs[ins.C+i].ToAny())
+				if i > 0 {
+					sb.WriteByte(' ')
+				}
+				sb.WriteString(formatValue(fr.regs[ins.C+i]))
 			}
 			fmt.Fprintln(m.writer, strings.TrimSpace(sb.String()))
 		case OpNow:
@@ -1245,7 +1248,7 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 				fr.regs[ins.A] = Value{Tag: ValueInt, Int: int(time.Now().UnixNano())}
 			}
 		case OpJSON:
-			b, _ := json.Marshal(fr.regs[ins.A].ToAny())
+			b, _ := json.MarshalIndent(fr.regs[ins.A].ToAny(), "", "  ")
 			fmt.Fprintln(m.writer, string(b))
 		case OpAppend:
 			lst := fr.regs[ins.B]
@@ -1954,7 +1957,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 			fr.regs[ins.A] = res
 		case OpCall:
 			args := make([]Value, ins.C)
-			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			for i := 0; i < ins.C; i++ {
+				args[i] = copyValue(fr.regs[ins.D+i])
+			}
 			if fr.ip < len(fr.fn.Code) {
 				next := fr.fn.Code[fr.ip]
 				if next.Op == OpReturn && next.A == ins.A {
@@ -1962,7 +1967,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					if fn.NumParams == len(args) {
 						fr.fn = fn
 						fr.regs = make([]Value, fn.NumRegs)
-						copy(fr.regs, args)
+						for i := 0; i < len(args) && i < len(fr.regs); i++ {
+							fr.regs[i] = copyValue(args[i])
+						}
 						fr.ip = 0
 						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(ins.B), Line: ins.Line}
 						continue
@@ -1982,7 +1989,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 		case OpCallV:
 			fnVal := fr.regs[ins.B]
 			args := make([]Value, ins.C)
-			copy(args, fr.regs[ins.D:ins.D+ins.C])
+			for i := 0; i < ins.C; i++ {
+				args[i] = copyValue(fr.regs[ins.D+i])
+			}
 			if fr.ip < len(fr.fn.Code) {
 				next := fr.fn.Code[fr.ip]
 				if next.Op == OpReturn && next.A == ins.A {
@@ -1992,6 +2001,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 						cl := fnVal.Func.(*closure)
 						fnIdx = cl.fn
 						all = append(append([]Value{}, cl.args...), args...)
+						for i := range all {
+							all[i] = copyValue(all[i])
+						}
 					} else {
 						fnIdx = fnVal.Int
 						all = args
@@ -2000,7 +2012,9 @@ func (m *VM) call(fnIndex int, args []Value, trace []StackFrame) (Value, error) 
 					if len(all) == fn.NumParams {
 						fr.fn = fn
 						fr.regs = make([]Value, fn.NumRegs)
-						copy(fr.regs, all)
+						for i := 0; i < len(all) && i < len(fr.regs); i++ {
+							fr.regs[i] = copyValue(all[i])
+						}
 						fr.ip = 0
 						trace[len(trace)-1] = StackFrame{Func: m.prog.funcName(fnIdx), Line: ins.Line}
 						continue
@@ -7357,6 +7371,44 @@ func applyBinaryConst(op string, a, b Value) (Value, bool) {
 func valueToAny(v Value) any { return v.ToAny() }
 
 func anyToValue(v any) Value { return FromAny(v) }
+
+func formatValue(v Value) string {
+	switch v.Tag {
+	case ValueNull:
+		return "null"
+	case ValueStr:
+		return v.Str
+	case ValueMap:
+		return "[object Object]"
+	case ValueList:
+		parts := make([]string, len(v.List))
+		for i, x := range v.List {
+			parts[i] = formatValue(x)
+		}
+		return strings.Join(parts, " ")
+	default:
+		return fmt.Sprint(v.ToAny())
+	}
+}
+
+func copyValue(v Value) Value {
+	switch v.Tag {
+	case ValueList:
+		l := make([]Value, len(v.List))
+		for i, x := range v.List {
+			l[i] = copyValue(x)
+		}
+		return Value{Tag: ValueList, List: l}
+	case ValueMap:
+		m := make(map[string]Value, len(v.Map))
+		for k, x := range v.Map {
+			m[k] = copyValue(x)
+		}
+		return Value{Tag: ValueMap, Map: m}
+	default:
+		return v
+	}
+}
 
 func valueToString(v Value) string {
 	visited := map[uintptr]bool{}
