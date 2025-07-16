@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/atomic-updates.dart:90:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/atomic-updates.dart:15:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/atomic-updates.dart:27:18: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     buckets[i] = v;
                  ^
@@ -26,6 +20,3 @@ void main() {
 /tmp/atomic-updates.dart:83:86: Error: A value of type 'double' can't be assigned to a variable of type 'String'.
     print(sum.toString() + ' ' + tc0.toString() + ' ' + tc1.toString() + ' ' + total / nTicks.toString() + '  ' + buckets.toString());
                                                                                      ^
-/tmp/atomic-updates.dart:91:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

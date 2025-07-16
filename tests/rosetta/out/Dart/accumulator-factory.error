@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/accumulator-factory.dart:22:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/accumulator-factory.dart:15:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/accumulator-factory.dart:5:22: Error: Type 'any' not found.
 Function accumulator(any sum) {
                      ^^^
@@ -20,6 +14,3 @@ Function accumulator(any sum) {
 /tmp/accumulator-factory.dart:7:11: Error: 'any' isn't a type.
   any add(any nv) {
           ^^^
-/tmp/accumulator-factory.dart:23:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

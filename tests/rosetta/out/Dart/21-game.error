@@ -1,185 +1,22 @@
 run: exit status 254
-/tmp/21-game.dart:27:9: Error: String starting with ' must end with '.
-  print('Enter q to quit at any time
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/tmp/21-game.dart:28:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/21-game.dart:35:9: Error: String starting with ' must end with '.
-  print('
-        ^
-/tmp/21-game.dart:39:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/21-game.dart:43:41: Error: String starting with ' must end with '.
-    print('ROUND ' + round.toString() + ':
-                                        ^^
-/tmp/21-game.dart:45:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/21-game.dart:60:17: Error: String starting with ' must end with '.
-          print('
-                ^
-/tmp/21-game.dart:61:42: Error: String starting with ' must end with '.
-So, commiserations, the computer has won!');
-                                         ^^^
-/tmp/21-game.dart:60:16: Error: Can't find ')' to match '('.
-          print('
-               ^
-/tmp/21-game.dart:93:17: Error: String starting with ' must end with '.
-          print('
-                ^
-/tmp/21-game.dart:98:13: Error: String starting with ' must end with '.
-      print('
-            ^
-/tmp/21-game.dart:99:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/21-game.dart:98:12: Error: Can't find ')' to match '('.
-      print('
-           ^
-/tmp/21-game.dart:43:10: Error: Can't find ')' to match '('.
-    print('ROUND ' + round.toString() + ':
-         ^
-/tmp/21-game.dart:35:8: Error: Can't find ')' to match '('.
-  print('
-       ^
-/tmp/21-game.dart:27:8: Error: Can't find ')' to match '('.
-  print('Enter q to quit at any time
-       ^
-/tmp/21-game.dart:107:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/21-game.dart:24:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/21-game.dart:15:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
     n = n * 10 + digits[str.substring(i, i + 1)];
                        ^
 /tmp/21-game.dart:15:16: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
     n = n * 10 + digits[str.substring(i, i + 1)];
                ^
-/tmp/21-game.dart:28:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/21-game.dart:37:1: Error: Expected ',' before this.
-Running total is now 0
-^^^^^^^
-/tmp/21-game.dart:37:9: Error: Expected ',' before this.
-Running total is now 0
-        ^^^^^
-/tmp/21-game.dart:37:18: Error: 'now' isn't a type.
-Running total is now 0
-                 ^^^
-/tmp/21-game.dart:37:22: Error: Expected ',' before this.
-Running total is now 0
-                     ^
-/tmp/21-game.dart:39:1: Error: Expected ',' before this.
-');
-^^^
-/tmp/21-game.dart:37:1: Error: Undefined name 'Running'.
-Running total is now 0
-^^^^^^^
-/tmp/21-game.dart:35:8: Error: Too many positional arguments: 1 allowed, but 5 found.
-Try removing the extra positional arguments.
-  print('
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/21-game.dart:39:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/21-game.dart:45:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/21-game.dart:61:1: Error: Expected ',' before this.
-So, commiserations, the computer has won!');
-^^
-/tmp/21-game.dart:61:25: Error: Expected ',' before this.
-So, commiserations, the computer has won!');
-                        ^^^^^^^^
-/tmp/21-game.dart:61:34: Error: Expected ',' before this.
-So, commiserations, the computer has won!');
-                                 ^^^
-/tmp/21-game.dart:61:38: Error: Expected ',' before this.
-So, commiserations, the computer has won!');
-                                     ^^^
-/tmp/21-game.dart:61:38: Error: Undefined name 'won'.
-So, commiserations, the computer has won!');
-                                     ^^^
-/tmp/21-game.dart:61:42: Error: Expected ',' before this.
-So, commiserations, the computer has won!');
-                                         ^^^
-/tmp/21-game.dart:62:11: Error: Expected ',' before this.
-          done = true;
-          ^^^^
-/tmp/21-game.dart:61:1: Error: Undefined name 'So'.
-So, commiserations, the computer has won!');
-^^
-/tmp/21-game.dart:61:5: Error: Undefined name 'commiserations'.
-So, commiserations, the computer has won!');
-    ^^^^^^^^^^^^^^
-/tmp/21-game.dart:61:21: Error: Undefined name 'the'.
-So, commiserations, the computer has won!');
-                    ^^^
-/tmp/21-game.dart:61:34: Error: Undefined name 'has'.
-So, commiserations, the computer has won!');
-                                 ^^^
-/tmp/21-game.dart:60:16: Error: Too many positional arguments: 1 allowed, but 9 found.
-Try removing the extra positional arguments.
-          print('
-               ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/21-game.dart:68:22: Error: Method not found: 'input'.
+/tmp/21-game.dart:60:22: Error: Method not found: 'input'.
           var line = input();
                      ^^^^^
-/tmp/21-game.dart:76:33: Error: 'num' isn't a type.
+/tmp/21-game.dart:68:33: Error: 'num' isn't a type.
             if (total + (num as num) > 21) {
                                 ^^^
-/tmp/21-game.dart:84:31: Error: 'num' isn't a type.
+/tmp/21-game.dart:76:31: Error: 'num' isn't a type.
           if (total + (num as num) > 21) {
                               ^^^
-/tmp/21-game.dart:88:35: Error: 'num' isn't a type.
+/tmp/21-game.dart:80:35: Error: 'num' isn't a type.
           total = total + (num as num);
                                   ^^^
-/tmp/21-game.dart:94:1: Error: Expected ',' before this.
-So, congratulations, you\'ve won!');
-^^
-/tmp/21-game.dart:94:25: Error: Expected ')' before this.
-So, congratulations, you\'ve won!');
-                        ^
-/tmp/21-game.dart:94:1: Error: Undefined name 'So'.
-So, congratulations, you\'ve won!');
-^^
-/tmp/21-game.dart:94:5: Error: Undefined name 'congratulations'.
-So, congratulations, you\'ve won!');
-    ^^^^^^^^^^^^^^^
-/tmp/21-game.dart:94:22: Error: Undefined name 'you'.
-So, congratulations, you\'ve won!');
-                     ^^^
-/tmp/21-game.dart:93:16: Error: Too many positional arguments: 1 allowed, but 4 found.
-Try removing the extra positional arguments.
-          print('
-               ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/21-game.dart:100:7: Error: Expected ',' before this.
-      computer = !computer;
-      ^^^^^^^^
-/tmp/21-game.dart:98:12: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-      print('
-           ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/21-game.dart:88:25: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+/tmp/21-game.dart:80:25: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
           total = total + (num as num);
                         ^
-/tmp/21-game.dart:108:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

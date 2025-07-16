@@ -1,10 +1,9 @@
-run: exit status 254
-/tmp/almost-prime.dart:41:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/almost-prime.dart:33:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
-/tmp/almost-prime.dart:42:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^
+run: exit status 255
+Unhandled exception:
+type 'double' is not a subtype of type 'int' in type cast
+#0      kPrime (file:///tmp/almost-prime.dart:14:18)
+#1      gen (file:///tmp/almost-prime.dart:25:9)
+#2      _main (file:///tmp/almost-prime.dart:36:32)
+#3      main (file:///tmp/almost-prime.dart:42:3)
+#4      _delayEntrypointInvocation.<anonymous closure> (dart:isolate-patch/isolate_patch.dart:314:19)
+#5      _RawReceivePort._handleMessage (dart:isolate-patch/isolate_patch.dart:193:12)

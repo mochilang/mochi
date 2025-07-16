@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/benfords-law.dart:103:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/benfords-law.dart:99:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/benfords-law.dart:6:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                                  ^
@@ -26,6 +20,3 @@ void main() {
 /tmp/benfords-law.dart:93:23: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
     var line = '  ' + i + 1.toString() + '  ' + padFloat3(obs, 9) + '  ' + padFloat3(preds[i], 8);
                       ^
-/tmp/benfords-law.dart:104:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

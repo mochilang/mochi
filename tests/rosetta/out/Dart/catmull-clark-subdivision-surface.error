@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/catmull-clark-subdivision-surface.dart:397:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/catmull-clark-subdivision-surface.dart:374:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/catmull-clark-subdivision-surface.dart:307:6: Error: Type 'any' not found.
 List<any> cmcSubdiv(List<Point> points, List<List<int>> faces) {
      ^^^
@@ -114,6 +108,3 @@ Try correcting the operator to an existing operator, or defining a '[]' operator
 /tmp/catmull-clark-subdivision-surface.dart:349:58: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
       newFaces = List.from(newFaces)..add([d, da, fpnum, cd]);
                                                          ^
-/tmp/catmull-clark-subdivision-surface.dart:398:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/arithmetic-rational.dart:62:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/arithmetic-rational.dart:46:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/arithmetic-rational.dart:16:14: Error: A value of type 'double' can't be returned from a function with return type 'int'.
       return mid;
              ^
@@ -17,6 +11,3 @@ void main() {
 /tmp/arithmetic-rational.dart:35:13: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       s = s + n / f;
             ^
-/tmp/arithmetic-rational.dart:63:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

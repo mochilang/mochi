@@ -1,35 +1,14 @@
 run: exit status 254
-/tmp/brazilian-numbers.dart:70:17: Error: String starting with ' must end with '.
-          print('
-                ^
-/tmp/brazilian-numbers.dart:71:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/brazilian-numbers.dart:70:16: Error: Can't find ')' to match '('.
-          print('
-               ^
-/tmp/brazilian-numbers.dart:103:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/brazilian-numbers.dart:58:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/brazilian-numbers.dart:7:21: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   n = (int.parse((n / b)) as int);
                     ^
 /tmp/brazilian-numbers.dart:12:23: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     n = (int.parse((n / b)) as int);
                       ^
-/tmp/brazilian-numbers.dart:71:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/brazilian-numbers.dart:100:46: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
+/tmp/brazilian-numbers.dart:99:46: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
   print('The 100,000th Brazilian number: ' + n - 1.toString());
                                              ^
-/tmp/brazilian-numbers.dart:100:48: Error: The operator '-' isn't defined for the class 'String'.
+/tmp/brazilian-numbers.dart:99:48: Error: The operator '-' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '-' operator.
   print('The 100,000th Brazilian number: ' + n - 1.toString());
                                                ^
-/tmp/brazilian-numbers.dart:104:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

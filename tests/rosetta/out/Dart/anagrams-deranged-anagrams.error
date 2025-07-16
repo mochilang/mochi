@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/anagrams-deranged-anagrams.dart:85:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/anagrams-deranged-anagrams.dart:55:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/anagrams-deranged-anagrams.dart:23:18: Error: The operator '>' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '>' operator.
       if (arr[j] > arr[j + 1]) {
@@ -14,6 +8,3 @@ Try correcting the operator to an existing operator, or defining a '>' operator.
  - 'Iterable' is from 'dart:core'.
     m[k] = List.from(m[k])..add(w);
                       ^
-/tmp/anagrams-deranged-anagrams.dart:86:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

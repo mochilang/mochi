@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/additive-primes.dart:79:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/additive-primes.dart:49:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/additive-primes.dart:34:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     x = int.parse((x / 10));
                      ^
 /tmp/additive-primes.dart:57:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-/tmp/additive-primes.dart:80:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

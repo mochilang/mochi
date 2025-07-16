@@ -1,14 +1,5 @@
 run: exit status 254
-/tmp/associative-array-creation.dart:34:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/associative-array-creation.dart:21:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/associative-array-creation.dart:22:24: Error: The value 'null' can't be assigned to a variable of type 'Map<String, int>' because 'Map<String, int>' is not nullable.
  - 'Map' is from 'dart:core'.
   Map<String, int> x = null;
                        ^
-/tmp/associative-array-creation.dart:35:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

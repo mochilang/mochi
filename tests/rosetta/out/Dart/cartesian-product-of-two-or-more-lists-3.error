@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:82:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:64:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/cartesian-product-of-two-or-more-lists-3.dart:44:23: Error: Type 'any' not found.
 List<List<int>> cartN(any lists) {
                       ^^^
@@ -16,6 +10,3 @@ List<List<int>> cartN(any lists) {
 Try correcting the name to the name of an existing method, or defining a method named 'substring'.
   var rest = cartN(((a is String) ? a.substring(1, a.length) : (a as List).sublist(1, a.length)));
                                       ^^^^^^^^^
-/tmp/cartesian-product-of-two-or-more-lists-3.dart:83:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

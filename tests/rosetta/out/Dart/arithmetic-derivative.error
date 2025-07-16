@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/arithmetic-derivative.dart:109:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/arithmetic-derivative.dart:74:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/arithmetic-derivative.dart:10:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     x = int.parse((x / 2));
                      ^
@@ -32,6 +26,3 @@ void main() {
 /tmp/arithmetic-derivative.dart:78:44: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     vals = List.from(vals)..add(int.parse((D(double.parse(n)))));
                                            ^
-/tmp/arithmetic-derivative.dart:110:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

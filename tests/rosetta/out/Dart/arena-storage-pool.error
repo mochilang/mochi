@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/arena-storage-pool.dart:58:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/arena-storage-pool.dart:24:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/arena-storage-pool.dart:9:13: Error: Type 'any' not found.
 Map<String, any> poolGet(List<int> p) {
             ^^^
@@ -17,6 +11,3 @@ Map<String, any> poolGet(List<int> p) {
 /tmp/arena-storage-pool.dart:55:15: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
   print(i + j.toString());
               ^
-/tmp/arena-storage-pool.dart:59:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

@@ -1,25 +1,4 @@
 run: exit status 254
-/tmp/bin-given-limits.dart:62:43: Error: String starting with ' must end with '.
-    print('Example ' + i + 1.toString() + '
-                                          ^
-/tmp/bin-given-limits.dart:63:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/bin-given-limits.dart:62:10: Error: Can't find ')' to match '('.
-    print('Example ' + i + 1.toString() + '
-         ^
-/tmp/bin-given-limits.dart:70:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bin-given-limits.dart:57:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
-/tmp/bin-given-limits.dart:63:1: Error: Expected ';' after this.
-');
-^^^
 /tmp/bin-given-limits.dart:62:24: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
-    print('Example ' + i + 1.toString() + '
+    print('Example ' + i + 1.toString() + '\n');
                        ^
-/tmp/bin-given-limits.dart:71:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

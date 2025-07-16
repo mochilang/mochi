@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/apply-a-callback-to-an-array-2.dart:25:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/apply-a-callback-to-an-array-2.dart:19:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
-/tmp/apply-a-callback-to-an-array-2.dart:26:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^
 /tmp/apply-a-callback-to-an-array-2.dart:35:14: Error: 'Map' isn't a type.
     if (a is Map && b is Map) {
              ^^^

@@ -1,15 +1,6 @@
 run: exit status 254
-/tmp/active-directory-connect.dart:32:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/active-directory-connect.dart:22:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/active-directory-connect.dart:25:35: Error: The operator '[]' isn't defined for the class 'LDAPClient'.
  - 'LDAPClient' is from '/tmp/active-directory-connect.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('Connected to ' + client['Host']);
                                   ^
-/tmp/active-directory-connect.dart:33:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

@@ -1,8 +1,34 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arbitrary-precision-integers-included-.mochi:32:73
-
- 32 | print("5^(4^(3^2)) has", len(s), "digits:", substring(s, 0, 20), "...", substring(s, len(s)-20, len(s)))
-    |                                                                         ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+run: exit status 254
+/tmp/arbitrary-precision-integers-included-.dart:37:1: Error: Type 'bigint' not found.
+bigint base = 5;
+^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:39:1: Error: Type 'bigint' not found.
+bigint x = pow_big(base, e2);
+^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:19:1: Error: Type 'bigint' not found.
+bigint pow_big(bigint base, int exp) {
+^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:19:16: Error: Type 'bigint' not found.
+bigint pow_big(bigint base, int exp) {
+               ^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:14:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    e = int.parse((e / 2));
+                     ^
+/tmp/arbitrary-precision-integers-included-.dart:19:16: Error: 'bigint' isn't a type.
+bigint pow_big(bigint base, int exp) {
+               ^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:20:3: Error: 'bigint' isn't a type.
+  bigint result = 1;
+  ^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:21:3: Error: 'bigint' isn't a type.
+  bigint b = base;
+  ^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:28:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    e = int.parse((e / 2));
+                     ^
+/tmp/arbitrary-precision-integers-included-.dart:37:1: Error: 'bigint' isn't a type.
+bigint base = 5;
+^^^^^^
+/tmp/arbitrary-precision-integers-included-.dart:39:1: Error: 'bigint' isn't a type.
+bigint x = pow_big(base, e2);
+^^^^^^

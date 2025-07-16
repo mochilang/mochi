@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/brilliant-numbers.dart:150:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/brilliant-numbers.dart:122:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/brilliant-numbers.dart:74:13: Error: Type 'any' not found.
 Map<String, any> getBrilliant(int digits, int limit, bool countOnly) {
             ^^^

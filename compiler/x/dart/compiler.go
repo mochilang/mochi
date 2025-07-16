@@ -86,10 +86,10 @@ bool _runTest(String name, void Function() f) {
 // translation is incomplete, but it is sufficient for simple examples such as
 // variable declarations and basic arithmetic/print statements.
 type Compiler struct {
-	env       *types.Env
-	buf       bytes.Buffer
-	indent    int
-	useIn     bool
+        env       *types.Env
+        buf       bytes.Buffer
+        indent    int
+        useIn     bool
 	useJSON   bool
 	useIO     bool
 	useYAML   bool
@@ -97,20 +97,28 @@ type Compiler struct {
 	useSave   bool
 	tmp       int
 	mapVars   map[string]bool
-	groupKeys map[string]string
-	imports   map[string]string
+        groupKeys map[string]string
+        imports   map[string]string
+       mainRename string
 }
 
 // New creates a new Dart compiler instance.
 func New(env *types.Env) *Compiler {
-	return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string), imports: make(map[string]string)}
+        return &Compiler{env: env, mapVars: make(map[string]bool), groupKeys: make(map[string]string), imports: make(map[string]string), mainRename: ""}
 }
 
 // Compile translates the given Mochi program into Dart source code.  If there
 // is a hand written translation under tests/human/x/dart it is returned.
 // Otherwise the program is compiled using the small subset supported here.
 func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
-	// compile function declarations first so that they appear before main
+       c.mainRename = ""
+       for _, st := range prog.Statements {
+               if st.Fun != nil && st.Fun.Name == "main" {
+                       c.mainRename = "_main"
+                       break
+               }
+       }
+       // compile function declarations first so that they appear before main
 	c.buf.Reset()
 	c.indent = 0
 	c.useIn = false
@@ -557,19 +565,23 @@ func (c *Compiler) compileType(td *parser.TypeDecl) error {
 }
 
 func (c *Compiler) compileFun(f *parser.FunStmt) error {
-	ret := dartType(f.Return)
-	if ret == "" {
-		ret = "void"
-	}
-	params := make([]string, len(f.Params))
-	for i, p := range f.Params {
-		pt := dartType(p.Type)
-		if pt == "" {
-			pt = "dynamic"
-		}
-		params[i] = fmt.Sprintf("%s %s", pt, escapeIdent(p.Name))
-	}
-	c.writeln(fmt.Sprintf("%s %s(%s) {", ret, escapeIdent(f.Name), strings.Join(params, ", ")))
+        name := escapeIdent(f.Name)
+        if name == "main" && c.mainRename != "" {
+                name = c.mainRename
+        }
+        ret := dartType(f.Return)
+        if ret == "" {
+                ret = "void"
+        }
+        params := make([]string, len(f.Params))
+        for i, p := range f.Params {
+                pt := dartType(p.Type)
+                if pt == "" {
+                        pt = "dynamic"
+                }
+                params[i] = fmt.Sprintf("%s %s", pt, escapeIdent(p.Name))
+        }
+        c.writeln(fmt.Sprintf("%s %s(%s) {", ret, name, strings.Join(params, ", ")))
 	c.indent++
 	origEnv := c.env
 	child := types.NewEnv(c.env)
@@ -1725,9 +1737,12 @@ func (c *Compiler) simpleMapQuery(q *parser.QueryExpr) (string, bool) {
 }
 
 func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
-	rootOrig := sel.Root
-	root := escapeIdent(sel.Root)
-	tail := sel.Tail
+       rootOrig := sel.Root
+       root := escapeIdent(sel.Root)
+       if root == "main" && c.mainRename != "" {
+               root = c.mainRename
+       }
+       tail := sel.Tail
 	if key, ok := c.groupKeys[root]; ok {
 		if len(tail) > 0 && tail[0] == "key" {
 			root = key
@@ -1844,23 +1859,27 @@ func (c *Compiler) compileSelector(sel *parser.SelectorExpr) string {
 }
 
 func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
-	args := make([]string, len(call.Args))
-	for i, a := range call.Args {
-		s, err := c.compileExpr(a)
-		if err != nil {
-			return "", err
-		}
-		args[i] = s
-	}
-	if fn, ok := c.env.GetFunc(call.Func); ok && len(call.Args) < len(fn.Params) {
-		missing := fn.Params[len(call.Args):]
-		vars := make([]string, len(missing))
-		for i, p := range missing {
-			vars[i] = p.Name
-		}
-		all := append(append([]string{}, args...), vars...)
-		return fmt.Sprintf("(%s) => %s(%s)", strings.Join(vars, ", "), call.Func, strings.Join(all, ", ")), nil
-	}
+       name := call.Func
+       if name == "main" && c.mainRename != "" {
+               name = c.mainRename
+       }
+       args := make([]string, len(call.Args))
+       for i, a := range call.Args {
+               s, err := c.compileExpr(a)
+               if err != nil {
+                       return "", err
+               }
+               args[i] = s
+       }
+       if fn, ok := c.env.GetFunc(call.Func); ok && len(call.Args) < len(fn.Params) {
+               missing := fn.Params[len(call.Args):]
+               vars := make([]string, len(missing))
+               for i, p := range missing {
+                       vars[i] = p.Name
+               }
+               all := append(append([]string{}, args...), vars...)
+               return fmt.Sprintf("(%s) => %s(%s)", strings.Join(vars, ", "), name, strings.Join(all, ", ")), nil
+       }
 	// handle simple builtins so the generated Dart code is runnable without
 	// additional support libraries
 	switch call.Func {
@@ -1885,11 +1904,11 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		tmp := fmt.Sprintf("_t%d", c.tmp)
 		c.tmp++
 		return fmt.Sprintf("(() { var %s = %s; return (%s.isEmpty ? 0 : %s.reduce((a, b) => a + b) / %s.length); })()", tmp, a, tmp, tmp, tmp), nil
-	case "count", "len":
-		if len(args) != 1 {
-			return "", fmt.Errorf("%s expects 1 arg", call.Func)
-		}
-		return fmt.Sprintf("%s.length", args[0]), nil
+       case "count", "len":
+               if len(args) != 1 {
+                       return "", fmt.Errorf("%s expects 1 arg", call.Func)
+               }
+               return fmt.Sprintf("%s.length", args[0]), nil
 	case "sum":
 		if len(args) != 1 {
 			return "", fmt.Errorf("sum expects 1 arg")
@@ -1971,9 +1990,9 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 		}
 		c.useJSON = true
 		return fmt.Sprintf("print(jsonEncode(%s))", args[0]), nil
-	}
+       }
 
-	return fmt.Sprintf("%s(%s)", escapeIdent(call.Func), strings.Join(args, ", ")), nil
+       return fmt.Sprintf("%s(%s)", escapeIdent(name), strings.Join(args, ", ")), nil
 }
 
 func (c *Compiler) compileLoadExpr(l *parser.LoadExpr) (string, error) {
@@ -2149,10 +2168,12 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 			return "true"
 		}
 		return "false"
-	case l.Str != nil:
-		s := strings.ReplaceAll(*l.Str, "'", "\\'")
-		s = strings.ReplaceAll(s, "$", "\\$")
-		return "'" + strings.Trim(s, "\"") + "'"
+       case l.Str != nil:
+                s := strings.ReplaceAll(*l.Str, "'", "\\'")
+                s = strings.ReplaceAll(s, "$", "\\$")
+                s = strings.ReplaceAll(s, "\n", "\\n")
+                s = strings.ReplaceAll(s, "\r", "\\r")
+                return "'" + strings.Trim(s, "\"") + "'"
 	case l.Null:
 		return "null"
 	default:

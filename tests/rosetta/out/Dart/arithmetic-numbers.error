@@ -1,19 +1,4 @@
 run: exit status 254
-/tmp/arithmetic-numbers.dart:146:11: Error: String starting with ' must end with '.
-    print('
-          ^
-/tmp/arithmetic-numbers.dart:147:50: Error: String starting with ' must end with '.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                                 ^^^^^^^^^^^
-/tmp/arithmetic-numbers.dart:146:10: Error: Can't find ')' to match '('.
-    print('
-         ^
-/tmp/arithmetic-numbers.dart:154:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/arithmetic-numbers.dart:123:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/arithmetic-numbers.dart:71:36: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     var mid = int.parse(((lo + hi) / 2));
                                    ^
@@ -29,59 +14,3 @@ void main() {
 /tmp/arithmetic-numbers.dart:111:23: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
         sigma = sigma * (sum as num);
                       ^
-/tmp/arithmetic-numbers.dart:147:1: Error: Expected ',' before this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-^^^
-/tmp/arithmetic-numbers.dart:147:5: Error: Expected ',' before this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-    ^^^^^^^^^^^^^^^^^^^^
-/tmp/arithmetic-numbers.dart:147:25: Error: Expected ',' before this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                        ^^
-/tmp/arithmetic-numbers.dart:147:28: Error: Expected ',' before this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                           ^^^^^^^^^^
-/tmp/arithmetic-numbers.dart:147:39: Error: Expected ',' before this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                      ^^^^^^
-/tmp/arithmetic-numbers.dart:147:48: Error: Expected a type, but got ':'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                               ^
-/tmp/arithmetic-numbers.dart:147:48: Error: This couldn't be parsed.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                               ^
-/tmp/arithmetic-numbers.dart:147:39: Error: Undefined name 'number'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                      ^^^^^^
-/tmp/arithmetic-numbers.dart:147:1: Error: Undefined name 'The'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-^^^
-/tmp/arithmetic-numbers.dart:147:25: Error: Undefined name 'th'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                        ^^
-/tmp/arithmetic-numbers.dart:147:28: Error: Undefined name 'arithmetic'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                           ^^^^^^^^^^
-/tmp/arithmetic-numbers.dart:146:10: Error: Too many positional arguments: 1 allowed, but 6 found.
-Try removing the extra positional arguments.
-    print('
-         ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/arithmetic-numbers.dart:147:46: Error: Expected ';' after this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                             ^^
-/tmp/arithmetic-numbers.dart:147:48: Error: Expected an identifier, but got ':'.
-Try inserting an identifier before ':'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                               ^
-/tmp/arithmetic-numbers.dart:147:48: Error: Unexpected token ':'.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                               ^
-/tmp/arithmetic-numbers.dart:147:50: Error: Expected ';' after this.
-The ' + commatize(x) + 'th arithmetic number is: ' + lastc);
-                                                 ^^^^^^^^^^^
-/tmp/arithmetic-numbers.dart:155:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

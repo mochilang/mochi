@@ -1,8 +1,43 @@
-type: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
-
- 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
-    |                ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+run: exit status 254
+/tmp/averages-mean-time-of-day.dart:12:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((2 * n) * (2 * n + 1)));
+                                      ^
+/tmp/averages-mean-time-of-day.dart:25:43: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+    var denom = double.parse(((2 * n - 1) * (2 * n)));
+                                          ^
+/tmp/averages-mean-time-of-day.dart:26:26: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    term = -term * x * x / (denom as num);
+                         ^
+/tmp/averages-mean-time-of-day.dart:27:24: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    sum = (sum as num) + term;
+                       ^
+/tmp/averages-mean-time-of-day.dart:30:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
+  return sum;
+         ^
+/tmp/averages-mean-time-of-day.dart:82:42: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  return double.parse(((h * 60 + m) * 60 + sec));
+                                         ^
+/tmp/averages-mean-time-of-day.dart:99:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    ssum = ssum + sinApprox(ang);
+                ^
+/tmp/averages-mean-time-of-day.dart:100:17: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
+    csum = csum + cosApprox(ang);
+                ^
+/tmp/averages-mean-time-of-day.dart:103:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+  var theta = atan2Approx(ssum, csum);
+                          ^
+/tmp/averages-mean-time-of-day.dart:103:33: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
+  var theta = atan2Approx(ssum, csum);
+                                ^
+/tmp/averages-mean-time-of-day.dart:109:22: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var si = int.parse(total);
+                     ^
+/tmp/averages-mean-time-of-day.dart:110:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var h = int.parse((si / 3600));
+                        ^
+/tmp/averages-mean-time-of-day.dart:111:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+  var m = int.parse(((si % 3600) / 60));
+                                 ^
+/tmp/averages-mean-time-of-day.dart:112:25: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
+  var s = int.parse((si % 60));
+                        ^

@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/call-a-function-4.dart:14:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/call-a-function-4.dart:8:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/call-a-function-4.dart:5:16: Error: Type 'any' not found.
 void gifEncode(any out, any img, Map<String, int> opts) {
                ^^^
@@ -17,6 +11,3 @@ void gifEncode(any out, any img, Map<String, int> opts) {
 /tmp/call-a-function-4.dart:5:25: Error: 'any' isn't a type.
 void gifEncode(any out, any img, Map<String, int> opts) {
                         ^^^
-/tmp/call-a-function-4.dart:15:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

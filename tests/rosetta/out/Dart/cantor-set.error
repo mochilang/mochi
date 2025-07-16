@@ -1,8 +1,52 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:38
-
- 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
-    |                                      ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+run: exit status 254
+/tmp/cantor-set.dart:33:33: Error: Operator '/' cannot be called on 'int?' because it is potentially null.
+    var seg = int.parse((lenSeg / 3));
+                                ^
+/tmp/cantor-set.dart:33:33: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
+    var seg = int.parse((lenSeg / 3));
+                                ^
+/tmp/cantor-set.dart:38:14: Error: Operator '<' cannot be called on 'int?' because it is potentially null.
+    while (i < height) {
+             ^
+/tmp/cantor-set.dart:39:21: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      var j = start + seg;
+                    ^
+/tmp/cantor-set.dart:40:24: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      while (j < start + 2 * seg) {
+                       ^
+/tmp/cantor-set.dart:41:15: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+        lines[i] = setChar(lines[i], j, ' ');
+              ^
+/tmp/cantor-set.dart:41:34: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+        lines[i] = setChar(lines[i], j, ' ');
+                                 ^
+/tmp/cantor-set.dart:41:38: Error: The argument type 'num' can't be assigned to the parameter type 'int'.
+        lines[i] = setChar(lines[i], j, ' ');
+                                     ^
+/tmp/cantor-set.dart:44:13: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+      i = i + 1;
+            ^
+/tmp/cantor-set.dart:44:13: Error: A value of type 'num' can't be assigned to a variable of type 'int?'.
+      i = i + 1;
+            ^
+/tmp/cantor-set.dart:46:45: Error: A value of type 'int?' can't be assigned to a variable of type 'int' because 'int?' is nullable and 'int' isn't.
+    stack = List.from(stack)..add({'start': start, 'len': seg, 'index': index + 1});
+                                            ^
+/tmp/cantor-set.dart:46:79: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+    stack = List.from(stack)..add({'start': start, 'len': seg, 'index': index + 1});
+                                                                              ^
+/tmp/cantor-set.dart:46:79: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    stack = List.from(stack)..add({'start': start, 'len': seg, 'index': index + 1});
+                                                                              ^
+/tmp/cantor-set.dart:47:51: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+    stack = List.from(stack)..add({'start': start + seg * 2, 'len': seg, 'index': index + 1});
+                                                  ^
+/tmp/cantor-set.dart:47:51: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    stack = List.from(stack)..add({'start': start + seg * 2, 'len': seg, 'index': index + 1});
+                                                  ^
+/tmp/cantor-set.dart:47:89: Error: Operator '+' cannot be called on 'int?' because it is potentially null.
+    stack = List.from(stack)..add({'start': start + seg * 2, 'len': seg, 'index': index + 1});
+                                                                                        ^
+/tmp/cantor-set.dart:47:89: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+    stack = List.from(stack)..add({'start': start + seg * 2, 'len': seg, 'index': index + 1});
+                                                                                        ^

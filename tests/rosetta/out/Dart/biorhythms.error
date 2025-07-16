@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/biorhythms.dart:211:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/biorhythms.dart:201:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/biorhythms.dart:14:39: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var denom = double.parse(((2 * n) * (2 * n + 1)));
                                       ^
@@ -50,6 +44,3 @@ void main() {
 /tmp/biorhythms.dart:184:28: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
       var next = quadrants[quadrant][1];
                            ^
-/tmp/biorhythms.dart:212:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

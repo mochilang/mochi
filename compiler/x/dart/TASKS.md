@@ -9,6 +9,7 @@
 - [2025-07-15 04:57 UTC] Regenerated TPC-DS Dart outputs for all queries. Script now records `.error` files on failures.
 - [2025-07-16 00:00 UTC] Escaped Dart reserved words and added `now()` builtin so more Rosetta tasks compile and run.
 - [2025-07-16 11:59 UTC] Installed Dart SDK and regenerated Rosetta outputs. Added fallback `as` cast in compiler, dropping failing tasks from 193 to 189.
+- [2025-07-16 15:21 UTC] Escaped newlines in string literals to prevent invalid Dart syntax and regenerated Rosetta outputs.
 
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

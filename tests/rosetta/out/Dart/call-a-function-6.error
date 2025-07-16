@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/call-a-function-6.dart:17:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/call-a-function-6.dart:9:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/call-a-function-6.dart:14:11: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
           ^
@@ -14,6 +8,3 @@ void main() {
 /tmp/call-a-function-6.dart:14:33: Error: The argument type 'int?' can't be assigned to the parameter type 'int' because 'int?' is nullable and 'int' isn't.
   bar(args['a'], args['b'], args['c']);
                                 ^
-/tmp/call-a-function-6.dart:18:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

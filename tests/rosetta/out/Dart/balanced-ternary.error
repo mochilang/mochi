@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/balanced-ternary.dart:145:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/balanced-ternary.dart:133:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/balanced-ternary.dart:13:13: Error: Type 'any' not found.
 Map<String, any> btString(String s) {
             ^^^
@@ -25,6 +19,3 @@ Try inserting an identifier before 'is'.
 /tmp/balanced-ternary.dart:130:32: Error: This couldn't be parsed.
   print(l + ' ' + bs + ' ' + is);
                                ^
-/tmp/balanced-ternary.dart:146:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

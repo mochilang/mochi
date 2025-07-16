@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/abundant-deficient-and-perfect-number-classifications.dart:40:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/abundant-deficient-and-perfect-number-classifications.dart:17:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/abundant-deficient-and-perfect-number-classifications.dart:10:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       sum = (sum as num) + p;
                          ^
-/tmp/abundant-deficient-and-perfect-number-classifications.dart:41:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/b-zier-curves-intersections.dart:178:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/b-zier-curves-intersections.dart:164:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/b-zier-curves-intersections.dart:90:13: Error: Type 'any' not found.
 Map<String, any> testIntersect(QuadCurve p, QuadCurve q, double tol) {
             ^^^
@@ -66,6 +60,3 @@ Try correcting the operator to an existing operator, or defining a '[]' operator
 Try correcting the operator to an existing operator, or defining a '[]' operator.
     print('(' + pt['x'].toString() + ', ' + pt['y'].toString() + ')');
                                               ^
-/tmp/b-zier-curves-intersections.dart:179:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

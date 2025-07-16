@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/arithmetic-geometric-mean-calculate-pi.dart:44:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/arithmetic-geometric-mean-calculate-pi.dart:40:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/arithmetic-geometric-mean-calculate-pi.dart:30:9: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     a = t;
         ^
 /tmp/arithmetic-geometric-mean-calculate-pi.dart:34:24: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     sum = (sum as num) + diff * pow;
                        ^
-/tmp/arithmetic-geometric-mean-calculate-pi.dart:45:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^
