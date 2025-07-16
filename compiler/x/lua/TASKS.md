@@ -40,3 +40,8 @@
 - Implemented `__str` helper and improved `print`/`str` handling for lists and maps.
 - Added support for `upper` builtin function.
 - Generated Lua code and outputs for first few Rosetta tasks.
+
+## Progress (2025-07-16 12:30)
+- Updated Rosetta golden files using new `__print` helper.
+- `4-rings-or-4-squares-puzzle` now passes and its `.error` file was removed.
+- Added generated Lua code for additional tasks (e.g. `100-prisoners`).

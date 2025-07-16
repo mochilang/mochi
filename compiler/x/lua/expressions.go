@@ -412,9 +412,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	switch name {
 	case "print":
 		if len(call.Args) == 1 {
+			c.helpers["print"] = true
 			c.helpers["str"] = true
 			if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
-				return fmt.Sprintf("print(__str(%s))", args[0]), nil
+				return fmt.Sprintf("__print(%s)", args[0]), nil
 			}
 		}
 		if len(args) > 1 {
@@ -430,11 +431,13 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("print(%s)", strings.Join(parts, " .. \" \" .. ")), nil
 		}
 		if n, ok := identName(call.Args[0]); !ok || !c.uninitVars[n] {
+			c.helpers["print"] = true
 			c.helpers["str"] = true
-			return fmt.Sprintf("print(__str(%s))", args[0]), nil
+			return fmt.Sprintf("__print(%s)", args[0]), nil
 		}
+		c.helpers["print"] = true
 		c.helpers["str"] = true
-		return fmt.Sprintf("print(__str(%s))", args[0]), nil
+		return fmt.Sprintf("__print(%s)", args[0]), nil
 	case "str":
 		c.helpers["str"] = true
 		if len(args) == 1 {

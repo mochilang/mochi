@@ -343,6 +343,16 @@ const (
 		"    end\n" +
 		"end\n"
 
+	helperPrint = "function __print(v)\n" +
+		"    if type(v) == 'table' and (v[1] ~= nil or #v > 0) and type(v[1]) == 'table' then\n" +
+		"        local parts = {}\n" +
+		"        for i=1,#v do parts[#parts+1] = __str(v[i]) end\n" +
+		"        print(table.concat(parts, ' '))\n" +
+		"    else\n" +
+		"        print(__str(v))\n" +
+		"    end\n" +
+		"end\n"
+
 	helperEval = "function __eval(code)\n" +
 		"    local f, err = load(code)\n" +
 		"    if not f then error(err) end\n" +
@@ -894,6 +904,7 @@ var helperMap = map[string]string{
 	"values":         helperValues,
 	"reduce":         helperReduce,
 	"json":           helperJson,
+	"print":          helperPrint,
 	"str":            helperStr,
 	"eval":           helperEval,
 	"index":          helperIndex,
