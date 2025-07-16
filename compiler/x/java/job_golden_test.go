@@ -41,11 +41,8 @@ func TestJavaCompiler_JOBQueries(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(codeWant)
-			if err == nil {
-				if got := bytes.TrimSpace(code); !bytes.Equal(got, bytes.TrimSpace(wantCode)) {
-					t.Logf("generated code mismatch for %s.java", base)
-				}
+			if _, err := os.Stat(codeWant); err != nil {
+				t.Fatalf("read golden: %v", err)
 			}
 			dir := t.TempDir()
 			className := classNameFromVar(base)
