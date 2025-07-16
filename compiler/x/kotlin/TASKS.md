@@ -20,6 +20,8 @@
 - 2025-07-16 12:42 UTC: Added `int` builtin support and deterministic headers, reducing Rosetta compile errors.
 - 2025-07-16 14:00 UTC: Added VM golden tests for `tests/vm/valid` and removed
   stale `.error` files when compilation succeeds.
+- 2025-07-16 16:23 UTC: Implemented comprehensive VM golden tests for
+  `tests/vm/valid` and updated generated Kotlin sources.
 
 ## Remaining Work
 - [ ] Implement dataset join and group-by operations fully.
