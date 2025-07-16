@@ -1,0 +1,5 @@
+run error: exit status 1
+[0m[1m[31merror[0m: Uncaught SyntaxError: Identifier 'OP_NUM' has already been declared
+let OP_NUM = 0;
+[0m[31m    ^[0m
+    at [0m[1m[3m<anonymous>[0m ([0m[36mfile:///tmp/TestMochiTypeScriptRunGolden24-game-solve3299837941/001/24-game-solve.ts[0m:[0m[33m154[0m:[0m[33m5[0m)
