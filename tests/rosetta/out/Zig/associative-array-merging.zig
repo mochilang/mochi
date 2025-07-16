@@ -20,7 +20,7 @@ fn merge(base: std.AutoHashMap([]const u8, i32), update: std.AutoHashMap([]const
     return result;
 }
 
-fn main() void {
+fn user_main() void {
     const base: std.StringHashMap(i32) = struct {
     name: []const u8,
     price: f64,
@@ -44,5 +44,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

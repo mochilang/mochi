@@ -1,3 +1,5 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean2962053274/001/prog.zig:40:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean2962053274/001/prog.zig:36:1: note: other declaration here
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean1349058413/001/prog.zig:17:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean1349058413/001/prog.zig:17:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean1349058413/001/prog.zig:27:20: error: root struct of file 'math' has no member named 'abs'
+/tmp/zig-0.12.0/lib/std/math.zig:1:1: note: struct declared here

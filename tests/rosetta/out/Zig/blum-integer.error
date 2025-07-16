@@ -1,8 +1,6 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:160:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:100:1: note: other declaration here
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:46:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:46:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:71:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:95:16: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenblum-integer2848568716/001/prog.zig:146:52: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:46:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:46:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:71:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:95:16: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenblum-integer1227876775/001/prog.zig:146:54: error: use of undeclared identifier 'substring'

@@ -1,0 +1,3 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencholesky-decomposition-13891669969/001/prog.zig:127:17: error: local variable is never mutated
+/tmp/TestMochiZigGoldencholesky-decomposition-13891669969/001/prog.zig:127:17: note: consider using 'const'

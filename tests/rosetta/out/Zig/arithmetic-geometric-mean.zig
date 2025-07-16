@@ -33,10 +33,10 @@ fn agm(a: f64, g: f64) f64 {
     return a;
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{agm(1.0, (1.0 / sqrtApprox(2.0)))}) catch |err| handleError(err)});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

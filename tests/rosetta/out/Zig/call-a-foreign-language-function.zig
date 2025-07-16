@@ -9,12 +9,12 @@ fn strdup(s: []const u8) []const u8 {
     return _concat_string(s, "");
 }
 
-fn main() void {
+fn user_main() void {
     const go1 = "hello C"; // []const u8
     const c2 = strdup(go1); // []const u8
     std.debug.print("{s}\n", .{c2});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

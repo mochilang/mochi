@@ -73,7 +73,7 @@ fn r2m(r: f64) f64 {
     return ((r2r(r) * 3200.0) / 3.141592653589793);
 }
 
-fn main() void {
+fn user_main() void {
     const angles = &[_]f64{
     -2.0,
     -1.0,
@@ -107,5 +107,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

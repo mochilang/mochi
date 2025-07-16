@@ -60,7 +60,7 @@ pub fn main() void {
         i = (i + 50);
     }
     while (idx < le) {
-        const ch = substring(dna, idx, (idx + 1)); // []const u8
+        const ch: i32 = substring(dna, idx, (idx + 1)); // i32
         if (std.mem.eql(u8, ch, "A")) {
             a = (a + 1);
         } else {

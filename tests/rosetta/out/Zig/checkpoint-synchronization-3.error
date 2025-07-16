@@ -1,2 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencheckpoint-synchronization-339684284/001/prog.zig:25:33: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldencheckpoint-synchronization-3950229391/001/prog.zig:25:33: error: use of undeclared identifier 'substring'

@@ -9,7 +9,7 @@ fn parseBool(s: []const u8) bool {
     return false;
 }
 
-fn main() void {
+fn user_main() void {
     var n = true; // bool
     std.debug.print("{}\n", .{n});
     std.debug.print("bool\n", .{});
@@ -27,5 +27,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

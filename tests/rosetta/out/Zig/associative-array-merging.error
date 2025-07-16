@@ -1,3 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenassociative-array-merging3083836444/001/prog.zig:46:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenassociative-array-merging3083836444/001/prog.zig:23:1: note: other declaration here
+/tmp/TestMochiZigGoldenassociative-array-merging576488839/001/prog.zig:28:2: error: expected type 'hash_map.HashMap([]const u8,i32,hash_map.StringContext,80)', found 'prog.user_main__struct_3952'
+/tmp/TestMochiZigGoldenassociative-array-merging576488839/001/prog.zig:24:42: note: struct declared here
+/tmp/zig-0.12.0/lib/std/hash_map.zig:366:12: note: struct declared here

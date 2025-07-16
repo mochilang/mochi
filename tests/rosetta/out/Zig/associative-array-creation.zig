@@ -17,7 +17,7 @@ fn removeKey(m: std.AutoHashMap([]const u8, i32), k: []const u8) std.AutoHashMap
     return out;
 }
 
-fn main() void {
+fn user_main() void {
     var x: std.StringHashMap(i32) = 0; // std.StringHashMap(i32)
     x = struct {}{  };
     _ = x.put("foo", 3) catch |err| handleError(err);
@@ -39,5 +39,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

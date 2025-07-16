@@ -57,11 +57,11 @@ fn clearPool(p: []const i32) []const i32 {
     return []i32{};
 }
 
-fn main() void {
+fn user_main() void {
     var pool = std.ArrayList(i32).init(std.heap.page_allocator);
     var i = 1; // i32
     var j = 2; // i32
-    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + j)}) catch |err| handleError(err)});
+    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + j)}) catch |err| handleError(err)});
     pool = poolPut(pool, i);
     pool = poolPut(pool, j);
     i = 0;
@@ -74,7 +74,7 @@ fn main() void {
     j = @as(i32, res2["val"]);
     i = 4;
     j = 5;
-    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + j)}) catch |err| handleError(err)});
+    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + j)}) catch |err| handleError(err)});
     pool = poolPut(pool, i);
     pool = poolPut(pool, j);
     i = 0;
@@ -88,9 +88,9 @@ fn main() void {
     j = @as(i32, res4["val"]);
     i = 7;
     j = 8;
-    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + j)}) catch |err| handleError(err)});
+    std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + j)}) catch |err| handleError(err)});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

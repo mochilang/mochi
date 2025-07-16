@@ -37,7 +37,7 @@ fn gen(k: i32, count: i32) []const i32 {
     return r.items;
 }
 
-fn main() void {
+fn user_main() void {
     var k = 1; // i32
     while (k <= 5) {
         std.debug.print("{s}\n", .{_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{k}) catch |err| handleError(err), " "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{gen(k, 10)}) catch |err| handleError(err))});
@@ -46,5 +46,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

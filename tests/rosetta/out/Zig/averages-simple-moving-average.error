@@ -1,11 +1,9 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:94:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:70:1: note: other declaration here
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:15:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:32:17: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:84:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:84:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:83:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:83:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:71:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-simple-moving-average3583884371/001/prog.zig:71:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:15:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:32:17: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:84:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:84:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:83:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:83:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:71:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenaverages-simple-moving-average4025872389/001/prog.zig:71:9: note: consider using 'const'

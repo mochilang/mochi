@@ -19,7 +19,7 @@ fn ackermann(m: i32, n: i32) i32 {
     return ackermann((m - 1), ackermann(m, (n - 1)));
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("{s}\n", .{_concat_string("A(0, 0) = ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{ackermann(0, 0)}) catch |err| handleError(err))});
     std.debug.print("{s}\n", .{_concat_string("A(1, 2) = ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{ackermann(1, 2)}) catch |err| handleError(err))});
     std.debug.print("{s}\n", .{_concat_string("A(2, 4) = ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{ackermann(2, 4)}) catch |err| handleError(err))});
@@ -27,5 +27,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

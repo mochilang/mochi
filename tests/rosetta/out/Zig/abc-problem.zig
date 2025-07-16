@@ -85,7 +85,7 @@ fn newSpeller(blocks: []const u8) fn([]const u8) bool {
 } }{ .bl = bl }).call;
 }
 
-fn main() void {
+fn user_main() void {
     const sp: i32 = newSpeller("BO XK DQ CP NA GT RE TG QD FS JW HU VI AN OB ER FS LY PC ZM"); // i32
     for (&[_][]const u8{
     "A",
@@ -101,5 +101,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

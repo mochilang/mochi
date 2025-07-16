@@ -1,4 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenatomic-updates649293429/001/prog.zig:102:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenatomic-updates649293429/001/prog.zig:28:1: note: other declaration here
-/tmp/TestMochiZigGoldenatomic-updates649293429/001/prog.zig:32:26: error: unused capture
+/tmp/TestMochiZigGoldenatomic-updates4179399889/001/prog.zig:32:26: error: unused capture

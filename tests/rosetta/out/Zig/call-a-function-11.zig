@@ -19,7 +19,7 @@ fn zeroptr(ref: []const i32) void {
     ref.items[0] = 0;
 }
 
-fn main() void {
+fn user_main() void {
     var i = 1; // i32
     std.debug.print("{s}\n", .{_concat_string("initial: ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{i}) catch |err| handleError(err))});
     const tmp = zeroval(i); // i32
@@ -32,5 +32,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

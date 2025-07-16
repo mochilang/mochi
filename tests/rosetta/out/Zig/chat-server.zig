@@ -15,7 +15,7 @@ fn removeName(names: []const []const u8, name: []const u8) []const []const u8 {
     return out.items;
 }
 
-fn main() void {
+fn user_main() void {
     var clients = std.ArrayList(u8).init(std.heap.page_allocator);
     const broadcast = fn (msg: []const u8) i32 {
         std.debug.print("{s}\n", .{msg});
@@ -41,5 +41,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

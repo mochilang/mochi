@@ -16,7 +16,7 @@ fn toBin(n: i32) []const u8 {
     var bits = ""; // []const u8
     var x: i32 = n; // i32
     while (x > 0) {
-        bits = _concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{@mod(x, 2)}) catch |err| handleError(err), bits);
+        bits = _concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{@mod(x, 2)}) catch |err| handleError(err), bits);
         x = @as(i32, ((x / 2)));
     }
     return bits;

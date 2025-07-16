@@ -40,7 +40,7 @@ fn fields(s: []const u8) []const []const u8 {
     var cur = ""; // []const u8
     var i = 0; // i32
     while (i < (s).len) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if ((std.mem.eql(u8, ch, " ") or std.mem.eql(u8, ch, "\n")) or std.mem.eql(u8, ch, "\t")) {
             if ((cur).len > 0) {
                 words = blk0: { var _tmp0 = std.ArrayList([]const u8).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(words) catch |err| handleError(err); _tmp0.append(cur) catch |err| handleError(err); break :blk0 _tmp0.items; };
@@ -139,7 +139,7 @@ fn isDigits(s: []const u8) bool {
     }
     var i = 0; // i32
     while (i < (s).len) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if (std.mem.order(u8, ch, "0") == .lt or std.mem.order(u8, ch, "9") == .gt) {
             return false;
         }
@@ -205,7 +205,7 @@ fn validate(commands: []const []const u8, mins: []const i32, words: []const []co
     return results.items;
 }
 
-fn main() void {
+fn user_main() void {
     const table = _concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("add 1  alter 3  backup 2  bottom 1  Cappend 2  change 1  Schange  Cinsert 2  Clast 3 ", "compress 4 copy 2 count 3 Coverlay 3 cursor 3  delete 3 Cdelete 2  down 1  duplicate "), "3 xEdit 1 expand 3 extract 3  find 1 Nfind 2 Nfindup 6 NfUP 3 Cfind 2 findUP 3 fUP 2 "), "forward 2  get  help 1 hexType 4  input 1 powerInput 3  join 1 split 2 spltJOIN load "), "locate 1 Clocate 2 lowerCase 3 upperCase 3 Lprefix 2  macro  merge 2 modify 3 move 2 "), "msg  next 1 overlay 1 parse preserve 4 purge 3 put putD query 1 quit  read recover 3 "), "refresh renum 3 repeat 3 replace 1 Creplace 2 reset 3 restore 4 rgtLEFT right 2 left "), "2  save  set  shift 2  si  sort  sos  stack 3 status 4 top  transfer 3  type 1  up 1 "); // []const u8
     const sentence = "riG   rePEAT copies  put mo   rest    types   fup.    6\npoweRin"; // []const u8
     const tbl = readTable(table); // std.StringHashMap(i32)
@@ -229,5 +229,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

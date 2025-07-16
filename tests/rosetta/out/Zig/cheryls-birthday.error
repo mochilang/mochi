@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencheryls-birthday963892433/001/prog.zig:114:26: error: expected type '*prog.Birthday', found '*const prog.Birthday'
+/tmp/TestMochiZigGoldencheryls-birthday963892433/001/prog.zig:114:26: note: cast discards const qualifier
+/tmp/TestMochiZigGoldencheryls-birthday963892433/001/prog.zig:64:19: note: parameter type declared here

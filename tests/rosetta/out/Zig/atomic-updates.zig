@@ -25,7 +25,7 @@ fn randChaos(seed: i32, n: i32) []const i32 {
 };
 }
 
-fn main() void {
+fn user_main() void {
     const nBuckets = 10; // i32
     const initialSum = 1000; // i32
     var buckets = std.ArrayList(i32).init(std.heap.page_allocator);
@@ -100,5 +100,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

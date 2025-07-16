@@ -35,7 +35,7 @@ fn nthRoot(x: f64, n: i32) f64 {
     return low;
 }
 
-fn main() void {
+fn user_main() void {
     var sum = 0.0; // f64
     var sumRecip = 0.0; // f64
     var prod = 1.0; // f64
@@ -56,5 +56,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

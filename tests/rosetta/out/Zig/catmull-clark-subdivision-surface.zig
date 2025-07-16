@@ -445,7 +445,7 @@ fn formatFace(f: []const i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const inputPoints = &[_]Point{
     Point{
     .x = -1.0,
@@ -545,5 +545,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

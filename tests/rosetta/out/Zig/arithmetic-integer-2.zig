@@ -9,16 +9,16 @@ fn _concat_string(a: []const u8, b: []const u8) []const u8 {
     return std.mem.concat(u8, &[_][]const u8{ a, b }) catch |err| handleError(err);
 }
 
-fn main() void {
+fn user_main() void {
     const a = 12345678; // i32
     const b = 98765; // i32
-    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " + "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(a + b)}) catch |err| handleError(err))});
-    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " - "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(a - b)}) catch |err| handleError(err))});
-    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " * "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(a * b)}) catch |err| handleError(err))});
+    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " + "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(a + b)}) catch |err| handleError(err))});
+    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " - "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(a - b)}) catch |err| handleError(err))});
+    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " * "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(a * b)}) catch |err| handleError(err))});
     std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " quo "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{@as(i32, ((a / b)))}) catch |err| handleError(err))});
-    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " rem "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{@mod(a, b)}) catch |err| handleError(err))});
+    std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), " rem "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), " = "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{@mod(a, b)}) catch |err| handleError(err))});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

@@ -21,7 +21,7 @@ fn printStat(fs: std.AutoHashMap([]const u8, bool), path: []const u8) void {
     }
 }
 
-fn main() void {
+fn user_main() void {
     var fs = std.AutoHashMap([]const u8, bool).init(std.heap.page_allocator);
     _ = fs.put("docs", true) catch |err| handleError(err);
     for (&[_][]const u8{
@@ -35,5 +35,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

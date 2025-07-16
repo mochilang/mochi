@@ -25,7 +25,7 @@ fn fib(n: i32) i32 {
     return b;
 }
 
-fn main() void {
+fn user_main() void {
     for (&[_]i32{
     0,
     1,
@@ -46,5 +46,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

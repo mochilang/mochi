@@ -1,3 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenappend-a-record-to-the-end-of-a-text-file1408348205/001/prog.zig:29:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenappend-a-record-to-the-end-of-a-text-file1408348205/001/prog.zig:19:1: note: other declaration here
+/tmp/TestMochiZigGoldenappend-a-record-to-the-end-of-a-text-file2943112205/001/prog.zig:9:25: error: array literal requires address-of operator (&) to coerce to slice type '[]const []const u8'

@@ -1,8 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:22:9: error: local variable shadows declaration of 'i'
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:43:1: note: declared here
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:29:34: error: function parameter shadows declaration of 'b'
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:33:1: note: declared here
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:55:12: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:60:9: error: local variable shadows declaration of 'i'
-/tmp/TestMochiZigGoldenbinary-strings628376564/001/prog.zig:43:1: note: declared here
+type error: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
+
+  7 |   return substring(letters, idx, idx + 1)
+    |          ^
+
+help:
+  Ensure the argument type matches the function’s signature.

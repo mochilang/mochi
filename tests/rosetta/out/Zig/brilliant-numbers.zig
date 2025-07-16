@@ -178,7 +178,7 @@ fn getBrilliant(digits: i32, limit: i32, countOnly: bool) std.AutoHashMap([]cons
 };
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("First 100 brilliant numbers:\n", .{});
     const r = getBrilliant(2, 10000, false); // std.StringHashMap(i32)
     var br = sortInts(r["bc"]); // []const i32

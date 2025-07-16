@@ -1,8 +1,6 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:260:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:218:1: note: other declaration here
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:46:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:59:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:122:13: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:171:39: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenbioinformatics-global-alignment2621009351/001/prog.zig:189:20: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:46:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:59:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:122:13: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:171:39: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenbioinformatics-global-alignment207981463/001/prog.zig:189:25: error: use of undeclared identifier 'substring'

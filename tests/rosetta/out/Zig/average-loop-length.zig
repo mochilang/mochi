@@ -104,7 +104,7 @@ fn ana(n: i32) f64 {
     return sum;
 }
 
-fn main() void {
+fn user_main() void {
     const nmax = 20; // i32
     std.debug.print(" N    average    analytical    (error)\n", .{});
     std.debug.print("===  =========  ============  =========\n", .{});
@@ -120,5 +120,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

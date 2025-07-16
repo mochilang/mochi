@@ -295,7 +295,7 @@ fn dump(node: i32, indent: i32) void {
     dumpNode(node, indent, false);
 }
 
-fn main() void {
+fn user_main() void {
     var tree: i32 = 0; // i32
     std.debug.print("Empty tree:\n", .{});
     dump(tree, 0);
@@ -318,5 +318,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

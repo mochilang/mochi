@@ -1,0 +1,2 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenmd51945640671/001/prog.zig:39:26: error: use of undeclared identifier 'testpkg'

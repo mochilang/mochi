@@ -87,7 +87,7 @@ fn bestShuffle(s: []const u8, seed: i32) []const i32 {
 };
 }
 
-fn main() void {
+fn user_main() void {
     const ts = &[_][]const u8{
     "abracadabra",
     "seesaw",
@@ -109,5 +109,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

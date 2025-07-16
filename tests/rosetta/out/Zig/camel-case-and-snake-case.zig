@@ -144,7 +144,7 @@ fn camelToSnake(s: []const u8) []const u8 {
     return res;
 }
 
-fn main() void {
+fn user_main() void {
     const samples = &[_][]const u8{
     "snakeCase",
     "snake_case",
@@ -171,5 +171,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

@@ -25,7 +25,7 @@ fn partialSum(x: i32) fn(i32) i32 {
 } }{ .x = x }).call;
 }
 
-fn main() void {
+fn user_main() void {
     const add2: i32 = mkAdd(2); // i32
     const add3: i32 = mkAdd(3); // i32
     std.debug.print("{any}\n", .{_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{add2(5)}) catch |err| handleError(err), " "), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{add3(6)}) catch |err| handleError(err))});
@@ -34,5 +34,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

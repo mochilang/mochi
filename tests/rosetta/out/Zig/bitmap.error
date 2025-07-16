@@ -1,9 +1,7 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:172:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:146:1: note: other declaration here
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:167:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:167:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:166:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:166:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:165:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitmap313438025/001/prog.zig:165:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:167:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:167:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:166:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:166:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:165:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitmap2283840268/001/prog.zig:165:13: note: consider using 'const'

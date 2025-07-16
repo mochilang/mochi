@@ -67,7 +67,7 @@ fn smaSeries(xs: []const f64, period: i32) []const f64 {
     return res.items;
 }
 
-fn main() void {
+fn user_main() void {
     var xs = &[_]f64{
     1.0,
     2.0,
@@ -92,5 +92,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

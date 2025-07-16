@@ -89,16 +89,16 @@ fn nextRand(seed: i32) i32 {
     return @mod((((seed * 1664525) + 1013904223)), 2147483648);
 }
 
-fn main() void {
+fn user_main() void {
     var bm = NewBitmap(400, 300); // Bitmap
     FillRgb(&bm, 12615744);
     var seed = std.time.nanoTimestamp(); // i64
     var i = 0; // i32
     while (i < 2000) {
         seed = nextRand(seed);
-        const x = @mod(seed, 400); // i64
+        const x = @mod(seed, 400); // i32
         seed = nextRand(seed);
-        const y = @mod(seed, 300); // i64
+        const y = @mod(seed, 300); // i32
         SetPxRgb(&bm, x, y, 8405024);
         i = (i + 1);
     }
@@ -133,5 +133,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

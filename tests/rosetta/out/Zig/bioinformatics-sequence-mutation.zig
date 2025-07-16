@@ -105,8 +105,8 @@ fn mutate(s: i32, dna: []const u8, w: []const i32) []const i32 {
         r = randInt(s, 4);
         s = r[0];
         const idx = @as(i32, r[1]); // i32
-        const b = substring(bases, idx, (idx + 1)); // []const u8
-        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("  Change @", padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), 3)), " '"), arr[p]), "' to '"), b), "'")});
+        const b: i32 = substring(bases, idx, (idx + 1)); // i32
+        std.debug.print("{any}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("  Change @", padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), 3)), " '"), arr[p]), "' to '"), b), "'")});
         arr.items[p] = b;
     } else     if (x < (w[0] + w[1])) {
         std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string("  Delete @", padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), 3)), " '"), arr[p]), "'")});
@@ -120,14 +120,14 @@ fn mutate(s: i32, dna: []const u8, w: []const i32) []const i32 {
         r = randInt(s, 4);
         s = r[0];
         const idx2 = @as(i32, r[1]); // i32
-        const b = substring(bases, idx2, (idx2 + 1)); // []const u8
+        const b: i32 = substring(bases, idx2, (idx2 + 1)); // i32
         arr = blk1: { var _tmp1 = std.ArrayList([]const u8).init(std.heap.page_allocator); defer _tmp1.deinit(); _tmp1.appendSlice(arr) catch |err| handleError(err); _tmp1.append("") catch |err| handleError(err); break :blk1 _tmp1.items; };
         var j = ((arr).len - 1); // i32
         while (j > p) {
             arr.items[j] = arr[(j - 1)];
             j = (j - 1);
         }
-        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string("  Insert @", padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), 3)), " '"), b), "'")});
+        std.debug.print("{any}\n", .{_concat_string(_concat_string(_concat_string(_concat_string("  Insert @", padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), 3)), " '"), b), "'")});
         arr.items[p] = b;
     }
     var out = ""; // []const u8
@@ -160,7 +160,7 @@ fn prettyPrint(dna: []const u8, rowLen: i32) void {
     var t = 0; // i32
     var idx = 0; // i32
     while (idx < le) {
-        const ch = substring(dna, idx, (idx + 1)); // []const u8
+        const ch: i32 = substring(dna, idx, (idx + 1)); // i32
         if (std.mem.eql(u8, ch, "A")) {
             a = (a + 1);
         } else {
@@ -193,7 +193,7 @@ fn wstring(w: []const i32) []const u8 {
     return _concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("  Change: ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{w[0]}) catch |err| handleError(err)), "\n  Delete: "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{w[1]}) catch |err| handleError(err)), "\n  Insert: "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{w[2]}) catch |err| handleError(err)), "\n");
 }
 
-fn main() void {
+fn user_main() void {
     var seed = 1; // i32
     var res = makeSeq(seed, 250); // []const i32
     seed = res[0];
@@ -220,5 +220,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

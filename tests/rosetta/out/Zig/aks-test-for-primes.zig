@@ -55,7 +55,7 @@ fn aks(n: i32) bool {
     return true;
 }
 
-fn main() void {
+fn user_main() void {
     var p = 0; // i32
     while (p <= 7) {
         std.debug.print("{s}\n", .{_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p}) catch |err| handleError(err), ":  "), poly(p))});
@@ -79,5 +79,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

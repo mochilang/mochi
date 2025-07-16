@@ -22,7 +22,7 @@ fn btString(s: []const u8) std.AutoHashMap([]const u8, i32) {
     var b = std.ArrayList(i32).init(std.heap.page_allocator);
     var i = ((s).len - 1); // i32
     while (i >= 0) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if (std.mem.eql(u8, ch, "+")) {
             b = blk0: { var _tmp0 = std.ArrayList(i32).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(b) catch |err| handleError(err); _tmp0.append(1) catch |err| handleError(err); break :blk0 _tmp0.items; };
         } else {
@@ -143,7 +143,7 @@ fn show(label: []const u8, b: []const i32) void {
     std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(l, " "), bs), " "), is)});
 }
 
-fn main() void {
+fn user_main() void {
     const ares = btString("+-0++0+"); // std.StringHashMap(i32)
     const a: i32 = ares["bt"]; // i32
     const b = btInt(-436); // []const i32
@@ -156,5 +156,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

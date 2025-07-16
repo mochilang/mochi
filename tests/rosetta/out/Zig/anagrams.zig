@@ -88,7 +88,7 @@ fn sortStrings(xs: []const []const u8) []const []const u8 {
     return res.items;
 }
 
-fn main() void {
+fn user_main() void {
     const words = &[_][]const u8{
     "abel",
     "able",
@@ -155,5 +155,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

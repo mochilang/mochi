@@ -1,8 +1,5 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "B'zier curves/Intersections" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:121:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:121:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:117:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenb-zier-curves-intersections92694514/001/prog.zig:117:9: note: consider using 'const'

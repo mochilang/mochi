@@ -26,7 +26,7 @@ fn bprint(b: *Beast) void {
     std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(beastName(&b), ", who's a "), beastKind(&b)), ", cries: \""), beastCry(&b)), "\".")});
 }
 
-fn main() void {
+fn user_main() void {
     const d: Beast = Beast{ .Dog = .{
     .kind = "labrador",
     .name = "Max",
@@ -40,5 +40,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

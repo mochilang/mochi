@@ -40,10 +40,10 @@ fn agmPi() f64 {
     return pi;
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{agmPi()}) catch |err| handleError(err)});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

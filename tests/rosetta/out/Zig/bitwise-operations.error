@@ -1,12 +1,12 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:20:20: error: unused capture
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:37:20: error: unused capture
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:53:20: error: unused capture
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:69:20: error: unused capture
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:83:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:83:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:126:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:126:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:133:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbitwise-operations1300231285/001/prog.zig:133:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:20:20: error: unused capture
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:37:20: error: unused capture
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:53:20: error: unused capture
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:69:20: error: unused capture
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:83:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:83:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:126:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:126:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:133:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbitwise-operations1212142073/001/prog.zig:133:9: note: consider using 'const'

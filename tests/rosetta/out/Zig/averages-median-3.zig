@@ -29,7 +29,7 @@ fn _slice_list(comptime T: type, v: []const T, start: i32, end: i32, step: i32) 
 fn qsel(a: []const f64, k: i32) f64 {
     var arr = a; // []const f64
     while ((arr).len > 1) {
-        var px = @mod(std.time.nanoTimestamp(), (arr).len); // i64
+        var px = @mod(std.time.nanoTimestamp(), (arr).len); // i32
         var pv = arr[px]; // f64
         const last = ((arr).len - 1); // i32
         const tmp = arr[px]; // f64

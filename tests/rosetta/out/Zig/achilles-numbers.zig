@@ -120,7 +120,7 @@ fn pad(n: i32, width: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const maxDigits = 15; // i32
     getPerfectPowers(maxDigits);
     const achSet = getAchilles(1, 5); // std.AutoHashMap(i32, bool)
@@ -197,5 +197,5 @@ fn main() void {
 
 pub fn main() void {
     pps = (blk0: { var _map0 = std.AutoHashMap(i32, i32).init(std.heap.page_allocator); break :blk0 _map0; });
-    main();
+    user_main();
 }

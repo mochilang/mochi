@@ -289,7 +289,7 @@ fn biorhythms(birth: []const u8, target: []const u8) void {
             }
             description = _concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(" ", pct), "% ("), trend), ", next "), next), " "), transition), ")");
         }
-        var posStr = std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{position}) catch |err| handleError(err); // []const u8
+        var posStr = std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{position}) catch |err| handleError(err); // []const u8
         if (position < 10) {
             posStr = _concat_string(" ", posStr);
         }
@@ -299,7 +299,7 @@ fn biorhythms(birth: []const u8, target: []const u8) void {
     std.debug.print("\n", .{});
 }
 
-fn main() void {
+fn user_main() void {
     const pairs = &[_][]const []const u8{
     &[_][]const u8{
     "1943-03-09",
@@ -323,5 +323,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

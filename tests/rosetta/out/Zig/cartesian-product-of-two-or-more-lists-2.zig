@@ -81,7 +81,7 @@ fn cartN(lists: i32) []const []const i32 {
     return res.items;
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("{s}\n", .{llStr(cartN(&[_][]const i32{
     &[_]i32{
     1,
@@ -170,5 +170,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

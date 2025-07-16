@@ -91,7 +91,7 @@ fn decipher(s: []const u8, k: i32) []const u8 {
     return encipher(s, @mod(((26 - @mod(k, 26))), 26));
 }
 
-fn main() void {
+fn user_main() void {
     const pt = "The five boxing wizards jump quickly"; // []const u8
     std.debug.print("{s}\n", .{_concat_string("Plaintext: ", pt)});
     for (&[_]i32{
@@ -113,5 +113,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

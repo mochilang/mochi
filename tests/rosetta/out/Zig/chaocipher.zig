@@ -73,7 +73,7 @@ fn chao(text: []const u8, encode: bool) []const u8 {
     return out;
 }
 
-fn main() void {
+fn user_main() void {
     const plain = "WELLDONEISBETTERTHANWELLSAID"; // []const u8
     const cipher = chao(plain, true); // []const u8
     std.debug.print("{s}\n", .{plain});
@@ -82,5 +82,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

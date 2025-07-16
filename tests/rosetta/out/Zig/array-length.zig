@@ -9,7 +9,7 @@ fn _concat_string(a: []const u8, b: []const u8) []const u8 {
     return std.mem.concat(u8, &[_][]const u8{ a, b }) catch |err| handleError(err);
 }
 
-fn main() void {
+fn user_main() void {
     const arr = &[_][]const u8{
     "apple",
     "orange",
@@ -19,5 +19,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

@@ -109,7 +109,7 @@ fn makePrintable(s: []const u8) []const u8 {
     var out = ""; // []const u8
     var i = 0; // i32
     while (i < (s).len) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if (std.mem.eql(u8, ch, stx)) {
             out = _concat_string(out, "^");
         } else         if (std.mem.eql(u8, ch, etx)) {
@@ -122,7 +122,7 @@ fn makePrintable(s: []const u8) []const u8 {
     return out;
 }
 
-fn main() void {
+fn user_main() void {
     const examples = &[_][]const u8{
     "banana",
     "appellee",
@@ -148,5 +148,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

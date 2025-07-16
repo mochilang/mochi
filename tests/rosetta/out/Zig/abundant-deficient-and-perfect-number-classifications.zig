@@ -21,7 +21,7 @@ fn pfacSum(i: i32) i32 {
     return sum;
 }
 
-fn main() void {
+fn user_main() void {
     var d = 0; // i32
     var a = 0; // i32
     var pnum = 0; // i32
@@ -45,5 +45,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

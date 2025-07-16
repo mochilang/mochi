@@ -27,12 +27,12 @@ fn catalan(n: i32) i32 {
     return @as(i32, ((binom((2 * n), n) / ((n + 1)))));
 }
 
-fn main() void {
+fn user_main() void {
     for (0 .. 15) |i| {
         std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{catalan(i)}) catch |err| handleError(err)});
     }
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

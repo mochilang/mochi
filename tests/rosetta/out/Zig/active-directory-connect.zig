@@ -21,7 +21,7 @@ fn connect(client: *LDAPClient) bool {
     return (!std.mem.eql(u8, client.Host, "") and (client.Port > 0));
 }
 
-fn main() void {
+fn user_main() void {
     const client = LDAPClient{
     .Base = "dc=example,dc=com",
     .Host = "ldap.example.com",
@@ -46,5 +46,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

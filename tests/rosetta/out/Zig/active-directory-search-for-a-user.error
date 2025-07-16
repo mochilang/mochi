@@ -1,2 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenactive-directory-search-for-a-user2550619782/001/prog.zig:25:11: error: expected 'while', 'for', 'inline', or '{', found '['
+/tmp/TestMochiZigGoldenactive-directory-search-for-a-user2490903594/001/prog.zig:25:11: error: expected 'while', 'for', 'inline', or '{', found '['

@@ -165,7 +165,7 @@ fn pad(s: []const u8, w: i32) []const u8 {
     return r;
 }
 
-fn main() void {
+fn user_main() void {
     const pts = positions(40); // []const []const i32
     std.debug.print("The first 40 Babylonian spiral points are:\n", .{});
     var line = ""; // []const u8
@@ -183,5 +183,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

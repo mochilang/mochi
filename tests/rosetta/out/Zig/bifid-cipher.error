@@ -1,6 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbifid-cipher505555395/001/prog.zig:253:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenbifid-cipher505555395/001/prog.zig:132:1: note: other declaration here
-/tmp/TestMochiZigGoldenbifid-cipher505555395/001/prog.zig:61:15: error: use of undeclared identifier 'upper'
-/tmp/TestMochiZigGoldenbifid-cipher505555395/001/prog.zig:110:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbifid-cipher505555395/001/prog.zig:110:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbifid-cipher221066714/001/prog.zig:61:15: error: use of undeclared identifier 'upper'
+/tmp/TestMochiZigGoldenbifid-cipher221066714/001/prog.zig:110:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbifid-cipher221066714/001/prog.zig:110:9: note: consider using 'const'

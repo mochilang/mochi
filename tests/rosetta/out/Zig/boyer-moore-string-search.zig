@@ -60,7 +60,7 @@ fn display(nums: []const i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const texts = &[_][]const u8{
     "GCTAGCTCTACGAGTCTA",
     "GGCTATAATGCGTA",
@@ -79,18 +79,18 @@ fn main() void {
 }; // []const []const u8
     var i = 0; // i32
     while (i < (texts).len) {
-        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string("text", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + 1)}) catch |err| handleError(err)), " = "), texts[i])});
+        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string("text", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + 1)}) catch |err| handleError(err)), " = "), texts[i])});
         i = (i + 1);
     }
     std.debug.print("\n", .{});
     var j = 0; // i32
     while (j < (texts).len) {
         const idxs = stringSearch(texts[j], patterns[j]); // []const i32
-        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("Found \"", patterns[j]), "\" in 'text"), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(j + 1)}) catch |err| handleError(err)), "' at indexes "), display(idxs))});
+        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("Found \"", patterns[j]), "\" in 'text"), std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(j + 1)}) catch |err| handleError(err)), "' at indexes "), display(idxs))});
         j = (j + 1);
     }
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

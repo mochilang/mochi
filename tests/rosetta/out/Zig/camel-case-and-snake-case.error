@@ -1,6 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencamel-case-and-snake-case3518591515/001/prog.zig:173:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldencamel-case-and-snake-case3518591515/001/prog.zig:147:1: note: other declaration here
-/tmp/TestMochiZigGoldencamel-case-and-snake-case3518591515/001/prog.zig:20:60: error: use of undeclared identifier 'handleError'
-/tmp/TestMochiZigGoldencamel-case-and-snake-case3518591515/001/prog.zig:26:67: error: use of undeclared identifier 'handleError'
-/tmp/TestMochiZigGoldencamel-case-and-snake-case3518591515/001/prog.zig:74:39: error: use of undeclared identifier 'upper'
+/tmp/TestMochiZigGoldencamel-case-and-snake-case2784951938/001/prog.zig:20:60: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGoldencamel-case-and-snake-case2784951938/001/prog.zig:26:67: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGoldencamel-case-and-snake-case2784951938/001/prog.zig:74:39: error: use of undeclared identifier 'upper'

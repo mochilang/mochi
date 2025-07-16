@@ -19,7 +19,7 @@ fn Map(xs: []const i32, f: fn(i32) i32) []const i32 {
     return r.items;
 }
 
-fn main() void {
+fn user_main() void {
     const s: []const i32 = &[_]i32{
     1,
     2,
@@ -28,7 +28,7 @@ fn main() void {
     5,
 }; // []const i32
     each(s, fn (i: i32) i32 {
-        return std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i * i)}) catch |err| handleError(err)});
+        return std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i * i)}) catch |err| handleError(err)});
 });
     std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{Map(s, fn (i: i32) i32 {
         return (i * i);
@@ -36,5 +36,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

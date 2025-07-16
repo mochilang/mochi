@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencsv-to-html-translation-2516206927/001/prog.zig:9:19: error: expected 3 argument(s), found 2
+/tmp/zig-0.12.0/lib/std/mem.zig:3148:5: note: function declared here
+/tmp/TestMochiZigGoldencsv-to-html-translation-2516206927/001/prog.zig:20:70: note: called from here

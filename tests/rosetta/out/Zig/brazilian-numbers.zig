@@ -62,7 +62,7 @@ fn isPrime(n: i32) bool {
     return true;
 }
 
-fn main() void {
+fn user_main() void {
     var kinds = &[_][]const u8{
     " ",
     " odd ",
@@ -103,9 +103,9 @@ fn main() void {
         }
         n = (n + 1);
     }
-    std.debug.print("{s}\n", .{_concat_string("The 100,000th Brazilian number: ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(n - 1)}) catch |err| handleError(err))});
+    std.debug.print("{s}\n", .{_concat_string("The 100,000th Brazilian number: ", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(n - 1)}) catch |err| handleError(err))});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

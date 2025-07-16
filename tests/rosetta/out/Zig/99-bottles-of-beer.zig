@@ -19,7 +19,7 @@ fn bottles(n: i32) []const u8 {
     return _concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{n}) catch |err| handleError(err), " bottles");
 }
 
-fn main() void {
+fn user_main() void {
     var i = 99; // i32
     while (i > 0) {
         std.debug.print("{s}\n", .{_concat_string(bottles(i), " of beer on the wall")});
@@ -31,5 +31,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

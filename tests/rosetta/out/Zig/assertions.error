@@ -1,3 +1,0 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenassertions529048349/001/prog.zig:13:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenassertions529048349/001/prog.zig:4:1: note: other declaration here

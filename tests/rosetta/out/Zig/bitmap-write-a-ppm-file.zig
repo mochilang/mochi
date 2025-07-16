@@ -111,7 +111,7 @@ fn writePPMP3(b: *Bitmap) []const u8 {
     return out;
 }
 
-fn main() void {
+fn user_main() void {
     const black = Colour{
     .R = 0,
     .G = 0,
@@ -134,5 +134,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

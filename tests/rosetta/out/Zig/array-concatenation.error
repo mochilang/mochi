@@ -1,5 +1,5 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenarray-concatenation652294281/001/prog.zig:40:15: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarray-concatenation652294281/001/prog.zig:8:1: note: declared here
-/tmp/TestMochiZigGoldenarray-concatenation652294281/001/prog.zig:51:14: error: function parameter shadows declaration of 'a'
-/tmp/TestMochiZigGoldenarray-concatenation652294281/001/prog.zig:8:1: note: declared here
+/tmp/TestMochiZigGoldenarray-concatenation3053353705/001/prog.zig:40:15: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenarray-concatenation3053353705/001/prog.zig:8:1: note: declared here
+/tmp/TestMochiZigGoldenarray-concatenation3053353705/001/prog.zig:51:14: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenarray-concatenation3053353705/001/prog.zig:8:1: note: declared here

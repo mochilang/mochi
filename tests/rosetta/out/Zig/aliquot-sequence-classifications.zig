@@ -102,12 +102,12 @@ fn classifySequence(k: i32) std.AutoHashMap([]const u8, i32) {
         } else         if ((n == 3) and (last == k)) {
             aliquot = "Amicable";
         } else         if ((n >= 4) and (last == k)) {
-            aliquot = _concat_string(_concat_string("Sociable[", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(n - 1)}) catch |err| handleError(err)), "]");
+            aliquot = _concat_string(_concat_string("Sociable[", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(n - 1)}) catch |err| handleError(err)), "]");
         } else         if (last == seq[(n - 2)]) {
             aliquot = "Aspiring";
         } else         if (contains(_slice_list(i32, seq, 1, maxOf(1, (n - 2)), 1), last)) {
             const idx = indexOf(seq, last); // i32
-            aliquot = _concat_string(_concat_string("Cyclic[", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{((n - 1) - idx)}) catch |err| handleError(err)), "]");
+            aliquot = _concat_string(_concat_string("Cyclic[", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{((n - 1) - idx)}) catch |err| handleError(err)), "]");
         } else         if ((n == 16) or (last > THRESHOLD)) {
             aliquot = "Non-Terminating";
         }
@@ -160,7 +160,7 @@ fn joinWithCommas(seq: []const i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("Aliquot classifications - periods for Sociable/Cyclic in square brackets:\n\n", .{});
     var k = 1; // i32
     while (k <= 10) {
@@ -198,5 +198,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

@@ -1,3 +1,5 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenattractive-numbers1754635204/001/prog.zig:98:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenattractive-numbers1754635204/001/prog.zig:72:1: note: other declaration here
+/tmp/TestMochiZigGoldenattractive-numbers1765545253/001/prog.zig:75:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldenattractive-numbers1765545253/001/prog.zig:75:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldenattractive-numbers1765545253/001/prog.zig:9:19: error: expected 3 argument(s), found 2
+/tmp/zig-0.12.0/lib/std/mem.zig:3148:5: note: function declared here

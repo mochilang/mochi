@@ -29,7 +29,7 @@ fn pad(n: i32, width: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     var sums = std.ArrayList(i32).init(std.heap.page_allocator);
     var i = 0; // i32
     while (i < 20000) {
@@ -53,5 +53,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

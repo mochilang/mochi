@@ -13,7 +13,7 @@ fn bar(a: i32, b: i32, c: i32) void {
     std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{a}) catch |err| handleError(err), ", "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{b}) catch |err| handleError(err)), ", "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{c}) catch |err| handleError(err))});
 }
 
-fn main() void {
+fn user_main() void {
     var args = std.AutoHashMap([]const u8, i32).init(std.heap.page_allocator);
     _ = args.put("a", 3) catch |err| handleError(err);
     _ = args.put("b", 2) catch |err| handleError(err);
@@ -22,5 +22,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }
