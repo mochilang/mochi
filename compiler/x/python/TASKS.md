@@ -1,6 +1,8 @@
 ## Recent Enhancements (2025-07-16 18:00)
 - Removed generated code comparisons from tests to rely solely on runtime output.
 - Deprecated `.py.out` files in `tests/compiler/py`.
+## Recent Enhancements (2025-07-17 02:00)
+- Rosetta golden tests no longer compare generated `.py` files, only runtime output.
 ## Recent Enhancements (2025-07-16 18:30)
 - Added `UNDEFINED` sentinel and updated `_fmt` so uninitialized values print `undefined`.
 - Dataclasses now define `__contains__` for membership checks.
