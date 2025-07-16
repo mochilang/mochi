@@ -1,5 +1,1 @@
-Object: '' error: did not understand #+
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-String(Object)>>doesNotUnderstand: #+ (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/100-doors-3.st:12)
-''
+

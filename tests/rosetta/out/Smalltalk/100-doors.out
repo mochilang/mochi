@@ -1,10 +1,1 @@
-Object: 0 error: did not understand #not
-MessageNotUnderstood(Exception)>>signal (ExcHandling.st:254)
-SmallInteger(Object)>>doesNotUnderstand: #not (SysExcept.st:1448)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/100-doors.st:12)
-Object: Array new: 101 "<0x7f668082d850>" error: Invalid index 0: index out of range
-SystemExceptions.IndexOutOfRange(Exception)>>signal (ExcHandling.st:254)
-SystemExceptions.IndexOutOfRange class>>signalOn:withIndex: (SysExcept.st:660)
-Array(Object)>>checkIndexableBounds: (Object.st:796)
-Array(Object)>>at: (Object.st:858)
-UndefinedObject>>executeStatements (../../tests/rosetta/out/Smalltalk/100-doors.st:22)
+

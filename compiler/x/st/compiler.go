@@ -569,11 +569,31 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 				val = call
 			}
 		case op.Index != nil:
-			idx, err := c.compileExpr(op.Index.Start)
-			if err != nil {
-				return "", err
+			if op.Index.Colon != nil || op.Index.End != nil {
+				start := "1"
+				if op.Index.Start != nil {
+					s, err := c.compileExpr(op.Index.Start)
+					if err != nil {
+						return "", err
+					}
+					start = fmt.Sprintf("(%s + 1)", s)
+				}
+				end := fmt.Sprintf("%s size", val)
+				if op.Index.End != nil {
+					e, err := c.compileExpr(op.Index.End)
+					if err != nil {
+						return "", err
+					}
+					end = e
+				}
+				val = fmt.Sprintf("%s copyFrom: %s to: %s", val, start, end)
+			} else {
+				idx, err := c.compileExpr(op.Index.Start)
+				if err != nil {
+					return "", err
+				}
+				val = fmt.Sprintf("%s at: %s", val, idx)
 			}
-			val = fmt.Sprintf("%s at: %s", val, idx)
 		case op.Field != nil:
 			val = fmt.Sprintf("%s at: %q", val, op.Field.Name)
 		case op.Cast != nil:
