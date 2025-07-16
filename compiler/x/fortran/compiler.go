@@ -327,6 +327,8 @@ func (c *Compiler) compileLet(l *parser.LetStmt) error {
 		if l.Type == nil {
 			if t, err := c.env.GetVar(l.Name); err == nil {
 				typ = c.typeNameFromTypes(t)
+			} else if types.IsStringExpr(l.Value, c.env) {
+				typ = "character(len=100)"
 			}
 		}
 		if lst := listLiteral(l.Value); lst != nil {
@@ -394,6 +396,8 @@ func (c *Compiler) compileLetDecl(l *parser.LetStmt) error {
 	if l.Type == nil {
 		if t, err := c.env.GetVar(l.Name); err == nil {
 			typ = c.typeNameFromTypes(t)
+		} else if types.IsStringExpr(l.Value, c.env) {
+			typ = "character(len=100)"
 		}
 	}
 	if lst := listLiteral(l.Value); lst != nil {
@@ -1221,6 +1225,13 @@ func (c *Compiler) writelnDecl(s string) {
 
 func sanitize(name string) string {
 	name = strings.ReplaceAll(name, "-", "_")
+	if name == "" {
+		return "prog"
+	}
+	r := rune(name[0])
+	if !(r >= 'A' && r <= 'Z' || r >= 'a' && r <= 'z') {
+		name = "p_" + name
+	}
 	return name
 }
 
