@@ -25,6 +25,9 @@
   keys and regenerated TPC-DS outputs, reducing `.error` count.
 - [2025-07-17 00:15] Added Rosetta golden tests and `compile_rosetta_erlang.go`
   script to generate outputs. Fixed loop handling to reduce `.error` files.
+- [2025-07-16 12:40] Improved `if` statement compilation to reuse variable names
+  across branches, preventing unbound variable errors in several Rosetta
+  examples. Regenerated outputs for the first few tasks.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.

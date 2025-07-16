@@ -43,6 +43,8 @@ type Compiler struct {
 	groupKeys map[string]string
 
 	globals map[string]string
+
+	pinned map[string]string
 }
 
 func New(srcPath string) *Compiler {
@@ -61,6 +63,7 @@ func New(srcPath string) *Compiler {
 		aliases:        make(map[string]string),
 		groupKeys:      make(map[string]string),
 		globals:        make(map[string]string),
+		pinned:         make(map[string]string),
 	}
 }
 
@@ -564,14 +567,35 @@ func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
 }
 
 func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
+	mutated := map[string]bool{}
+	collectMutations(ifst.Then, mutated)
+	collectMutations(ifst.Else, mutated)
+	if ifst.ElseIf != nil {
+		collectMutations(ifst.ElseIf.Then, mutated)
+		collectMutations(ifst.ElseIf.Else, mutated)
+	}
+
+	pinned := map[string]string{}
+	for v := range mutated {
+		name := c.newVarName(v)
+		pinned[v] = name
+		c.pinned[v] = name
+	}
+
 	cond, err := c.compileExpr(ifst.Cond)
 	if err != nil {
+		for v := range pinned {
+			delete(c.pinned, v)
+		}
 		return "", err
 	}
 	thenLines := make([]string, len(ifst.Then))
 	for i, s := range ifst.Then {
 		l, err := c.compileStmtLine(s)
 		if err != nil {
+			for v := range pinned {
+				delete(c.pinned, v)
+			}
 			return "", err
 		}
 		thenLines[i] = l
@@ -584,6 +608,9 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 	if ifst.ElseIf != nil {
 		ec, err := c.compileIfStmt(ifst.ElseIf)
 		if err != nil {
+			for v := range pinned {
+				delete(c.pinned, v)
+			}
 			return "", err
 		}
 		elseCode = ec
@@ -592,6 +619,9 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		for i, s := range ifst.Else {
 			l, err := c.compileStmtLine(s)
 			if err != nil {
+				for v := range pinned {
+					delete(c.pinned, v)
+				}
 				return "", err
 			}
 			parts[i] = l
@@ -602,7 +632,13 @@ func (c *Compiler) compileIfStmt(ifst *parser.IfStmt) (string, error) {
 		}
 	}
 	if isBoolExpr(ifst.Cond) {
+		for v := range pinned {
+			delete(c.pinned, v)
+		}
 		return fmt.Sprintf("(case %s of true -> %s; _ -> %s end)", cond, thenCode, elseCode), nil
+	}
+	for v := range pinned {
+		delete(c.pinned, v)
 	}
 	return fmt.Sprintf("(case %s of undefined -> %s; false -> %s; _ -> %s end)", cond, elseCode, elseCode, thenCode), nil
 }
@@ -1818,6 +1854,9 @@ func (c *Compiler) writeln(s string) {
 }
 
 func (c *Compiler) newVarName(base string) string {
+	if name, ok := c.pinned[base]; ok {
+		return name
+	}
 	idx := c.varVers[base]
 	name := fmt.Sprintf("%s%d", capitalize(base), idx)
 	c.varVers[base] = idx + 1
