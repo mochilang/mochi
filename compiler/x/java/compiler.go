@@ -715,7 +715,7 @@ func classNameFromVar(s string) string {
 		return ""
 	}
 	parts := strings.FieldsFunc(s, func(r rune) bool {
-		return r == '_' || r == '-' || r == ' '
+		return r == '_' || r == '-' || r == ' ' || r == '.'
 	})
 	for i, p := range parts {
 		if p == "" {
@@ -723,7 +723,13 @@ func classNameFromVar(s string) string {
 		}
 		parts[i] = strings.ToUpper(p[:1]) + p[1:]
 	}
-	return strings.Join(parts, "")
+	name := strings.Join(parts, "")
+	if name != "" {
+		if c := name[0]; c >= '0' && c <= '9' {
+			name = "M" + name
+		}
+	}
+	return name
 }
 
 func mapValueType(t string) string {

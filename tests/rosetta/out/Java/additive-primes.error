@@ -1,6 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavaadditive-primes2491931277/001/AdditivePrimes.java:34: error: incompatible types: int cannot be converted to String
-            x = (int)(Integer.parseInt((x / 10)));
-                                          ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-1 error

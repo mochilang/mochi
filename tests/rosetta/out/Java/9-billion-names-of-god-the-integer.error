@@ -1,5 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJava9-billion-names-of-god-the-integer1332570069/001/9BillionNamesOfGodTheInteger.java:5: error: <identifier> expected
-public class 9BillionNamesOfGodTheInteger {
-            ^
-1 error

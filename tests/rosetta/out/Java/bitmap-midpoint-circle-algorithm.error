@@ -1,7 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavabitmap-midpoint-circle-algorithm2727651318/001/BitmapMidpointCircleAlgorithm.java:61: error: incompatible types: String cannot be converted to Number
-            s = s + ((Number)row.get(i)).doubleValue();
-                                    ^
-Note: /tmp/TestMochiToJavabitmap-midpoint-circle-algorithm2727651318/001/BitmapMidpointCircleAlgorithm.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-1 error
