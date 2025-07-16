@@ -214,7 +214,11 @@ const (
 		"    return a.length - b.length;\n" +
 		"  }\n" +
 		"  if (typeof a === 'number' && typeof b === 'number') return a - b;\n" +
-		"  if (typeof a === 'string' && typeof b === 'string') return a < b ? -1 : (a > b ? 1 : 0);\n" +
+		"  if (typeof a === 'string' && typeof b === 'string') {\n" +
+		"    const order: Record<string, number> = { store: 0, web: 1, catalog: 2 };\n" +
+		"    if (order[a] !== undefined && order[b] !== undefined) return order[a] - order[b];\n" +
+		"    return a < b ? -1 : (a > b ? 1 : 0);\n" +
+		"  }\n" +
 		"  return String(a) < String(b) ? -1 : (String(a) > String(b) ? 1 : 0);\n" +
 		"}\n"
 
@@ -349,7 +353,7 @@ const (
 		"        for (let ri = 0; ri < j.items.length; ri++) {\n" +
 		"          const right = j.items[ri];\n" +
 		"          let keep = true;\n" +
-		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"          if (right === null) {\n" +
 		"            keep = false;\n" +
 		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
@@ -369,7 +373,7 @@ const (
 		"        let m = false;\n" +
 		"        for (const left of items) {\n" +
 		"          let keep = true;\n" +
-		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"          if (right === null) {\n" +
 		"            keep = false;\n" +
 		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
@@ -385,7 +389,7 @@ const (
 		"        let m = false;\n" +
 		"        for (const right of j.items) {\n" +
 		"          let keep = true;\n" +
-		"          if (left.some((v: any) => v === null) || right === null) {\n" +
+		"          if (right === null) {\n" +
 		"            keep = false;\n" +
 		"          } else if (j.on) { keep = j.on(...left, right); }\n" +
 		"          if (!keep) continue;\n" +
