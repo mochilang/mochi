@@ -1,0 +1,2 @@
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/match_expr.pl:3: user:main is/2: Type error: `[]' expected, found `"two"' (a string) ("x" must hold one character)

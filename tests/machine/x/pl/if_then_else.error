@@ -1,0 +1,2 @@
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/if_then_else.pl:3: user:main is/2: Type error: `[]' expected, found `"yes"' (a string) ("x" must hold one character)

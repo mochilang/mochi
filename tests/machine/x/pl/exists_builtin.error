@@ -1,0 +1,2 @@
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/exists_builtin.pl:3: user:main is/2: Arithmetic: `true/0' is not a function

@@ -1,3 +1,2 @@
-true
-false
-false
+ERROR: tests/machine/x/pl/bool_chain.pl:3:5: Syntax error: Operand expected, unquoted comma or bar found
+ERROR: tests/machine/x/pl/bool_chain.pl:11:8: Syntax error: Operand expected, unquoted comma or bar found

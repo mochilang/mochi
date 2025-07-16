@@ -1,1 +1,2 @@
-query source must be list or group
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/order_by_map.pl:3: user:main is/2: Type error: `character' expected, found `map{a:1,b:2}' (a dict)

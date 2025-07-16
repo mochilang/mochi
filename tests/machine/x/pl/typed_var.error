@@ -1,0 +1,2 @@
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/typed_var.pl:3: user:main is/2: Arguments are not sufficiently instantiated

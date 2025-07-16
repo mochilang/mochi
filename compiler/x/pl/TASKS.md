@@ -19,3 +19,8 @@
 - Added closure support so captured variables are correctly passed to
   generated predicates.
 - Regenerated Prolog outputs via `go test -run TestPrologCompiler_GoldenOutput -update`.
+
+## Progress (2025-07-16 17:36 UTC)
+- Added `vm_golden_test.go` running programs under `tests/vm/valid` and storing Prolog outputs in `tests/machine/x/pl`.
+- Removed obsolete `compiler_test.go` which compared generated code against `.pl.out` files.
+- Regenerated VM outputs via `go test ./compiler/x/pl -run TestPrologCompiler_VMValid_Golden -update`.

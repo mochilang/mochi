@@ -1,1 +1,1 @@
-0
+ERROR: tests/machine/x/pl/record_assign.pl:18:13: Syntax error: Operator priority clash

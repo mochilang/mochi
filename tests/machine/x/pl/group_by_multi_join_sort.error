@@ -1,1 +1,2 @@
-query source must be list or group
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/group_by_multi_join_sort.pl:43: user:main >=/2: Type error: `[]' expected, found `"1993-10-15"' (a string) ("x" must hold one character)

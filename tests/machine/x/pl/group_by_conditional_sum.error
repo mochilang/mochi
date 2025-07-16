@@ -1,1 +1,2 @@
-query source must be list or group
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/group_by_conditional_sum.pl:43: user:main is/2: Type error: `character' expected, found `map{cat:"b",share:0/0}' (a dict)

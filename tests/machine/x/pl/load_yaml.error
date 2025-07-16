@@ -1,1 +1,2 @@
-query source must be list or group
+exit status 2
+ERROR: /workspace/mochi/tests/machine/x/pl/load_yaml.pl:22: user:main source_sink `"../interpreter/valid/people.yaml"' does not exist
