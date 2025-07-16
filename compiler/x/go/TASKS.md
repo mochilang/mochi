@@ -89,3 +89,4 @@ TPC-H progress:
 - 2025-07-16 16:55 - Stabilised VM valid golden tests with fixed header time; new failing cases logged.
 - 2025-07-16 23:59 - Replaced compiler_test.go with vm_golden_test.go using golden.Run and updated README generation
 - 2025-07-19 08:01 - Updated golden helpers to delete `.mochi.error` files when running VM tests
+- 2025-07-19 12:00 - Renamed VM test to vm_valid_golden_test.go and summarized pass/fail counts
