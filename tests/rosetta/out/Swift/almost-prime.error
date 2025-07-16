@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftalmost-prime488382382/001/main.swift:11:13: error: cannot assign to value: 'n' is a 'let' constant
+swiftc: exit status 1
+/tmp/almost-prime.swift:11:13: error: cannot assign to value: 'n' is a 'let' constant
  9 |             }
 10 |             nf = nf + 1
 11 |             n = n / i
@@ -7,16 +7,7 @@ run error: exit status 1
 12 |         }
 13 |         i = i + 1
 
-/tmp/TestMochiToSwiftalmost-prime488382382/001/main.swift:18:20: error: cannot assign value of type '[Any]' to type '[Int]'
-16 | }
-17 | func gen(_ k: Int, _ count: Int) -> [Int] {
-18 |     var r: [Int] = [Any]()
-   |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
-   |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
-19 |     var n = 2
-20 |     while r.count < count {
-
-/tmp/TestMochiToSwiftalmost-prime488382382/001/main.swift:31:33: error: no exact matches in call to initializer 
+/tmp/almost-prime.swift:31:33: error: no exact matches in call to initializer 
 29 |     var k = 1
 30 |     while k <= 5 {
 31 |         print(String(k) + " " + String(gen(k, 10)))

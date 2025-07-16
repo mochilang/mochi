@@ -1,9 +1,0 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftamicable-pairs1072913365/001/main.swift:21:23: error: cannot assign value of type '[Any]' to type '[Int]'
-19 | }
-20 | func main() {
-21 |     var sums: [Int] = [Any]()
-   |                       |- error: cannot assign value of type '[Any]' to type '[Int]'
-   |                       `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
-22 |     var i = 0
-23 |     while i < 20000 {

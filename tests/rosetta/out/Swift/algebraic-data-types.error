@@ -1,1 +1,1 @@
-compile error: unsupported cast to [String: any]
+compile: unsupported cast to [String: any]

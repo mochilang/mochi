@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-16 13:17 – implemented `now()` built-in to return nanoseconds using
+  `Date().timeIntervalSince1970`, allowing more Rosetta tasks to compile.
 - 2025-07-17 00:00 – variable declarations with empty lists now scan later
   assignments to infer the element type, avoiding `[Any]`.
 - 2025-07-13 05:09 – improved type inference for `append()` calls so list variables adopt the element type.
