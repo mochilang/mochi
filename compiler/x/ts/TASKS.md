@@ -1,6 +1,9 @@
 # TypeScript Compiler Tasks
 
 ## Recent Enhancements
+### 2025-07-16 16:20 UTC
+- Updated `vm_golden_test.go` to keep TypeScript outputs under
+  `tests/machine/x/ts` without touching `tests/vm/valid`.
 ### 2025-07-16 15:24 UTC
 - Added `vm_golden_test.go` to verify TypeScript output for programs under `tests/vm/valid`.
 - `_equal` helper now tolerates small numeric differences to avoid `.error` files.
