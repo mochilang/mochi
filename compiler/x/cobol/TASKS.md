@@ -1,6 +1,7 @@
 # COBOL Compiler Tasks
 
 ## Recent Enhancements
+- 2025-07-19 00:00 - Golden tests now use `golden.Run` and support `min`/`max` builtins for constant lists.
 - 2025-07-18 16:00 - `vm_golden_test.go` now only verifies program output and
   invokes `cobc` with `-std=cobol2002` to compile more examples. Fewer `.error`
   files are generated in `tests/machine/x/cobol`.

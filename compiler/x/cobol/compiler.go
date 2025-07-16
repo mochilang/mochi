@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	meta "mochi/compiler/meta"
@@ -703,6 +704,82 @@ func (c *Compiler) compileUserCall(call *parser.CallExpr) (string, error) {
 			return fmt.Sprintf("FUNCTION LENGTH(%s)", val), nil
 		}
 	}
+	if call.Func == "min" && len(call.Args) == 1 {
+		arg := call.Args[0]
+		if lst := listLiteral(arg); lst != nil {
+			if len(lst.Elems) == 0 {
+				return "0", nil
+			}
+			min := int(^uint(0) >> 1)
+			for _, e := range lst.Elems {
+				v, ok := intLiteral(e)
+				if !ok {
+					return "", fmt.Errorf("only int lists supported in min")
+				}
+				if v < min {
+					min = v
+				}
+			}
+			return fmt.Sprintf("%d", min), nil
+		}
+		if id, ok := identExpr(arg); ok {
+			if vals, ok := c.constLists[id]; ok && len(vals) > 0 {
+				min := int(^uint(0) >> 1)
+				for _, s := range vals {
+					v, err := strconv.Atoi(s)
+					if err != nil {
+						return "", fmt.Errorf("only int lists supported in min")
+					}
+					if v < min {
+						min = v
+					}
+				}
+				return fmt.Sprintf("%d", min), nil
+			}
+			if _, ok := c.seqList[id]; ok {
+				return "1", nil
+			}
+		}
+	}
+
+	if call.Func == "max" && len(call.Args) == 1 {
+		arg := call.Args[0]
+		if lst := listLiteral(arg); lst != nil {
+			if len(lst.Elems) == 0 {
+				return "0", nil
+			}
+			max := -int(^uint(0)>>1) - 1
+			for _, e := range lst.Elems {
+				v, ok := intLiteral(e)
+				if !ok {
+					return "", fmt.Errorf("only int lists supported in max")
+				}
+				if v > max {
+					max = v
+				}
+			}
+			return fmt.Sprintf("%d", max), nil
+		}
+		if id, ok := identExpr(arg); ok {
+			if vals, ok := c.constLists[id]; ok && len(vals) > 0 {
+				max := -int(^uint(0)>>1) - 1
+				for _, s := range vals {
+					v, err := strconv.Atoi(s)
+					if err != nil {
+						return "", fmt.Errorf("only int lists supported in max")
+					}
+					if v > max {
+						max = v
+					}
+				}
+				return fmt.Sprintf("%d", max), nil
+			}
+			if n, ok := c.seqList[id]; ok {
+				return fmt.Sprintf("%d", n), nil
+			}
+		}
+	}
+
 	if call.Func == "substring" && len(call.Args) == 3 {
 		sArg, err := c.compileExpr(call.Args[0])
 		if err != nil {
