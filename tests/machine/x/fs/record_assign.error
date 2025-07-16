@@ -1,0 +1,7 @@
+F# Compiler for F# 4.0 (Open Source Edition)
+Freely distributed under the Apache 2.0 Open Source License
+
+/workspace/mochi/tests/machine/x/fs/record_assign.fs(13,19): error FS0001: This expression was expected to have type
+    Counter    
+but here has type
+    Anon1    

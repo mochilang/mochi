@@ -1,11 +1,8 @@
-F# Compiler for F# 4.0 (Open Source Edition)
-Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/map_nested_assign.fs(3,89): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    Collections.Generic.IDictionary<'a,'b>    
-
-/workspace/mochi/tests/machine/x/fs/map_nested_assign.fs(4,1): error FS0039: The field, constructor or member 'Item' is not defined
-
-/workspace/mochi/tests/machine/x/fs/map_nested_assign.fs(5,15): error FS0039: The field, constructor or member 'Item' is not defined
+Unhandled Exception:
+System.NotSupportedException: Exception of type 'System.NotSupportedException' was thrown.
+  at Microsoft.FSharp.Core.ExtraTopLevelOperators+dictRefType@101-1[TKey,T].System-Collections-Generic-IDictionary`2-set_Item (TKey key, T value) [0x00015] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$map_nested_assign>.$Map_nested_assign.main@ () [0x00051] in <6877d3072a4495d7a745038307d37768>:0 
+[ERROR] FATAL UNHANDLED EXCEPTION: System.NotSupportedException: Exception of type 'System.NotSupportedException' was thrown.
+  at Microsoft.FSharp.Core.ExtraTopLevelOperators+dictRefType@101-1[TKey,T].System-Collections-Generic-IDictionary`2-set_Item (TKey key, T value) [0x00015] in <65d1017bc6ad35d9a74503837b01d165>:0 
+  at <StartupCode$map_nested_assign>.$Map_nested_assign.main@ () [0x00051] in <6877d3072a4495d7a745038307d37768>:0 

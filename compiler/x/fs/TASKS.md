@@ -2,6 +2,12 @@
 
 ## Recent Updates
 
+- 2025-07-17 00:00 UTC - Added golden tests for `tests/vm/valid` verifying
+  generated F# code and improved type inference on assignments so more
+  examples compile without errors.
+- 2025-07-17 12:34 UTC - Simplified dataset tests to check only program output
+  and corrected TPC-DS output paths.
+
 - 2025-07-16 12:22 UTC - compile script now autodetects `System.Text.Json.dll`
   and `System.Runtime.dll` paths so tests run on machines without exact
   directory versions installed.

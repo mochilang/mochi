@@ -1,10 +1,10 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/load_yaml.fs(15,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (14:19). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/load_yaml.fs(16,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (15:19). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/load_yaml.fs(16,5): error FS0010: Unexpected identifier in expression. Expected 'in' or other token.
+/workspace/mochi/tests/machine/x/fs/load_yaml.fs(17,5): error FS0010: Unexpected identifier in expression. Expected 'in' or other token.
 
-/workspace/mochi/tests/machine/x/fs/load_yaml.fs(14,20): error FS0587: Error in the return expression for this 'let'. Possible incorrect indentation.
+/workspace/mochi/tests/machine/x/fs/load_yaml.fs(15,20): error FS0587: Error in the return expression for this 'let'. Possible incorrect indentation.
 
-/workspace/mochi/tests/machine/x/fs/load_yaml.fs(16,52): error FS0010: Unexpected symbol ')' in binding. Expected incomplete structured construct at or before this point or other token.
+/workspace/mochi/tests/machine/x/fs/load_yaml.fs(17,52): error FS0010: Unexpected symbol ')' in binding. Expected incomplete structured construct at or before this point or other token.

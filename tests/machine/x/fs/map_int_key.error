@@ -1,17 +1,17 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/map_int_key.fs(3,72): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/map_int_key.fs(4,72): error FS0001: This expression was expected to have type
     string    
 but here has type
     int    
 
-/workspace/mochi/tests/machine/x/fs/map_int_key.fs(3,82): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/map_int_key.fs(4,82): error FS0001: This expression was expected to have type
     string    
 but here has type
     int    
 
-/workspace/mochi/tests/machine/x/fs/map_int_key.fs(4,18): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/map_int_key.fs(5,18): error FS0001: This expression was expected to have type
     string    
 but here has type
     int    

@@ -1,16 +1,30 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(27,13): error FS0374: Invalid expression on left of assignment
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:25). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_having.fs(34,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:23). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(35,26): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(38,85): warning FS0064: This construct causes code to be less generic than indicated by the type annotations. The type variable 'K has been constrained to be type 'string'.
+
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(38,149): error FS0001: This expression was expected to have type
+    'a list    
+but here has type
+    Collections.Generic.List<Anon1>    
+
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(39,45): error FS0001: This expression was expected to have type
+    'a list    
+but here has type
+    Collections.Generic.List<Anon1>    
+
+/workspace/mochi/tests/machine/x/fs/group_by_having.fs(40,15): error FS1109: A reference to the type 'System.Object' in assembly 'System.Runtime' was found, but the type could not be found in that assembly

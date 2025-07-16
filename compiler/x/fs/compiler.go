@@ -1768,23 +1768,29 @@ func (c *Compiler) gatherHints(stmts []*parser.Statement) {
 		switch {
 		case st.Assign != nil:
 			a := st.Assign
-			if len(a.Index) > 0 {
-				t := c.inferType(a.Value)
-				if t != "obj" {
-					if _, ok := c.hints[a.Name]; !ok {
-						c.hints[a.Name] = t
-					}
-				}
-			} else if p := rootPrimary(a.Value); p != nil && p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2 {
-				if name, ok := c.simpleIdentifier(p.Call.Args[0]); ok && name == a.Name {
-					t := c.inferType(p.Call.Args[1])
-					if t != "obj" {
-						if _, ok := c.hints[a.Name]; !ok {
-							c.hints[a.Name] = t
-						}
-					}
-				}
-			}
+                       if len(a.Index) > 0 {
+                               t := c.inferType(a.Value)
+                               if t != "obj" {
+                                       if _, ok := c.hints[a.Name]; !ok {
+                                               c.hints[a.Name] = t
+                                       }
+                               }
+                       } else if p := rootPrimary(a.Value); p != nil && p.Call != nil && p.Call.Func == "append" && len(p.Call.Args) == 2 {
+                               if name, ok := c.simpleIdentifier(p.Call.Args[0]); ok && name == a.Name {
+                                       t := c.inferType(p.Call.Args[1])
+                                       if t != "obj" {
+                                               if _, ok := c.hints[a.Name]; !ok {
+                                                       c.hints[a.Name] = t
+                                               }
+                                       }
+                               }
+                       } else {
+                               if t := c.inferType(a.Value); t != "obj" {
+                                       if _, ok := c.hints[a.Name]; !ok {
+                                               c.hints[a.Name] = t
+                                       }
+                               }
+                       }
 		case st.For != nil:
 			c.gatherHints(st.For.Body)
 		case st.While != nil:

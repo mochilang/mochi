@@ -1,17 +1,17 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(4,32): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(5,32): error FS0001: This expression was expected to have type
     obj    
 but here has type
     string    
 
-/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(4,58): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(5,58): error FS0001: This expression was expected to have type
     obj    
 but here has type
     string    
 
-/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(4,72): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/if_then_else_nested.fs(5,72): error FS0001: This expression was expected to have type
     obj    
 but here has type
     string    

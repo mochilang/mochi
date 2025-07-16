@@ -1,12 +1,7 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/match_expr.fs(5,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (4:18). Try indenting this token further or using standard formatting conventions.
-
-/workspace/mochi/tests/machine/x/fs/match_expr.fs(5,12): error FS0001: This expression was expected to have type
-    obj    
-but here has type
-    string    
+/workspace/mochi/tests/machine/x/fs/match_expr.fs(6,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (5:18). Try indenting this token further or using standard formatting conventions.
 
 /workspace/mochi/tests/machine/x/fs/match_expr.fs(6,12): error FS0001: This expression was expected to have type
     obj    
@@ -19,6 +14,11 @@ but here has type
     string    
 
 /workspace/mochi/tests/machine/x/fs/match_expr.fs(8,12): error FS0001: This expression was expected to have type
+    obj    
+but here has type
+    string    
+
+/workspace/mochi/tests/machine/x/fs/match_expr.fs(9,12): error FS0001: This expression was expected to have type
     obj    
 but here has type
     string    

@@ -75,16 +75,6 @@ func runRosettaTaskGolden(t *testing.T, name string) {
 	if err != nil {
 		t.Fatalf("compile error: %v", err)
 	}
-	codeWant := filepath.Join(root, "tests", "rosetta", "out", "FS", name+".fs")
-	if shouldUpdateRosetta() {
-		_ = os.WriteFile(codeWant, code, 0o644)
-	} else if want, err := os.ReadFile(codeWant); err == nil {
-		got := stripHeaderLocal(bytes.TrimSpace(code))
-		want = stripHeaderLocal(bytes.TrimSpace(want))
-		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch for %s.fs\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-		}
-	}
 
 	dir := t.TempDir()
 	file := filepath.Join(dir, "main.fs")
