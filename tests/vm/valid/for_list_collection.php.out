@@ -1,13 +1,34 @@
 <?php
-foreach ((is_string([1, 2, 3]) ? str_split([1, 2, 3]) : [1, 2, 3]) as $n) {
-	_print($n);
+foreach ([1, 2, 3] as $n) {
+    _print($n);
 }
-
 function _print(...$args) {
-    $parts = [];
+    $first = true;
     foreach ($args as $a) {
-        if (is_null($a)) { $parts[] = '<nil>'; }
-        elseif (is_array($a) || is_object($a)) { $parts[] = json_encode($a); } else { $parts[] = strval($a); }
+        if (!$first) echo ' ';
+        $first = false;
+        if (is_array($a)) {
+            if (array_is_list($a)) {
+                if ($a && is_array($a[0])) {
+                    $parts = [];
+                    foreach ($a as $sub) {
+                        if (is_array($sub)) {
+                            $parts[] = '[' . implode(' ', $sub) . ']';
+                        } else {
+                            $parts[] = strval($sub);
+                        }
+                    }
+                    echo implode(' ', $parts);
+                } else {
+                    echo '[' . implode(' ', array_map('strval', $a)) . ']';
+                }
+            } else {
+                echo json_encode($a);
+            }
+        } else {
+            echo strval($a);
+        }
     }
-    echo implode(' ', $parts), PHP_EOL;
+    echo PHP_EOL;
 }
+?>

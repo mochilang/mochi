@@ -16,6 +16,7 @@
 - 2025-07-16 12:13 - Generated PHP code for select Rosetta tasks via compile_rosetta_php.go.
 - 2025-07-16 16:20 - Sanitizer now avoids PHP reserved names like `shuffle` and
   `this` so more Rosetta tasks compile successfully.
+- 2025-07-17 00:00 - Added golden tests for VM valid programs to ensure PHP backend parity.
 
 ## Remaining Work
 - [ ] Improve runtime helpers for grouping and aggregation
