@@ -1,0 +1,8 @@
+type error: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/calculating-the-value-of-e.mochi:26:17
+
+ 26 |   let intPart = substring(digits, 0, len(digits)-prec)
+    |                 ^
+
+help:
+  Ensure the argument type matches the function’s signature.

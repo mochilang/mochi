@@ -109,3 +109,4 @@ should compile and run successfully.
 - 2025-07-15 08:18 - Added compile_tpch_c.go script to generate C outputs for TPCH queries 1-22. Script compiles each query and records .error logs on failure.
 - 2025-07-15 08:34 - Fixed join result length calculation to use array length variables so TPCH queries with arrays compile.
 - 2025-07-15 12:09 - Adjusted list equality generation to handle arrays in expectations.
+- 2025-09-01 09:00 – Added indexOf and sha256 built-ins to reduce Rosetta compile errors; regenerated C golden files.

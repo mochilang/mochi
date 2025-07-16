@@ -1,0 +1,8 @@
+type error: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
+
+ 98 |   s = s + substring(p, len(p) - 1, len(p))
+    |           ^
+
+help:
+  Ensure the argument type matches the function’s signature.
