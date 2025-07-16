@@ -2,6 +2,10 @@
 
 ## Recent Updates
 
+- 2025-07-16 12:22 UTC - compile script now autodetects `System.Text.Json.dll`
+  and `System.Runtime.dll` paths so tests run on machines without exact
+  directory versions installed.
+
 - 2025-07-16 12:07 UTC - Improved type hints for arrays by analyzing assignments
   and fixed range loop bounds so Rosetta tasks compile and run without errors.
 

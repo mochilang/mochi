@@ -60,6 +60,12 @@ func main() {
 
 	jsonRef := "/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Text.Json.dll"
 	runtimeRef := "/usr/lib/dotnet/shared/Microsoft.NETCore.App/8.0.17/System.Runtime.dll"
+	if matches, _ := filepath.Glob("/usr/lib/dotnet/shared/Microsoft.NETCore.App/*/System.Text.Json.dll"); len(matches) > 0 {
+		jsonRef = matches[0]
+	}
+	if matches, _ := filepath.Glob("/usr/lib/dotnet/shared/Microsoft.NETCore.App/*/System.Runtime.dll"); len(matches) > 0 {
+		runtimeRef = matches[0]
+	}
 
 	for _, name := range tasks {
 		src := filepath.Join(root, "tests", "rosetta", "x", "Mochi", name+".mochi")
