@@ -1,5 +1,0 @@
-tests/vm/valid/string_prefix_slice.go.out:15: unsupported parameter list
->>> 14:    
-15:>>> func _sliceString(s string, i, j int) string {
-16:    start := i
-17:    end := j
