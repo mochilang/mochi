@@ -508,6 +508,16 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			args[i] = v
 		}
 		switch p.Call.Func {
+		case "input":
+			if len(args) != 0 {
+				return "", fmt.Errorf("input expects no args")
+			}
+			return "(read-line)", nil
+		case "now":
+			if len(args) != 0 {
+				return "", fmt.Errorf("now expects no args")
+			}
+			return "(inexact->exact (floor (* (current-inexact-milliseconds) 1000000)))", nil
 		case "print":
 			if len(args) == 0 {
 				return "", fmt.Errorf("print expects at least 1 arg")

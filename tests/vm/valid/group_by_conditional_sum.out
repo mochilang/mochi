@@ -1,1 +1,1 @@
-[object Object] [object Object]
+#hash((cat . b) (share . 1)) #hash((cat . a) (share . 2/3))

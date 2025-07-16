@@ -2,6 +2,9 @@
 
 Recent enhancements:
 
+- 2025-09-01 05:04 - Implemented `now()` and `input()` builtins to
+  reduce `.error` files in Rosetta golden tests.
+
 - 2025-08-30 05:04 - Added golden tests for `tests/vm/valid` to
   verify generated Racket code and runtime output.
 
