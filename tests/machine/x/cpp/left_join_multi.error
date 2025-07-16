@@ -1,0 +1,23 @@
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:19:12: error: ‘o’ was not declared in this scope
+   19 |   decltype(o.id) orderId;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:19:12: error: ‘o’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:20:12: error: ‘c’ was not declared in this scope
+   20 |   decltype(c.name) name;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:20:12: error: ‘c’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:21:12: error: ‘i’ was not declared in this scope
+   21 |   decltype(i) item;
+      |            ^
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:21:12: error: ‘i’ was not declared in this scope
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp: In lambda function:
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:40:46: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+   40 |             __items.push_back(Result{o.id, c.name, i});
+      |                                            ~~^~~~
+      |                                              |
+      |                                              std::string {aka std::__cxx11::basic_string<char>}
+/tmp/TestCPPCompiler_VMValid_Goldenleft_join_multi309181997/001/prog.cpp:44:46: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+   44 |             __items.push_back(Result{o.id, c.name, i});
+      |                                            ~~^~~~
+      |                                              |
+      |                                              std::string {aka std::__cxx11::basic_string<char>}
