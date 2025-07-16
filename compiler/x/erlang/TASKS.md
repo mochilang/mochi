@@ -20,6 +20,8 @@
   regenerated failing TPC-DS outputs.
 - [2025-07-15 07:25] Tweaked `mochi_get` to return `undefined` for missing
   keys and regenerated TPC-DS outputs, reducing `.error` count.
+- [2025-07-17 00:15] Added Rosetta golden tests and `compile_rosetta_erlang.go`
+  script to generate outputs. Fixed loop handling to reduce `.error` files.
 
 ## Remaining work
 - [ ] Implement auto FFI handling for `go_auto` and `python_auto` programs.

@@ -1,17 +1,17 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-2.erl:8:261: variable 'Line1' is unbound
+run: exit status 127
+/tmp/100-doors-2.erl:8:261: variable 'Line1' is unbound
 %    8|     lists:foreach(fun(Current) -> Line0 = "Door " ++ lists:flatten(io_lib:format("~p", [Current])) ++ " ", (case (Current == Door0) of true -> Line1 = Line0 ++ "Open", Incrementer1 = (Incrementer0 + 1), Door1 = ((Door0 + (2 * Incrementer1)) + 1); _ -> Line2 = Line1 ++ "Closed" end), io:format("~p~n", [Line2]) end, lists:seq(1, (101)-1)).
 %     |                                                                                                                                                                                                                                                                     ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-2.erl:8:304: variable 'Line2' unsafe in 'case' (line 8, column 109)
+/tmp/100-doors-2.erl:8:304: variable 'Line2' unsafe in 'case' (line 8, column 109)
 %    8|     lists:foreach(fun(Current) -> Line0 = "Door " ++ lists:flatten(io_lib:format("~p", [Current])) ++ " ", (case (Current == Door0) of true -> Line1 = Line0 ++ "Open", Incrementer1 = (Incrementer0 + 1), Door1 = ((Door0 + (2 * Incrementer1)) + 1); _ -> Line2 = Line1 ++ "Closed" end), io:format("~p~n", [Line2]) end, lists:seq(1, (101)-1)).
 %     |                                                                                                                                                                                                                                                                                                                ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-2.erl:8:144: Warning: variable 'Line1' is unused
+/tmp/100-doors-2.erl:8:144: Warning: variable 'Line1' is unused
 %    8|     lists:foreach(fun(Current) -> Line0 = "Door " ++ lists:flatten(io_lib:format("~p", [Current])) ++ " ", (case (Current == Door0) of true -> Line1 = Line0 ++ "Open", Incrementer1 = (Incrementer0 + 1), Door1 = ((Door0 + (2 * Incrementer1)) + 1); _ -> Line2 = Line1 ++ "Closed" end), io:format("~p~n", [Line2]) end, lists:seq(1, (101)-1)).
 %     |                                                                                                                                                ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors-2.erl:8:204: Warning: variable 'Door1' is unused
+/tmp/100-doors-2.erl:8:204: Warning: variable 'Door1' is unused
 %    8|     lists:foreach(fun(Current) -> Line0 = "Door " ++ lists:flatten(io_lib:format("~p", [Current])) ++ " ", (case (Current == Door0) of true -> Line1 = Line0 ++ "Open", Incrementer1 = (Incrementer0 + 1), Door1 = ((Door0 + (2 * Incrementer1)) + 1); _ -> Line2 = Line1 ++ "Closed" end), io:format("~p~n", [Line2]) end, lists:seq(1, (101)-1)).
 %     |                                                                                                                                                                                                            ^
 

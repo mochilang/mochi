@@ -1,33 +1,33 @@
-run error: exit status 127
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:120: variable 'Doors2' is unbound
+run: exit status 127
+/tmp/100-doors.erl:9:120: variable 'Doors2' is unbound
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                        ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:152: variable 'Line1' is unbound
+/tmp/100-doors.erl:9:152: variable 'Line1' is unbound
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                        ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:183: variable 'Line1' is unbound
+/tmp/100-doors.erl:9:183: variable 'Line1' is unbound
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                                                       ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:264: variable 'Line2' unsafe in 'case' (line 9, column 96)
+/tmp/100-doors.erl:9:264: variable 'Line2' unsafe in 'case' (line 9, column 96)
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                                                                                                                                        ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:338: variable 'Line3' is unbound
+/tmp/100-doors.erl:9:338: variable 'Line3' is unbound
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                                                                                                                                                                                                                  ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:7:32: Warning: variable 'I' is unused
+/tmp/100-doors.erl:7:32: Warning: variable 'I' is unused
 %    7|     {Doors1} = lists:foldl(fun(I, {Doors}) -> Doors1 = Doors ++ [false], {Doors1} end, {Doors0}, lists:seq(0, (100)-1)),
 %     |                                ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:202: Warning: variable 'Line1' is unused
+/tmp/100-doors.erl:9:202: Warning: variable 'Line1' is unused
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                                                                          ^
 
-/workspace/mochi/tests/rosetta/out/Erlang/100-doors.erl:9:256: Warning: variable 'Line3' is unused
+/tmp/100-doors.erl:9:256: Warning: variable 'Line3' is unused
 %    9|     lists:foreach(fun(Row) -> Line0 = "", lists:foreach(fun(Col) -> Idx = ((Row * 10) + Col), (case lists:nth((Idx)+1, Doors2) of undefined -> Line2 = Line1 ++ "0"; false -> Line2 = Line1 ++ "0"; _ -> Line1 = Line0 ++ "1" end), (case (Col < 9) of true -> Line3 = Line2 ++ " "; _ -> ok end) end, lists:seq(0, (10)-1)), io:format("~p~n", [Line3]) end, lists:seq(0, (10)-1)).
 %     |                                                                                                                                                                                                                                                                ^
 

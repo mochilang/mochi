@@ -334,6 +334,8 @@ func (c *Compiler) compileAssign(a *parser.AssignStmt) (string, error) {
 		c.types[a.Name] = t
 	}
 	name := c.newVarName(a.Name)
+	c.aliases[a.Name] = name
+	c.lets[a.Name] = true
 	return fmt.Sprintf("%s = %s", name, val), nil
 }
 
@@ -474,6 +476,9 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 		if st.Assign != nil {
 			mutated[st.Assign.Name] = true
 		}
+		if st.Update != nil {
+			mutated[st.Update.Target] = true
+		}
 	}
 	params := make([]string, 0, len(mutated))
 	initArgs := make([]string, 0, len(mutated))
@@ -509,7 +514,7 @@ func (c *Compiler) compileWhile(w *parser.WhileStmt) (string, error) {
 	}
 	loopName := c.newVarName("loop")
 	fun := fmt.Sprintf("fun %s(%s) -> case %s of true -> %s, %s(%s); _ -> ok end end", loopName, strings.Join(params, ", "), cond, body, loopName, strings.Join(nextArgs, ", "))
-	return fmt.Sprintf("(%s(%s))", fun, strings.Join(initArgs, ", ")), nil
+	return fmt.Sprintf("(%s)(%s)", fun, strings.Join(initArgs, ", ")), nil
 }
 
 func (c *Compiler) compileUpdate(st *parser.UpdateStmt) (string, error) {
@@ -607,6 +612,9 @@ func (c *Compiler) compileFor(fr *parser.ForStmt) (string, error) {
 	for _, st := range fr.Body {
 		if st.Assign != nil {
 			mutated[st.Assign.Name] = true
+		}
+		if st.Update != nil {
+			mutated[st.Update.Target] = true
 		}
 	}
 
