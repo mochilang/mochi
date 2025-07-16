@@ -1,0 +1,5 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/bool_chain.cob:16: error: 'FN_BOOM_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/bool_chain.cob:16: error: invalid expression
+/workspace/mochi/tests/machine/x/cobol/bool_chain.cob:22: error: invalid expression
+

@@ -63,8 +63,9 @@ func TestCobolCompiler_Programs(t *testing.T) {
 			}
 			srcFile := filepath.Join(outDir, name+".cob")
 			os.WriteFile(srcFile, code, 0644)
-			bin := filepath.Join(outDir, name)
-			if out, err := exec.Command(cobc, "-x", "-o", bin, srcFile).CombinedOutput(); err != nil {
+			tmp := t.TempDir()
+			bin := filepath.Join(tmp, name)
+			if out, err := exec.Command(cobc, "-free", "-x", "-o", bin, srcFile).CombinedOutput(); err != nil {
 				writeError(outDir, name, string(code), fmt.Errorf("cobc: %v\n%s", err, out))
 				return
 			}
@@ -98,4 +99,37 @@ func writeError(dir, name, src string, err error) {
 		ctx = strings.Join(lines[start:end], "\n")
 	}
 	os.WriteFile(filepath.Join(dir, name+".error"), []byte(msg+"\n"+ctx), 0644)
+}
+
+func TestMain(m *testing.M) {
+	code := m.Run()
+	updateReadme()
+	os.Exit(code)
+}
+
+func updateReadme() {
+	root := repoRoot()
+	srcDir := filepath.Join(root, "tests", "vm", "valid")
+	outDir := filepath.Join(root, "tests", "machine", "x", "cobol")
+	files, _ := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
+	total := len(files)
+	compiled := 0
+	var lines []string
+	for _, f := range files {
+		name := strings.TrimSuffix(filepath.Base(f), ".mochi")
+		mark := "[ ]"
+		if _, err := os.Stat(filepath.Join(outDir, name+".out")); err == nil {
+			compiled++
+			mark = "[x]"
+		}
+		lines = append(lines, fmt.Sprintf("- %s %s.mochi", mark, name))
+	}
+	var buf bytes.Buffer
+	buf.WriteString("# Mochi to COBOL Machine Outputs\n\n")
+	buf.WriteString("This directory contains COBOL code generated from the programs in `tests/vm/valid`.\n\n")
+	fmt.Fprintf(&buf, "Compiled programs: %d/%d\n\n", compiled, total)
+	buf.WriteString("## Checklist\n")
+	buf.WriteString(strings.Join(lines, "\n"))
+	buf.WriteString("\n")
+	_ = os.WriteFile(filepath.Join(outDir, "README.md"), buf.Bytes(), 0644)
 }

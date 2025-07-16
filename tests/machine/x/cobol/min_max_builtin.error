@@ -1,0 +1,8 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:13: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:14: error: 'FN_MIN_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:15: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:16: error: 'FN_MAX_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:13: error: 'FN_MIN' is not defined
+/workspace/mochi/tests/machine/x/cobol/min_max_builtin.cob:15: error: 'FN_MAX' is not defined
+

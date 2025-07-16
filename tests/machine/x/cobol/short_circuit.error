@@ -1,0 +1,9 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:10: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:11: error: 'FN_BOOM_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:11: error: invalid conditional expression
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:16: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:17: error: invalid conditional expression
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob: in paragraph 'FN_BOOM':
+/workspace/mochi/tests/machine/x/cobol/short_circuit.cob:25: error: syntax error, unexpected PROCEDURE
+

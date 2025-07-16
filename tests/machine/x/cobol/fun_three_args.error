@@ -1,0 +1,9 @@
+cobc: exit status 1
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:10: error: syntax error, unexpected USING
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:11: error: 'FN_SUM3_RES' is not defined
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob: in paragraph 'FN_SUM3':
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:15: error: syntax error, unexpected PROCEDURE
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:16: error: 'A' is not defined
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:16: error: 'B' is not defined
+/workspace/mochi/tests/machine/x/cobol/fun_three_args.cob:16: error: 'C' cannot be used here
+
