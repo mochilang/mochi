@@ -6,6 +6,12 @@
 - Regenerated all `.hs.out` files which removed stale `Data.Aeson` imports and
   reduced the number of `.error` files.
 
+## Recent Updates (2025-07-20 05:00)
+- `group_by` helper now triggers `Data.Maybe` import automatically to avoid
+  "fromMaybe not in scope" compile errors.
+- Removed the golden-code test for VM programs so we only compare runtime
+  output.
+
 -## Recent Updates (2025-07-18 05:00)
 - Automatically import `Data.Map` whenever runtime helpers are emitted so
   generated programs compile cleanly.

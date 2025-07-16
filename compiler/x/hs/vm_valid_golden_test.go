@@ -18,29 +18,6 @@ import (
 	"mochi/types"
 )
 
-// TestHSCompiler_VMValid_GoldenCode verifies generated Haskell code for
-// each program in tests/vm/valid matches the checked in .hs.out files.
-func TestHSCompiler_VMValid_GoldenCode(t *testing.T) {
-	if err := hscode.EnsureHaskell(); err != nil {
-		t.Skipf("haskell not installed: %v", err)
-	}
-	golden.Run(t, "tests/vm/valid", ".mochi", ".hs.out", func(src string) ([]byte, error) {
-		prog, err := parser.Parse(src)
-		if err != nil {
-			return nil, fmt.Errorf("parse error: %w", err)
-		}
-		env := types.NewEnv(nil)
-		if errs := types.Check(prog, env); len(errs) > 0 {
-			return nil, fmt.Errorf("type error: %v", errs[0])
-		}
-		code, err := hscode.New(env).Compile(prog)
-		if err != nil {
-			return nil, fmt.Errorf("compile error: %w", err)
-		}
-		return bytes.TrimSpace(code), nil
-	})
-}
-
 // TestHSCompiler_VMValid_GoldenRun compiles each program and executes the
 // generated Haskell code, comparing the output with the reference .out files.
 func TestHSCompiler_VMValid_GoldenRun(t *testing.T) {

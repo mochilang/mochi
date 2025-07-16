@@ -2053,6 +2053,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		c.env = orig
 		c.usesMap = true
 		c.usesList = true
+		c.usesMaybe = true
 		expr := fmt.Sprintf("[ %s | g <- _group_by %s (\\%s -> %s), let %s = g ]", valExpr, src, sanitizeName(q.Var), keyExpr, sanitizeName(q.Group.Name))
 		return expr, nil
 	}
@@ -2075,6 +2076,7 @@ func (c *Compiler) compileQueryExpr(q *parser.QueryExpr) (string, error) {
 		}(), ", "))
 		rows := fmt.Sprintf("[%s | %s%s]", tuple, strings.Join(loops, ", "), condStr)
 		groups := fmt.Sprintf("_group_by %s (\\%s -> %s)", rows, tuple, keyExpr)
+		c.usesMaybe = true
 		genv := types.NewEnv(child)
 		genv.SetVar(q.Group.Name, types.GroupType{Elem: types.AnyType{}}, true)
 		c.env = genv
