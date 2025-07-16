@@ -1,6 +1,0 @@
-Error on line 0: output mismatch
--- got --
-{b 7} {a 4}
--- want --
-[object Object] [object Object]
-1: //go:build ignore
