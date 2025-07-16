@@ -63,3 +63,6 @@
 - Fixed join logic in runtime to keep rows with NULL values.
 - Added custom channel order in _cmp to satisfy q76 sorting.
 - Regenerated TPC-DS outputs for q40 and q76; all queries now compile and run.
+### 2025-07-16 11:26 UTC
+- Added `compile_rosetta_ts.go` and `rosetta_golden_test.go` for running Rosetta tasks with the TypeScript backend.
+- Initial golden run updates code and outputs for the first few tasks without errors.
