@@ -1,10 +1,10 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(24,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(25,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (24:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(24,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (23:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(25,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (24:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(25,58): error FS0010: Unexpected keyword 'if' in binding. Expected incomplete structured construct at or before this point or other token.
+/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(26,58): error FS0010: Unexpected keyword 'if' in binding. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(25,3): error FS0588: Block following this 'let' is unfinished. Expect an expression.
+/workspace/mochi/tests/machine/x/fs/left_join_multi.fs(26,3): error FS0588: Block following this 'let' is unfinished. Expect an expression.

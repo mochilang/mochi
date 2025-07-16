@@ -1,28 +1,26 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(26,13): error FS0374: Invalid expression on left of assignment
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(37,181): error FS0599: Missing qualification after '.'
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(32,179): error FS0599: Missing qualification after '.'
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(37,182): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(32,180): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(37,160): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(32,158): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (37:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,66): error FS0599: Missing qualification after '.'
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,66): error FS0599: Missing qualification after '.'
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,67): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,67): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
-
-/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(33,45): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
+/workspace/mochi/tests/machine/x/fs/group_by_sort.fs(38,45): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.

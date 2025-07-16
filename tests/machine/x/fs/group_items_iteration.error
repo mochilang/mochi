@@ -1,16 +1,14 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(26,13): error FS0374: Invalid expression on left of assignment
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(42,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (41:26). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(42,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (41:26). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(33,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (32:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(47,27): error FS0599: Missing qualification after '.'
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(38,27): error FS0599: Missing qualification after '.'
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(47,28): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(38,28): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(46,5): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
 
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(37,5): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
-
-/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(40,1): error FS0010: Incomplete structured construct at or before this point in implementation file
+/workspace/mochi/tests/machine/x/fs/group_items_iteration.fs(49,1): error FS0010: Incomplete structured construct at or before this point in implementation file

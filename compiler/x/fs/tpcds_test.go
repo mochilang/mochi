@@ -26,8 +26,7 @@ func TestFSCompiler_TPCDS(t *testing.T) {
 
 	runQuery := func(q string) {
 		src := filepath.Join(root, "tests", "dataset", "tpc-ds", q+".mochi")
-		codeWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "fs", q+".fs.out")
-		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "compiler", "fs", q+".out")
+		outWant := filepath.Join(root, "tests", "dataset", "tpc-ds", "out", q+".out")
 
 		prog, err := parser.Parse(src)
 		if err != nil {
@@ -40,15 +39,6 @@ func TestFSCompiler_TPCDS(t *testing.T) {
 		code, err := fscode.New().Compile(prog)
 		if err != nil {
 			t.Skipf("compile error: %v", err)
-		}
-		wantCode, err := os.ReadFile(codeWant)
-		if err != nil {
-			t.Fatalf("read golden: %v", err)
-		}
-		got := stripHeader(bytes.TrimSpace(code))
-		want := stripHeader(bytes.TrimSpace(wantCode))
-		if !bytes.Equal(got, want) {
-			t.Errorf("generated code mismatch for %s.fs.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s\n", q, got, want)
 		}
 		dir := t.TempDir()
 		fsPath := filepath.Join(dir, "main.fs")

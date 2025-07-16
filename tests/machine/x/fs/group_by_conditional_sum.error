@@ -1,30 +1,28 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(27,13): error FS0374: Invalid expression on left of assignment
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (38:28). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,19): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (33:26). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,82): error FS0599: Missing qualification after '.'
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,82): error FS0599: Missing qualification after '.'
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,83): error FS0010: Unexpected keyword 'val' in if/then/else expression. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,83): error FS0010: Unexpected keyword 'val' in if/then/else expression. Expected incomplete structured construct at or before this point or other token.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,65): error FS0583: Unmatched '('
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,65): error FS0583: Unmatched '('
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,87): error FS0010: Unexpected keyword 'else' in expression
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,87): error FS0010: Unexpected keyword 'else' in expression
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,131): error FS0599: Missing qualification after '.'
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,131): error FS0599: Missing qualification after '.'
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,132): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
 
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,132): error FS0010: Unexpected keyword 'val' in expression. Expected incomplete structured construct at or before this point or other token.
-
-/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(34,110): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.
+/workspace/mochi/tests/machine/x/fs/group_by_conditional_sum.fs(39,110): error FS3106: Unexpected end of input in 'for' expression. Expected 'for <pat> in <expr> do <expr>'.

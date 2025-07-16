@@ -1,20 +1,24 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(40,13): error FS0374: Invalid expression on left of assignment
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(54,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (53:30). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(49,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (48:28). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(54,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (53:30). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(49,3): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (48:28). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,5): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,13): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(57,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (56:29). Try indenting this token further or using standard formatting conventions.
 
-/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(52,20): warning FS0058: Possible incorrect indentation: this token is offside of context started at position (51:27). Try indenting this token further or using standard formatting conventions.
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(48,26): error FS0003: This value is not a function and cannot be applied
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(55,127): error FS0001: The type 'int' does not match the type 'float'
+
+/workspace/mochi/tests/machine/x/fs/group_by_multi_join.fs(56,91): warning FS0064: This construct causes code to be less generic than indicated by the type annotations. The type variable 'K has been constrained to be type 'int'.

@@ -1,7 +1,7 @@
 F# Compiler for F# 4.0 (Open Source Edition)
 Freely distributed under the Apache 2.0 Open Source License
 
-/workspace/mochi/tests/machine/x/fs/exists_builtin.fs(4,17): error FS0001: This expression was expected to have type
+/workspace/mochi/tests/machine/x/fs/exists_builtin.fs(5,17): error FS0001: This expression was expected to have type
     obj    
 but here has type
     bool    
