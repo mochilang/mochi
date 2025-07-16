@@ -9,6 +9,7 @@
 - 2025-07-16 00:00 - Renamed user-defined `main` to `user_main` to prevent conflicts with the exported entry point.
 - 2025-07-16 02:00 - Added VM valid golden tests and improved float sum detection.
 - 2025-07-16 17:30 - `_append` now returns an owned slice and lists print via `_print_list`.
+- 2025-07-16 18:00 - Added `vm_valid_golden_test.go` and fixed float printing to always show one decimal place.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.

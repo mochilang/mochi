@@ -3205,7 +3205,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 		case types.BoolType:
 			fmtStr = "{}"
 		case types.FloatType:
-			fmtStr = "{d}"
+			fmtStr = "{d:.1}"
 		}
 		return fmt.Sprintf("std.fmt.allocPrint(std.heap.page_allocator, %q, .{%s})%s", fmtStr, arg, c.catchHandler()), nil
 	}
@@ -3239,7 +3239,7 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				if err != nil {
 					return "", err
 				}
-				return fmt.Sprintf("std.debug.print(\"{d}\\n\", .{%s})", arg), nil
+				return fmt.Sprintf("std.debug.print(\"{d:.1}\\n\", .{%s})", arg), nil
 			}
 		}
 		if len(call.Args) > 0 && c.isStringLiteralExpr(call.Args[0]) {
@@ -3258,8 +3258,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 				switch c.inferExprType(a).(type) {
 				case types.StringType:
 					format += " {s}"
-				case types.IntType, types.Int64Type, types.FloatType:
+				case types.IntType, types.Int64Type:
 					format += " {d}"
+				case types.FloatType:
+					format += " {d:.1}"
 				case types.BoolType:
 					format += " {}"
 				default:
@@ -3284,8 +3286,10 @@ func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 			switch c.inferExprType(a).(type) {
 			case types.StringType:
 				fmtParts[i] = "{s}"
-			case types.IntType, types.Int64Type, types.FloatType:
+			case types.IntType, types.Int64Type:
 				fmtParts[i] = "{d}"
+			case types.FloatType:
+				fmtParts[i] = "{d:.1}"
 			case types.BoolType:
 				fmtParts[i] = "{}"
 			default:
