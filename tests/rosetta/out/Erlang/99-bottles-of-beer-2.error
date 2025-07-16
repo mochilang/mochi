@@ -1,0 +1,5 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/99-bottles-of-beer-2.erl:24:75: syntax error before: 'rem'
+/workspace/mochi/tests/rosetta/out/Erlang/99-bottles-of-beer-2.erl:34:12: syntax error before: 'rem'
+/workspace/mochi/tests/rosetta/out/Erlang/99-bottles-of-beer-2.erl:44:65: syntax error before: 'rem'
+escript: There were compilation errors.

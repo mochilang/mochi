@@ -1,0 +1,22 @@
+run error: exit status 127
+/workspace/mochi/tests/rosetta/out/Erlang/4-rings-or-4-squares-puzzle.erl:22:18: variable 'Count1' is unbound
+%   22|     #{"count" => Count1, "list" => Valid1}.
+%     |                  ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/4-rings-or-4-squares-puzzle.erl:22:36: variable 'Valid1' is unbound
+%   22|     #{"count" => Count1, "list" => Valid1}.
+%     |                                    ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/4-rings-or-4-squares-puzzle.erl:5:1: Warning: function validComb/7 is unused
+%    5| validComb(A, B, C, D, E, F, G) ->
+%     | ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/4-rings-or-4-squares-puzzle.erl:21:565: Warning: variable 'Valid1' is unused
+%   21|     try lists:foreach(fun(B) -> try try lists:foreach(fun(C) -> try try lists:foreach(fun(D) -> try S = ((B + C) + D), try lists:foreach(fun(E) -> try try lists:foreach(fun(F) -> try A = (S - B), G = (S - F), (case ((A < Low) orelse (A > High)) of true -> throw(continue); _ -> ok end), (case ((G < Low) orelse (G > High)) of true -> throw(continue); _ -> ok end), (case (((D + E) + F) /= S) of true -> throw(continue); _ -> ok end), (case ((F + G) /= S) of true -> throw(continue); _ -> ok end), (case (not Unique orelse isUnique(A, B, C, D, E, F, G)) of true -> Valid1 = Valid0 ++ [[A, B, C, D, E, F, G]], Count1 = (Count0 + 1); _ -> ok end) catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end,
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^
+
+/workspace/mochi/tests/rosetta/out/Erlang/4-rings-or-4-squares-puzzle.erl:21:609: Warning: variable 'Count1' is unused
+%   21|     try lists:foreach(fun(B) -> try try lists:foreach(fun(C) -> try try lists:foreach(fun(D) -> try S = ((B + C) + D), try lists:foreach(fun(E) -> try try lists:foreach(fun(F) -> try A = (S - B), G = (S - F), (case ((A < Low) orelse (A > High)) of true -> throw(continue); _ -> ok end), (case ((G < Low) orelse (G > High)) of true -> throw(continue); _ -> ok end), (case (((D + E) + F) /= S) of true -> throw(continue); _ -> ok end), (case ((F + G) /= S) of true -> throw(continue); _ -> ok end), (case (not Unique orelse isUnique(A, B, C, D, E, F, G)) of true -> Valid1 = Valid0 ++ [[A, B, C, D, E, F, G]], Count1 = (Count0 + 1); _ -> ok end) catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end catch throw:continue -> ok end end, lists:seq(Low, (((High + 1)))-1)) catch throw:break -> ok end,
+%     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^
+
+escript: There were compilation errors.
