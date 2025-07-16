@@ -1,0 +1,352 @@
+swiftc: exit status 1
+/tmp/adfgvx-cipher.swift:8:23: error: cannot convert value of type 'Character' to expected element type 'String'
+  6 |     var i = 0
+  7 |     while i < s.count {
+  8 |         arr = arr + [s[i]]
+    |                       `- error: cannot convert value of type 'Character' to expected element type 'String'
+  9 |         i = i + 1
+ 10 |     }
+
+/tmp/adfgvx-cipher.swift:13:17: error: cannot find 'now' in scope
+ 11 |     var j = arr.count - 1
+ 12 |     while j > 0 {
+ 13 |         let k = now() % (j + 1)
+    |                 `- error: cannot find 'now' in scope
+ 14 |         let tmp = arr[j]
+ 15 |         arr[j] = arr[k]
+
+/tmp/adfgvx-cipher.swift:35:25: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 33 |     var i = 0
+ 34 |     while i < 6 {
+ 35 |         var row = Array(shuffled[i * 6..<(i + 1) * 6])
+    |                         `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 36 |         p = p + [row]
+ 37 |         var line = adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: i)] + " | "
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/adfgvx-cipher.swift:36:18: error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected element type 'String'
+ 34 |     while i < 6 {
+ 35 |         var row = Array(shuffled[i * 6..<(i + 1) * 6])
+ 36 |         p = p + [row]
+    |                  `- error: cannot convert value of type '[String.Element]' (aka 'Array<Character>') to expected element type 'String'
+ 37 |         var line = adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: i)] + " | "
+ 38 |         var j = 0
+
+/tmp/adfgvx-cipher.swift:37:26: error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+ 35 |         var row = Array(shuffled[i * 6..<(i + 1) * 6])
+ 36 |         p = p + [row]
+ 37 |         var line = adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: i)] + " | "
+    |                          `- error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+ 38 |         var j = 0
+ 39 |         while j < 6 {
+
+Swift.Collection.subscript:2:19: note: where 'R' = 'String.Index'
+1 | protocol Collection {
+2 | @inlinable public subscript<R>(r: R) -> Self.SubSequence where R : RangeExpression, Self.Index == R.Bound { get }}
+  |                   `- note: where 'R' = 'String.Index'
+3 | 
+
+/tmp/adfgvx-cipher.swift:56:19: error: cannot find 'now' in scope
+ 54 |     var i = 0
+ 55 |     while i < n {
+ 56 |         let idx = now() % pool.count
+    |                   `- error: cannot find 'now' in scope
+ 57 |         key = key + pool[pool.index(pool.startIndex, offsetBy: idx)]
+ 58 |         pool = String(pool[pool.index(pool.startIndex, offsetBy: 0)..<pool.index(pool.startIndex, offsetBy: idx)]) + String(pool[pool.index(pool.startIndex, offsetBy: idx + 1)..<pool.index(pool.startIndex, offsetBy: pool.count)])
+
+/tmp/adfgvx-cipher.swift:57:25: error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+ 55 |     while i < n {
+ 56 |         let idx = now() % pool.count
+ 57 |         key = key + pool[pool.index(pool.startIndex, offsetBy: idx)]
+    |                         `- error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+ 58 |         pool = String(pool[pool.index(pool.startIndex, offsetBy: 0)..<pool.index(pool.startIndex, offsetBy: idx)]) + String(pool[pool.index(pool.startIndex, offsetBy: idx + 1)..<pool.index(pool.startIndex, offsetBy: pool.count)])
+ 59 |         i = i + 1
+
+Swift.Collection.subscript:2:19: note: where 'R' = 'String.Index'
+1 | protocol Collection {
+2 | @inlinable public subscript<R>(r: R) -> Self.SubSequence where R : RangeExpression, Self.Index == R.Bound { get }}
+  |                   `- note: where 'R' = 'String.Index'
+3 | 
+
+/tmp/adfgvx-cipher.swift:68:27: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 66 |     var i = 0
+ 67 |     while i < key.count {
+ 68 |         pairs = pairs + [[key[i], i]]
+    |                           `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 69 |         i = i + 1
+ 70 |     }
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/adfgvx-cipher.swift:76:21: error: no exact matches in call to subscript 
+ 74 |         var j = 0
+ 75 |         while j < n - 1 {
+ 76 |             if pairs[j][0] > pairs[j + 1][0] {
+    |                     `- error: no exact matches in call to subscript 
+ 77 |                 let tmp = pairs[j]
+ 78 |                 pairs[j] = pairs[j + 1]
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'Int')
+1 | generic struct Array {
+2 | @inlinable public subscript(bounds: Range<Int>) -> ArraySlice<Element> { get set }}
+  |                   `- note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'Int')
+3 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+Swift.MutableCollection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol MutableCollection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get set }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+/tmp/adfgvx-cipher.swift:76:35: error: no exact matches in call to subscript 
+ 74 |         var j = 0
+ 75 |         while j < n - 1 {
+ 76 |             if pairs[j][0] > pairs[j + 1][0] {
+    |                                   `- error: no exact matches in call to subscript 
+ 77 |                 let tmp = pairs[j]
+ 78 |                 pairs[j] = pairs[j + 1]
+
+Swift.Array.subscript:2:19: note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'Int')
+1 | generic struct Array {
+2 | @inlinable public subscript(bounds: Range<Int>) -> ArraySlice<Element> { get set }}
+  |                   `- note: candidate expects value of type 'Range<Int>' for parameter #1 (got 'Int')
+3 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+Swift.MutableCollection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol MutableCollection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get set }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+/tmp/adfgvx-cipher.swift:76:28: error: binary operator '>' cannot be applied to two 'Any' operands
+ 74 |         var j = 0
+ 75 |         while j < n - 1 {
+ 76 |             if pairs[j][0] > pairs[j + 1][0] {
+    |                            `- error: binary operator '>' cannot be applied to two 'Any' operands
+ 77 |                 let tmp = pairs[j]
+ 78 |                 pairs[j] = pairs[j + 1]
+
+/tmp/adfgvx-cipher.swift:88:22: error: no exact matches in call to initializer 
+ 86 |     i = 0
+ 87 |     while i < n {
+ 88 |         res = res + [Int(pairs[i][1])]
+    |                      `- error: no exact matches in call to initializer 
+ 89 |         i = i + 1
+ 90 |     }
+
+Swift.Int.init:3:10: note: candidate expects value of type 'Float16' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | @available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *)
+3 |   public init(_ source: Float16)}
+  |          `- note: candidate expects value of type 'Float16' for parameter #1 (got 'Any')
+4 | 
+
+Swift.Int.init:2:8: note: candidate expects value of type 'Float' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | public init(_ source: Float)}
+  |        `- note: candidate expects value of type 'Float' for parameter #1 (got 'Any')
+3 | 
+
+Swift.Int.init:2:8: note: candidate expects value of type 'Double' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | public init(_ source: Double)}
+  |        `- note: candidate expects value of type 'Double' for parameter #1 (got 'Any')
+3 | 
+
+Swift.Int.init:2:8: note: candidate expects value of type 'Float80' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | public init(_ source: Float80)}
+  |        `- note: candidate expects value of type 'Float80' for parameter #1 (got 'Any')
+3 | 
+
+Swift.Int.init:2:8: note: candidate expects value of type 'Builtin.Int64' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | public init(_ _value: Builtin.Int64)}
+  |        `- note: candidate expects value of type 'Builtin.Int64' for parameter #1 (got 'Any')
+3 | 
+
+Swift.Int.init:2:8: note: candidate expects value of type 'Builtin.Word' for parameter #1 (got 'Any')
+1 | struct Int {
+2 | public init(_ _v: Builtin.Word)}
+  |        `- note: candidate expects value of type 'Builtin.Word' for parameter #1 (got 'Any')
+3 | 
+
+Swift.FixedWidthInteger.init:2:19: note: candidate expects value of type 'String' for parameter #1 (got 'Any')
+1 | protocol FixedWidthInteger {
+2 | @inlinable public init?(_ description: String)}
+  |                   `- note: candidate expects value of type 'String' for parameter #1 (got 'Any')
+3 | 
+
+/tmp/adfgvx-cipher.swift:88:32: error: cannot convert value of type 'Int' to expected argument type 'Range<Int>'
+ 86 |     i = 0
+ 87 |     while i < n {
+ 88 |         res = res + [Int(pairs[i][1])]
+    |                                `- error: cannot convert value of type 'Int' to expected argument type 'Range<Int>'
+ 89 |         i = i + 1
+ 90 |     }
+
+/tmp/adfgvx-cipher.swift:91:12: error: cannot convert return expression of type '[Any]' to return type '[Int]'
+ 89 |         i = i + 1
+ 90 |     }
+ 91 |     return res
+    |            |- error: cannot convert return expression of type '[Any]' to return type '[Int]'
+    |            `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 92 | }
+ 93 | func encrypt(_ polybius: [String], _ key: String, _ plainText: String) -> String {
+
+/tmp/adfgvx-cipher.swift:101:20: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 99 |             var c = 0
+100 |             while c < 6 {
+101 |                 if polybius[r][c] == plainText[i] {
+    |                    `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+102 |                     temp = temp + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: r)] + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: c)]
+103 |                 }
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/adfgvx-cipher.swift:101:38: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+ 99 |             var c = 0
+100 |             while c < 6 {
+101 |                 if polybius[r][c] == plainText[i] {
+    |                                      `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+102 |                     temp = temp + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: r)] + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: c)]
+103 |                 }
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/adfgvx-cipher.swift:102:41: error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+100 |             while c < 6 {
+101 |                 if polybius[r][c] == plainText[i] {
+102 |                     temp = temp + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: r)] + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: c)]
+    |                                         `- error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+103 |                 }
+104 |                 c = c + 1
+
+Swift.Collection.subscript:2:19: note: where 'R' = 'String.Index'
+1 | protocol Collection {
+2 | @inlinable public subscript<R>(r: R) -> Self.SubSequence where R : RangeExpression, Self.Index == R.Bound { get }}
+  |                   `- note: where 'R' = 'String.Index'
+3 | 
+
+/tmp/adfgvx-cipher.swift:102:96: error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+100 |             while c < 6 {
+101 |                 if polybius[r][c] == plainText[i] {
+102 |                     temp = temp + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: r)] + adfgvx[adfgvx.index(adfgvx.startIndex, offsetBy: c)]
+    |                                                                                                `- error: subscript 'subscript(_:)' requires that 'String.Index' conform to 'RangeExpression'
+103 |                 }
+104 |                 c = c + 1
+
+Swift.Collection.subscript:2:19: note: where 'R' = 'String.Index'
+1 | protocol Collection {
+2 | @inlinable public subscript<R>(r: R) -> Self.SubSequence where R : RangeExpression, Self.Index == R.Bound { get }}
+  |                   `- note: where 'R' = 'String.Index'
+3 | 
+
+/tmp/adfgvx-cipher.swift:130:27: error: cannot assign value of type 'Array<String.Element>' (aka 'Array<Character>') to subscript of type 'String'
+128 |         let row = idx / key.count
+129 |         let col = idx % key.count
+130 |         table[row][col] = Array(temp[idx..<idx + 1])
+    |                           `- error: cannot assign value of type 'Array<String.Element>' (aka 'Array<Character>') to subscript of type 'String'
+131 |         idx = idx + 1
+132 |     }
+
+/tmp/adfgvx-cipher.swift:160:13: error: no exact matches in call to subscript 
+158 |     var i = 0
+159 |     while i < s.count {
+160 |         if s[i] == ch {
+    |             `- error: no exact matches in call to subscript 
+161 |             return i
+162 |         }
+
+Swift.String.subscript:3:10: note: candidate expects value of type 'Range<String.Index>' for parameter #1 (got 'Int')
+1 | struct String {
+2 | @available(swift 4)
+3 |   public subscript(r: Range<String.Index>) -> Substring { get }}
+  |          `- note: candidate expects value of type 'Range<String.Index>' for parameter #1 (got 'Int')
+4 | 
+
+Swift.Collection.subscript:2:19: note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+1 | protocol Collection {
+2 | @inlinable public subscript(x: (UnboundedRange_) -> ()) -> Self.SubSequence { get }}
+  |                   `- note: candidate expects value of type '(UnboundedRange_) -> ()' for parameter #1 (got 'Int')
+3 | 
+
+/tmp/adfgvx-cipher.swift:172:37: error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+170 |     var i = 0
+171 |     while i <= cipherText.count {
+172 |         if i == cipherText.count || cipherText[i] == " " {
+    |                                     `- error: 'subscript(_:)' is unavailable: cannot subscript String with an Int, use a String.Index instead.
+173 |             colStrs = colStrs + [Array(cipherText[start..<i])]
+174 |             start = i + 1
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an Int, use a String.Index instead.")
+3 |   public subscript(i: Int) -> Character { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/adfgvx-cipher.swift:173:34: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected element type 'String'
+171 |     while i <= cipherText.count {
+172 |         if i == cipherText.count || cipherText[i] == " " {
+173 |             colStrs = colStrs + [Array(cipherText[start..<i])]
+    |                                  `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected element type 'String'
+174 |             start = i + 1
+175 |         }
+
+/tmp/adfgvx-cipher.swift:193:25: error: cannot convert value of type 'Character' to expected element type 'String'
+191 |         var j = 0
+192 |         while j < s.count {
+193 |             ls = ls + [s[j]]
+    |                         `- error: cannot convert value of type 'Character' to expected element type 'String'
+194 |             j = j + 1
+195 |         }
+
+/tmp/adfgvx-cipher.swift:250:36: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+248 |     var idx = 0
+249 |     while idx < temp.count {
+250 |         let rIdx = indexOf(adfgvx, Array(temp[idx..<idx + 1]))
+    |                                    `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+251 |         let cIdx = indexOf(adfgvx, Array(temp[idx + 1..<idx + 2]))
+252 |         plainText = plainText + polybius[rIdx][cIdx]
+
+/tmp/adfgvx-cipher.swift:251:36: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+249 |     while idx < temp.count {
+250 |         let rIdx = indexOf(adfgvx, Array(temp[idx..<idx + 1]))
+251 |         let cIdx = indexOf(adfgvx, Array(temp[idx + 1..<idx + 2]))
+    |                                    `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+252 |         plainText = plainText + polybius[rIdx][cIdx]
+253 |         idx = idx + 2

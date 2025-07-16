@@ -1,0 +1,41 @@
+swiftc: exit status 1
+/tmp/21-game.swift:5:43: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 3 |     var i = 0
+ 4 |     var neg = false
+ 5 |     if str.count > 0 && Array(str[0..<1]) == "-" {
+   |                                           |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+   |                                           `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 6 |         neg = true
+ 7 |         i = 1
+
+/tmp/21-game.swift:12:29: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+10 |     let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+11 |     while i < str.count {
+12 |         n = n * 10 + digits[Array(str[i..<i + 1])]!
+   |                             `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+13 |         i = i + 1
+14 |     }
+
+/tmp/21-game.swift:22:20: error: cannot find 'now' in scope
+20 | func main() {
+21 |     var total = 0
+22 |     var computer = now() % 2 == 0
+   |                    `- error: cannot find 'now' in scope
+23 |     print("Enter q to quit at any time\n")
+24 |     if computer {
+
+/tmp/21-game.swift:40:30: error: cannot find 'now' in scope
+38 |                 var choice = 0
+39 |                 if total < 18 {
+40 |                     choice = now() % 3 + 1
+   |                              `- error: cannot find 'now' in scope
+41 |                 }
+42 |                 else {
+
+/tmp/21-game.swift:56:32: error: cannot find 'input' in scope
+54 |                 while true {
+55 |                     print("Your choice 1 to 3 : ")
+56 |                     let line = input()
+   |                                `- error: cannot find 'input' in scope
+57 |                     if line == "q" || line == "Q" {
+58 |                         print("OK, quitting the game")

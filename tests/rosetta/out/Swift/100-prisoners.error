@@ -1,0 +1,24 @@
+swiftc: exit status 1
+/tmp/100-prisoners.swift:6:17: error: cannot find 'now' in scope
+ 4 |     var i = 99
+ 5 |     while i > 0 {
+ 6 |         let j = now() % (i + 1)
+   |                 `- error: cannot find 'now' in scope
+ 7 |         let tmp = arr[i]
+ 8 |         arr[i] = arr[j]
+
+/tmp/100-prisoners.swift:51:29: error: cannot find 'now' in scope
+49 |                 var d = 0
+50 |                 while d < 50 {
+51 |                     var n = now() % 100
+   |                             `- error: cannot find 'now' in scope
+52 |                     while opened[n] {
+53 |                         n = now() % 100
+
+/tmp/100-prisoners.swift:53:29: error: cannot find 'now' in scope
+51 |                     var n = now() % 100
+52 |                     while opened[n] {
+53 |                         n = now() % 100
+   |                             `- error: cannot find 'now' in scope
+54 |                     }
+55 |                     opened[n] = true

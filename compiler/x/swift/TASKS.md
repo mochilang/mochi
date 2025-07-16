@@ -1,6 +1,8 @@
 # Swift Compiler Progress
 
 ## Recent Enhancements
+- 2025-07-17 00:00 – variable declarations with empty lists now scan later
+  assignments to infer the element type, avoiding `[Any]`.
 - 2025-07-13 05:09 – improved type inference for `append()` calls so list variables adopt the element type.
 - 2025-07-13 07:03 – fixed nested selector handling and avoided unnecessary casts when grouping by built-in keys.
 - 2025-07-13 07:31 – added optional-aware struct generation for join queries.
