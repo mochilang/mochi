@@ -1,4 +1,4 @@
-func main (regs=27)
+func main (regs=28)
   // left: Leaf,
   Const        r0, "__name"
   Const        r1, "Leaf"
@@ -6,13 +6,17 @@ func main (regs=27)
   // value: 1,
   Const        r3, 1
   // left: Leaf,
+  Const        r0, "__name"
+  Const        r1, "Leaf"
   MakeMap      r4, 1, r0
   // value: 2,
   Const        r5, 2
   // right: Leaf
+  Const        r0, "__name"
+  Const        r1, "Leaf"
   MakeMap      r6, 1, r0
   // right: Node {
-  Move         r7, r0
+  Const        r7, "__name"
   Const        r8, "Node"
   // left: Leaf,
   Const        r9, "left"
@@ -26,55 +30,60 @@ func main (regs=27)
   // right: Node {
   MakeMap      r15, 4, r7
   // let t = Node {
-  Move         r16, r0
-  Move         r17, r8
+  Const        r16, "__name"
+  Const        r17, "Node"
   // left: Leaf,
-  Move         r18, r9
+  Const        r18, "left"
   Move         r19, r2
   // value: 1,
-  Move         r20, r11
+  Const        r20, "value"
   Move         r21, r3
   // right: Node {
-  Move         r22, r13
+  Const        r22, "right"
   Move         r23, r15
   // let t = Node {
-  MakeMap      r25, 4, r16
+  MakeMap      r24, 4, r16
+  Move         r25, r24
   // print(sum_tree(t))
-  Call         r26, sum_tree, r25
-  Print        r26
+  Move         r26, r25
+  Call         r27, sum_tree, r26
+  Print        r27
   Return       r0
 
   // fun sum_tree(t: Tree): int {
-func sum_tree (regs=23)
+func sum_tree (regs=24)
   // Leaf => 0
-  Const        r3, "__name"
-  Index        r4, r0, r3
-  Const        r5, "Leaf"
-  Equal        r2, r4, r5
-  JumpIfFalse  r2, L0
-  Const        r1, 0
+  Const        r4, "__name"
+  Index        r5, r0, r4
+  Const        r6, "Leaf"
+  Equal        r3, r5, r6
+  JumpIfFalse  r3, L0
+  Const        r7, 0
+  Move         r2, r7
   Jump         L1
 L0:
   // Node(left, value, right) => sum_tree(left) + value + sum_tree(right)
-  Index        r9, r0, r3
-  Const        r10, "Node"
-  Equal        r7, r9, r10
-  JumpIfFalse  r7, L2
-  Const        r11, "left"
-  Index        r12, r0, r11
-  Const        r13, "value"
-  Index        r14, r0, r13
-  Const        r15, "right"
-  Index        r16, r0, r15
-  Move         r17, r12
-  Call         r18, sum_tree, r17
-  Add          r19, r18, r14
-  Move         r20, r16
-  Call         r21, sum_tree, r20
-  Add          r1, r19, r21
+  Const        r9, "__name"
+  Index        r10, r0, r9
+  Const        r11, "Node"
+  Equal        r8, r10, r11
+  JumpIfFalse  r8, L2
+  Const        r12, "left"
+  Index        r13, r0, r12
+  Const        r14, "value"
+  Index        r15, r0, r14
+  Const        r16, "right"
+  Index        r17, r0, r16
+  Move         r18, r13
+  Call         r19, sum_tree, r18
+  Add          r20, r19, r15
+  Move         r21, r17
+  Call         r22, sum_tree, r21
+  Add          r23, r20, r22
+  Move         r2, r23
   Jump         L1
 L2:
-  Const        r1, nil
+  Const        r2, nil
 L1:
   // return match t {
-  Return       r1
+  Return       r2

@@ -1,49 +1,62 @@
-func main (regs=26)
+func main (regs=31)
   // let xs = [1, 2, 3]
   Const        r0, [1, 2, 3]
+  Move         r1, r0
   // let ys = from x in xs where x % 2 == 1 select x
-  Const        r1, []
-  IterPrep     r2, r0
-  Len          r3, r2
-  Const        r4, 0
+  Const        r2, []
+  Const        r3, [1, 2, 3]
+  IterPrep     r4, r3
+  Len          r5, r4
+  Const        r7, 0
+  Move         r6, r7
 L2:
-  LessInt      r6, r4, r3
-  JumpIfFalse  r6, L0
-  Index        r8, r2, r4
-  Const        r9, 2
-  Mod          r10, r8, r9
-  Const        r11, 1
-  Equal        r12, r10, r11
-  JumpIfFalse  r12, L1
-  Append       r1, r1, r8
+  LessInt      r8, r6, r5
+  JumpIfFalse  r8, L0
+  Index        r9, r4, r6
+  Move         r10, r9
+  Const        r11, 2
+  Mod          r12, r10, r11
+  Const        r13, 1
+  Equal        r14, r12, r13
+  JumpIfFalse  r14, L1
+  Append       r15, r2, r10
+  Move         r2, r15
 L1:
-  AddInt       r4, r4, r11
+  Const        r13, 1
+  AddInt       r6, r6, r13
   Jump         L2
 L0:
+  Move         r16, r2
   // print(1 in ys)
-  In           r14, r11, r1
-  Print        r14
+  Const        r13, 1
+  In           r17, r13, r16
+  Print        r17
   // print(2 in ys)
-  In           r15, r9, r1
-  Print        r15
-  // let m = {a: 1}
-  Const        r16, {"a": 1}
-  // print("a" in m)
-  Const        r17, "a"
-  In           r18, r17, r16
+  Const        r11, 2
+  In           r18, r11, r16
   Print        r18
+  // let m = {a: 1}
+  Const        r19, {"a": 1}
+  Move         r20, r19
+  // print("a" in m)
+  Const        r21, "a"
+  In           r22, r21, r20
+  Print        r22
   // print("b" in m)
-  Const        r19, "b"
-  In           r20, r19, r16
-  Print        r20
+  Const        r23, "b"
+  In           r24, r23, r20
+  Print        r24
   // let s = "hello"
-  Const        r21, "hello"
+  Const        r25, "hello"
+  Move         r26, r25
   // print("ell" in s)
-  Const        r22, "ell"
-  In           r23, r22, r21
-  Print        r23
+  Const        r27, "ell"
+  Const        r25, "hello"
+  In           r28, r27, r25
+  Print        r28
   // print("foo" in s)
-  Const        r24, "foo"
-  In           r25, r24, r21
-  Print        r25
+  Const        r29, "foo"
+  Const        r25, "hello"
+  In           r30, r29, r25
+  Print        r30
   Return       r0

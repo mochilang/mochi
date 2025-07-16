@@ -1,39 +1,52 @@
-func main (regs=26)
+func main (regs=28)
   // let data = [
   Const        r0, [{"a": 1, "b": 2}, {"a": 1, "b": 1}, {"a": 0, "b": 5}]
+  Move         r1, r0
   // from x in data
-  Const        r1, []
+  Const        r2, []
   // sort by { a: x.a, b: x.b }
-  Const        r2, "a"
-  Const        r3, "b"
+  Const        r3, "a"
+  Const        r3, "a"
+  Const        r4, "b"
+  Const        r4, "b"
   // from x in data
-  IterPrep     r4, r0
-  Len          r5, r4
-  Const        r6, 0
+  IterPrep     r5, r1
+  Len          r6, r5
+  Const        r8, 0
+  Move         r7, r8
 L1:
-  LessInt      r8, r6, r5
-  JumpIfFalse  r8, L0
-  Index        r10, r4, r6
+  LessInt      r9, r7, r6
+  JumpIfFalse  r9, L0
+  Index        r10, r5, r7
+  Move         r11, r10
   // sort by { a: x.a, b: x.b }
-  Move         r11, r2
-  Index        r12, r10, r2
-  Move         r13, r3
-  Index        r14, r10, r3
-  Move         r15, r11
-  Move         r16, r12
-  Move         r17, r13
+  Const        r14, "a"
+  Const        r3, "a"
+  Index        r15, r11, r3
+  Const        r16, "b"
+  Const        r4, "b"
+  Index        r17, r11, r4
   Move         r18, r14
-  MakeMap      r20, 2, r15
+  Move         r19, r15
+  Move         r20, r16
+  Move         r21, r17
+  MakeMap      r22, 2, r18
+  Move         r12, r22
   // from x in data
-  Move         r21, r10
-  MakeList     r22, 2, r20
-  Append       r1, r1, r22
-  Const        r24, 1
-  AddInt       r6, r6, r24
+  Move         r13, r11
+  MakeList     r23, 2, r12
+  Append       r24, r2, r23
+  Move         r2, r24
+  Const        r25, 1
+  AddInt       r7, r7, r25
   Jump         L1
 L0:
   // sort by { a: x.a, b: x.b }
-  Sort         r1, r1
+  Sort         r26, r2
+  // from x in data
+  Move         r2, r26
+  // let sorted =
+  Move         r27, r2
   // print(sorted)
-  Print        r1
+  Print        r27
   Return       r0

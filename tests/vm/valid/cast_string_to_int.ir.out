@@ -1,6 +1,5 @@
-func main (regs=2)
+func main (regs=1)
   // print("1995" as int)
-  Const        r0, "1995"
-  Cast         r1, r0, int
-  Print        r1
+  Const        r0, 1995
+  Print        r0
   Return       r0

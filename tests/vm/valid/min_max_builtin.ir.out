@@ -1,10 +1,11 @@
-func main (regs=3)
+func main (regs=4)
   // let nums = [3,1,4]
   Const        r0, [3, 1, 4]
+  Move         r1, r0
   // print(min(nums))
-  Const        r1, 1
-  Print        r1
-  // print(max(nums))
-  Const        r2, 4
+  Const        r2, 1
   Print        r2
+  // print(max(nums))
+  Const        r3, 4
+  Print        r3
   Return       r0

@@ -1,0 +1,18 @@
+func main (regs=10)
+  // print(testpkg.Add(2,3))
+  Const        r2, 2
+  Move         r0, r2
+  Const        r3, 3
+  Move         r1, r3
+  Const        r5, "mochi/runtime/ffi/go/testpkg.Add"
+  GoAutoCall   r4, r5, 2, r0
+  Print        r4
+  // print(testpkg.Pi)
+  Const        r7, "mochi/runtime/ffi/go/testpkg.Pi"
+  GoAutoCall   r6, r7, 0, r0
+  Print        r6
+  // print(testpkg.Answer)
+  Const        r9, "mochi/runtime/ffi/go/testpkg.Answer"
+  GoAutoCall   r8, r9, 0, r0
+  Print        r8
+  Return       r0

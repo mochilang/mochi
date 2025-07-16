@@ -1,7 +1,10 @@
-func main (regs=3)
+func main (regs=5)
   // let a = [1,2]
   Const        r0, [1, 2]
+  Move         r1, r0
   // print(append(a, 3))
-  Const        r2, [1, 2, 3]
-  Print        r2
+  Const        r2, [1, 2]
+  Const        r3, 3
+  Const        r4, [1, 2, 3]
+  Print        r4
   Return       r0

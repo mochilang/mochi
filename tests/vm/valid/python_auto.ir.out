@@ -1,0 +1,14 @@
+func main (regs=7)
+  // print(math.sqrt(16.0))
+  Const        r1, 16.0
+  Move         r0, r1
+  Const        r3, "math"
+  Const        r4, "sqrt"
+  PyCall       r2, r3, r4, 1, r0
+  Print        r2
+  // print(math.pi)
+  Const        r3, "math"
+  Const        r6, "pi"
+  PyCall       r5, r3, r6, 0, r0
+  Print        r5
+  Return       r0

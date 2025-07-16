@@ -1,10 +1,15 @@
-func main (regs=6)
+func main (regs=7)
   // let x = 1 + 2
   Const        r0, 1
+  Const        r1, 2
+  Const        r2, 3
+  Move         r3, r2
   // expect x == 3
-  Const        r4, true
-  Expect       r4
+  Const        r4, 3
+  Const        r4, 3
+  EqualInt     r5, r4, r4
+  Expect       r5
   // print("ok")
-  Const        r5, "ok"
-  Print        r5
+  Const        r6, "ok"
+  Print        r6
   Return       r0

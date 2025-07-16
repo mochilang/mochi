@@ -1,15 +1,26 @@
-func main (regs=11)
+func main (regs=10)
   // print(1 + 2 * 3)
   Const        r0, 1
-  Const        r4, 7
+  Const        r1, 2
+  Const        r2, 3
+  MulInt       r3, r1, r2
+  AddInt       r4, r0, r3
   Print        r4
   // print((1 + 2) * 3)
-  Const        r6, 9
-  Print        r6
+  Const        r2, 3
+  Const        r2, 3
+  MulInt       r5, r2, r2
+  Print        r5
   // print(2 * 3 + 1)
-  Move         r8, r4
-  Print        r8
+  Const        r1, 2
+  Const        r2, 3
+  MulInt       r6, r1, r2
+  Const        r0, 1
+  AddInt       r7, r6, r0
+  Print        r7
   // print(2 * (3 + 1))
-  Const        r10, 8
-  Print        r10
+  Const        r1, 2
+  Const        r8, 4
+  MulInt       r9, r1, r8
+  Print        r9
   Return       r0

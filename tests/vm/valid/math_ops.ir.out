@@ -1,12 +1,17 @@
 func main (regs=6)
   // print(6 * 7)
   Const        r0, 6
-  Const        r2, 42
+  Const        r1, 7
+  MulInt       r2, r0, r1
   Print        r2
   // print(7 / 2)
-  Const        r4, 3
+  Const        r1, 7
+  Const        r3, 2
+  DivInt       r4, r1, r3
   Print        r4
   // print(7 % 2)
-  Const        r5, 1
+  Const        r1, 7
+  Const        r3, 2
+  ModInt       r5, r1, r3
   Print        r5
   Return       r0

@@ -6,13 +6,21 @@ func main (regs=12)
   Const        r4, 1
   Move         r2, r4
   Const        r5, 2
-  Call2        r1, boom, r2, r5
+  Move         r3, r5
+  Call2        r6, boom, r2, r3
+  Move         r1, r6
 L0:
   Print        r1
   // print(true || boom(1, 2))
-  Const        r8, true
+  Const        r7, true
+  Move         r8, r7
   JumpIfTrue   r8, L1
-  Call2        r8, boom, r4, r5
+  Const        r4, 1
+  Move         r9, r4
+  Const        r5, 2
+  Move         r10, r5
+  Call2        r11, boom, r9, r10
+  Move         r8, r11
 L1:
   Print        r8
   Return       r0

@@ -1,7 +1,20 @@
-func main (regs=5)
+func main (regs=6)
   // let x = 5
   Const        r0, 5
+  Move         r1, r0
+  // if x > 3 {
+  Const        r0, 5
+  Const        r2, 3
+  LessInt      r3, r2, r0
+  JumpIfFalse  r3, L0
   // print("big")
-  Const        r3, "big"
-  Print        r3
+  Const        r4, "big"
+  Print        r4
+  // if x > 3 {
+  Jump         L1
+L0:
+  // print("small")
+  Const        r5, "small"
+  Print        r5
+L1:
   Return       r0

@@ -1,13 +1,15 @@
-func main (regs=6)
+func main (regs=8)
   // let x = 12
   Const        r0, 12
+  Move         r1, r0
   // let msg = if x > 10 then "yes" else "no"
   Const        r0, 12
-  Const        r1, 10
-  LessInt      r2, r1, r0
-  Const        r3, "yes"
-  Const        r4, "no"
-  Select       5,2,3,4
+  Const        r2, 10
+  LessInt      r3, r2, r0
+  Const        r4, "yes"
+  Const        r5, "no"
+  Select       6,3,4,5
+  Move         r7, r6
   // print(msg)
-  Print        r5
+  Print        r7
   Return       r0

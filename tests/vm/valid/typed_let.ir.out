@@ -1,4 +1,6 @@
-func main (regs=1)
+func main (regs=2)
+  // let y: int
+  Move         r1, r0
   // print(y)
-  Print        r0
+  Print        r1
   Return       r0

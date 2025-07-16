@@ -1,5 +1,5 @@
 func main (regs=1)
   // print(avg([1,2,3]))
-  Const        r0, 2
+  Const        r0, 2.0
   Print        r0
   Return       r0

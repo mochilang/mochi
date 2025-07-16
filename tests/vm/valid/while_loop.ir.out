@@ -11,7 +11,8 @@ L1:
   Print        r1
   // i = i + 1
   Const        r4, 1
-  AddInt       r1, r1, r4
+  AddInt       r5, r1, r4
+  Move         r1, r5
   // while i < 3 {
   Jump         L1
 L0:

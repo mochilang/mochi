@@ -1,46 +1,138 @@
-func main (regs=35)
+func main (regs=41)
   // let x = 2
   Const        r0, 2
+  Move         r1, r0
+  // let label = match x {
+  Const        r0, 2
+  // 1 => "one"
+  Const        r4, 1
+  Equal        r3, r0, r4
+  JumpIfFalse  r3, L0
+  Const        r5, "one"
+  Move         r2, r5
+  Jump         L1
+L0:
   // 2 => "two"
-  Const        r1, "two"
+  Const        r0, 2
+  Equal        r6, r0, r0
+  JumpIfFalse  r6, L2
+  Const        r7, "two"
+  Move         r2, r7
+  Jump         L1
+L2:
+  // 3 => "three"
+  Const        r9, 3
+  Equal        r8, r0, r9
+  JumpIfFalse  r8, L3
+  Const        r10, "three"
+  Move         r2, r10
+  Jump         L1
+L3:
+  // _ => "unknown"
+  Const        r11, "unknown"
+  Move         r2, r11
+L1:
+  // let label = match x {
+  Move         r12, r2
   // print(label)
-  Print        r1
-  // "sun" => "relaxed"
-  Const        r12, "relaxed"
-  // print(mood)
   Print        r12
+  // let day = "sun"
+  Const        r13, "sun"
+  Move         r14, r13
+  // let mood = match day {
+  Const        r13, "sun"
+  // "mon" => "tired"
+  Const        r17, "mon"
+  Equal        r16, r13, r17
+  JumpIfFalse  r16, L4
+  Const        r18, "tired"
+  Move         r15, r18
+  Jump         L5
+L4:
+  // "fri" => "excited"
+  Const        r20, "fri"
+  Equal        r19, r13, r20
+  JumpIfFalse  r19, L6
+  Const        r21, "excited"
+  Move         r15, r21
+  Jump         L5
+L6:
+  // "sun" => "relaxed"
+  Const        r13, "sun"
+  Equal        r22, r13, r13
+  JumpIfFalse  r22, L7
+  Const        r23, "relaxed"
+  Move         r15, r23
+  Jump         L5
+L7:
+  // _     => "normal"
+  Const        r24, "normal"
+  Move         r15, r24
+L5:
+  // let mood = match day {
+  Move         r25, r15
+  // print(mood)
+  Print        r25
+  // let ok = true
+  Const        r26, true
+  Move         r27, r26
+  // let status = match ok {
+  Const        r26, true
   // true => "confirmed"
-  Const        r23, "confirmed"
+  Const        r26, true
+  Equal        r29, r26, r26
+  JumpIfFalse  r29, L8
+  Const        r30, "confirmed"
+  Move         r28, r30
+  Jump         L9
+L8:
+  // false => "denied"
+  Const        r32, false
+  Equal        r31, r26, r32
+  JumpIfFalse  r31, L10
+  Const        r33, "denied"
+  Move         r28, r33
+  Jump         L9
+L10:
+  Const        r28, nil
+L9:
+  // let status = match ok {
+  Move         r34, r28
   // print(status)
-  Print        r23
-  // print(classify(0))
-  Const        r29, 0
-  Call         r31, classify, r29
-  Print        r31
-  // print(classify(5))
-  Const        r32, 5
-  Call         r34, classify, r32
   Print        r34
+  // print(classify(0))
+  Const        r36, 0
+  Move         r35, r36
+  Call         r37, classify, r35
+  Print        r37
+  // print(classify(5))
+  Const        r39, 5
+  Move         r38, r39
+  Call         r40, classify, r38
+  Print        r40
   Return       r0
 
   // fun classify(n: int): string {
-func classify (regs=9)
+func classify (regs=15)
   // 0 => "zero"
-  Const        r3, 0
-  Equal        r2, r0, r3
-  JumpIfFalse  r2, L0
-  Const        r1, "zero"
+  Const        r9, 0
+  Equal        r8, r0, r9
+  JumpIfFalse  r8, L0
+  Const        r10, "zero"
+  Move         r7, r10
   Jump         L1
 L0:
   // 1 => "one"
-  Const        r6, 1
-  Equal        r5, r0, r6
-  JumpIfFalse  r5, L2
-  Const        r1, "one"
+  Const        r12, 1
+  Equal        r11, r0, r12
+  JumpIfFalse  r11, L2
+  Const        r13, "one"
+  Move         r7, r13
   Jump         L1
 L2:
   // _ => "many"
-  Const        r1, "many"
+  Const        r14, "many"
+  Move         r7, r14
 L1:
   // return match n {
-  Return       r1
+  Return       r7
