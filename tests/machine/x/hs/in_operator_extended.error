@@ -1,0 +1,12 @@
+
+/workspace/mochi/tests/machine/x/hs/in_operator_extended.hs:23:10: error:
+    Variable not in scope: isInfixOf :: String -> String -> a2
+   |
+23 |   print (isInfixOf "ell" s)
+   |          ^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/in_operator_extended.hs:24:10: error:
+    Variable not in scope: isInfixOf :: String -> String -> a1
+   |
+24 |   print (isInfixOf "foo" s)
+   |          ^^^^^^^^^

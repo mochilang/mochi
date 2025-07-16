@@ -1,5 +1,11 @@
 # Haskell Backend Progress
 
+## Recent Updates (2025-07-19 05:00)
+- Added golden tests for `tests/vm/valid` that verify both generated Haskell
+  code and program output.
+- Regenerated all `.hs.out` files which removed stale `Data.Aeson` imports and
+  reduced the number of `.error` files.
+
 -## Recent Updates (2025-07-18 05:00)
 - Automatically import `Data.Map` whenever runtime helpers are emitted so
   generated programs compile cleanly.

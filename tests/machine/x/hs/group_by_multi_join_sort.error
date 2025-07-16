@@ -1,38 +1,194 @@
 
-/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:6:1: error:
-    Could not find module ‘Data.Aeson’
-    Perhaps you meant Data.Version (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-6 | import qualified Data.Aeson as Aeson
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:270: error:
+    • Couldn't match type ‘Int’ with ‘AnyValue’
+      Expected: Map.Map String (Map.Map String AnyValue)
+        Actual: Map.Map String (Map.Map String Int)
+    • In the second argument of ‘Map.lookup’, namely ‘(x)’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "l" (x))’
+      In the second argument of ‘Map.lookup’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "l" (x)))’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                              ^
 
-/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:7:1: error:
-    Could not find module ‘Data.Aeson.Key’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-7 | import qualified Data.Aeson.Key as Key
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:287: error:
+    • Couldn't match expected type: [Map.Map
+                                       String (Map.Map String Int)]
+                  with actual type: MGroup
+                                      (Map.Map String AnyValue)
+                                      (Map.Map String AnyValue, Map.Map String AnyValue,
+                                       Map.Map String AnyValue, Map.Map String AnyValue)
+    • In the expression: g
+      In a stmt of a list comprehension: x <- g
+      In the first argument of ‘sum’, namely
+        ‘[(fromMaybe
+             (error "missing")
+             (Map.lookup
+                "l_extendedprice"
+                (fromMaybe (error "missing") (Map.lookup "l" (x))))
+             * ((1 - _asInt
+                       (fromMaybe
+                          (error "missing")
+                          (Map.lookup
+                             "l_discount"
+                             (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) |
+            x <- g]’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                               ^
 
-/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:8:1: error:
-    Could not find module ‘Data.Aeson.KeyMap’
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-  |
-8 | import qualified Data.Aeson.KeyMap as KeyMap
-  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:603: error:
+    • Couldn't match expected type ‘Double’ with actual type ‘Int’
+    • In the second argument of ‘(-)’, namely
+        ‘_asInt
+           (fromMaybe
+              (error "missing")
+              (Map.lookup
+                 "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))’
+      In the second argument of ‘(*)’, namely
+        ‘((1 - _asInt
+                 (fromMaybe
+                    (error "missing")
+                    (Map.lookup
+                       "l_discount"
+                       (fromMaybe (error "missing") (Map.lookup "l" (x)))))))’
+      In the expression:
+        (fromMaybe
+           (error "missing")
+           (Map.lookup
+              "l_extendedprice"
+              (fromMaybe (error "missing") (Map.lookup "l" (x))))
+           * ((1 - _asInt
+                     (fromMaybe
+                        (error "missing")
+                        (Map.lookup
+                           "l_discount"
+                           (fromMaybe (error "missing") (Map.lookup "l" (x))))))))
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:16:1: error:
-    Could not find module ‘Data.Vector’
-    Perhaps you meant Data.Functor (from base-4.17.2.0)
-    Use -v (or `:set -v` in ghci) to see a list of the files searched for.
-   |
-16 | import qualified Data.Vector as V
-   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:710: error:
+    • Couldn't match type ‘Double’ with ‘AnyValue’
+      Expected: Map.Map String (Map.Map String AnyValue)
+        Actual: Map.Map String (Map.Map String Double)
+    • In the second argument of ‘Map.lookup’, namely ‘(x)’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "l" (x))’
+      In the second argument of ‘Map.lookup’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "l" (x)))’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
 
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:727: error:
+    • Couldn't match expected type: [Map.Map
+                                       String (Map.Map String Double)]
+                  with actual type: MGroup
+                                      (Map.Map String AnyValue)
+                                      (Map.Map String AnyValue, Map.Map String AnyValue,
+                                       Map.Map String AnyValue, Map.Map String AnyValue)
+    • In the expression: g
+      In a stmt of a list comprehension: x <- g
+      In the first argument of ‘sum’, namely
+        ‘[(fromMaybe
+             (error "missing")
+             (Map.lookup
+                "l_extendedprice"
+                (fromMaybe (error "missing") (Map.lookup "l" (x))))
+             * ((1 - _asInt
+                       (fromMaybe
+                          (error "missing")
+                          (Map.lookup
+                             "l_discount"
+                             (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) |
+            x <- g]’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^
 
-Context around line 6:
-    4| module Main where
-    5| 
-    6| import qualified Data.Aeson as Aeson
-    7| import qualified Data.Aeson.Key as Key
-    8| import qualified Data.Aeson.KeyMap as KeyMap
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:1639: error:
+    • Couldn't match type ‘[Char]’ with ‘AnyValue’
+      Expected: AnyValue
+        Actual: String
+    • In the second argument of ‘(>=)’, namely ‘start_date’
+      In the first argument of ‘(&&)’, namely
+        ‘(fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+            >= start_date)’
+      In the first argument of ‘(<)’, namely
+        ‘((fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+             >= start_date)
+            && fromMaybe (error "missing") (Map.lookup "o_orderdate" o))’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ^^^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:1708: error:
+    • Couldn't match type ‘AnyValue’ with ‘Bool’
+      Expected: Map.Map String Bool
+        Actual: Map.Map String AnyValue
+    • In the second argument of ‘Map.lookup’, namely ‘o’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "o_orderdate" o)’
+      In the second argument of ‘(&&)’, namely
+        ‘fromMaybe (error "missing") (Map.lookup "o_orderdate" o)’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:1714: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(<)’, namely ‘end_date’
+      In the first argument of ‘(&&)’, namely
+        ‘(((fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+              >= start_date)
+             && fromMaybe (error "missing") (Map.lookup "o_orderdate" o))
+            < end_date)’
+      In the first argument of ‘(==)’, namely
+        ‘((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+               >= start_date)
+              && fromMaybe (error "missing") (Map.lookup "o_orderdate" o))
+             < end_date)
+            && fromMaybe (error "missing") (Map.lookup "l_returnflag" l))’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ^^^^^^^^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:1782: error:
+    • Couldn't match type ‘AnyValue’ with ‘Bool’
+      Expected: Map.Map String Bool
+        Actual: Map.Map String AnyValue
+    • In the second argument of ‘Map.lookup’, namely ‘l’
+      In the second argument of ‘fromMaybe’, namely
+        ‘(Map.lookup "l_returnflag" l)’
+      In the second argument of ‘(&&)’, namely
+        ‘fromMaybe (error "missing") (Map.lookup "l_returnflag" l)’
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ^
+
+/workspace/mochi/tests/machine/x/hs/group_by_multi_join_sort.hs:139:1789: error:
+    • Couldn't match type ‘[Char]’ with ‘Bool’
+      Expected: Bool
+        Actual: String
+    • In the second argument of ‘(==)’, namely ‘"R"’
+      In the expression:
+        ((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+              >= start_date)
+             && fromMaybe (error "missing") (Map.lookup "o_orderdate" o))
+            < end_date)
+           && fromMaybe (error "missing") (Map.lookup "l_returnflag" l))
+          == "R"
+      In a stmt of a list comprehension:
+        (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o)
+               >= start_date)
+              && fromMaybe (error "missing") (Map.lookup "o_orderdate" o))
+             < end_date)
+            && fromMaybe (error "missing") (Map.lookup "l_returnflag" l))
+           == "R")
+    |
+139 | result = map snd (List.sortOn fst [((-sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g]), Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" (key (g)))), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" (key (g)))), ("revenue", VDouble (sum [(fromMaybe (error "missing") (Map.lookup "l_extendedprice" (fromMaybe (error "missing") (Map.lookup "l" (x)))) * ((1 - _asInt (fromMaybe (error "missing") (Map.lookup "l_discount" (fromMaybe (error "missing") (Map.lookup "l" (x)))))))) | x <- g])), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" (key (g)))), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" (key (g)))), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" (key (g)))), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" (key (g)))), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" (key (g))))]) | g <- _group_by [(c, o, l, n) | c <- customer, o <- orders, l <- lineitem, n <- nation, (fromMaybe (error "missing") (Map.lookup "o_custkey" (o)) == fromMaybe (error "missing") (Map.lookup "c_custkey" (c))), (fromMaybe (error "missing") (Map.lookup "l_orderkey" (l)) == fromMaybe (error "missing") (Map.lookup "o_orderkey" (o))), (fromMaybe (error "missing") (Map.lookup "n_nationkey" (n)) == fromMaybe (error "missing") (Map.lookup "c_nationkey" (c))), (((((fromMaybe (error "missing") (Map.lookup "o_orderdate" o) >= start_date) && fromMaybe (error "missing") (Map.lookup "o_orderdate" o)) < end_date) && fromMaybe (error "missing") (Map.lookup "l_returnflag" l)) == "R")] (\(c, o, l, n) -> Map.fromList [("c_custkey", fromMaybe (error "missing") (Map.lookup "c_custkey" c)), ("c_name", fromMaybe (error "missing") (Map.lookup "c_name" c)), ("c_acctbal", fromMaybe (error "missing") (Map.lookup "c_acctbal" c)), ("c_address", fromMaybe (error "missing") (Map.lookup "c_address" c)), ("c_phone", fromMaybe (error "missing") (Map.lookup "c_phone" c)), ("c_comment", fromMaybe (error "missing") (Map.lookup "c_comment" c)), ("n_name", fromMaybe (error "missing") (Map.lookup "n_name" n))])])
+    |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ^^^
