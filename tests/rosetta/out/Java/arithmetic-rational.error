@@ -1,5 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavaarithmetic-rational2682392586/001/ArithmeticRational.java:17: error: incompatible types: possible lossy conversion from double to int
-                return mid;
-                       ^
-1 error

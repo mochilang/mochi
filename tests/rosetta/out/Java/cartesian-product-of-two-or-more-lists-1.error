@@ -1,8 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavacartesian-product-of-two-or-more-lists-12260681591/001/CartesianProductOfTwoOrMoreLists1.java:19: error: incompatible types: List<Integer> cannot be converted to List<List<Integer>>
-            List<List<Integer>> row = lst.get(i);
-                                             ^
-/tmp/TestMochiToJavacartesian-product-of-two-or-more-lists-12260681591/001/CartesianProductOfTwoOrMoreLists1.java:23: error: incompatible types: String cannot be converted to Number
-                s = s + ((Number)String.valueOf(row.get(j))).doubleValue();
-                                               ^
-2 errors

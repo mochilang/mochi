@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavabrazilian-numbers472523807/001/BrazilianNumbers.java:8: error: incompatible types: int cannot be converted to String
-        n = (int)(Integer.parseInt((n / b)));
-                                      ^
-/tmp/TestMochiToJavabrazilian-numbers472523807/001/BrazilianNumbers.java:13: error: incompatible types: int cannot be converted to String
-            n = (int)(Integer.parseInt((n / b)));
-                                          ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors

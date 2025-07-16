@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavacall-a-function-51110366730/001/CallAFunction5.java:11: error: bad operand types for binary operator '+'
-        return ((Number)((Number)p.get("a")).doubleValue() + b).doubleValue() + ((Number)p.get("c")).doubleValue();
-                                                           ^
-  first type:  Number
-  second type: int
-Note: /tmp/TestMochiToJavacall-a-function-51110366730/001/CallAFunction5.java uses unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
-1 error

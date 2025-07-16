@@ -1,8 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavaaliquot-sequence-classifications258502941/001/AliquotSequenceClassifications.java:6: error: integer number too large
-    static int THRESHOLD = 140737488355328;
-                           ^
-/tmp/TestMochiToJavaaliquot-sequence-classifications258502941/001/AliquotSequenceClassifications.java:120: error: integer number too large
-        int big = 15355717786080;
-                  ^
-2 errors
