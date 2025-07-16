@@ -24,8 +24,8 @@ program barnsley_fern
     integer, allocatable, dimension(:) :: app1
     integer :: res
     integer :: r
-      integer :: nx
-      integer :: ny
+      real :: nx
+      real :: ny
     integer :: next
   xMin = -2.182
   xMax = 2.6558

@@ -149,11 +149,6 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
    96 |       res = results
       |      1
 Error: Incompatible ranks 0 and 1 in assignment at (1)
-/tmp/abbreviations-easy.f90:102:14:
-
-  102 |       found = .false.
-      |              1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/abbreviations-easy.f90:103:18:
 
   103 |       wlen = size(w)
@@ -179,21 +174,11 @@ Error: Function ‘upper’ at (1) has no IMPLICIT type
   109 |           ww = upper(w)
       |               1
 Error: Function ‘upper’ at (1) has no IMPLICIT type
-/tmp/abbreviations-easy.f90:116:20:
-
-  116 |             found = .true.
-      |                    1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/abbreviations-easy.f90:105:27:
 
   105 |       do while ((ci < size(commands)))
       |                           1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/abbreviations-easy.f90:122:15:
-
-  122 |       if (.not. found) then
-      |               1
-Error: Operand of .not. operator at (1) is INTEGER(4)
 /tmp/abbreviations-easy.f90:125:32:
 
   125 |         app3(1:size(results)) = results

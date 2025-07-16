@@ -13,8 +13,8 @@ program averages_mean_time_of_day
     integer :: sec
       character(len=100) :: s0
     character(len=100) :: s1
-    integer :: ssum
-    integer :: csum
+    real :: ssum
+    real :: csum
       integer :: ang
     integer :: theta
     integer :: frac

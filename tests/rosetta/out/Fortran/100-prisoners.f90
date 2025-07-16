@@ -10,8 +10,8 @@ program p_100_prisoners
       integer, allocatable, dimension(:) :: drawers
         integer, allocatable, dimension(:) :: app0
       integer :: p
-      integer :: success
-        integer :: found
+      logical :: success
+        logical :: found
           integer :: prev
           integer :: d
             integer :: this
@@ -27,7 +27,7 @@ program p_100_prisoners
       character(len=100) :: s5
       character(len=100) :: s6
       integer :: strat
-      integer, dimension(2) :: arr7 = (/'random','optimal'/)
+      character(len=7), dimension(2) :: arr7 = (/'random ','optimal'/)
       integer :: i7
   call main()
   contains

@@ -44,13 +44,3 @@ Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
   138 |     do while ((i < size(times)))
       |                        1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/averages-mean-time-of-day.f90:145:12:
-
-  145 |     theta = atan2Approx(ssum,csum)
-      |            1
-Error: Type mismatch in argument ‘y’ at (1); passed INTEGER(4) to REAL(4)
-/tmp/averages-mean-time-of-day.f90:145:12:
-
-  145 |     theta = atan2Approx(ssum,csum)
-      |            1
-Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)

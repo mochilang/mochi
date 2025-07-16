@@ -1,9 +1,9 @@
 gfortran: exit status 1
-/tmp/100-prisoners.f90:30:49:
+/tmp/100-prisoners.f90:40:7:
 
-   30 |       integer, dimension(2) :: arr7 = (/'random','optimal'/)
-      |                                                 1
-Error: Different CHARACTER lengths (6/7) in array constructor at (1)
+   40 |       tmp = arr(((i)+1))
+      |       1
+Error: Unclassifiable statement at (1)
 /tmp/100-prisoners.f90:121:132:
 
   121 |     print *, trim(trim(trim(trim(trim('  strategy = ' // strategy) // '  pardoned = ') // s2) // ' relative frequency = ') // s3) // '%'
@@ -28,7 +28,7 @@ Error: Symbol ‘trials’ at (1) has no IMPLICIT type
 
   131 |         strat = arr7(i7)
       |                1
-Error: Function ‘arr7’ at (1) has no IMPLICIT type
+Error: Cannot convert CHARACTER(7) to INTEGER(4) at (1)
 /tmp/100-prisoners.f90:65:24:
 
    65 |       drawers = shuffle(drawers)
@@ -39,21 +39,6 @@ Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
    39 |       j = mod(now(),((i + 1)))
       |              1
 Error: Function ‘now’ at (1) has no IMPLICIT type
-/tmp/100-prisoners.f90:67:16:
-
-   67 |       success = .true.
-      |                1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:69:16:
-
-   69 |         found = .false.
-      |                1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:76:22:
-
-   76 |               found = .true.
-      |                      1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/100-prisoners.f90:88:35:
 
    88 |             app1(1:size(opened)) = opened
@@ -84,24 +69,4 @@ Error: Exit condition of DO WHILE loop at (1) must be a scalar LOGICAL expressio
    99 |             opened(((n)+1)) = .true.
       |                              1
 Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:101:22:
-
-  101 |               found = .true.
-      |                      1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:107:17:
-
-  107 |         if (.not. found) then
-      |                 1
-Error: Operand of .not. operator at (1) is INTEGER(4)
-/tmp/100-prisoners.f90:108:20:
-
-  108 |           success = .false.
-      |                    1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/100-prisoners.f90:113:10:
-
-  113 |       if (success) then
-      |          1
-Error: IF clause at (1) requires a scalar LOGICAL expression
 f951: some warnings being treated as errors

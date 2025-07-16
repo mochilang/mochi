@@ -7,9 +7,9 @@ program apply_a_digital_filter_direct_form_ii_transposed_
   integer :: res
   integer :: k
     integer, allocatable, dimension(:) :: out
-    integer :: scale
+    real :: scale
     integer :: i
-      integer :: tmp
+      real :: tmp
       integer :: j
       integer, allocatable, dimension(:) :: app0
   a = (/1,-2.7756e-16,0.33333333,-1.85e-17/)

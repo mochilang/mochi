@@ -21,7 +21,7 @@ program arithmetic_derivative
       integer, allocatable, dimension(:) :: app8
       character(len=100) :: line
       integer :: j
-    integer :: pow
+    real :: pow
     integer :: m
       integer :: exp
       character(len=100) :: s9

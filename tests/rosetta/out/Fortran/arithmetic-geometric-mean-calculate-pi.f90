@@ -3,14 +3,14 @@ program arithmetic_geometric_mean_calculate_pi
   implicit none
     integer :: guess
     integer :: i
-    integer :: a
-    integer :: g
+    real :: a
+    real :: g
     integer :: sum
-    integer :: pow
+    real :: pow
       integer :: t
       integer :: u
       integer :: diff
-    integer :: pi
+    real :: pi
     character(len=100) :: s0
   call main()
   contains

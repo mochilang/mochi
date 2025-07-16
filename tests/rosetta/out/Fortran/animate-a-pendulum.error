@@ -1,6 +1,0 @@
-gfortran: exit status 1
-/tmp/animate-a-pendulum.f90:30:31:
-
-   30 |     pos = int((((10 * sinApprox(phi)) + 0.5)))
-      |                               1
-Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)

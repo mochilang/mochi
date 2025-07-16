@@ -6,8 +6,8 @@ program benfords_law
     character(len=100) :: s0
     integer :: dot
       integer :: decs
-    integer :: a
-    integer :: b
+    real :: a
+    real :: b
     integer, allocatable, dimension(:) :: res
       integer, allocatable, dimension(:) :: app1
       integer :: t

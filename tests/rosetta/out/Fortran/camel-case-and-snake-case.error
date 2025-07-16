@@ -44,56 +44,16 @@ Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(
    82 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/tmp/camel-case-and-snake-case.f90:84:14:
-
-   84 |     prevUnd = .false.
-      |              1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:89:39:
 
    89 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:89:19:
-
-   89 |         if (((.not. prevUnd .and. size(out)) > 0)) then
-      |                   1
-Error: Operand of .not. operator at (1) is INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:91:20:
-
-   91 |           prevUnd = .true.
-      |                    1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:97:39:
 
    97 |         if (((.not. prevUnd .and. size(out)) > 0)) then
       |                                       1
 Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
-/tmp/camel-case-and-snake-case.f90:97:19:
-
-   97 |         if (((.not. prevUnd .and. size(out)) > 0)) then
-      |                   1
-Error: Operand of .not. operator at (1) is INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:99:20:
-
-   99 |           prevUnd = .true.
-      |                    1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:105:33:
-
-  105 |         if (((i > 0) .and. (.not. prevUnd))) then
-      |                                 1
-Error: Operand of .not. operator at (1) is INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:109:18:
-
-  109 |         prevUnd = .false.
-      |                  1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:112:18:
-
-  112 |         prevUnd = .false.
-      |                  1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:86:24:
 
    86 |     do while ((i < size(s)))
@@ -114,11 +74,6 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
   121 |     do while ((((end > start) .and. out(((end - 1))+1:end)) == '_'))
       |                                   1
 Error: Operands of logical operator ‘.and.’ at (1) are LOGICAL(4)/CHARACTER(*)
-/tmp/camel-case-and-snake-case.f90:127:14:
-
-  127 |     lastUnd = .false.
-      |              1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:129:10:
 
   129 |       c = out((j)+1:(j + 1))
@@ -129,31 +84,16 @@ Error: Cannot convert CHARACTER(*) to INTEGER(4) at (1)
   130 |       if ((c == '_')) then
       |           1
 Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
-/tmp/camel-case-and-snake-case.f90:131:17:
-
-  131 |         if (.not. lastUnd) then
-      |                 1
-Error: Operand of .not. operator at (1) is INTEGER(4)
 /tmp/camel-case-and-snake-case.f90:132:17:
 
   132 |           res = (res + c)
       |                 1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:134:18:
-
-  134 |         lastUnd = .true.
-      |                  1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:136:15:
 
   136 |         res = (res + c)
       |               1
 Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/INTEGER(4)
-/tmp/camel-case-and-snake-case.f90:137:18:
-
-  137 |         lastUnd = .false.
-      |                  1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:128:24:
 
   128 |     do while ((j < size(out)))
@@ -164,31 +104,6 @@ Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
    52 |     s = trimSpace(s)
       |    1
 Error: Dummy argument ‘s’ with INTENT(IN) in variable definition context (assignment) at (1)
-/tmp/camel-case-and-snake-case.f90:54:9:
-
-   54 |     up = .false.
-      |         1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:59:13:
-
-   59 |         up = .true.
-      |             1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:65:13:
-
-   65 |         up = .false.
-      |             1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
-/tmp/camel-case-and-snake-case.f90:69:10:
-
-   69 |       if (up) then
-      |          1
-Error: IF clause at (1) requires a scalar LOGICAL expression
-/tmp/camel-case-and-snake-case.f90:71:13:
-
-   71 |         up = .false.
-      |             1
-Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
 /tmp/camel-case-and-snake-case.f90:56:24:
 
    56 |     do while ((i < size(s)))

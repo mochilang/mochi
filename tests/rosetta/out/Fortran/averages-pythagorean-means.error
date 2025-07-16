@@ -4,11 +4,6 @@ gfortran: exit status 1
    57 |     n = 1
       |     1
 Error: Symbol ‘n’ at (1) has no IMPLICIT type
-/tmp/averages-pythagorean-means.f90:67:8:
-
-   67 |     g = nthRoot(prod,10)
-      |        1
-Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
 /tmp/averages-pythagorean-means.f90:43:11:
 
    43 |       if ((powf(mid,n) > x)) then
