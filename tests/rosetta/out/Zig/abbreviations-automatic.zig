@@ -14,7 +14,7 @@ fn fields(s: []const u8) []const []const u8 {
     var cur = ""; // []const u8
     var i = 0; // i32
     while (i < (s).len) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if ((std.mem.eql(u8, ch, " ") or std.mem.eql(u8, ch, "\n")) or std.mem.eql(u8, ch, "\t")) {
             if ((cur).len > 0) {
                 words = blk0: { var _tmp0 = std.ArrayList([]const u8).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(words) catch |err| handleError(err); _tmp0.append(cur) catch |err| handleError(err); break :blk0 _tmp0.items; };
@@ -85,7 +85,7 @@ fn pad2(n: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const lines = &[_][]const u8{
     "Sunday Monday Tuesday Wednesday Thursday Friday Saturday",
     "Sondag Maandag Dinsdag Woensdag Donderdag Vrydag Saterdag",
@@ -196,5 +196,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

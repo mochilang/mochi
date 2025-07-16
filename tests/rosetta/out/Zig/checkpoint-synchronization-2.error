@@ -1,3 +1,3 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencheckpoint-synchronization-2331957373/001/prog.zig:22:11: error: local constant shadows declaration of 'lower'
-/tmp/TestMochiZigGoldencheckpoint-synchronization-2331957373/001/prog.zig:20:1: note: declared here
+/tmp/TestMochiZigGoldencheckpoint-synchronization-23639369707/001/prog.zig:22:11: error: local constant shadows declaration of 'lower'
+/tmp/TestMochiZigGoldencheckpoint-synchronization-23639369707/001/prog.zig:20:1: note: declared here

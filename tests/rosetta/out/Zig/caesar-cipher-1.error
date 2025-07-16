@@ -1,4 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencaesar-cipher-12291645523/001/prog.zig:115:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldencaesar-cipher-12291645523/001/prog.zig:94:1: note: other declaration here
-/tmp/TestMochiZigGoldencaesar-cipher-12291645523/001/prog.zig:36:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldencaesar-cipher-12146368071/001/prog.zig:36:29: error: use of undeclared identifier 'substring'

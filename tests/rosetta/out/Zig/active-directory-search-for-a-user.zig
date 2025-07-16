@@ -9,7 +9,7 @@ fn search_user(directory: std.AutoHashMap([]const u8, []const []const u8), usern
     return directory[username];
 }
 
-fn main() void {
+fn user_main() void {
     const Client = struct {
     Base: []const u8,
     Host: []const u8,
@@ -60,5 +60,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

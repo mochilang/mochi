@@ -31,7 +31,7 @@ fn amb(wordsets: []const []const []const u8, res: []const []const u8, idx: i32) 
     return false;
 }
 
-fn main() void {
+fn user_main() void {
     const wordset = &[_][]const []const u8{
     &[_][]const u8{
     "the",
@@ -74,5 +74,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

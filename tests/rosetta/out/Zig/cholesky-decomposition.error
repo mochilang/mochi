@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencholesky-decomposition1576077102/001/prog.zig:59:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldencholesky-decomposition1576077102/001/prog.zig:59:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldencholesky-decomposition1576077102/001/prog.zig:25:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldencholesky-decomposition1576077102/001/prog.zig:25:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

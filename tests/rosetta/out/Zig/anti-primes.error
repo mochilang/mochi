@@ -1,4 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:46:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:27:1: note: other declaration here
-/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:42:12: error: use of undeclared identifier 'substring'
+type error: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/anti-primes.mochi:27:10
+
+ 27 |   line = substring(line, 0, len(line) - 1)
+    |          ^
+
+help:
+  Ensure the argument type matches the function’s signature.

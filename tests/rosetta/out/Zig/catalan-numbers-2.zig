@@ -16,12 +16,12 @@ fn catalanRec(n: i32) i32 {
     return @as(i32, ((t5 / ((n + 1)))));
 }
 
-fn main() void {
+fn user_main() void {
     for (1 .. 16) |i| {
         std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{catalanRec(i)}) catch |err| handleError(err)});
     }
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

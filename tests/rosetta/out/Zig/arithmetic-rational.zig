@@ -49,7 +49,7 @@ fn sumRecip(n: i32) i32 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const nums = &[_]i32{
     6,
     28,
@@ -75,5 +75,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

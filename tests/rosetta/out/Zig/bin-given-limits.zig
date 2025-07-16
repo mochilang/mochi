@@ -61,7 +61,7 @@ fn printBins(limits: []const i32, bins: []const i32) void {
     std.debug.print("\n", .{});
 }
 
-fn main() void {
+fn user_main() void {
     const limitsList = &[_][]const i32{
     &[_]i32{
     23,
@@ -342,7 +342,7 @@ fn main() void {
 }; // []const []const i32
     var i = 0; // i32
     while (i < (limitsList).len) {
-        std.debug.print("{s}\n", .{_concat_string(_concat_string("Example ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + 1)}) catch |err| handleError(err)), "\n")});
+        std.debug.print("{s}\n", .{_concat_string(_concat_string("Example ", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + 1)}) catch |err| handleError(err)), "\n")});
         const bins = getBins(limitsList[i], dataList[i]); // []const i32
         printBins(limitsList[i], bins);
         i = (i + 1);
@@ -350,5 +350,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

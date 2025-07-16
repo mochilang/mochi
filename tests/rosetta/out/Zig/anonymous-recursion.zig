@@ -16,7 +16,7 @@ fn fib(n: i32) i32 {
     return (fib((n - 1)) + fib((n - 2)));
 }
 
-fn main() void {
+fn user_main() void {
     var i = -1; // i32
     while (i <= 10) {
         if (i < 0) {
@@ -29,5 +29,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

@@ -13,7 +13,7 @@ fn doIt(p: std.AutoHashMap([]const u8, i32)) i32 {
     return ((p["a"] + b) + p["c"]);
 }
 
-fn main() void {
+fn user_main() void {
     var p = std.AutoHashMap([]const u8, i32).init(std.heap.page_allocator);
     _ = p.put("a", 1) catch |err| handleError(err);
     _ = p.put("c", 9) catch |err| handleError(err);
@@ -21,5 +21,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

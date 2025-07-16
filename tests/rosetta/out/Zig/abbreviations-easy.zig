@@ -19,7 +19,7 @@ fn fields(s: []const u8) []const []const u8 {
     var cur = ""; // []const u8
     var i = 0; // i32
     while (i < (s).len) {
-        const ch = substring(s, i, (i + 1)); // []const u8
+        const ch: i32 = substring(s, i, (i + 1)); // i32
         if ((std.mem.eql(u8, ch, " ") or std.mem.eql(u8, ch, "\n")) or std.mem.eql(u8, ch, "\t")) {
             if ((cur).len > 0) {
                 words = blk0: { var _tmp0 = std.ArrayList([]const u8).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(words) catch |err| handleError(err); _tmp0.append(cur) catch |err| handleError(err); break :blk0 _tmp0.items; };
@@ -91,7 +91,7 @@ fn validate(commands: []const []const u8, words: []const []const u8, mins: []con
     return results.items;
 }
 
-fn main() void {
+fn user_main() void {
     const table = _concat_string(_concat_string(_concat_string(_concat_string(_concat_string("Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ", "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput "), " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO "), "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT "), "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT "), "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "); // []const u8
     const commands = fields(table); // []const []const u8
     var mins = std.ArrayList(i32).init(std.heap.page_allocator);
@@ -101,7 +101,7 @@ fn main() void {
         var j = 0; // i32
         const cmd = commands[i]; // []const u8
         while (j < (cmd).len) {
-            const ch = substring(cmd, j, (j + 1)); // []const u8
+            const ch: i32 = substring(cmd, j, (j + 1)); // i32
             if (std.mem.order(u8, ch, "A") != .lt and std.mem.order(u8, ch, "Z") != .gt) {
                 count = (count + 1);
             }
@@ -124,5 +124,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

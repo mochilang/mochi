@@ -1,2 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGolden100-doors-32204437568/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGolden100-doors-3400573492/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'

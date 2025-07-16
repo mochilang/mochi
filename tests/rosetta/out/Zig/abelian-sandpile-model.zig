@@ -83,7 +83,7 @@ fn drawPile(pile: []const []const i32, d: i32) void {
     }
 }
 
-fn main() void {
+fn user_main() void {
     var pile = newPile(16); // []const []const i32
     const hdim = 7; // i32
     pile.items[hdim][hdim] = 16;
@@ -92,5 +92,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

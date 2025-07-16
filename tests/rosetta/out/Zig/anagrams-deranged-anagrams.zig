@@ -74,7 +74,7 @@ fn deranged(a: []const u8, b: []const u8) bool {
     return true;
 }
 
-fn main() void {
+fn user_main() void {
     const words = &[_][]const u8{
     "constitutionalism",
     "misconstitutional",
@@ -106,5 +106,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

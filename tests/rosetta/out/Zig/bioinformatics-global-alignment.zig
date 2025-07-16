@@ -186,7 +186,7 @@ fn printCounts(seq: []const u8) void {
     var t = 0; // i32
     var i = 0; // i32
     while (i < (seq).len) {
-        const ch = substring(seq, i, (i + 1)); // []const u8
+        const ch: i32 = substring(seq, i, (i + 1)); // i32
         if (std.mem.eql(u8, ch, "A")) {
             a = (a + 1);
         } else {
@@ -210,12 +210,12 @@ fn printCounts(seq: []const u8) void {
     std.debug.print("{s}\n", .{(padLeft("C", 10) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{c}) catch |err| handleError(err), 12))});
     std.debug.print("{s}\n", .{(padLeft("G", 10) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{g}) catch |err| handleError(err), 12))});
     std.debug.print("{s}\n", .{(padLeft("T", 10) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{t}) catch |err| handleError(err), 12))});
-    std.debug.print("{s}\n", .{(padLeft("Other", 10) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(total - ((((a + c) + g) + t)))}) catch |err| handleError(err), 12))});
+    std.debug.print("{s}\n", .{(padLeft("Other", 10) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(total - ((((a + c) + g) + t)))}) catch |err| handleError(err), 12))});
     std.debug.print("  ____________________\n", .{});
     std.debug.print("{s}\n", .{(padLeft("Total length", 14) + padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{total}) catch |err| handleError(err), 8))});
 }
 
-fn main() void {
+fn user_main() void {
     const tests: []const []const []const u8 = &[_][]const []const u8{
     &[_][]const u8{
     "TA",
@@ -258,5 +258,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

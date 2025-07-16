@@ -69,7 +69,7 @@ fn pad4(n: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     const max = 120; // i32
     std.debug.print("{s}\n", .{_concat_string(_concat_string("The attractive numbers up to and including ", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{max}) catch |err| handleError(err)), " are:")});
     var count = 0; // i32
@@ -96,5 +96,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

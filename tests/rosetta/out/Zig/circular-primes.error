@@ -1,0 +1,7 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:33:32: error: type '[]i32' does not support array initialization syntax
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:33:32: note: inferred array length is specified with an underscore: '[_]i32'
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:68:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:68:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:84:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldencircular-primes2091372840/001/prog.zig:84:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type

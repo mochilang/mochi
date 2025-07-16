@@ -148,7 +148,7 @@ pub fn main() void {
         const h = headings[i]; // f64
         const idx = (@mod(i, 32) + 1); // i32
         const cp = degrees2compasspoint(h); // []const u8
-        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{idx}) catch |err| handleError(err), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°")});
+        std.debug.print("{s}\n", .{_concat_string(_concat_string(_concat_string(_concat_string(_concat_string(padLeft(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{idx}) catch |err| handleError(err), 4), "   "), padRight(cp, 19)), " "), format2(h)), "°")});
         i = (i + 1);
     }
 }

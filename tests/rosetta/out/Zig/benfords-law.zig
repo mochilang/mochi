@@ -115,16 +115,16 @@ fn show(nums: []const f64, title: []const u8) void {
     var i = 0; // i32
     while (i < 9) {
         const obs = ((@as(f64, counts[i])) / (@as(f64, total))); // f64
-        var line = _concat_string(_concat_string(_concat_string(_concat_string(_concat_string("  ", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i + 1)}) catch |err| handleError(err)), "  "), padFloat3(obs, 9)), "  "), padFloat3(preds[i], 8)); // []const u8
+        var line = _concat_string(_concat_string(_concat_string(_concat_string(_concat_string("  ", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i + 1)}) catch |err| handleError(err)), "  "), padFloat3(obs, 9)), "  "), padFloat3(preds[i], 8)); // []const u8
         std.debug.print("{s}\n", .{line});
         i = (i + 1);
     }
 }
 
-fn main() void {
+fn user_main() void {
     show(fib1000(), "First 1000 Fibonacci numbers");
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

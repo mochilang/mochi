@@ -68,6 +68,7 @@ type Compiler struct {
 		Order  []string
 	}
 	builtinAliases map[string]string
+	funcRenames    map[string]string
 }
 
 func (c *Compiler) pushPointerVars() map[string]bool {
@@ -92,6 +93,7 @@ func New(env *types.Env) *Compiler {
 		captures:       map[string]string{},
 		pointerVars:    map[string]bool{},
 		builtinAliases: map[string]string{},
+		funcRenames:    map[string]string{},
 		variantInfo: map[string]struct {
 			Union  string
 			Fields map[string]types.Type
@@ -203,6 +205,11 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 	name := sanitizeName(fn.Name)
+	if name == "main" {
+		alt := "user_main"
+		c.funcRenames[name] = alt
+		name = alt
+	}
 
 	if c.env != nil {
 		c.env.SetFunc(fn.Name, fn)
@@ -2873,6 +2880,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary, asReturn bool) (string, err
 
 func (c *Compiler) compileCallExpr(call *parser.CallExpr) (string, error) {
 	name := sanitizeName(call.Func)
+	if alt, ok := c.funcRenames[name]; ok {
+		name = alt
+	}
 	if idx := strings.IndexByte(name, '_'); idx > 0 {
 		alias := name[:idx]
 		method := name[idx+1:]

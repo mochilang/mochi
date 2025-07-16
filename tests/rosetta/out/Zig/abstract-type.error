@@ -1,6 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenabstract-type1633920489/001/prog.zig:42:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenabstract-type1633920489/001/prog.zig:29:1: note: other declaration here
-/tmp/TestMochiZigGoldenabstract-type1633920489/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
-/tmp/TestMochiZigGoldenabstract-type1633920489/001/prog.zig:22:35: error: unused capture
-/tmp/TestMochiZigGoldenabstract-type1633920489/001/prog.zig:22:59: error: unused capture
+/tmp/TestMochiZigGoldenabstract-type3062291654/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGoldenabstract-type3062291654/001/prog.zig:22:35: error: unused capture
+/tmp/TestMochiZigGoldenabstract-type3062291654/001/prog.zig:22:59: error: unused capture

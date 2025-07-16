@@ -149,7 +149,7 @@ fn printMatrix(m: []const []const i32) void {
     }
 }
 
-fn main() void {
+fn user_main() void {
     const img = &[_][]const f64{
     &[_]f64{
     0.0,
@@ -193,5 +193,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

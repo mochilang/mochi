@@ -1,4 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencall-an-object-method-3323398643/001/prog.zig:5:12: error: use of undeclared identifier 'secret'
-/tmp/TestMochiZigGoldencall-an-object-method-3323398643/001/prog.zig:15:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldencall-an-object-method-3323398643/001/prog.zig:15:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencall-an-object-method-33163997562/001/prog.zig:5:12: error: use of undeclared identifier 'secret'
+/tmp/TestMochiZigGoldencall-an-object-method-33163997562/001/prog.zig:15:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencall-an-object-method-33163997562/001/prog.zig:15:9: note: consider using 'const'

@@ -1,5 +1,5 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenalgebraic-data-types2630744001/001/prog.zig:88:8: error: function parameter shadows declaration of 'tr'
-/tmp/TestMochiZigGoldenalgebraic-data-types2630744001/001/prog.zig:12:1: note: declared here
-/tmp/TestMochiZigGoldenalgebraic-data-types2630744001/001/prog.zig:101:11: error: function parameter shadows declaration of 'tr'
-/tmp/TestMochiZigGoldenalgebraic-data-types2630744001/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenalgebraic-data-types3625705460/001/prog.zig:88:8: error: function parameter shadows declaration of 'tr'
+/tmp/TestMochiZigGoldenalgebraic-data-types3625705460/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenalgebraic-data-types3625705460/001/prog.zig:101:11: error: function parameter shadows declaration of 'tr'
+/tmp/TestMochiZigGoldenalgebraic-data-types3625705460/001/prog.zig:12:1: note: declared here

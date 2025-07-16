@@ -1,0 +1,9 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:8:19: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:17:1: note: declared here
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:24:9: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:17:1: note: declared here
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:43:11: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:17:1: note: declared here
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:55:8: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenchinese-remainder-theorem1691819765/001/prog.zig:17:1: note: declared here

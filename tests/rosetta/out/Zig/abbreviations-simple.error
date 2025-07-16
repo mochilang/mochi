@@ -1,2 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenabbreviations-simple2038741513/001/prog.zig:115:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'
+/tmp/TestMochiZigGoldenabbreviations-simple608237937/001/prog.zig:115:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

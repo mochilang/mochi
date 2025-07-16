@@ -13,6 +13,6 @@ pub fn main() void {
     4,
     5,
 }) |i| {
-        std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{(i * i)}) catch |err| handleError(err)});
+        std.debug.print("{s}\n", .{std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{(i * i)}) catch |err| handleError(err)});
     }
 }

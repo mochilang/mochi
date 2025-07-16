@@ -1,3 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencheck-that-file-exists2897613141/001/prog.zig:37:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldencheck-that-file-exists2897613141/001/prog.zig:24:1: note: other declaration here
+/tmp/zig-0.12.0/lib/std/hash_map.zig:14:13: error: std.auto_hash.autoHash does not allow slices here ([]const u8) because the intent is unclear. Consider using std.StringHashMap for hashing the contents of []const u8. Alternatively, consider using std.auto_hash.hash or providing your own hash function instead.
+/tmp/zig-0.12.0/lib/std/hash_map.zig:55:39: note: called from here
+/tmp/TestMochiZigGoldencheck-that-file-exists2353615106/001/prog.zig:14:16: error: expected type 'usize', found '[]const u8'

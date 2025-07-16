@@ -1,5 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:25:10: error: function parameter shadows declaration of 'n'
-/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:15:1: note: declared here
-/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:38:9: error: local variable shadows declaration of 'n'
-/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:15:1: note: declared here
+type error: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/calculating-the-value-of-e.mochi:26:17
+
+ 26 |   let intPart = substring(digits, 0, len(digits)-prec)
+    |                 ^
+
+help:
+  Ensure the argument type matches the function’s signature.

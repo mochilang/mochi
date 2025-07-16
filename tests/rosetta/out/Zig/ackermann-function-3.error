@@ -1,8 +1,8 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/ackermann-function-3.mochi:57:3
-
- 57 |   }
-    |   ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:4:16: error: function parameter shadows declaration of 'err'
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:9:62: error: capture shadows declaration of 'err'
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:43:20: error: use of undeclared identifier 'int'
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:73:181: error: capture shadows declaration of 'err'
+/tmp/TestMochiZigGoldenackermann-function-3227405273/001/prog.zig:12:1: note: declared here

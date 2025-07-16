@@ -97,7 +97,7 @@ fn formatFloat(f: f64, prec: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     var blum = std.ArrayList(i32).init(std.heap.page_allocator);
     var counts = &[_]i32{
     0,
@@ -143,7 +143,7 @@ fn main() void {
                             idx = (idx + 1);
                             j = (j + 1);
                         }
-                        std.debug.print("{s}\n", .{substring(line, 0, ((line).len - 1))});
+                        std.debug.print("{any}\n", .{substring(line, 0, ((line).len - 1))});
                     }
                     break;
                 }
@@ -158,5 +158,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

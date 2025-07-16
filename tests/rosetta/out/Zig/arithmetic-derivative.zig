@@ -77,7 +77,7 @@ fn pad(n: i32) []const u8 {
     return s;
 }
 
-fn main() void {
+fn user_main() void {
     var vals = std.ArrayList(i32).init(std.heap.page_allocator);
     var n = -99; // i32
     while (n < 101) {
@@ -113,5 +113,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

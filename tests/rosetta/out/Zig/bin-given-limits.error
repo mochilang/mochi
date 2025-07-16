@@ -1,11 +1,9 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:352:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:64:1: note: other declaration here
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:13:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:13:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:42:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:42:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:41:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:41:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:53:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenbin-given-limits1216242614/001/prog.zig:53:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:13:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:13:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:42:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:42:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:41:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:41:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:53:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenbin-given-limits4002208710/001/prog.zig:53:9: note: consider using 'const'

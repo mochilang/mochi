@@ -1,6 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencall-a-function-112240674470/001/prog.zig:34:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldencall-a-function-112240674470/001/prog.zig:22:1: note: other declaration here
-/tmp/TestMochiZigGoldencall-a-function-112240674470/001/prog.zig:27:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldencall-a-function-112240674470/001/prog.zig:27:9: note: consider using 'const'
-/tmp/TestMochiZigGoldencall-a-function-112240674470/001/prog.zig:25:11: error: unused local constant
+/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:27:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:27:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencall-a-function-11600184456/001/prog.zig:25:11: error: unused local constant

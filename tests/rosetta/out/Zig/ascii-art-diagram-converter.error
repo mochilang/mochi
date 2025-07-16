@@ -1,3 +1,0 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenascii-art-diagram-converter849204925/001/prog.zig:57:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenascii-art-diagram-converter849204925/001/prog.zig:4:1: note: other declaration here

@@ -1,7 +1,7 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:15:9: error: local variable shadows declaration of 'g'
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:12:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:30:8: error: function parameter shadows declaration of 'g'
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:12:1: note: declared here
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:38:9: error: local variable shadows declaration of 'g'
-/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm3191715234/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:15:9: error: local variable shadows declaration of 'g'
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:30:8: error: function parameter shadows declaration of 'g'
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:12:1: note: declared here
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:38:9: error: local variable shadows declaration of 'g'
+/tmp/TestMochiZigGoldenbitmap-midpoint-circle-algorithm2405344339/001/prog.zig:12:1: note: declared here

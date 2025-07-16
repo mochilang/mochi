@@ -129,7 +129,7 @@ fn decrypt(text: []const u8, emap: std.AutoHashMap([]const u8, []const i32), dma
     return res;
 }
 
-fn main() void {
+fn user_main() void {
     const squareRosetta = &[_][]const []const u8{
     &[_][]const u8{
     "A",
@@ -251,5 +251,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

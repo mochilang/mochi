@@ -1,9 +1,9 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:174:15: error: value of type 'i32' ignored
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:174:15: note: all non-void values must be used
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:174:15: note: this error can be suppressed by assigning the value to '_'
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:157:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:157:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:140:9: error: variable of type 'comptime_int' must be const or comptime
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:140:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
-/tmp/TestMochiZigGoldenabelian-sandpile-model-identity654180596/001/prog.zig:73:26: error: array literal requires address-of operator (&) to coerce to slice type '[]const []const i32'
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:174:15: error: value of type 'i32' ignored
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:174:15: note: all non-void values must be used
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:174:15: note: this error can be suppressed by assigning the value to '_'
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:157:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:157:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:140:9: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:140:9: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGoldenabelian-sandpile-model-identity3316895499/001/prog.zig:73:26: error: array literal requires address-of operator (&) to coerce to slice type '[]const []const i32'

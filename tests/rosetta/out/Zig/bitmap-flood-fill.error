@@ -1,8 +1,3 @@
-parse error: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30: unexpected token "}" (expected PostfixExpr)
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-flood-fill.mochi:14:30
-
- 14 |   if target == repl { return }
-    |                              ^
-
-help:
-  Parse error occurred. Check syntax near this location.
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenbitmap-flood-fill1568531552/001/prog.zig:5:67: error: use of undeclared identifier 'handleError'
+/tmp/TestMochiZigGoldenbitmap-flood-fill1568531552/001/prog.zig:59:9: error: use of undeclared identifier 'ff'

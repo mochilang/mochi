@@ -111,7 +111,7 @@ fn printImage(g: []const []const i32) void {
     }
 }
 
-fn main() void {
+fn user_main() void {
     const img = image(); // []const []const i32
     const h = histogram(img, 0); // []const i32
     std.debug.print("{s}\n", .{_concat_string("Histogram: ", std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{h}) catch |err| handleError(err))});
@@ -122,5 +122,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

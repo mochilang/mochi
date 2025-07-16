@@ -125,7 +125,7 @@ fn arithmeticNumbers(limit: i32, spf: []const i32) []const i32 {
     return arr.items;
 }
 
-fn main() void {
+fn user_main() void {
     const limit = 1228663; // i32
     const spf = sieve(limit); // []const i32
     const primes = primesFrom(spf, limit); // []const i32
@@ -161,5 +161,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

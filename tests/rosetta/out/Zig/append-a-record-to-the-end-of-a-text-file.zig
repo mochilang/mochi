@@ -16,7 +16,7 @@ fn appendOneMore(lines: []const []const u8) []const []const u8 {
     return blk0: { var _tmp0 = std.ArrayList([]const u8).init(std.heap.page_allocator); defer _tmp0.deinit(); _tmp0.appendSlice(lines) catch |err| handleError(err); _tmp0.append("xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash") catch |err| handleError(err); break :blk0 _tmp0.items; };
 }
 
-fn main() void {
+fn user_main() void {
     var lines = writeTwo(); // []const []const u8
     lines = appendOneMore(lines);
     if (((lines).len >= 3) and std.mem.eql(u8, lines[2], "xyz:x:1003:1000:X Yz,Room 1003,(234)555-8913,(234)555-0033,xyz@rosettacode.org:/home/xyz:/bin/bash")) {
@@ -27,5 +27,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

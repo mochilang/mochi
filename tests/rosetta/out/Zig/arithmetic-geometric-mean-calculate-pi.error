@@ -1,11 +1,9 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:47:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:43:1: note: other declaration here
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:36:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:36:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:32:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:32:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:31:13: error: local variable is never mutated
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:31:13: note: consider using 'const'
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:39:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi164971686/001/prog.zig:39:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:36:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:36:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:32:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:32:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:31:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:31:13: note: consider using 'const'
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:39:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenarithmetic-geometric-mean-calculate-pi312988759/001/prog.zig:39:9: note: consider using 'const'

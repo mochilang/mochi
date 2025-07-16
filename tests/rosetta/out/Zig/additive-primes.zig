@@ -53,7 +53,7 @@ fn pad(n: i32) []const u8 {
     return std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{n}) catch |err| handleError(err);
 }
 
-fn main() void {
+fn user_main() void {
     std.debug.print("Additive primes less than 500:\n", .{});
     var count = 0; // i32
     var line = ""; // []const u8
@@ -65,7 +65,7 @@ fn main() void {
             line = _concat_string(_concat_string(line, pad(i)), "  ");
             lineCount = (lineCount + 1);
             if (lineCount == 10) {
-                std.debug.print("{s}\n", .{substring(line, 0, ((line).len - 2))});
+                std.debug.print("{any}\n", .{substring(line, 0, ((line).len - 2))});
                 line = "";
                 lineCount = 0;
             }
@@ -77,11 +77,11 @@ fn main() void {
         }
     }
     if (lineCount > 0) {
-        std.debug.print("{s}\n", .{substring(line, 0, ((line).len - 2))});
+        std.debug.print("{any}\n", .{substring(line, 0, ((line).len - 2))});
     }
     std.debug.print("{s}\n", .{_concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{count}) catch |err| handleError(err), " additive primes found.")});
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

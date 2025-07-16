@@ -28,7 +28,7 @@ fn mean(v: []const f64) std.AutoHashMap([]const u8, i32) {
 };
 }
 
-fn main() void {
+fn user_main() void {
     const sets = &[_][]const i32{
     &[]i32{},
     &[_]f64{
@@ -90,5 +90,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

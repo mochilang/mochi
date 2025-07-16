@@ -1,3 +1,4 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencall-a-function-121652448500/001/prog.zig:36:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldencall-a-function-121652448500/001/prog.zig:28:1: note: other declaration here
+/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:15:16: error: no field named 'call' in struct 'prog.mkAdd__struct_3841'
+/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:13:13: note: struct declared here
+/tmp/TestMochiZigGoldencall-a-function-12663837651/001/prog.zig:29:28: note: called from here

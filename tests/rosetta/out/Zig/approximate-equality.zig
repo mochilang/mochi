@@ -40,7 +40,7 @@ fn sqrtApprox(x: f64) f64 {
     return guess;
 }
 
-fn main() void {
+fn user_main() void {
     const root2 = sqrtApprox(2.0); // f64
     const pairs = &[_][]const f64{
     &[_]f64{
@@ -89,5 +89,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

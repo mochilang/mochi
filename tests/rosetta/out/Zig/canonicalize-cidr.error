@@ -1,2 +1,2 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldencanonicalize-cidr3281088295/001/prog.zig:128:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'
+/tmp/TestMochiZigGoldencanonicalize-cidr1381817618/001/prog.zig:128:8: error: expected 'while', 'for', 'inline', or '{', found 'an identifier'

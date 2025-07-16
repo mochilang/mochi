@@ -1,9 +1,7 @@
 zig build error: exit status 1
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:150:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:125:1: note: other declaration here
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:18:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:28:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:28:9: note: consider using 'const'
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:60:22: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:92:31: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenburrows-wheeler-transform3431324613/001/prog.zig:112:20: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:18:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:28:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:28:9: note: consider using 'const'
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:60:22: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:92:31: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenburrows-wheeler-transform1623459263/001/prog.zig:112:25: error: use of undeclared identifier 'substring'

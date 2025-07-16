@@ -151,7 +151,7 @@ fn toBinary(n: i32, bits: i32) []const u8 {
     var val = n; // i32
     var i = 0; // i32
     while (i < bits) {
-        b = _concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{@mod(val, 2)}) catch |err| handleError(err), b);
+        b = _concat_string(std.fmt.allocPrint(std.heap.page_allocator, "{any}", .{@mod(val, 2)}) catch |err| handleError(err), b);
         val = @as(i32, ((val / 2)));
         i = (i + 1);
     }

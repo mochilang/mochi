@@ -1,7 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:164:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:153:1: note: other declaration here
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:22:20: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:95:13: error: local variable is never mutated
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:95:13: note: consider using 'const'
-/tmp/TestMochiZigGolden99-bottles-of-beer-21808495257/001/prog.zig:127:176: error: use of undeclared identifier 'substring'
+type error: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/99-bottles-of-beer-2.mochi:98:11
+
+ 98 |   s = s + substring(p, len(p) - 1, len(p))
+    |           ^
+
+help:
+  Ensure the argument type matches the function’s signature.

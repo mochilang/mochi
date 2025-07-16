@@ -14,7 +14,7 @@ fn accumulator(sum: i32) fn(i32) void {
     return add;
 }
 
-fn main() void {
+fn user_main() void {
     const x: i32 = accumulator(1); // i32
     x(5);
     accumulator(3);
@@ -22,5 +22,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

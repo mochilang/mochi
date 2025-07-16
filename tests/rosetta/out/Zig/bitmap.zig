@@ -143,7 +143,7 @@ fn pixelStr(p: *Pixel) []const u8 {
     return _concat_string(_concat_string(_concat_string(_concat_string(_concat_string(_concat_string("{", std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p.R}) catch |err| handleError(err)), " "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p.G}) catch |err| handleError(err)), " "), std.fmt.allocPrint(std.heap.page_allocator, "{d}", .{p.B}) catch |err| handleError(err)), "}");
 }
 
-fn main() void {
+fn user_main() void {
     var bm = NewBitmap(300, 240); // Bitmap
     FillRgb(&bm, 16711680);
     SetPxRgb(&bm, 10, 20, 255);
@@ -170,5 +170,5 @@ fn main() void {
 }
 
 pub fn main() void {
-    main();
+    user_main();
 }

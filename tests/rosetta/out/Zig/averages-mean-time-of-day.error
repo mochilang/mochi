@@ -1,7 +1,8 @@
-zig build error: exit status 1
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:133:5: error: redeclaration of 'main'
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:123:1: note: other declaration here
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:73:29: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:82:20: error: use of undeclared identifier 'substring'
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:110:9: error: local variable is never mutated
-/tmp/TestMochiZigGoldenaverages-mean-time-of-day3343043164/001/prog.zig:110:9: note: consider using 'const'
+type error: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
+
+ 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
+    |                ^
+
+help:
+  Ensure the argument type matches the function’s signature.
