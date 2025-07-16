@@ -1,7 +1,0 @@
-output mismatch
--- got --
-2.0
-
--- want --
-2
-

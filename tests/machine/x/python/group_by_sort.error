@@ -1,7 +1,0 @@
-output mismatch
--- got --
-[Auto1(cat='b', total=7), Auto1(cat='a', total=4)]
-
--- want --
-map[cat:b total:7] map[cat:a total:4]
-
