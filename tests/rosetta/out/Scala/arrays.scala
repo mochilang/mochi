@@ -23,7 +23,7 @@ object arrays {
     var s = a.slice(0, 4)
     var cap_s = 5
     println("s = " + listStr(s))
-    println((("len(s) = " + s.length.toString).asInstanceOf[Int] + "  cap(s) = ").asInstanceOf[Int] + cap_s.toString)
+    println("len(s) = " + s.length.toString + "  cap(s) = " + cap_s.toString)
     s = a.slice(0, 5)
     println("s = " + listStr(s))
     a(0) = 22
@@ -35,7 +35,7 @@ object arrays {
     s = s :+ 6
     cap_s = 10
     println("s = " + listStr(s))
-    println((("len(s) = " + s.length.toString).asInstanceOf[Int] + "  cap(s) = ").asInstanceOf[Int] + cap_s.toString)
+    println("len(s) = " + s.length.toString + "  cap(s) = " + cap_s.toString)
     a(4) = -1
     println("a = " + listStr(a))
     println("s = " + listStr(s))
@@ -45,6 +45,6 @@ object arrays {
     }
     cap_s = 8
     println("s = " + listStr(s))
-    println((("len(s) = " + s.length.toString).asInstanceOf[Int] + "  cap(s) = ").asInstanceOf[Int] + cap_s.toString)
+    println("len(s) = " + s.length.toString + "  cap(s) = " + cap_s.toString)
   }
 }

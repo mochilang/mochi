@@ -48,11 +48,11 @@ object bioinformatics_sequence_mutation {
       s = (r).apply(0)
       val idx = (r).apply(1).toInt
       val b = bases.substring(idx, idx + 1)
-      println(((((("  Change @" + padLeft(p.toString, 3)).asInstanceOf[Int] + " '").asInstanceOf[Int] + (arr).apply(p)).asInstanceOf[Int] + "' to '").asInstanceOf[Int] + b).asInstanceOf[Int] + "'")
+      println("  Change @" + padLeft(p.toString, 3) + " '" + (arr).apply(p) + "' to '" + b + "'")
       arr(p) = b
     } else {
       if (x < (w).apply(0) + (w).apply(1)) {
-        println(((("  Delete @" + padLeft(p.toString, 3)).asInstanceOf[Int] + " '").asInstanceOf[Int] + (arr).apply(p)).asInstanceOf[Int] + "'")
+        println("  Delete @" + padLeft(p.toString, 3) + " '" + (arr).apply(p) + "'")
         var j = p
         while (j < arr.length - 1) {
           arr(j) = (arr).apply(j + 1)
@@ -70,7 +70,7 @@ object bioinformatics_sequence_mutation {
           arr(j) = (arr).apply(j - 1)
           j -= 1
         }
-        println(((("  Insert @" + padLeft(p.toString, 3)).asInstanceOf[Int] + " '").asInstanceOf[Int] + b).asInstanceOf[Int] + "'")
+        println("  Insert @" + padLeft(p.toString, 3) + " '" + b + "'")
         arr(p) = b
       }
     }
@@ -92,7 +92,7 @@ object bioinformatics_sequence_mutation {
       if (k > le) {
         k = le
       }
-      println((padLeft(i.toString, 5) + ": ").asInstanceOf[Int] + dna.substring(i, k))
+      println(padLeft(i.toString, 5) + ": " + dna.substring(i, k))
       i += rowLen
     }
     var a = 0
@@ -130,7 +130,7 @@ object bioinformatics_sequence_mutation {
     println("    ======")
   }
   
-  def wstring(w: List[Int]): String = ((((("  Change: " + (w).apply(0).toString).asInstanceOf[Int] + "\n  Delete: ").asInstanceOf[Int] + (w).apply(1).toString).asInstanceOf[Int] + "\n  Insert: ").asInstanceOf[Int] + (w).apply(2).toString).asInstanceOf[Int] + "\n"
+  def wstring(w: List[Int]): String = "  Change: " + (w).apply(0).toString + "\n  Delete: " + (w).apply(1).toString + "\n  Insert: " + (w).apply(2).toString + "\n"
   
   def main() = {
     var seed = 1
@@ -142,7 +142,7 @@ object bioinformatics_sequence_mutation {
     val w = List(100, 100, 100)
     println("\nWEIGHTS (ex 300):")
     println(wstring(w))
-    println(("MUTATIONS (" + muts.toString).asInstanceOf[Int] + "):")
+    println("MUTATIONS (" + muts.toString + "):")
     var i = 0
     while (i < muts) {
       res = mutate(seed, dna, w)

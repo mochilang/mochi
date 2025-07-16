@@ -10,9 +10,9 @@ object anonymous_recursion {
     var i = -1
     while (i <= 10) {
       if (i < 0) {
-        println(("fib(" + i.toString).asInstanceOf[Int] + ") returned error: negative n is forbidden")
+        println("fib(" + i.toString + ") returned error: negative n is forbidden")
       } else {
-        println((("fib(" + i.toString).asInstanceOf[Int] + ") = ").asInstanceOf[Int] + fib(i).toString)
+        println("fib(" + i.toString + ") = " + fib(i).toString)
       }
       i += 1
     }

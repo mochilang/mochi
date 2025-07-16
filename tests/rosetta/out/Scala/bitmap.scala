@@ -81,11 +81,11 @@ object bitmap {
   }
   
   def ppmSize(b: Bitmap): Int = {
-    val header = ((("P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + b.cols.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + b.rows.toString).asInstanceOf[Int] + "\n255\n"
+    val header = "P6\n# Creator: Rosetta Code http://rosettacode.org/\n" + b.cols.toString + " " + b.rows.toString + "\n255\n"
     return header.length + 3 * b.cols * b.rows
   }
   
-  def pixelStr(p: Pixel): String = ((((("{" + p.R.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + p.G.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + p.B.toString).asInstanceOf[Int] + "}"
+  def pixelStr(p: Pixel): String = "{" + p.R.toString + " " + p.G.toString + " " + p.B.toString + "}"
   
   def main() = {
     var bm = NewBitmap(300, 240)
@@ -96,7 +96,7 @@ object bitmap {
     val c1 = GetPx(bm, 0, 0)
     val c2 = GetPx(bm, 10, 20)
     val c3 = GetPx(bm, 30, 40)
-    println((("Image size: " + bm.cols.toString).asInstanceOf[Int] + " × ").asInstanceOf[Int] + bm.rows.toString)
+    println("Image size: " + bm.cols.toString + " × " + bm.rows.toString)
     println(ppmSize(bm).toString + " bytes when encoded as PPM.")
     if (c1("ok") != null) {
       println("Pixel at (0,0) is " + pixelStr(c1("pixel")))
@@ -109,7 +109,7 @@ object bitmap {
       var r16 = (p.R).asInstanceOf[Int] * 257
       var g16 = (p.G).asInstanceOf[Int] * 257
       var b16 = (p.B).asInstanceOf[Int] * 257
-      println((((("Pixel at (30,40) has R=" + r16.toString).asInstanceOf[Int] + ", G=").asInstanceOf[Int] + g16.toString).asInstanceOf[Int] + ", B=").asInstanceOf[Int] + b16.toString)
+      println("Pixel at (30,40) has R=" + r16.toString + ", G=" + g16.toString + ", B=" + b16.toString)
     }
   }
   

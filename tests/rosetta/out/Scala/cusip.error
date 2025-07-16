@@ -1,8 +1,8 @@
-type error: error[T003]: unknown function: indexOf
-  --> /workspace/mochi/tests/rosetta/x/Mochi/cusip.mochi:4:13
+type error: error[T003]: unknown function: parseIntStr
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cusip.mochi:33:10
 
-  4 |   var idx = indexOf(upper, ch)
-    |             ^
+ 33 |   return parseIntStr(s[8:9]) == (10 - (sum % 10)) % 10
+    |          ^
 
 help:
   Ensure the function is defined before it's called.

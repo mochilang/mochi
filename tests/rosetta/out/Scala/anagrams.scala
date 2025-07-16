@@ -81,7 +81,7 @@ object anagrams {
           var line = "[" + (g).apply(0)
           var i = 1
           while (i < g.length) {
-            line = (line + " ").asInstanceOf[Int] + (g).apply(i)
+            line = line + " " + (g).apply(i)
             i += 1
           }
           line += "]"

@@ -53,14 +53,14 @@ object boyer_moore_string_search {
     val patterns = List("TCTA", "TAATAAA", "word", "needle", "and", "alfalfa")
     var i = 0
     while (i < texts.length) {
-      println((("text" + i + 1.toString).asInstanceOf[Int] + " = ").asInstanceOf[Int] + (texts).apply(i))
+      println("text" + i + 1.toString + " = " + (texts).apply(i))
       i += 1
     }
     println("")
     var j = 0
     while (j < texts.length) {
       val idxs = stringSearch((texts).apply(j), (patterns).apply(j))
-      println((((("Found \"" + (patterns).apply(j)).asInstanceOf[Int] + "\" in 'text").asInstanceOf[Int] + j + 1.toString).asInstanceOf[Int] + "' at indexes ").asInstanceOf[Int] + display(idxs))
+      println("Found \"" + (patterns).apply(j) + "\" in 'text" + j + 1.toString + "' at indexes " + display(idxs))
       j += 1
     }
   }

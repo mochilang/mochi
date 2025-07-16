@@ -1,0 +1,119 @@
+object _24_game_solve {
+  val OP_NUM = 0
+  val OP_ADD = 1
+  val OP_SUB = 2
+  val OP_MUL = 3
+  val OP_DIV = 4
+  def newNum(n: Int): Map[String, any] = Map("op" -> OP_NUM, "value" -> Map("num" -> n, "denom" -> 1))
+  
+  def exprEval(x: Map[String, any]): Map[String, Int] = {
+    if (((x).apply("op")).asInstanceOf[Int] == OP_NUM) {
+      return (x).apply("value")
+    }
+    val l = exprEval((x).apply("left"))
+    val r = exprEval((x).apply("right"))
+    if (((x).apply("op")).asInstanceOf[Int] == OP_ADD) {
+      return Map("num" -> (l).apply("num") * (r).apply("denom") + (l).apply("denom") * (r).apply("num"), "denom" -> (l).apply("denom") * (r).apply("denom"))
+    }
+    if (((x).apply("op")).asInstanceOf[Int] == OP_SUB) {
+      return Map("num" -> (l).apply("num") * (r).apply("denom") - (l).apply("denom") * (r).apply("num"), "denom" -> (l).apply("denom") * (r).apply("denom"))
+    }
+    if (((x).apply("op")).asInstanceOf[Int] == OP_MUL) {
+      return Map("num" -> (l).apply("num") * (r).apply("num"), "denom" -> (l).apply("denom") * (r).apply("denom"))
+    }
+    return Map("num" -> (l).apply("num") * (r).apply("denom"), "denom" -> (l).apply("denom") * (r).apply("num"))
+  }
+  
+  def exprString(x: Map[String, any]): String = {
+    if (((x).apply("op")).asInstanceOf[Int] == OP_NUM) {
+      return ((x).apply("value")).apply("num").toString
+    }
+    val ls = exprString((x).apply("left"))
+    val rs = exprString((x).apply("right"))
+    var opstr = ""
+    if (((x).apply("op")).asInstanceOf[Int] == OP_ADD) {
+      opstr = " + "
+    } else {
+      if (((x).apply("op")).asInstanceOf[Int] == OP_SUB) {
+        opstr = " - "
+      } else {
+        if (((x).apply("op")).asInstanceOf[Int] == OP_MUL) {
+          opstr = " * "
+        } else {
+          opstr = " / "
+        }
+      }
+    }
+    return "(" + ls + opstr + rs + ")"
+  }
+  
+  def solve(xs: List[Map[String, any]]): Boolean = {
+    if (xs.length == 1) {
+      val f = exprEval((xs).apply(0))
+      if ((f).apply("denom") != 0 && (f).apply("num") == (f).apply("denom") * goal) {
+        println(exprString((xs).apply(0)))
+        return true
+      }
+      return false
+    }
+    var i = 0
+    while (i < xs.length) {
+      var j = i + 1
+      while (j < xs.length) {
+        var rest: List[Map[String, any]] = scala.collection.mutable.ArrayBuffer[Any]()
+        var k = 0
+        while (k < xs.length) {
+          if (k != i && k != j) {
+            rest = rest :+ (xs).apply(k)
+          }
+          k += 1
+        }
+        val a = (xs).apply(i)
+        val b = (xs).apply(j)
+        for(op <- List(OP_ADD, OP_SUB, OP_MUL, OP_DIV)) {
+          var node = scala.collection.mutable.Map("op" -> op, "left" -> a, "right" -> b)
+          if (solve(rest :+ node)) {
+            return true
+          }
+        }
+        var node = scala.collection.mutable.Map("op" -> OP_SUB, "left" -> b, "right" -> a)
+        if (solve(rest :+ node)) {
+          return true
+        }
+        node = Map("op" -> OP_DIV, "left" -> b, "right" -> a)
+        if (solve(rest :+ node)) {
+          return true
+        }
+        j += 1
+      }
+      i += 1
+    }
+    return false
+  }
+  
+  def main() = {
+    var iter = 0
+    while (iter < 10) {
+      var cards: List[Map[String, any]] = scala.collection.mutable.ArrayBuffer[Any]()
+      var i = 0
+      while (i < n_cards) {
+        val n = (now() % (digit_range - 1)) + 1
+        cards = cards :+ newNum(n)
+        println(" " + n.toString)
+        i += 1
+      }
+      println(":  ")
+      if (!solve(cards)) {
+        println("No solution")
+      }
+      iter += 1
+    }
+  }
+  
+  def main(args: Array[String]): Unit = {
+    val n_cards = 4
+    val goal = 24
+    val digit_range = 9
+    main()
+  }
+}

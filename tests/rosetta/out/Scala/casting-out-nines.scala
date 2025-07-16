@@ -59,7 +59,7 @@ object casting_out_nines {
     var idx = 0
     while (idx < testCases.length) {
       val tc = (testCases).apply(idx)
-      println(((((("\nTest case base = " + (tc).apply("base").toString).asInstanceOf[Int] + ", begin = ").asInstanceOf[Int] + ((tc).apply("begin")).asInstanceOf[Int]).asInstanceOf[Int] + ", end = ").asInstanceOf[Int] + ((tc).apply("end")).asInstanceOf[Int]).asInstanceOf[Int] + ":")
+      println("\nTest case base = " + (tc).apply("base").toString + ", begin = " + (tc).apply("begin") + ", end = " + (tc).apply("end") + ":")
       val s = subset((tc).apply("base"), (tc).apply("begin"), (tc).apply("end"))
       println("Subset:  " + s.toString)
       println("Kaprekar:" + (tc).apply("kaprekar").toString)
@@ -78,7 +78,7 @@ object casting_out_nines {
           sx += 1
         }
         if (!found) {
-          println(("Fail:" + (k).asInstanceOf[Int]).asInstanceOf[Int] + " not in subset")
+          println("Fail:" + k + " not in subset")
           valid = false
           return
         }

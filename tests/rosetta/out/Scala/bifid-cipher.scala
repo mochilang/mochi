@@ -9,7 +9,7 @@ object bifid_cipher {
       while (y < row.length) {
         val ch = (row).apply(y)
         emap(ch) = List(x, y)
-        dmap((x.toString + ",").asInstanceOf[Int] + y.toString) = ch
+        dmap(x.toString + "," + y.toString) = ch
         y += 1
       }
       x += 1
@@ -49,7 +49,7 @@ object bifid_cipher {
     var res = ""
     var j = 0
     while (j < row0.length) {
-      val key = ((row0).apply(j).toString + ",").asInstanceOf[Int] + (row0).apply(j + 1).toString
+      val key = (row0).apply(j).toString + "," + (row0).apply(j + 1).toString
       res += (dmap).apply(key)
       j += 2
     }
@@ -82,7 +82,7 @@ object bifid_cipher {
     var res = ""
     var j = 0
     while (j < half) {
-      val key = ((k1).apply(j).toString + ",").asInstanceOf[Int] + (k2).apply(j).toString
+      val key = (k1).apply(j).toString + "," + (k2).apply(j).toString
       res += (dmap).apply(key)
       j += 1
     }

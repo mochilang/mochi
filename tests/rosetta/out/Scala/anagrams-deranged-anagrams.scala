@@ -68,7 +68,7 @@ object anagrams_deranged_anagrams {
       }
       m(k) = (m).apply(k) :+ w
     }
-    println((((w1 + " ").asInstanceOf[Int] + w2).asInstanceOf[Int] + " : Length ").asInstanceOf[Int] + bestLen.toString)
+    println(w1 + " " + w2 + " : Length " + bestLen.toString)
   }
   
   def main(args: Array[String]): Unit = {

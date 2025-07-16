@@ -43,7 +43,7 @@ object abelian_sandpile_model_identity {
     while (r < 3) {
       var c = 0
       while (c < 3) {
-        s = (s + (p).apply(3 * r + c).toString).asInstanceOf[Int] + " "
+        s = s + (p).apply(3 * r + c).toString + " "
         c += 1
       }
       s += "\n"
@@ -71,8 +71,8 @@ object abelian_sandpile_model_identity {
     while (!isStable(s3_b)) {
       topple(s3_b)
     }
-    println((((pileString(s1) + "\nplus\n\n").asInstanceOf[Int] + pileString(s2)).asInstanceOf[Int] + "\nequals\n\n").asInstanceOf[Int] + pileString(s3_a))
-    println((((("and\n\n" + pileString(s2)).asInstanceOf[Int] + "\nplus\n\n").asInstanceOf[Int] + pileString(s1)).asInstanceOf[Int] + "\nalso equals\n\n").asInstanceOf[Int] + pileString(s3_b))
+    println(pileString(s1) + "\nplus\n\n" + pileString(s2) + "\nequals\n\n" + pileString(s3_a))
+    println("and\n\n" + pileString(s2) + "\nplus\n\n" + pileString(s1) + "\nalso equals\n\n" + pileString(s3_b))
     println("Addition of identity sandpile:\n")
     var s3 = scala.collection.mutable.ArrayBuffer(3, 3, 3, 3, 3, 3, 3, 3, 3)
     var s3_id = scala.collection.mutable.ArrayBuffer(2, 1, 2, 1, 0, 1, 2, 1, 2)
@@ -80,12 +80,12 @@ object abelian_sandpile_model_identity {
     while (!isStable(s4b)) {
       topple(s4b)
     }
-    println((((pileString(s3) + "\nplus\n\n").asInstanceOf[Int] + pileString(s3_id)).asInstanceOf[Int] + "\nequals\n\n").asInstanceOf[Int] + pileString(s4b))
+    println(pileString(s3) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s4b))
     println("Addition of identities:\n")
     var s5 = plus(s3_id, s3_id)
     while (!isStable(s5)) {
       topple(s5)
     }
-    println((((pileString(s3_id) + "\nplus\n\n").asInstanceOf[Int] + pileString(s3_id)).asInstanceOf[Int] + "\nequals\n\n").asInstanceOf[Int] + pileString(s5))
+    println(pileString(s3_id) + "\nplus\n\n" + pileString(s3_id) + "\nequals\n\n" + pileString(s5))
   }
 }

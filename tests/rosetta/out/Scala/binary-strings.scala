@@ -50,7 +50,7 @@ object binary_strings {
       }
       i += 1
     }
-    println((fromBytes(d) + " -> ").asInstanceOf[Int] + fromBytes(f))
+    println(fromBytes(d) + " -> " + fromBytes(f))
     var rem: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
     rem = rem :+ (b).apply(0)
     i = 3

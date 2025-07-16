@@ -29,9 +29,9 @@ object character_codes_3 {
     var b = ord("a")
     var r = ord("π")
     var s = "aπ"
-    println((((b.toString + " ").asInstanceOf[Int] + r.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + s)
-    println(((("string cast to []rune: [" + b.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r.toString).asInstanceOf[Int] + "]")
-    println((("    string range loop: " + b.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + r.toString)
+    println(b.toString + " " + r.toString + " " + s)
+    println("string cast to []rune: [" + b.toString + " " + r.toString + "]")
+    println("    string range loop: " + b.toString + " " + r.toString)
     println("         string bytes: 0x61 0xcf 0x80")
   }
 }

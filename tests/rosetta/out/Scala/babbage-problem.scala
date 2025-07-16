@@ -7,7 +7,7 @@ object babbage_problem {
       val square = n * n
       val ending = square % modulus
       if (ending == target) {
-        println((("The smallest number whose square ends with " + target.toString).asInstanceOf[Int] + " is ").asInstanceOf[Int] + n.toString)
+        println("The smallest number whose square ends with " + target.toString + " is " + n.toString)
         return
       }
       n += 1

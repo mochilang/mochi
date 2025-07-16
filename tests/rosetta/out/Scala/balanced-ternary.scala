@@ -114,7 +114,7 @@ object balanced_ternary {
     val l = padLeft(label, 7)
     val bs = padLeft(btToString(b), 12)
     val is = padLeft(btToInt(b).toString, 7)
-    println((((l + " ").asInstanceOf[Int] + bs).asInstanceOf[Int] + " ").asInstanceOf[Int] + is)
+    println(l + " " + bs + " " + is)
   }
   
   def main() = {

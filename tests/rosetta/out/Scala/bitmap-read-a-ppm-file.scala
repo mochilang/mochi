@@ -175,24 +175,24 @@ object bitmap_read_a_ppm_file {
     val w: Int = b.w
     var max = b.max
     val digits = max.toString.length
-    var out = ((((("P3\n# generated from Bitmap.writeppmp3\n" + w.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + h.toString).asInstanceOf[Int] + "\n").asInstanceOf[Int] + max.toString).asInstanceOf[Int] + "\n"
+    var out = "P3\n# generated from Bitmap.writeppmp3\n" + w.toString + " " + h.toString + "\n" + max.toString + "\n"
     var y = h - 1
     while (y >= 0) {
       var line = ""
       var x = 0
       while (x < w) {
         val p = getPx(b, x, y)
-        line = (((((line + "   ").asInstanceOf[Int] + pad(p.R, digits)).asInstanceOf[Int] + " ").asInstanceOf[Int] + pad(p.G, digits)).asInstanceOf[Int] + " ").asInstanceOf[Int] + pad(p.B, digits)
+        line = line + "   " + pad(p.R, digits) + " " + pad(p.G, digits) + " " + pad(p.B, digits)
         x += 1
       }
-      out = (out + line).asInstanceOf[Int] + "\n"
+      out = out + line + "\n"
       y -= 1
     }
     return out
   }
   
   def main(args: Array[String]): Unit = {
-    var ppmtxt = (((((("P3\n" + "# feep.ppm\n").asInstanceOf[Int] + "4 4\n").asInstanceOf[Int] + "15\n").asInstanceOf[Int] + " 0  0  0    0  0  0    0  0  0   15  0 15\n").asInstanceOf[Int] + " 0  0  0    0 15  7    0  0  0    0  0  0\n").asInstanceOf[Int] + " 0  0  0    0  0  0    0 15  7    0  0  0\n").asInstanceOf[Int] + "15  0 15    0  0  0    0  0  0    0  0  0\n"
+    var ppmtxt = "P3\n" + "# feep.ppm\n" + "4 4\n" + "15\n" + " 0  0  0    0  0  0    0  0  0   15  0 15\n" + " 0  0  0    0 15  7    0  0  0    0  0  0\n" + " 0  0  0    0  0  0    0 15  7    0  0  0\n" + "15  0 15    0  0  0    0  0  0    0  0  0\n"
     println("Original Colour PPM file")
     println(ppmtxt)
     var bm = readP3(ppmtxt)

@@ -11,6 +11,7 @@
 - 2025-07-15 05:44 - Archive script now captures `.error` files when `scalac` or runtime fails
 - 2025-07-17 05:20 - `substring` now accepts `bigint` indices to avoid false type errors during Rosetta tests
 - 2025-07-18 12:14 - Added `padStart` builtin and Scala code generation support to reduce Rosetta compile errors
+- 2025-07-19 00:30 - Handle `padStart` as string method and keep string type during concatenation to reduce `.error` files
 
 ## Remaining Work
 - [ ] Review generated Scala for idiomatic improvements

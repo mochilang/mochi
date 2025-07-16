@@ -20,7 +20,7 @@ object anonymous_recursion_1 {
       if (n < 0) {
         println("fib undefined for negative numbers")
       } else {
-        println((("fib " + n.toString).asInstanceOf[Int] + " = ").asInstanceOf[Int] + fib(n).toString)
+        println("fib " + n.toString + " = " + fib(n).toString)
       }
     }
   }

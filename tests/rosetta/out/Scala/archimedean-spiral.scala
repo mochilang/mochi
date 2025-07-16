@@ -41,7 +41,7 @@ object archimedean_spiral {
       val x = r * cosApprox(theta)
       val y = r * sinApprox(theta)
       if (count % 100 == 0) {
-        println((centre + x.toString + ",").asInstanceOf[Int] + centre - y.toString)
+        println(centre + x.toString + "," + centre - y.toString)
       }
       theta += degreesIncr
       count += 1

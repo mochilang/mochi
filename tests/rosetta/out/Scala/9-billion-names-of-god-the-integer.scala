@@ -120,7 +120,7 @@ object _9_billion_names_of_god_the_integer {
       var line = ""
       var i = 0
       while (i < r.size) {
-        line = ((line + " ").asInstanceOf[Int] + (r).apply(i)).asInstanceOf[Int] + " "
+        line = line + " " + (r).apply(i) + " "
         i += 1
       }
       println(line)
@@ -130,7 +130,7 @@ object _9_billion_names_of_god_the_integer {
     println("sums:")
     for(num <- List(23, 123, 1234)) {
       val r = cumu(num)
-      println((num.toString + " ").asInstanceOf[Int] + bigToString((r).apply(r.size - 1)))
+      println(num.toString + " " + bigToString((r).apply(r.size - 1)))
     }
   }
 }

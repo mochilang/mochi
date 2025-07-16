@@ -45,7 +45,7 @@ object align_columns {
     }
     var left = (diff / 2).toInt
     var right = diff - left
-    return (spaces(left) + word).asInstanceOf[Int] + spaces(right)
+    return spaces(left) + word + spaces(right)
   }
   
   def newFormatter(text: String): Map[String, any] = {
@@ -86,7 +86,7 @@ object align_columns {
       var line = ""
       var j = 0
       while (j < words.length) {
-        line = (line + pad((words).apply(j), (width).apply(j), align)).asInstanceOf[Int] + " "
+        line = line + pad((words).apply(j), (width).apply(j), align) + " "
         j += 1
       }
       println(line)
@@ -96,7 +96,7 @@ object align_columns {
   }
   
   def main(args: Array[String]): Unit = {
-    val text = (((("Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" + "are$delineated$by$a$single$'dollar'$character,$write$a$program\n").asInstanceOf[Int] + "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n").asInstanceOf[Int] + "column$are$separated$by$at$least$one$space.\n").asInstanceOf[Int] + "Further,$allow$for$each$word$in$a$column$to$be$either$left\n").asInstanceOf[Int] + "justified,$right$justified,$or$center$justified$within$its$column."
+    val text = "Given$a$text$file$of$many$lines,$where$fields$within$a$line\n" + "are$delineated$by$a$single$'dollar'$character,$write$a$program\n" + "that$aligns$each$column$of$fields$by$ensuring$that$words$in$each\n" + "column$are$separated$by$at$least$one$space.\n" + "Further,$allow$for$each$word$in$a$column$to$be$either$left\n" + "justified,$right$justified,$or$center$justified$within$its$column."
     val f = newFormatter(text)
     printFmt(f, 0)
     printFmt(f, 1)

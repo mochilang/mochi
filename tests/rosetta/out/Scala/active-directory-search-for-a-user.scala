@@ -9,7 +9,7 @@ object active_directory_search_for_a_user {
       var out = "Groups: ["
       var i = 0
       while (i < groups.length) {
-        out = ((out + "\"").asInstanceOf[Int] + (groups).apply(i)).asInstanceOf[Int] + "\""
+        out = out + "\"" + (groups).apply(i) + "\""
         if (i < groups.length - 1) {
           out += ", "
         }

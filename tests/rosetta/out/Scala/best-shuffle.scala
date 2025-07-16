@@ -77,7 +77,7 @@ object best_shuffle {
       val shuf = (r).apply(0)
       seed = (r).apply(1)
       val cnt = (r).apply(2)
-      println((((((ts).apply(i) + " -> ").asInstanceOf[Int] + (shuf).asInstanceOf[Int]).asInstanceOf[Int] + " (").asInstanceOf[Int] + cnt.toString).asInstanceOf[Int] + ")")
+      println((ts).apply(i) + " -> " + shuf + " (" + cnt.toString + ")")
       i += 1
     }
   }

@@ -76,7 +76,7 @@ object atomic_updates {
       }
       total = total + tc0 + tc1
       nTicks += 1
-      println((((((((sum.toString + " ").asInstanceOf[Int] + tc0.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + tc1.toString).asInstanceOf[Int] + " ").asInstanceOf[Int] + total / nTicks.toString).asInstanceOf[Int] + "  ").asInstanceOf[Int] + buckets.toString)
+      println(sum.toString + " " + tc0.toString + " " + tc1.toString + " " + total / nTicks.toString + "  " + buckets.toString)
       tc0 = 0
       tc1 = 0
       t += 1

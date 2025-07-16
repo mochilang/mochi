@@ -10,7 +10,7 @@ object checkpoint_synchronization_1 {
       for(p <- partList) {
         println(p + " worker completes part")
       }
-      println(("assemble.  cycle " + cycle.toString).asInstanceOf[Int] + " complete")
+      println("assemble.  cycle " + cycle.toString + " complete")
     }
   }
 }

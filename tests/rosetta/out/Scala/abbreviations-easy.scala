@@ -77,7 +77,7 @@ object abbreviations_easy {
   }
   
   def main() = {
-    val table = ((((("Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find ").asInstanceOf[Int] + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput ").asInstanceOf[Int] + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO ").asInstanceOf[Int] + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT ").asInstanceOf[Int] + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT ").asInstanceOf[Int] + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
+    val table = "Add ALTer  BAckup Bottom  CAppend Change SCHANGE  CInsert CLAst COMPress Copy " + "COUnt COVerlay CURsor DELete CDelete Down DUPlicate Xedit EXPand EXTract Find " + "NFind NFINDUp NFUp CFind FINdup FUp FOrward GET Help HEXType Input POWerinput " + " Join SPlit SPLTJOIN  LOAD  Locate CLocate  LOWercase UPPercase  LPrefix MACRO " + "MErge MODify MOve MSG Next Overlay PARSE PREServe PURge PUT PUTD  Query  QUIT " + "READ  RECover REFRESH RENum REPeat  Replace CReplace  RESet  RESTore  RGTLEFT " + "RIght LEft  SAVE  SET SHift SI  SORT  SOS  STAck STATus  TOP TRAnsfer TypeUp "
     val commands = fields(table)
     var mins: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
     var i = 0
@@ -101,7 +101,7 @@ object abbreviations_easy {
     var out1 = "user words:  "
     var k = 0
     while (k < words.length) {
-      out1 = (out1 + padRight((words).apply(k), (results).apply(k).length)).asInstanceOf[Int] + " "
+      out1 = out1 + padRight((words).apply(k), (results).apply(k).length) + " "
       k += 1
     }
     println(out1)

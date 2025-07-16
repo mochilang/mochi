@@ -89,7 +89,7 @@ object circular_primes {
     println("[R(19) R(23) R(317) R(1031)]")
     println("\nThe following repunits are probably circular primes:")
     for(i <- List(5003, 9887, 15073, 25031, 35317, 49081)) {
-      println(("R(" + i.toString).asInstanceOf[Int] + ") : true")
+      println("R(" + i.toString + ") : true")
     }
   }
 }

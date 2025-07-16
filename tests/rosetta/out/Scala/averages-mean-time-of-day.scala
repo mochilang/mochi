@@ -104,7 +104,7 @@ object averages_mean_time_of_day {
     val h = (si / 3600).toInt
     val m = ((si % 3600) / 60).toInt
     val s = (si % 60).toInt
-    return (((pad(h) + ":").asInstanceOf[Int] + pad(m)).asInstanceOf[Int] + ":").asInstanceOf[Int] + pad(s)
+    return pad(h) + ":" + pad(m) + ":" + pad(s)
   }
   
   def main() = {

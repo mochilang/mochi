@@ -36,7 +36,7 @@ object amicable_pairs {
     while (n < 19999) {
       val m = (sums).apply(n)
       if (m > n && m < 20000 && n == (sums).apply(m)) {
-        println((("  " + pad(n, 5)).asInstanceOf[Int] + " and ").asInstanceOf[Int] + pad(m, 5))
+        println("  " + pad(n, 5) + " and " + pad(m, 5))
       }
       n += 1
     }

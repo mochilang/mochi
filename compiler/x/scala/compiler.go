@@ -67,6 +67,7 @@ func isFloat(t types.Type) bool {
 	}
 	return false
 }
+func isString(t types.Type) bool { _, ok := t.(types.StringType); return ok }
 
 func New(env *types.Env) *Compiler {
 	return &Compiler{
@@ -1167,27 +1168,32 @@ func (c *Compiler) compileExpr(e *parser.Expr) (string, error) {
 		switch op.Op {
 		case "+", "-", "*", "/", "%", "==", "!=", "<", "<=", ">", ">=", "&&", "||":
 			ls, rs := s, r
-			if _, ok := leftType.(types.AnyType); ok {
-				ls = fmt.Sprintf("(%s).asInstanceOf[Int]", s)
-			}
-			if _, ok := rightType.(types.AnyType); ok {
-				rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
-			}
-			if op.Op == "/" {
-				s = fmt.Sprintf("%s / %s", ls, rs)
+			if op.Op == "+" && (isString(leftType) || isString(rightType)) {
+				s = fmt.Sprintf("%s + %s", ls, rs)
+				leftType = types.StringType{}
 			} else {
-				s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
-			}
-			switch op.Op {
-			case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
-				leftType = types.BoolType{}
-			default:
-				if isFloat(leftType) || isFloat(rightType) {
-					leftType = types.FloatType{}
-				} else if isInt(leftType) && isInt(rightType) {
-					leftType = types.IntType{}
+				if _, ok := leftType.(types.AnyType); ok {
+					ls = fmt.Sprintf("(%s).asInstanceOf[Int]", s)
+				}
+				if _, ok := rightType.(types.AnyType); ok {
+					rs = fmt.Sprintf("(%s).asInstanceOf[Int]", r)
+				}
+				if op.Op == "/" {
+					s = fmt.Sprintf("%s / %s", ls, rs)
 				} else {
-					leftType = types.AnyType{}
+					s = fmt.Sprintf("%s %s %s", ls, op.Op, rs)
+				}
+				switch op.Op {
+				case "&&", "||", "==", "!=", "<", "<=", ">", ">=":
+					leftType = types.BoolType{}
+				default:
+					if isFloat(leftType) || isFloat(rightType) {
+						leftType = types.FloatType{}
+					} else if isInt(leftType) && isInt(rightType) {
+						leftType = types.IntType{}
+					} else {
+						leftType = types.AnyType{}
+					}
 				}
 			}
 		case "in":
@@ -1253,7 +1259,8 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 		return "", err
 	}
 	typ := types.TypeOfPrimary(p.Target, c.env)
-	for _, op := range p.Ops {
+	for i := 0; i < len(p.Ops); i++ {
+		op := p.Ops[i]
 		switch {
 		case op.Call != nil:
 			args := make([]string, len(op.Call.Args))
@@ -1312,6 +1319,56 @@ func (c *Compiler) compilePostfix(p *parser.PostfixExpr) (string, error) {
 						typ = types.AnyType{}
 					}
 				}
+			}
+		case op.Field != nil:
+			name := op.Field.Name
+			if i+1 < len(p.Ops) && p.Ops[i+1].Call != nil {
+				call := p.Ops[i+1].Call
+				args := make([]string, len(call.Args))
+				for j, a := range call.Args {
+					val, err := c.compileExpr(a)
+					if err != nil {
+						return "", err
+					}
+					args[j] = val
+				}
+				if _, ok := typ.(types.StringType); ok {
+					switch name {
+					case "contains":
+						s = fmt.Sprintf("%s.contains(%s)", s, args[0])
+						typ = types.BoolType{}
+					case "padStart":
+						if len(args) != 2 {
+							return "", fmt.Errorf("padStart expects 2 args")
+						}
+						fill := args[1]
+						if strings.HasPrefix(fill, "\"") && strings.HasSuffix(fill, "\"") && len([]rune(fill[1:len(fill)-1])) == 1 {
+							fill = fmt.Sprintf("'%s'", fill[1:len(fill)-1])
+						} else {
+							fill = fmt.Sprintf("%s.charAt(0)", fill)
+						}
+						s = fmt.Sprintf("%s.reverse.padTo(%s, %s).reverse", s, args[0], fill)
+						typ = types.StringType{}
+					default:
+						s = fmt.Sprintf("%s.%s(%s)", s, sanitizeField(name), strings.Join(args, ", "))
+						typ = types.AnyType{}
+					}
+				} else {
+					s = fmt.Sprintf("%s.%s(%s)", s, sanitizeField(name), strings.Join(args, ", "))
+					typ = types.AnyType{}
+				}
+				i++
+				continue
+			}
+			s = fmt.Sprintf("%s.%s", s, sanitizeField(name))
+			if st, ok := typ.(types.StructType); ok {
+				if ft, ok2 := st.Fields[name]; ok2 {
+					typ = ft
+				} else {
+					typ = types.AnyType{}
+				}
+			} else {
+				typ = types.AnyType{}
 			}
 		case op.Cast != nil:
 			tstr := c.typeString(op.Cast.Type)

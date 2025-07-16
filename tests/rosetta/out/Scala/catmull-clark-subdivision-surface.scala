@@ -265,9 +265,9 @@ object catmull_clark_subdivision_surface {
   
   def key(a: Int, b: Int): String = {
     if (a < b) {
-      return (a.toString + ",").asInstanceOf[Int] + b.toString
+      return a.toString + "," + b.toString
     }
-    return (b.toString + ",").asInstanceOf[Int] + a.toString
+    return b.toString + "," + a.toString
   }
   
   def cmcSubdiv(points: List[Point], faces: List[List[Int]]): List[any] = {
@@ -318,7 +318,7 @@ object catmull_clark_subdivision_surface {
     return List(newPoints, newFaces)
   }
   
-  def formatPoint(p: Point): String = ((((("[" + fmt4(p.x)).asInstanceOf[Int] + " ").asInstanceOf[Int] + fmt4(p.y)).asInstanceOf[Int] + " ").asInstanceOf[Int] + fmt4(p.z)).asInstanceOf[Int] + "]"
+  def formatPoint(p: Point): String = "[" + fmt4(p.x) + " " + fmt4(p.y) + " " + fmt4(p.z) + "]"
   
   def formatFace(f: List[Int]): String = {
     if (f.length == 0) {
@@ -327,7 +327,7 @@ object catmull_clark_subdivision_surface {
     var s = "[" + fmt2((f).apply(0))
     var i = 1
     while (i < f.length) {
-      s = (s + " ").asInstanceOf[Int] + fmt2((f).apply(i))
+      s = s + " " + fmt2((f).apply(i))
       i += 1
     }
     s += "]"

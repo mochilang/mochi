@@ -49,7 +49,7 @@ object arithmetic_rational {
         if (val == 1) {
           perfect = "perfect!"
         }
-        println((((("Sum of recipr. factors of " + n.toString).asInstanceOf[Int] + " = ").asInstanceOf[Int] + val.toString).asInstanceOf[Int] + " exactly ").asInstanceOf[Int] + perfect)
+        println("Sum of recipr. factors of " + n.toString + " = " + val.toString + " exactly " + perfect)
       }
     }
   }

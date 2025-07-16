@@ -35,7 +35,7 @@ object burrows_wheeler_transform {
     if (contains(s, stx) || contains(s, etx)) {
       return Map("err" -> true, "res" -> "")
     }
-    s = (stx + s).asInstanceOf[Int] + etx
+    s = stx + s + etx
     val le = s.length
     var table: List[String] = scala.collection.mutable.ArrayBuffer[Any]()
     var i = 0

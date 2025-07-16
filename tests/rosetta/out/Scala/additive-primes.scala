@@ -52,7 +52,7 @@ object additive_primes {
     while (i < 500) {
       if (isPrime(i) && isPrime(sumDigits(i))) {
         count += 1
-        line = (line + pad(i)).asInstanceOf[Int] + "  "
+        line = line + pad(i) + "  "
         lineCount += 1
         if (lineCount == 10) {
           println(line.substring(0, line.length - 2))

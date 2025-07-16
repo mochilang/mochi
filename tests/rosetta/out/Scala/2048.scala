@@ -1,0 +1,326 @@
+object _2048 {
+  val SIZE = 4
+  def newBoard(): List[List[Int]] = {
+    var b: List[List[Int]] = scala.collection.mutable.ArrayBuffer[Any]()
+    var y = 0
+    while (y < SIZE) {
+      var row: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
+      var x = 0
+      while (x < SIZE) {
+        row = row :+ 0
+        x += 1
+      }
+      b = b :+ row
+      y += 1
+    }
+    return b
+  }
+  
+  def spawnTile(b: List[List[Int]]): Map[String, any] = {
+    var empty: List[List[Int]] = scala.collection.mutable.ArrayBuffer[Any]()
+    var y = 0
+    while (y < SIZE) {
+      var x = 0
+      while (x < SIZE) {
+        if (((b).apply(y)).apply(x) == 0) {
+          empty = empty :+ List(x, y)
+        }
+        x += 1
+      }
+      y += 1
+    }
+    if (empty.length == 0) {
+      return Map("board" -> b, "full" -> true)
+    }
+    var idx = now() % empty.length
+    val cell = (empty).apply(idx)
+    var val = 4
+    if ((now() % 10).asInstanceOf[Int] < 9) {
+      val = 2
+    }
+    val _tmp0 = b((cell).apply(1)).updated((cell).apply(0), val)
+    b = b.updated((cell).apply(1), _tmp0)
+    return Map("board" -> b, "full" -> empty.length == 1)
+  }
+  
+  def pad(n: Int): String = {
+    var s = n.toString
+    var pad = 4 - s.length
+    var i = 0
+    var out = ""
+    while (i < pad) {
+      out += " "
+      i += 1
+    }
+    return out + s
+  }
+  
+  def draw(b: List[List[Int]], score: Int) = {
+    println("Score: " + score.toString)
+    var y = 0
+    while (y < SIZE) {
+      println("+----+----+----+----+")
+      var line = "|"
+      var x = 0
+      while (x < SIZE) {
+        var v = ((b).apply(y)).apply(x)
+        if (v == 0) {
+          line += "    |"
+        } else {
+          line = line + pad(v) + "|"
+        }
+        x += 1
+      }
+      println(line)
+      y += 1
+    }
+    println("+----+----+----+----+")
+    println("W=Up S=Down A=Left D=Right Q=Quit")
+  }
+  
+  def reverseRow(r: List[Int]): List[Int] = {
+    var out: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
+    var i = r.length - 1
+    while (i >= 0) {
+      out = out :+ (r).apply(i)
+      i -= 1
+    }
+    return out
+  }
+  
+  def slideLeft(row: List[Int]): Map[String, any] = {
+    var xs: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
+    var i = 0
+    while (i < row.length) {
+      if ((row).apply(i) != 0) {
+        xs = xs :+ (row).apply(i)
+      }
+      i += 1
+    }
+    var res: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
+    var gain = 0
+    i = 0
+    while (i < xs.length) {
+      if (i + 1 < xs.length && (xs).apply(i) == (xs).apply(i + 1)) {
+        val v = (xs).apply(i) * 2
+        gain += v
+        res = res :+ v
+        i += 2
+      } else {
+        res = res :+ (xs).apply(i)
+        i += 1
+      }
+    }
+    while (res.length < SIZE) {
+      res = res :+ 0
+    }
+    return Map("row" -> res, "gain" -> gain)
+  }
+  
+  def moveLeft(b: List[List[Int]], score: Int): Map[String, any] = {
+    var moved = false
+    var y = 0
+    while (y < SIZE) {
+      val r = slideLeft((b).apply(y))
+      val new = (r).apply("row")
+      score += (r).apply("gain")
+      var x = 0
+      while (x < SIZE) {
+        if (((b).apply(y)).apply(x) != ((new).apply(x)).asInstanceOf[Int]) {
+          moved = true
+        }
+        val _tmp1 = b(y).updated(x, (new).apply(x))
+        b = b.updated(y, _tmp1)
+        x += 1
+      }
+      y += 1
+    }
+    return Map("board" -> b, "score" -> score, "moved" -> moved)
+  }
+  
+  def moveRight(b: List[List[Int]], score: Int): Map[String, any] = {
+    var moved = false
+    var y = 0
+    while (y < SIZE) {
+      var rev = reverseRow((b).apply(y))
+      val r = slideLeft(rev)
+      rev = (r).apply("row")
+      score += (r).apply("gain")
+      rev = reverseRow(rev)
+      var x = 0
+      while (x < SIZE) {
+        if (((b).apply(y)).apply(x) != (rev).apply(x)) {
+          moved = true
+        }
+        val _tmp2 = b(y).updated(x, (rev).apply(x))
+        b = b.updated(y, _tmp2)
+        x += 1
+      }
+      y += 1
+    }
+    return Map("board" -> b, "score" -> score, "moved" -> moved)
+  }
+  
+  def getCol(b: List[List[Int]], x: Int): List[Int] = {
+    var col: List[Int] = scala.collection.mutable.ArrayBuffer[Any]()
+    var y = 0
+    while (y < SIZE) {
+      col = col :+ ((b).apply(y)).apply(x)
+      y += 1
+    }
+    return col
+  }
+  
+  def setCol(b: List[List[Int]], x: Int, col: List[Int]) = {
+    var y = 0
+    while (y < SIZE) {
+      val _tmp3 = b(y).updated(x, (col).apply(y))
+      b = b.updated(y, _tmp3)
+      y += 1
+    }
+  }
+  
+  def moveUp(b: List[List[Int]], score: Int): Map[String, any] = {
+    var moved = false
+    var x = 0
+    while (x < SIZE) {
+      var col = getCol(b, x)
+      val r = slideLeft(col)
+      val new = (r).apply("row")
+      score += (r).apply("gain")
+      var y = 0
+      while (y < SIZE) {
+        if (((b).apply(y)).apply(x) != ((new).apply(y)).asInstanceOf[Int]) {
+          moved = true
+        }
+        val _tmp4 = b(y).updated(x, (new).apply(y))
+        b = b.updated(y, _tmp4)
+        y += 1
+      }
+      x += 1
+    }
+    return Map("board" -> b, "score" -> score, "moved" -> moved)
+  }
+  
+  def moveDown(b: List[List[Int]], score: Int): Map[String, any] = {
+    var moved = false
+    var x = 0
+    while (x < SIZE) {
+      var col = reverseRow(getCol(b, x))
+      val r = slideLeft(col)
+      col = (r).apply("row")
+      score += (r).apply("gain")
+      col = reverseRow(col)
+      var y = 0
+      while (y < SIZE) {
+        if (((b).apply(y)).apply(x) != (col).apply(y)) {
+          moved = true
+        }
+        val _tmp5 = b(y).updated(x, (col).apply(y))
+        b = b.updated(y, _tmp5)
+        y += 1
+      }
+      x += 1
+    }
+    return Map("board" -> b, "score" -> score, "moved" -> moved)
+  }
+  
+  def hasMoves(b: List[List[Int]]): Boolean = {
+    var y = 0
+    while (y < SIZE) {
+      var x = 0
+      while (x < SIZE) {
+        if (((b).apply(y)).apply(x) == 0) {
+          return true
+        }
+        if (x + 1 < SIZE && ((b).apply(y)).apply(x) == ((b).apply(y)).apply(x + 1)) {
+          return true
+        }
+        if (y + 1 < SIZE && ((b).apply(y)).apply(x) == ((b).apply(y + 1)).apply(x)) {
+          return true
+        }
+        x += 1
+      }
+      y += 1
+    }
+    return false
+  }
+  
+  def has2048(b: List[List[Int]]): Boolean = {
+    var y = 0
+    while (y < SIZE) {
+      var x = 0
+      while (x < SIZE) {
+        if (((b).apply(y)).apply(x) >= 2048) {
+          return true
+        }
+        x += 1
+      }
+      y += 1
+    }
+    return false
+  }
+  
+  def main(args: Array[String]): Unit = {
+    var board = newBoard()
+    var r = spawnTile(board)
+    board = (r).apply("board")
+    var full = (r).apply("full")
+    r = spawnTile(board)
+    board = (r).apply("board")
+    full = (r).apply("full")
+    var score = 0
+    draw(board, score)
+    while (true) {
+      println("Move: ")
+      val cmd = input()
+      var moved = false
+      if (cmd == "a" || cmd == "A") {
+        val m = moveLeft(board, score)
+        board = (m).apply("board")
+        score = (m).apply("score")
+        moved = (m).apply("moved")
+      }
+      if (cmd == "d" || cmd == "D") {
+        val m = moveRight(board, score)
+        board = (m).apply("board")
+        score = (m).apply("score")
+        moved = (m).apply("moved")
+      }
+      if (cmd == "w" || cmd == "W") {
+        val m = moveUp(board, score)
+        board = (m).apply("board")
+        score = (m).apply("score")
+        moved = (m).apply("moved")
+      }
+      if (cmd == "s" || cmd == "S") {
+        val m = moveDown(board, score)
+        board = (m).apply("board")
+        score = (m).apply("score")
+        moved = (m).apply("moved")
+      }
+      if (cmd == "q" || cmd == "Q") {
+        return
+      }
+      if (moved) {
+        val r2 = spawnTile(board)
+        board = (r2).apply("board")
+        full = (r2).apply("full")
+        if ((full).asInstanceOf[Int] && (!hasMoves(board)) != null) {
+          draw(board, score)
+          println("Game Over")
+          return
+        }
+      }
+      draw(board, score)
+      if (has2048(board)) {
+        println("You win!")
+        return
+      }
+      if (!hasMoves(board)) {
+        println("Game Over")
+        return
+      }
+    }
+  }
+}

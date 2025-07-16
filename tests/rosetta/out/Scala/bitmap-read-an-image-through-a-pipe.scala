@@ -61,6 +61,6 @@ object bitmap_read_an_image_through_a_pipe {
   def main(args: Array[String]): Unit = {
     val ppmData = "P3\n2 2\n1\n0 1 1 0 1 0 0 1 1 1 0 0\n"
     val img = parsePpm(ppmData)
-    println((("width=" + img("w").toString).asInstanceOf[Int] + " height=").asInstanceOf[Int] + img("h").toString)
+    println("width=" + img("w").toString + " height=" + img("h").toString)
   }
 }

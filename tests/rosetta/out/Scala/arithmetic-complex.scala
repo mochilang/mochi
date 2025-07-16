@@ -17,9 +17,9 @@ object arithmetic_complex {
   def cstr(a: Complex): String = {
     var s = "(" + a.re.toString
     if (a.im >= 0) {
-      s = ((s + "+").asInstanceOf[Int] + a.im.toString).asInstanceOf[Int] + "i)"
+      s = s + "+" + a.im.toString + "i)"
     } else {
-      s = (s + a.im.toString).asInstanceOf[Int] + "i)"
+      s = s + a.im.toString + "i)"
     }
     return s
   }

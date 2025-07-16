@@ -9,7 +9,7 @@ object aks_test_for_primes {
     while (i > 0) {
       s += "x"
       if (i != 1) {
-        s = (s + "^").asInstanceOf[Int] + i.toString
+        s = s + "^" + i.toString
       }
       coef = (coef * i / (p - i + 1)).toInt
       var d = coef
@@ -17,9 +17,9 @@ object aks_test_for_primes {
         d = -d
       }
       if (d < 0) {
-        s = (s + " - ").asInstanceOf[Int] + -d.toString
+        s = s + " - " + -d.toString
       } else {
-        s = (s + " + ").asInstanceOf[Int] + d.toString
+        s = s + " + " + d.toString
       }
       i -= 1
     }
@@ -48,7 +48,7 @@ object aks_test_for_primes {
   def main() = {
     var p = 0
     while (p <= 7) {
-      println((p.toString + ":  ").asInstanceOf[Int] + poly(p))
+      println(p.toString + ":  " + poly(p))
       p += 1
     }
     var first = true
@@ -60,7 +60,7 @@ object aks_test_for_primes {
           line += p.toString
           first = false
         } else {
-          line = (line + " ").asInstanceOf[Int] + p.toString
+          line = line + " " + p.toString
         }
       }
       p += 1

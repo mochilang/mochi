@@ -47,7 +47,7 @@ object _99_bottles_of_beer_2 {
       var t = (tens).apply((n / 10).toInt)
       var s = n % 10
       if (s > 0) {
-        t = (t + " ").asInstanceOf[Int] + (small).apply(s)
+        t = t + " " + (small).apply(s)
       }
       return t
     }
@@ -106,10 +106,10 @@ object _99_bottles_of_beer_2 {
   def main() = {
     var i = 99
     while (i > 0) {
-      println((((slur(numberName(i), i) + " ").asInstanceOf[Int] + pluralizeFirst(slur("bottle of", i), i)).asInstanceOf[Int] + " ").asInstanceOf[Int] + slur("beer on the wall", i))
-      println((((slur(numberName(i), i) + " ").asInstanceOf[Int] + pluralizeFirst(slur("bottle of", i), i)).asInstanceOf[Int] + " ").asInstanceOf[Int] + slur("beer", i))
-      println((((slur("take one", i) + " ").asInstanceOf[Int] + slur("down", i)).asInstanceOf[Int] + " ").asInstanceOf[Int] + slur("pass it around", i))
-      println((((slur(numberName(i - 1), i) + " ").asInstanceOf[Int] + pluralizeFirst(slur("bottle of", i), i - 1)).asInstanceOf[Int] + " ").asInstanceOf[Int] + slur("beer on the wall", i))
+      println(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer on the wall", i))
+      println(slur(numberName(i), i) + " " + pluralizeFirst(slur("bottle of", i), i) + " " + slur("beer", i))
+      println(slur("take one", i) + " " + slur("down", i) + " " + slur("pass it around", i))
+      println(slur(numberName(i - 1), i) + " " + pluralizeFirst(slur("bottle of", i), i - 1) + " " + slur("beer on the wall", i))
       i -= 1
     }
   }

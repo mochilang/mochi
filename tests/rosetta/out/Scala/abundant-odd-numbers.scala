@@ -33,7 +33,7 @@ object abundant_odd_numbers {
     var s = ""
     var i = 0
     while (i < xs.length) {
-      s = (s + (xs).apply(i).toString).asInstanceOf[Int] + " + "
+      s = s + (xs).apply(i).toString + " + "
       i += 1
     }
     return s.substring(0, s.length - 3)
@@ -69,9 +69,9 @@ object abundant_odd_numbers {
         }
         val s = sumStr(divs)
         if (!printOne) {
-          println((((((pad2(count) + ". ").asInstanceOf[Int] + pad5(n)).asInstanceOf[Int] + " < ").asInstanceOf[Int] + s).asInstanceOf[Int] + " = ").asInstanceOf[Int] + tot.toString)
+          println(pad2(count) + ". " + pad5(n) + " < " + s + " = " + tot.toString)
         } else {
-          println((((n.toString + " < ").asInstanceOf[Int] + s).asInstanceOf[Int] + " = ").asInstanceOf[Int] + tot.toString)
+          println(n.toString + " < " + s + " = " + tot.toString)
         }
       }
       n += 2
@@ -81,7 +81,7 @@ object abundant_odd_numbers {
   
   def main() = {
     val max = 25
-    println(("The first " + max.toString).asInstanceOf[Int] + " abundant odd numbers are:")
+    println("The first " + max.toString + " abundant odd numbers are:")
     val n = abundantOdd(1, 0, max, false)
     println("\nThe one thousandth abundant odd number is:")
     abundantOdd(n, max, 1000, true)

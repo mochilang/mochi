@@ -118,7 +118,7 @@ object chernicks_carmichael_numbers {
       while (true) {
         val num = ccFactors(n, m)
         if (num.size > 0) {
-          println((("a(" + n.toString).asInstanceOf[Int] + ") = ").asInstanceOf[Int] + bigToString(num))
+          println("a(" + n.toString + ") = " + bigToString(num))
           return
         }
         if (n <= 4) {

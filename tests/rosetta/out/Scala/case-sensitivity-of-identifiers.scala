@@ -4,33 +4,33 @@ object case_sensitivity_of_identifiers {
     var Dog = "Pepper"
     var pkg_DOG = "Mustard"
     def packageSees(d1: String, d2: String, d3: String): Map[String, Boolean] = {
-      println((((("Package sees: " + d1).asInstanceOf[Int] + " ").asInstanceOf[Int] + d2).asInstanceOf[Int] + " ").asInstanceOf[Int] + d3)
+      println("Package sees: " + d1 + " " + d2 + " " + d3)
       return Map("pkg_dog" -> true, "Dog" -> true, "pkg_DOG" -> true)
     }
     var d = packageSees(pkg_dog, Dog, pkg_DOG)
-    println(("There are " + d.length.toString).asInstanceOf[Int] + " dogs.\n")
+    println("There are " + d.length.toString + " dogs.\n")
     var dog = "Benjamin"
     d = packageSees(pkg_dog, Dog, pkg_DOG)
-    println((((("Main sees:   " + dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + Dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + pkg_DOG)
+    println("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
     d("dog") = true
     d("Dog") = true
     d("pkg_DOG") = true
-    println(("There are " + d.length.toString).asInstanceOf[Int] + " dogs.\n")
+    println("There are " + d.length.toString + " dogs.\n")
     Dog = "Samba"
     d = packageSees(pkg_dog, Dog, pkg_DOG)
-    println((((("Main sees:   " + dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + Dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + pkg_DOG)
+    println("Main sees:   " + dog + " " + Dog + " " + pkg_DOG)
     d("dog") = true
     d("Dog") = true
     d("pkg_DOG") = true
-    println(("There are " + d.length.toString).asInstanceOf[Int] + " dogs.\n")
+    println("There are " + d.length.toString + " dogs.\n")
     var DOG = "Bernie"
     d = packageSees(pkg_dog, Dog, pkg_DOG)
-    println((((("Main sees:   " + dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + Dog).asInstanceOf[Int] + " ").asInstanceOf[Int] + DOG)
+    println("Main sees:   " + dog + " " + Dog + " " + DOG)
     d("dog") = true
     d("Dog") = true
     d("pkg_DOG") = true
     d("DOG") = true
-    println(("There are " + d.length.toString).asInstanceOf[Int] + " dogs.")
+    println("There are " + d.length.toString + " dogs.")
   }
   
   def main(args: Array[String]): Unit = {

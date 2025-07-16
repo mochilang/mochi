@@ -20,10 +20,10 @@ object checkpoint_synchronization_2 {
       var a = ""
       for(p <- partList) {
         println(p + " worker begins part")
-        println((p + " worker completed ").asInstanceOf[Int] + lower(p))
+        println(p + " worker completed " + lower(p))
         a += lower(p)
       }
-      println(((a + " assembled.  cycle ").asInstanceOf[Int] + cycle.toString).asInstanceOf[Int] + " complete")
+      println(a + " assembled.  cycle " + cycle.toString + " complete")
     }
   }
 }

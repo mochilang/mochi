@@ -174,7 +174,7 @@ object bioinformatics_global_alignment {
       i += 1
     }
     val total = seq.length
-    println(("\nNucleotide counts for " + seq).asInstanceOf[Int] + ":\n")
+    println("\nNucleotide counts for " + seq + ":\n")
     println(padLeft("A", 10) + padLeft(a.toString, 12))
     println(padLeft("C", 10) + padLeft(c.toString, 12))
     println(padLeft("G", 10) + padLeft(g.toString, 12))

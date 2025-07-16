@@ -105,13 +105,13 @@ object canonicalize_cidr {
       canonParts = canonParts :+ binToInt(binary.substring(i, i + 8)).toString
       i += 8
     }
-    return (join(canonParts, ".") + "/").asInstanceOf[Int] + (parts).apply(1)
+    return join(canonParts, ".") + "/" + (parts).apply(1)
   }
   
   def main(args: Array[String]): Unit = {
     val tests = List("87.70.141.1/22", "36.18.154.103/12", "62.62.197.11/29", "67.137.119.181/4", "161.214.74.21/24", "184.232.176.184/18")
     for(t <- tests) {
-      println((padRight(t, 18) + " -> ").asInstanceOf[Int] + canonicalize(t))
+      println(padRight(t, 18) + " -> " + canonicalize(t))
     }
   }
 }
