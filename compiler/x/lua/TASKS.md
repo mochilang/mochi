@@ -49,3 +49,8 @@
 ## Progress (2025-07-17 08:10)
 - Added golden tests for `tests/vm/valid` that compile programs with the Lua backend and verify runtime output.
 - All examples compile and run successfully, producing 0 `.error` files.
+
+## Progress (2025-07-17 09:00)
+- VM valid tests now read golden outputs from `tests/machine/x/lua` and no longer use the `golden` helper.
+- Removed old `TestLuaCompiler_ValidPrograms` duplicate.
+
