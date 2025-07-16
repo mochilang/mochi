@@ -44,6 +44,8 @@ type Compiler struct {
 
 	aliases map[string]string
 
+	renamed map[string]string
+
 	structMap    map[string]*structInfo
 	structByName map[string]*structInfo
 	structCount  int
@@ -76,6 +78,7 @@ func New() *Compiler {
 	return &Compiler{
 		vars:           map[string]string{},
 		aliases:        map[string]string{},
+		renamed:        map[string]string{},
 		structMap:      map[string]*structInfo{},
 		structByName:   map[string]*structInfo{},
 		varStruct:      map[string]string{},
@@ -339,14 +342,20 @@ func (c *Compiler) Compile(p *parser.Program) ([]byte, error) {
 }
 
 func (c *Compiler) compileFun(fn *parser.FunStmt) error {
+	name := fn.Name
+	if name == "main" {
+		name = "__mochi_main"
+		c.renamed[fn.Name] = name
+	}
 	c.funParams[fn.Name] = len(fn.Params)
+	c.funParams[name] = len(fn.Params)
 	c.writeIndent()
 	ret, err := c.compileType(fn.Return)
 	if err != nil {
 		return err
 	}
 	c.buf.WriteString(ret + " ")
-	c.buf.WriteString(fn.Name)
+	c.buf.WriteString(name)
 	c.buf.WriteString("(")
 	for i, p := range fn.Params {
 		if i > 0 {
@@ -1823,6 +1832,9 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 		return name, nil
 	case p.Call != nil:
 		name := p.Call.Func
+		if alias, ok := c.renamed[name]; ok {
+			name = alias
+		}
 		args := []string{}
 		for _, a := range p.Call.Args {
 			s, err := c.compileExpr(a)
