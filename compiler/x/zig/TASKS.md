@@ -8,6 +8,8 @@
 - 2025-07-13 17:48 - Expanded TPCH golden tests to compile and run q1-q22 with output verification.
 - 2025-07-16 00:00 - Renamed user-defined `main` to `user_main` to prevent conflicts with the exported entry point.
 - 2025-07-16 02:00 - Added VM valid golden tests and improved float sum detection.
+- 2025-07-16 17:36 - Simplified dataset golden tests to use `golden.Run` and removed
+  generated code comparisons. Outputs now live under `tests/dataset/*/compiler/zig`.
 
 ## Remaining Work
 - Support struct field type inference for TPCH data sets.
