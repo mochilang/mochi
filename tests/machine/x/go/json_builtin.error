@@ -1,6 +1,9 @@
 Error on line 0: output mismatch
 -- got --
-0
+{"a":1,"b":2}
 -- want --
-undefined
+{
+  "a": 1,
+  "b": 2
+}
 1: //go:build ignore

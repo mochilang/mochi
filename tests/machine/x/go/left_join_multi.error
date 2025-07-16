@@ -5,6 +5,6 @@ Error on line 0: output mismatch
 101 Bob {0 }
 -- want --
 --- Left Join Multi ---
-100 Alice map[orderId:100 sku:a]
-101 Bob <nil>
+100 Alice [object Object]
+101 Bob null
 1: //go:build ignore

@@ -1,6 +1,11 @@
 Error on line 0: output mismatch
 -- got --
-0
+[{"city":"Paris","num":4}]
 -- want --
-undefined
+[
+  {
+    "city": "Paris",
+    "num": 4
+  }
+]
 1: //go:build ignore
