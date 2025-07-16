@@ -1,10 +1,8 @@
-fpc: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /tmp/binary-strings.pas
-binary-strings.pas(18,13) Error: Identifier not found "_sliceString"
-binary-strings.pas(31,30) Error: Identifier not found "_indexList"
-binary-strings.pas(31,52) Fatal: Syntax error, ")" expected but "," found
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
+
+  7 |   return substring(letters, idx, idx + 1)
+    |          ^
+
+help:
+  Ensure the argument type matches the function’s signature.

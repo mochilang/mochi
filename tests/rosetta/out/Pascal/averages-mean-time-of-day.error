@@ -1,23 +1,8 @@
-fpc: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /tmp/averages-mean-time-of-day.pas
-averages-mean-time-of-day.pas(18,10) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):Double is nested;Register>"
-averages-mean-time-of-day.pas(22,14) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
-averages-mean-time-of-day.pas(23,27) Error: Operator is not overloaded: "Variant" div "<procedure variable type of function(Variant):LongInt is nested;Register>"
-averages-mean-time-of-day.pas(24,16) Error: Operator is not overloaded: "<procedure variable type of function(Variant):Double is nested;Register>" + "Variant"
-averages-mean-time-of-day.pas(27,13) Error: Incompatible types: got "<procedure variable type of function(Variant):Double is nested;Register>" expected "Double"
-averages-mean-time-of-day.pas(39,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
-averages-mean-time-of-day.pas(43,14) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
-averages-mean-time-of-day.pas(44,27) Error: Operator is not overloaded: "Variant" div "<procedure variable type of function(Variant):LongInt is nested;Register>"
-averages-mean-time-of-day.pas(45,16) Error: Operator is not overloaded: "<procedure variable type of function(Variant):Double is nested;Register>" + "Variant"
-averages-mean-time-of-day.pas(48,13) Error: Incompatible types: got "<procedure variable type of function(Variant):Double is nested;Register>" expected "Double"
-averages-mean-time-of-day.pas(66,28) Error: Operator is not overloaded: "Double" div "Double"
-averages-mean-time-of-day.pas(84,9) Error: Identifier not found "_sliceString"
-averages-mean-time-of-day.pas(93,19) Error: Identifier not found "_sliceString"
-averages-mean-time-of-day.pas(93,69) Error: Identifier not found "_sliceString"
-averages-mean-time-of-day.pas(137,32) Error: Identifier not found "_indexList"
-averages-mean-time-of-day.pas(137,57) Fatal: Syntax error, ")" expected but "," found
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+type: error[T007]: argument 3: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
+
+ 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
+    |                ^
+
+help:
+  Ensure the argument type matches the function’s signature.

@@ -1,1 +1,12 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/apply-a-callback-to-an-array-2.pas
+apply-a-callback-to-an-array-2.pas(15,7) Error: Identifier not found "x"
+apply-a-callback-to-an-array-2.pas(17,7) Error: Identifier not found "x"
+apply-a-callback-to-an-array-2.pas(26,7) Error: Identifier not found "x"
+apply-a-callback-to-an-array-2.pas(28,21) Error: Identifier not found "_appendList"
+apply-a-callback-to-an-array-2.pas(28,43) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

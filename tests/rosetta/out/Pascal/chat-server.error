@@ -1,1 +1,17 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/chat-server.pas
+chat-server.pas(15,7) Error: Identifier not found "n"
+chat-server.pas(17,9) Error: Identifier not found "n"
+chat-server.pas(28,3) Error: Identifier not found "add"
+chat-server.pas(29,3) Error: Identifier not found "add"
+chat-server.pas(30,3) Error: Identifier not found "send"
+chat-server.pas(31,3) Error: Identifier not found "send"
+chat-server.pas(32,3) Error: Identifier not found "remove"
+chat-server.pas(33,3) Error: Identifier not found "remove"
+chat-server.pas(34,3) Error: Identifier not found "broadcast"
+chat-server.pas(34,13) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

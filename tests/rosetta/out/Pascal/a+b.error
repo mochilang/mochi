@@ -1,8 +1,8 @@
-type: error[T003]: unknown function: int
-  --> /workspace/mochi/tests/rosetta/x/Mochi/a+b.mochi:2:11
-
-  2 |   let a = int(input())
-    |           ^
-
-help:
-  Ensure the function is defined before it's called.
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/a+b.pas
+a+b.pas(15,17) Fatal: Syntax error, ")" expected but "(" found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

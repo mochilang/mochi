@@ -1,1 +1,15 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/blum-integer.pas
+blum-integer.pas(38,62) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+blum-integer.pas(58,9) Error: Identifier not found "_sliceString"
+blum-integer.pas(84,18) Error: Incompatible type for arg no. 1: Got "Double", expected "QWord"
+blum-integer.pas(108,53) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+blum-integer.pas(109,53) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crcE41905E8"
+blum-integer.pas(150,21) Error: Identifier not found "_sliceString"
+blum-integer.pas(170,19) Warning: function result variable of a managed type does not seem to be initialized
+blum-integer.pas(193) Fatal: There were 6 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

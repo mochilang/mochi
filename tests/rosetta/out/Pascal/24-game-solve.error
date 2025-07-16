@@ -1,1 +1,46 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/24-game-solve.pas
+24-game-solve.pas(10,57) Error: Identifier not found "any"
+24-game-solve.pas(10,60) Error: Type identifier expected
+24-game-solve.pas(16,28) Error: Identifier not found "OP_NUM"
+24-game-solve.pas(20,36) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "Variant"
+24-game-solve.pas(25,49) Error: Identifier not found "any"
+24-game-solve.pas(25,52) Error: Type identifier expected
+24-game-solve.pas(34,9) Error: Illegal qualifier
+24-game-solve.pas(34,25) Error: Identifier not found "OP_NUM"
+24-game-solve.pas(35,19) Error: Illegal qualifier
+24-game-solve.pas(36,19) Error: Illegal qualifier
+24-game-solve.pas(37,9) Error: Illegal qualifier
+24-game-solve.pas(37,25) Error: Identifier not found "OP_ADD"
+24-game-solve.pas(38,9) Error: Illegal qualifier
+24-game-solve.pas(38,25) Error: Identifier not found "OP_SUB"
+24-game-solve.pas(39,9) Error: Illegal qualifier
+24-game-solve.pas(39,25) Error: Identifier not found "OP_MUL"
+24-game-solve.pas(41,31) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(41,42) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(42,33) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(42,46) Error: Incompatible types: got "Constant String" expected "LongInt"
+24-game-solve.pas(43,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TFPGMap<System.ShortString,System.LongInt>"
+24-game-solve.pas(47,51) Error: Identifier not found "any"
+24-game-solve.pas(47,54) Error: Type identifier expected
+24-game-solve.pas(53,9) Error: Illegal qualifier
+24-game-solve.pas(53,25) Error: Identifier not found "OP_NUM"
+24-game-solve.pas(54,22) Error: Illegal qualifier
+24-game-solve.pas(55,22) Error: Illegal qualifier
+24-game-solve.pas(57,9) Error: Illegal qualifier
+24-game-solve.pas(57,25) Error: Identifier not found "OP_ADD"
+24-game-solve.pas(60,18) Error: Illegal qualifier
+24-game-solve.pas(60,34) Error: Identifier not found "OP_SUB"
+24-game-solve.pas(63,18) Error: Illegal qualifier
+24-game-solve.pas(63,34) Error: Identifier not found "OP_MUL"
+24-game-solve.pas(74,65) Error: Identifier not found "any"
+24-game-solve.pas(74,68) Error: Type identifier expected
+24-game-solve.pas(74,69) Error: Type identifier expected
+24-game-solve.pas(88,7) Error: Type mismatch
+24-game-solve.pas(90,30) Error: Identifier not found "_indexList"
+24-game-solve.pas(90,52) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

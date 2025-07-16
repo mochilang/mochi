@@ -1,1 +1,14 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/balanced-ternary.pas
+balanced-ternary.pas(15,31) Error: Identifier not found "_sliceString"
+balanced-ternary.pas(19,13) Error: Identifier not found "_sliceString"
+balanced-ternary.pas(23,58) Error: Identifier not found "any"
+balanced-ternary.pas(23,61) Error: Type identifier expected
+balanced-ternary.pas(36,11) Error: Identifier not found "_sliceString"
+balanced-ternary.pas(39,23) Error: Identifier not found "_appendList"
+balanced-ternary.pas(39,45) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

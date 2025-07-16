@@ -1,1 +1,15 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/casting-out-nines.pas
+casting-out-nines.pas(27,11) Error: Identifier not found "_sliceString"
+casting-out-nines.pas(27,48) Error: Identifier not found "_sliceString"
+casting-out-nines.pas(55,12) Error: Identifier not found "_sliceString"
+casting-out-nines.pas(75,40) Error: Incompatible types: got "Pointer" expected "ShortString"
+casting-out-nines.pas(86,13) Error: Incompatible types: got "ShortString" expected "TArray$1$crc862A1656"
+casting-out-nines.pas(94,19) Warning: function result variable of a managed type does not seem to be initialized
+casting-out-nines.pas(150,11) Error: Incompatible types: got "TFPGMap<System.ShortString,System.Variant>" expected "TArray$1$crc2ED50C58"
+casting-out-nines.pas(151,13) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

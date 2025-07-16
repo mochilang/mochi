@@ -1835,12 +1835,12 @@ func (c *Compiler) compilePrimary(p *parser.Primary) (string, error) {
 			if len(args) != 2 {
 				return "", fmt.Errorf("append expects 2 arguments")
 			}
+			elem := "Variant"
 			if lt, ok := types.TypeOfExpr(p.Call.Args[0], c.env).(types.ListType); ok {
-				elem := typeString(lt.Elem)
-				c.use("_appendList")
-				return fmt.Sprintf("specialize _appendList<%s>(%s, %s)", elem, args[0], args[1]), nil
+				elem = typeString(lt.Elem)
 			}
-			return "", fmt.Errorf("append on non-list not supported")
+			c.use("_appendList")
+			return fmt.Sprintf("specialize _appendList<%s>(%s, %s)", elem, args[0], args[1]), nil
 		case "exists":
 			if len(args) != 1 {
 				return "", fmt.Errorf("exists expects 1 argument")
@@ -2719,11 +2719,13 @@ func (c *Compiler) compileFunExpr(fn *parser.FunExpr) (string, error) {
 		body = fn.BlockBody
 	}
 	fs := &parser.FunStmt{Name: name, Params: fn.Params, Return: fn.Return, Body: body}
+	prevVars := c.varTypes
 	if err := c.compileFun(fs); err != nil {
 		c.buf = oldBuf
 		c.indent = oldIndent
 		return "", err
 	}
+	c.varTypes = prevVars
 	code := c.buf.String()
 	c.buf = oldBuf
 	c.indent = oldIndent

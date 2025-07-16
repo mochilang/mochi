@@ -1,1 +1,11 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/amicable-pairs.pas
+amicable-pairs.pas(15,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+amicable-pairs.pas(22,13) Error: Incompatible types: got "<procedure variable type of function(Variant):Double is nested;Register>" expected "LongInt"
+amicable-pairs.pas(50,24) Error: Identifier not found "_appendList"
+amicable-pairs.pas(50,49) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
