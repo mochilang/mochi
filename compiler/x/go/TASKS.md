@@ -85,3 +85,4 @@ TPC-H progress:
 - 2025-07-16 12:45 - Improved indexing on `any` by casting to `map[string]any` or `[]any`; infer simple map types from literals
 - 2025-07-16 12:23 - Enabled full Rosetta golden tests for Go and expanded map
   inference using `stringKey`; mismatched map literals now unify key/value types
+- 2025-07-16 13:10 - Added VM golden tests for valid programs and removed stale `.error` files after successful runs

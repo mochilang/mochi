@@ -85,6 +85,7 @@ func runGoCompile(t *testing.T, srcPath, name, outDir string) {
 	if err := os.WriteFile(filepath.Join(outDir, name+".out"), got, 0o644); err != nil {
 		t.Fatalf("write out: %v", err)
 	}
+	_ = os.Remove(filepath.Join(outDir, name+".error"))
 }
 
 func writeError(dir, name string, src []byte, line int, err error) {
