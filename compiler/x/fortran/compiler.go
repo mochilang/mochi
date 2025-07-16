@@ -5,6 +5,7 @@ package ftncode
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -746,6 +747,19 @@ func (c *Compiler) compileFun(fn *parser.FunStmt) error {
 		c.writeln(fmt.Sprintf("%s, intent(in) :: %s", c.typeName(p.Type), p.Name))
 		c.declared[p.Name] = true
 	}
+	// declare local variables before emitting executable statements
+	for _, st := range fn.Body {
+		switch {
+		case st.Let != nil:
+			if err := c.compileLetDecl(st.Let); err != nil {
+				return err
+			}
+		case st.Var != nil:
+			if err := c.compileLetDecl(&parser.LetStmt{Name: st.Var.Name, Value: st.Var.Value, Type: st.Var.Type}); err != nil {
+				return err
+			}
+		}
+	}
 	prev := c.currentFunc
 	c.currentFunc = "res"
 	for _, st := range fn.Body {
@@ -1231,6 +1245,13 @@ func (c *Compiler) compileCall(call *parser.CallExpr) (string, error) {
 			return tmp, nil
 		}
 		return "", fmt.Errorf("values only supported for map literals")
+	case "sqrt", "pow", "sin", "log":
+		for i, a := range call.Args {
+			if !types.IsFloatExpr(a, c.env) {
+				args[i] = fmt.Sprintf("real(%s)", args[i])
+			}
+		}
+		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	default:
 		return fmt.Sprintf("%s(%s)", call.Func, strings.Join(args, ",")), nil
 	}
@@ -1293,7 +1314,11 @@ func (c *Compiler) compileLiteral(l *parser.Literal) string {
 	case l.Int != nil:
 		return fmt.Sprintf("%d", *l.Int)
 	case l.Float != nil:
-		return fmt.Sprintf("%g", *l.Float)
+		v := *l.Float
+		if v == math.Trunc(v) {
+			return fmt.Sprintf("%.1f", v)
+		}
+		return fmt.Sprintf("%g", v)
 	case l.Bool != nil:
 		if bool(*l.Bool) {
 			return ".true."

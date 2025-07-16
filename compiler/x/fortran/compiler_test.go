@@ -89,6 +89,8 @@ func compileOne(t *testing.T, src, outDir, name, gfortran string) {
 		return
 	}
 	os.WriteFile(filepath.Join(outDir, name+".out"), bytes.TrimSpace(out), 0644)
+	errPath := filepath.Join(outDir, name+".error")
+	os.Remove(errPath)
 }
 
 func writeError(dir, name string, src []byte, err error) {
