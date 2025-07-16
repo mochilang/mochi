@@ -174,6 +174,14 @@ func (c *compiler) letStmt(l *parser.LetStmt) error {
 		if err != nil {
 			return err
 		}
+		if typ == "" {
+			switch val {
+			case "[]":
+				typ = "[Any]"
+			case "[:]":
+				typ = "[String:Any]"
+			}
+		}
 		if typ != "" {
 			c.writeln(fmt.Sprintf("%s %s: %s = %s", kw, l.Name, typ, val))
 			c.swiftTypes[l.Name] = typ
@@ -203,6 +211,14 @@ func (c *compiler) varStmt(v *parser.VarStmt) error {
 		val, err := c.expr(v.Value)
 		if err != nil {
 			return err
+		}
+		if typ == "" {
+			switch val {
+			case "[]":
+				typ = "[Any]"
+			case "[:]":
+				typ = "[String:Any]"
+			}
 		}
 		if typ != "" {
 			c.writeln(fmt.Sprintf("var %s: %s = %s", v.Name, typ, val))
@@ -900,7 +916,11 @@ func (c *compiler) primary(p *parser.Primary) (string, error) {
 		return c.callExpr(p.Call)
 	case p.List != nil:
 		if len(p.List.Elems) == 0 {
-			return "[Any]()", nil
+			// Use an empty literal so the surrounding context can
+			// infer the element type. Returning a list of `Any`
+			// forces the variable type to `[Any]` and causes
+			// compilation errors when assigned to typed variables.
+			return "[]", nil
 		}
 		if st, ok := c.detectAutoStructList(p.List, ""); ok {
 			order := c.structs[st]

@@ -11,6 +11,9 @@
 - 2025-07-13 17:32 – generated code and output for TPC-H `q4`; test now covers queries up to `q6` though later ones still fail.
 - 2025-07-15 05:04 – added golden tests for TPC-DS queries and generated Swift
   output for all compilable cases.
+- 2025-07-16 11:43 – empty list literals now infer `Any` type only when no
+  annotation is provided. Typed variables emit plain `[]` so Swift infers the
+  element type from the declaration.
 
 ## Remaining Work
 - [ ] Generate safer optional handling in join queries
