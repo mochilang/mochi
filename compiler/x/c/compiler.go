@@ -2175,7 +2175,10 @@ func (c *Compiler) compileSaveExpr(s *parser.SaveExpr) string {
 	if s.Path != nil {
 		path = fmt.Sprintf("%q", *s.Path)
 	}
+	// include JSON helpers so map_string types and _isnum are defined
 	c.need(needSaveJSON)
+	c.need(needLoadJSON)
+	c.need(needMapStringInt)
 	c.need(needStringHeader)
 	return fmt.Sprintf("_save_json(%s, %s)", src, path)
 }

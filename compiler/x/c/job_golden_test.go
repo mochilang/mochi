@@ -17,10 +17,10 @@ import (
 	"mochi/types"
 )
 
-var update = flag.Bool("update", false, "update golden files")
+var jobUpdate = flag.Bool("update-job", false, "update golden files")
 
 func shouldUpdate() bool {
-	f := flag.Lookup("update")
+	f := flag.Lookup("update-job")
 	return f != nil && f.Value.String() == "true"
 }
 
