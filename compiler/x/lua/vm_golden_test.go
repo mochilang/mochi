@@ -16,6 +16,11 @@ import (
 	"mochi/types"
 )
 
+func shouldUpdate() bool {
+	v := os.Getenv("UPDATE")
+	return v == "1" || strings.ToLower(v) == "true"
+}
+
 func TestLuaCompiler_VMValid_Golden(t *testing.T) {
 	if err := luacode.EnsureLua(); err != nil {
 		t.Skipf("lua not installed: %v", err)
@@ -33,28 +38,28 @@ func TestLuaCompiler_VMValid_Golden(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			prog, err := parser.Parse(src)
 			if err != nil {
-				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
-					return
+				if shouldUpdate() {
+					_ = os.WriteFile(filepath.Join(goldenDir, name+".error"), []byte("parse: "+err.Error()), 0o644)
 				}
 				t.Fatalf("parse error: %v", err)
 			}
 			env := types.NewEnv(nil)
 			if errs := types.Check(prog, env); len(errs) > 0 {
-				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
-					return
+				if shouldUpdate() {
+					_ = os.WriteFile(filepath.Join(goldenDir, name+".error"), []byte("type: "+errs[0].Error()), 0o644)
 				}
 				t.Fatalf("type error: %v", errs[0])
 			}
 			code, err := luacode.New(env).Compile(prog)
 			if err != nil {
-				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
-					return
+				if shouldUpdate() {
+					_ = os.WriteFile(filepath.Join(goldenDir, name+".error"), []byte("compile: "+err.Error()), 0o644)
 				}
 				t.Fatalf("compile error: %v", err)
 			}
 			dir := t.TempDir()
 			file := filepath.Join(dir, "main.lua")
-			if err := os.WriteFile(file, code, 0644); err != nil {
+			if err := os.WriteFile(file, code, 0o644); err != nil {
 				t.Fatalf("write error: %v", err)
 			}
 			cmd := exec.Command("lua", file)
@@ -63,12 +68,18 @@ func TestLuaCompiler_VMValid_Golden(t *testing.T) {
 			}
 			out, err := cmd.CombinedOutput()
 			if err != nil {
-				if _, err2 := os.Stat(filepath.Join(goldenDir, name+".error")); err2 == nil {
-					return
+				if shouldUpdate() {
+					_ = os.WriteFile(filepath.Join(goldenDir, name+".error"), out, 0o644)
 				}
 				t.Fatalf("run error: %v\n%s", err, out)
 			}
 			got := bytes.TrimSpace(out)
+			if shouldUpdate() {
+				_ = os.WriteFile(filepath.Join(goldenDir, name+".lua"), code, 0o644)
+				_ = os.WriteFile(filepath.Join(goldenDir, name+".out"), append(got, '\n'), 0o644)
+				_ = os.Remove(filepath.Join(goldenDir, name+".error"))
+				return
+			}
 			wantOut, err := os.ReadFile(filepath.Join(goldenDir, name+".out"))
 			if err != nil {
 				t.Fatalf("read golden out: %v", err)

@@ -54,3 +54,7 @@
 - VM valid tests now read golden outputs from `tests/machine/x/lua` and no longer use the `golden` helper.
 - Removed old `TestLuaCompiler_ValidPrograms` duplicate.
 
+## Progress (2025-07-17 10:15)
+- Reworked `vm_golden_test.go` to regenerate Lua code and outputs using `golden.Run`.
+- Running the golden tests confirmed all 100 programs compile and run successfully with no `.error` files.
+
