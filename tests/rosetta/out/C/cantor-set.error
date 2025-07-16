@@ -1,8 +1,60 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:38
-
- 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
-    |                                      ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+cc: exit status 1
+/tmp/cantor-set.c: In function ‘setChar’:
+/tmp/cantor-set.c:149:34: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  149 |   return slice_string(s, 0, idx) + ch + slice_string(s, idx + 1, strlen(s));
+      |          ~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |          |
+      |          char *
+/tmp/cantor-set.c: In function ‘main’:
+/tmp/cantor-set.c:154:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  154 |   int lines = tmp1;
+      |               ^~~~
+/tmp/cantor-set.c:159:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  159 |       char *tmp2 = concat_string(row, "*");
+      |                                  ^~~
+/tmp/cantor-set.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/cantor-set.c:164:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  164 |     tmp3.data[0] = row;
+      |                  ^
+/tmp/cantor-set.c:165:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  165 |     list_string tmp4 = concat_list_string(lines, tmp3);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/cantor-set.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/cantor-set.c:166:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  166 |     lines = tmp4;
+      |             ^~~~
+/tmp/cantor-set.c:172:36: error: incompatible type for argument 1 of ‘slice_list_int’
+  172 |     list_int tmp5 = slice_list_int(stack, 0, stack_len - 1);
+      |                                    ^~~~~
+      |                                    |
+      |                                    stack_t *
+/tmp/cantor-set.c:69:41: note: expected ‘list_int’ but argument is of type ‘stack_t *’
+   69 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+/tmp/cantor-set.c:173:11: error: assignment to expression with array type
+  173 |     stack = tmp5;
+      |           ^
+/tmp/cantor-set.c:185:14: error: request for member ‘data’ in something not a structure or union
+  185 |         lines.data[i] = setChar(lines.data[i], j, " ");
+      |              ^
+/tmp/cantor-set.c:185:38: error: request for member ‘data’ in something not a structure or union
+  185 |         lines.data[i] = setChar(lines.data[i], j, " ");
+      |                                      ^
+/tmp/cantor-set.c:190:11: error: assignment to expression with array type
+  190 |     stack = 0;
+      |           ^
+/tmp/cantor-set.c:191:11: error: assignment to expression with array type
+  191 |     stack = 0;
+      |           ^
+/tmp/cantor-set.c:193:34: error: request for member ‘len’ in something not a structure or union
+  193 |   for (int tmp6 = 0; tmp6 < lines.len; tmp6++) {
+      |                                  ^
+/tmp/cantor-set.c:194:23: error: request for member ‘data’ in something not a structure or union
+  194 |     char *line = lines.data[tmp6];
+      |                       ^

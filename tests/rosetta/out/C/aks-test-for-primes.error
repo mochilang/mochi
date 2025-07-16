@@ -1,0 +1,57 @@
+cc: exit status 1
+/tmp/aks-test-for-primes.c: In function ‘poly’:
+/tmp/aks-test-for-primes.c:27:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   27 |     char *tmp2 = concat_string(s, tmp1);
+      |                                ^
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c:31:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   31 |     char *tmp3 = concat_string(s, "x");
+      |                                ^
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c:34:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   34 |       char *tmp4 = concat_string(s, "^");
+      |                                  ^
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c:45:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   45 |       char *tmp7 = concat_string(s, " - ");
+      |                                  ^
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c:50:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   50 |       char *tmp10 = concat_string(s, " + ");
+      |                                   ^
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c: In function ‘main’:
+/tmp/aks-test-for-primes.c:84:26: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+   84 |     printf("%s\n", tmp14 + poly(p));
+      |                          ^ ~~~~~~~
+      |                            |
+      |                            const char *
+/tmp/aks-test-for-primes.c:94:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   94 |         char *tmp16 = concat_string(line, tmp15);
+      |                                     ^~~~
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c:98:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   98 |         char *tmp17 = concat_string(line, " ");
+      |                                     ^~~~
+/tmp/aks-test-for-primes.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/aks-test-for-primes.c: At top level:
+/tmp/aks-test-for-primes.c:109:5: error: redefinition of ‘main’
+  109 | int main() {
+      |     ^~~~
+/tmp/aks-test-for-primes.c:79:5: note: previous definition of ‘main’ with type ‘int()’
+   79 | int main() {
+      |     ^~~~

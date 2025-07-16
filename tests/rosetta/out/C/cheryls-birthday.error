@@ -1,0 +1,148 @@
+cc: exit status 1
+/tmp/cheryls-birthday.c:54:7: error: duplicate member ‘month’
+   54 |   int month;
+      |       ^~~~~
+/tmp/cheryls-birthday.c:55:7: error: duplicate member ‘day’
+   55 |   int day;
+      |       ^~~
+/tmp/cheryls-birthday.c: In function ‘monthUnique’:
+/tmp/cheryls-birthday.c:79:33: error: request for member ‘len’ in something not a structure or union
+   79 |   for (int tmp1 = 0; tmp1 < list.len; tmp1++) {
+      |                                 ^
+/tmp/cheryls-birthday.c:80:24: error: request for member ‘data’ in something not a structure or union
+   80 |     birthday_t x = list.data[tmp1];
+      |                        ^
+/tmp/cheryls-birthday.c: In function ‘dayUnique’:
+/tmp/cheryls-birthday.c:90:33: error: request for member ‘len’ in something not a structure or union
+   90 |   for (int tmp2 = 0; tmp2 < list.len; tmp2++) {
+      |                                 ^
+/tmp/cheryls-birthday.c:91:24: error: request for member ‘data’ in something not a structure or union
+   91 |     birthday_t x = list.data[tmp2];
+      |                        ^
+/tmp/cheryls-birthday.c: In function ‘monthWithUniqueDay’:
+/tmp/cheryls-birthday.c:100:33: error: request for member ‘len’ in something not a structure or union
+  100 |   for (int tmp3 = 0; tmp3 < list.len; tmp3++) {
+      |                                 ^
+/tmp/cheryls-birthday.c:101:24: error: request for member ‘data’ in something not a structure or union
+  101 |     birthday_t x = list.data[tmp3];
+      |                        ^
+/tmp/cheryls-birthday.c:102:42: warning: passing argument 1 of ‘dayUnique’ from incompatible pointer type [-Wincompatible-pointer-types]
+  102 |     if (x.month == b->month && dayUnique(&x, list)) {
+      |                                          ^~
+      |                                          |
+      |                                          birthday_t *
+/tmp/cheryls-birthday.c:88:25: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+   88 | int dayUnique(Birthday *b, int list) {
+      |               ~~~~~~~~~~^
+/tmp/cheryls-birthday.c: In function ‘bstr’:
+/tmp/cheryls-birthday.c:124:7: error: conflicting types for ‘months’; have ‘int’
+  124 |   int months = months;
+      |       ^~~~~~
+/tmp/cheryls-birthday.c:110:15: note: previous definition of ‘months’ with type ‘list_string’
+  110 |   list_string months = list_string_create(13);
+      |               ^~~~~~
+/tmp/cheryls-birthday.c: In function ‘main’:
+/tmp/cheryls-birthday.c:133:7: error: incompatible types when initializing type ‘int’ using type ‘Birthday’ {aka ‘struct Birthday’}
+  133 |       (Birthday){.month = 5, .day = 15}, (Birthday){.month = 5, .day = 16},
+      |       ^
+/tmp/cheryls-birthday.c:140:30: error: invalid initializer
+  140 |   birthday_list_t filtered = tmp7;
+      |                              ^~~~
+/tmp/cheryls-birthday.c:143:23: warning: passing argument 1 of ‘monthUnique’ from incompatible pointer type [-Wincompatible-pointer-types]
+  143 |     if ((!monthUnique(&bd, choices))) {
+      |                       ^~~
+      |                       |
+      |                       birthday_t *
+/tmp/cheryls-birthday.c:77:27: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+   77 | int monthUnique(Birthday *b, int list) {
+      |                 ~~~~~~~~~~^
+/tmp/cheryls-birthday.c:143:28: warning: passing argument 2 of ‘monthUnique’ makes integer from pointer without a cast [-Wint-conversion]
+  143 |     if ((!monthUnique(&bd, choices))) {
+      |                            ^~~~~~~
+      |                            |
+      |                            birthday_t *
+/tmp/cheryls-birthday.c:77:34: note: expected ‘int’ but argument is of type ‘birthday_t *’
+   77 | int monthUnique(Birthday *b, int list) {
+      |                              ~~~~^~~~
+/tmp/cheryls-birthday.c:144:18: error: incompatible types when assigning to type ‘birthday_list_t’ from type ‘int’
+  144 |       filtered = 0;
+      |                  ^
+/tmp/cheryls-birthday.c:148:31: error: invalid initializer
+  148 |   birthday_list_t filtered2 = tmp9;
+      |                               ^~~~
+/tmp/cheryls-birthday.c:151:30: warning: passing argument 1 of ‘monthWithUniqueDay’ from incompatible pointer type [-Wincompatible-pointer-types]
+  151 |     if ((!monthWithUniqueDay(&bd, filtered))) {
+      |                              ^~~
+      |                              |
+      |                              birthday_t *
+/tmp/cheryls-birthday.c:99:34: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+   99 | int monthWithUniqueDay(Birthday *b, int list) {
+      |                        ~~~~~~~~~~^
+/tmp/cheryls-birthday.c:151:35: error: incompatible type for argument 2 of ‘monthWithUniqueDay’
+  151 |     if ((!monthWithUniqueDay(&bd, filtered))) {
+      |                                   ^~~~~~~~
+      |                                   |
+      |                                   birthday_list_t
+/tmp/cheryls-birthday.c:99:41: note: expected ‘int’ but argument is of type ‘birthday_list_t’
+   99 | int monthWithUniqueDay(Birthday *b, int list) {
+      |                                     ~~~~^~~~
+/tmp/cheryls-birthday.c:152:19: error: incompatible types when assigning to type ‘birthday_list_t’ from type ‘int’
+  152 |       filtered2 = 0;
+      |                   ^
+/tmp/cheryls-birthday.c:156:31: error: invalid initializer
+  156 |   birthday_list_t filtered3 = tmp11;
+      |                               ^~~~~
+/tmp/cheryls-birthday.c:159:19: warning: passing argument 1 of ‘dayUnique’ from incompatible pointer type [-Wincompatible-pointer-types]
+  159 |     if (dayUnique(&bd, filtered2)) {
+      |                   ^~~
+      |                   |
+      |                   birthday_t *
+/tmp/cheryls-birthday.c:88:25: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+   88 | int dayUnique(Birthday *b, int list) {
+      |               ~~~~~~~~~~^
+/tmp/cheryls-birthday.c:159:24: error: incompatible type for argument 2 of ‘dayUnique’
+  159 |     if (dayUnique(&bd, filtered2)) {
+      |                        ^~~~~~~~~
+      |                        |
+      |                        birthday_list_t
+/tmp/cheryls-birthday.c:88:32: note: expected ‘int’ but argument is of type ‘birthday_list_t’
+   88 | int dayUnique(Birthday *b, int list) {
+      |                            ~~~~^~~~
+/tmp/cheryls-birthday.c:160:19: error: incompatible types when assigning to type ‘birthday_list_t’ from type ‘int’
+  160 |       filtered3 = 0;
+      |                   ^
+/tmp/cheryls-birthday.c:164:31: error: invalid initializer
+  164 |   birthday_list_t filtered4 = tmp13;
+      |                               ^~~~~
+/tmp/cheryls-birthday.c:167:21: warning: passing argument 1 of ‘monthUnique’ from incompatible pointer type [-Wincompatible-pointer-types]
+  167 |     if (monthUnique(&bd, filtered3)) {
+      |                     ^~~
+      |                     |
+      |                     birthday_t *
+/tmp/cheryls-birthday.c:77:27: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+   77 | int monthUnique(Birthday *b, int list) {
+      |                 ~~~~~~~~~~^
+/tmp/cheryls-birthday.c:167:26: error: incompatible type for argument 2 of ‘monthUnique’
+  167 |     if (monthUnique(&bd, filtered3)) {
+      |                          ^~~~~~~~~
+      |                          |
+      |                          birthday_list_t
+/tmp/cheryls-birthday.c:77:34: note: expected ‘int’ but argument is of type ‘birthday_list_t’
+   77 | int monthUnique(Birthday *b, int list) {
+      |                              ~~~~^~~~
+/tmp/cheryls-birthday.c:168:19: error: incompatible types when assigning to type ‘birthday_list_t’ from type ‘int’
+  168 |       filtered4 = 0;
+      |                   ^
+/tmp/cheryls-birthday.c:172:51: warning: passing argument 1 of ‘bstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+  172 |     printf("%s\n", "Cheryl's birthday is " + bstr(&filtered4.data[0]));
+      |                                                   ^~~~~~~~~~~~~~~~~~
+      |                                                   |
+      |                                                   birthday_t *
+/tmp/cheryls-birthday.c:109:28: note: expected ‘Birthday *’ {aka ‘struct Birthday *’} but argument is of type ‘birthday_t *’
+  109 | const char *bstr(Birthday *b) {
+      |                  ~~~~~~~~~~^
+/tmp/cheryls-birthday.c:172:44: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  172 |     printf("%s\n", "Cheryl's birthday is " + bstr(&filtered4.data[0]));
+      |                    ~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~
+      |                    |                         |
+      |                    char *                    const char *

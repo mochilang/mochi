@@ -1,0 +1,69 @@
+cc: exit status 1
+/tmp/active-directory-search-for-a-user.c: In function ‘search_user’:
+/tmp/active-directory-search-for-a-user.c:71:19: error: request for member ‘data’ in something not a structure or union
+   71 |   return directory.data[username];
+      |                   ^
+/tmp/active-directory-search-for-a-user.c: In function ‘main’:
+/tmp/active-directory-search-for-a-user.c:82:15: error: redefinition of ‘directory’
+   82 |   list_string directory = list_string_create(1);
+      |               ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:79:15: note: previous definition of ‘directory’ with type ‘list_string’
+   79 |   list_string directory = list_string_create(2);
+      |               ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:84:20: error: conflicting types for ‘directory’; have ‘directory_item_t’
+   84 |   directory_item_t directory =
+      |                    ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:82:15: note: previous definition of ‘directory’ with type ‘list_string’
+   82 |   list_string directory = list_string_create(1);
+      |               ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:85:38: error: incompatible types when initializing type ‘int’ using type ‘directory_item_t’
+   85 |       (directory_item_t){.username = directory, .john = directory};
+      |                                      ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:85:57: error: incompatible types when initializing type ‘int’ using type ‘directory_item_t’
+   85 |       (directory_item_t){.username = directory, .john = directory};
+      |                                                         ^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:86:28: warning: passing argument 1 of ‘search_user’ makes integer from pointer without a cast [-Wint-conversion]
+   86 |   int groups = search_user(&directory, "username");
+      |                            ^~~~~~~~~~
+      |                            |
+      |                            directory_item_t *
+/tmp/active-directory-search-for-a-user.c:70:21: note: expected ‘int’ but argument is of type ‘directory_item_t *’
+   70 | int search_user(int directory, char *username) {
+      |                 ~~~~^~~~~~~~~
+/tmp/active-directory-search-for-a-user.c:87:13: error: request for member ‘len’ in something not a structure or union
+   87 |   if (groups.len > 0) {
+      |             ^
+/tmp/active-directory-search-for-a-user.c:90:22: error: request for member ‘len’ in something not a structure or union
+   90 |     while (i < groups.len) {
+      |                      ^
+/tmp/active-directory-search-for-a-user.c:91:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   91 |       char *tmp1 = concat_string(out, "\"");
+      |                                  ^~~
+/tmp/active-directory-search-for-a-user.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/active-directory-search-for-a-user.c:92:26: error: request for member ‘data’ in something not a structure or union
+   92 |       out = tmp1 + groups.data[i] + "\"";
+      |                          ^
+/tmp/active-directory-search-for-a-user.c:93:21: error: request for member ‘len’ in something not a structure or union
+   93 |       if (i < groups.len - 1) {
+      |                     ^
+/tmp/active-directory-search-for-a-user.c:94:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   94 |         char *tmp2 = concat_string(out, ", ");
+      |                                    ^~~
+/tmp/active-directory-search-for-a-user.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/active-directory-search-for-a-user.c:99:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   99 |     char *tmp3 = concat_string(out, "]");
+      |                                ^~~
+/tmp/active-directory-search-for-a-user.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/active-directory-search-for-a-user.c: At top level:
+/tmp/active-directory-search-for-a-user.c:107:5: error: redefinition of ‘main’
+  107 | int main() {
+      |     ^~~~
+/tmp/active-directory-search-for-a-user.c:74:5: note: previous definition of ‘main’ with type ‘int()’
+   74 | int main() {
+      |     ^~~~

@@ -1,0 +1,67 @@
+cc: exit status 1
+/tmp/abelian-sandpile-model-identity.c: In function ‘neighborsList’:
+/tmp/abelian-sandpile-model-identity.c:83:31: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   83 |   list_int tmp1_data[] = {{2, tmp2}, {3, tmp3}, {2, tmp4}, {3, tmp5}, {4, tmp6},
+      |                               ^~~~
+/tmp/abelian-sandpile-model-identity.c:83:42: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   83 |   list_int tmp1_data[] = {{2, tmp2}, {3, tmp3}, {2, tmp4}, {3, tmp5}, {4, tmp6},
+      |                                          ^~~~
+/tmp/abelian-sandpile-model-identity.c:83:53: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   83 |   list_int tmp1_data[] = {{2, tmp2}, {3, tmp3}, {2, tmp4}, {3, tmp5}, {4, tmp6},
+      |                                                     ^~~~
+/tmp/abelian-sandpile-model-identity.c:83:64: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   83 |   list_int tmp1_data[] = {{2, tmp2}, {3, tmp3}, {2, tmp4}, {3, tmp5}, {4, tmp6},
+      |                                                                ^~~~
+/tmp/abelian-sandpile-model-identity.c:83:75: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   83 |   list_int tmp1_data[] = {{2, tmp2}, {3, tmp3}, {2, tmp4}, {3, tmp5}, {4, tmp6},
+      |                                                                           ^~~~
+/tmp/abelian-sandpile-model-identity.c:84:31: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   84 |                           {3, tmp7}, {2, tmp8}, {3, tmp9}, {2, tmp10}};
+      |                               ^~~~
+/tmp/abelian-sandpile-model-identity.c:84:42: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   84 |                           {3, tmp7}, {2, tmp8}, {3, tmp9}, {2, tmp10}};
+      |                                          ^~~~
+/tmp/abelian-sandpile-model-identity.c:84:53: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   84 |                           {3, tmp7}, {2, tmp8}, {3, tmp9}, {2, tmp10}};
+      |                                                     ^~~~
+/tmp/abelian-sandpile-model-identity.c:84:64: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   84 |                           {3, tmp7}, {2, tmp8}, {3, tmp9}, {2, tmp10}};
+      |                                                                ^~~~~
+/tmp/abelian-sandpile-model-identity.c: In function ‘plus’:
+/tmp/abelian-sandpile-model-identity.c:93:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   93 |     res = 0;
+      |           ^
+/tmp/abelian-sandpile-model-identity.c: In function ‘pileString’:
+/tmp/abelian-sandpile-model-identity.c:134:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  134 |       char *tmp14 = concat_string(s, tmp13);
+      |                                   ^
+/tmp/abelian-sandpile-model-identity.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abelian-sandpile-model-identity.c:139:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  139 |     char *tmp16 = concat_string(s, "\n");
+      |                                 ^
+/tmp/abelian-sandpile-model-identity.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/abelian-sandpile-model-identity.c: In function ‘main’:
+/tmp/abelian-sandpile-model-identity.c:292:36: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  292 |   printf("%s\n", pileString(tmp25) + "\nplus\n\n" + pileString(tmp26) +
+      |                  ~~~~~~~~~~~~~~~~~ ^
+      |                  |                 |
+      |                  const char *      char *
+/tmp/abelian-sandpile-model-identity.c:314:28: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  314 |   printf("%s\n", "and\n\n" + pileString(tmp27) + "\nplus\n\n" +
+      |                  ~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~
+      |                  |           |
+      |                  char *      const char *
+/tmp/abelian-sandpile-model-identity.c:382:36: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  382 |   printf("%s\n", pileString(tmp31) + "\nplus\n\n" + pileString(tmp32) +
+      |                  ~~~~~~~~~~~~~~~~~ ^
+      |                  |                 |
+      |                  const char *      char *
+/tmp/abelian-sandpile-model-identity.c:429:36: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  429 |   printf("%s\n", pileString(tmp35) + "\nplus\n\n" + pileString(tmp36) +
+      |                  ~~~~~~~~~~~~~~~~~ ^
+      |                  |                 |
+      |                  const char *      char *

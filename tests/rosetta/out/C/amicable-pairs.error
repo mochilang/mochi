@@ -1,0 +1,24 @@
+cc: exit status 1
+/tmp/amicable-pairs.c: In function ‘pad’:
+/tmp/amicable-pairs.c:51:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   51 |     char *tmp2 = concat_string(" ", s);
+      |                                     ^
+/tmp/amicable-pairs.c:21:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/amicable-pairs.c: In function ‘main’:
+/tmp/amicable-pairs.c:61:12: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   61 |     sums = 0;
+      |            ^
+/tmp/amicable-pairs.c:74:27: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+   74 |       printf("%s\n", "  " + pad(n, 5) + " and " + pad(m, 5));
+      |                      ~~~~ ^ ~~~~~~~~~
+      |                      |      |
+      |                      char * const char *
+/tmp/amicable-pairs.c: At top level:
+/tmp/amicable-pairs.c:80:5: error: redefinition of ‘main’
+   80 | int main() {
+      |     ^~~~
+/tmp/amicable-pairs.c:57:5: note: previous definition of ‘main’ with type ‘int()’
+   57 | int main() {
+      |     ^~~~

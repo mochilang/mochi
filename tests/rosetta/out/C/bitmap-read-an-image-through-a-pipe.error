@@ -1,8 +1,120 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1: lexer: invalid input text "# Parse a simple..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitmap-read-an-image-through-a-pipe.mochi:1:1
-
-  1 | # Parse a simple P3 PPM image from a string to simulate reading from a pipe
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+cc: exit status 1
+/tmp/bitmap-read-an-image-through-a-pipe.c:140:7: error: duplicate member ‘_’
+  140 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:141:7: error: duplicate member ‘_’
+  141 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:142:7: error: duplicate member ‘_’
+  142 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:143:7: error: duplicate member ‘_’
+  143 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:144:7: error: duplicate member ‘_’
+  144 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:145:7: error: duplicate member ‘_’
+  145 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:146:7: error: duplicate member ‘_’
+  146 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:147:7: error: duplicate member ‘_’
+  147 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:148:7: error: duplicate member ‘_’
+  148 |   int _;
+      |       ^
+/tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘parseIntStr’:
+/tmp/bitmap-read-an-image-through-a-pipe.c:191:11: error: request for member ‘len’ in something not a structure or union
+  191 |   if ((str.len > 0 && tmp1 == "-")) {
+      |           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:196:27: error: invalid initializer
+  196 |   map_string_int digits = (tmp_item_t){._ = 0,
+      |                           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:206:18: error: request for member ‘len’ in something not a structure or union
+  206 |   while ((i < str.len)) {
+      |                  ^
+/tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘splitWs’:
+/tmp/bitmap-read-an-image-through-a-pipe.c:219:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  219 |   int parts = tmp3;
+      |               ^~~~
+/tmp/bitmap-read-an-image-through-a-pipe.c:227:22: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  227 |         tmp4.data[0] = cur;
+      |                      ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:228:47: error: incompatible type for argument 1 of ‘concat_list_string’
+  228 |         list_string tmp5 = concat_list_string(parts, tmp4);
+      |                                               ^~~~~
+      |                                               |
+      |                                               int
+/tmp/bitmap-read-an-image-through-a-pipe.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-an-image-through-a-pipe.c:229:17: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  229 |         parts = tmp5;
+      |                 ^~~~
+/tmp/bitmap-read-an-image-through-a-pipe.c:233:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  233 |       char *tmp6 = concat_string(cur, ch);
+      |                                  ^~~
+/tmp/bitmap-read-an-image-through-a-pipe.c:105:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-read-an-image-through-a-pipe.c:233:39: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  233 |       char *tmp6 = concat_string(cur, ch);
+      |                                       ^~
+/tmp/bitmap-read-an-image-through-a-pipe.c:105:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/bitmap-read-an-image-through-a-pipe.c:240:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  240 |     tmp7.data[0] = cur;
+      |                  ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:241:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  241 |     list_string tmp8 = concat_list_string(parts, tmp7);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/bitmap-read-an-image-through-a-pipe.c:97:51: note: expected ‘list_string’ but argument is of type ‘int’
+   97 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/bitmap-read-an-image-through-a-pipe.c:242:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  242 |     parts = tmp8;
+      |             ^~~~
+/tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘parsePpm’:
+/tmp/bitmap-read-an-image-through-a-pipe.c:249:11: error: request for member ‘len’ in something not a structure or union
+  249 |   if (toks.len < 4) {
+      |           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:250:26: error: ‘tmp_item_t’ has no member named ‘err’
+  250 |     return (tmp_item_t){.err = 1};
+      |                          ^~~
+/tmp/bitmap-read-an-image-through-a-pipe.c:250:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  250 |     return (tmp_item_t){.err = 1};
+      |            ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:252:27: error: request for member ‘data’ in something not a structure or union
+  252 |   const char *magic = toks.data[0];
+      |                           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:253:27: error: request for member ‘data’ in something not a structure or union
+  253 |   int w = parseIntStr(toks.data[1]);
+      |                           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:254:27: error: request for member ‘data’ in something not a structure or union
+  254 |   int h = parseIntStr(toks.data[2]);
+      |                           ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:255:30: error: request for member ‘data’ in something not a structure or union
+  255 |   int maxv = parseIntStr(toks.data[3]);
+      |                              ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:258:18: error: request for member ‘len’ in something not a structure or union
+  258 |   while (i < toks.len) {
+      |                  ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:259:10: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  259 |     px = 0;
+      |          ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:262:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  262 |   return (tmp_item1_t){.magic = magic, .w = w, .h = h, .max = maxv, .px = px};
+      |          ^
+/tmp/bitmap-read-an-image-through-a-pipe.c: In function ‘main’:
+/tmp/bitmap-read-an-image-through-a-pipe.c:267:24: error: request for member ‘w’ in something not a structure or union
+  267 |   char *tmp9 = _str(img.w);
+      |                        ^
+/tmp/bitmap-read-an-image-through-a-pipe.c:270:25: error: request for member ‘h’ in something not a structure or union
+  270 |   char *tmp12 = _str(img.h);
+      |                         ^

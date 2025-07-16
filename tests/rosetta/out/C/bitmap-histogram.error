@@ -1,0 +1,48 @@
+cc: exit status 1
+/tmp/bitmap-histogram.c: In function ‘image’:
+/tmp/bitmap-histogram.c:78:31: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   78 |   list_int tmp1_data[] = {{3, tmp2}, {3, tmp3}, {3, tmp4}};
+      |                               ^~~~
+/tmp/bitmap-histogram.c:78:42: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   78 |   list_int tmp1_data[] = {{3, tmp2}, {3, tmp3}, {3, tmp4}};
+      |                                          ^~~~
+/tmp/bitmap-histogram.c:78:53: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+   78 |   list_int tmp1_data[] = {{3, tmp2}, {3, tmp3}, {3, tmp4}};
+      |                                                     ^~~~
+/tmp/bitmap-histogram.c: In function ‘histogram’:
+/tmp/bitmap-histogram.c:90:9: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   90 |     h = 0;
+      |         ^
+/tmp/bitmap-histogram.c: In function ‘threshold’:
+/tmp/bitmap-histogram.c:135:18: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  135 |         newRow = 0;
+      |                  ^
+/tmp/bitmap-histogram.c: In function ‘printImage’:
+/tmp/bitmap-histogram.c:162:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  162 |         char *tmp10 = concat_string(line, "0");
+      |                                     ^~~~
+/tmp/bitmap-histogram.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   51 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-histogram.c:165:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  165 |         char *tmp11 = concat_string(line, "1");
+      |                                     ^~~~
+/tmp/bitmap-histogram.c:51:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   51 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/bitmap-histogram.c: In function ‘main’:
+/tmp/bitmap-histogram.c:178:22: error: incompatible type for argument 1 of ‘_str’
+  178 |   char *tmp12 = _str(h);
+      |                      ^
+      |                      |
+      |                      list_int
+/tmp/bitmap-histogram.c:60:23: note: expected ‘int’ but argument is of type ‘list_int’
+   60 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/bitmap-histogram.c: At top level:
+/tmp/bitmap-histogram.c:189:5: error: redefinition of ‘main’
+  189 | int main() {
+      |     ^~~~
+/tmp/bitmap-histogram.c:175:5: note: previous definition of ‘main’ with type ‘int()’
+  175 | int main() {
+      |     ^~~~

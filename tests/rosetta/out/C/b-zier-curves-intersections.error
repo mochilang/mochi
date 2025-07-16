@@ -1,8 +1,238 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "B'zier curves/Intersections" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+cc: exit status 1
+/tmp/b-zier-curves-intersections.c:58:3: error: unknown type name ‘point_t’
+   58 |   point_t intersect;
+      |   ^~~~~~~
+/tmp/b-zier-curves-intersections.c:78:10: error: duplicate member ‘x’
+   78 |   double x;
+      |          ^
+/tmp/b-zier-curves-intersections.c:79:10: error: duplicate member ‘y’
+   79 |   double y;
+      |          ^
+/tmp/b-zier-curves-intersections.c:83:3: error: unknown type name ‘quad_curve_t’
+   83 |   quad_curve_t p;
+      |   ^~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:84:3: error: unknown type name ‘quad_curve_t’
+   84 |   quad_curve_t q;
+      |   ^~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:102:3: error: unknown type name ‘quad_spline_t’
+  102 |   quad_spline_t x;
+      |   ^~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:103:3: error: unknown type name ‘quad_spline_t’
+  103 |   quad_spline_t y;
+      |   ^~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:104:3: error: unknown type name ‘quad_spline_t’
+  104 |   quad_spline_t x;
+      |   ^~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:105:3: error: unknown type name ‘quad_spline_t’
+  105 |   quad_spline_t y;
+      |   ^~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:104:17: error: duplicate member ‘x’
+  104 |   quad_spline_t x;
+      |                 ^
+/tmp/b-zier-curves-intersections.c:105:17: error: duplicate member ‘y’
+  105 |   quad_spline_t y;
+      |                 ^
+/tmp/b-zier-curves-intersections.c:112:10: error: duplicate member ‘c0’
+  112 |   double c0;
+      |          ^~
+/tmp/b-zier-curves-intersections.c:113:10: error: duplicate member ‘c1’
+  113 |   double c1;
+      |          ^~
+/tmp/b-zier-curves-intersections.c:114:10: error: duplicate member ‘c2’
+  114 |   double c2;
+      |          ^~
+/tmp/b-zier-curves-intersections.c: In function ‘subdivideQuadSpline’:
+/tmp/b-zier-curves-intersections.c:277:21: error: invalid initializer
+  277 |   quad_spline_t u = (QuadSpline){.c0 = q->c0, .c1 = 0.0, .c2 = 0.0};
+      |                     ^
+/tmp/b-zier-curves-intersections.c:278:21: error: invalid initializer
+  278 |   quad_spline_t v = (QuadSpline){.c0 = 0.0, .c1 = 0.0, .c2 = q->c2};
+      |                     ^
+/tmp/b-zier-curves-intersections.c:284:18: error: incompatible types when assigning to type ‘int’ from type ‘quad_spline_t’
+  284 |   tmp1.data[0] = u;
+      |                  ^
+/tmp/b-zier-curves-intersections.c:285:18: error: incompatible types when assigning to type ‘int’ from type ‘quad_spline_t’
+  285 |   tmp1.data[1] = v;
+      |                  ^
+/tmp/b-zier-curves-intersections.c:286:10: error: incompatible types when returning type ‘list_int’ but ‘quad_spline_list_t’ was expected
+  286 |   return tmp1;
+      |          ^~~~
+/tmp/b-zier-curves-intersections.c: In function ‘subdivideQuadCurve’:
+/tmp/b-zier-curves-intersections.c:292:37: error: incompatible types when initializing type ‘double’ using type ‘quad_spline_t’
+  292 |   quad_curve_t u = (QuadCurve){.x = xs.data[0], .y = ys.data[0]};
+      |                                     ^~
+/tmp/b-zier-curves-intersections.c:292:54: error: incompatible types when initializing type ‘double’ using type ‘quad_spline_t’
+  292 |   quad_curve_t u = (QuadCurve){.x = xs.data[0], .y = ys.data[0]};
+      |                                                      ^~
+/tmp/b-zier-curves-intersections.c:293:37: error: incompatible types when initializing type ‘double’ using type ‘quad_spline_t’
+  293 |   quad_curve_t v = (QuadCurve){.x = xs.data[1], .y = ys.data[1]};
+      |                                     ^~
+/tmp/b-zier-curves-intersections.c:293:54: error: incompatible types when initializing type ‘double’ using type ‘quad_spline_t’
+  293 |   quad_curve_t v = (QuadCurve){.x = xs.data[1], .y = ys.data[1]};
+      |                                                      ^~
+/tmp/b-zier-curves-intersections.c:295:18: error: incompatible types when assigning to type ‘int’ from type ‘quad_curve_t’
+  295 |   tmp2.data[0] = u;
+      |                  ^
+/tmp/b-zier-curves-intersections.c:296:18: error: incompatible types when assigning to type ‘int’ from type ‘quad_curve_t’
+  296 |   tmp2.data[1] = v;
+      |                  ^
+/tmp/b-zier-curves-intersections.c:297:10: error: incompatible types when returning type ‘list_int’ but ‘quad_curve_list_t’ was expected
+  297 |   return tmp2;
+      |          ^~~~
+/tmp/b-zier-curves-intersections.c: In function ‘testIntersect’:
+/tmp/b-zier-curves-intersections.c:316:19: error: invalid initializer
+  316 |   point_t inter = (Point){.x = 0.0, .y = 0.0};
+      |                   ^
+/tmp/b-zier-curves-intersections.c:331:74: error: incompatible types when initializing type ‘int’ using type ‘point_t’
+  331 |   return (tmp_item_t){.exclude = exclude, .accept = accept, .intersect = inter};
+      |                                                                          ^~~~~
+/tmp/b-zier-curves-intersections.c: In function ‘seemsToBeDuplicate’:
+/tmp/b-zier-curves-intersections.c:336:17: error: request for member ‘len’ in something not a structure or union
+  336 |   while (i < pts.len) {
+      |                 ^
+/tmp/b-zier-curves-intersections.c:337:21: error: request for member ‘data’ in something not a structure or union
+  337 |     point_t pt = pts.data[i];
+      |                     ^
+/tmp/b-zier-curves-intersections.c: In function ‘findIntersects’:
+/tmp/b-zier-curves-intersections.c:349:25: error: invalid initializer
+  349 |   point_list_t inters = tmp3;
+      |                         ^~~~
+/tmp/b-zier-curves-intersections.c:350:46: warning: initialization of ‘int’ from ‘QuadCurve *’ {aka ‘struct QuadCurve *’} makes integer from pointer without a cast [-Wint-conversion]
+  350 |   workload_t workload[] = {(workload_t){.p = p, .q = q}};
+      |                                              ^
+/tmp/b-zier-curves-intersections.c:350:46: note: (near initialization for ‘(anonymous).p’)
+/tmp/b-zier-curves-intersections.c:350:54: warning: initialization of ‘int’ from ‘QuadCurve *’ {aka ‘struct QuadCurve *’} makes integer from pointer without a cast [-Wint-conversion]
+  350 |   workload_t workload[] = {(workload_t){.p = p, .q = q}};
+      |                                                      ^
+/tmp/b-zier-curves-intersections.c:350:54: note: (near initialization for ‘(anonymous).q’)
+/tmp/b-zier-curves-intersections.c:355:36: error: incompatible type for argument 1 of ‘slice_list_int’
+  355 |     list_int tmp4 = slice_list_int(workload, 0, idx);
+      |                                    ^~~~~~~~
+      |                                    |
+      |                                    workload_t *
+/tmp/b-zier-curves-intersections.c:35:41: note: expected ‘list_int’ but argument is of type ‘workload_t *’
+   35 | static list_int slice_list_int(list_int v, int start, int end) {
+      |                                ~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:356:14: error: assignment to expression with array type
+  356 |     workload = tmp4;
+      |              ^
+/tmp/b-zier-curves-intersections.c:357:33: warning: passing argument 1 of ‘testIntersect’ makes pointer from integer without a cast [-Wint-conversion]
+  357 |     int res = testIntersect(work.p, work.q, tol);
+      |                             ~~~~^~
+      |                                 |
+      |                                 int
+/tmp/b-zier-curves-intersections.c:305:30: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘int’
+  305 | int testIntersect(QuadCurve *p, QuadCurve *q, double tol) {
+      |                   ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:357:41: warning: passing argument 2 of ‘testIntersect’ makes pointer from integer without a cast [-Wint-conversion]
+  357 |     int res = testIntersect(work.p, work.q, tol);
+      |                                     ~~~~^~
+      |                                         |
+      |                                         int
+/tmp/b-zier-curves-intersections.c:305:44: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘int’
+  305 | int testIntersect(QuadCurve *p, QuadCurve *q, double tol) {
+      |                                 ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:358:19: error: request for member ‘data’ in something not a structure or union
+  358 |     int excl = res.data["exclude"];
+      |                   ^
+/tmp/b-zier-curves-intersections.c:359:18: error: request for member ‘data’ in something not a structure or union
+  359 |     int acc = res.data["accept"];
+      |                  ^
+/tmp/b-zier-curves-intersections.c:360:28: error: request for member ‘data’ in something not a structure or union
+  360 |     int inter = (Point)(res.data["intersect"]);
+      |                            ^
+/tmp/b-zier-curves-intersections.c:362:32: error: incompatible type for argument 1 of ‘seemsToBeDuplicate’
+  362 |       if ((!seemsToBeDuplicate(inters, inter, spacing))) {
+      |                                ^~~~~~
+      |                                |
+      |                                point_list_t
+/tmp/b-zier-curves-intersections.c:334:28: note: expected ‘int’ but argument is of type ‘point_list_t’
+  334 | int seemsToBeDuplicate(int pts, Point *xy, double spacing) {
+      |                        ~~~~^~~
+/tmp/b-zier-curves-intersections.c:362:40: warning: passing argument 2 of ‘seemsToBeDuplicate’ makes pointer from integer without a cast [-Wint-conversion]
+  362 |       if ((!seemsToBeDuplicate(inters, inter, spacing))) {
+      |                                        ^~~~~
+      |                                        |
+      |                                        int
+/tmp/b-zier-curves-intersections.c:334:40: note: expected ‘Point *’ {aka ‘struct Point *’} but argument is of type ‘int’
+  334 | int seemsToBeDuplicate(int pts, Point *xy, double spacing) {
+      |                                 ~~~~~~~^~
+/tmp/b-zier-curves-intersections.c:363:18: error: incompatible types when assigning to type ‘point_list_t’ from type ‘int’
+  363 |         inters = 0;
+      |                  ^
+/tmp/b-zier-curves-intersections.c:366:39: warning: passing argument 1 of ‘subdivideQuadCurve’ makes pointer from integer without a cast [-Wint-conversion]
+  366 |       int ps = subdivideQuadCurve(work.p, 0.5);
+      |                                   ~~~~^~
+      |                                       |
+      |                                       int
+/tmp/b-zier-curves-intersections.c:289:49: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘int’
+  289 | quad_curve_list_t subdivideQuadCurve(QuadCurve *q, double t) {
+      |                                      ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:366:16: error: incompatible types when initializing type ‘int’ using type ‘quad_curve_list_t’
+  366 |       int ps = subdivideQuadCurve(work.p, 0.5);
+      |                ^~~~~~~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:367:39: warning: passing argument 1 of ‘subdivideQuadCurve’ makes pointer from integer without a cast [-Wint-conversion]
+  367 |       int qs = subdivideQuadCurve(work.q, 0.5);
+      |                                   ~~~~^~
+      |                                       |
+      |                                       int
+/tmp/b-zier-curves-intersections.c:289:49: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘int’
+  289 | quad_curve_list_t subdivideQuadCurve(QuadCurve *q, double t) {
+      |                                      ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:367:16: error: incompatible types when initializing type ‘int’ using type ‘quad_curve_list_t’
+  367 |       int qs = subdivideQuadCurve(work.q, 0.5);
+      |                ^~~~~~~~~~~~~~~~~~
+/tmp/b-zier-curves-intersections.c:368:18: error: request for member ‘data’ in something not a structure or union
+  368 |       int p0 = ps.data[0];
+      |                  ^
+/tmp/b-zier-curves-intersections.c:369:18: error: request for member ‘data’ in something not a structure or union
+  369 |       int p1 = ps.data[1];
+      |                  ^
+/tmp/b-zier-curves-intersections.c:370:18: error: request for member ‘data’ in something not a structure or union
+  370 |       int q0 = qs.data[0];
+      |                  ^
+/tmp/b-zier-curves-intersections.c:371:18: error: request for member ‘data’ in something not a structure or union
+  371 |       int q1 = qs.data[1];
+      |                  ^
+/tmp/b-zier-curves-intersections.c:372:16: error: assignment to expression with array type
+  372 |       workload = 0;
+      |                ^
+/tmp/b-zier-curves-intersections.c:373:16: error: assignment to expression with array type
+  373 |       workload = 0;
+      |                ^
+/tmp/b-zier-curves-intersections.c:374:16: error: assignment to expression with array type
+  374 |       workload = 0;
+      |                ^
+/tmp/b-zier-curves-intersections.c:375:16: error: assignment to expression with array type
+  375 |       workload = 0;
+      |                ^
+/tmp/b-zier-curves-intersections.c: In function ‘main’:
+/tmp/b-zier-curves-intersections.c:383:7: error: invalid initializer
+  383 |       (QuadCurve){.x = (QuadSpline){.c0 = (-1.0), .c1 = 0.0, .c2 = 1.0},
+      |       ^
+/tmp/b-zier-curves-intersections.c:386:7: error: invalid initializer
+  386 |       (QuadCurve){.x = (QuadSpline){.c0 = 2.0, .c1 = (-8.0), .c2 = 2.0},
+      |       ^
+/tmp/b-zier-curves-intersections.c:390:40: warning: passing argument 1 of ‘findIntersects’ from incompatible pointer type [-Wincompatible-pointer-types]
+  390 |   point_list_t inters = findIntersects(&p, &q, tol, spacing);
+      |                                        ^~
+      |                                        |
+      |                                        quad_curve_t *
+/tmp/b-zier-curves-intersections.c:346:40: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘quad_curve_t *’
+  346 | point_list_t findIntersects(QuadCurve *p, QuadCurve *q, double tol,
+      |                             ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c:390:44: warning: passing argument 2 of ‘findIntersects’ from incompatible pointer type [-Wincompatible-pointer-types]
+  390 |   point_list_t inters = findIntersects(&p, &q, tol, spacing);
+      |                                            ^~
+      |                                            |
+      |                                            quad_curve_t *
+/tmp/b-zier-curves-intersections.c:346:54: note: expected ‘QuadCurve *’ {aka ‘struct QuadCurve *’} but argument is of type ‘quad_curve_t *’
+  346 | point_list_t findIntersects(QuadCurve *p, QuadCurve *q, double tol,
+      |                                           ~~~~~~~~~~~^
+/tmp/b-zier-curves-intersections.c: At top level:
+/tmp/b-zier-curves-intersections.c:405:5: error: redefinition of ‘main’
+  405 | int main() {
+      |     ^~~~
+/tmp/b-zier-curves-intersections.c:381:5: note: previous definition of ‘main’ with type ‘int()’
+  381 | int main() {
+      |     ^~~~

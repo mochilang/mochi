@@ -1,0 +1,23 @@
+cc: exit status 1
+/tmp/boolean-values.c: In function ‘parseBool’:
+/tmp/boolean-values.c:8:19: warning: implicit declaration of function ‘lower’ [-Wimplicit-function-declaration]
+    8 |   const char *l = lower(s);
+      |                   ^~~~~
+/tmp/boolean-values.c:8:19: warning: initialization of ‘const char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+/tmp/boolean-values.c:9:47: warning: comparison between pointer and integer
+    9 |   if (((strcmp(l, "1") == 0) || l == "t" || l == 1 || l == "yes" || l == "y")) {
+      |                                               ^~
+/tmp/boolean-values.c: In function ‘main’:
+/tmp/boolean-values.c:28:26: warning: passing argument 1 of ‘parseBool’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   28 |   int bolStr = parseBool(str1);
+      |                          ^~~~
+/tmp/boolean-values.c:7:21: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | int parseBool(char *s) {
+      |               ~~~~~~^
+/tmp/boolean-values.c: At top level:
+/tmp/boolean-values.c:32:5: error: redefinition of ‘main’
+   32 | int main() {
+      |     ^~~~
+/tmp/boolean-values.c:15:5: note: previous definition of ‘main’ with type ‘int()’
+   15 | int main() {
+      |     ^~~~

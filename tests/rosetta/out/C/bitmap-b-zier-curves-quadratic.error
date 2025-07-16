@@ -1,0 +1,68 @@
+cc: exit status 1
+/tmp/bitmap-b-zier-curves-quadratic.c:51:3: error: unknown type name ‘pixel_t’
+   51 |   pixel_t *data;
+      |   ^~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c: In function ‘create_pixel_list’:
+/tmp/bitmap-b-zier-curves-quadratic.c:56:31: error: ‘pixel_t’ undeclared (first use in this function); did you mean ‘Pixel’?
+   56 |   l.data = calloc(len, sizeof(pixel_t));
+      |                               ^~~~~~~
+      |                               Pixel
+/tmp/bitmap-b-zier-curves-quadratic.c:56:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/bitmap-b-zier-curves-quadratic.c: At top level:
+/tmp/bitmap-b-zier-curves-quadratic.c:64:1: error: unknown type name ‘pixel_t’; did you mean ‘Pixel’?
+   64 | pixel_t pixelFromRgb(int rgb) {
+      | ^~~~~~~
+      | Pixel
+/tmp/bitmap-b-zier-curves-quadratic.c: In function ‘pixelFromRgb’:
+/tmp/bitmap-b-zier-curves-quadratic.c:65:52: error: invalid operands to binary % (have ‘double’ and ‘int’)
+   65 |   int r = (int)(((((double)rgb) / ((double)65536)) % 256));
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |                                 |
+      |                                 double
+/tmp/bitmap-b-zier-curves-quadratic.c:66:50: error: invalid operands to binary % (have ‘double’ and ‘int’)
+   66 |   int g = (int)(((((double)rgb) / ((double)256)) % 256));
+      |                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+      |                                 |
+      |                                 double
+/tmp/bitmap-b-zier-curves-quadratic.c:68:10: error: incompatible types when returning type ‘Pixel’ {aka ‘struct Pixel’} but ‘int’ was expected
+   68 |   return (Pixel){.r = r, .g = g, .b = b};
+      |          ^
+/tmp/bitmap-b-zier-curves-quadratic.c: In function ‘newBitmap’:
+/tmp/bitmap-b-zier-curves-quadratic.c:73:11: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+   73 |   int d = tmp1;
+      |           ^~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:77:24: error: invalid initializer
+   77 |     pixel_list_t row = tmp2;
+      |                        ^~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:80:13: error: incompatible types when assigning to type ‘pixel_list_t’ from type ‘int’
+   80 |       row = 0;
+      |             ^
+/tmp/bitmap-b-zier-curves-quadratic.c:86:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+   86 |   return (tmp_item_t){.cols = cols, .rows = rows, .data = d};
+      |          ^
+/tmp/bitmap-b-zier-curves-quadratic.c: At top level:
+/tmp/bitmap-b-zier-curves-quadratic.c:89:11: error: unknown type name ‘map_string_int’
+   89 | int setPx(map_string_int b, int x, int y, Pixel *p) {
+      |           ^~~~~~~~~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:97:10: error: unknown type name ‘map_string_int’
+   97 | int fill(map_string_int b, Pixel *p) {
+      |          ^~~~~~~~~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:111:13: error: unknown type name ‘map_string_int’
+  111 | int fillRgb(map_string_int b, int rgb) { fill(b, &pixelFromRgb(rgb)); }
+      |             ^~~~~~~~~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:113:10: error: unknown type name ‘map_string_int’
+  113 | int line(map_string_int b, int x0, int y0, int x1, int y1, Pixel *p) {
+      |          ^~~~~~~~~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:148:13: error: unknown type name ‘map_string_int’
+  148 | int bezier2(map_string_int b, int x1, int y1, int x2, int y2, int x3, int y3,
+      |             ^~~~~~~~~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c: In function ‘main’:
+/tmp/bitmap-b-zier-curves-quadratic.c:190:3: warning: implicit declaration of function ‘fillRgb’ [-Wimplicit-function-declaration]
+  190 |   fillRgb(b, 14614575);
+      |   ^~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:191:3: warning: implicit declaration of function ‘bezier2’ [-Wimplicit-function-declaration]
+  191 |   bezier2(b, 20, 150, 500, (-100), 300, 280, &pixelFromRgb(4165615));
+      |   ^~~~~~~
+/tmp/bitmap-b-zier-curves-quadratic.c:191:46: error: lvalue required as unary ‘&’ operand
+  191 |   bezier2(b, 20, 150, 500, (-100), 300, 280, &pixelFromRgb(4165615));
+      |                                              ^

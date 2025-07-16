@@ -1,0 +1,8 @@
+cc: exit status 1
+/tmp/averages-median-3.c: In function ‘qsel’:
+/tmp/averages-median-3.c:78:18: error: conflicting types for ‘tmp2’; have ‘list_float’
+   78 |       list_float tmp2 = slice_list_float(arr, (px + 1), arr.len);
+      |                  ^~~~
+/tmp/averages-median-3.c:75:14: note: previous definition of ‘tmp2’ with type ‘double’
+   75 |       double tmp2 = arr.data[px];
+      |              ^~~~

@@ -1,0 +1,7 @@
+cc: exit status 1
+/tmp/anonymous-recursion.c:49:5: error: redefinition of ‘main’
+   49 | int main() {
+      |     ^~~~
+/tmp/anonymous-recursion.c:28:5: note: previous definition of ‘main’ with type ‘int()’
+   28 | int main() {
+      |     ^~~~

@@ -1,8 +1,17 @@
-type error: error[T003]: unknown function: sha256
-  --> /workspace/mochi/tests/rosetta/x/Mochi/bitcoin-address-validation.mochi:43:15
-
- 43 |   let first = sha256(bs)
-    |               ^
-
-help:
-  Ensure the function is defined before it's called.
+cc: exit status 1
+/tmp/bitcoin-address-validation.c: In function ‘set58’:
+/tmp/bitcoin-address-validation.c:104:9: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  104 |     a = 0;
+      |         ^
+/tmp/bitcoin-address-validation.c:111:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  111 |     int c = index_of_string(tmpl, ch);
+      |                             ^~~~
+/tmp/bitcoin-address-validation.c:47:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   47 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/bitcoin-address-validation.c:111:35: warning: passing argument 2 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  111 |     int c = index_of_string(tmpl, ch);
+      |                                   ^~
+/tmp/bitcoin-address-validation.c:47:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   47 | static int index_of_string(char *s, char *sub) {
+      |                                     ~~~~~~^~~

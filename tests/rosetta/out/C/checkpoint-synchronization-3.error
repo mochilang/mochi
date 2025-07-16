@@ -1,0 +1,37 @@
+cc: exit status 1
+/tmp/checkpoint-synchronization-3.c: In function ‘lower’:
+/tmp/checkpoint-synchronization-3.c:59:28: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   59 |     if (ch == slice_string(up, i, i + 1)) {
+      |                            ^~
+/tmp/checkpoint-synchronization-3.c:35:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/checkpoint-synchronization-3.c:60:27: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   60 |       return slice_string(low, i, i + 1);
+      |                           ^~~
+/tmp/checkpoint-synchronization-3.c:35:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/checkpoint-synchronization-3.c: In function ‘main’:
+/tmp/checkpoint-synchronization-3.c:73:7: error: conflicting types for ‘partList’; have ‘int’
+   73 |   int partList = partList;
+      |       ^~~~~~~~
+/tmp/checkpoint-synchronization-3.c:68:15: note: previous definition of ‘partList’ with type ‘list_string’
+   68 |   list_string partList = list_string_create(4);
+      |               ^~~~~~~~
+/tmp/checkpoint-synchronization-3.c:89:27: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+   89 |       printf("%s\n", tmp7 + lower(p));
+      |                           ^ ~~~~~~~~
+      |                             |
+      |                             const char *
+/tmp/checkpoint-synchronization-3.c:90:13: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+   90 |       a = a + lower(p);
+      |             ^ ~~~~~~~~
+      |               |
+      |               const char *
+/tmp/checkpoint-synchronization-3.c:92:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   92 |     char *tmp8 = concat_string(a, " assembled.  cycle ");
+      |                                ^
+/tmp/checkpoint-synchronization-3.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^

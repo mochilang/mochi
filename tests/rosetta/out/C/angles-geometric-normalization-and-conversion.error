@@ -1,0 +1,33 @@
+cc: exit status 1
+/tmp/angles-geometric-normalization-and-conversion.c: In function ‘d2d’:
+/tmp/angles-geometric-normalization-and-conversion.c:35:33: error: invalid operands to binary % (have ‘double’ and ‘double’)
+   35 | double d2d(double d) { return d % 360.0; }
+      |                                 ^
+/tmp/angles-geometric-normalization-and-conversion.c: In function ‘g2g’:
+/tmp/angles-geometric-normalization-and-conversion.c:37:33: error: invalid operands to binary % (have ‘double’ and ‘double’)
+   37 | double g2g(double g) { return g % 400.0; }
+      |                                 ^
+/tmp/angles-geometric-normalization-and-conversion.c: In function ‘m2m’:
+/tmp/angles-geometric-normalization-and-conversion.c:39:33: error: invalid operands to binary % (have ‘double’ and ‘double’)
+   39 | double m2m(double m) { return m % 6400.0; }
+      |                                 ^
+/tmp/angles-geometric-normalization-and-conversion.c: In function ‘r2r’:
+/tmp/angles-geometric-normalization-and-conversion.c:41:33: error: invalid operands to binary % (have ‘double’ and ‘double’)
+   41 | double r2r(double r) { return r % (2.0 * 3.141592653589793); }
+      |                                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                        |
+      |                                        double
+/tmp/angles-geometric-normalization-and-conversion.c: In function ‘main’:
+/tmp/angles-geometric-normalization-and-conversion.c:81:14: error: redefinition of ‘angles’
+   81 |   list_float angles = angles;
+      |              ^~~~~~
+/tmp/angles-geometric-normalization-and-conversion.c:68:14: note: previous definition of ‘angles’ with type ‘list_float’
+   68 |   list_float angles = list_float_create(12);
+      |              ^~~~~~
+/tmp/angles-geometric-normalization-and-conversion.c: At top level:
+/tmp/angles-geometric-normalization-and-conversion.c:156:5: error: redefinition of ‘main’
+  156 | int main() {
+      |     ^~~~
+/tmp/angles-geometric-normalization-and-conversion.c:67:5: note: previous definition of ‘main’ with type ‘int()’
+   67 | int main() {
+      |     ^~~~

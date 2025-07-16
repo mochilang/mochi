@@ -1,0 +1,40 @@
+cc: exit status 1
+/tmp/arena-storage-pool.c: In function ‘poolGet’:
+/tmp/arena-storage-pool.c:98:12: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+   98 |     return (tmp_item_t){.pool = p, .val = 0};
+      |            ^
+/tmp/arena-storage-pool.c:104:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  104 |   return (tmp_item1_t){.pool = p, .val = v};
+      |          ^
+/tmp/arena-storage-pool.c: In function ‘main’:
+/tmp/arena-storage-pool.c:126:25: error: request for member ‘data’ in something not a structure or union
+  126 |   pool = (list_int)(res1.data["pool"]);
+      |                         ^
+/tmp/arena-storage-pool.c:127:17: error: request for member ‘data’ in something not a structure or union
+  127 |   i = (int)(res1.data["val"]);
+      |                 ^
+/tmp/arena-storage-pool.c:130:25: error: request for member ‘data’ in something not a structure or union
+  130 |   pool = (list_int)(res2.data["pool"]);
+      |                         ^
+/tmp/arena-storage-pool.c:131:17: error: request for member ‘data’ in something not a structure or union
+  131 |   j = (int)(res2.data["val"]);
+      |                 ^
+/tmp/arena-storage-pool.c:146:25: error: request for member ‘data’ in something not a structure or union
+  146 |   pool = (list_int)(res3.data["pool"]);
+      |                         ^
+/tmp/arena-storage-pool.c:147:17: error: request for member ‘data’ in something not a structure or union
+  147 |   i = (int)(res3.data["val"]);
+      |                 ^
+/tmp/arena-storage-pool.c:150:25: error: request for member ‘data’ in something not a structure or union
+  150 |   pool = (list_int)(res4.data["pool"]);
+      |                         ^
+/tmp/arena-storage-pool.c:151:17: error: request for member ‘data’ in something not a structure or union
+  151 |   j = (int)(res4.data["val"]);
+      |                 ^
+/tmp/arena-storage-pool.c: At top level:
+/tmp/arena-storage-pool.c:158:5: error: redefinition of ‘main’
+  158 | int main() {
+      |     ^~~~
+/tmp/arena-storage-pool.c:112:5: note: previous definition of ‘main’ with type ‘int()’
+  112 | int main() {
+      |     ^~~~

@@ -1,0 +1,17 @@
+cc: exit status 1
+/tmp/bernoulli-numbers.c: In function ‘main’:
+/tmp/bernoulli-numbers.c:55:9: warning: implicit declaration of function ‘num’ [-Wimplicit-function-declaration]
+   55 |     if (num(b) != 0) {
+      |         ^~~
+/tmp/bernoulli-numbers.c:58:25: warning: implicit declaration of function ‘denom’ [-Wimplicit-function-declaration]
+   58 |       char *tmp4 = _str(denom(b));
+      |                         ^~~~~
+/tmp/bernoulli-numbers.c:62:29: error: called object ‘tmp6’ is not a function or function pointer
+   62 |       printf("%d\n", "B(" + tmp6(2, " ") + ") =" + numStr.pad_start(45, " ") +
+      |                             ^~~~
+/tmp/bernoulli-numbers.c:61:13: note: declared here
+   61 |       char *tmp6 = _str(i);
+      |             ^~~~
+/tmp/bernoulli-numbers.c:62:58: error: request for member ‘pad_start’ in something not a structure or union
+   62 |       printf("%d\n", "B(" + tmp6(2, " ") + ") =" + numStr.pad_start(45, " ") +
+      |                                                          ^

@@ -1,0 +1,214 @@
+cc: exit status 1
+/tmp/canonicalize-cidr.c:124:7: error: duplicate member ‘_’
+  124 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:125:7: error: duplicate member ‘_’
+  125 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:126:7: error: duplicate member ‘_’
+  126 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:127:7: error: duplicate member ‘_’
+  127 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:128:7: error: duplicate member ‘_’
+  128 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:129:7: error: duplicate member ‘_’
+  129 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:130:7: error: duplicate member ‘_’
+  130 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:131:7: error: duplicate member ‘_’
+  131 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c:132:7: error: duplicate member ‘_’
+  132 |   int _;
+      |       ^
+/tmp/canonicalize-cidr.c: In function ‘split’:
+/tmp/canonicalize-cidr.c:151:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  151 |   int parts = tmp1;
+      |               ^~~~
+/tmp/canonicalize-cidr.c:158:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  158 |       tmp2.data[0] = cur;
+      |                    ^
+/tmp/canonicalize-cidr.c:159:45: error: incompatible type for argument 1 of ‘concat_list_string’
+  159 |       list_string tmp3 = concat_list_string(parts, tmp2);
+      |                                             ^~~~~
+      |                                             |
+      |                                             int
+/tmp/canonicalize-cidr.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
+   83 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/canonicalize-cidr.c:160:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  160 |       parts = tmp3;
+      |               ^~~~
+/tmp/canonicalize-cidr.c:165:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  165 |       char *tmp5 = concat_string(cur, tmp4);
+      |                                  ^~~
+/tmp/canonicalize-cidr.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canonicalize-cidr.c:171:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  171 |   tmp6.data[0] = cur;
+      |                ^
+/tmp/canonicalize-cidr.c:172:41: error: incompatible type for argument 1 of ‘concat_list_string’
+  172 |   list_string tmp7 = concat_list_string(parts, tmp6);
+      |                                         ^~~~~
+      |                                         |
+      |                                         int
+/tmp/canonicalize-cidr.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
+   83 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/canonicalize-cidr.c:173:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  173 |   parts = tmp7;
+      |           ^~~~
+/tmp/canonicalize-cidr.c: In function ‘join’:
+/tmp/canonicalize-cidr.c:182:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  182 |       char *tmp8 = concat_string(res, sep);
+      |                                  ^~~
+/tmp/canonicalize-cidr.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canonicalize-cidr.c:185:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  185 |     char *tmp9 = concat_string(res, xs.data[i]);
+      |                                ^~~
+/tmp/canonicalize-cidr.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canonicalize-cidr.c: In function ‘repeat’:
+/tmp/canonicalize-cidr.c:196:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  196 |     char *tmp10 = concat_string(out, ch);
+      |                                 ^~~
+/tmp/canonicalize-cidr.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canonicalize-cidr.c: In function ‘parseIntStr’:
+/tmp/canonicalize-cidr.c:207:11: error: request for member ‘len’ in something not a structure or union
+  207 |   if ((str.len > 0 && tmp11 == "-")) {
+      |           ^
+/tmp/canonicalize-cidr.c:212:27: error: invalid initializer
+  212 |   map_string_int digits = (tmp_item_t){._ = 0,
+      |                           ^
+/tmp/canonicalize-cidr.c:222:18: error: request for member ‘len’ in something not a structure or union
+  222 |   while ((i < str.len)) {
+      |                  ^
+/tmp/canonicalize-cidr.c: In function ‘toBinary’:
+/tmp/canonicalize-cidr.c:239:40: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  239 |     char *tmp14 = concat_string(tmp13, b);
+      |                                        ^
+/tmp/canonicalize-cidr.c:91:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/canonicalize-cidr.c: In function ‘padRight’:
+/tmp/canonicalize-cidr.c:261:33: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  261 |     char *tmp16 = concat_string(out, " ");
+      |                                 ^~~
+/tmp/canonicalize-cidr.c:91:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   91 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/canonicalize-cidr.c: In function ‘canonicalize’:
+/tmp/canonicalize-cidr.c:269:29: error: request for member ‘data’ in something not a structure or union
+  269 |   const char *dotted = parts.data[0];
+      |                             ^
+/tmp/canonicalize-cidr.c:270:31: error: request for member ‘data’ in something not a structure or union
+  270 |   int size = parseIntStr(parts.data[1]);
+      |                               ^
+/tmp/canonicalize-cidr.c:272:18: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  272 |   int binParts = tmp17;
+      |                  ^~~~~
+/tmp/canonicalize-cidr.c:273:37: warning: passing argument 1 of ‘split’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  273 |   for (int tmp18 = 0; tmp18 < split(dotted, ".").len; tmp18++) {
+      |                                     ^~~~~~
+/tmp/canonicalize-cidr.c:149:17: note: expected ‘char *’ but argument is of type ‘const char *’
+  149 | int split(char *s, char *sep) {
+      |           ~~~~~~^
+/tmp/canonicalize-cidr.c:273:49: error: request for member ‘len’ in something not a structure or union
+  273 |   for (int tmp18 = 0; tmp18 < split(dotted, ".").len; tmp18++) {
+      |                                                 ^
+/tmp/canonicalize-cidr.c:274:21: warning: passing argument 1 of ‘split’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  274 |     char *p = split(dotted, ".").data[tmp18];
+      |                     ^~~~~~
+/tmp/canonicalize-cidr.c:149:17: note: expected ‘char *’ but argument is of type ‘const char *’
+  149 | int split(char *s, char *sep) {
+      |           ~~~~~~^
+/tmp/canonicalize-cidr.c:274:33: error: request for member ‘data’ in something not a structure or union
+  274 |     char *p = split(dotted, ".").data[tmp18];
+      |                                 ^
+/tmp/canonicalize-cidr.c:276:19: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  276 |     tmp19.data[0] = toBinary(parseIntStr(p), 8);
+      |                   ^
+/tmp/canonicalize-cidr.c:277:44: error: incompatible type for argument 1 of ‘concat_list_string’
+  277 |     list_string tmp20 = concat_list_string(binParts, tmp19);
+      |                                            ^~~~~~~~
+      |                                            |
+      |                                            int
+/tmp/canonicalize-cidr.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
+   83 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/canonicalize-cidr.c:278:16: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  278 |     binParts = tmp20;
+      |                ^~~~~
+/tmp/canonicalize-cidr.c:280:29: error: incompatible type for argument 1 of ‘join’
+  280 |   const char *binary = join(binParts, "");
+      |                             ^~~~~~~~
+      |                             |
+      |                             int
+/tmp/canonicalize-cidr.c:177:30: note: expected ‘list_string’ but argument is of type ‘int’
+  177 | const char *join(list_string xs, char *sep) {
+      |                  ~~~~~~~~~~~~^~
+/tmp/canonicalize-cidr.c:281:30: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  281 |   char *tmp21 = slice_string(binary, 0, size);
+      |                              ^~~~~~
+/tmp/canonicalize-cidr.c:105:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/canonicalize-cidr.c:282:18: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  282 |   binary = tmp21 + repeat("0", 32 - size);
+      |                  ^ ~~~~~~~~~~~~~~~~~~~~~~
+      |                    |
+      |                    const char *
+/tmp/canonicalize-cidr.c:284:20: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  284 |   int canonParts = tmp22;
+      |                    ^~~~~
+/tmp/canonicalize-cidr.c:287:32: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  287 |     char *tmp23 = slice_string(binary, i, i + 8);
+      |                                ^~~~~~
+/tmp/canonicalize-cidr.c:105:33: note: expected ‘char *’ but argument is of type ‘const char *’
+  105 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/canonicalize-cidr.c:291:44: error: incompatible type for argument 1 of ‘concat_list_string’
+  291 |     list_string tmp26 = concat_list_string(canonParts, tmp25);
+      |                                            ^~~~~~~~~~
+      |                                            |
+      |                                            int
+/tmp/canonicalize-cidr.c:83:51: note: expected ‘list_string’ but argument is of type ‘int’
+   83 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/canonicalize-cidr.c:292:18: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  292 |     canonParts = tmp26;
+      |                  ^~~~~
+/tmp/canonicalize-cidr.c:295:15: error: incompatible type for argument 1 of ‘join’
+  295 |   return join(canonParts, ".") + "/" + parts.data[1];
+      |               ^~~~~~~~~~
+      |               |
+      |               int
+/tmp/canonicalize-cidr.c:177:30: note: expected ‘list_string’ but argument is of type ‘int’
+  177 | const char *join(list_string xs, char *sep) {
+      |                  ~~~~~~~~~~~~^~
+/tmp/canonicalize-cidr.c:295:45: error: request for member ‘data’ in something not a structure or union
+  295 |   return join(canonParts, ".") + "/" + parts.data[1];
+      |                                             ^
+/tmp/canonicalize-cidr.c: In function ‘main’:
+/tmp/canonicalize-cidr.c:306:7: error: conflicting types for ‘tests’; have ‘int’
+  306 |   int tests = tests;
+      |       ^~~~~
+/tmp/canonicalize-cidr.c:299:15: note: previous definition of ‘tests’ with type ‘list_string’
+  299 |   list_string tests = list_string_create(6);
+      |               ^~~~~
+/tmp/canonicalize-cidr.c:309:36: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  309 |     printf("%s\n", padRight(t, 18) + " -> " + canonicalize(t));
+      |                    ~~~~~~~~~~~~~~~ ^
+      |                    |               |
+      |                    const char *    char *

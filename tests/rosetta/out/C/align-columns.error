@@ -1,0 +1,105 @@
+cc: exit status 1
+/tmp/align-columns.c: In function ‘split’:
+/tmp/align-columns.c:106:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  106 |   int parts = tmp1;
+      |               ^~~~
+/tmp/align-columns.c:113:20: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  113 |       tmp2.data[0] = cur;
+      |                    ^
+/tmp/align-columns.c:114:45: error: incompatible type for argument 1 of ‘concat_list_string’
+  114 |       list_string tmp3 = concat_list_string(parts, tmp2);
+      |                                             ^~~~~
+      |                                             |
+      |                                             int
+/tmp/align-columns.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/align-columns.c:115:15: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  115 |       parts = tmp3;
+      |               ^~~~
+/tmp/align-columns.c:119:17: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  119 |       cur = cur + slice_string(s, i, i + 1);
+      |                 ^ ~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                   |
+      |                   char *
+/tmp/align-columns.c:124:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  124 |   tmp4.data[0] = cur;
+      |                ^
+/tmp/align-columns.c:125:41: error: incompatible type for argument 1 of ‘concat_list_string’
+  125 |   list_string tmp5 = concat_list_string(parts, tmp4);
+      |                                         ^~~~~
+      |                                         |
+      |                                         int
+/tmp/align-columns.c:35:51: note: expected ‘list_string’ but argument is of type ‘int’
+   35 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/align-columns.c:126:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  126 |   parts = tmp5;
+      |           ^~~~
+/tmp/align-columns.c: In function ‘rstripEmpty’:
+/tmp/align-columns.c:136:10: error: incompatible types when returning type ‘list_string’ but ‘int’ was expected
+  136 |   return tmp6;
+      |          ^~~~
+/tmp/align-columns.c: In function ‘spaces’:
+/tmp/align-columns.c:143:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  143 |     char *tmp7 = concat_string(out, " ");
+      |                                ^~~
+/tmp/align-columns.c:43:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   43 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/align-columns.c: In function ‘pad’:
+/tmp/align-columns.c:153:17: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  153 |     return word + spaces(diff);
+      |                 ^ ~~~~~~~~~~~~
+      |                   |
+      |                   const char *
+/tmp/align-columns.c:156:25: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  156 |     return spaces(diff) + word;
+      |            ~~~~~~~~~~~~ ^
+      |            |
+      |            const char *
+/tmp/align-columns.c:160:23: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  160 |   return spaces(left) + word + spaces(right);
+      |          ~~~~~~~~~~~~ ^
+      |          |
+      |          const char *
+/tmp/align-columns.c: In function ‘newFormatter’:
+/tmp/align-columns.c:169:19: error: request for member ‘len’ in something not a structure or union
+  169 |   while (i < lines.len) {
+      |                   ^
+/tmp/align-columns.c:170:21: error: request for member ‘data’ in something not a structure or union
+  170 |     if (strlen(lines.data[i]) == 0) {
+      |                     ^
+/tmp/align-columns.c:174:40: error: request for member ‘data’ in something not a structure or union
+  174 |     int words = rstripEmpty(split(lines.data[i], "$"));
+      |                                        ^
+/tmp/align-columns.c:175:16: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  175 |     fmtLines = 0;
+      |                ^
+/tmp/align-columns.c:177:21: error: request for member ‘len’ in something not a structure or union
+  177 |     while (j < words.len) {
+      |                     ^
+/tmp/align-columns.c:178:30: error: request for member ‘data’ in something not a structure or union
+  178 |       int wlen = strlen(words.data[j]);
+      |                              ^
+/tmp/align-columns.c:180:17: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  180 |         width = 0;
+      |                 ^
+/tmp/align-columns.c:188:10: error: incompatible types when returning type ‘tmp_item_t’ but ‘int’ was expected
+  188 |   return (tmp_item_t){.text = fmtLines, .width = width};
+      |          ^
+/tmp/align-columns.c: At top level:
+/tmp/align-columns.c:191:14: error: unknown type name ‘map_string_int’
+  191 | int printFmt(map_string_int f, int align) {
+      |              ^~~~~~~~~~~~~~
+/tmp/align-columns.c: In function ‘main’:
+/tmp/align-columns.c:224:24: warning: passing argument 1 of ‘newFormatter’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  224 |   int f = newFormatter(text);
+      |                        ^~~~
+/tmp/align-columns.c:163:24: note: expected ‘char *’ but argument is of type ‘const char *’
+  163 | int newFormatter(char *text) {
+      |                  ~~~~~~^~~~
+/tmp/align-columns.c:225:3: warning: implicit declaration of function ‘printFmt’; did you mean ‘printf’? [-Wimplicit-function-declaration]
+  225 |   printFmt(f, 0);
+      |   ^~~~~~~~
+      |   printf

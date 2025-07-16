@@ -1,0 +1,62 @@
+cc: exit status 1
+/tmp/averages-mode.c: In function ‘main’:
+/tmp/averages-mode.c:108:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  108 |   int counts1 = tmp1;
+      |                 ^~~~
+/tmp/averages-mode.c:112:10: error: expected ‘)’ before ‘in’
+  112 |     if (v in counts1) {
+      |        ~ ^~~
+      |          )
+/tmp/averages-mode.c:113:14: error: request for member ‘data’ in something not a structure or union
+  113 |       counts1.data[v] = counts1.data[v] + 1;
+      |              ^
+/tmp/averages-mode.c:113:32: error: request for member ‘data’ in something not a structure or union
+  113 |       counts1.data[v] = counts1.data[v] + 1;
+      |                                ^
+/tmp/averages-mode.c:115:14: error: request for member ‘data’ in something not a structure or union
+  115 |       counts1.data[v] = 1;
+      |              ^
+/tmp/averages-mode.c:127:20: error: request for member ‘data’ in something not a structure or union
+  127 |     int c = counts1.data[k];
+      |                    ^
+/tmp/averages-mode.c:137:16: error: request for member ‘data’ in something not a structure or union
+  137 |     if (counts1.data[k] == max1) {
+      |                ^
+/tmp/averages-mode.c:146:21: error: incompatible type for argument 1 of ‘_str’
+  146 |   char *tmp6 = _str(modes1);
+      |                     ^~~~~~
+      |                     |
+      |                     list_int
+/tmp/averages-mode.c:91:23: note: expected ‘int’ but argument is of type ‘list_int’
+   91 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/averages-mode.c:156:17: error: incompatible types when initializing type ‘int’ using type ‘map_string_int’
+  156 |   int counts2 = tmp7;
+      |                 ^~~~
+/tmp/averages-mode.c:161:10: error: expected ‘)’ before ‘in’
+  161 |     if (v in counts2) {
+      |        ~ ^~~
+      |          )
+/tmp/averages-mode.c:162:14: error: request for member ‘data’ in something not a structure or union
+  162 |       counts2.data[v] = counts2.data[v] + 1;
+      |              ^
+/tmp/averages-mode.c:162:32: error: request for member ‘data’ in something not a structure or union
+  162 |       counts2.data[v] = counts2.data[v] + 1;
+      |                                ^
+/tmp/averages-mode.c:164:14: error: request for member ‘data’ in something not a structure or union
+  164 |       counts2.data[v] = 1;
+      |              ^
+/tmp/averages-mode.c:176:20: error: request for member ‘data’ in something not a structure or union
+  176 |     int c = counts2.data[k];
+      |                    ^
+/tmp/averages-mode.c:186:16: error: request for member ‘data’ in something not a structure or union
+  186 |     if (counts2.data[k] == max2) {
+      |                ^
+/tmp/averages-mode.c:195:22: error: incompatible type for argument 1 of ‘_str’
+  195 |   char *tmp12 = _str(modes2);
+      |                      ^~~~~~
+      |                      |
+      |                      list_int
+/tmp/averages-mode.c:91:23: note: expected ‘int’ but argument is of type ‘list_int’
+   91 | static char *_str(int v) {
+      |                   ~~~~^

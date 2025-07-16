@@ -1,8 +1,29 @@
-type error: error[T007]: argument 3: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/averages-mean-time-of-day.mochi:58:16
-
- 58 |   return digit(substring(s, idx, idx+1))*10 + digit(substring(s, idx+1, idx+2))
-    |                ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+cc: exit status 1
+/tmp/averages-mean-time-of-day.c: In function ‘digit’:
+/tmp/averages-mean-time-of-day.c:113:22: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  113 |     if (slice_string(digits, i, i + 1) == ch) {
+      |                      ^~~~~~
+/tmp/averages-mean-time-of-day.c:35:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/averages-mean-time-of-day.c: In function ‘meanTime’:
+/tmp/averages-mean-time-of-day.c:164:17: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  164 |   return pad(h) + ":" + pad(m) + ":" + pad(s);
+      |          ~~~~~~ ^
+      |          |      |
+      |          |      char *
+      |          const char *
+/tmp/averages-mean-time-of-day.c: In function ‘main’:
+/tmp/averages-mean-time-of-day.c:173:7: error: conflicting types for ‘inputs’; have ‘int’
+  173 |   int inputs = inputs;
+      |       ^~~~~~
+/tmp/averages-mean-time-of-day.c:168:15: note: previous definition of ‘inputs’ with type ‘list_string’
+  168 |   list_string inputs = list_string_create(4);
+      |               ^~~~~~
+/tmp/averages-mean-time-of-day.c: At top level:
+/tmp/averages-mean-time-of-day.c:177:5: error: redefinition of ‘main’
+  177 | int main() {
+      |     ^~~~
+/tmp/averages-mean-time-of-day.c:167:5: note: previous definition of ‘main’ with type ‘int()’
+  167 | int main() {
+      |     ^~~~

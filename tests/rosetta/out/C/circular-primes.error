@@ -1,0 +1,33 @@
+cc: exit status 1
+/tmp/circular-primes.c: In function ‘showList’:
+/tmp/circular-primes.c:112:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  112 |     char *tmp2 = concat_string(out, tmp1);
+      |                                ^~~
+/tmp/circular-primes.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/circular-primes.c:115:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  115 |       char *tmp3 = concat_string(out, ", ");
+      |                                  ^~~
+/tmp/circular-primes.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/circular-primes.c:120:30: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  120 |   char *tmp4 = concat_string(out, "]");
+      |                              ^~~
+/tmp/circular-primes.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/circular-primes.c: In function ‘main’:
+/tmp/circular-primes.c:160:25: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+  160 |     list_int tmp8 = {6, q};
+      |                         ^
+/tmp/circular-primes.c:163:26: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+  163 |     list_int tmp10 = {6, fq};
+      |                          ^~
+/tmp/circular-primes.c:173:22: error: subscripted value is neither array nor pointer nor vector
+  173 |         int d = tmp11[tmp12];
+      |                      ^
+/tmp/circular-primes.c:199:18: error: subscripted value is neither array nor pointer nor vector
+  199 |     int i = tmp17[tmp18];
+      |                  ^

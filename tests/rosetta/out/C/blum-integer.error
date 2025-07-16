@@ -1,0 +1,55 @@
+cc: exit status 1
+/tmp/blum-integer.c: In function ‘padLeft’:
+/tmp/blum-integer.c:128:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  128 |     char *tmp2 = concat_string(" ", s);
+      |                                     ^
+/tmp/blum-integer.c:21:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/blum-integer.c: In function ‘formatFloat’:
+/tmp/blum-integer.c:137:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  137 |   int idx = index_of_string(s, ".");
+      |                             ^
+/tmp/blum-integer.c:35:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   35 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/blum-integer.c:143:25: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  143 |     return slice_string(s, 0, need);
+      |                         ^
+/tmp/blum-integer.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   41 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/blum-integer.c: In function ‘main’:
+/tmp/blum-integer.c:168:18: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  168 |           blum = 0;
+      |                  ^
+/tmp/blum-integer.c:172:17: error: subscripted value is neither array nor pointer nor vector
+  172 |           counts[0] = counts.data[0] + 1;
+      |                 ^
+/tmp/blum-integer.c:174:17: error: subscripted value is neither array nor pointer nor vector
+  174 |           counts[1] = counts.data[1] + 1;
+      |                 ^
+/tmp/blum-integer.c:176:17: error: subscripted value is neither array nor pointer nor vector
+  176 |           counts[2] = counts.data[2] + 1;
+      |                 ^
+/tmp/blum-integer.c:178:17: error: subscripted value is neither array nor pointer nor vector
+  178 |           counts[3] = counts.data[3] + 1;
+      |                 ^
+/tmp/blum-integer.c:188:27: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  188 |               line = line + padLeft(blum.data[idx], 3) + " ";
+      |                           ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                             |
+      |                             const char *
+/tmp/blum-integer.c:192:41: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  192 |             printf("%s\n", slice_string(line, 0, strlen(line) - 1));
+      |                                         ^~~~
+/tmp/blum-integer.c:41:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   41 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/blum-integer.c: At top level:
+/tmp/blum-integer.c:206:5: error: redefinition of ‘main’
+  206 | int main() {
+      |     ^~~~
+/tmp/blum-integer.c:148:5: note: previous definition of ‘main’ with type ‘int()’
+  148 | int main() {
+      |     ^~~~

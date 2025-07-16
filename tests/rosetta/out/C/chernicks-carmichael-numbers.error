@@ -1,0 +1,25 @@
+cc: exit status 1
+/tmp/chernicks-carmichael-numbers.c: In function ‘bigFromInt’:
+/tmp/chernicks-carmichael-numbers.c:95:14: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   95 |     digits = 0;
+      |              ^
+/tmp/chernicks-carmichael-numbers.c: In function ‘bigMulSmall’:
+/tmp/chernicks-carmichael-numbers.c:112:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  112 |     res = 0;
+      |           ^
+/tmp/chernicks-carmichael-numbers.c:117:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  117 |     res = 0;
+      |           ^
+/tmp/chernicks-carmichael-numbers.c: In function ‘bigToString’:
+/tmp/chernicks-carmichael-numbers.c:128:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  128 |     char *tmp5 = concat_string(s, tmp4);
+      |                                ^
+/tmp/chernicks-carmichael-numbers.c:21:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   21 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/chernicks-carmichael-numbers.c: In function ‘ccNumbers’:
+/tmp/chernicks-carmichael-numbers.c:187:30: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+  187 |         printf("%d\n", tmp14 + bigToString(num));
+      |                              ^ ~~~~~~~~~~~~~~~~
+      |                                |
+      |                                const char *

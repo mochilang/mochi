@@ -1,0 +1,21 @@
+cc: exit status 1
+/tmp/catamorphism.c: In function ‘_lambda0’:
+/tmp/catamorphism.c:20:37: warning: implicit declaration of function ‘add’ [-Wimplicit-function-declaration]
+   20 | int _lambda0(int a, int b) { return add(a, b); }
+      |                                     ^~~
+/tmp/catamorphism.c: In function ‘_lambda2’:
+/tmp/catamorphism.c:24:37: warning: implicit declaration of function ‘sub’ [-Wimplicit-function-declaration]
+   24 | int _lambda2(int a, int b) { return sub(a, b); }
+      |                                     ^~~
+/tmp/catamorphism.c: In function ‘_lambda4’:
+/tmp/catamorphism.c:28:37: warning: implicit declaration of function ‘mul’ [-Wimplicit-function-declaration]
+   28 | int _lambda4(int a, int b) { return mul(a, b); }
+      |                                     ^~~
+/tmp/catamorphism.c: At top level:
+/tmp/catamorphism.c:38:28: error: expected ‘;’, ‘,’ or ‘)’ before ‘f’
+   38 | int fold(int (*)(int, int) f, list_int xs) {
+      |                            ^
+/tmp/catamorphism.c: In function ‘main’:
+/tmp/catamorphism.c:67:18: warning: implicit declaration of function ‘fold’ [-Wimplicit-function-declaration]
+   67 |   printf("%d\n", fold(_lambda1, tmp2));
+      |                  ^~~~

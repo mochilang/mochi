@@ -1,8 +1,39 @@
-type error: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
-
-  7 |   return substring(letters, idx, idx + 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+cc: exit status 1
+/tmp/binary-strings.c: In function ‘_char’:
+/tmp/binary-strings.c:75:23: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   75 |   return slice_string(letters, idx, idx + 1);
+      |                       ^~~~~~~
+/tmp/binary-strings.c:34:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   34 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/binary-strings.c: In function ‘fromBytes’:
+/tmp/binary-strings.c:82:11: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+   82 |     s = s + _char(bs.data[i]);
+      |           ^ ~~~~~~~~~~~~~~~~~
+      |             |
+      |             const char *
+/tmp/binary-strings.c: In function ‘main’:
+/tmp/binary-strings.c:103:21: error: incompatible type for argument 1 of ‘_str’
+  103 |   char *tmp2 = _str(tmp1);
+      |                     ^~~~
+      |                     |
+      |                     list_int
+/tmp/binary-strings.c:29:23: note: expected ‘int’ but argument is of type ‘list_int’
+   29 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/binary-strings.c:119:21: error: incompatible type for argument 1 of ‘_str’
+  119 |   char *tmp4 = _str(tmp3);
+      |                     ^~~~
+      |                     |
+      |                     list_int
+/tmp/binary-strings.c:29:23: note: expected ‘int’ but argument is of type ‘list_int’
+   29 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/binary-strings.c:166:24: error: incompatible types when initializing type ‘int *’ using type ‘list_int’
+  166 |   list_int tmp14 = {6, b};
+      |                        ^
+/tmp/binary-strings.c:189:31: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  189 |   printf("%s\n", fromBytes(d) + " -> " + fromBytes(f));
+      |                  ~~~~~~~~~~~~ ^
+      |                  |            |
+      |                  const char * char *

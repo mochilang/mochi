@@ -1,0 +1,119 @@
+cc: exit status 1
+/tmp/balanced-ternary.c: In function ‘btString’:
+/tmp/balanced-ternary.c:107:5: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  107 |   s = trimLeftZeros(s);
+      |     ^
+/tmp/balanced-ternary.c:113:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  113 |       b = 0;
+      |           ^
+/tmp/balanced-ternary.c:130:37: error: incompatible types when initializing type ‘int’ using type ‘list_int’
+  130 |           return (tmp_item_t){.bt = tmp5, .ok = 0};
+      |                                     ^~~~
+/tmp/balanced-ternary.c:136:10: error: incompatible types when returning type ‘tmp_item1_t’ but ‘int’ was expected
+  136 |   return (tmp_item1_t){.bt = b, .ok = 1};
+      |          ^
+/tmp/balanced-ternary.c: In function ‘btToString’:
+/tmp/balanced-ternary.c:148:34: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  148 |       char *tmp6 = concat_string(r, "-");
+      |                                  ^
+/tmp/balanced-ternary.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/balanced-ternary.c:152:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  152 |         char *tmp7 = concat_string(r, "0");
+      |                                    ^
+/tmp/balanced-ternary.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/balanced-ternary.c:155:36: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  155 |         char *tmp8 = concat_string(r, "+");
+      |                                    ^
+/tmp/balanced-ternary.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/balanced-ternary.c: In function ‘btInt’:
+/tmp/balanced-ternary.c:183:9: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  183 |     b = 0;
+      |         ^
+/tmp/balanced-ternary.c: In function ‘btNeg’:
+/tmp/balanced-ternary.c:204:9: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+  204 |     r = 0;
+      |         ^
+/tmp/balanced-ternary.c: In function ‘padLeft’:
+/tmp/balanced-ternary.c:221:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  221 |     char *tmp10 = concat_string(" ", r);
+      |                                      ^
+/tmp/balanced-ternary.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/balanced-ternary.c: In function ‘show’:
+/tmp/balanced-ternary.c:229:28: warning: passing argument 1 of ‘padLeft’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  229 |   const char *bs = padLeft(btToString(b), 12);
+      |                            ^~~~~~~~~~~~~
+/tmp/balanced-ternary.c:218:27: note: expected ‘char *’ but argument is of type ‘const char *’
+  218 | const char *padLeft(char *s, int w) {
+      |                     ~~~~~~^
+/tmp/balanced-ternary.c:232:31: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  232 |   char *tmp12 = concat_string(l, " ");
+      |                               ^
+/tmp/balanced-ternary.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/balanced-ternary.c:233:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  233 |   char *tmp13 = concat_string(tmp12, bs);
+      |                                      ^~
+/tmp/balanced-ternary.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/balanced-ternary.c:235:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  235 |   char *tmp15 = concat_string(tmp14, is);
+      |                                      ^~
+/tmp/balanced-ternary.c:29:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/balanced-ternary.c: In function ‘main’:
+/tmp/balanced-ternary.c:241:15: error: request for member ‘data’ in something not a structure or union
+  241 |   int a = ares.data["bt"];
+      |               ^
+/tmp/balanced-ternary.c:244:15: error: request for member ‘data’ in something not a structure or union
+  244 |   int c = cres.data["bt"];
+      |               ^
+/tmp/balanced-ternary.c:245:14: error: incompatible type for argument 2 of ‘show’
+  245 |   show("a:", a);
+      |              ^
+      |              |
+      |              int
+/tmp/balanced-ternary.c:227:32: note: expected ‘list_int’ but argument is of type ‘int’
+  227 | int show(char *label, list_int b) {
+      |                       ~~~~~~~~~^
+/tmp/balanced-ternary.c:247:14: error: incompatible type for argument 2 of ‘show’
+  247 |   show("c:", c);
+      |              ^
+      |              |
+      |              int
+/tmp/balanced-ternary.c:227:32: note: expected ‘list_int’ but argument is of type ‘int’
+  227 | int show(char *label, list_int b) {
+      |                       ~~~~~~~~~^
+/tmp/balanced-ternary.c:248:43: error: incompatible type for argument 1 of ‘btNeg’
+  248 |   show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
+      |                                           ^
+      |                                           |
+      |                                           int
+/tmp/balanced-ternary.c:200:25: note: expected ‘list_int’ but argument is of type ‘int’
+  200 | list_int btNeg(list_int b) {
+      |                ~~~~~~~~~^
+/tmp/balanced-ternary.c:248:25: error: incompatible type for argument 1 of ‘btMul’
+  248 |   show("a(b-c):", btMul(a, btAdd(b, btNeg(c))));
+      |                         ^
+      |                         |
+      |                         int
+/tmp/balanced-ternary.c:214:25: note: expected ‘list_int’ but argument is of type ‘int’
+  214 | list_int btMul(list_int a, list_int b) {
+      |                ~~~~~~~~~^
+/tmp/balanced-ternary.c: At top level:
+/tmp/balanced-ternary.c:251:5: error: redefinition of ‘main’
+  251 | int main() {
+      |     ^~~~
+/tmp/balanced-ternary.c:239:5: note: previous definition of ‘main’ with type ‘int()’
+  239 | int main() {
+      |     ^~~~

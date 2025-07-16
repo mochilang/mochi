@@ -1,0 +1,21 @@
+cc: exit status 1
+/tmp/attractive-numbers.c: In function ‘pad4’:
+/tmp/attractive-numbers.c:77:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   77 |     char *tmp2 = concat_string(" ", s);
+      |                                     ^
+/tmp/attractive-numbers.c:7:43: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/attractive-numbers.c: In function ‘main’:
+/tmp/attractive-numbers.c:97:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+   97 |       line = line + pad4(i);
+      |                   ^ ~~~~~~~
+      |                     |
+      |                     const char *
+/tmp/attractive-numbers.c: At top level:
+/tmp/attractive-numbers.c:113:5: error: redefinition of ‘main’
+  113 | int main() {
+      |     ^~~~
+/tmp/attractive-numbers.c:83:5: note: previous definition of ‘main’ with type ‘int()’
+   83 | int main() {
+      |     ^~~~

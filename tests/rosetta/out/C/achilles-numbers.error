@@ -1,0 +1,82 @@
+cc: exit status 1
+/tmp/achilles-numbers.c:146:5: warning: conflicting types for built-in function ‘pow10’; expected ‘double(double)’ [-Wbuiltin-declaration-mismatch]
+  146 | int pow10(int exp) {
+      |     ^~~~~
+/tmp/achilles-numbers.c: In function ‘getPerfectPowers’:
+/tmp/achilles-numbers.c:188:25: error: ‘pps’ undeclared (first use in this function)
+  188 |       map_int_bool_put(&pps, p, 1);
+      |                         ^~~
+/tmp/achilles-numbers.c:188:25: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/achilles-numbers.c: In function ‘getAchilles’:
+/tmp/achilles-numbers.c:198:27: error: invalid initializer
+  198 |   map_int_bool achilles = tmp1;
+      |                           ^~~~
+/tmp/achilles-numbers.c:209:38: error: ‘pps’ undeclared (first use in this function)
+  209 |         if ((!(map_int_bool_contains(pps, p)))) {
+      |                                      ^~~
+/tmp/achilles-numbers.c: In function ‘sortInts’:
+/tmp/achilles-numbers.c:236:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  236 |     res = res + tmp2;
+      |               ^
+/tmp/achilles-numbers.c:243:19: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  243 |         out = out + tmp3;
+      |                   ^
+/tmp/achilles-numbers.c: In function ‘pad’:
+/tmp/achilles-numbers.c:258:37: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  258 |     char *tmp7 = concat_string(" ", s);
+      |                                     ^
+/tmp/achilles-numbers.c:132:43: note: expected ‘char *’ but argument is of type ‘const char *’
+  132 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/achilles-numbers.c: In function ‘main’:
+/tmp/achilles-numbers.c:269:35: error: ‘map_int_bool’ has no member named ‘keys’
+  269 |   for (int tmp8 = 0; tmp8 < achSet.keys().len; tmp8++) {
+      |                                   ^
+/tmp/achilles-numbers.c:270:19: error: ‘map_int_bool’ has no member named ‘keys’
+  270 |     int k = achSet.keys().data[tmp8];
+      |                   ^
+/tmp/achilles-numbers.c:273:15: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  273 |     ach = ach + tmp9;
+      |               ^
+/tmp/achilles-numbers.c:283:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  283 |       line = line + pad(ach.data[i], 4);
+      |                   ^ ~~~~~~~~~~~~~~~~~~~
+      |                     |
+      |                     const char *
+/tmp/achilles-numbers.c:285:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  285 |         char *tmp11 = concat_string(line, " ");
+      |                                     ^~~~
+/tmp/achilles-numbers.c:132:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  132 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/achilles-numbers.c:302:23: error: invalid operands to binary + (have ‘list_int’ and ‘list_int’)
+  302 |       strong = strong + tmp12;
+      |                       ^
+/tmp/achilles-numbers.c:312:19: error: invalid operands to binary + (have ‘const char *’ and ‘const char *’)
+  312 |       line = line + pad(strong.data[i], 5);
+      |                   ^ ~~~~~~~~~~~~~~~~~~~~~~
+      |                     |
+      |                     const char *
+/tmp/achilles-numbers.c:314:37: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  314 |         char *tmp13 = concat_string(line, " ");
+      |                                     ^~~~
+/tmp/achilles-numbers.c:132:34: note: expected ‘char *’ but argument is of type ‘const char *’
+  132 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/achilles-numbers.c:342:30: error: invalid operands to binary + (have ‘const char *’ and ‘char *’)
+  342 |     printf("%s\n", pad(d, 2) + " digits: " + tmp14);
+      |                    ~~~~~~~~~ ^
+      |                    |         |
+      |                    |         char *
+      |                    const char *
+/tmp/achilles-numbers.c: At top level:
+/tmp/achilles-numbers.c:347:5: error: redefinition of ‘main’
+  347 | int main() {
+      |     ^~~~
+/tmp/achilles-numbers.c:264:5: note: previous definition of ‘main’ with type ‘int()’
+  264 | int main() {
+      |     ^~~~
+/tmp/achilles-numbers.c: In function ‘main’:
+/tmp/achilles-numbers.c:349:22: error: invalid initializer
+  349 |   map_int_bool pps = tmp15;
+      |                      ^~~~~

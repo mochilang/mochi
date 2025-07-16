@@ -1,0 +1,50 @@
+cc: exit status 1
+/tmp/chat-server.c: In function ‘add’:
+/tmp/chat-server.c:44:41: error: incompatible type for argument 1 of ‘concat_list_string’
+   44 |   list_string tmp7 = concat_list_string(add_clients, tmp6);
+      |                                         ^~~~~~~~~~~
+      |                                         |
+      |                                         int
+/tmp/chat-server.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/chat-server.c:45:3: error: ‘clients’ undeclared (first use in this function); did you mean ‘add_clients’?
+   45 |   clients = tmp7;
+      |   ^~~~~~~
+      |   add_clients
+/tmp/chat-server.c:45:3: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/chat-server.c: In function ‘_remove’:
+/tmp/chat-server.c:60:3: error: ‘clients’ undeclared (first use in this function); did you mean ‘add_clients’?
+   60 |   clients = removeName(_remove_clients, name);
+      |   ^~~~~~~
+      |   add_clients
+/tmp/chat-server.c:60:13: warning: implicit declaration of function ‘removeName’; did you mean ‘remove’? [-Wimplicit-function-declaration]
+   60 |   clients = removeName(_remove_clients, name);
+      |             ^~~~~~~~~~
+      |             remove
+/tmp/chat-server.c: In function ‘removeName’:
+/tmp/chat-server.c:68:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+   68 |   int out = tmp1;
+      |             ^~~~
+/tmp/chat-server.c:74:45: error: incompatible type for argument 1 of ‘concat_list_string’
+   74 |       list_string tmp4 = concat_list_string(out, tmp3);
+      |                                             ^~~
+      |                                             |
+      |                                             int
+/tmp/chat-server.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/chat-server.c:75:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+   75 |       out = tmp4;
+      |             ^~~~
+/tmp/chat-server.c: In function ‘main’:
+/tmp/chat-server.c:83:17: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+   83 |   int clients = tmp5;
+      |                 ^~~~
+/tmp/chat-server.c: At top level:
+/tmp/chat-server.c:93:5: error: redefinition of ‘main’
+   93 | int main() {
+      |     ^~~~
+/tmp/chat-server.c:81:5: note: previous definition of ‘main’ with type ‘int()’
+   81 | int main() {
+      |     ^~~~

@@ -1,8 +1,187 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+cc: exit status 1
+/tmp/arithmetic-complex.c:29:3: error: unknown type name ‘complex_t’
+   29 |   complex_t *data;
+      |   ^~~~~~~~~
+/tmp/arithmetic-complex.c: In function ‘create_complex_list’:
+/tmp/arithmetic-complex.c:34:31: error: ‘complex_t’ undeclared (first use in this function); did you mean ‘Complex’?
+   34 |   l.data = calloc(len, sizeof(complex_t));
+      |                               ^~~~~~~~~
+      |                               Complex
+/tmp/arithmetic-complex.c:34:31: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/arithmetic-complex.c: At top level:
+/tmp/arithmetic-complex.c:42:1: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   42 | complex_t add(Complex *a, Complex *b) {
+      | ^~~~~~~~~
+      | Complex
+/tmp/arithmetic-complex.c: In function ‘add’:
+/tmp/arithmetic-complex.c:43:10: error: incompatible types when returning type ‘Complex’ {aka ‘struct Complex’} but ‘int’ was expected
+   43 |   return (Complex){.re = a->re + b->re, .im = a->im + b->im};
+      |          ^
+/tmp/arithmetic-complex.c: At top level:
+/tmp/arithmetic-complex.c:46:1: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   46 | complex_t mul(Complex *a, Complex *b) {
+      | ^~~~~~~~~
+      | Complex
+/tmp/arithmetic-complex.c: In function ‘mul’:
+/tmp/arithmetic-complex.c:47:10: error: incompatible types when returning type ‘Complex’ {aka ‘struct Complex’} but ‘int’ was expected
+   47 |   return (Complex){.re = a->re * b->re - a->im * b->im,
+      |          ^
+/tmp/arithmetic-complex.c: At top level:
+/tmp/arithmetic-complex.c:51:1: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   51 | complex_t neg(Complex *a) { return (Complex){.re = (-a->re), .im = (-a->im)}; }
+      | ^~~~~~~~~
+      | Complex
+/tmp/arithmetic-complex.c: In function ‘neg’:
+/tmp/arithmetic-complex.c:51:36: error: incompatible types when returning type ‘Complex’ {aka ‘struct Complex’} but ‘int’ was expected
+   51 | complex_t neg(Complex *a) { return (Complex){.re = (-a->re), .im = (-a->im)}; }
+      |                                    ^
+/tmp/arithmetic-complex.c: At top level:
+/tmp/arithmetic-complex.c:53:1: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   53 | complex_t inv(Complex *a) {
+      | ^~~~~~~~~
+      | Complex
+/tmp/arithmetic-complex.c: In function ‘inv’:
+/tmp/arithmetic-complex.c:55:10: error: incompatible types when returning type ‘Complex’ {aka ‘struct Complex’} but ‘int’ was expected
+   55 |   return (Complex){.re = a->re / denom, .im = (-a->im) / denom};
+      |          ^
+/tmp/arithmetic-complex.c: At top level:
+/tmp/arithmetic-complex.c:58:1: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   58 | complex_t conj(Complex *a) { return (Complex){.re = a->re, .im = (-a->im)}; }
+      | ^~~~~~~~~
+      | Complex
+/tmp/arithmetic-complex.c:58:11: warning: conflicting types for built-in function ‘conj’; expected ‘_Complex double(_Complex double)’ [-Wbuiltin-declaration-mismatch]
+   58 | complex_t conj(Complex *a) { return (Complex){.re = a->re, .im = (-a->im)}; }
+      |           ^~~~
+/tmp/arithmetic-complex.c:6:1: note: ‘conj’ is declared in header ‘<complex.h>’
+    5 | #include <string.h>
+  +++ |+#include <complex.h>
+    6 | 
+/tmp/arithmetic-complex.c: In function ‘conj’:
+/tmp/arithmetic-complex.c:58:37: error: incompatible types when returning type ‘Complex’ {aka ‘struct Complex’} but ‘int’ was expected
+   58 | complex_t conj(Complex *a) { return (Complex){.re = a->re, .im = (-a->im)}; }
+      |                                     ^
+/tmp/arithmetic-complex.c: In function ‘cstr’:
+/tmp/arithmetic-complex.c:65:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   65 |     char *tmp3 = concat_string(s, "+");
+      |                                ^
+/tmp/arithmetic-complex.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/arithmetic-complex.c:72:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   72 |     char *tmp8 = concat_string(s, tmp7);
+      |                                ^
+/tmp/arithmetic-complex.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/arithmetic-complex.c: In function ‘main’:
+/tmp/arithmetic-complex.c:80:3: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   80 |   complex_t a = (Complex){.re = 1.0, .im = 1.0};
+      |   ^~~~~~~~~
+      |   Complex
+/tmp/arithmetic-complex.c:80:17: error: incompatible types when initializing type ‘int’ using type ‘Complex’ {aka ‘struct Complex’}
+   80 |   complex_t a = (Complex){.re = 1.0, .im = 1.0};
+      |                 ^
+/tmp/arithmetic-complex.c:81:3: error: unknown type name ‘complex_t’; did you mean ‘Complex’?
+   81 |   complex_t b = (Complex){.re = 3.14159, .im = 1.25};
+      |   ^~~~~~~~~
+      |   Complex
+/tmp/arithmetic-complex.c:81:17: error: incompatible types when initializing type ‘int’ using type ‘Complex’ {aka ‘struct Complex’}
+   81 |   complex_t b = (Complex){.re = 3.14159, .im = 1.25};
+      |                 ^
+/tmp/arithmetic-complex.c:82:37: warning: passing argument 1 of ‘cstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+   82 |   printf("%s\n", "a:       " + cstr(&a));
+      |                                     ^~
+      |                                     |
+      |                                     int *
+/tmp/arithmetic-complex.c:60:27: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   60 | const char *cstr(Complex *a) {
+      |                  ~~~~~~~~~^
+/tmp/arithmetic-complex.c:82:30: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+   82 |   printf("%s\n", "a:       " + cstr(&a));
+      |                  ~~~~~~~~~~~ ^ ~~~~~~~~
+      |                  |             |
+      |                  char *        const char *
+/tmp/arithmetic-complex.c:83:37: warning: passing argument 1 of ‘cstr’ from incompatible pointer type [-Wincompatible-pointer-types]
+   83 |   printf("%s\n", "b:       " + cstr(&b));
+      |                                     ^~
+      |                                     |
+      |                                     int *
+/tmp/arithmetic-complex.c:60:27: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   60 | const char *cstr(Complex *a) {
+      |                  ~~~~~~~~~^
+/tmp/arithmetic-complex.c:83:30: error: invalid operands to binary + (have ‘char *’ and ‘const char *’)
+   83 |   printf("%s\n", "b:       " + cstr(&b));
+      |                  ~~~~~~~~~~~ ^ ~~~~~~~~
+      |                  |             |
+      |                  char *        const char *
+/tmp/arithmetic-complex.c:84:42: warning: passing argument 1 of ‘add’ from incompatible pointer type [-Wincompatible-pointer-types]
+   84 |   printf("%s\n", "a + b:   " + cstr(&add(&a, &b)));
+      |                                          ^~
+      |                                          |
+      |                                          int *
+/tmp/arithmetic-complex.c:42:24: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   42 | complex_t add(Complex *a, Complex *b) {
+      |               ~~~~~~~~~^
+/tmp/arithmetic-complex.c:84:46: warning: passing argument 2 of ‘add’ from incompatible pointer type [-Wincompatible-pointer-types]
+   84 |   printf("%s\n", "a + b:   " + cstr(&add(&a, &b)));
+      |                                              ^~
+      |                                              |
+      |                                              int *
+/tmp/arithmetic-complex.c:42:36: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   42 | complex_t add(Complex *a, Complex *b) {
+      |                           ~~~~~~~~~^
+/tmp/arithmetic-complex.c:84:37: error: lvalue required as unary ‘&’ operand
+   84 |   printf("%s\n", "a + b:   " + cstr(&add(&a, &b)));
+      |                                     ^
+/tmp/arithmetic-complex.c:85:42: warning: passing argument 1 of ‘mul’ from incompatible pointer type [-Wincompatible-pointer-types]
+   85 |   printf("%s\n", "a * b:   " + cstr(&mul(&a, &b)));
+      |                                          ^~
+      |                                          |
+      |                                          int *
+/tmp/arithmetic-complex.c:46:24: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   46 | complex_t mul(Complex *a, Complex *b) {
+      |               ~~~~~~~~~^
+/tmp/arithmetic-complex.c:85:46: warning: passing argument 2 of ‘mul’ from incompatible pointer type [-Wincompatible-pointer-types]
+   85 |   printf("%s\n", "a * b:   " + cstr(&mul(&a, &b)));
+      |                                              ^~
+      |                                              |
+      |                                              int *
+/tmp/arithmetic-complex.c:46:36: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   46 | complex_t mul(Complex *a, Complex *b) {
+      |                           ~~~~~~~~~^
+/tmp/arithmetic-complex.c:85:37: error: lvalue required as unary ‘&’ operand
+   85 |   printf("%s\n", "a * b:   " + cstr(&mul(&a, &b)));
+      |                                     ^
+/tmp/arithmetic-complex.c:86:42: warning: passing argument 1 of ‘neg’ from incompatible pointer type [-Wincompatible-pointer-types]
+   86 |   printf("%s\n", "-a:      " + cstr(&neg(&a)));
+      |                                          ^~
+      |                                          |
+      |                                          int *
+/tmp/arithmetic-complex.c:51:24: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   51 | complex_t neg(Complex *a) { return (Complex){.re = (-a->re), .im = (-a->im)}; }
+      |               ~~~~~~~~~^
+/tmp/arithmetic-complex.c:86:37: error: lvalue required as unary ‘&’ operand
+   86 |   printf("%s\n", "-a:      " + cstr(&neg(&a)));
+      |                                     ^
+/tmp/arithmetic-complex.c:87:42: warning: passing argument 1 of ‘inv’ from incompatible pointer type [-Wincompatible-pointer-types]
+   87 |   printf("%s\n", "1 / a:   " + cstr(&inv(&a)));
+      |                                          ^~
+      |                                          |
+      |                                          int *
+/tmp/arithmetic-complex.c:53:24: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   53 | complex_t inv(Complex *a) {
+      |               ~~~~~~~~~^
+/tmp/arithmetic-complex.c:87:37: error: lvalue required as unary ‘&’ operand
+   87 |   printf("%s\n", "1 / a:   " + cstr(&inv(&a)));
+      |                                     ^
+/tmp/arithmetic-complex.c:88:43: warning: passing argument 1 of ‘conj’ from incompatible pointer type [-Wincompatible-pointer-types]
+   88 |   printf("%s\n", "a̅:       " + cstr(&conj(&a)));
+      |                                           ^~
+      |                                           |
+      |                                           int *
+/tmp/arithmetic-complex.c:58:25: note: expected ‘Complex *’ {aka ‘struct Complex *’} but argument is of type ‘int *’
+   58 | complex_t conj(Complex *a) { return (Complex){.re = a->re, .im = (-a->im)}; }
+      |                ~~~~~~~~~^
+/tmp/arithmetic-complex.c:88:37: error: lvalue required as unary ‘&’ operand
+   88 |   printf("%s\n", "a̅:       " + cstr(&conj(&a)));
+      |                                     ^

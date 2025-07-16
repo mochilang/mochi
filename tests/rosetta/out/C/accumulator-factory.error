@@ -1,0 +1,20 @@
+cc: exit status 1
+/tmp/accumulator-factory.c: In function ‘add’:
+/tmp/accumulator-factory.c:27:3: error: ‘store’ undeclared (first use in this function)
+   27 |   store[0] = add_store.data[0] + nv;
+      |   ^~~~~
+/tmp/accumulator-factory.c:27:3: note: each undeclared identifier is reported only once for each function it appears in
+/tmp/accumulator-factory.c: In function ‘accumulator’:
+/tmp/accumulator-factory.c:34:12: error: redefinition of ‘store’
+   34 |   list_int store = store;
+      |            ^~~~~
+/tmp/accumulator-factory.c:32:12: note: previous definition of ‘store’ with type ‘list_int’
+   32 |   list_int store = list_int_create(1);
+      |            ^~~~~
+/tmp/accumulator-factory.c: At top level:
+/tmp/accumulator-factory.c:46:5: error: redefinition of ‘main’
+   46 | int main() {
+      |     ^~~~
+/tmp/accumulator-factory.c:38:5: note: previous definition of ‘main’ with type ‘int()’
+   38 | int main() {
+      |     ^~~~

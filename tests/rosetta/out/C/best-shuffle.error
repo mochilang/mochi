@@ -1,0 +1,183 @@
+cc: exit status 1
+/tmp/best-shuffle.c:62:1: error: unknown type name ‘list_int’; did you mean ‘list_string’?
+   62 | list_int shuffleChars(char *s, int seed) {
+      | ^~~~~~~~
+      | list_string
+/tmp/best-shuffle.c: In function ‘shuffleChars’:
+/tmp/best-shuffle.c:64:15: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+   64 |   int chars = tmp1;
+      |               ^~~~
+/tmp/best-shuffle.c:69:43: error: incompatible type for argument 1 of ‘concat_list_string’
+   69 |     list_string tmp3 = concat_list_string(chars, tmp2);
+      |                                           ^~~~~
+      |                                           |
+      |                                           int
+/tmp/best-shuffle.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/best-shuffle.c:70:13: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+   70 |     chars = tmp3;
+      |             ^~~~
+/tmp/best-shuffle.c:74:18: error: request for member ‘len’ in something not a structure or union
+   74 |   int idx = chars.len - 1;
+      |                  ^
+/tmp/best-shuffle.c:78:28: error: request for member ‘data’ in something not a structure or union
+   78 |     const char *tmp = chars.data[idx];
+      |                            ^
+/tmp/best-shuffle.c:79:10: error: request for member ‘data’ in something not a structure or union
+   79 |     chars.data[idx] = chars.data[j];
+      |          ^
+/tmp/best-shuffle.c:79:28: error: request for member ‘data’ in something not a structure or union
+   79 |     chars.data[idx] = chars.data[j];
+      |                            ^
+/tmp/best-shuffle.c:80:10: error: request for member ‘data’ in something not a structure or union
+   80 |     chars.data[j] = tmp;
+      |          ^
+/tmp/best-shuffle.c:85:19: error: request for member ‘len’ in something not a structure or union
+   85 |   while (i < chars.len) {
+      |                   ^
+/tmp/best-shuffle.c:86:42: error: request for member ‘data’ in something not a structure or union
+   86 |     char *tmp4 = concat_string(res, chars.data[i]);
+      |                                          ^
+/tmp/best-shuffle.c:86:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   86 |     char *tmp4 = concat_string(res, chars.data[i]);
+      |                                ^~~
+/tmp/best-shuffle.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/best-shuffle.c:91:16: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   91 |   tmp5.data[0] = res;
+      |                ^
+/tmp/best-shuffle.c:92:16: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+   92 |   tmp5.data[1] = sd;
+      |                ^
+/tmp/best-shuffle.c:93:10: error: incompatible types when returning type ‘list_string’ but ‘int’ was expected
+   93 |   return tmp5;
+      |          ^~~~
+/tmp/best-shuffle.c: At top level:
+/tmp/best-shuffle.c:96:1: error: unknown type name ‘list_int’; did you mean ‘list_string’?
+   96 | list_int bestShuffle(char *s, int seed) {
+      | ^~~~~~~~
+      | list_string
+/tmp/best-shuffle.c: In function ‘bestShuffle’:
+/tmp/best-shuffle.c:97:3: error: unknown type name ‘list_int’; did you mean ‘list_string’?
+   97 |   list_int r = shuffleChars(s, seed);
+      |   ^~~~~~~~
+      |   list_string
+/tmp/best-shuffle.c:98:12: error: request for member ‘data’ in something not a structure or union
+   98 |   int t = r.data[0];
+      |            ^
+/tmp/best-shuffle.c:99:13: error: request for member ‘data’ in something not a structure or union
+   99 |   int sd = r.data[1];
+      |             ^
+/tmp/best-shuffle.c:101:13: error: incompatible types when initializing type ‘int’ using type ‘list_string’
+  101 |   int arr = tmp6;
+      |             ^~~~
+/tmp/best-shuffle.c:103:15: error: request for member ‘len’ in something not a structure or union
+  103 |   while (i < t.len) {
+      |               ^
+/tmp/best-shuffle.c:105:33: warning: passing argument 1 of ‘slice_string’ makes pointer from integer without a cast [-Wint-conversion]
+  105 |     tmp7.data[0] = slice_string(t, i, i + 1);
+      |                                 ^
+      |                                 |
+      |                                 int
+/tmp/best-shuffle.c:43:33: note: expected ‘char *’ but argument is of type ‘int’
+   43 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/best-shuffle.c:106:43: error: incompatible type for argument 1 of ‘concat_list_string’
+  106 |     list_string tmp8 = concat_list_string(arr, tmp7);
+      |                                           ^~~
+      |                                           |
+      |                                           int
+/tmp/best-shuffle.c:21:51: note: expected ‘list_string’ but argument is of type ‘int’
+   21 | static list_string concat_list_string(list_string a, list_string b) {
+      |                                       ~~~~~~~~~~~~^
+/tmp/best-shuffle.c:107:11: error: incompatible types when assigning to type ‘int’ from type ‘list_string’
+  107 |     arr = tmp8;
+      |           ^~~~
+/tmp/best-shuffle.c:111:17: error: request for member ‘len’ in something not a structure or union
+  111 |   while (i < arr.len) {
+      |                 ^
+/tmp/best-shuffle.c:113:19: error: request for member ‘len’ in something not a structure or union
+  113 |     while (j < arr.len) {
+      |                   ^
+/tmp/best-shuffle.c:114:24: error: request for member ‘data’ in something not a structure or union
+  114 |       if (i != j && arr.data[i] != slice_string(s, j, j + 1) &&
+      |                        ^
+/tmp/best-shuffle.c:115:14: error: request for member ‘data’ in something not a structure or union
+  115 |           arr.data[j] != slice_string(s, i, i + 1)) {
+      |              ^
+/tmp/best-shuffle.c:116:30: error: request for member ‘data’ in something not a structure or union
+  116 |         const char *tmp = arr.data[i];
+      |                              ^
+/tmp/best-shuffle.c:117:12: error: request for member ‘data’ in something not a structure or union
+  117 |         arr.data[i] = arr.data[j];
+      |            ^
+/tmp/best-shuffle.c:117:26: error: request for member ‘data’ in something not a structure or union
+  117 |         arr.data[i] = arr.data[j];
+      |                          ^
+/tmp/best-shuffle.c:118:12: error: request for member ‘data’ in something not a structure or union
+  118 |         arr.data[j] = tmp;
+      |            ^
+/tmp/best-shuffle.c:127:17: error: request for member ‘len’ in something not a structure or union
+  127 |   while (i < arr.len) {
+      |                 ^
+/tmp/best-shuffle.c:128:12: error: request for member ‘data’ in something not a structure or union
+  128 |     if (arr.data[i] == slice_string(s, i, i + 1)) {
+      |            ^
+/tmp/best-shuffle.c:135:17: error: request for member ‘len’ in something not a structure or union
+  135 |   while (i < arr.len) {
+      |                 ^
+/tmp/best-shuffle.c:136:40: error: request for member ‘data’ in something not a structure or union
+  136 |     char *tmp9 = concat_string(out, arr.data[i]);
+      |                                        ^
+/tmp/best-shuffle.c:136:32: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  136 |     char *tmp9 = concat_string(out, arr.data[i]);
+      |                                ^~~
+/tmp/best-shuffle.c:29:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   29 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/best-shuffle.c:141:17: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  141 |   tmp10.data[0] = out;
+      |                 ^
+/tmp/best-shuffle.c:142:17: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  142 |   tmp10.data[1] = sd;
+      |                 ^
+/tmp/best-shuffle.c:143:17: warning: assignment to ‘char *’ from ‘int’ makes pointer from integer without a cast [-Wint-conversion]
+  143 |   tmp10.data[2] = count;
+      |                 ^
+/tmp/best-shuffle.c:144:10: error: incompatible types when returning type ‘list_string’ but ‘int’ was expected
+  144 |   return tmp10;
+      |          ^~~~~
+/tmp/best-shuffle.c: In function ‘main’:
+/tmp/best-shuffle.c:155:7: error: conflicting types for ‘ts’; have ‘int’
+  155 |   int ts = ts;
+      |       ^~
+/tmp/best-shuffle.c:148:15: note: previous definition of ‘ts’ with type ‘list_string’
+  148 |   list_string ts = list_string_create(6);
+      |               ^~
+/tmp/best-shuffle.c:159:5: error: unknown type name ‘list_int’; did you mean ‘list_string’?
+  159 |     list_int r = bestShuffle(ts.data[i], seed);
+      |     ^~~~~~~~
+      |     list_string
+/tmp/best-shuffle.c:160:17: error: request for member ‘data’ in something not a structure or union
+  160 |     int shuf = r.data[0];
+      |                 ^
+/tmp/best-shuffle.c:161:13: error: request for member ‘data’ in something not a structure or union
+  161 |     seed = r.data[1];
+      |             ^
+/tmp/best-shuffle.c:162:16: error: request for member ‘data’ in something not a structure or union
+  162 |     int cnt = r.data[2];
+      |                ^
+/tmp/best-shuffle.c:167:33: error: invalid operands to binary + (have ‘char *’ and ‘char *’)
+  167 |     printf("%d\n", tmp13 + shuf + " (" + tmp14 + ")");
+      |                    ~~~~~~~~~~~~ ^
+      |                          |      |
+      |                          char * char *
+/tmp/best-shuffle.c: At top level:
+/tmp/best-shuffle.c:172:5: error: redefinition of ‘main’
+  172 | int main() {
+      |     ^~~~
+/tmp/best-shuffle.c:147:5: note: previous definition of ‘main’ with type ‘int()’
+  147 | int main() {
+      |     ^~~~

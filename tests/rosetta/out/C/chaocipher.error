@@ -1,0 +1,106 @@
+cc: exit status 1
+/tmp/chaocipher.c: In function ‘rotate’:
+/tmp/chaocipher.c:52:36: error: request for member ‘len’ in something not a structure or union
+   52 |   char *tmp2 = slice_string(s, n, s.len);
+      |                                    ^
+/tmp/chaocipher.c: In function ‘scrambleLeft’:
+/tmp/chaocipher.c:64:38: error: request for member ‘len’ in something not a structure or union
+   64 |   char *tmp10 = slice_string(s, 14, s.len);
+      |                                      ^
+/tmp/chaocipher.c: In function ‘scrambleRight’:
+/tmp/chaocipher.c:75:38: error: request for member ‘len’ in something not a structure or union
+   75 |   char *tmp17 = slice_string(s, 15, s.len);
+      |                                      ^
+/tmp/chaocipher.c: In function ‘chao’:
+/tmp/chaocipher.c:92:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   92 |       idx = index_of_string(right, ch);
+      |                             ^~~~~
+/tmp/chaocipher.c:16:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   16 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/chaocipher.c:92:36: warning: passing argument 2 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   92 |       idx = index_of_string(right, ch);
+      |                                    ^~
+/tmp/chaocipher.c:16:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   16 | static int index_of_string(char *s, char *sub) {
+      |                                     ~~~~~~^~~
+/tmp/chaocipher.c:93:34: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   93 |       char *tmp22 = slice_string(left, idx, idx + 1);
+      |                                  ^~~~
+/tmp/chaocipher.c:22:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   22 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/chaocipher.c:94:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   94 |       char *tmp23 = concat_string(out, tmp22);
+      |                                   ^~~
+/tmp/chaocipher.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/chaocipher.c:97:29: warning: passing argument 1 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   97 |       idx = index_of_string(left, ch);
+      |                             ^~~~
+/tmp/chaocipher.c:16:34: note: expected ‘char *’ but argument is of type ‘const char *’
+   16 | static int index_of_string(char *s, char *sub) {
+      |                            ~~~~~~^
+/tmp/chaocipher.c:97:35: warning: passing argument 2 of ‘index_of_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   97 |       idx = index_of_string(left, ch);
+      |                                   ^~
+/tmp/chaocipher.c:16:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   16 | static int index_of_string(char *s, char *sub) {
+      |                                     ~~~~~~^~~
+/tmp/chaocipher.c:98:34: warning: passing argument 1 of ‘slice_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   98 |       char *tmp24 = slice_string(right, idx, idx + 1);
+      |                                  ^~~~~
+/tmp/chaocipher.c:22:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   22 | static char *slice_string(char *s, int start, int end) {
+      |                           ~~~~~~^
+/tmp/chaocipher.c:99:35: warning: passing argument 1 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+   99 |       char *tmp25 = concat_string(out, tmp24);
+      |                                   ^~~
+/tmp/chaocipher.c:7:34: note: expected ‘char *’ but argument is of type ‘const char *’
+    7 | static char *concat_string(char *a, char *b) {
+      |                            ~~~~~~^
+/tmp/chaocipher.c:102:19: warning: passing argument 1 of ‘rotate’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  102 |     left = rotate(left, idx);
+      |                   ^~~~
+/tmp/chaocipher.c:51:26: note: expected ‘char *’ but argument is of type ‘const char *’
+   51 | const char *rotate(char *s, int n) {
+      |                    ~~~~~~^
+/tmp/chaocipher.c:103:20: warning: passing argument 1 of ‘rotate’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  103 |     right = rotate(right, idx);
+      |                    ^~~~~
+/tmp/chaocipher.c:51:26: note: expected ‘char *’ but argument is of type ‘const char *’
+   51 | const char *rotate(char *s, int n) {
+      |                    ~~~~~~^
+/tmp/chaocipher.c:104:25: warning: passing argument 1 of ‘scrambleLeft’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  104 |     left = scrambleLeft(left);
+      |                         ^~~~
+/tmp/chaocipher.c:58:32: note: expected ‘char *’ but argument is of type ‘const char *’
+   58 | const char *scrambleLeft(char *s) {
+      |                          ~~~~~~^
+/tmp/chaocipher.c:105:27: warning: passing argument 1 of ‘scrambleRight’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  105 |     right = scrambleRight(right);
+      |                           ^~~~~
+/tmp/chaocipher.c:69:33: note: expected ‘char *’ but argument is of type ‘const char *’
+   69 | const char *scrambleRight(char *s) {
+      |                           ~~~~~~^
+/tmp/chaocipher.c: In function ‘main’:
+/tmp/chaocipher.c:113:29: warning: passing argument 1 of ‘chao’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  113 |   const char *cipher = chao(plain, 1);
+      |                             ^~~~~
+/tmp/chaocipher.c:82:24: note: expected ‘char *’ but argument is of type ‘const char *’
+   82 | const char *chao(char *text, int encode) {
+      |                  ~~~~~~^~~~
+/tmp/chaocipher.c:116:23: warning: passing argument 1 of ‘chao’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  116 |   printf("%s\n", chao(cipher, 0));
+      |                       ^~~~~~
+/tmp/chaocipher.c:82:24: note: expected ‘char *’ but argument is of type ‘const char *’
+   82 | const char *chao(char *text, int encode) {
+      |                  ~~~~~~^~~~
+/tmp/chaocipher.c: At top level:
+/tmp/chaocipher.c:119:5: error: redefinition of ‘main’
+  119 | int main() {
+      |     ^~~~
+/tmp/chaocipher.c:111:5: note: previous definition of ‘main’ with type ‘int()’
+  111 | int main() {
+      |     ^~~~

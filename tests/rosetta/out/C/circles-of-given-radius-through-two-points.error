@@ -1,0 +1,216 @@
+cc: exit status 1
+/tmp/circles-of-given-radius-through-two-points.c:62:10: error: duplicate member ‘x’
+   62 |   double x;
+      |          ^
+/tmp/circles-of-given-radius-through-two-points.c:63:10: error: duplicate member ‘y’
+   63 |   double y;
+      |          ^
+/tmp/circles-of-given-radius-through-two-points.c: In function ‘circles’:
+/tmp/circles-of-given-radius-through-two-points.c:101:20: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  101 |       tmp1.data[0] = p1;
+      |                    ^
+/tmp/circles-of-given-radius-through-two-points.c:102:20: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  102 |       tmp1.data[1] = p1;
+      |                    ^
+/tmp/circles-of-given-radius-through-two-points.c:103:20: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  103 |       tmp1.data[2] =
+      |                    ^
+/tmp/circles-of-given-radius-through-two-points.c:108:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  108 |     tmp2.data[0] = p1;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:109:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  109 |     tmp2.data[1] = p2;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:110:18: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  110 |     tmp2.data[2] = "Coincident points describe an infinite number of circles.";
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:115:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  115 |     tmp3.data[0] = p1;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:116:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  116 |     tmp3.data[1] = p2;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:117:18: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  117 |     tmp3.data[2] = "R==0.0 does not describe circles.";
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:125:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  125 |     tmp4.data[0] = p1;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:126:18: warning: assignment to ‘int’ from ‘Point *’ {aka ‘struct Point *’} makes integer from pointer without a cast [-Wint-conversion]
+  126 |     tmp4.data[1] = p2;
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:127:18: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  127 |     tmp4.data[2] = "Points too far apart to form circles.";
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:130:15: error: invalid initializer
+  130 |   point_t m = (Point){.x = (p1->x + p2->x) / 2.0, .y = (p1->y + p2->y) / 2.0};
+      |               ^
+/tmp/circles-of-given-radius-through-two-points.c:133:20: error: incompatible types when assigning to type ‘int’ from type ‘point_t’
+  133 |     tmp5.data[0] = m;
+      |                    ^
+/tmp/circles-of-given-radius-through-two-points.c:134:20: error: incompatible types when assigning to type ‘int’ from type ‘point_t’
+  134 |     tmp5.data[1] = m;
+      |                    ^
+/tmp/circles-of-given-radius-through-two-points.c:135:18: warning: assignment to ‘int’ from ‘char *’ makes integer from pointer without a cast [-Wint-conversion]
+  135 |     tmp5.data[2] = "Points form a diameter and describe only a single circle.";
+      |                  ^
+/tmp/circles-of-given-radius-through-two-points.c:141:21: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  141 |   point_t tmp6[] = {(Point){.x = m.x - oy, .y = m.y + ox},
+      |                     ^
+/tmp/circles-of-given-radius-through-two-points.c:142:60: error: incompatible types when initializing type ‘double’ using type ‘char *’
+  142 |                     (Point){.x = m.x + oy, .y = m.y - ox}, "Two circles."};
+      |                                                            ^~~~~~~~~~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:144:10: error: incompatible types when returning type ‘point_t *’ but ‘list_int’ was expected
+  144 |   return tmp6;
+      |          ^~~~
+/tmp/circles-of-given-radius-through-two-points.c: In function ‘main’:
+/tmp/circles-of-given-radius-through-two-points.c:148:19: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  148 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |                   ^
+/tmp/circles-of-given-radius-through-two-points.c:151:11: error: redefinition of ‘td’
+  151 |   point_t td[] = {(Point){.x = 0.0, .y = 2.0}, (Point){.x = 0.0, .y = 0.0},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:148:11: note: previous definition of ‘td’ with type ‘point_t[1]’
+  148 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:151:19: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  151 |   point_t td[] = {(Point){.x = 0.0, .y = 2.0}, (Point){.x = 0.0, .y = 0.0},
+      |                   ^
+/tmp/circles-of-given-radius-through-two-points.c:153:7: error: redefinition of ‘td_len’
+  153 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:150:7: note: previous definition of ‘td_len’ with type ‘int’
+  150 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:154:11: error: redefinition of ‘td’
+  154 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:151:11: note: previous definition of ‘td’ with type ‘point_t[1]’
+  151 |   point_t td[] = {(Point){.x = 0.0, .y = 2.0}, (Point){.x = 0.0, .y = 0.0},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:154:19: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  154 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |                   ^
+/tmp/circles-of-given-radius-through-two-points.c:156:7: error: redefinition of ‘td_len’
+  156 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:153:7: note: previous definition of ‘td_len’ with type ‘int’
+  153 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:157:11: error: redefinition of ‘td’
+  157 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:154:11: note: previous definition of ‘td’ with type ‘point_t[1]’
+  154 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:157:19: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  157 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |                   ^
+/tmp/circles-of-given-radius-through-two-points.c:159:7: error: redefinition of ‘td_len’
+  159 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:156:7: note: previous definition of ‘td_len’ with type ‘int’
+  156 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:160:11: error: redefinition of ‘td’
+  160 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:157:11: note: previous definition of ‘td’ with type ‘point_t[1]’
+  157 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:160:19: error: incompatible types when initializing type ‘double’ using type ‘Point’ {aka ‘struct Point’}
+  160 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |                   ^
+/tmp/circles-of-given-radius-through-two-points.c:162:7: error: redefinition of ‘td_len’
+  162 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:159:7: note: previous definition of ‘td_len’ with type ‘int’
+  159 |   int td_len = sizeof(td) / sizeof(td[0]);
+      |       ^~~~~~
+/tmp/circles-of-given-radius-through-two-points.c:163:25: warning: initialization of ‘int’ from ‘point_t *’ makes integer from pointer without a cast [-Wint-conversion]
+  163 |   list_int td_data[] = {td, td, td, td, td};
+      |                         ^~
+/tmp/circles-of-given-radius-through-two-points.c:163:25: note: (near initialization for ‘td_data[0].len’)
+/tmp/circles-of-given-radius-through-two-points.c:163:29: warning: initialization of ‘int *’ from incompatible pointer type ‘point_t *’ [-Wincompatible-pointer-types]
+  163 |   list_int td_data[] = {td, td, td, td, td};
+      |                             ^~
+/tmp/circles-of-given-radius-through-two-points.c:163:29: note: (near initialization for ‘td_data[0].data’)
+/tmp/circles-of-given-radius-through-two-points.c:163:33: warning: initialization of ‘int’ from ‘point_t *’ makes integer from pointer without a cast [-Wint-conversion]
+  163 |   list_int td_data[] = {td, td, td, td, td};
+      |                                 ^~
+/tmp/circles-of-given-radius-through-two-points.c:163:33: note: (near initialization for ‘td_data[1].len’)
+/tmp/circles-of-given-radius-through-two-points.c:163:37: warning: initialization of ‘int *’ from incompatible pointer type ‘point_t *’ [-Wincompatible-pointer-types]
+  163 |   list_int td_data[] = {td, td, td, td, td};
+      |                                     ^~
+/tmp/circles-of-given-radius-through-two-points.c:163:37: note: (near initialization for ‘td_data[1].data’)
+/tmp/circles-of-given-radius-through-two-points.c:163:41: warning: initialization of ‘int’ from ‘point_t *’ makes integer from pointer without a cast [-Wint-conversion]
+  163 |   list_int td_data[] = {td, td, td, td, td};
+      |                                         ^~
+/tmp/circles-of-given-radius-through-two-points.c:163:41: note: (near initialization for ‘td_data[2].len’)
+/tmp/circles-of-given-radius-through-two-points.c:164:17: error: conflicting types for ‘td’; have ‘list_list_int’
+  164 |   list_list_int td = {5, td_data};
+      |                 ^~
+/tmp/circles-of-given-radius-through-two-points.c:160:11: note: previous definition of ‘td’ with type ‘point_t[1]’
+  160 |   point_t td[] = {(Point){.x = 0.1234, .y = 0.9876},
+      |           ^~
+/tmp/circles-of-given-radius-through-two-points.c:170:25: error: request for member ‘x’ in something not a structure or union
+  170 |     char *tmp8 = _str(p1.x);
+      |                         ^
+/tmp/circles-of-given-radius-through-two-points.c:173:26: error: request for member ‘y’ in something not a structure or union
+  173 |     char *tmp11 = _str(p1.y);
+      |                          ^
+/tmp/circles-of-given-radius-through-two-points.c:177:26: error: request for member ‘x’ in something not a structure or union
+  177 |     char *tmp14 = _str(p2.x);
+      |                          ^
+/tmp/circles-of-given-radius-through-two-points.c:180:26: error: request for member ‘y’ in something not a structure or union
+  180 |     char *tmp17 = _str(p2.y);
+      |                          ^
+/tmp/circles-of-given-radius-through-two-points.c:187:28: warning: passing argument 1 of ‘circles’ makes pointer from integer without a cast [-Wint-conversion]
+  187 |     list_int res = circles(p1, p2, r);
+      |                            ^~
+      |                            |
+      |                            int
+/tmp/circles-of-given-radius-through-two-points.c:97:25: note: expected ‘Point *’ {aka ‘struct Point *’} but argument is of type ‘int’
+   97 | list_int circles(Point *p1, Point *p2, double r) {
+      |                  ~~~~~~~^~
+/tmp/circles-of-given-radius-through-two-points.c:187:32: warning: passing argument 2 of ‘circles’ makes pointer from integer without a cast [-Wint-conversion]
+  187 |     list_int res = circles(p1, p2, r);
+      |                                ^~
+      |                                |
+      |                                int
+/tmp/circles-of-given-radius-through-two-points.c:97:36: note: expected ‘Point *’ {aka ‘struct Point *’} but argument is of type ‘int’
+   97 | list_int circles(Point *p1, Point *p2, double r) {
+      |                             ~~~~~~~^~
+/tmp/circles-of-given-radius-through-two-points.c:191:14: warning: format ‘%d’ expects argument of type ‘int’, but argument 2 has type ‘char *’ [-Wformat=]
+  191 |     printf("%d\n", "   " + caseStr);
+      |             ~^     ~~~~~~~~~~~~~~~
+      |              |           |
+      |              int         char *
+      |             %s
+/tmp/circles-of-given-radius-through-two-points.c:192:18: warning: comparison between pointer and integer
+  192 |     if ((caseStr ==
+      |                  ^~
+/tmp/circles-of-given-radius-through-two-points.c:194:18: warning: comparison between pointer and integer
+  194 |          caseStr ==
+      |                  ^~
+/tmp/circles-of-given-radius-through-two-points.c:196:28: error: request for member ‘x’ in something not a structure or union
+  196 |       char *tmp22 = _str(c1.x);
+      |                            ^
+/tmp/circles-of-given-radius-through-two-points.c:199:28: error: request for member ‘y’ in something not a structure or union
+  199 |       char *tmp25 = _str(c1.y);
+      |                            ^
+/tmp/circles-of-given-radius-through-two-points.c:204:20: warning: comparison between pointer and integer
+  204 |       if ((caseStr == "Two circles.")) {
+      |                    ^~
+/tmp/circles-of-given-radius-through-two-points.c:205:30: error: request for member ‘x’ in something not a structure or union
+  205 |         char *tmp28 = _str(c1.x);
+      |                              ^
+/tmp/circles-of-given-radius-through-two-points.c:208:30: error: request for member ‘y’ in something not a structure or union
+  208 |         char *tmp31 = _str(c1.y);
+      |                              ^
+/tmp/circles-of-given-radius-through-two-points.c:212:30: error: request for member ‘x’ in something not a structure or union
+  212 |         char *tmp34 = _str(c2.x);
+      |                              ^
+/tmp/circles-of-given-radius-through-two-points.c:215:30: error: request for member ‘y’ in something not a structure or union
+  215 |         char *tmp37 = _str(c2.y);
+      |                              ^

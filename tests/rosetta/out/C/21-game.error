@@ -1,0 +1,52 @@
+cc: exit status 1
+/tmp/21-game.c:117:7: error: duplicate member ‘_’
+  117 |   int _;
+      |       ^
+/tmp/21-game.c:118:7: error: duplicate member ‘_’
+  118 |   int _;
+      |       ^
+/tmp/21-game.c:119:7: error: duplicate member ‘_’
+  119 |   int _;
+      |       ^
+/tmp/21-game.c:120:7: error: duplicate member ‘_’
+  120 |   int _;
+      |       ^
+/tmp/21-game.c:121:7: error: duplicate member ‘_’
+  121 |   int _;
+      |       ^
+/tmp/21-game.c:122:7: error: duplicate member ‘_’
+  122 |   int _;
+      |       ^
+/tmp/21-game.c:123:7: error: duplicate member ‘_’
+  123 |   int _;
+      |       ^
+/tmp/21-game.c:124:7: error: duplicate member ‘_’
+  124 |   int _;
+      |       ^
+/tmp/21-game.c:125:7: error: duplicate member ‘_’
+  125 |   int _;
+      |       ^
+/tmp/21-game.c: In function ‘parseIntStr’:
+/tmp/21-game.c:146:11: error: request for member ‘len’ in something not a structure or union
+  146 |   if ((str.len > 0 && tmp1 == "-")) {
+      |           ^
+/tmp/21-game.c:151:27: error: invalid initializer
+  151 |   map_string_int digits = (tmp_item_t){._ = 0,
+      |                           ^
+/tmp/21-game.c:161:18: error: request for member ‘len’ in something not a structure or union
+  161 |   while ((i < str.len)) {
+      |                  ^
+/tmp/21-game.c: In function ‘main’:
+/tmp/21-game.c:218:33: warning: passing argument 1 of ‘parseIntStr’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  218 |           int num = parseIntStr(line);
+      |                                 ^~~~
+/tmp/21-game.c:142:23: note: expected ‘char *’ but argument is of type ‘const char *’
+  142 | int parseIntStr(char *str) {
+      |                 ~~~~~~^~~
+/tmp/21-game.c: At top level:
+/tmp/21-game.c:250:5: error: redefinition of ‘main’
+  250 | int main() {
+      |     ^~~~
+/tmp/21-game.c:172:5: note: previous definition of ‘main’ with type ‘int()’
+  172 | int main() {
+      |     ^~~~

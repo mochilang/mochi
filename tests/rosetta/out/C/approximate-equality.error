@@ -1,0 +1,109 @@
+cc: exit status 1
+/tmp/approximate-equality.c:63:8: error: conflicting types for ‘abs’; have ‘double(double)’
+   63 | double abs(double x) {
+      |        ^~~
+In file included from /tmp/approximate-equality.c:4:
+/usr/include/stdlib.h:980:12: note: previous declaration of ‘abs’ with type ‘int(int)’
+  980 | extern int abs (int __x) __THROW __attribute__ ((__const__)) __wur;
+      |            ^~~
+/tmp/approximate-equality.c: In function ‘main’:
+/tmp/approximate-equality.c:99:14: error: redefinition of ‘pairs’
+   99 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:96:14: note: previous definition of ‘pairs’ with type ‘list_float’
+   96 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:102:14: error: redefinition of ‘pairs’
+  102 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:99:14: note: previous definition of ‘pairs’ with type ‘list_float’
+   99 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:105:14: error: redefinition of ‘pairs’
+  105 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:102:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  102 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:108:14: error: redefinition of ‘pairs’
+  108 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:105:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  105 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:111:14: error: redefinition of ‘pairs’
+  111 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:108:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  108 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:114:12: error: conflicting types for ‘pairs’; have ‘list_int’
+  114 |   list_int pairs = list_int_create(2);
+      |            ^~~~~
+/tmp/approximate-equality.c:111:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  111 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:117:14: error: conflicting types for ‘pairs’; have ‘list_float’
+  117 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:114:12: note: previous definition of ‘pairs’ with type ‘list_int’
+  114 |   list_int pairs = list_int_create(2);
+      |            ^~~~~
+/tmp/approximate-equality.c:120:14: error: redefinition of ‘pairs’
+  120 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:117:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  117 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:123:28: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  123 |   list_int pairs_data[] = {pairs, pairs,      pairs,      pairs,     pairs,
+      |                            ^~~~~
+/tmp/approximate-equality.c:123:35: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  123 |   list_int pairs_data[] = {pairs, pairs,      pairs,      pairs,     pairs,
+      |                                   ^~~~~
+/tmp/approximate-equality.c:123:47: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  123 |   list_int pairs_data[] = {pairs, pairs,      pairs,      pairs,     pairs,
+      |                                               ^~~~~
+/tmp/approximate-equality.c:123:59: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  123 |   list_int pairs_data[] = {pairs, pairs,      pairs,      pairs,     pairs,
+      |                                                           ^~~~~
+/tmp/approximate-equality.c:123:70: error: incompatible types when initializing type ‘int’ using type ‘list_float’
+  123 |   list_int pairs_data[] = {pairs, pairs,      pairs,      pairs,     pairs,
+      |                                                                      ^~~~~
+/tmp/approximate-equality.c:124:28: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  124 |                            pairs, {2, pairs}, {2, pairs}, {2, pairs}};
+      |                            ^~~~~
+/tmp/approximate-equality.c:124:39: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  124 |                            pairs, {2, pairs}, {2, pairs}, {2, pairs}};
+      |                                       ^~~~~
+/tmp/approximate-equality.c:124:51: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  124 |                            pairs, {2, pairs}, {2, pairs}, {2, pairs}};
+      |                                                   ^~~~~
+/tmp/approximate-equality.c:124:63: error: incompatible types when initializing type ‘int *’ using type ‘list_float’
+  124 |                            pairs, {2, pairs}, {2, pairs}, {2, pairs}};
+      |                                                               ^~~~~
+/tmp/approximate-equality.c:125:17: error: conflicting types for ‘pairs’; have ‘list_list_int’
+  125 |   list_list_int pairs = {9, pairs_data};
+      |                 ^~~~~
+/tmp/approximate-equality.c:120:14: note: previous definition of ‘pairs’ with type ‘list_float’
+  120 |   list_float pairs = list_float_create(2);
+      |              ^~~~~
+/tmp/approximate-equality.c:126:7: error: conflicting types for ‘pairs’; have ‘int’
+  126 |   int pairs = pairs;
+      |       ^~~~~
+/tmp/approximate-equality.c:125:17: note: previous definition of ‘pairs’ with type ‘list_list_int’
+  125 |   list_list_int pairs = {9, pairs_data};
+      |                 ^~~~~
+/tmp/approximate-equality.c:134:38: warning: passing argument 2 of ‘concat_string’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  134 |     char *tmp4 = concat_string(tmp3, s);
+      |                                      ^
+/tmp/approximate-equality.c:49:43: note: expected ‘char *’ but argument is of type ‘const char *’
+   49 | static char *concat_string(char *a, char *b) {
+      |                                     ~~~~~~^
+/tmp/approximate-equality.c: At top level:
+/tmp/approximate-equality.c:142:5: error: redefinition of ‘main’
+  142 | int main() {
+      |     ^~~~
+/tmp/approximate-equality.c:94:5: note: previous definition of ‘main’ with type ‘int()’
+   94 | int main() {
+      |     ^~~~

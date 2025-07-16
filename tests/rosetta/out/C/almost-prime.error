@@ -1,0 +1,21 @@
+cc: exit status 1
+/tmp/almost-prime.c: In function ‘gen’:
+/tmp/almost-prime.c:56:11: error: incompatible types when assigning to type ‘list_int’ from type ‘int’
+   56 |       r = 0;
+      |           ^
+/tmp/almost-prime.c: In function ‘main’:
+/tmp/almost-prime.c:68:23: error: incompatible type for argument 1 of ‘_str’
+   68 |     char *tmp3 = _str(gen(k, 10));
+      |                       ^~~~~~~~~~
+      |                       |
+      |                       list_int
+/tmp/almost-prime.c:30:23: note: expected ‘int’ but argument is of type ‘list_int’
+   30 | static char *_str(int v) {
+      |                   ~~~~^
+/tmp/almost-prime.c: At top level:
+/tmp/almost-prime.c:75:5: error: redefinition of ‘main’
+   75 | int main() {
+      |     ^~~~
+/tmp/almost-prime.c:63:5: note: previous definition of ‘main’ with type ‘int()’
+   63 | int main() {
+      |     ^~~~
