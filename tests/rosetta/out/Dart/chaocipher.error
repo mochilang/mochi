@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/chaocipher.dart:61:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/chaocipher.dart:53:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/chaocipher.dart:38:37: Error: A value of type 'Object' can't be assigned to a variable of type 'String'.
  - 'Object' is from 'dart:core'.
       out = out + ((left is String) ? left.substring(idx, idx + 1) : (left as List).sublist(idx, idx + 1));
@@ -13,6 +7,3 @@ void main() {
  - 'Object' is from 'dart:core'.
       out = out + ((right is String) ? right.substring(idx, idx + 1) : (right as List).sublist(idx, idx + 1));
                                      ^
-/tmp/chaocipher.dart:62:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

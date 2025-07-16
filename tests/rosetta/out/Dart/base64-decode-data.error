@@ -1,22 +1,4 @@
 run: exit status 254
-/tmp/base64-decode-data.dart:174:9: Error: String starting with ' must end with '.
-  print('
-        ^
-/tmp/base64-decode-data.dart:175:12: Error: String starting with ' must end with '.
-Encoded  : ' + enc);
-           ^^^^^^^^^
-/tmp/base64-decode-data.dart:176:9: Error: String starting with ' must end with '.
-  print('
-        ^
-/tmp/base64-decode-data.dart:177:12: Error: String starting with ' must end with '.
-Decoded  : ' + dec);
-           ^^^^^^^^^
-/tmp/base64-decode-data.dart:176:8: Error: Can't find ')' to match '('.
-  print('
-       ^
-/tmp/base64-decode-data.dart:174:8: Error: Can't find ')' to match '('.
-  print('
-       ^
 /tmp/base64-decode-data.dart:26:24: Error: A value of type 'int?' can't be assigned to a variable of type 'num' because 'int?' is nullable and 'num' isn't.
     n = n * 10 + digits[str[i]];
                        ^
@@ -69,28 +51,3 @@ Try correcting the operator to an existing operator, or defining a '+' operator.
  - 'Object' is from 'dart:core'.
     var val = binToInt(chunk);
                        ^
-/tmp/base64-decode-data.dart:175:1: Error: Expected ',' before this.
-Encoded  : ' + enc);
-^^^^^^^
-/tmp/base64-decode-data.dart:176:3: Error: Expected ',' before this.
-  print('
-  ^^^^^
-/tmp/base64-decode-data.dart:177:1: Error: Expected ',' before this.
-Decoded  : ' + dec);
-^^^^^^^
-/tmp/base64-decode-data.dart:177:1: Error: No named parameter with the name 'Decoded'.
-Decoded  : ' + dec);
-^^^^^^^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/base64-decode-data.dart:174:8: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-  print('
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/base64-decode-data.dart:177:12: Error: Expected ';' after this.
-Decoded  : ' + dec);
-           ^^^^^^^^^

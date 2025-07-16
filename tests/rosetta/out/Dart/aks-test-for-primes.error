@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/aks-test-for-primes.dart:76:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/aks-test-for-primes.dart:52:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/aks-test-for-primes.dart:17:32: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     coef = int.parse((coef * i / (p - i + 1)));
                                ^
@@ -15,6 +9,3 @@ Try correcting the operator to an existing operator, or defining a 'unary-' oper
 /tmp/aks-test-for-primes.dart:46:32: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
     c = int.parse((c * (n - i) / (i + 1)));
                                ^
-/tmp/aks-test-for-primes.dart:77:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

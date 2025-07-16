@@ -1,63 +1,7 @@
 run: exit status 254
-/tmp/bioinformatics-global-alignment.dart:185:9: Error: String starting with ' must end with '.
-  print('
-        ^
-/tmp/bioinformatics-global-alignment.dart:187:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/bioinformatics-global-alignment.dart:185:8: Error: Can't find ')' to match '('.
-  print('
-       ^
-/tmp/bioinformatics-global-alignment.dart:206:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bioinformatics-global-alignment.dart:197:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
-/tmp/bioinformatics-global-alignment.dart:186:1: Error: Expected ',' before this.
-Nucleotide counts for ' + seq + ':
-^^^^^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:12: Error: Expected ',' before this.
-Nucleotide counts for ' + seq + ':
-           ^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:1: Error: Undefined name 'Nucleotide'.
-Nucleotide counts for ' + seq + ':
-^^^^^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:12: Error: Undefined name 'counts'.
-Nucleotide counts for ' + seq + ':
-           ^^^^^^
-/tmp/bioinformatics-global-alignment.dart:185:8: Error: Too many positional arguments: 1 allowed, but 3 found.
-Try removing the extra positional arguments.
-  print('
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:12: Error: Expected ';' after this.
-Nucleotide counts for ' + seq + ':
-           ^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:23: Error: Expected '(' before this.
-Nucleotide counts for ' + seq + ':
-                      ^^^^^^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:23: Error: Expected ';' after this.
-Nucleotide counts for ' + seq + ':
-                      ^^^^^^^^^^^
-/tmp/bioinformatics-global-alignment.dart:186:34: Error: Expected an identifier, but got ':'.
-Try inserting an identifier before ':'.
-Nucleotide counts for ' + seq + ':
-                                 ^
-/tmp/bioinformatics-global-alignment.dart:186:34: Error: Unexpected token ';'.
-Nucleotide counts for ' + seq + ':
-                                 ^
-/tmp/bioinformatics-global-alignment.dart:187:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/bioinformatics-global-alignment.dart:192:64: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
+/tmp/bioinformatics-global-alignment.dart:190:64: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
   print(padLeft('Other', 10) + padLeft(total - (a + c + g + t).toString(), 12));
                                                                ^
-/tmp/bioinformatics-global-alignment.dart:192:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
+/tmp/bioinformatics-global-alignment.dart:190:46: Error: The argument type 'num' can't be assigned to the parameter type 'String'.
   print(padLeft('Other', 10) + padLeft(total - (a + c + g + t).toString(), 12));
                                              ^
-/tmp/bioinformatics-global-alignment.dart:207:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

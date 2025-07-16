@@ -1,19 +1,4 @@
 run: exit status 254
-/tmp/aliquot-sequence-classifications.dart:137:9: Error: String starting with ' must end with '.
-  print('Aliquot classifications - periods for Sociable/Cyclic in square brackets:
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/tmp/aliquot-sequence-classifications.dart:138:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/aliquot-sequence-classifications.dart:137:8: Error: Can't find ')' to match '('.
-  print('Aliquot classifications - periods for Sociable/Cyclic in square brackets:
-       ^
-/tmp/aliquot-sequence-classifications.dart:160:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/aliquot-sequence-classifications.dart:136:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/aliquot-sequence-classifications.dart:63:13: Error: Type 'any' not found.
 Map<String, any> classifySequence(int k) {
             ^^^
@@ -45,9 +30,3 @@ Try correcting the name to the name of an existing method, or defining a method 
 Try correcting the operator to an existing operator, or defining a '-' operator.
       aliquot = 'Cyclic[' + n - 1 - idx.toString() + ']';
                               ^
-/tmp/aliquot-sequence-classifications.dart:138:1: Error: Expected ';' after this.
-');
-^^^
-/tmp/aliquot-sequence-classifications.dart:161:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

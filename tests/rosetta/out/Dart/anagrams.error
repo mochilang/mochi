@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/anagrams.dart:107:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/anagrams.dart:69:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/anagrams.dart:23:18: Error: The operator '>' isn't defined for the class 'String'.
 Try correcting the operator to an existing operator, or defining a '>' operator.
       if (arr[j] > arr[j + 1]) {
@@ -33,6 +27,3 @@ Try accessing using ?. instead.
  - 'List' is from 'dart:core'.
         var g = sortStrings(groups[k]);
                                   ^
-/tmp/anagrams.dart:108:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

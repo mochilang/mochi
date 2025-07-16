@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/burrows-wheeler-transform.dart:130:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/burrows-wheeler-transform.dart:110:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/burrows-wheeler-transform.dart:39:13: Error: Type 'any' not found.
 Map<String, any> bwt(String s) {
             ^^^
@@ -12,6 +6,3 @@ Map<String, any> bwt(String s) {
 Try correcting the operator to an existing operator, or defining a '>' operator.
       if (arr[j] > arr[j + 1]) {
                  ^
-/tmp/burrows-wheeler-transform.dart:131:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

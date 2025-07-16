@@ -1,8 +1,5 @@
-type: error[T007]: argument 2: expected int, got bigint
-  --> /workspace/mochi/tests/rosetta/x/Mochi/binary-strings.mochi:7:10
-
-  7 |   return substring(letters, idx, idx + 1)
-    |          ^
-
-help:
-  Ensure the argument type matches the function’s signature.
+run: exit status 254
+/tmp/binary-strings.dart:53:19: Error: The argument type 'List<dynamic>' can't be assigned to the parameter type 'List<int>'.
+ - 'List' is from 'dart:core'.
+  print(fromBytes(z));
+                  ^

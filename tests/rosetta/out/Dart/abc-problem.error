@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/abc-problem.dart:66:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/abc-problem.dart:59:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/abc-problem.dart:32:11: Error: Method not found: 'lower'.
   var c = lower(word.substring(0, 1));
           ^^^^^
@@ -14,6 +8,3 @@ void main() {
 /tmp/abc-problem.dart:36:93: Error: Method not found: 'lower'.
     if (c == lower(((b is String) ? b.substring(0, 1) : (b as List).sublist(0, 1))) || c == lower(((b is String) ? b.substring(1, 2) : (b as List).sublist(1, 2)))) {
                                                                                             ^^^^^
-/tmp/abc-problem.dart:67:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

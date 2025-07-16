@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/a+b.dart:11:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/a+b.dart:5:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/a+b.dart:6:15: Error: Method not found: 'input'.
   var a = int(input());
               ^^^^^
@@ -17,6 +11,3 @@ void main() {
 /tmp/a+b.dart:7:11: Error: Couldn't find constructor 'int'.
   var b = int(input());
           ^^^
-/tmp/a+b.dart:12:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

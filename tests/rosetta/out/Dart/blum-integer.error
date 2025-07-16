@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/blum-integer.dart:141:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/blum-integer.dart:84:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/blum-integer.dart:93:28: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
       var q = int.parse((i / p));
                            ^
-/tmp/blum-integer.dart:142:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

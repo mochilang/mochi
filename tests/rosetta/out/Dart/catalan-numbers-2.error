@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/catalan-numbers-2.dart:22:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/catalan-numbers-2.dart:16:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/catalan-numbers-2.dart:13:24: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return int.parse((t5 / (n + 1)));
                        ^
-/tmp/catalan-numbers-2.dart:23:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

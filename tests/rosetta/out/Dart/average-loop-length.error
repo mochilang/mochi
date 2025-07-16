@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/average-loop-length.dart:117:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/average-loop-length.dart:102:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/average-loop-length.dart:13:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return double.parse((int.parse(x)));
                                  ^
@@ -29,6 +23,3 @@ void main() {
 /tmp/average-loop-length.dart:99:10: Error: A value of type 'int' can't be returned from a function with return type 'double'.
   return sum;
          ^
-/tmp/average-loop-length.dart:118:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

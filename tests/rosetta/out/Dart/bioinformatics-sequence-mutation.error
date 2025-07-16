@@ -1,25 +1,4 @@
 run: exit status 254
-/tmp/bioinformatics-sequence-mutation.dart:141:43: Error: String starting with ' must end with '.
-  return '  Change: ' + w[0].toString() + '
-                                          ^
-/tmp/bioinformatics-sequence-mutation.dart:144:1: Error: String starting with ' must end with '.
-';
-^^
-/tmp/bioinformatics-sequence-mutation.dart:155:9: Error: String starting with ' must end with '.
-  print('
-        ^
-/tmp/bioinformatics-sequence-mutation.dart:156:18: Error: String starting with ' must end with '.
-WEIGHTS (ex 300):');
-                 ^^^
-/tmp/bioinformatics-sequence-mutation.dart:155:8: Error: Can't find ')' to match '('.
-  print('
-       ^
-/tmp/bioinformatics-sequence-mutation.dart:170:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bioinformatics-sequence-mutation.dart:147:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/bioinformatics-sequence-mutation.dart:20:6: Error: Type 'any' not found.
 List<any> makeSeq(int s, int le) {
      ^^^
@@ -46,47 +25,3 @@ Try correcting the name to the name of an existing method, or defining a method 
 /tmp/bioinformatics-sequence-mutation.dart:70:27: Error: The argument type 'int' can't be assigned to the parameter type 'String'.
     var idx2 = int.parse(r[1]);
                           ^
-/tmp/bioinformatics-sequence-mutation.dart:141:43: Error: Expected ';' after this.
-  return '  Change: ' + w[0].toString() + '
-                                          ^
-/tmp/bioinformatics-sequence-mutation.dart:142:11: Error: Expected ';' after this.
-  Delete: ' + w[1].toString() + '
-          ^^^^^^^^^^^^^^^^^^^^^^^
-/tmp/bioinformatics-sequence-mutation.dart:144:1: Error: Expected ';' after this.
-';
-^^
-/tmp/bioinformatics-sequence-mutation.dart:156:1: Error: Expected ',' before this.
-WEIGHTS (ex 300):');
-^^^^^^^
-/tmp/bioinformatics-sequence-mutation.dart:156:13: Error: Expected ',' before this.
-WEIGHTS (ex 300):');
-            ^^^
-/tmp/bioinformatics-sequence-mutation.dart:156:10: Error: Undefined name 'ex'.
-WEIGHTS (ex 300):');
-         ^^
-/tmp/bioinformatics-sequence-mutation.dart:156:1: Error: Method not found: 'WEIGHTS'.
-WEIGHTS (ex 300):');
-^^^^^^^
-/tmp/bioinformatics-sequence-mutation.dart:155:8: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-  print('
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^
-/tmp/bioinformatics-sequence-mutation.dart:156:16: Error: Expected ';' after this.
-WEIGHTS (ex 300):');
-               ^
-/tmp/bioinformatics-sequence-mutation.dart:156:17: Error: Expected an identifier, but got ':'.
-Try inserting an identifier before ':'.
-WEIGHTS (ex 300):');
-                ^
-/tmp/bioinformatics-sequence-mutation.dart:156:17: Error: Unexpected token ';'.
-WEIGHTS (ex 300):');
-                ^
-/tmp/bioinformatics-sequence-mutation.dart:156:18: Error: Expected ';' after this.
-WEIGHTS (ex 300):');
-                 ^^^
-/tmp/bioinformatics-sequence-mutation.dart:171:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

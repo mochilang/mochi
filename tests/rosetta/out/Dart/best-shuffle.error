@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/best-shuffle.dart:90:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/best-shuffle.dart:76:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/best-shuffle.dart:9:6: Error: Type 'any' not found.
 List<any> shuffleChars(String s, int seed) {
      ^^^
@@ -14,6 +8,3 @@ List<any> bestShuffle(String s, int seed) {
 /tmp/best-shuffle.dart:63:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-/tmp/best-shuffle.dart:91:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

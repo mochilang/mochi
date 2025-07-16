@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/bitmap-histogram.dart:104:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bitmap-histogram.dart:94:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/bitmap-histogram.dart:25:45: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
       var idx = int.parse(((p * (bins - 1)) / 65535));
                                             ^
 /tmp/bitmap-histogram.dart:49:34: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   return int.parse(((ub * 65535) / h.length));
                                  ^
-/tmp/bitmap-histogram.dart:105:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

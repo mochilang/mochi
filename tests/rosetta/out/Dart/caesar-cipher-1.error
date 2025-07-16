@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/caesar-cipher-1.dart:81:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/caesar-cipher-1.dart:66:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/caesar-cipher-1.dart:34:31: Error: A value of type 'Object' can't be returned from a function with return type 'String'.
  - 'Object' is from 'dart:core'.
     return ((upper is String) ? upper.substring(n - 65, n - 64) : (upper as List).sublist(n - 65, n - 64));
@@ -13,6 +7,3 @@ void main() {
  - 'Object' is from 'dart:core'.
     return ((lower is String) ? lower.substring(n - 97, n - 96) : (lower as List).sublist(n - 97, n - 96));
                               ^
-/tmp/caesar-cipher-1.dart:82:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

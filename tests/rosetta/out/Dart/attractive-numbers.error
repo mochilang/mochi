@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/attractive-numbers.dart:94:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/attractive-numbers.dart:68:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/attractive-numbers.dart:40:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
 /tmp/attractive-numbers.dart:79:30: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       count = (count as num) + 1;
                              ^
-/tmp/attractive-numbers.dart:95:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

@@ -1,83 +1,10 @@
 run: exit status 254
-/tmp/abbreviations-easy.dart:11:28: Error: String starting with ' must end with '.
-    if (ch == ' ' || ch == '
-                           ^
-/tmp/abbreviations-easy.dart:12:15: Error: String starting with ' must end with '.
-' || ch == '  ') {
-              ^^^^
-/tmp/abbreviations-easy.dart:11:8: Error: Can't find ')' to match '('.
-    if (ch == ' ' || ch == '
-       ^
-/tmp/abbreviations-easy.dart:23:3: Error: 'if' can't be used as an identifier because it's a keyword.
-Try renaming this to be an identifier that isn't a keyword.
-  if (cur.length > 0) {
-  ^^
-/tmp/abbreviations-easy.dart:23:18: Error: Expected an identifier, but got '>'.
-Try inserting an identifier before '>'.
-  if (cur.length > 0) {
-                 ^
-/tmp/abbreviations-easy.dart:23:20: Error: Expected ')' before this.
-  if (cur.length > 0) {
-                   ^
-/tmp/abbreviations-easy.dart:26:3: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
-Try adding the name of the type of the variable or the keyword 'var'.
-  return words;
-  ^^^^^^
-/tmp/abbreviations-easy.dart:26:3: Error: 'return' can't be used as an identifier because it's a keyword.
-Try renaming this to be an identifier that isn't a keyword.
-  return words;
-  ^^^^^^
-/tmp/abbreviations-easy.dart:26:3: Error: Expected ';' after this.
-  return words;
-  ^^^^^^
-/tmp/abbreviations-easy.dart:26:10: Error: Variables must be declared using the keywords 'const', 'final', 'var' or a type name.
-Try adding the name of the type of the variable or the keyword 'var'.
-  return words;
-         ^^^^^
-/tmp/abbreviations-easy.dart:27:1: Error: Expected a declaration, but got '}'.
-}
-^
-/tmp/abbreviations-easy.dart:116:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/abbreviations-easy.dart:84:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
-/tmp/abbreviations-easy.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' doesn't refer to an import prefix.
-  if (cur.length > 0) {
-      ^^^^^^^^^^
-/tmp/abbreviations-easy.dart:18:5: Error: Expected an identifier, but got 'else'.
-Try inserting an identifier before 'else'.
-    else {
-    ^^^^
-/tmp/abbreviations-easy.dart:17:5: Error: Expected ';' after this.
-    }
-    ^
-/tmp/abbreviations-easy.dart:18:5: Error: Unexpected token ';'.
-    else {
-    ^^^^
-/tmp/abbreviations-easy.dart:19:19: Error: Undefined name 'ch'.
-      cur = cur + ch;
-                  ^^
-/tmp/abbreviations-easy.dart:5:14: Error: A non-null value must be returned since the return type 'List<String>' doesn't allow null.
- - 'List' is from 'dart:core'.
-List<String> fields(String s) {
-             ^
-/tmp/abbreviations-easy.dart:23:7: Error: 'cur.length' can't be used as a type because 'cur' isn't defined.
-  if (cur.length > 0) {
-      ^^^^^^^^^^
-/tmp/abbreviations-easy.dart:24:35: Error: Undefined name 'cur'.
-    words = List.from(words)..add(cur);
-                                  ^^^
-/tmp/abbreviations-easy.dart:66:17: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:65:17: Error: Method not found: 'upper'.
         var c = upper(cmd);
                 ^^^^^
-/tmp/abbreviations-easy.dart:67:18: Error: Method not found: 'upper'.
+/tmp/abbreviations-easy.dart:66:18: Error: Method not found: 'upper'.
         var ww = upper(w);
                  ^^^^^
-/tmp/abbreviations-easy.dart:96:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
+/tmp/abbreviations-easy.dart:95:32: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
         count = (count as num) + 1;
                                ^
-/tmp/abbreviations-easy.dart:117:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

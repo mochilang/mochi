@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/amicable-pairs.dart:48:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/amicable-pairs.dart:25:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/amicable-pairs.dart:10:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       sum = (sum as num) + p;
                          ^
-/tmp/amicable-pairs.dart:49:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

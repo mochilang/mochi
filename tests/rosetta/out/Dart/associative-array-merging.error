@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/associative-array-merging.dart:23:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/associative-array-merging.dart:16:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/associative-array-merging.dart:5:13: Error: Type 'any' not found.
 Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
             ^^^
@@ -33,6 +27,3 @@ Map<String, any> merge(Map<String, any> base, Map<String, any> update) {
 /tmp/associative-array-merging.dart:18:15: Error: 'any' isn't a type.
   Map<String, any> update = {'price': 15.25, 'color': 'red', 'year': 1974};
               ^^^
-/tmp/associative-array-merging.dart:24:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

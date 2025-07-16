@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/bitmap-ppm-conversion-through-a-pipe.dart:122:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bitmap-ppm-conversion-through-a-pipe.dart:79:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/bitmap-ppm-conversion-through-a-pipe.dart:13:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var r = (int.parse((c / 65536))) % 256;
                         ^
 /tmp/bitmap-ppm-conversion-through-a-pipe.dart:14:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var g = (int.parse((c / 256))) % 256;
                         ^
-/tmp/bitmap-ppm-conversion-through-a-pipe.dart:123:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

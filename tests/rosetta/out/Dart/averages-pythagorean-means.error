@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/averages-pythagorean-means.dart:52:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/averages-pythagorean-means.dart:32:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/averages-pythagorean-means.dart:9:21: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     result = result * base;
                     ^
@@ -42,6 +36,3 @@ Try correcting the operator to an existing operator, or defining a '>=' operator
 /tmp/averages-pythagorean-means.dart:49:44: Error: A value of type 'String' can't be assigned to a variable of type 'num'.
   print('A >= G >= H: ' + a >= g && g >= h.toString());
                                            ^
-/tmp/averages-pythagorean-means.dart:53:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

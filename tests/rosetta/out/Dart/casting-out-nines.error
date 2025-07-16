@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/casting-out-nines.dart:65:11: Error: String starting with ' must end with '.
-    print('
-          ^
-/tmp/casting-out-nines.dart:66:102: Error: String starting with ' must end with '.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                                                     ^^^
-/tmp/casting-out-nines.dart:65:10: Error: Can't find ')' to match '('.
-    print('
-         ^
 /tmp/casting-out-nines.dart:34:98: Error: The operator '+' isn't defined for the class 'Object'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '+' operator.
@@ -16,62 +7,32 @@ Try correcting the operator to an existing operator, or defining a '+' operator.
 /tmp/casting-out-nines.dart:35:11: Error: A value of type 'double' can't be assigned to a variable of type 'int'.
     v = v / base;
           ^
-/tmp/casting-out-nines.dart:66:1: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-^^^^
-/tmp/casting-out-nines.dart:66:6: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-     ^^^^
-/tmp/casting-out-nines.dart:66:6: Error: 'case' can't be used as an identifier because it's a keyword.
-Try renaming this to be an identifier that isn't a keyword.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-     ^^^^
-/tmp/casting-out-nines.dart:66:11: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-          ^^^^
-/tmp/casting-out-nines.dart:66:26: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                         ^^^^
-/tmp/casting-out-nines.dart:66:30: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                             ^^^^^^^^^^^^^^^^^
-/tmp/casting-out-nines.dart:66:65: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                ^^^^^
-/tmp/casting-out-nines.dart:66:70: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                     ^^^^^^
-/tmp/casting-out-nines.dart:66:92: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                                           ^^^
-/tmp/casting-out-nines.dart:66:95: Error: Expected ',' before this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                                              ^^^^^^
-/tmp/casting-out-nines.dart:66:95: Error: Expected an identifier, but got ''] + ''.
-Try inserting an identifier before ''] + ''.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                                              ^^^^^^
-/tmp/casting-out-nines.dart:66:102: Error: Expected ';' after this.
-Test case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
-                                                                                                     ^^^
-/tmp/casting-out-nines.dart:67:22: Error: The argument type 'Object?' can't be assigned to the parameter type 'int'.
+/tmp/casting-out-nines.dart:65:76: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+    print('\nTest case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                           ^
+/tmp/casting-out-nines.dart:65:103: Error: A value of type 'Object?' can't be assigned to a variable of type 'String'.
+ - 'Object' is from 'dart:core'.
+    print('\nTest case base = ' + tc['base'].toString() + ', begin = ' + tc['begin'] + ', end = ' + tc['end'] + ':');
+                                                                                                      ^
+/tmp/casting-out-nines.dart:66:22: Error: The argument type 'Object?' can't be assigned to the parameter type 'int'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                      ^
-/tmp/casting-out-nines.dart:67:34: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+/tmp/casting-out-nines.dart:66:34: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                                  ^
-/tmp/casting-out-nines.dart:67:47: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
+/tmp/casting-out-nines.dart:66:47: Error: The argument type 'Object?' can't be assigned to the parameter type 'String'.
  - 'Object' is from 'dart:core'.
     var s = subset(tc['base'], tc['begin'], tc['end']);
                                               ^
-/tmp/casting-out-nines.dart:73:31: Error: The getter 'length' isn't defined for the class 'Object?'.
+/tmp/casting-out-nines.dart:72:31: Error: The getter 'length' isn't defined for the class 'Object?'.
  - 'Object' is from 'dart:core'.
 Try correcting the name to the name of an existing getter, or defining a getter or field named 'length'.
     while (i < tc['kaprekar'].length) {
                               ^^^^^^
-/tmp/casting-out-nines.dart:74:29: Error: The operator '[]' isn't defined for the class 'Object?'.
+/tmp/casting-out-nines.dart:73:29: Error: The operator '[]' isn't defined for the class 'Object?'.
  - 'Object' is from 'dart:core'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
       var k = tc['kaprekar'][i];

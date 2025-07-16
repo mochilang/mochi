@@ -1,16 +1,4 @@
 run: exit status 254
-/tmp/bitmap.dart:103:16: Error: String starting with ' must end with '.
-  var header = 'P6
-               ^^^
-/tmp/bitmap.dart:107:1: Error: String starting with ' must end with '.
-';
-^^
-/tmp/bitmap.dart:141:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/bitmap.dart:115:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/bitmap.dart:86:13: Error: Type 'any' not found.
 Map<String, any> GetPx(Bitmap b, int x, int y) {
             ^^^
@@ -23,44 +11,13 @@ Map<String, any> GetPxRgb(Bitmap b, int x, int y) {
 /tmp/bitmap.dart:14:25: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var g = (int.parse((c / 256))) % 256;
                         ^
-/tmp/bitmap.dart:103:16: Error: Expected ';' after this.
-  var header = 'P6
-               ^^^
-/tmp/bitmap.dart:104:3: Error: Expected ';' after this.
-# Creator: Rosetta Code http://rosettacode.org/
-  ^^^^^^^
-/tmp/bitmap.dart:104:10: Error: Expected an identifier, but got ':'.
-Try inserting an identifier before ':'.
-# Creator: Rosetta Code http://rosettacode.org/
-         ^
-/tmp/bitmap.dart:104:10: Error: Unexpected token ';'.
-# Creator: Rosetta Code http://rosettacode.org/
-         ^
-/tmp/bitmap.dart:104:12: Error: 'Rosetta' isn't a type.
-# Creator: Rosetta Code http://rosettacode.org/
-           ^^^^^^^
-/tmp/bitmap.dart:104:20: Error: Expected ';' after this.
-# Creator: Rosetta Code http://rosettacode.org/
-                   ^^^^
-/tmp/bitmap.dart:105:27: Error: Expected ';' after this.
-' + b.cols.toString() + ' ' + b.rows.toString() + '
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^
-/tmp/bitmap.dart:106:1: Error: Expected ';' after this.
-255
-^^^
-/tmp/bitmap.dart:107:1: Error: Expected ';' after this.
-';
-^^
-/tmp/bitmap.dart:124:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+/tmp/bitmap.dart:120:28: Error: The operator '[]' isn't defined for the class 'Bitmap'.
  - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());
                            ^
-/tmp/bitmap.dart:124:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
+/tmp/bitmap.dart:120:60: Error: The operator '[]' isn't defined for the class 'Bitmap'.
  - 'Bitmap' is from '/tmp/bitmap.dart'.
 Try correcting the operator to an existing operator, or defining a '[]' operator.
   print('Image size: ' + bm['cols'].toString() + ' × ' + bm['rows'].toString());
                                                            ^
-/tmp/bitmap.dart:142:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

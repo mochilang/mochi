@@ -1,13 +1,4 @@
 run: exit status 254
-/tmp/carmichael-3-strong-pseudoprimes.dart:64:9: Error: String starting with ' must end with '.
-  print('The following are Carmichael munbers for p1 <= 61:
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/tmp/carmichael-3-strong-pseudoprimes.dart:65:1: Error: String starting with ' must end with '.
-');
-^^^
-/tmp/carmichael-3-strong-pseudoprimes.dart:64:8: Error: Can't find ')' to match '('.
-  print('The following are Carmichael munbers for p1 <= 61:
-       ^
 /tmp/carmichael-3-strong-pseudoprimes.dart:46:22: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
         if (!isPrime(p2)) {
                      ^
@@ -20,13 +11,3 @@ run: exit status 254
 /tmp/carmichael-3-strong-pseudoprimes.dart:57:61: Error: The argument type 'double' can't be assigned to the parameter type 'int'.
         print(pad(p1, 2) + '   ' + pad(p2, 4) + '   ' + pad(p3, 5) + '     ' + c.toString());
                                                             ^
-/tmp/carmichael-3-strong-pseudoprimes.dart:66:3: Error: Expected ',' before this.
-  print('p1     p2      p3     product');
-  ^^^^^
-/tmp/carmichael-3-strong-pseudoprimes.dart:64:8: Error: Too many positional arguments: 1 allowed, but 2 found.
-Try removing the extra positional arguments.
-  print('The following are Carmichael munbers for p1 <= 61:
-       ^
-org-dartlang-sdk:///sdk/lib/core/print.dart:19:6: Context: Found this candidate, but the arguments don't match.
-void print(Object? object) {
-     ^^^^^

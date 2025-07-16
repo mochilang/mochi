@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/avl-tree.dart:222:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/avl-tree.dart:200:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/avl-tree.dart:5:13: Error: Type 'any' not found.
 Map<String, any> Node(int data) {
             ^^^
@@ -146,6 +140,3 @@ void dump(any node, int indent) {
 /tmp/avl-tree.dart:216:32: Error: 'any' isn't a type.
   var t = (tree as Map<String, any>);
                                ^^^
-/tmp/avl-tree.dart:223:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

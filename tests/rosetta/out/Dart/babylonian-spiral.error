@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/babylonian-spiral.dart:120:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/babylonian-spiral.dart:103:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/babylonian-spiral.dart:17:13: Error: Type 'any' not found.
 Map<String, any> step(List<Map<String, int>> h, int nv, List<int> dir) {
             ^^^
@@ -44,6 +38,3 @@ Map<String, any> step(List<Map<String, int>> h, int nv, List<int> dir) {
 /tmp/babylonian-spiral.dart:29:103: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
       h = push(h, {'s': it['a'] * it['a'] + (it['b'] + 1) * (it['b'] + 1), 'a': it['a'], 'b': it['b'] + 1});
                                                                                                       ^
-/tmp/babylonian-spiral.dart:121:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

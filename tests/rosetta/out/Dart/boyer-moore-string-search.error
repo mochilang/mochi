@@ -1,16 +1,7 @@
 run: exit status 254
-/tmp/boyer-moore-string-search.dart:74:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/boyer-moore-string-search.dart:57:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/boyer-moore-string-search.dart:62:20: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
     print('text' + i + 1.toString() + ' = ' + texts[i]);
                    ^
 /tmp/boyer-moore-string-search.dart:69:51: Error: A value of type 'int' can't be assigned to a variable of type 'String'.
     print('Found ' + patterns[j] + ' in \'text' + j + 1.toString() + '\' at indexes ' + display(idxs));
                                                   ^
-/tmp/boyer-moore-string-search.dart:75:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^

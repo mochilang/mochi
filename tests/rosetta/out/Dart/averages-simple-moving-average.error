@@ -1,10 +1,4 @@
 run: exit status 254
-/tmp/averages-simple-moving-average.dart:78:6: Error: 'main' is already declared in this scope.
-void main() {
-     ^^^^
-/tmp/averages-simple-moving-average.dart:65:6: Context: Previous declaration of 'main'.
-void main() {
-     ^^^^
 /tmp/averages-simple-moving-average.dart:17:46: Error: The argument type 'double' can't be assigned to the parameter type 'String'.
   var y = double.parse(int.parse(((x * 1000) + 0.5))) / 1000;
                                              ^
@@ -31,6 +25,3 @@ void main() {
 /tmp/averages-simple-moving-average.dart:72:27: Error: The argument type 'int' can't be assigned to the parameter type 'double'.
     var line = pad(fmt3(xs[i]), 5) + '  ' + pad(fmt3(sma3[i]), 5) + '  ' + pad(fmt3(sma5[i]), 5);
                           ^
-/tmp/averages-simple-moving-average.dart:79:3: Error: Can't use 'main' because it is declared more than once.
-  main();
-  ^
