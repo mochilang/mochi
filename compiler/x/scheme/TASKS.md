@@ -11,6 +11,8 @@ The Scheme backend now targets chibi-scheme and can compile the `tpc-h/q1.mochi`
 - 2025-07-15 07:28 – Generated Scheme code for TPC-DS queries `q40`, `q77`, `q78`, `q93` and `q97`.
 - 2025-07-16 11:34 – Added Rosetta golden test and compile script; improved
   variable handling to avoid runtime errors.
+- 2025-07-16 12:20 – Implemented `now()` builtin using `(chibi time)` to reduce
+  runtime failures when compiling Rosetta examples.
 
 ### Remaining Work
 - [ ] Better handling of date comparisons and sorting when running JOB benchmarks
