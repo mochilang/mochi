@@ -1,0 +1,26 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/camel-case-and-snake-case.pas
+camel-case-and-snake-case.pas(16,35) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(21,30) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(25,13) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(64,11) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(80,14) Warning: Implicit string type conversion from "ShortString" to "UnicodeString"
+camel-case-and-snake-case.pas(80,11) Warning: Implicit string type conversion with potential data loss from "UnicodeString" to "ShortString"
+camel-case-and-snake-case.pas(111,11) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(145,37) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(150,30) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(154,10) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(160,10) Error: Identifier not found "_sliceString"
+camel-case-and-snake-case.pas(180,245) Error: Incompatible types: got "TArray$1$crc862A1656" expected "TArray$1$crcE41905E8"
+camel-case-and-snake-case.pas(182,7) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(184,21) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(184,52) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(188,7) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(190,21) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(190,52) Error: Identifier not found "s"
+camel-case-and-snake-case.pas(211) Fatal: There were 16 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

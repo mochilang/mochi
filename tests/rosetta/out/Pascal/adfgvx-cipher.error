@@ -1,0 +1,13 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/adfgvx-cipher.pas
+adfgvx-cipher.pas(23,52) Error: Identifier not found "_indexString"
+adfgvx-cipher.pas(23,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc862A1656", expected "{Open} Array Of Pointer"
+adfgvx-cipher.pas(30,15) Error: Incompatible types: got "ShortString" expected "TArray$1$crc862A1656"
+adfgvx-cipher.pas(32,15) Error: Incompatible types: got "TArray$1$crc862A1656" expected "ShortString"
+adfgvx-cipher.pas(55,26) Error: Identifier not found "alphabet"
+adfgvx-cipher.pas(56,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

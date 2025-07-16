@@ -1,0 +1,9 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/averages-median-3.pas
+averages-median-3.pas(24,17) Error: Operator is not overloaded: "TDateTime" mod "Int64"
+averages-median-3.pas(79) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

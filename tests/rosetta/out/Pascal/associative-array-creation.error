@@ -1,0 +1,14 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/associative-array-creation.pas
+associative-array-creation.pas(20,5) Error: Identifier not found "key"
+associative-array-creation.pas(21,9) Error: Identifier not found "key"
+associative-array-creation.pas(35,8) Error: Incompatible types: got "Variant" expected "TFPGMap<System.ShortString,System.LongInt>"
+associative-array-creation.pas(39,10) Error: Incompatible types: got "LongInt" expected "TFPGMap<System.ShortString,System.LongInt>"
+associative-array-creation.pas(40,16) Error: Operator is not overloaded
+associative-array-creation.pas(41,13) Error: Can't read or write variables of this type
+associative-array-creation.pas(55) Fatal: There were 6 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,15 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/check-that-file-exists.pas
+check-that-file-exists.pas(10,10) Warning: Function result does not seem to be set
+fgl.pp(1668,8) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Boolean>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+check-that-file-exists.pas(12,9) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Boolean>.IndexOf(const AKey:ShortString):LongInt;" marked as inline is not inlined
+check-that-file-exists.pas(14,10) Note: Call to subroutine "function TFPGMap<System.ShortString,System.Boolean>.GetKeyData(const AKey:ShortString):Boolean;" marked as inline is not inlined
+check-that-file-exists.pas(33,9) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.Boolean>"
+check-that-file-exists.pas(35,7) Error: Identifier not found "p"
+check-that-file-exists.pas(37,19) Error: Identifier not found "p"
+check-that-file-exists.pas(44) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

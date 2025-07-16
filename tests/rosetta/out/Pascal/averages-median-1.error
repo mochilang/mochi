@@ -1,0 +1,8 @@
+run: exit status 217
+An unhandled exception occurred at $00000000004C6BA8:
+EVariantError: Invalid variant type cast
+  $00000000004C6BA8
+  $00000000004CC4AB
+  $00000000004014A0
+  $00000000004016FE
+

@@ -1,0 +1,16 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/call-an-object-method-1.pas
+call-an-object-method-1.pas(19,14) Warning: Variable "_tmp0" does not seem to be initialized
+call-an-object-method-1.pas(20,16) Warning: Variable "_tmp1" does not seem to be initialized
+call-an-object-method-1.pas(21,11) Error: identifier idents no member "ValueMethod"
+call-an-object-method-1.pas(22,13) Error: identifier idents no member "PointerMethod"
+call-an-object-method-1.pas(23,13) Error: identifier idents no member "ValueMethod"
+call-an-object-method-1.pas(24,11) Error: identifier idents no member "PointerMethod"
+call-an-object-method-1.pas(25,11) Error: identifier idents no member "ValueMethod"
+call-an-object-method-1.pas(26,13) Error: identifier idents no member "PointerMethod"
+call-an-object-method-1.pas(28) Fatal: There were 6 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

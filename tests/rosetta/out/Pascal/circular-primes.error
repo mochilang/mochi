@@ -1,0 +1,27 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/circular-primes.pas
+circular-primes.pas(35,9) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+circular-primes.pas(37,9) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+circular-primes.pas(37,13) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+circular-primes.pas(40,14) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(40,14) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+circular-primes.pas(42,9) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+circular-primes.pas(45,14) Note: Call to subroutine "operator *(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(45,14) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+circular-primes.pas(46,13) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(46,13) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+circular-primes.pas(47,22) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(47,22) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(47,14) Note: Call to subroutine "operator *(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+circular-primes.pas(47,18) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+circular-primes.pas(47,22) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+circular-primes.pas(48,8) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+circular-primes.pas(48,12) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+circular-primes.pas(49,22) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+circular-primes.pas(64,38) Error: Identifier not found "_indexList"
+circular-primes.pas(64,60) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

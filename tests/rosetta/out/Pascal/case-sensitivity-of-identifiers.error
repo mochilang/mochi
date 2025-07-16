@@ -1,0 +1,12 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/case-sensitivity-of-identifiers.pas
+case-sensitivity-of-identifiers.pas(13,6) Error: Duplicate identifier "DOG"
+case-sensitivity-of-identifiers.pas(15,6) Error: Duplicate identifier "Dog"
+case-sensitivity-of-identifiers.pas(17,10) Error: Duplicate identifier "pkg_DOG"
+case-sensitivity-of-identifiers.pas(22,8) Error: Identifier not found "packageSees"
+case-sensitivity-of-identifiers.pas(23,48) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,8 @@
+parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:30:58: lexer: invalid input text "; return f }\n  x..."
+  --> /workspace/mochi/tests/rosetta/x/Mochi/church-numerals-2.mochi:30:58
+
+ 30 |   fun fCounter(f: Church): Church { counter = counter + 1; return f }
+    |                                                          ^
+
+help:
+  String literals must be properly closed with a `"`.

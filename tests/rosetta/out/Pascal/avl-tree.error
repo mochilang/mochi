@@ -1,0 +1,58 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/avl-tree.pas
+avl-tree.pas(10,58) Error: Identifier not found "any"
+avl-tree.pas(10,61) Error: Type identifier expected
+avl-tree.pas(22,48) Error: Identifier not found "any"
+avl-tree.pas(22,51) Error: Type identifier expected
+avl-tree.pas(22,72) Error: Identifier not found "any"
+avl-tree.pas(24,21) Error: Illegal qualifier
+avl-tree.pas(28,48) Error: Identifier not found "any"
+avl-tree.pas(28,51) Error: Type identifier expected
+avl-tree.pas(28,74) Error: Identifier not found "any"
+avl-tree.pas(32,20) Error: Illegal qualifier
+avl-tree.pas(34,5) Error: Illegal qualifier
+avl-tree.pas(43,50) Error: Identifier not found "any"
+avl-tree.pas(43,53) Error: Type identifier expected
+avl-tree.pas(43,98) Error: Identifier not found "any"
+avl-tree.pas(43,101) Error: Type identifier expected
+avl-tree.pas(48,38) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(49,14) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(54,50) Error: Identifier not found "any"
+avl-tree.pas(54,53) Error: Type identifier expected
+avl-tree.pas(54,98) Error: Identifier not found "any"
+avl-tree.pas(54,101) Error: Type identifier expected
+avl-tree.pas(59,52) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(60,14) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(61,30) Error: Incompatible type for arg no. 3: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(63,38) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(64,14) Error: Incompatible type for arg no. 1: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(69,57) Error: Identifier not found "any"
+avl-tree.pas(69,60) Error: Type identifier expected
+avl-tree.pas(74,32) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Extended"
+avl-tree.pas(75,24) Error: Incompatible type for arg no. 1: Got "TFPGMap<System.ShortString,System.Variant>", expected "<erroneous type>"
+avl-tree.pas(78,10) Error: Illegal qualifier
+avl-tree.pas(82,10) Error: Illegal qualifier
+avl-tree.pas(86,10) Error: Illegal qualifier
+avl-tree.pas(92,57) Error: Identifier not found "any"
+avl-tree.pas(92,60) Error: Type identifier expected
+avl-tree.pas(92,105) Error: Identifier not found "any"
+avl-tree.pas(92,108) Error: Type identifier expected
+avl-tree.pas(97,32) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Extended"
+avl-tree.pas(101,10) Error: Illegal qualifier
+avl-tree.pas(111,27) Error: Identifier not found "any"
+avl-tree.pas(111,72) Error: Identifier not found "any"
+avl-tree.pas(111,75) Error: Type identifier expected
+avl-tree.pas(122,12) Error: Operator is not overloaded: "<erroneous type>" = "Variant"
+avl-tree.pas(123,21) Error: Incompatible type for arg no. 1: Got "<erroneous type>", expected "Extended"
+avl-tree.pas(126,28) Error: Incompatible type for arg no. 1: Got "TFPGMap<System.ShortString,System.Variant>", expected "<erroneous type>"
+avl-tree.pas(127,24) Error: Incompatible types: got "Constant String" expected "LongInt"
+avl-tree.pas(127,31) Error: Incompatible type for arg no. 3: Got "Variant", expected "<erroneous type>"
+avl-tree.pas(128,8) Error: Incompatible types: got "Constant String" expected "LongInt"
+avl-tree.pas(133,48) Error: Incompatible type for arg no. 1: Got "TFPGMap<System.ShortString,System.Variant>", expected "<erroneous type>"
+avl-tree.pas(139,26) Error: Identifier not found "any"
+avl-tree.pas(139,26) Fatal: There were 50 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

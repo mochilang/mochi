@@ -1,0 +1,19 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/boolean-values.pas
+boolean-values.pas(14,8) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+boolean-values.pas(15,10) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+boolean-values.pas(15,13) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+boolean-values.pas(15,23) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+boolean-values.pas(15,26) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+boolean-values.pas(15,37) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+boolean-values.pas(15,40) Note: Call to subroutine "operator :=(const source:Boolean):Variant;" marked as inline is not inlined
+boolean-values.pas(15,52) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+boolean-values.pas(15,55) Note: Call to subroutine "operator :=(const source:ShortString):Variant;" marked as inline is not inlined
+boolean-values.pas(15,68) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+boolean-values.pas(15,71) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+boolean-values.pas(37,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

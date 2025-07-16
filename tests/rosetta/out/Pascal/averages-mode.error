@@ -1,0 +1,33 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/averages-mode.pas
+averages-mode.pas(14,19) Warning: function result variable of a managed type does not seem to be initialized
+averages-mode.pas(49,14) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.LongInt,System.LongInt>"
+averages-mode.pas(54,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(55,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(57,46) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(60,24) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(61,56) Error: Incompatible type for arg no. 2: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(69,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(70,27) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(71,11) Error: Operator is not overloaded: "TFPGMap$2$crcCE019B12" > "LongInt"
+averages-mode.pas(78,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(79,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(82,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "QWord"
+averages-mode.pas(85,14) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.LongInt,System.LongInt>"
+averages-mode.pas(90,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(91,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(93,46) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(96,24) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(97,56) Error: Incompatible type for arg no. 2: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(105,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(106,27) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(107,11) Error: Operator is not overloaded: "TFPGMap$2$crcCE019B12" > "LongInt"
+averages-mode.pas(114,10) Error: Incompatible types: got "LongInt" expected "TArray$1$crc9F312717"
+averages-mode.pas(115,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "LongInt"
+averages-mode.pas(118,26) Error: Incompatible type for arg no. 1: Got "TArray$1$crc9F312717", expected "QWord"
+averages-mode.pas(120) Fatal: There were 24 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

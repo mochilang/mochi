@@ -1,0 +1,23 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/caesar-cipher-1.pas
+caesar-cipher-1.pas(17,9) Error: Identifier not found "_sliceString"
+caesar-cipher-1.pas(30,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+caesar-cipher-1.pas(31,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+caesar-cipher-1.pas(32,23) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(ShortString):ShortString is nested;Register>", expected "ShortString"
+caesar-cipher-1.pas(34,23) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):ShortString is nested;Register>", expected "ShortString"
+caesar-cipher-1.pas(45,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+caesar-cipher-1.pas(46,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+caesar-cipher-1.pas(70,28) Error: Identifier not found "_sliceString"
+caesar-cipher-1.pas(90,7) Error: Identifier not found "key"
+caesar-cipher-1.pas(92,10) Error: Identifier not found "key"
+caesar-cipher-1.pas(92,23) Error: Identifier not found "key"
+caesar-cipher-1.pas(94,33) Error: Identifier not found "key"
+caesar-cipher-1.pas(97,24) Error: Identifier not found "key"
+caesar-cipher-1.pas(98,31) Error: Identifier not found "key"
+caesar-cipher-1.pas(100,45) Error: Identifier not found "key"
+caesar-cipher-1.pas(121) Fatal: There were 15 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

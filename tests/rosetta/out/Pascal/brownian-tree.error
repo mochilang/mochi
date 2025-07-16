@@ -1,0 +1,8 @@
+parse: error[P999]: /workspace/mochi/tests/rosetta/x/Mochi/brownian-tree.mochi:4:8: unexpected token ":"
+  --> /workspace/mochi/tests/rosetta/x/Mochi/brownian-tree.mochi:4:8
+
+  4 | const w: int = 400
+    |        ^
+
+help:
+  Parse error occurred. Check syntax near this location.

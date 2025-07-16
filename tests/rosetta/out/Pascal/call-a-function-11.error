@@ -1,0 +1,13 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/call-a-function-11.pas
+call-a-function-11.pas(14,8) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+call-a-function-11.pas(15,8) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+call-a-function-11.pas(16,13) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+call-a-function-11.pas(20,10) Warning: Function result does not seem to be set
+call-a-function-11.pas(36,14) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "TArray$1$crc9F312717"
+call-a-function-11.pas(45) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

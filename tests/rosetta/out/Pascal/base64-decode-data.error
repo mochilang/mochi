@@ -1,0 +1,24 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/base64-decode-data.pas
+base64-decode-data.pas(17,9) Error: Identifier not found "_indexString"
+base64-decode-data.pas(34,30) Error: Identifier not found "_indexString"
+base64-decode-data.pas(51,13) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.Variant,System.Variant>"
+base64-decode-data.pas(54,26) Error: Identifier not found "_indexString"
+base64-decode-data.pas(68,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+base64-decode-data.pas(69,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+base64-decode-data.pas(70,23) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(ShortString):ShortString is nested;Register>", expected "ShortString"
+base64-decode-data.pas(72,23) Error: Incompatible type for arg no. 1: Got "<procedure variable type of function(Variant):ShortString is nested;Register>", expected "ShortString"
+base64-decode-data.pas(89,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(ShortString):ShortString is nested;Register>"
+base64-decode-data.pas(90,12) Error: Incompatible types: got "Constant String" expected "<procedure variable type of function(Variant):ShortString is nested;Register>"
+base64-decode-data.pas(95,15) Error: Incompatible types: got "Constant String" expected "TFPGMap<System.Variant,System.Variant>"
+base64-decode-data.pas(135,30) Error: Identifier not found "_sliceString"
+base64-decode-data.pas(157,5) Error: Identifier not found "ch"
+base64-decode-data.pas(158,31) Error: Identifier not found "ch"
+base64-decode-data.pas(196,11) Error: Identifier not found "_indexString"
+base64-decode-data.pas(206,14) Error: Identifier not found "_sliceString"
+base64-decode-data.pas(246,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

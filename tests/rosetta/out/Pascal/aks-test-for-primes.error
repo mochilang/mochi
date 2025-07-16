@@ -1,0 +1,48 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/aks-test-for-primes.pas
+aks-test-for-primes.pas(19,8) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(21,9) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aks-test-for-primes.pas(21,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(24,11) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aks-test-for-primes.pas(24,11) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,41) Note: Call to subroutine "operator :=(const source:Variant):Extended;" marked as inline is not inlined
+aks-test-for-primes.pas(25,41) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,38) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,34) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,28) Note: Call to subroutine "operator *(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,24) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,28) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(25,38) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(27,8) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aks-test-for-primes.pas(27,25) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(27,15) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(27,11) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(27,15) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(27,25) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(35,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(35,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(48,8) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(49,8) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(50,9) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aks-test-for-primes.pas(50,12) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(52,17) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+aks-test-for-primes.pas(52,17) Note: Call to subroutine "operator mod(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(52,11) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(52,17) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,36) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,35) Note: Call to subroutine "operator :=(const source:Variant):Extended;" marked as inline is not inlined
+aks-test-for-primes.pas(53,35) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,32) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,22) Note: Call to subroutine "operator *(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,18) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,22) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(53,32) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(54,12) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(54,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+aks-test-for-primes.pas(72,12) Error: Incompatible types: got "Boolean" expected "<procedure variable type of function(TArray$1$crcE41905E8):Variant is nested;Register>"
+aks-test-for-primes.pas(86) Fatal: There were 1 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,0 +1,10 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/array-length.pas
+array-length.pas(14,64) Error: Incompatible types: got "TArray$1$crc862A1656" expected "TArray$1$crcE41905E8"
+array-length.pas(15,38) Error: Incompatible type for arg no. 1: Got "TArray$1$crcE41905E8", expected "QWord"
+array-length.pas(21) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

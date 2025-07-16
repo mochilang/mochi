@@ -1,0 +1,28 @@
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/carmichael-3-strong-pseudoprimes.pas
+carmichael-3-strong-pseudoprimes.pas(39,8) Note: Call to subroutine "operator :=(const source:AnsiString):Variant;" marked as inline is not inlined
+carmichael-3-strong-pseudoprimes.pas(40,17) Note: Call to subroutine "operator :=(const source:Variant):AnsiString;" marked as inline is not inlined
+carmichael-3-strong-pseudoprimes.pas(42,14) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+carmichael-3-strong-pseudoprimes.pas(42,14) Note: Call to subroutine "operator :=(const source:Char):Variant;" marked as inline is not inlined
+carmichael-3-strong-pseudoprimes.pas(44,13) Note: Call to subroutine "operator :=(const source:Variant):ShortString;" marked as inline is not inlined
+carmichael-3-strong-pseudoprimes.pas(54,7) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(54,7) Error: Ordinal expression expected
+carmichael-3-strong-pseudoprimes.pas(54,7) Error: Illegal counter variable
+carmichael-3-strong-pseudoprimes.pas(56,9) Error: Identifier not found "d"
+carmichael-3-strong-pseudoprimes.pas(56,9) Error: Ordinal expression expected
+carmichael-3-strong-pseudoprimes.pas(56,9) Error: Illegal counter variable
+carmichael-3-strong-pseudoprimes.pas(56,19) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(58,12) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(58,33) Error: Identifier not found "d"
+carmichael-3-strong-pseudoprimes.pas(58,60) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(58,66) Error: Identifier not found "d"
+carmichael-3-strong-pseudoprimes.pas(58,72) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(60,28) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(60,40) Error: Identifier not found "d"
+carmichael-3-strong-pseudoprimes.pas(62,31) Error: Identifier not found "h3"
+carmichael-3-strong-pseudoprimes.pas(76,11) Fatal: String exceeds line
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
