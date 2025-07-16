@@ -1,1 +1,10 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/canonicalize-cidr.pas
+canonicalize-cidr.pas(21,69) Error: Identifier not found "_sliceString"
+canonicalize-cidr.pas(23,27) Error: Identifier not found "_appendList"
+canonicalize-cidr.pas(23,53) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

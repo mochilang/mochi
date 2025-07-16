@@ -1,44 +1,8 @@
-fpc: exit status 1
-Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
-Copyright (c) 1993-2021 by Florian Klaempfl and others
-Target OS: Linux for x86-64
-Compiling /tmp/cantor-set.pas
-cantor-set.pas(12,13) Error: Identifier not found "_sliceString"
-cantor-set.pas(12,48) Error: Identifier not found "_sliceString"
-cantor-set.pas(20,19) Warning: function result variable of a managed type does not seem to be initialized
-cantor-set.pas(84,7) Error: Ordinal expression expected
-cantor-set.pas(85,3) Error: range check error while evaluating constants (0 must be between 0 and -1)
-cantor-set.pas(87,10) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(88,14) Error: Operator is not overloaded: "TArray$1$crc7766314F" < "LongInt"
-cantor-set.pas(91,23) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(91,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(84,12) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(84,24) Error: Incompatible types: got "Int64" expected "TArray$1$crc7766314F"
-cantor-set.pas(102,14) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TArray$1$crc7766314F"
-cantor-set.pas(104,87) Error: Incompatible type for arg no. 2: Got "Constant String", expected "LongInt"
-cantor-set.pas(105,86) Error: Incompatible type for arg no. 2: Got "Constant String", expected "LongInt"
-cantor-set.pas(106,87) Error: Incompatible type for arg no. 2: Got "Constant String", expected "LongInt"
-cantor-set.pas(107,25) Error: Operator is not overloaded: "TArray$1$crc7766314F" div "ShortInt"
-cantor-set.pas(110,14) Error: Operator is not overloaded: "TArray$1$crc7766314F" < "LongInt"
-cantor-set.pas(112,29) Error: Incompatible types: got "LongInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(112,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(113,39) Error: Incompatible types: got "Int64" expected "TArray$1$crc7766314F"
-cantor-set.pas(113,18) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(115,15) Error: Incompatible types: got "TArray$1$crc7766314F" expected "QWord"
-cantor-set.pas(115,67) Error: Incompatible type for arg no. 2: Got "TArray$1$crc7766314F", expected "LongInt"
-cantor-set.pas(116,25) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(116,14) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(118,23) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(118,12) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(123,48) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(123,33) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(124,86) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "TFPGMap<System.ShortString,System.LongInt>"
-cantor-set.pas(126,54) Error: Incompatible types: got "Int64" expected "TArray$1$crc7766314F"
-cantor-set.pas(126,33) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(128,48) Error: Incompatible types: got "ShortInt" expected "TArray$1$crc7766314F"
-cantor-set.pas(128,33) Error: Incompatible type for arg no. 3: Got "{Array Of Const/Constant Open} Array of TArray$1$crc7766314F", expected "{Open} Array Of Pointer"
-cantor-set.pas(129,86) Error: Incompatible type for arg no. 2: Got "TFPGMap<System.ShortString,System.Variant>", expected "TFPGMap<System.ShortString,System.LongInt>"
-cantor-set.pas(20,19) Warning: function result variable of a managed type does not seem to be initialized
-cantor-set.pas(136) Fatal: There were 34 errors compiling module, stopping
-Fatal: Compilation aborted
-Error: /usr/bin/ppcx64 returned an error exitcode
+type: error[T007]: argument 2: expected int, got bigint
+  --> /workspace/mochi/tests/rosetta/x/Mochi/cantor-set.mochi:19:38
+
+ 19 |   return substring(s, 0, idx) + ch + substring(s, idx+1, len(s))
+    |                                      ^
+
+help:
+  Ensure the argument type matches the function’s signature.

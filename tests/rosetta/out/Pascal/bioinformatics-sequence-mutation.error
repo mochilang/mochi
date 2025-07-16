@@ -1,1 +1,25 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/bioinformatics-sequence-mutation.pas
+bioinformatics-sequence-mutation.pas(14,23) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(15,41) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(15,52) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(15,52) Note: Call to subroutine "operator mod(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(15,52) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(25,10) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(26,9) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(26,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(29,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(29,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+bioinformatics-sequence-mutation.pas(35,62) Error: Identifier not found "any"
+bioinformatics-sequence-mutation.pas(35,65) Error: Type identifier expected
+bioinformatics-sequence-mutation.pas(51,18) Error: Identifier not found "_sliceString"
+bioinformatics-sequence-mutation.pas(54,44) Error: Incompatible types: got "ShortString" expected "LongInt"
+bioinformatics-sequence-mutation.pas(58,92) Error: Identifier not found "any"
+bioinformatics-sequence-mutation.pas(58,95) Error: Type identifier expected
+bioinformatics-sequence-mutation.pas(85,23) Error: Identifier not found "_appendList"
+bioinformatics-sequence-mutation.pas(85,47) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

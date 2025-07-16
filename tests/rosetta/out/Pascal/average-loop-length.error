@@ -1,1 +1,12 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/average-loop-length.pas
+average-loop-length.pas(30,9) Error: Identifier not found "_sliceString"
+average-loop-length.pas(55,12) Error: Identifier not found "_sliceString"
+average-loop-length.pas(106,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+average-loop-length.pas(115,29) Error: Identifier not found "_appendList"
+average-loop-length.pas(115,57) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

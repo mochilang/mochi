@@ -1,8 +1,11 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/arithmetic-complex.pas
+arithmetic-complex.pas(49,24) Error: Incompatible types: got "Double" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
+arithmetic-complex.pas(50,20) Error: Operator is not overloaded: "Double" / "<procedure variable type of function(Variant):LongInt is nested;Register>"
+arithmetic-complex.pas(51,21) Error: Operator is not overloaded: "Double" / "<procedure variable type of function(Variant):LongInt is nested;Register>"
+arithmetic-complex.pas(103) Fatal: There were 3 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

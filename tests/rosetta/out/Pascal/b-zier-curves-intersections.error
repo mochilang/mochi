@@ -1,8 +1,34 @@
-parse: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/b-zier-curves-intersections.mochi:1:1
-
-  1 | # Mochi implementation of Rosetta "B'zier curves/Intersections" task
-    | ^
-
-help:
-  String literals must be properly closed with a `"`.
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/b-zier-curves-intersections.pas
+b-zier-curves-intersections.pas(48,8) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(49,6) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+b-zier-curves-intersections.pas(49,9) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(50,6) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+b-zier-curves-intersections.pas(50,9) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(51,13) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
+b-zier-curves-intersections.pas(59,8) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(60,6) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+b-zier-curves-intersections.pas(60,9) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(61,6) Note: Call to subroutine "operator <(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+b-zier-curves-intersections.pas(61,9) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+b-zier-curves-intersections.pas(62,13) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
+b-zier-curves-intersections.pas(78,8) Error: Incompatible types: got "QuadSpline" expected "Variant"
+b-zier-curves-intersections.pas(82,8) Error: Incompatible types: got "QuadSpline" expected "Variant"
+b-zier-curves-intersections.pas(87,47) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crc7ED07D64"
+b-zier-curves-intersections.pas(102,16) Error: Incompatible types: got "Variant" expected "QuadSpline"
+b-zier-curves-intersections.pas(103,16) Error: Incompatible types: got "Variant" expected "QuadSpline"
+b-zier-curves-intersections.pas(104,8) Error: Incompatible types: got "QuadCurve" expected "Variant"
+b-zier-curves-intersections.pas(105,16) Error: Incompatible types: got "Variant" expected "QuadSpline"
+b-zier-curves-intersections.pas(106,16) Error: Incompatible types: got "Variant" expected "QuadSpline"
+b-zier-curves-intersections.pas(107,8) Error: Incompatible types: got "QuadCurve" expected "Variant"
+b-zier-curves-intersections.pas(108,47) Error: Incompatible types: got "TArray$1$crc9F312717" expected "TArray$1$crc09D74DF2"
+b-zier-curves-intersections.pas(118,93) Error: Identifier not found "any"
+b-zier-curves-intersections.pas(118,96) Error: Type identifier expected
+b-zier-curves-intersections.pas(150,12) Error: Incompatible types: got "Point" expected "Variant"
+b-zier-curves-intersections.pas(184,22) Error: Identifier not found "_indexList"
+b-zier-curves-intersections.pas(184,45) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

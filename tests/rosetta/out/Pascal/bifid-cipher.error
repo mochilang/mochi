@@ -1,1 +1,13 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/bifid-cipher.pas
+bifid-cipher.pas(10,107) Error: Identifier not found "any"
+bifid-cipher.pas(10,110) Error: Type identifier expected
+bifid-cipher.pas(23,11) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,BifidCipher.TArray$1$crc9F312717>"
+bifid-cipher.pas(25,11) Error: Incompatible types: got "TFPGMap<System.ShortString,System.LongInt>" expected "TFPGMap<System.ShortString,System.ShortString>"
+bifid-cipher.pas(29,23) Error: Identifier not found "_indexList"
+bifid-cipher.pas(29,49) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

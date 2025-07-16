@@ -1,1 +1,12 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/catmull-clark-subdivision-surface.pas
+catmull-clark-subdivision-surface.pas(33,9) Error: Identifier not found "_sliceString"
+catmull-clark-subdivision-surface.pas(66,12) Error: Identifier not found "_sliceString"
+catmull-clark-subdivision-surface.pas(115,27) Error: Operator is not overloaded: "ShortInt" div "Double"
+catmull-clark-subdivision-surface.pas(137,24) Error: Identifier not found "_indexList"
+catmull-clark-subdivision-surface.pas(137,49) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

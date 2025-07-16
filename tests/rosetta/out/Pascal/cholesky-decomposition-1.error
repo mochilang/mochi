@@ -1,1 +1,22 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/cholesky-decomposition-1.pas
+cholesky-decomposition-1.pas(15,12) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(19,20) Note: Call to subroutine "operator +(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(19,20) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(19,34) Note: Call to subroutine "operator div(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(19,24) Note: Call to subroutine "operator :=(const source:Double):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(19,34) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+cholesky-decomposition-1.pas(22,13) Note: Call to subroutine "operator :=(const source:Variant):Double;" marked as inline is not inlined
+cholesky-decomposition-1.pas(26,99) Error: Identifier not found "any"
+cholesky-decomposition-1.pas(26,102) Error: Type identifier expected
+cholesky-decomposition-1.pas(37,50) Error: Identifier not found "any"
+cholesky-decomposition-1.pas(37,53) Error: Type identifier expected
+cholesky-decomposition-1.pas(47,10) Error: Illegal qualifier
+cholesky-decomposition-1.pas(48,12) Error: Illegal qualifier
+cholesky-decomposition-1.pas(58,25) Error: Identifier not found "_appendList"
+cholesky-decomposition-1.pas(58,49) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

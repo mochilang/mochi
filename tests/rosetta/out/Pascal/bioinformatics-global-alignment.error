@@ -1,1 +1,24 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/bioinformatics-global-alignment.pas
+bioinformatics-global-alignment.pas(16,10) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bioinformatics-global-alignment.pas(17,9) Note: Call to subroutine "operator >(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+bioinformatics-global-alignment.pas(17,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+bioinformatics-global-alignment.pas(20,12) Note: Call to subroutine "operator -(const op1:Variant;const op2:Variant):Variant;" marked as inline is not inlined
+bioinformatics-global-alignment.pas(20,12) Note: Call to subroutine "operator :=(const source:ShortInt):Variant;" marked as inline is not inlined
+bioinformatics-global-alignment.pas(33,9) Error: Identifier not found "_sliceString"
+bioinformatics-global-alignment.pas(51,9) Error: Identifier not found "_sliceString"
+bioinformatics-global-alignment.pas(64,40) Error: Incompatible types: got "Pointer" expected "ShortString"
+bioinformatics-global-alignment.pas(65,7) Error: Identifier not found "s"
+bioinformatics-global-alignment.pas(70,7) Error: Identifier not found "r"
+bioinformatics-global-alignment.pas(71,11) Error: Identifier not found "r"
+bioinformatics-global-alignment.pas(71,15) Error: Identifier not found "s"
+bioinformatics-global-alignment.pas(79,13) Error: Incompatible types: got "ShortString" expected "TArray$1$crc862A1656"
+bioinformatics-global-alignment.pas(94,40) Error: Incompatible types: got "Pointer" expected "ShortString"
+bioinformatics-global-alignment.pas(106,9) Error: Identifier not found "p"
+bioinformatics-global-alignment.pas(108,53) Error: Identifier not found "_indexList"
+bioinformatics-global-alignment.pas(108,75) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

@@ -1,1 +1,56 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/4-rings-or-4-squares-puzzle.pas
+4-rings-or-4-squares-puzzle.pas(17,16) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(18,20) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(19,20) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(20,16) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(21,15) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(21,39) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(21,64) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,39) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,42) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,45) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,48) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,51) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,54) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(31,57) Note: Call to subroutine "operator :=(const source:LongInt):Variant;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(38,10) Note: Call to subroutine "operator =(const op1:Variant;const op2:Variant):Boolean;" marked as inline is not inlined
+4-rings-or-4-squares-puzzle.pas(47,93) Error: Identifier not found "any"
+4-rings-or-4-squares-puzzle.pas(47,96) Error: Type identifier expected
+4-rings-or-4-squares-puzzle.pas(57,12) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):LongInt is nested;Register>"
+4-rings-or-4-squares-puzzle.pas(58,7) Error: Identifier not found "b"
+4-rings-or-4-squares-puzzle.pas(58,7) Error: Ordinal expression expected
+4-rings-or-4-squares-puzzle.pas(58,7) Error: Illegal counter variable
+4-rings-or-4-squares-puzzle.pas(60,9) Error: Identifier not found "c"
+4-rings-or-4-squares-puzzle.pas(60,9) Error: Ordinal expression expected
+4-rings-or-4-squares-puzzle.pas(60,9) Error: Illegal counter variable
+4-rings-or-4-squares-puzzle.pas(62,11) Error: Identifier not found "d"
+4-rings-or-4-squares-puzzle.pas(62,11) Error: Ordinal expression expected
+4-rings-or-4-squares-puzzle.pas(62,11) Error: Illegal counter variable
+4-rings-or-4-squares-puzzle.pas(64,14) Error: Identifier not found "b"
+4-rings-or-4-squares-puzzle.pas(64,18) Error: Identifier not found "c"
+4-rings-or-4-squares-puzzle.pas(64,22) Error: Identifier not found "d"
+4-rings-or-4-squares-puzzle.pas(65,13) Error: Identifier not found "e"
+4-rings-or-4-squares-puzzle.pas(65,13) Error: Ordinal expression expected
+4-rings-or-4-squares-puzzle.pas(65,13) Error: Illegal counter variable
+4-rings-or-4-squares-puzzle.pas(67,15) Error: Identifier not found "f"
+4-rings-or-4-squares-puzzle.pas(67,15) Error: Ordinal expression expected
+4-rings-or-4-squares-puzzle.pas(67,15) Error: Illegal counter variable
+4-rings-or-4-squares-puzzle.pas(69,22) Error: Identifier not found "b"
+4-rings-or-4-squares-puzzle.pas(70,22) Error: Identifier not found "f"
+4-rings-or-4-squares-puzzle.pas(73,17) Error: Identifier not found "d"
+4-rings-or-4-squares-puzzle.pas(73,21) Error: Identifier not found "e"
+4-rings-or-4-squares-puzzle.pas(73,25) Error: Identifier not found "f"
+4-rings-or-4-squares-puzzle.pas(74,17) Error: Identifier not found "f"
+4-rings-or-4-squares-puzzle.pas(75,43) Error: Identifier not found "b"
+4-rings-or-4-squares-puzzle.pas(75,46) Error: Identifier not found "c"
+4-rings-or-4-squares-puzzle.pas(75,49) Error: Identifier not found "d"
+4-rings-or-4-squares-puzzle.pas(75,52) Error: Identifier not found "e"
+4-rings-or-4-squares-puzzle.pas(75,55) Error: Identifier not found "f"
+4-rings-or-4-squares-puzzle.pas(77,35) Error: Identifier not found "_appendList"
+4-rings-or-4-squares-puzzle.pas(77,61) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

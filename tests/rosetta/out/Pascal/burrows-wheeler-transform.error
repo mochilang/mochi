@@ -1,1 +1,18 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/burrows-wheeler-transform.pas
+burrows-wheeler-transform.pas(17,9) Error: Identifier not found "_sliceString"
+burrows-wheeler-transform.pas(54,53) Error: Identifier not found "any"
+burrows-wheeler-transform.pas(54,56) Error: Type identifier expected
+burrows-wheeler-transform.pas(64,12) Error: Identifier not found "stx"
+burrows-wheeler-transform.pas(64,33) Error: Identifier not found "etx"
+burrows-wheeler-transform.pas(65,8) Error: Identifier not found "stx"
+burrows-wheeler-transform.pas(65,18) Error: Identifier not found "etx"
+burrows-wheeler-transform.pas(71,12) Error: Identifier not found "_sliceString"
+burrows-wheeler-transform.pas(71,41) Error: Identifier not found "_sliceString"
+burrows-wheeler-transform.pas(72,25) Error: Identifier not found "_appendList"
+burrows-wheeler-transform.pas(72,51) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

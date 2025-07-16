@@ -1,1 +1,13 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/averages-simple-moving-average.pas
+averages-simple-moving-average.pas(17,9) Error: Identifier not found "_sliceString"
+averages-simple-moving-average.pas(32,18) Error: Incompatible type for arg no. 1: Got "Double", expected "QWord"
+averages-simple-moving-average.pas(42,12) Error: Identifier not found "_sliceString"
+averages-simple-moving-average.pas(77,10) Error: Incompatible types: got "ShortInt" expected "<procedure variable type of function(Variant):Double is nested;Register>"
+averages-simple-moving-average.pas(81,29) Error: Identifier not found "_indexList"
+averages-simple-moving-average.pas(81,51) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode

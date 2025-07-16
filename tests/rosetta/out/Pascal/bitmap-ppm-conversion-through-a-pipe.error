@@ -1,1 +1,15 @@
-compile: append on non-list not supported
+fpc: exit status 1
+Free Pascal Compiler version 3.2.2+dfsg-32 [2024/01/05] for x86_64
+Copyright (c) 1993-2021 by Florian Klaempfl and others
+Target OS: Linux for x86-64
+Compiling /tmp/bitmap-ppm-conversion-through-a-pipe.pas
+bitmap-ppm-conversion-through-a-pipe.pas(27,27) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(28,25) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(29,10) Note: Call to subroutine "operator :=(const source:Int64):Variant;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(30,14) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(31,14) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(32,14) Note: Call to subroutine "operator :=(const source:Variant):LongInt;" marked as inline is not inlined
+bitmap-ppm-conversion-through-a-pipe.pas(63,23) Error: Identifier not found "_appendList"
+bitmap-ppm-conversion-through-a-pipe.pas(63,45) Fatal: Syntax error, ")" expected but "," found
+Fatal: Compilation aborted
+Error: /usr/bin/ppcx64 returned an error exitcode
