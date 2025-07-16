@@ -1,4 +1,27 @@
 # 📦 CHANGELOG.md
+## [0.10.27] – 2025-07-16T22:58:30+07:00
+
+### Added
+
+* Rosetta Code golden tests across compilers with VM runner
+* Deterministic `now` builtin for reproducible timestamps
+* `sha256` builtin for the C backend
+* Virtual machine global variable support
+
+### Changed
+
+* PHP and Kotlin escape reserved names and keywords
+* Go and C++ improve indexing and collections
+* Ex compiler adds length helper; Lua provides FFI print helpers
+* C backend aliases `main` to avoid duplicate entries
+
+### Fixed
+
+* Fortran newline strings and void function handling
+* Outer join sort corrected for TypeScript
+* Join length calculation fixed in the C backend
+* Faster compilation for packages with slow build tags
+
 ## [0.10.26] – 2025-07-14T19:44:27+07:00
 
 ### Added
