@@ -11,3 +11,5 @@
 
 - Improved binary `+` handling so expressions use `string_concat` only when both operands are non-numeric. This prevents runtime failures on numeric additions in Rosetta tasks.
 - Regenerated Rosetta outputs via `go test` with `UPDATE=1`.
+- Installed `swipl` and regenerated golden outputs for a few Rosetta tasks
+  (`100-doors-2` and `ackermann-function`) to verify the compiler end-to-end.
