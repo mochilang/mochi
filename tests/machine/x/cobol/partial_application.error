@@ -1,8 +1,8 @@
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:11: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:13: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:14: error: 'FN-ADD5-RES' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob: in paragraph 'FN_ADD':
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:18: error: syntax error, unexpected PROCEDURE
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:19: error: 'A' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:19: error: 'B' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenpartial_application4145858172/001/prog.cob:13: error: 'FN_ADD5' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:11: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:14: error: 'FN-ADD5-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob: in paragraph 'FN_ADD':
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:18: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:19: error: 'A' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:19: error: 'B' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenpartial_application1879519673/001/prog.cob:13: error: 'FN_ADD5' is not defined

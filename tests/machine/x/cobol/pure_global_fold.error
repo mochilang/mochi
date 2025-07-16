@@ -1,4 +1,4 @@
-/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold731118932/001/prog.cob:11: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold731118932/001/prog.cob: in paragraph 'FN_INC':
-/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold731118932/001/prog.cob:16: error: syntax error, unexpected PROCEDURE
-/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold731118932/001/prog.cob:17: error: 'X' cannot be used here
+/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold1227078331/001/prog.cob:11: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold1227078331/001/prog.cob: in paragraph 'FN_INC':
+/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold1227078331/001/prog.cob:16: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Goldenpure_global_fold1227078331/001/prog.cob:17: error: 'X' is not defined, but is a reserved word in another dialect
