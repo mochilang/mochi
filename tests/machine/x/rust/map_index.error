@@ -1,5 +1,6 @@
+exit status 1
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_index574565003/001/prog.rs:4:32
+ --> /workspace/mochi/tests/machine/x/rust/map_index.rs:4:32
   |
 4 |     println!("{:?}", m.clone()["b" as usize]);
   |                                ^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -12,7 +13,7 @@ help: consider borrowing here
   |                                ++            +
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_index574565003/001/prog.rs:4:32
+ --> /workspace/mochi/tests/machine/x/rust/map_index.rs:4:32
   |
 4 |     println!("{:?}", m.clone()["b" as usize]);
   |                                ^^^^^^^^^^^^

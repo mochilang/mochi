@@ -11,102 +11,79 @@ import (
 	"testing"
 
 	rustcode "mochi/compiler/x/rust"
+	"mochi/golden"
 	"mochi/parser"
 	"mochi/types"
 )
 
-func shouldUpdateValid() bool {
-	if v, ok := os.LookupEnv("UPDATE"); ok && (v == "1" || v == "true") {
-		return true
-	}
-	return false
-}
-
+// TestRustCompiler_VMValid_Golden compiles programs under tests/vm/valid
+// to Rust, executes them with rustc and compares output against golden files
+// under tests/machine/x/rust. Generated source code is written to the same
+// directory but not compared.
 func TestRustCompiler_VMValid_Golden(t *testing.T) {
 	if _, err := exec.LookPath("rustc"); err != nil {
 		t.Skip("rustc not installed")
 	}
 	root := findRepoRoot(t)
-	srcDir := filepath.Join(root, "tests", "vm", "valid")
 	outDir := filepath.Join(root, "tests", "machine", "x", "rust")
-	files, err := filepath.Glob(filepath.Join(srcDir, "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
 	os.MkdirAll(outDir, 0o755)
-	for _, src := range files {
-		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
-		t.Run(name, func(t *testing.T) {
-			data, err := os.ReadFile(src)
-			if err != nil {
-				t.Fatal(err)
-			}
-			prog, err := parser.ParseString(string(data))
-			if err != nil {
-				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
-				if !shouldUpdateValid() {
-					t.Skipf("parse error: %v", err)
-				}
-				return
-			}
-			env := types.NewEnv(nil)
-			if errs := types.Check(prog, env); len(errs) > 0 {
-				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(errs[0].Error()), 0644)
-				if !shouldUpdateValid() {
-					t.Skipf("type error: %v", errs[0])
-				}
-				return
-			}
-			code, err := rustcode.New(env).Compile(prog)
-			if err != nil {
-				os.WriteFile(filepath.Join(outDir, name+".error"), []byte(err.Error()), 0644)
-				if !shouldUpdateValid() {
-					t.Skipf("compile error: %v", err)
-				}
-				return
-			}
-			codePath := filepath.Join(outDir, name+".rs")
-			if shouldUpdateValid() {
-				_ = os.WriteFile(codePath, code, 0644)
-			} else if want, err := os.ReadFile(codePath); err == nil {
-				got := bytes.TrimSpace(code)
-				want = bytes.TrimSpace(want)
-				if !bytes.Equal(got, want) {
-					t.Errorf("generated code mismatch for %s.rs\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-				}
-			}
-			tmp := t.TempDir()
-			srcFile := filepath.Join(tmp, "prog.rs")
-			if err := os.WriteFile(srcFile, code, 0644); err != nil {
-				t.Fatalf("write src: %v", err)
-			}
-			bin := filepath.Join(tmp, "prog")
-			if out, err := exec.Command("rustc", srcFile, "-O", "-o", bin).CombinedOutput(); err != nil {
-				os.WriteFile(filepath.Join(outDir, name+".error"), out, 0644)
-				if !shouldUpdateValid() {
-					t.Skipf("rustc error: %v", err)
-				}
-				return
-			}
-			outBytes, err := exec.Command(bin).CombinedOutput()
-			if err != nil {
-				os.WriteFile(filepath.Join(outDir, name+".error"), outBytes, 0644)
-				if !shouldUpdateValid() {
-					t.Skipf("run error: %v", err)
-				}
-				return
-			}
-			os.Remove(filepath.Join(outDir, name+".error"))
-			if shouldUpdateValid() {
-				_ = os.WriteFile(filepath.Join(outDir, name+".out"), bytes.TrimSpace(outBytes), 0644)
-				return
-			}
-			wantOut := filepath.Join(outDir, name+".out")
-			if want, err := os.ReadFile(wantOut); err == nil {
-				if !bytes.Equal(bytes.TrimSpace(outBytes), bytes.TrimSpace(want)) {
-					t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, bytes.TrimSpace(outBytes), bytes.TrimSpace(want))
-				}
-			}
-		})
+
+	golden.Run(t, "tests/vm/valid", ".mochi", ".out", func(src string) ([]byte, error) {
+		base := strings.TrimSuffix(filepath.Base(src), ".mochi")
+		codePath := filepath.Join(outDir, base+".rs")
+		errPath := filepath.Join(outDir, base+".error")
+
+		prog, err := parser.Parse(src)
+		if err != nil {
+			os.WriteFile(errPath, []byte(err.Error()), 0o644)
+			return nil, err
+		}
+		env := types.NewEnv(nil)
+		if errs := types.Check(prog, env); len(errs) > 0 {
+			os.WriteFile(errPath, []byte(errs[0].Error()), 0o644)
+			return nil, errs[0]
+		}
+		code, err := rustcode.New(env).Compile(prog)
+		if err != nil {
+			os.WriteFile(errPath, []byte(err.Error()), 0o644)
+			return nil, err
+		}
+		if err := os.WriteFile(codePath, code, 0o644); err != nil {
+			return nil, err
+		}
+		tmp := t.TempDir()
+		bin := filepath.Join(tmp, base)
+		if out, err := exec.Command("rustc", codePath, "-O", "-o", bin).CombinedOutput(); err != nil {
+			os.WriteFile(errPath, append([]byte(err.Error()+"\n"), out...), 0o644)
+			return nil, err
+		}
+		outBytes, err := exec.Command(bin).CombinedOutput()
+		if err != nil {
+			os.WriteFile(errPath, append([]byte(err.Error()+"\n"), outBytes...), 0o644)
+			return nil, err
+		}
+		outBytes = bytes.TrimSpace(outBytes)
+		os.WriteFile(filepath.Join(outDir, base+".out"), outBytes, 0o644)
+		os.Remove(errPath)
+		return outBytes, nil
+	})
+}
+
+func findRepoRoot(t *testing.T) string {
+	dir, err := os.Getwd()
+	if err != nil {
+		t.Fatal("cannot determine working directory")
 	}
+	for i := 0; i < 10; i++ {
+		if _, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+	t.Fatal("go.mod not found (not in Go module)")
+	return ""
 }

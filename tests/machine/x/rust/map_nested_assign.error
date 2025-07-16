@@ -1,5 +1,6 @@
+exit status 1
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:4:10
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:4:10
   |
 4 |     data["outer" as usize]["inner" as usize] = 2;
   |          ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -12,7 +13,7 @@ help: consider borrowing here
   |          ++                +
 
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:4:28
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:4:28
   |
 4 |     data["outer" as usize]["inner" as usize] = 2;
   |                            ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -25,7 +26,7 @@ help: consider borrowing here
   |                            ++                +
 
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:5:35
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:5:35
   |
 5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
   |                                   ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -38,7 +39,7 @@ help: consider borrowing here
   |                                   ++                +
 
 error[E0308]: mismatched types
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:5:53
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:5:53
   |
 5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
   |                                                     ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
@@ -51,7 +52,7 @@ help: consider borrowing here
   |                                                     ++                +
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:4:10
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:4:10
   |
 4 |     data["outer" as usize]["inner" as usize] = 2;
   |          ^^^^^^^^^^^^^^^^
@@ -59,7 +60,7 @@ error[E0606]: casting `&'static str` as `usize` is invalid
   = help: cast through a raw pointer first
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:4:28
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:4:28
   |
 4 |     data["outer" as usize]["inner" as usize] = 2;
   |                            ^^^^^^^^^^^^^^^^
@@ -67,7 +68,7 @@ error[E0606]: casting `&'static str` as `usize` is invalid
   = help: cast through a raw pointer first
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:5:35
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:5:35
   |
 5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
   |                                   ^^^^^^^^^^^^^^^^
@@ -75,7 +76,7 @@ error[E0606]: casting `&'static str` as `usize` is invalid
   = help: cast through a raw pointer first
 
 error[E0606]: casting `&'static str` as `usize` is invalid
- --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign515475333/001/prog.rs:5:53
+ --> /workspace/mochi/tests/machine/x/rust/map_nested_assign.rs:5:53
   |
 5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
   |                                                     ^^^^^^^^^^^^^^^^
