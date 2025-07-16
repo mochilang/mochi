@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftarithmetic-geometric-mean2558889870/001/main.swift:22:9: error: cannot assign to value: 'a' is a 'let' constant
+swiftc: exit status 1
+/tmp/arithmetic-geometric-mean.swift:22:9: error: cannot assign to value: 'a' is a 'let' constant
 20 |         let newA = (a + g) / 2.0
 21 |         let newG = sqrtApprox(a * g)
 22 |         a = newA
@@ -7,7 +7,7 @@ run error: exit status 1
 23 |         g = newG
 24 |     }
 
-/tmp/TestMochiToSwiftarithmetic-geometric-mean2558889870/001/main.swift:23:9: error: cannot assign to value: 'g' is a 'let' constant
+/tmp/arithmetic-geometric-mean.swift:23:9: error: cannot assign to value: 'g' is a 'let' constant
 21 |         let newG = sqrtApprox(a * g)
 22 |         a = newA
 23 |         g = newG

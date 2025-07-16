@@ -1,1 +1,1 @@
-compile error: unsupported cast to [String]
+compile: unsupported cast to [String]

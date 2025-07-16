@@ -1,1 +1,1 @@
-compile error: unsupported cast to [Int]
+compile: unsupported cast to [Int]

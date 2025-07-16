@@ -1,13 +1,13 @@
-run error: exit status 1
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:24:71: error: expected dictionary value type
+swiftc: exit status 1
+/tmp/4-rings-or-4-squares-puzzle.swift:24:71: error: expected dictionary value type
 22 |     return true
 23 | }
 24 | func getCombs(_ low: Int, _ high: Int, _ unique: Bool) -> [String: any] {
    |                                                                       `- error: expected dictionary value type
-25 |     var valid = []
+25 |     var valid: [[Any]] = []
 26 |     var count = 0
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:58:5: warning: constant 'r1' inferred to have type '()', which may be unexpected
+/tmp/4-rings-or-4-squares-puzzle.swift:58:5: warning: constant 'r1' inferred to have type '()', which may be unexpected
 56 |     return ["count": count, "list": valid]
 57 | }
 58 | let r1 = getCombs(1, 7, true)
@@ -16,7 +16,7 @@ run error: exit status 1
 59 | print(String(r1["count"]) + " unique solutions in 1 to 7")
 60 | print(r1["list"])
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:59:16: error: value of type '()' has no subscripts
+/tmp/4-rings-or-4-squares-puzzle.swift:59:16: error: value of type '()' has no subscripts
 57 | }
 58 | let r1 = getCombs(1, 7, true)
 59 | print(String(r1["count"]) + " unique solutions in 1 to 7")
@@ -24,7 +24,7 @@ run error: exit status 1
 60 | print(r1["list"])
 61 | let r2 = getCombs(3, 9, true)
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:60:9: error: value of type '()' has no subscripts
+/tmp/4-rings-or-4-squares-puzzle.swift:60:9: error: value of type '()' has no subscripts
 58 | let r1 = getCombs(1, 7, true)
 59 | print(String(r1["count"]) + " unique solutions in 1 to 7")
 60 | print(r1["list"])
@@ -32,7 +32,7 @@ run error: exit status 1
 61 | let r2 = getCombs(3, 9, true)
 62 | print(String(r2["count"]) + " unique solutions in 3 to 9")
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:61:5: warning: constant 'r2' inferred to have type '()', which may be unexpected
+/tmp/4-rings-or-4-squares-puzzle.swift:61:5: warning: constant 'r2' inferred to have type '()', which may be unexpected
 59 | print(String(r1["count"]) + " unique solutions in 1 to 7")
 60 | print(r1["list"])
 61 | let r2 = getCombs(3, 9, true)
@@ -41,7 +41,7 @@ run error: exit status 1
 62 | print(String(r2["count"]) + " unique solutions in 3 to 9")
 63 | print(r2["list"])
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:62:16: error: value of type '()' has no subscripts
+/tmp/4-rings-or-4-squares-puzzle.swift:62:16: error: value of type '()' has no subscripts
 60 | print(r1["list"])
 61 | let r2 = getCombs(3, 9, true)
 62 | print(String(r2["count"]) + " unique solutions in 3 to 9")
@@ -49,7 +49,7 @@ run error: exit status 1
 63 | print(r2["list"])
 64 | let r3 = getCombs(0, 9, false)
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:63:9: error: value of type '()' has no subscripts
+/tmp/4-rings-or-4-squares-puzzle.swift:63:9: error: value of type '()' has no subscripts
 61 | let r2 = getCombs(3, 9, true)
 62 | print(String(r2["count"]) + " unique solutions in 3 to 9")
 63 | print(r2["list"])
@@ -57,7 +57,7 @@ run error: exit status 1
 64 | let r3 = getCombs(0, 9, false)
 65 | print(String(r3["count"]) + " non-unique solutions in 0 to 9")
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:64:5: warning: constant 'r3' inferred to have type '()', which may be unexpected
+/tmp/4-rings-or-4-squares-puzzle.swift:64:5: warning: constant 'r3' inferred to have type '()', which may be unexpected
 62 | print(String(r2["count"]) + " unique solutions in 3 to 9")
 63 | print(r2["list"])
 64 | let r3 = getCombs(0, 9, false)
@@ -66,14 +66,14 @@ run error: exit status 1
 65 | print(String(r3["count"]) + " non-unique solutions in 0 to 9")
 66 | 
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:65:16: error: value of type '()' has no subscripts
+/tmp/4-rings-or-4-squares-puzzle.swift:65:16: error: value of type '()' has no subscripts
 63 | print(r2["list"])
 64 | let r3 = getCombs(0, 9, false)
 65 | print(String(r3["count"]) + " non-unique solutions in 0 to 9")
    |                `- error: value of type '()' has no subscripts
 66 | 
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:10:9: warning: variable 'nums' was never mutated; consider changing to 'let' constant
+/tmp/4-rings-or-4-squares-puzzle.swift:10:9: warning: variable 'nums' was never mutated; consider changing to 'let' constant
  8 | }
  9 | func isUnique(_ a: Int, _ b: Int, _ c: Int, _ d: Int, _ e: Int, _ f: Int, _ g: Int) -> Bool {
 10 |     var nums = [a, b, c, d, e, f, g]
@@ -81,15 +81,7 @@ run error: exit status 1
 11 |     var i = 0
 12 |     while i < nums.count {
 
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:25:17: error: empty collection literal requires an explicit type
-23 | }
-24 | func getCombs(_ low: Int, _ high: Int, _ unique: Bool) -> [String: any] {
-25 |     var valid = []
-   |                 `- error: empty collection literal requires an explicit type
-26 |     var count = 0
-27 |     for b in low..<(high + 1) {
-
-/tmp/TestMochiToSwift4-rings-or-4-squares-puzzle383238669/001/main.swift:56:12: error: unexpected non-void return value in void function
+/tmp/4-rings-or-4-squares-puzzle.swift:56:12: error: unexpected non-void return value in void function
 54 |         }
 55 |     }
 56 |     return ["count": count, "list": valid]

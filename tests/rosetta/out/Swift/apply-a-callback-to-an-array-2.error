@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:16:31: error: consecutive statements on a line must be separated by ';'
+swiftc: exit status 1
+/tmp/apply-a-callback-to-an-array-2.swift:16:31: error: consecutive statements on a line must be separated by ';'
 14 | func main() {
 15 |     var s: [Int] = [1, 2, 3, 4, 5]
 16 |     each(s, &{ (i: Int) -> any in print(String(i * i)) })
@@ -7,7 +7,7 @@ run error: exit status 1
 17 |     print(String(Map(s, &{ (i: Int) -> Int in i * i })))
 18 | }
 
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:16:32: error: expected expression
+/tmp/apply-a-callback-to-an-array-2.swift:16:32: error: expected expression
 14 | func main() {
 15 |     var s: [Int] = [1, 2, 3, 4, 5]
 16 |     each(s, &{ (i: Int) -> any in print(String(i * i)) })
@@ -15,16 +15,7 @@ run error: exit status 1
 17 |     print(String(Map(s, &{ (i: Int) -> Int in i * i })))
 18 | }
 
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:8:20: error: cannot assign value of type '[Any]' to type '[Int]'
- 6 | }
- 7 | func Map(_ xs: [Int], _ f: inout (Int) -> Int) -> [Int] {
- 8 |     var r: [Int] = [Any]()
-   |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
-   |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
- 9 |     for x in xs {
-10 |         r = r + [f(x)]
-
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:16:28: error: expected type after '->'
+/tmp/apply-a-callback-to-an-array-2.swift:16:28: error: expected type after '->'
 14 | func main() {
 15 |     var s: [Int] = [1, 2, 3, 4, 5]
 16 |     each(s, &{ (i: Int) -> any in print(String(i * i)) })
@@ -32,7 +23,7 @@ run error: exit status 1
 17 |     print(String(Map(s, &{ (i: Int) -> Int in i * i })))
 18 | }
 
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:17:11: error: no exact matches in call to initializer 
+/tmp/apply-a-callback-to-an-array-2.swift:17:11: error: no exact matches in call to initializer 
 15 |     var s: [Int] = [1, 2, 3, 4, 5]
 16 |     each(s, &{ (i: Int) -> any in print(String(i * i)) })
 17 |     print(String(Map(s, &{ (i: Int) -> Int in i * i })))
@@ -70,7 +61,7 @@ Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expec
   |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
 3 | 
 
-/tmp/TestMochiToSwiftapply-a-callback-to-an-array-21632992013/001/main.swift:17:25: error: cannot pass immutable value of type '(Int) -> Int' as inout argument
+/tmp/apply-a-callback-to-an-array-2.swift:17:25: error: cannot pass immutable value of type '(Int) -> Int' as inout argument
 15 |     var s: [Int] = [1, 2, 3, 4, 5]
 16 |     each(s, &{ (i: Int) -> any in print(String(i * i)) })
 17 |     print(String(Map(s, &{ (i: Int) -> Int in i * i })))

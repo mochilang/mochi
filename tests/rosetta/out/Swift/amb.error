@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftamb1009185744/001/main.swift:14:16: error: cannot assign through subscript: 'res' is a 'let' constant
+swiftc: exit status 1
+/tmp/amb.swift:14:16: error: cannot assign through subscript: 'res' is a 'let' constant
 12 |         let w = wordsets[idx][i]
 13 |         if idx == 0 || String(prev[prev.index(prev.startIndex, offsetBy: prev.count - 1)..<prev.index(prev.startIndex, offsetBy: prev.count)]) == String(w[w.index(w.startIndex, offsetBy: 0)..<w.index(w.startIndex, offsetBy: 1)]) {
 14 |             res[idx] = w
@@ -7,11 +7,10 @@ run error: exit status 1
 15 |             if amb(wordsets, res, idx + 1) {
 16 |                 return true
 
-/tmp/TestMochiToSwiftamb1009185744/001/main.swift:25:25: error: cannot assign value of type '[Any]' to type '[String]'
+/tmp/amb.swift:24:9: warning: variable 'wordset' was never mutated; consider changing to 'let' constant
+22 | }
 23 | func main() {
 24 |     var wordset = [["the", "that", "a"], ["frog", "elephant", "thing"], ["walked", "treaded", "grows"], ["slowly", "quickly"]]
-25 |     var res: [String] = [Any]()
-   |                         |- error: cannot assign value of type '[Any]' to type '[String]'
-   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+   |         `- warning: variable 'wordset' was never mutated; consider changing to 'let' constant
+25 |     var res: [String] = []
 26 |     var i = 0
-27 |     while i < wordset.count {

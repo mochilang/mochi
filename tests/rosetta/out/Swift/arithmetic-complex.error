@@ -1,8 +1,118 @@
-parse error: error[P040]: /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1: lexer: invalid input text "# Mochi implemen..."
-  --> /workspace/mochi/tests/rosetta/x/Mochi/arithmetic-complex.mochi:1:1
+swiftc: exit status 1
+/tmp/arithmetic-complex.swift:34:26: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+   |                          `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+35 | print("b:       " + cstr(&b))
+36 | print("a + b:   " + cstr(&add(&a, &b)))
 
-  1 | # Mochi implementation of Rosetta "Arithmetic/Complex" task
-    | ^
+/tmp/arithmetic-complex.swift:35:26: error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+33 | let b = Complex(re: 3.14159, im: 1.25)
+   | `- note: change 'let' to 'var' to make it mutable
+34 | print("a:       " + cstr(&a))
+35 | print("b:       " + cstr(&b))
+   |                          `- error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
 
-help:
-  String literals must be properly closed with a `"`.
+/tmp/arithmetic-complex.swift:36:31: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+35 | print("b:       " + cstr(&b))
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+   |                               `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+38 | print("-a:      " + cstr(&neg(&a)))
+
+/tmp/arithmetic-complex.swift:36:35: error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+33 | let b = Complex(re: 3.14159, im: 1.25)
+   | `- note: change 'let' to 'var' to make it mutable
+34 | print("a:       " + cstr(&a))
+35 | print("b:       " + cstr(&b))
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+   |                                   `- error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+38 | print("-a:      " + cstr(&neg(&a)))
+
+/tmp/arithmetic-complex.swift:37:31: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+35 | print("b:       " + cstr(&b))
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+   |                               `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+38 | print("-a:      " + cstr(&neg(&a)))
+39 | print("1 / a:   " + cstr(&inv(&a)))
+
+/tmp/arithmetic-complex.swift:37:35: error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+33 | let b = Complex(re: 3.14159, im: 1.25)
+   | `- note: change 'let' to 'var' to make it mutable
+34 | print("a:       " + cstr(&a))
+35 | print("b:       " + cstr(&b))
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+   |                                   `- error: cannot pass immutable value as inout argument: 'b' is a 'let' constant
+38 | print("-a:      " + cstr(&neg(&a)))
+39 | print("1 / a:   " + cstr(&inv(&a)))
+
+/tmp/arithmetic-complex.swift:38:31: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+   :
+36 | print("a + b:   " + cstr(&add(&a, &b)))
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+38 | print("-a:      " + cstr(&neg(&a)))
+   |                               `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+39 | print("1 / a:   " + cstr(&inv(&a)))
+40 | print("a̅:       " + cstr(&conj(&a)))
+
+/tmp/arithmetic-complex.swift:39:31: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+   :
+37 | print("a * b:   " + cstr(&mul(&a, &b)))
+38 | print("-a:      " + cstr(&neg(&a)))
+39 | print("1 / a:   " + cstr(&inv(&a)))
+   |                               `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+40 | print("a̅:       " + cstr(&conj(&a)))
+41 | 
+
+/tmp/arithmetic-complex.swift:40:34: error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+30 |     return s
+31 | }
+32 | let a = Complex(re: 1.0, im: 1.0)
+   | `- note: change 'let' to 'var' to make it mutable
+33 | let b = Complex(re: 3.14159, im: 1.25)
+34 | print("a:       " + cstr(&a))
+   :
+38 | print("-a:      " + cstr(&neg(&a)))
+39 | print("1 / a:   " + cstr(&inv(&a)))
+40 | print("a̅:       " + cstr(&conj(&a)))
+   |                                `- error: cannot pass immutable value as inout argument: 'a' is a 'let' constant
+41 | 

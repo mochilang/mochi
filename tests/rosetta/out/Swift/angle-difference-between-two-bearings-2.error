@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftangle-difference-between-two-bearings-2560955275/001/main.swift:4:44: error: '%' is unavailable: For floating point numbers use truncatingRemainder instead
+swiftc: exit status 1
+/tmp/angle-difference-between-two-bearings-2.swift:4:44: error: '%' is unavailable: For floating point numbers use truncatingRemainder instead
  2 | func angleDiff(_ b1: Double, _ b2: Double) -> Double {
  3 |     let diff = b2 - b1
  4 |     return ((diff % 360.0 + 360.0 + 180.0) % 360.0) - 180.0
@@ -12,7 +12,7 @@ Swift.%:2:13: note: '%' has been explicitly marked unavailable here
 2 | public func % <T>(lhs: T, rhs: T) -> T where T : BinaryFloatingPoint
   |             `- note: '%' has been explicitly marked unavailable here
 
-/tmp/TestMochiToSwiftangle-difference-between-two-bearings-2560955275/001/main.swift:4:19: error: '%' is unavailable: For floating point numbers use truncatingRemainder instead
+/tmp/angle-difference-between-two-bearings-2.swift:4:19: error: '%' is unavailable: For floating point numbers use truncatingRemainder instead
  2 | func angleDiff(_ b1: Double, _ b2: Double) -> Double {
  3 |     let diff = b2 - b1
  4 |     return ((diff % 360.0 + 360.0 + 180.0) % 360.0) - 180.0

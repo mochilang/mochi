@@ -1137,6 +1137,11 @@ func (c *compiler) callExpr(call *parser.CallExpr) (string, error) {
 		}
 		c.helpers["_json"] = true
 		return fmt.Sprintf("_json(%s)", args[0]), nil
+	case "now":
+		if len(args) != 0 {
+			return "", fmt.Errorf("now expects no arguments at line %d", call.Pos.Line)
+		}
+		return "Int(Date().timeIntervalSince1970 * 1000000000)", nil
 	case "substring":
 		if len(args) != 3 {
 			return "", fmt.Errorf("substring expects 3 arguments at line %d", call.Pos.Line)

@@ -1,5 +1,5 @@
-run error: exit status 1
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:32:24: error: use [:] to get an empty dictionary literal
+swiftc: exit status 1
+/tmp/achilles-numbers.swift:32:24: error: use [:] to get an empty dictionary literal
  30 |     return tot
  31 | }
  32 | var pps: [Int: Bool] = []
@@ -7,7 +7,7 @@ run error: exit status 1
  33 | func getPerfectPowers(_ maxExp: Int) {
  34 |     let upper = pow10(maxExp)
 
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:51:33: error: use [:] to get an empty dictionary literal
+/tmp/achilles-numbers.swift:51:33: error: use [:] to get an empty dictionary literal
  49 |     let lower = pow10(minExp)
  50 |     let upper = pow10(maxExp)
  51 |     var achilles: [Int: Bool] = []
@@ -15,51 +15,15 @@ run error: exit status 1
  52 |     var b = 1
  53 |     while b * b * b < upper {
 
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:73:22: error: cannot assign value of type '[Any]' to type '[Int]'
- 71 | }
- 72 | func sortInts(_ xs: [Int]) -> [Int] {
- 73 |     var res: [Int] = [Any]()
-    |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
-    |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
- 74 |     var tmp = xs
- 75 |     while tmp.count > 0 {
-
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:87:26: error: cannot assign value of type '[Any]' to type '[Int]'
- 85 |         }
- 86 |         res = res + [min]
- 87 |         var out: [Int] = [Any]()
-    |                          |- error: cannot assign value of type '[Any]' to type '[Int]'
-    |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
- 88 |         var j = 0
- 89 |         while j < tmp.count {
-
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:110:22: error: cannot assign value of type '[Any]' to type '[Int]'
-108 |     getPerfectPowers(maxDigits)
+/tmp/achilles-numbers.swift:111:21: error: cannot call value of non-function type 'Dictionary<Int, Bool>.Keys'
 109 |     let achSet = getAchilles(1, 5)
-110 |     var ach: [Int] = [Any]()
-    |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
-    |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
-111 |     for k in achSet.keys() {
-112 |         ach = ach + [k]
-
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:111:21: error: cannot call value of non-function type 'Dictionary<Int, Bool>.Keys'
-109 |     let achSet = getAchilles(1, 5)
-110 |     var ach: [Int] = [Any]()
+110 |     var ach: [Int] = []
 111 |     for k in achSet.keys() {
     |                     `- error: cannot call value of non-function type 'Dictionary<Int, Bool>.Keys'
 112 |         ach = ach + [k]
 113 |     }
 
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:131:25: error: cannot assign value of type '[Any]' to type '[Int]'
-129 |     }
-130 |     print("\nFirst 30 strong Achilles numbers:")
-131 |     var strong: [Int] = [Any]()
-    |                         |- error: cannot assign value of type '[Any]' to type '[Int]'
-    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
-132 |     var count = 0
-133 |     var idx = 0
-
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:136:28: error: missing argument label 'where:' in call
+/tmp/achilles-numbers.swift:136:28: error: missing argument label 'where:' in call
 134 |     while count < 30 {
 135 |         let tot = totient(ach[idx])
 136 |         if achSet.contains(tot) {
@@ -67,7 +31,7 @@ run error: exit status 1
 137 |             strong = strong + [ach[idx]]
 138 |             count = count + 1
 
-/tmp/TestMochiToSwiftachilles-numbers828578926/001/main.swift:136:28: error: cannot convert value of type 'Int' to expected argument type '(Dictionary<Int, Bool>.Element) throws -> Bool' (aka '((key: Int, value: Bool)) throws -> Bool')
+/tmp/achilles-numbers.swift:136:28: error: cannot convert value of type 'Int' to expected argument type '(Dictionary<Int, Bool>.Element) throws -> Bool' (aka '((key: Int, value: Bool)) throws -> Bool')
 134 |     while count < 30 {
 135 |         let tot = totient(ach[idx])
 136 |         if achSet.contains(tot) {
