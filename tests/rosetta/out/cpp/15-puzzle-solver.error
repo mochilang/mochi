@@ -1,0 +1,5 @@
+g++ error: exit status 1
+/tmp/TestMochiCPPGolden15-puzzle-solver263786942/001/prog.cpp: In function ‘int main()’:
+/tmp/TestMochiCPPGolden15-puzzle-solver263786942/001/prog.cpp:10:25: error: ‘FifteenPuzzleExample’ is not a member of ‘testpkg’
+   10 |   std::cout << testpkg::FifteenPuzzleExample() << std::endl;
+      |                         ^~~~~~~~~~~~~~~~~~~~
