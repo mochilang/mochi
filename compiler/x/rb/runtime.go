@@ -291,6 +291,10 @@ end`
   parts.map(&:to_s).join(sep)
 end`
 
+	helperFormatList = `def _format_list(arr)
+  '[' + arr.map { |v| v.to_s }.join(' ') + ']'
+end`
+
 	helperGroup = `class MGroup
   include Enumerable
   attr_accessor :key, :Items
@@ -493,6 +497,7 @@ var helperMap = map[string]string{
 	"_reverse":     helperReverse,
 	"_splitString": helperSplitString,
 	"_joinStrings": helperJoinStrings,
+	"_format_list": helperFormatList,
 	"_hash_join":   helperHashJoin,
 }
 
