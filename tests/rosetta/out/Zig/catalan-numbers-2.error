@@ -1,0 +1,11 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:25:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:19:1: note: other declaration here
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:15:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:15:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:14:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:14:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:13:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:13:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:12:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatalan-numbers-21511510667/001/prog.zig:12:9: note: consider using 'const'

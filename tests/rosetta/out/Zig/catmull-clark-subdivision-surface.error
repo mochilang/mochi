@@ -1,0 +1,24 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:547:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:448:1: note: other declaration here
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:34:29: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:57:17: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:168:21: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:168:21: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:157:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:157:13: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:223:18: error: unused function parameter
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:242:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:242:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:295:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:295:13: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:279:9: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:279:9: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:341:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:341:13: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:340:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:340:13: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:339:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:339:13: note: consider using 'const'
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:338:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldencatmull-clark-subdivision-surface1495588141/001/prog.zig:338:13: note: consider using 'const'

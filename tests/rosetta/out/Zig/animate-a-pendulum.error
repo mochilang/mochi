@@ -1,0 +1,2 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenanimate-a-pendulum2955042104/001/prog.zig:53:20: error: unused capture

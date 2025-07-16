@@ -1,0 +1,3 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenarchimedean-spiral24071503/001/prog.zig:8:19: error: function parameter shadows declaration of 'a'
+/tmp/TestMochiZigGoldenarchimedean-spiral24071503/001/prog.zig:18:1: note: declared here

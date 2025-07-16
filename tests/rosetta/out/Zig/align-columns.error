@@ -1,0 +1,2 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenalign-columns2003898113/001/prog.zig:80:38: error: expected type expression, found 'align'

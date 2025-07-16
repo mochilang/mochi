@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenarithmetic-numbers95843522/001/prog.zig:163:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenarithmetic-numbers95843522/001/prog.zig:128:1: note: other declaration here
+/tmp/TestMochiZigGoldenarithmetic-numbers95843522/001/prog.zig:64:30: error: use of undeclared identifier 'substring'
+/tmp/TestMochiZigGoldenarithmetic-numbers95843522/001/prog.zig:78:13: error: local variable is never mutated
+/tmp/TestMochiZigGoldenarithmetic-numbers95843522/001/prog.zig:78:13: note: consider using 'const'

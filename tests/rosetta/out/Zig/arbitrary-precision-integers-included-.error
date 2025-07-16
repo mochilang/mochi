@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenarbitrary-precision-integers-included-3187327350/001/prog.zig:14:12: error: function parameter shadows declaration of 'base'
+/tmp/TestMochiZigGoldenarbitrary-precision-integers-included-3187327350/001/prog.zig:10:1: note: declared here
+/tmp/TestMochiZigGoldenarbitrary-precision-integers-included-3187327350/001/prog.zig:28:12: error: function parameter shadows declaration of 'base'
+/tmp/TestMochiZigGoldenarbitrary-precision-integers-included-3187327350/001/prog.zig:10:1: note: declared here
+/tmp/TestMochiZigGoldenarbitrary-precision-integers-included-3187327350/001/prog.zig:43:77: error: use of undeclared identifier 'substring'

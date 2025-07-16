@@ -1,0 +1,4 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:46:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:27:1: note: other declaration here
+/tmp/TestMochiZigGoldenanti-primes2125138262/001/prog.zig:42:12: error: use of undeclared identifier 'substring'

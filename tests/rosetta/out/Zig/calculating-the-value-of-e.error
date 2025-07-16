@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:25:10: error: function parameter shadows declaration of 'n'
+/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:15:1: note: declared here
+/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:38:9: error: local variable shadows declaration of 'n'
+/tmp/TestMochiZigGoldencalculating-the-value-of-e3612761755/001/prog.zig:15:1: note: declared here

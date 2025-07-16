@@ -1,0 +1,6 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGoldenabundant-odd-numbers3533825236/001/prog.zig:108:5: error: redeclaration of 'main'
+/tmp/TestMochiZigGoldenabundant-odd-numbers3533825236/001/prog.zig:98:1: note: other declaration here
+/tmp/TestMochiZigGoldenabundant-odd-numbers3533825236/001/prog.zig:9:9: error: local variable shadows declaration of 'sum'
+/tmp/TestMochiZigGoldenabundant-odd-numbers3533825236/001/prog.zig:40:1: note: declared here
+/tmp/TestMochiZigGoldenabundant-odd-numbers3533825236/001/prog.zig:55:12: error: use of undeclared identifier 'substring'

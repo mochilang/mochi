@@ -1,0 +1,5 @@
+zig build error: exit status 1
+/tmp/TestMochiZigGolden100-doors-23512053776/001/prog.zig:12:5: error: variable of type 'comptime_int' must be const or comptime
+/tmp/TestMochiZigGolden100-doors-23512053776/001/prog.zig:12:5: note: to modify this variable at runtime, it must be given an explicit fixed-size number type
+/tmp/TestMochiZigGolden100-doors-23512053776/001/prog.zig:9:19: error: expected 3 argument(s), found 2
+/tmp/zig-0.12.0/lib/std/mem.zig:3148:5: note: function declared here
