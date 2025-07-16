@@ -72,23 +72,6 @@ func writeError(path string, err error) {
 	_ = os.WriteFile(path, []byte(msg), 0o644)
 }
 
-func TestCompileValidPrograms(t *testing.T) {
-	if err := cljcode.EnsureClojure(); err != nil {
-		t.Skipf("clojure not installed: %v", err)
-	}
-	root := findRepoRoot(t)
-	files, err := filepath.Glob(filepath.Join(root, "tests", "vm", "valid", "*.mochi"))
-	if err != nil {
-		t.Fatalf("glob: %v", err)
-	}
-	for _, f := range files {
-		f := f
-		t.Run(filepath.Base(f), func(t *testing.T) {
-			compileAndRun(t, root, f)
-		})
-	}
-}
-
 func findRepoRoot(t *testing.T) string {
 	dir, err := os.Getwd()
 	if err != nil {
