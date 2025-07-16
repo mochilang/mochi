@@ -16,7 +16,7 @@ public class M100Doors {
     for (int pass = 1; pass < 101; pass++) {
         int idx = pass - 1;
         while (idx < 100) {
-            doors.set(idx, !doors.get(idx));
+            doors.set(idx, !((Boolean)doors.get(idx)));
             idx = (int)(idx + pass);
         }
     }
