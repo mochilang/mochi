@@ -1,0 +1,131 @@
+import 'dart:io';
+import 'dart:convert';
+
+dynamic _load(String path, dynamic opts) {
+  var fmt = 'csv';
+  if (opts is Map && opts.containsKey('format')) fmt = opts['format'].toString();
+  if (fmt == 'yaml') {
+    var text = File(path).readAsStringSync();
+    var data = _parseYaml(text);
+    return data;
+  }
+  var text = File(path).readAsStringSync();
+  var data = jsonDecode(text);
+  if (data is List) return data;
+  if (data is Map) return [data];
+  return [];
+}
+
+List<Map<String,dynamic>> _parseYaml(String text) {
+  var rows = <Map<String,dynamic>>[];
+  Map<String,dynamic>? cur;
+  for (var line in LineSplitter.split(text)) {
+    var t = line.trim();
+    if (t.isEmpty) continue;
+    if (t.startsWith('-')) {
+      if (cur != null) rows.add(cur);
+      cur = <String,dynamic>{};
+      t = t.substring(1).trim();
+      if (t.isEmpty) continue;
+    }
+    var idx = t.indexOf(':');
+    if (idx <= 0) continue;
+    var key = t.substring(0, idx).trim();
+    var val = t.substring(idx+1).trim();
+    if ((val.startsWith("\"") && val.endsWith("\"")) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.substring(1, val.length-1);
+    }
+    var numVal = num.tryParse(val);
+    cur?[key] = numVal ?? val;
+  }
+  if (cur != null) rows.add(cur);
+  return rows;
+}
+
+class Person {
+  String name;
+  int age;
+  String email;
+  Person(this.name, this.age, this.email);
+}
+
+var people = [for (var _it in (_load('tests/interpreter/valid/people.yaml', {'format': 'yaml'}))) Person((_it['name'] as String), (_it['age'] as int), (_it['email'] as String))];
+
+var adults = (() {
+  var _q0 = <dynamic>[];
+  for (var p in people) {
+    if (!(p.age >= 18)) continue;
+    _q0.add({'name': p.name, 'email': p.email});
+  }
+  return _q0;
+})();
+
+void main() {
+  for (var a in adults) {
+    print([a['name'], a['email']].join(' '));
+  }
+}
+
+bool _equal(dynamic a, dynamic b) {
+    if (a is List && b is List) {
+        if (a.length != b.length) return false;
+        for (var i = 0; i < a.length; i++) { if (!_equal(a[i], b[i])) return false; }
+        return true;
+    }
+    if (a is Map && b is Map) {
+        if (a.length != b.length) return false;
+        for (var k in a.keys) { if (!b.containsKey(k) || !_equal(a[k], b[k])) return false; }
+        return true;
+    }
+    return a == b;
+}
+
+String _formatDuration(Duration d) {
+    if (d.inMicroseconds < 1000) return '${d.inMicroseconds}µs';
+    if (d.inMilliseconds < 1000) return '${d.inMilliseconds}ms';
+    return '${(d.inMilliseconds/1000).toStringAsFixed(2)}s';
+}
+
+void _json(dynamic v) {
+    print(jsonEncode(v));
+}
+
+
+dynamic _min(dynamic v) {
+    List<dynamic>? list;
+    if (v is List) list = v;
+    else if (v is Map && v['items'] is List) list = (v['items'] as List);
+    else if (v is Map && v['Items'] is List) list = (v['Items'] as List);
+    else { try { var it = (v as dynamic).items; if (it is List) list = it; } catch (_) {} }
+    if (list == null || list.isEmpty) return 0;
+    var m = list[0];
+    for (var n in list) { if ((n as Comparable).compareTo(m) < 0) m = n; }
+    return m;
+}
+
+num _sum(dynamic v) {
+    Iterable<dynamic>? list;
+    if (v is Iterable) list = v;
+    else if (v is Map && v['items'] is Iterable) list = (v['items'] as Iterable);
+    else if (v is Map && v['Items'] is Iterable) list = (v['Items'] as Iterable);
+    else { try { var it = (v as dynamic).items; if (it is Iterable) list = it; } catch (_) {} }
+    if (list == null) return 0;
+    num s = 0;
+    for (var n in list) s += (n as num);
+    return s;
+}
+
+bool _runTest(String name, void Function() f) {
+    stdout.write('   test $name ...');
+    var start = DateTime.now();
+    try {
+        f();
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' ok (${_formatDuration(d)})');
+        return true;
+    } catch (e) {
+        var d = DateTime.now().difference(start);
+        stdout.writeln(' fail $e (${_formatDuration(d)})');
+        return false;
+    }
+}

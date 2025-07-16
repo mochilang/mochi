@@ -1,0 +1,4 @@
+line 59: exit status 254
+  return null;
+})();
+}

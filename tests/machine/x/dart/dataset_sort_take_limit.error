@@ -1,0 +1,4 @@
+line 10: exit status 254
+  for (var p in products) {
+    _q0.add([-p['price'], p]);
+  }

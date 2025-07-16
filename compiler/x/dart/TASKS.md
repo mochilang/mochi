@@ -11,5 +11,6 @@
 - [2025-07-16 11:59 UTC] Installed Dart SDK and regenerated Rosetta outputs. Added fallback `as` cast in compiler, dropping failing tasks from 193 to 189.
 - [2025-07-16 15:21 UTC] Escaped newlines in string literals to prevent invalid Dart syntax and regenerated Rosetta outputs.
 
+- [2025-07-16 15:30 UTC] Added golden tests for `tests/vm/valid` programs to verify Dart compilation output.
 ## Remaining Enhancements
 - [ ] Improve generated code formatting to more closely match `tests/human/x/dart` examples.

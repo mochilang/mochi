@@ -1,0 +1,4 @@
+line 6: exit status 254
+int sum3(int a, int b, int c) {
+  return ((a + b) as int + c) as int;
+}

@@ -1,0 +1,4 @@
+line 8: exit status 254
+void main() {
+  print(math['sqrt'](16));
+  print(math['pi']);

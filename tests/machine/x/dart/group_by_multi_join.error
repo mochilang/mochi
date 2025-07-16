@@ -1,0 +1,4 @@
+line 19: exit status 254
+        if (!(n['name'] == 'A')) continue;
+        _q0.add({'part': ps['part'], 'value': ps['cost'] * ps['qty']});
+      }
