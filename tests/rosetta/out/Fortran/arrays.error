@@ -1,0 +1,206 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:38:3:
+
+   38 |   s(((0)+1)) = 22
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:61:10:
+
+   61 |   s = (//)
+      |          1
+Error: Empty array constructor at (1) is not allowed
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:74:50:
+
+   74 |   recursive character(len=100) function listStr(xs) result(res)
+      |                                                  1
+Error: PROCEDURE attribute conflicts with INTENT attribute in ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:76:8:
+
+   76 |     s = '['
+      |        1
+Error: Cannot convert CHARACTER(1) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:80:11:
+
+   80 |       s = (s + s12)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are INTEGER(4)/CHARACTER(100)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:81:26:
+
+   81 |       if (((i + 1) < size(xs))) then
+      |                          1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:82:12:
+
+   82 |         s = s // ' '
+      |            1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:78:24:
+
+   78 |     do while ((i < size(xs)))
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:86:8:
+
+   86 |     s = s // ']'
+      |        1
+Error: Operands of string concatenation operator at (1) are INTEGER(4)/CHARACTER(1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:87:10:
+
+   87 |     res = s
+      |          1
+Error: Cannot convert INTEGER(4) to CHARACTER(100) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:24:29:
+
+   24 |   print *, 'a = ' // listStr(a)
+      |                             1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:26:29:
+
+   26 |   print *, 'a = ' // listStr(a)
+      |                             1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:29:2:
+
+   29 |   s = a(1:4)
+      |  1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:31:29:
+
+   31 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:32:24:
+
+   32 |   write(s2,'(G0)') size(s)
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:35:2:
+
+   35 |   s = a(1:5)
+      |  1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:36:29:
+
+   36 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:39:29:
+
+   39 |   print *, 'a = ' // listStr(a)
+      |                             1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:40:29:
+
+   40 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:41:21:
+
+   41 |   allocate(app4(size(s)+1))
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:42:14:
+
+   42 |   app4(1:size(s)) = s
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:43:12:
+
+   43 |   app4(size(s)+1) = 4
+      |            1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:44:2:
+
+   44 |   s = app4
+      |  1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:45:21:
+
+   45 |   allocate(app5(size(s)+1))
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:46:14:
+
+   46 |   app5(1:size(s)) = s
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:47:12:
+
+   47 |   app5(size(s)+1) = 5
+      |            1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:48:2:
+
+   48 |   s = app5
+      |  1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:49:21:
+
+   49 |   allocate(app6(size(s)+1))
+      |                     1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:50:14:
+
+   50 |   app6(1:size(s)) = s
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:51:12:
+
+   51 |   app6(size(s)+1) = 6
+      |            1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:52:2:
+
+   52 |   s = app6
+      |  1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:54:29:
+
+   54 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:55:24:
+
+   55 |   write(s7,'(G0)') size(s)
+      |                        1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:59:29:
+
+   59 |   print *, 'a = ' // listStr(a)
+      |                             1
+Error: Rank mismatch in argument ‘xs’ at (1) (scalar and rank-1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:60:29:
+
+   60 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:63:23:
+
+   63 |     allocate(app9(size(s)+1))
+      |                       1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:64:16:
+
+   64 |     app9(1:size(s)) = s
+      |                1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:65:14:
+
+   65 |     app9(size(s)+1) = 0
+      |              1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:66:4:
+
+   66 |     s = app9
+      |    1
+Error: Incompatible ranks 0 and 1 in assignment at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:69:29:
+
+   69 |   print *, 's = ' // listStr(s)
+      |                             1
+Error: Expected a procedure for argument ‘xs’ at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arrays.f90:70:25:
+
+   70 |   write(s10,'(G0)') size(s)
+      |                         1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array

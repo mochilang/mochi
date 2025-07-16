@@ -1,0 +1,7 @@
+output mismatch
+-- got --
+aπ                                                                                                  
+ aπ
+-- want --
+a π
+a π

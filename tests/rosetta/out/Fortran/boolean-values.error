@@ -1,0 +1,51 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:10:3:
+
+   10 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:32:14:
+
+   32 |     print *, '
+      |              1
+Error: Unterminated character constant beginning at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:34:1:
+
+   34 | '
+      | 1
+Error: Invalid character in name at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:23:8:
+
+   23 |     n = .true.
+      |        1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:26:13:
+
+   26 |     n = .not. n
+      |             1
+Error: Operand of .not. operator at (1) is INTEGER(4)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:35:11:
+
+   35 |     str1 = 'japan'
+      |           1
+Error: Cannot convert CHARACTER(5) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:37:13:
+
+   37 |     bolStr = parseBool(str1)
+      |             1
+Error: Type mismatch in argument ‘s’ at (1); passed INTEGER(4) to CHARACTER(100)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:14:8:
+
+   14 |     l = lower(s)
+      |        1
+Error: Function ‘lower’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:15:17:
+
+   15 |     if ((((((((((l == '1') .or. l) == 't') .or. l) == .true.) .or. l) == 'yes') .or. l) == 'y')) then
+      |                 1
+Error: Operands of comparison operator ‘==’ at (1) are INTEGER(4)/CHARACTER(1)
+/workspace/mochi/tests/rosetta/out/Fortran/boolean-values.f90:37:13:
+
+   37 |     bolStr = parseBool(str1)
+      |             1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)

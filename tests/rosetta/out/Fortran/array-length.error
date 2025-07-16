@@ -1,0 +1,11 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/array-length.f90:7:3:
+
+    7 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/array-length.f90:10:20:
+
+   10 |     arr = (/'apple','orange','pear'/)
+      |                    1
+Error: Different CHARACTER lengths (5/6) in array constructor at (1)

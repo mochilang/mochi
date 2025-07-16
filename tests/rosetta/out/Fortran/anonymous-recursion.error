@@ -1,0 +1,6 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/anonymous-recursion.f90:8:3:
+
+    8 |   main()
+      |   1
+Error: Unclassifiable statement at (1)

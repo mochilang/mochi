@@ -1,0 +1,36 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:18:3:
+
+   18 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:75:5:
+
+   75 |     p = 0
+      |     1
+Error: Symbol ‘p’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:81:12:
+
+   81 |     first = .true.
+      |            1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:86:12:
+
+   86 |         if (first) then
+      |            1
+Error: IF clause at (1) requires a scalar LOGICAL expression
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:88:18:
+
+   88 |           line = (line + s5)
+      |                  1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:89:18:
+
+   89 |           first = .false.
+      |                  1
+Warning: Extension: Conversion from LOGICAL(4) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/aks-test-for-primes.f90:27:11:
+
+   27 |       s = (s + s0)
+      |           1
+Error: Operands of binary numeric operator ‘+’ at (1) are CHARACTER(100)/CHARACTER(100)

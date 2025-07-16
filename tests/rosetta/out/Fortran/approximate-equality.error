@@ -1,0 +1,54 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:17:3:
+
+   17 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:60:132:
+
+   60 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0,(root2 * root2),2,((-root2) * root2),-2,1e+17,1e+17,3.141592653589793,3.141592653589793/),(/9,2/))
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:60:132:
+
+   60 |     pairs = reshape((/1.0000000000000002e+14,1.0000000000000002e+14,100.01,100.011,(1.0000000000000002e+13 / 10000),1.0000000000000001e+09,0.001,0.0010000001,1.01e-22,0,(root2 * root2),2,((-root2) * root2),-2,1e+17,1e+17,3.141592653589793,3.141592653589793/),(/9,2/))
+      |                                                                                                                                    1
+Error: Syntax error in array constructor at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:65:19:
+
+   65 |       if (isClose(a,b)) then
+      |                   1
+Error: Symbol ‘a’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:65:21:
+
+   65 |       if (isClose(a,b)) then
+      |                     1
+Error: Symbol ‘b’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:59:12:
+
+   59 |     root2 = sqrtApprox(2)
+      |            1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:62:18:
+
+   62 |       pair = pairs(i0)
+      |                  1
+Error: Rank mismatch in array reference at (1) (1/2)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:70:10:
+
+   70 |       s = tmp1
+      |          1
+Error: Cannot convert CHARACTER(100) to INTEGER(4) at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:73:25:
+
+   73 |       print *, trim(trim(trim(s2 // ' ') // s) // ' ') // s3
+      |                         1
+Error: Operands of string concatenation operator at (1) are CHARACTER(*)/INTEGER(4)
+/workspace/mochi/tests/rosetta/out/Fortran/approximate-equality.f90:62:19:
+
+   61 |     do i0 = 1, size(pairs)
+      |                          2
+   62 |       pair = pairs(i0)
+      |                   1
+Warning: Array reference at (1) out of bounds (18 > 9) in loop beginning at (2)
+f951: some warnings being treated as errors

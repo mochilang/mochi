@@ -1,0 +1,6 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/active-object.f90:21:7:
+
+   21 |   k1 = sinApprox(0)
+      |       1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)

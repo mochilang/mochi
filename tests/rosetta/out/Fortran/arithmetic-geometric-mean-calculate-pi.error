@@ -1,0 +1,21 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean-calculate-pi.f90:15:3:
+
+   15 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean-calculate-pi.f90:39:23:
+
+   39 |     g = (1 / sqrtApprox(2))
+      |                       1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean-calculate-pi.f90:44:10:
+
+   44 |       u = sqrtApprox((a * g))
+      |          1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)
+/workspace/mochi/tests/rosetta/out/Fortran/arithmetic-geometric-mean-calculate-pi.f90:42:15:
+
+   42 |     do while ((abs((a - g)) > 1e-15))
+      |               1
+Error: Type mismatch in argument ‘x’ at (1); passed INTEGER(4) to REAL(4)

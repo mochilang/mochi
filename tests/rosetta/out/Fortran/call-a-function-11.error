@@ -1,0 +1,11 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/call-a-function-11.f90:11:3:
+
+   11 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/call-a-function-11.f90:32:12:
+
+   32 |     zeroptr(box)
+      |            1
+Error: ‘zeroptr’ at (1) is not a variable

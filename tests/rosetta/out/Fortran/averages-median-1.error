@@ -1,0 +1,46 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:26:17:
+
+   26 |         if ((arr(((j)+1)) > arr((((j + 1))+1)))) then
+      |                 1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:30:11:
+
+   30 |         end if
+      |           1
+Error: Expecting END DO statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:44:21:
+
+   44 |       m = (((m + arr((((half - 1))+1)))) / 2)
+      |                     1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:21:13:
+
+   21 |     n = size(arr)
+      |             1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:25:17:
+
+   25 |       do while (((j < n) - 1))
+      |                 1
+Error: Operands of binary numeric operator ‘-’ at (1) are LOGICAL(4)/INTEGER(4)
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:41:22:
+
+   41 |     half = int(((size(arr) / 2)))
+      |                      1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:43:18:
+
+   43 |     if ((mod(size(arr),2) == 0)) then
+      |                  1
+Error: ‘array’ argument of ‘size’ intrinsic at (1) must be an array
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:13:26:
+
+   13 |   write(s0,'(G0)') median((/3,1,4,1/))
+      |                          1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)
+/workspace/mochi/tests/rosetta/out/Fortran/averages-median-1.f90:15:26:
+
+   15 |   write(s1,'(G0)') median((/3,1,4,1,5/))
+      |                          1
+Error: Rank mismatch in argument ‘a’ at (1) (scalar and rank-1)

@@ -1,0 +1,42 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:7:132:
+
+    7 |   integer, dimension(8) :: arr0 = (/(/'d41d8cd98f00b204e9800998ecf8427e',''/),(/'0cc175b9c0f1b6a831c399e269772661','a'/),(/'900150983cd24fb0d6963f7d28e17f72','abc'/),(/'f96b697d7cb7938d525a2f31aaf161d0','message digest'/),(/'c3fcd3d76192e4007dfb496cca67e13b','abcdefghijklmnopqrstuvwxyz'/),(/'d174ab98d277d9f5a5611c2c9f419d9f','ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'/),(/'57edf4a22be3c955ac49da2e2107b67a','12345678901234567890' // '123456789012345678901234567890123456789012345678901234567890'/),(/'e38ca1d920c4b8b8d3946b2c72f01680','The quick brown fox jumped over the lazy dog's back'/)/)
+      |                                                                                                                                    1
+Error: Line truncated at (1) [-Werror=line-truncation]
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:7:132:
+
+    7 |   integer, dimension(8) :: arr0 = (/(/'d41d8cd98f00b204e9800998ecf8427e',''/),(/'0cc175b9c0f1b6a831c399e269772661','a'/),(/'900150983cd24fb0d6963f7d28e17f72','abc'/),(/'f96b697d7cb7938d525a2f31aaf161d0','message digest'/),(/'c3fcd3d76192e4007dfb496cca67e13b','abcdefghijklmnopqrstuvwxyz'/),(/'d174ab98d277d9f5a5611c2c9f419d9f','ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'/),(/'57edf4a22be3c955ac49da2e2107b67a','12345678901234567890' // '123456789012345678901234567890123456789012345678901234567890'/),(/'e38ca1d920c4b8b8d3946b2c72f01680','The quick brown fox jumped over the lazy dog's back'/)/)
+      |                                                                                                                                    1
+Error: Missing ‘)’ in statement at or before (1)
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:12:19:
+
+   12 |     sum = testpkg%MD5Hex(pair(((1)+1)))
+      |                   1
+Error: Symbol ‘testpkg’ at (1) has no IMPLICIT type
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:13:21:
+
+   13 |     if ((sum /= pair(((0)+1)))) then
+      |                     1
+Error: Expected a right parenthesis in expression at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:15:37:
+
+   15 |       print *, '  for string,', pair(((1)+1))
+      |                                     1
+Error: Syntax error in PRINT statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:16:37:
+
+   16 |       print *, '  expected:  ', pair(((0)+1))
+      |                                     1
+Error: Syntax error in PRINT statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:18:7:
+
+   18 |     end if
+      |       1
+Error: Expecting END DO statement at (1)
+/workspace/mochi/tests/rosetta/out/Fortran/md5.f90:11:11:
+
+   11 |     pair = arr0(i0)
+      |           1
+Error: Function ‘arr0’ at (1) has no IMPLICIT type
+f951: some warnings being treated as errors

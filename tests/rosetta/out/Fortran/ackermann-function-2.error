@@ -1,0 +1,6 @@
+gfortran error: exit status 1
+/workspace/mochi/tests/rosetta/out/Fortran/ackermann-function-2.f90:10:3:
+
+   10 |   main()
+      |   1
+Error: Unclassifiable statement at (1)
