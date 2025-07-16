@@ -635,7 +635,7 @@ func (c *Compiler) compileStmt(s *parser.Statement) error {
 
 func (c *Compiler) typeName(t *parser.TypeRef) string {
 	if t == nil {
-		return "int"
+		return "Object"
 	}
 	if t.Fun != nil {
 		if len(t.Fun.Params) == 1 && t.Fun.Return != nil && t.Fun.Return.Simple != nil && *t.Fun.Return.Simple == "int" && t.Fun.Params[0].Simple != nil && *t.Fun.Params[0].Simple == "int" {
@@ -933,6 +933,9 @@ func (c *Compiler) inferType(e *parser.Expr) string {
 			rightExpr := &parser.Expr{Binary: &parser.BinaryExpr{Left: &parser.Unary{Value: e.Binary.Right[len(e.Binary.Right)-1].Right}}}
 			leftType := c.inferType(leftExpr)
 			rightType := c.inferType(rightExpr)
+			if op == "+" && (leftType == "String" || rightType == "String") {
+				return "String"
+			}
 			if leftType == "double" || rightType == "double" {
 				if op == "%" {
 					return "int"

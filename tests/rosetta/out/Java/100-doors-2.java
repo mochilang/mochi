@@ -7,14 +7,14 @@ public class M100Doors2 {
     int door = 1;
     int incrementer = 0;
     for (int current = 1; current < 101; current++) {
-        int line = "Door " + String.valueOf(current) + " ";
+        String line = "Door " + String.valueOf(current) + " ";
         if (Objects.equals(current, door)) {
-            line = (int)(line + "Open");
+            line = line + "Open";
             incrementer = (int)(incrementer + 1);
             door = (int)(door + 2 * incrementer + 1);
         }
         else {
-            line = (int)(line + "Closed");
+            line = line + "Closed";
         }
         System.out.println(line);
     }

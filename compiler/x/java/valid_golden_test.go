@@ -84,6 +84,8 @@ func TestJavaCompiler_VMValidPrograms(t *testing.T) {
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		t.Fatalf("mkdir out: %v", err)
 	}
+	passed := 0
+	failed := 0
 	for _, src := range files {
 		name := strings.TrimSuffix(filepath.Base(src), ".mochi")
 		codeWant := filepath.Join(outDir, name+".java")
@@ -162,8 +164,12 @@ func TestJavaCompiler_VMValidPrograms(t *testing.T) {
 				t.Fatalf("read golden: %v", err)
 			}
 			if !bytes.Equal(gotOut, bytes.TrimSpace(wantOut)) {
+				failed++
 				t.Errorf("output mismatch for %s.out\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, gotOut, bytes.TrimSpace(wantOut))
+			} else {
+				passed++
 			}
 		})
 	}
+	t.Logf("Summary: %d passed, %d failed", passed, failed)
 }
