@@ -639,7 +639,8 @@ func NewWithIO(prog *Program, r io.Reader, w io.Writer) *VM {
 }
 
 func (m *VM) Run() error {
-	_, err := m.call(0, nil, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
+	args := make([]Value, m.prog.Funcs[0].NumParams)
+	_, err := m.call(0, args, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
 	if err != nil {
 		if vmErr, ok := err.(*VMError); ok {
 			fmt.Fprintln(m.writer, "call graph:", vmErr.callGraph())
@@ -651,7 +652,8 @@ func (m *VM) Run() error {
 }
 
 func (m *VM) RunResult() (Value, error) {
-	return m.call(0, nil, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
+	args := make([]Value, m.prog.Funcs[0].NumParams)
+	return m.call(0, args, []StackFrame{{Func: m.prog.funcName(0), Line: 0}})
 }
 
 type frame struct {
@@ -2157,11 +2159,8 @@ func newFuncCompiler(c *compiler) *funcCompiler {
 		groupVar:  "",
 		constRegs: map[string]int{},
 	}
-	for name, idx := range c.globals {
-		fc.vars[name] = idx
-	}
-	fc.idx = len(c.globals)
-	fc.fn.NumRegs = fc.idx
+	fc.idx = 0
+	fc.fn.NumRegs = 0
 	return fc
 }
 
@@ -2240,15 +2239,12 @@ func (c *compiler) compileFun(fn *parser.FunStmt) (Function, error) {
 	fc := newFuncCompiler(c)
 	fc.fn.Name = fn.Name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(c.globals) + len(fn.Params)
-	for i, p := range fn.Params {
-		idx := len(c.globals) + i
+	fc.fn.NumParams = len(fn.Params)
+	for _, p := range fn.Params {
+		idx := fc.newReg()
 		fc.vars[p.Name] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	fc.idx = fc.fn.NumParams
+	fc.idx = len(c.globals) + len(fn.Params)
 	for _, st := range fn.Body {
 		if err := fc.compileStmt(st); err != nil {
 			return Function{}, err
@@ -2265,23 +2261,17 @@ func (c *compiler) compileMethod(st types.StructType, fn *parser.FunStmt) (Funct
 	fc := newFuncCompiler(c)
 	fc.fn.Name = st.Name + "." + fn.Name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(c.globals) + len(st.Order) + len(fn.Params)
+	fc.fn.NumParams = len(st.Order) + len(fn.Params)
 	// struct fields as parameters
-	for i, field := range st.Order {
-		idx := len(c.globals) + i
+	for _, field := range st.Order {
+		idx := fc.newReg()
 		fc.vars[field] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	for i, p := range fn.Params {
-		idx := len(c.globals) + len(st.Order) + i
+	for _, p := range fn.Params {
+		idx := fc.newReg()
 		fc.vars[p.Name] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	fc.idx = fc.fn.NumParams
+	fc.idx = len(c.globals) + len(st.Order) + len(fn.Params)
 	for _, stmnt := range fn.Body {
 		if err := fc.compileStmt(stmnt); err != nil {
 			return Function{}, err
@@ -2319,22 +2309,16 @@ func (c *compiler) compileTypeMethods(td *parser.TypeDecl) error {
 func (c *compiler) compileFunExpr(fn *parser.FunExpr, captures []string) int {
 	fc := newFuncCompiler(c)
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(c.globals) + len(captures) + len(fn.Params)
-	for i, name := range captures {
-		idx := len(c.globals) + i
+	fc.fn.NumParams = len(captures) + len(fn.Params)
+	for _, name := range captures {
+		idx := fc.newReg()
 		fc.vars[name] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	for i, p := range fn.Params {
-		idx := len(c.globals) + len(captures) + i
+	for _, p := range fn.Params {
+		idx := fc.newReg()
 		fc.vars[p.Name] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	fc.idx = fc.fn.NumParams
+	fc.idx = len(c.globals) + len(captures) + len(fn.Params)
 	if fn.ExprBody != nil {
 		r := fc.compileExpr(fn.ExprBody)
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
@@ -2363,22 +2347,16 @@ func (c *compiler) compileNamedFunExpr(name string, fn *parser.FunExpr, captures
 	fc := newFuncCompiler(c)
 	fc.fn.Name = name
 	fc.fn.Line = fn.Pos.Line
-	fc.fn.NumParams = len(c.globals) + len(captures) + len(fn.Params)
-	for i, name := range captures {
-		idx := len(c.globals) + i
+	fc.fn.NumParams = len(captures) + len(fn.Params)
+	for _, name := range captures {
+		idx := fc.newReg()
 		fc.vars[name] = idx
-		if idx >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idx + 1
-		}
 	}
-	for i, p := range fn.Params {
-		idxp := len(c.globals) + len(captures) + i
+	for _, p := range fn.Params {
+		idxp := fc.newReg()
 		fc.vars[p.Name] = idxp
-		if idxp >= fc.fn.NumRegs {
-			fc.fn.NumRegs = idxp + 1
-		}
 	}
-	fc.idx = fc.fn.NumParams
+	fc.idx = len(c.globals) + len(captures) + len(fn.Params)
 	if fn.ExprBody != nil {
 		r := fc.compileExpr(fn.ExprBody)
 		fc.emit(lexer.Position{}, Instr{Op: OpReturn, A: r})
@@ -2406,7 +2384,7 @@ func (c *compiler) compileMain(p *parser.Program) (Function, error) {
 	fc := newFuncCompiler(c)
 	fc.fn.Name = "main"
 	fc.fn.Line = 0
-	fc.fn.NumParams = len(c.globals)
+	fc.fn.NumParams = 0
 	for _, st := range p.Statements {
 		if st.Fun != nil {
 			continue
