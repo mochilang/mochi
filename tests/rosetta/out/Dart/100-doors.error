@@ -1,16 +1,1 @@
-run error: exit status 254
-../../tests/rosetta/out/Dart/100-doors.dart:12:26: Error: A value of type 'num' can't be assigned to a variable of type 'int'.
-      idx = (idx as num) + pass;
-                         ^
-../../tests/rosetta/out/Dart/100-doors.dart:54:11: Error: Method not found: 'jsonEncode'.
-    print(jsonEncode(v));
-          ^^^^^^^^^^
-../../tests/rosetta/out/Dart/100-doors.dart:83:5: Error: Undefined name 'stdout'.
-    stdout.write('   test $name ...');
-    ^^^^^^
-../../tests/rosetta/out/Dart/100-doors.dart:88:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' ok (${_formatDuration(d)})');
-        ^^^^^^
-../../tests/rosetta/out/Dart/100-doors.dart:92:9: Error: Undefined name 'stdout'.
-        stdout.writeln(' fail $e (${_formatDuration(d)})');
-        ^^^^^^
+dart not installed
