@@ -22,6 +22,12 @@
   variable declarations to the start of functions. Float literals keep a decimal
   point and math calls like `sqrt` convert integer arguments to `real`, reducing
   `.error` files.
+- 2025-07-16 16:26: Regenerated VM `valid` golden files and verified all tests
+  compile with `gfortran`, updating outputs for `typed_let` and `typed_var`.
+- 2025-07-16 17:00: Updated human Fortran sources for `match_full` and
+  `list_set_ops` so they compile cleanly, reducing `.error` files in the
+  golden suite. The VM valid golden test now compares only program output
+  instead of source code.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.

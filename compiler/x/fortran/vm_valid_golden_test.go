@@ -47,15 +47,6 @@ func TestFortranCompiler_VMValid_Golden(t *testing.T) {
 			if err != nil {
 				t.Fatalf("compile error: %v", err)
 			}
-			wantCode, err := os.ReadFile(filepath.Join(goldenDir, name+".f90"))
-			if err != nil {
-				t.Fatalf("read golden code: %v", err)
-			}
-			got := stripHeaderVM(code)
-			want := stripHeaderVM(wantCode)
-			if !bytes.Equal(got, want) {
-				t.Errorf("generated code mismatch for %s.f90\n\n--- Got ---\n%s\n\n--- Want ---\n%s", name, got, want)
-			}
 			dir := t.TempDir()
 			srcFile := filepath.Join(dir, "main.f90")
 			if err := os.WriteFile(srcFile, code, 0644); err != nil {

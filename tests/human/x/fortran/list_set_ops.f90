@@ -2,6 +2,9 @@ program list_set_ops
   implicit none
   integer, dimension(2) :: a = (/1,2/)
   integer, dimension(2) :: b = (/2,3/)
+  integer, dimension(3) :: tmp3 = (/1,2,3/)
+  integer, dimension(1) :: tmp2 = (/2/)
+  integer, dimension(2) :: tmp24 = (/2,4/)
   integer, allocatable :: union_set(:)
   integer, allocatable :: diff_set(:)
   integer, allocatable :: inter_set(:)
@@ -29,8 +32,8 @@ program list_set_ops
   allocate(diff_set(3))
   size_d = 0
   do i = 1, 3
-    n = (/1,2,3/)(i)
-    if (.not. any(n == (/2/))) then
+    n = tmp3(i)
+    if (.not. any(n == tmp2)) then
       size_d = size_d + 1
       diff_set(size_d) = n
     end if
@@ -41,8 +44,8 @@ program list_set_ops
   allocate(inter_set(3))
   size_i = 0
   do i = 1, 3
-    n = (/1,2,3/)(i)
-    if (any(n == (/2,4/))) then
+    n = tmp3(i)
+    if (any(n == tmp24)) then
       size_i = size_i + 1
       inter_set(size_i) = n
     end if
