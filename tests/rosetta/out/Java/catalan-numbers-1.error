@@ -1,9 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavacatalan-numbers-13058867811/001/CatalanNumbers1.java:17: error: incompatible types: int cannot be converted to String
-            res = (int)(Integer.parseInt((res / i)));
-                                              ^
-/tmp/TestMochiToJavacatalan-numbers-13058867811/001/CatalanNumbers1.java:22: error: incompatible types: int cannot be converted to String
-        return Integer.parseInt((binom(2 * n, n) / (n + 1)));
-                                                 ^
-Note: Some messages have been simplified; recompile with -Xdiags:verbose to get full output
-2 errors

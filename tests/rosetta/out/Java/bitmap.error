@@ -1,5 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJavabitmap157935991/001/Bitmap.java:41: error: duplicate class: Bitmap
-public class Bitmap {
-       ^
-1 error

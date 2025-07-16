@@ -1,5 +1,0 @@
-javac error: exit status 1
-/tmp/TestMochiToJava4-rings-or-4-squares-puzzle1953409085/001/4RingsOr4SquaresPuzzle.java:5: error: <identifier> expected
-public class 4RingsOr4SquaresPuzzle {
-            ^
-1 error
