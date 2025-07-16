@@ -18,6 +18,10 @@
 - 2025-07-16 13:00: List and scalar declarations infer boolean, float, and
   string types automatically. `for` loops over string lists now declare arrays as
   `character` vectors, fixing the `100-prisoners` task and similar cases.
+- 2025-07-16 15:33: Added golden tests for `tests/vm/valid` and moved local
+  variable declarations to the start of functions. Float literals keep a decimal
+  point and math calls like `sqrt` convert integer arguments to `real`, reducing
+  `.error` files.
 
 ## Remaining Work
 - [x] Support query compilation with joins and group-by for TPC-H `q1.mochi`.
