@@ -42,6 +42,12 @@
 - Improved `defineStruct` to replace field types referencing variables using
   either `varStruct` or `elemType` information.
 
+## Recent Enhancements (2025-07-16 18:33 UTC)
+- VM golden tests now log a summary of passed and failed programs using
+  `golden.RunWithSummary`.
+- Fallback to `std::any` in `structFromVars` when field types cannot be
+  determined, reducing compile errors.
+
 ## Remaining Enhancements
 - [ ] Improve formatting to better match human examples.
 - [ ] Implement additional TPCH optimizations.

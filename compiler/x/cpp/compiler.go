@@ -3759,6 +3759,9 @@ func (c *Compiler) structFromVars(names []string) string {
 			}
 		} else if t := c.elemType[n]; t != "" {
 			fieldType = t
+		} else {
+			fieldType = "std::any"
+			c.usesAny = true
 		}
 		if info.Types[i] == "" || strings.Contains(info.Types[i], n) {
 			info.Types[i] = fieldType

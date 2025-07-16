@@ -1,242 +1,165 @@
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:81:12: error: ‘c’ was not declared in this scope
-   81 |   decltype(c.c_custkey) c_custkey;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:96:12: error: ‘c’ was not declared in this scope
+   96 |   decltype(c.c_custkey) c_custkey;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:81:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:82:12: error: ‘c’ was not declared in this scope
-   82 |   decltype(c.c_name) c_name;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:96:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:97:12: error: ‘c’ was not declared in this scope
+   97 |   decltype(c.c_name) c_name;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:82:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:83:12: error: ‘c’ was not declared in this scope
-   83 |   decltype(c.c_acctbal) c_acctbal;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:97:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:98:12: error: ‘c’ was not declared in this scope
+   98 |   decltype(c.c_acctbal) c_acctbal;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:83:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:84:12: error: ‘c’ was not declared in this scope
-   84 |   decltype(c.c_address) c_address;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:98:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:99:12: error: ‘c’ was not declared in this scope
+   99 |   decltype(c.c_address) c_address;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:84:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:85:12: error: ‘c’ was not declared in this scope
-   85 |   decltype(c.c_phone) c_phone;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:99:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:100:12: error: ‘c’ was not declared in this scope
+  100 |   decltype(c.c_phone) c_phone;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:85:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:86:12: error: ‘c’ was not declared in this scope
-   86 |   decltype(c.c_comment) c_comment;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:100:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:101:12: error: ‘c’ was not declared in this scope
+  101 |   decltype(c.c_comment) c_comment;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:86:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:87:12: error: ‘n’ was not declared in this scope
-   87 |   decltype(n.n_name) n_name;
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:101:12: error: ‘c’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:102:12: error: ‘n’ was not declared in this scope
+  102 |   decltype(n.n_name) n_name;
       |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:87:12: error: ‘n’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:90:12: error: ‘c’ was not declared in this scope
-   90 |   decltype(c) c;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:90:12: error: ‘c’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:91:12: error: ‘o’ was not declared in this scope
-   91 |   decltype(o) o;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:91:12: error: ‘o’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:92:12: error: ‘l’ was not declared in this scope
-   92 |   decltype(l) l;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:92:12: error: ‘l’ was not declared in this scope
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:93:12: error: ‘n’ was not declared in this scope
-   93 |   decltype(n) n;
-      |            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:93:12: error: ‘n’ was not declared in this scope
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:102:12: error: ‘n’ was not declared in this scope
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:347:39: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
-  347 |                 Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:362:39: error: cannot convert ‘std::string’ {aka ‘std::__cxx11::basic_string<char>’} to ‘int’ in initialization
+  362 |                 Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
       |                                     ~~^~~~~~
       |                                       |
       |                                       std::string {aka std::__cxx11::basic_string<char>}
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:352:47: error: cannot convert ‘Customer’ to ‘int’ in initialization
-  352 |                 __g.items.push_back(__struct6{c, o, l, n});
-      |                                               ^
-      |                                               |
-      |                                               Customer
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:359:59: error: cannot convert ‘Customer’ to ‘int’ in initialization
-  359 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
-      |                                                           ^
-      |                                                           |
-      |                                                           Customer
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:359:70: error: no matching function for call to ‘std::vector<__struct6>::vector(<brace-enclosed initializer list>)’
-  359 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
-      |                                                                      ^
-In file included from /usr/include/c++/13/vector:66,
-                 from /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:9:
-/usr/include/c++/13/bits/stl_vector.h:707:9: note: candidate: ‘template<class _InputIterator, class> std::vector<_Tp, _Alloc>::vector(_InputIterator, _InputIterator, const allocator_type&) [with <template-parameter-2-2> = _InputIterator; _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
-  707 |         vector(_InputIterator __first, _InputIterator __last,
-      |         ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:707:9: note:   template argument deduction/substitution failed:
-/usr/include/c++/13/bits/stl_vector.h:678:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::initializer_list<_Tp>, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
-  678 |       vector(initializer_list<value_type> __l,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:678:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:659:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
-  659 |       vector(vector&& __rv, const __type_identity_t<allocator_type>& __m)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:659:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:640:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::false_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::false_type = std::integral_constant<bool, false>]’
-  640 |       vector(vector&& __rv, const allocator_type& __m, false_type)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:640:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:635:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&, const allocator_type&, std::true_type) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>; std::true_type = std::integral_constant<bool, true>]’
-  635 |       vector(vector&& __rv, const allocator_type& __m, true_type) noexcept
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:635:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:624:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&, std::__type_identity_t<_Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; std::__type_identity_t<_Alloc> = std::allocator<__struct6>]’
-  624 |       vector(const vector& __x, const __type_identity_t<allocator_type>& __a)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:624:7: note:   candidate expects 2 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:620:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(std::vector<_Tp, _Alloc>&&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
-  620 |       vector(vector&&) noexcept = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:620:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:601:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const std::vector<_Tp, _Alloc>&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
-  601 |       vector(const vector& __x)
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:601:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:569:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const value_type&, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; value_type = std::vector<__struct6>::value_type; allocator_type = std::allocator<__struct6>]’
-  569 |       vector(size_type __n, const value_type& __value,
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:569:7: note:   candidate expects 3 arguments, 1 provided
-/usr/include/c++/13/bits/stl_vector.h:556:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(size_type, const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; size_type = long unsigned int; allocator_type = std::allocator<__struct6>]’
-  556 |       vector(size_type __n, const allocator_type& __a = allocator_type())
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:556:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:542:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector(const allocator_type&) [with _Tp = __struct6; _Alloc = std::allocator<__struct6>; allocator_type = std::allocator<__struct6>]’
-  542 |       vector(const allocator_type& __a) _GLIBCXX_NOEXCEPT
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:542:7: note:   conversion of argument 1 would be ill-formed:
-/usr/include/c++/13/bits/stl_vector.h:531:7: note: candidate: ‘std::vector<_Tp, _Alloc>::vector() [with _Tp = __struct6; _Alloc = std::allocator<__struct6>]’
-  531 |       vector() = default;
-      |       ^~~~~~
-/usr/include/c++/13/bits/stl_vector.h:531:7: note:   candidate expects 0 arguments, 1 provided
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  371 |                      std::declval<__struct6>().l.l_extendedprice *
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:386:50: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  386 |                      std::declval<__struct6>().l.l_extendedprice *
       |                                                  ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:387:56: error: ‘class std::any’ has no member named ‘l_discount’
+  387 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                        ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:371:50: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  371 |                      std::declval<__struct6>().l.l_extendedprice *
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:386:50: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  386 |                      std::declval<__struct6>().l.l_extendedprice *
       |                                                  ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:56: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:387:56: error: ‘class std::any’ has no member named ‘l_discount’
+  387 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                        ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:70: error: template argument 1 is invalid
-  372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:387:70: error: template argument 1 is invalid
+  387 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                                      ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:372:70: error: template argument 2 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:375:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  375 |                    __items.push_back(
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:387:70: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:390:28: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  390 |                    __items.push_back(
       |                            ^~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:376:29: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
-  376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:391:29: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  391 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                             ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:376:57: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
-  376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:391:57: error: ‘class std::any’ has no member named ‘l_discount’
+  391 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                         ^~~~~~~~~~
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:1)> [with auto:1 = int]’:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:80:   required from here
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:383:80:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:383:54: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  383 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                    ~~^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:368:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:383:65: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  383 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |                                                               ~~^~~
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  384 |                            std::declval<__struct6>().l.l_extendedprice *
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:399:56: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  399 |                            std::declval<__struct6>().l.l_extendedprice *
       |                                                        ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:62: error: ‘class std::any’ has no member named ‘l_discount’
+  400 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:384:56: error: request for member ‘l_extendedprice’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  384 |                            std::declval<__struct6>().l.l_extendedprice *
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:399:56: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  399 |                            std::declval<__struct6>().l.l_extendedprice *
       |                                                        ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:62: error: request for member ‘l_discount’ in ‘std::declval<__struct6>().__struct6::l’, which is of non-class type ‘int’
-  385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:62: error: ‘class std::any’ has no member named ‘l_discount’
+  400 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                              ^~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:76: error: template argument 1 is invalid
-  385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:76: error: template argument 1 is invalid
+  400 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                                                                            ^
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:385:76: error: template argument 2 is invalid
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:388:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
-  388 |                          __items.push_back(
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:400:76: error: template argument 2 is invalid
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:403:34: error: request for member ‘push_back’ in ‘__items’, which is of non-class type ‘int’
+  403 |                          __items.push_back(
       |                                  ^~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:35: error: request for member ‘l_extendedprice’ in ‘x.__struct6::l’, which is of non-class type ‘int’
-  389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:404:35: error: ‘class std::any’ has no member named ‘l_extendedprice’
+  404 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                   ^~~~~~~~~~~~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:389:63: error: request for member ‘l_discount’ in ‘x.__struct6::l’, which is of non-class type ‘int’
-  389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:404:63: error: ‘class std::any’ has no member named ‘l_discount’
+  404 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                                                               ^~~~~~~~~~
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In instantiation of ‘main()::<lambda()>::<lambda(auto:2)> [with auto:2 = int]’:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:382:24:   required from here
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:381:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
-  381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:397:24:   required from here
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:396:49: error: request for member ‘begin’ in ‘v’, which is of non-class type ‘int’
+  396 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                               ~~^~~~~
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:381:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
-  381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:396:60: error: request for member ‘end’ in ‘v’, which is of non-class type ‘int’
+  396 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                                                          ~~^~~
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In lambda function:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:367:24: error: no matching function for call to ‘std::vector<std::pair<double, __struct8> >::push_back(<brace-enclosed initializer list>)’
-  367 |       __items.push_back(
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:382:24: error: no matching function for call to ‘std::vector<std::pair<double, __struct8> >::push_back(<brace-enclosed initializer list>)’
+  382 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~^
-  368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+  383 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  369 |                ([&]() {
+  384 |                ([&]() {
       |                ~~~~~~~~ 
-  370 |                  std::vector<decltype((
+  385 |                  std::vector<decltype((
       |                  ~~~~~~~~~~~~~~~~~~~~~~
-  371 |                      std::declval<__struct6>().l.l_extendedprice *
+  386 |                      std::declval<__struct6>().l.l_extendedprice *
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
+  387 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  373 |                      __items;
+  388 |                      __items;
       |                      ~~~~~~~~
-  374 |                  for (auto x : g.items) {
+  389 |                  for (auto x : g.items) {
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~
-  375 |                    __items.push_back(
+  390 |                    __items.push_back(
       |                    ~~~~~~~~~~~~~~~~~~
-  376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+  391 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  377 |                  }
+  392 |                  }
       |                  ~      
-  378 |                  return __items;
+  393 |                  return __items;
       |                  ~~~~~~~~~~~~~~~
-  379 |                })())),
+  394 |                })())),
       |                ~~~~~~~  
-  380 |            __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
+  395 |            __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
       |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  396 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  382 |                      })(([&]() {
+  397 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  383 |                        std::vector<decltype((
+  398 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  384 |                            std::declval<__struct6>().l.l_extendedprice *
+  399 |                            std::declval<__struct6>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
+  400 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  386 |                            __items;
+  401 |                            __items;
       |                            ~~~~~~~~
-  387 |                        for (auto x : g.items) {
+  402 |                        for (auto x : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  388 |                          __items.push_back(
+  403 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+  404 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  390 |                        }
+  405 |                        }
       |                        ~
-  391 |                        return __items;
+  406 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  392 |                      })()),
+  407 |                      })()),
       |                      ~~~~~~
-  393 |                      g.key.c_acctbal, g.key.n_name, g.key.c_address,
+  408 |                      g.key.c_acctbal, g.key.n_name, g.key.c_address,
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  394 |                      g.key.c_phone, g.key.c_comment}});
+  409 |                      g.key.c_phone, g.key.c_comment}});
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/c++/13/vector:66,
+                 from /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:10:
 /usr/include/c++/13/bits/stl_vector.h:1281:7: note: candidate: ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = std::pair<double, __struct8>; _Alloc = std::allocator<std::pair<double, __struct8> >; value_type = std::pair<double, __struct8>]’
  1281 |       push_back(const value_type& __x)
       |       ^~~~~~~~~
@@ -250,150 +173,150 @@ In file included from /usr/include/c++/13/vector:66,
  1298 |       push_back(value_type&& __x)
       |                 ~~~~~~~~~~~~~^~~
 /workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp: In function ‘int main()’:
-/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:402:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
-  330 |   std::vector<__struct6> result = ([&]() {
+/workspace/mochi/tests/machine/x/cpp/group_by_multi_join_sort.cpp:417:5: error: conversion from ‘vector<__struct8>’ to non-scalar type ‘vector<__struct6>’ requested
+  345 |   std::vector<__struct6> result = ([&]() {
       |                                   ~~~~~~~~
-  331 |     std::vector<__struct7> __groups;
+  346 |     std::vector<__struct7> __groups;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  332 |     for (auto c : customer) {
+  347 |     for (auto c : customer) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~
-  333 |       for (auto o : orders) {
+  348 |       for (auto o : orders) {
       |       ~~~~~~~~~~~~~~~~~~~~~~~
-  334 |         if (!((o.o_custkey == c.c_custkey)))
+  349 |         if (!((o.o_custkey == c.c_custkey)))
       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  335 |           continue;
+  350 |           continue;
       |           ~~~~~~~~~
-  336 |         for (auto l : lineitem) {
+  351 |         for (auto l : lineitem) {
       |         ~~~~~~~~~~~~~~~~~~~~~~~~~
-  337 |           if (!((l.l_orderkey == o.o_orderkey)))
+  352 |           if (!((l.l_orderkey == o.o_orderkey)))
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  338 |             continue;
+  353 |             continue;
       |             ~~~~~~~~~
-  339 |           for (auto n : nation) {
+  354 |           for (auto n : nation) {
       |           ~~~~~~~~~~~~~~~~~~~~~~~
-  340 |             if (!((n.n_nationkey == c.c_nationkey)))
+  355 |             if (!((n.n_nationkey == c.c_nationkey)))
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  341 |               continue;
+  356 |               continue;
       |               ~~~~~~~~~
-  342 |             if (!((((o.o_orderdate >= start_date) &&
+  357 |             if (!((((o.o_orderdate >= start_date) &&
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  343 |                     (o.o_orderdate < end_date)) &&
+  358 |                     (o.o_orderdate < end_date)) &&
       |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  344 |                    (l.l_returnflag == std::string("R")))))
+  359 |                    (l.l_returnflag == std::string("R")))))
       |                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  345 |               continue;
+  360 |               continue;
       |               ~~~~~~~~~
-  346 |             auto __key =
+  361 |             auto __key =
       |             ~~~~~~~~~~~~
-  347 |                 Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
+  362 |                 Result{c.c_custkey, c.c_name,    c.c_acctbal, c.c_address,
       |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  348 |                        c.c_phone,   c.c_comment, n.n_name};
+  363 |                        c.c_phone,   c.c_comment, n.n_name};
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  349 |             bool __found = false;
+  364 |             bool __found = false;
       |             ~~~~~~~~~~~~~~~~~~~~~
-  350 |             for (auto &__g : __groups) {
+  365 |             for (auto &__g : __groups) {
       |             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  351 |               if (__g.key == __key) {
+  366 |               if (__g.key == __key) {
       |               ~~~~~~~~~~~~~~~~~~~~~~~
-  352 |                 __g.items.push_back(__struct6{c, o, l, n});
+  367 |                 __g.items.push_back(__struct6{c, o, l, n});
       |                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  353 |                 __found = true;
+  368 |                 __found = true;
       |                 ~~~~~~~~~~~~~~~
-  354 |                 break;
+  369 |                 break;
       |                 ~~~~~~
-  355 |               }
+  370 |               }
       |               ~
-  356 |             }
+  371 |             }
       |             ~
-  357 |             if (!__found) {
+  372 |             if (!__found) {
       |             ~~~~~~~~~~~~~~~
-  358 |               __groups.push_back(__struct7{
+  373 |               __groups.push_back(__struct7{
       |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  359 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
+  374 |                   __key, std::vector<__struct6>{__struct6{c, o, l, n}}});
       |                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  360 |             }
+  375 |             }
       |             ~
-  361 |           }
+  376 |           }
       |           ~
-  362 |         }
+  377 |         }
       |         ~
-  363 |       }
+  378 |       }
       |       ~
-  364 |     }
+  379 |     }
       |     ~
-  365 |     std::vector<std::pair<double, __struct8>> __items;
+  380 |     std::vector<std::pair<double, __struct8>> __items;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  366 |     for (auto &g : __groups) {
+  381 |     for (auto &g : __groups) {
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  367 |       __items.push_back(
+  382 |       __items.push_back(
       |       ~~~~~~~~~~~~~~~~~~
-  368 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
+  383 |           {(-([&](auto v) { return std::accumulate(v.begin(), v.end(), 0.0); })(
       |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  369 |                ([&]() {
+  384 |                ([&]() {
       |                ~~~~~~~~
-  370 |                  std::vector<decltype((
+  385 |                  std::vector<decltype((
       |                  ~~~~~~~~~~~~~~~~~~~~~~
-  371 |                      std::declval<__struct6>().l.l_extendedprice *
+  386 |                      std::declval<__struct6>().l.l_extendedprice *
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  372 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
+  387 |                      ((1 - std::declval<__struct6>().l.l_discount))))>
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  373 |                      __items;
+  388 |                      __items;
       |                      ~~~~~~~~
-  374 |                  for (auto x : g.items) {
+  389 |                  for (auto x : g.items) {
       |                  ~~~~~~~~~~~~~~~~~~~~~~~~
-  375 |                    __items.push_back(
+  390 |                    __items.push_back(
       |                    ~~~~~~~~~~~~~~~~~~
-  376 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+  391 |                        (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  377 |                  }
+  392 |                  }
       |                  ~
-  378 |                  return __items;
+  393 |                  return __items;
       |                  ~~~~~~~~~~~~~~~
-  379 |                })())),
+  394 |                })())),
       |                ~~~~~~~
-  380 |            __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
+  395 |            __struct8{g.key.c_custkey, g.key.c_name, ([&](auto v) {
       |            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  381 |                        return std::accumulate(v.begin(), v.end(), 0.0);
+  396 |                        return std::accumulate(v.begin(), v.end(), 0.0);
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  382 |                      })(([&]() {
+  397 |                      })(([&]() {
       |                      ~~~~~~~~~~~
-  383 |                        std::vector<decltype((
+  398 |                        std::vector<decltype((
       |                        ~~~~~~~~~~~~~~~~~~~~~~
-  384 |                            std::declval<__struct6>().l.l_extendedprice *
+  399 |                            std::declval<__struct6>().l.l_extendedprice *
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  385 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
+  400 |                            ((1 - std::declval<__struct6>().l.l_discount))))>
       |                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  386 |                            __items;
+  401 |                            __items;
       |                            ~~~~~~~~
-  387 |                        for (auto x : g.items) {
+  402 |                        for (auto x : g.items) {
       |                        ~~~~~~~~~~~~~~~~~~~~~~~~
-  388 |                          __items.push_back(
+  403 |                          __items.push_back(
       |                          ~~~~~~~~~~~~~~~~~~
-  389 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
+  404 |                              (x.l.l_extendedprice * ((1 - x.l.l_discount))));
       |                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  390 |                        }
+  405 |                        }
       |                        ~
-  391 |                        return __items;
+  406 |                        return __items;
       |                        ~~~~~~~~~~~~~~~
-  392 |                      })()),
+  407 |                      })()),
       |                      ~~~~~~
-  393 |                      g.key.c_acctbal, g.key.n_name, g.key.c_address,
+  408 |                      g.key.c_acctbal, g.key.n_name, g.key.c_address,
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  394 |                      g.key.c_phone, g.key.c_comment}});
+  409 |                      g.key.c_phone, g.key.c_comment}});
       |                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  395 |     }
+  410 |     }
       |     ~
-  396 |     std::sort(__items.begin(), __items.end(),
+  411 |     std::sort(__items.begin(), __items.end(),
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  397 |               [](auto &a, auto &b) { return a.first < b.first; });
+  412 |               [](auto &a, auto &b) { return a.first < b.first; });
       |               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  398 |     std::vector<__struct8> __res;
+  413 |     std::vector<__struct8> __res;
       |     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  399 |     for (auto &p : __items)
+  414 |     for (auto &p : __items)
       |     ~~~~~~~~~~~~~~~~~~~~~~~
-  400 |       __res.push_back(p.second);
+  415 |       __res.push_back(p.second);
       |       ~~~~~~~~~~~~~~~~~~~~~~~~~~
-  401 |     return __res;
+  416 |     return __res;
       |     ~~~~~~~~~~~~~
-  402 |   })();
+  417 |   })();
       |   ~~^~
