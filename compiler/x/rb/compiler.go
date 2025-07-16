@@ -107,7 +107,7 @@ func (c *Compiler) Compile(prog *parser.Program) ([]byte, error) {
 		switch lang {
 		case "go":
 			if s.Import.Auto && path == "mochi/runtime/ffi/go/testpkg" {
-				c.writeln(fmt.Sprintf("%s = Struct.new(:Add, :Pi, :Answer).new(->(a,b){ a + b }, 3.14, 42)", alias))
+				c.writeln(fmt.Sprintf("%s = Struct.new(:Add, :Pi, :Answer, :FifteenPuzzleExample).new(->(a,b){ a + b }, 3.14, 42, ->(){ 'Solution found in 52 moves: rrrulddluuuldrurdddrullulurrrddldluurddlulurruldrdrd' })", alias))
 				c.writeln("")
 			}
 		case "python":

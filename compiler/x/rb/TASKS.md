@@ -7,6 +7,9 @@
 - Verified `tpc-h/q2.mochi` and `tpc-h/q3.mochi` compile and run successfully.
 - 2025-07-16 12:23 - Added nil checks in expression compilation to avoid
   panics during Rosetta runs and regenerated outputs.
+- 2025-07-17 - Added `rosetta_golden_test.go` and `compile_rosetta_rb.go` to
+  generate Ruby Rosetta outputs. Included a `FifteenPuzzleExample` stub so the
+  first task compiles and runs without error.
 
 ## Progress (2025-07-15 04:48)
 - Recompiled `tpc-h` queries `q4`-`q22` using the updated compiler.
