@@ -1,0 +1,88 @@
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:4:10
+  |
+4 |     data["outer" as usize]["inner" as usize] = 2;
+  |          ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+4 |     data[&("outer" as usize)]["inner" as usize] = 2;
+  |          ++                +
+
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:4:28
+  |
+4 |     data["outer" as usize]["inner" as usize] = 2;
+  |                            ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+4 |     data["outer" as usize][&("inner" as usize)] = 2;
+  |                            ++                +
+
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:5:35
+  |
+5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
+  |                                   ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+5 |     println!("{:?}", data.clone()[&("outer" as usize)]["inner" as usize]);
+  |                                   ++                +
+
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:5:53
+  |
+5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
+  |                                                     ^^^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+5 |     println!("{:?}", data.clone()["outer" as usize][&("inner" as usize)]);
+  |                                                     ++                +
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:4:10
+  |
+4 |     data["outer" as usize]["inner" as usize] = 2;
+  |          ^^^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:4:28
+  |
+4 |     data["outer" as usize]["inner" as usize] = 2;
+  |                            ^^^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:5:35
+  |
+5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
+  |                                   ^^^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_nested_assign2218470594/001/prog.rs:5:53
+  |
+5 |     println!("{:?}", data.clone()["outer" as usize]["inner" as usize]);
+  |                                                     ^^^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error: aborting due to 8 previous errors
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.

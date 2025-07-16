@@ -1,0 +1,46 @@
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_assign3540926013/001/prog.rs:4:12
+  |
+4 |     scores["bob" as usize] = 2;
+  |            ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+4 |     scores[&("bob" as usize)] = 2;
+  |            ++              +
+
+error[E0308]: mismatched types
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_assign3540926013/001/prog.rs:5:37
+  |
+5 |     println!("{:?}", scores.clone()["bob" as usize]);
+  |                                     ^^^^^^^^^^^^^^ expected `&_`, found `usize`
+  |
+  = note: expected reference `&_`
+                  found type `usize`
+help: consider borrowing here
+  |
+5 |     println!("{:?}", scores.clone()[&("bob" as usize)]);
+  |                                     ++              +
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_assign3540926013/001/prog.rs:4:12
+  |
+4 |     scores["bob" as usize] = 2;
+  |            ^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error[E0606]: casting `&'static str` as `usize` is invalid
+ --> /tmp/TestRustCompiler_VMValid_Goldenmap_assign3540926013/001/prog.rs:5:37
+  |
+5 |     println!("{:?}", scores.clone()["bob" as usize]);
+  |                                     ^^^^^^^^^^^^^^
+  |
+  = help: cast through a raw pointer first
+
+error: aborting due to 4 previous errors
+
+Some errors have detailed explanations: E0308, E0606.
+For more information about an error, try `rustc --explain E0308`.
