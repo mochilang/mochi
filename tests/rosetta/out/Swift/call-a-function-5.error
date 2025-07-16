@@ -1,0 +1,54 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:4:19: error: missing argument label 'where:' in call
+ 2 | func doIt(_ p: [String: Int]) -> Int {
+ 3 |     var b = 0
+ 4 |     if p.contains("b") {
+   |                   `- error: missing argument label 'where:' in call
+ 5 |         b = p["b"]
+ 6 |     }
+
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:4:19: error: cannot convert value of type 'String' to expected argument type '(Dictionary<String, Int>.Element) throws -> Bool' (aka '((key: String, value: Int)) throws -> Bool')
+ 2 | func doIt(_ p: [String: Int]) -> Int {
+ 3 |     var b = 0
+ 4 |     if p.contains("b") {
+   |                   `- error: cannot convert value of type 'String' to expected argument type '(Dictionary<String, Int>.Element) throws -> Bool' (aka '((key: String, value: Int)) throws -> Bool')
+ 5 |         b = p["b"]
+ 6 |     }
+
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:5:14: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+ 3 |     var b = 0
+ 4 |     if p.contains("b") {
+ 5 |         b = p["b"]
+   |              |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |              |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |              `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+ 6 |     }
+ 7 |     return p["a"] + b + p["c"]
+
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:7:13: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+ 5 |         b = p["b"]
+ 6 |     }
+ 7 |     return p["a"] + b + p["c"]
+   |             |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |             |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |             `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+ 8 | }
+ 9 | func main() {
+
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:7:26: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+ 5 |         b = p["b"]
+ 6 |     }
+ 7 |     return p["a"] + b + p["c"]
+   |                          |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                          |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                          `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+ 8 | }
+ 9 | func main() {
+
+/tmp/TestMochiToSwiftcall-a-function-53108557867/001/main.swift:10:28: error: use [:] to get an empty dictionary literal
+ 8 | }
+ 9 | func main() {
+10 |     var p: [String: Int] = []
+   |                            `- error: use [:] to get an empty dictionary literal
+11 |     p["a"] = 1
+12 |     p["c"] = 9

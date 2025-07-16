@@ -1,0 +1,49 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:13:9: warning: variable 'y' was never mutated; consider changing to 'let' constant
+11 | }
+12 | func fmt3(_ x: Double) -> String {
+13 |     var y = Double(Int(((x * 1000.0) + 0.5))) / 1000.0
+   |         `- warning: variable 'y' was never mutated; consider changing to 'let' constant
+14 |     var s = String(y)
+15 |     var dot = indexOf(s, ".")
+
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:15:9: warning: variable 'dot' was never mutated; consider changing to 'let' constant
+13 |     var y = Double(Int(((x * 1000.0) + 0.5))) / 1000.0
+14 |     var s = String(y)
+15 |     var dot = indexOf(s, ".")
+   |         `- warning: variable 'dot' was never mutated; consider changing to 'let' constant
+16 |     if dot == 0 - 1 {
+17 |         s = s + ".000"
+
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:41:25: error: cannot assign value of type '[Any]' to type '[Double]'
+39 | }
+40 | func smaSeries(_ xs: [Double], _ period: Int) -> [Double] {
+41 |     var res: [Double] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[Double]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+42 |     var sum = 0.0
+43 |     var i = 0
+
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:59:9: warning: variable 'xs' was never mutated; consider changing to 'let' constant
+57 | }
+58 | func main() {
+59 |     var xs = [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0]
+   |         `- warning: variable 'xs' was never mutated; consider changing to 'let' constant
+60 |     var sma3 = smaSeries(xs, 3)
+61 |     var sma5 = smaSeries(xs, 5)
+
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:60:9: warning: variable 'sma3' was never mutated; consider changing to 'let' constant
+58 | func main() {
+59 |     var xs = [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0]
+60 |     var sma3 = smaSeries(xs, 3)
+   |         `- warning: variable 'sma3' was never mutated; consider changing to 'let' constant
+61 |     var sma5 = smaSeries(xs, 5)
+62 |     print("x       sma3   sma5")
+
+/tmp/TestMochiToSwiftaverages-simple-moving-average4159967159/001/main.swift:61:9: warning: variable 'sma5' was never mutated; consider changing to 'let' constant
+59 |     var xs = [1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 4.0, 3.0, 2.0, 1.0]
+60 |     var sma3 = smaSeries(xs, 3)
+61 |     var sma5 = smaSeries(xs, 5)
+   |         `- warning: variable 'sma5' was never mutated; consider changing to 'let' constant
+62 |     print("x       sma3   sma5")
+63 |     var i = 0

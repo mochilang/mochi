@@ -1,0 +1,9 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcircular-primes1549752240/001/main.swift:25:20: error: cannot assign value of type '[Any]' to type '[Int]'
+23 |     return true
+24 | }
+25 | var circs: [Int] = [Any]()
+   |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+26 | func isCircular(_ n: Int) -> Bool {
+27 |     var nn = n

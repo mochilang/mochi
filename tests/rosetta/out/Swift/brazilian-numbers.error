@@ -1,0 +1,24 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbrazilian-numbers2504191751/001/main.swift:4:5: error: cannot assign to value: 'n' is a 'let' constant
+ 2 | func sameDigits(_ n: Int, _ b: Int) -> Bool {
+ 3 |     var f = n % b
+ 4 |     n = Int((n / b))
+   |     `- error: cannot assign to value: 'n' is a 'let' constant
+ 5 |     while n > 0 {
+ 6 |         if n % b != f {
+
+/tmp/TestMochiToSwiftbrazilian-numbers2504191751/001/main.swift:9:9: error: cannot assign to value: 'n' is a 'let' constant
+ 7 |             return false
+ 8 |         }
+ 9 |         n = Int((n / b))
+   |         `- error: cannot assign to value: 'n' is a 'let' constant
+10 |     }
+11 |     return true
+
+/tmp/TestMochiToSwiftbrazilian-numbers2504191751/001/main.swift:53:9: warning: variable 'kinds' was never mutated; consider changing to 'let' constant
+51 | }
+52 | func main() {
+53 |     var kinds = [" ", " odd ", " prime "]
+   |         `- warning: variable 'kinds' was never mutated; consider changing to 'let' constant
+54 |     for kind in kinds {
+55 |         print("First 20" + kind + "Brazilian numbers:")

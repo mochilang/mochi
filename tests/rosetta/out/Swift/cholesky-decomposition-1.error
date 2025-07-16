@@ -1,0 +1,119 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:11:65: error: expected dictionary value type
+  9 |     return guess
+ 10 | }
+ 11 | func makeSym(_ order: Int, _ elements: [Double]) -> [String: any] {
+    |                                                                 `- error: expected dictionary value type
+ 12 |     return ["order": order, "ele": elements]
+ 13 | }
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:14:33: error: expected dictionary value type
+ 12 |     return ["order": order, "ele": elements]
+ 13 | }
+ 14 | func unpackSym(_ m: [String: any]) -> [[Double]] {
+    |                                 `- error: expected dictionary value type
+ 15 |     let n = m["order"]
+ 16 |     let ele = m["ele"]
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:62:32: error: expected dictionary value type
+ 60 |     }
+ 61 | }
+ 62 | func printSym(_ m: [String: any]) {
+    |                                `- error: expected dictionary value type
+ 63 |     printMat(unpackSym(m))
+ 64 | }
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:65:34: error: expected dictionary value type
+ 63 |     printMat(unpackSym(m))
+ 64 | }
+ 65 | func printLower(_ m: [String: any]) {
+    |                                  `- error: expected dictionary value type
+ 66 |     let n = m["order"]
+ 67 |     let ele = m["ele"]
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:88:37: error: expected dictionary value type
+ 86 |     printMat(mat)
+ 87 | }
+ 88 | func choleskyLower(_ a: [String: any]) -> [String: any] {
+    |                                     `- error: expected dictionary value type
+ 89 |     let n = a["order"]
+ 90 |     let ae = a["ele"]
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:88:55: error: expected dictionary value type
+ 86 |     printMat(mat)
+ 87 | }
+ 88 | func choleskyLower(_ a: [String: any]) -> [String: any] {
+    |                                                       `- error: expected dictionary value type
+ 89 |     let n = a["order"]
+ 90 |     let ae = a["ele"]
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:130:28: error: expected dictionary value type
+128 |     return ["order": n, "ele": le]
+129 | }
+130 | func demo(_ a: [String: any]) {
+    |                            `- error: expected dictionary value type
+131 |     print("A:")
+132 |     printSym(a)
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:12:12: error: unexpected non-void return value in void function
+ 10 | }
+ 11 | func makeSym(_ order: Int, _ elements: [Double]) -> [String: any] {
+ 12 |     return ["order": order, "ele": elements]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 13 | }
+ 14 | func unpackSym(_ m: [String: any]) -> [[Double]] {
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:17:27: error: cannot assign value of type '[Any]' to type '[[Double]]'
+ 15 |     let n = m["order"]
+ 16 |     let ele = m["ele"]
+ 17 |     var mat: [[Double]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Double]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Double]') are expected to be equal
+ 18 |     var idx = 0
+ 19 |     var r = 0
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:21:29: error: cannot assign value of type '[Any]' to type '[Double]'
+ 19 |     var r = 0
+ 20 |     while r < n {
+ 21 |         var row: [Double] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[Double]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+ 22 |         var c = 0
+ 23 |         while c <= r {
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:68:27: error: cannot assign value of type '[Any]' to type '[[Double]]'
+ 66 |     let n = m["order"]
+ 67 |     let ele = m["ele"]
+ 68 |     var mat: [[Double]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Double]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Double]') are expected to be equal
+ 69 |     var idx = 0
+ 70 |     var r = 0
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:72:29: error: cannot assign value of type '[Any]' to type '[Double]'
+ 70 |     var r = 0
+ 71 |     while r < n {
+ 72 |         var row: [Double] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[Double]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+ 73 |         var c = 0
+ 74 |         while c <= r {
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:91:24: error: cannot assign value of type '[Any]' to type '[Double]'
+ 89 |     let n = a["order"]
+ 90 |     let ae = a["ele"]
+ 91 |     var le: [Double] = [Any]()
+    |                        |- error: cannot assign value of type '[Any]' to type '[Double]'
+    |                        `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+ 92 |     var idx = 0
+ 93 |     while idx < ae.count {
+
+/tmp/TestMochiToSwiftcholesky-decomposition-12813084160/001/main.swift:128:12: error: unexpected non-void return value in void function
+126 |         i = i + 1
+127 |     }
+128 |     return ["order": n, "ele": le]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+129 | }
+130 | func demo(_ a: [String: any]) {

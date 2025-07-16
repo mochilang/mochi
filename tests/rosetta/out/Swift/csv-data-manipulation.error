@@ -1,0 +1,17 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcsv-data-manipulation2585600120/001/main.swift:17:43: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+15 |     var i = 0
+16 |     var neg = false
+17 |     if str.count > 0 && Array(str[0..<1]) == "-" {
+   |                                           |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+   |                                           `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+18 |         neg = true
+19 |         i = 1
+
+/tmp/TestMochiToSwiftcsv-data-manipulation2585600120/001/main.swift:24:29: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+22 |     let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+23 |     while i < str.count {
+24 |         n = n * 10 + digits[Array(str[i..<i + 1])]!
+   |                             `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+25 |         i = i + 1
+26 |     }

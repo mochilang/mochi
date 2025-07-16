@@ -1,0 +1,23 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcatamorphism1385490033/001/main.swift:21:12: error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+19 | }
+20 | var n = [1, 2, 3, 4, 5]
+21 | print(fold(&{ (a: Int, b: Int) -> Int in add(a, b) }, n))
+   |            `- error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+22 | print(fold(&{ (a: Int, b: Int) -> Int in sub(a, b) }, n))
+23 | print(fold(&{ (a: Int, b: Int) -> Int in mul(a, b) }, n))
+
+/tmp/TestMochiToSwiftcatamorphism1385490033/001/main.swift:22:12: error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+20 | var n = [1, 2, 3, 4, 5]
+21 | print(fold(&{ (a: Int, b: Int) -> Int in add(a, b) }, n))
+22 | print(fold(&{ (a: Int, b: Int) -> Int in sub(a, b) }, n))
+   |            `- error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+23 | print(fold(&{ (a: Int, b: Int) -> Int in mul(a, b) }, n))
+24 | 
+
+/tmp/TestMochiToSwiftcatamorphism1385490033/001/main.swift:23:12: error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+21 | print(fold(&{ (a: Int, b: Int) -> Int in add(a, b) }, n))
+22 | print(fold(&{ (a: Int, b: Int) -> Int in sub(a, b) }, n))
+23 | print(fold(&{ (a: Int, b: Int) -> Int in mul(a, b) }, n))
+   |            `- error: cannot pass immutable value of type '(Int, Int) -> Int' as inout argument
+24 | 

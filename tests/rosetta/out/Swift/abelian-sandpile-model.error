@@ -1,0 +1,106 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:4:22: error: cannot assign value of type '[Any]' to type '[[Int]]'
+ 2 | let dim = 16
+ 3 | func newPile(_ d: Int) -> [[Int]] {
+ 4 |     var b: [[Int]] = [Any]()
+   |                      |- error: cannot assign value of type '[Any]' to type '[[Int]]'
+   |                      `- note: arguments to generic parameter 'Element' ('Any' and '[Int]') are expected to be equal
+ 5 |     var y = 0
+ 6 |     while y < d {
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:7:26: error: cannot assign value of type '[Any]' to type '[Int]'
+ 5 |     var y = 0
+ 6 |     while y < d {
+ 7 |         var row: [Int] = [Any]()
+   |                          |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 8 |         var x = 0
+ 9 |         while x < d {
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:20:16: error: cannot assign through subscript: 'pile' is a 'let' constant
+18 | func handlePile(_ pile: [[Int]], _ x: Int, _ y: Int) -> [[Int]] {
+19 |     if pile[y][x] >= 4 {
+20 |         pile[y][x] = pile[y][x] - 4
+   |                `- error: cannot assign through subscript: 'pile' is a 'let' constant
+21 |         if y > 0 {
+22 |             pile[y - 1][x] = pile[y - 1][x] + 1
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:22:24: error: cannot assign through subscript: 'pile' is a 'let' constant
+20 |         pile[y][x] = pile[y][x] - 4
+21 |         if y > 0 {
+22 |             pile[y - 1][x] = pile[y - 1][x] + 1
+   |                        `- error: cannot assign through subscript: 'pile' is a 'let' constant
+23 |             if pile[y - 1][x] >= 4 {
+24 |                 pile = handlePile(pile, x, y - 1)
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:24:17: error: cannot assign to value: 'pile' is a 'let' constant
+22 |             pile[y - 1][x] = pile[y - 1][x] + 1
+23 |             if pile[y - 1][x] >= 4 {
+24 |                 pile = handlePile(pile, x, y - 1)
+   |                 `- error: cannot assign to value: 'pile' is a 'let' constant
+25 |             }
+26 |         }
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:28:20: error: cannot assign through subscript: 'pile' is a 'let' constant
+26 |         }
+27 |         if x > 0 {
+28 |             pile[y][x - 1] = pile[y][x - 1] + 1
+   |                    `- error: cannot assign through subscript: 'pile' is a 'let' constant
+29 |             if pile[y][x - 1] >= 4 {
+30 |                 pile = handlePile(pile, x - 1, y)
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:30:17: error: cannot assign to value: 'pile' is a 'let' constant
+28 |             pile[y][x - 1] = pile[y][x - 1] + 1
+29 |             if pile[y][x - 1] >= 4 {
+30 |                 pile = handlePile(pile, x - 1, y)
+   |                 `- error: cannot assign to value: 'pile' is a 'let' constant
+31 |             }
+32 |         }
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:34:24: error: cannot assign through subscript: 'pile' is a 'let' constant
+32 |         }
+33 |         if y < dim - 1 {
+34 |             pile[y + 1][x] = pile[y + 1][x] + 1
+   |                        `- error: cannot assign through subscript: 'pile' is a 'let' constant
+35 |             if pile[y + 1][x] >= 4 {
+36 |                 pile = handlePile(pile, x, y + 1)
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:36:17: error: cannot assign to value: 'pile' is a 'let' constant
+34 |             pile[y + 1][x] = pile[y + 1][x] + 1
+35 |             if pile[y + 1][x] >= 4 {
+36 |                 pile = handlePile(pile, x, y + 1)
+   |                 `- error: cannot assign to value: 'pile' is a 'let' constant
+37 |             }
+38 |         }
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:40:20: error: cannot assign through subscript: 'pile' is a 'let' constant
+38 |         }
+39 |         if x < dim - 1 {
+40 |             pile[y][x + 1] = pile[y][x + 1] + 1
+   |                    `- error: cannot assign through subscript: 'pile' is a 'let' constant
+41 |             if pile[y][x + 1] >= 4 {
+42 |                 pile = handlePile(pile, x + 1, y)
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:42:17: error: cannot assign to value: 'pile' is a 'let' constant
+40 |             pile[y][x + 1] = pile[y][x + 1] + 1
+41 |             if pile[y][x + 1] >= 4 {
+42 |                 pile = handlePile(pile, x + 1, y)
+   |                 `- error: cannot assign to value: 'pile' is a 'let' constant
+43 |             }
+44 |         }
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:45:9: error: cannot assign to value: 'pile' is a 'let' constant
+43 |             }
+44 |         }
+45 |         pile = handlePile(pile, x, y)
+   |         `- error: cannot assign to value: 'pile' is a 'let' constant
+46 |     }
+47 |     return pile
+
+/tmp/TestMochiToSwiftabelian-sandpile-model342477219/001/main.swift:50:9: warning: variable 'chars' was never mutated; consider changing to 'let' constant
+48 | }
+49 | func drawPile(_ pile: [[Int]], _ d: Int) {
+50 |     var chars = [" ", "░", "▓", "█"]
+   |         `- warning: variable 'chars' was never mutated; consider changing to 'let' constant
+51 |     var row = 0
+52 |     while row < d {

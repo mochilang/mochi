@@ -1,0 +1,58 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:22:27: error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+ 20 | }
+ 21 | func NewBitmap(_ x: Int, _ y: Int) -> Bitmap {
+ 22 |     var data: [[Pixel]] = [Any]()
+    |                           |- error: cannot assign value of type '[Any]' to type '[[Pixel]]'
+    |                           `- note: arguments to generic parameter 'Element' ('Any' and '[Pixel]') are expected to be equal
+ 23 |     var row = 0
+ 24 |     while row < y {
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:25:26: error: cannot assign value of type '[Any]' to type '[Pixel]'
+ 23 |     var row = 0
+ 24 |     while row < y {
+ 25 |         var r: [Pixel] = [Any]()
+    |                          |- error: cannot assign value of type '[Any]' to type '[Pixel]'
+    |                          `- note: arguments to generic parameter 'Element' ('Any' and 'Pixel') are expected to be equal
+ 26 |         var col = 0
+ 27 |         while col < x {
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:69:16: error: cannot find 'now' in scope
+ 67 |     var bm = NewBitmap(400, 300)
+ 68 |     FillRgb(&bm, 12615744)
+ 69 |     var seed = now()
+    |                `- error: cannot find 'now' in scope
+ 70 |     var i = 0
+ 71 |     while i < 2000 {
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:83:13: warning: result of call to 'SetPxRgb' is unused
+ 81 |         var y = 240
+ 82 |         while y < 245 {
+ 83 |             SetPxRgb(&bm, x, y, 8405024)
+    |             `- warning: result of call to 'SetPxRgb' is unused
+ 84 |             y = y + 1
+ 85 |         }
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:88:13: warning: result of call to 'SetPxRgb' is unused
+ 86 |         y = 260
+ 87 |         while y < 265 {
+ 88 |             SetPxRgb(&bm, x, y, 8405024)
+    |             `- warning: result of call to 'SetPxRgb' is unused
+ 89 |             y = y + 1
+ 90 |         }
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:97:13: warning: result of call to 'SetPxRgb' is unused
+ 95 |         var x = 80
+ 96 |         while x < 85 {
+ 97 |             SetPxRgb(&bm, x, y, 8405024)
+    |             `- warning: result of call to 'SetPxRgb' is unused
+ 98 |             x = x + 1
+ 99 |         }
+
+/tmp/TestMochiToSwiftbitmap-ppm-conversion-through-a-pipe3312862711/001/main.swift:102:13: warning: result of call to 'SetPxRgb' is unused
+100 |         x = 95
+101 |         while x < 100 {
+102 |             SetPxRgb(&bm, x, y, 8405024)
+    |             `- warning: result of call to 'SetPxRgb' is unused
+103 |             x = x + 1
+104 |         }

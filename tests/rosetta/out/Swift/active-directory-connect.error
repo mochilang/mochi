@@ -1,0 +1,10 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftactive-directory-connect3258863087/001/main.swift:18:16: error: cannot pass immutable value as inout argument: 'client' is a 'let' constant
+15 | }
+16 | func main() {
+17 |     let client = LDAPClient(Base: "dc=example,dc=com", Host: "ldap.example.com", Port: 389, UseSSL: false, BindDN: "uid=readonlyuser,ou=People,dc=example,dc=com", BindPassword: "readonlypassword", UserFilter: "(uid=%s)", GroupFilter: "(memberUid=%s)", Attributes: ["givenName", "sn", "mail", "uid"])
+   |     `- note: change 'let' to 'var' to make it mutable
+18 |     if connect(&client) {
+   |                `- error: cannot pass immutable value as inout argument: 'client' is a 'let' constant
+19 |         print("Connected to " + client.Host)
+20 |     }

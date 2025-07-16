@@ -1,0 +1,25 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftboyer-moore-string-search2372012851/001/main.swift:21:25: error: cannot assign value of type '[Any]' to type '[Int]'
+19 | }
+20 | func stringSearch(_ h: String, _ n: String) -> [Int] {
+21 |     var result: [Int] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[Int]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+22 |     var start = 0
+23 |     let hlen = h.count
+
+/tmp/TestMochiToSwiftboyer-moore-string-search2372012851/001/main.swift:51:9: warning: variable 'texts' was never mutated; consider changing to 'let' constant
+49 | }
+50 | func main() {
+51 |     var texts = ["GCTAGCTCTACGAGTCTA", "GGCTATAATGCGTA", "there would have been a time for such a word", "needle need noodle needle", "DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages", "Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk."]
+   |         `- warning: variable 'texts' was never mutated; consider changing to 'let' constant
+52 |     var patterns = ["TCTA", "TAATAAA", "word", "needle", "and", "alfalfa"]
+53 |     var i = 0
+
+/tmp/TestMochiToSwiftboyer-moore-string-search2372012851/001/main.swift:52:9: warning: variable 'patterns' was never mutated; consider changing to 'let' constant
+50 | func main() {
+51 |     var texts = ["GCTAGCTCTACGAGTCTA", "GGCTATAATGCGTA", "there would have been a time for such a word", "needle need noodle needle", "DKnuthusesandprogramsanimaginarycomputertheMIXanditsassociatedmachinecodeandassemblylanguages", "Nearby farms grew an acre of alfalfa on the dairy's behalf, with bales of that alfalfa exchanged for milk."]
+52 |     var patterns = ["TCTA", "TAATAAA", "word", "needle", "and", "alfalfa"]
+   |         `- warning: variable 'patterns' was never mutated; consider changing to 'let' constant
+53 |     var i = 0
+54 |     while i < texts.count {

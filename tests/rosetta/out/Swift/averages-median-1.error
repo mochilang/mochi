@@ -1,0 +1,7 @@
+output mismatch
+-- got --
+2.0
+3.0
+-- want --
+2
+3

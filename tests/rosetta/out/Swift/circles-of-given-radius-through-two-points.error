@@ -1,0 +1,175 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:24:72: error: expected element type
+22 | let Diam = "Points form a diameter and describe only a single circle."
+23 | let Far = "Points too far apart to form circles."
+24 | func circles(_ p1: inout Point, _ p2: inout Point, _ r: Double) -> [any] {
+   |                                                                        `- error: expected element type
+25 |     if p1.x == p2.x && p1.y == p2.y {
+26 |         if r == 0.0 {
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:54:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+52 |     let p2 = tc[1]
+53 |     let r = tc[2]
+54 |     print("p1:  {" + String(p1.x) + " " + String(p1.y) + "}")
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:55:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+53 |     let r = tc[2]
+54 |     print("p1:  {" + String(p1.x) + " " + String(p1.y) + "}")
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:56:20: error: no exact matches in call to initializer 
+54 |     print("p1:  {" + String(p1.x) + " " + String(p1.y) + "}")
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+   |                    `- error: no exact matches in call to initializer 
+57 |     let res = circles(&p1, &p2, r)
+58 |     let c1 = res[0]
+
+Swift.String.init:2:19: note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+1 | struct String {
+2 | @inlinable public init<T>(_ value: T) where T : LosslessStringConvertible}
+  |                   `- note: candidate requires that 'Any' conform to 'LosslessStringConvertible' (requirement specified as 'T' : 'LosslessStringConvertible')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+1 | struct String {
+2 | public init<T>(_ value: T, radix: Int = 10, uppercase: Bool = false) where T : BinaryInteger}
+  |        `- note: candidate requires that 'Any' conform to 'BinaryInteger' (requirement specified as 'T' : 'BinaryInteger')
+3 | 
+
+Swift.String.init:2:8: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | struct String {
+2 | public init<S>(_ characters: S) where S : Sequence, S.Element == Character}
+  |        `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.RangeReplaceableCollection.init:2:19: note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+1 | protocol RangeReplaceableCollection {
+2 | @inlinable public init<S>(_ elements: S) where S : Sequence, Self.Element == S.Element}
+  |                   `- note: candidate requires that 'Any' conform to 'Sequence' (requirement specified as 'S' : 'Sequence')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+1 | struct String {
+2 | public init<Subject>(describing instance: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(describing:)')
+3 | 
+
+Swift.String.init:2:8: note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+1 | struct String {
+2 | public init<Subject>(reflecting subject: Subject)}
+  |        `- note: incorrect labels for candidate (have: '(_:)', expected: '(reflecting:)')
+3 | 
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:57:23: error: cannot convert value of type 'Any' to expected argument type 'Point'
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+   |                       `- error: cannot convert value of type 'Any' to expected argument type 'Point'
+58 |     let c1 = res[0]
+59 |     let c2 = res[1]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:57:28: error: cannot convert value of type 'Any' to expected argument type 'Point'
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+   |                            `- error: cannot convert value of type 'Any' to expected argument type 'Point'
+58 |     let c1 = res[0]
+59 |     let c2 = res[1]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:57:33: error: cannot convert value of type 'Any' to expected argument type 'Double'
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+   |                                 `- error: cannot convert value of type 'Any' to expected argument type 'Double'
+58 |     let c1 = res[0]
+59 |     let c2 = res[1]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:57:23: error: cannot pass immutable value as inout argument: 'p1' is a 'let' constant
+49 | var td = [[Point(x: 0.1234, y: 0.9876), Point(x: 0.8765, y: 0.2345), 2.0], [Point(x: 0.0, y: 2.0), Point(x: 0.0, y: 0.0), 1.0], [Point(x: 0.1234, y: 0.9876), Point(x: 0.1234, y: 0.9876), 2.0], [Point(x: 0.1234, y: 0.9876), Point(x: 0.8765, y: 0.2345), 0.5], [Point(x: 0.1234, y: 0.9876), Point(x: 0.1234, y: 0.9876), 0.0]]
+50 | for tc in td {
+51 |     let p1 = tc[0]
+   |     `- note: change 'let' to 'var' to make it mutable
+52 |     let p2 = tc[1]
+53 |     let r = tc[2]
+   :
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+   |                       `- error: cannot pass immutable value as inout argument: 'p1' is a 'let' constant
+58 |     let c1 = res[0]
+59 |     let c2 = res[1]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:57:28: error: cannot pass immutable value as inout argument: 'p2' is a 'let' constant
+50 | for tc in td {
+51 |     let p1 = tc[0]
+52 |     let p2 = tc[1]
+   |     `- note: change 'let' to 'var' to make it mutable
+53 |     let r = tc[2]
+54 |     print("p1:  {" + String(p1.x) + " " + String(p1.y) + "}")
+55 |     print("p2:  {" + String(p2.x) + " " + String(p2.y) + "}")
+56 |     print("r:  " + String(r))
+57 |     let res = circles(&p1, &p2, r)
+   |                            `- error: cannot pass immutable value as inout argument: 'p2' is a 'let' constant
+58 |     let c1 = res[0]
+59 |     let c2 = res[1]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:27:20: error: unexpected non-void return value in void function
+25 |     if p1.x == p2.x && p1.y == p2.y {
+26 |         if r == 0.0 {
+27 |             return [p1, p1, "Coincident points with r==0.0 describe a degenerate circle."]
+   |                    |- error: unexpected non-void return value in void function
+   |                    `- note: did you mean to add a return type?
+28 |         }
+29 |         return [p1, p2, "Coincident points describe an infinite number of circles."]
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:29:16: error: unexpected non-void return value in void function
+27 |             return [p1, p1, "Coincident points with r==0.0 describe a degenerate circle."]
+28 |         }
+29 |         return [p1, p2, "Coincident points describe an infinite number of circles."]
+   |                |- error: unexpected non-void return value in void function
+   |                `- note: did you mean to add a return type?
+30 |     }
+31 |     if r == 0.0 {
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:32:16: error: unexpected non-void return value in void function
+30 |     }
+31 |     if r == 0.0 {
+32 |         return [p1, p2, "R==0.0 does not describe circles."]
+   |                |- error: unexpected non-void return value in void function
+   |                `- note: did you mean to add a return type?
+33 |     }
+34 |     let dx = p2.x - p1.x
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:38:16: error: unexpected non-void return value in void function
+36 |     let q = hypot(dx, dy)
+37 |     if q > 2.0 * r {
+38 |         return [p1, p2, "Points too far apart to form circles."]
+   |                |- error: unexpected non-void return value in void function
+   |                `- note: did you mean to add a return type?
+39 |     }
+40 |     let m = Point(x: (p1.x + p2.x) / 2.0, y: (p1.y + p2.y) / 2.0)
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:42:16: error: unexpected non-void return value in void function
+40 |     let m = Point(x: (p1.x + p2.x) / 2.0, y: (p1.y + p2.y) / 2.0)
+41 |     if q == 2.0 * r {
+42 |         return [m, m, "Points form a diameter and describe only a single circle."]
+   |                |- error: unexpected non-void return value in void function
+   |                `- note: did you mean to add a return type?
+43 |     }
+44 |     let d = sqrtApprox(r * r - q * q / 4.0)
+
+/tmp/TestMochiToSwiftcircles-of-given-radius-through-two-points2855395805/001/main.swift:47:12: error: unexpected non-void return value in void function
+45 |     let ox = d * dx / q
+46 |     let oy = d * dy / q
+47 |     return [Point(x: m.x - oy, y: m.y + ox), Point(x: m.x + oy, y: m.y - ox), "Two circles."]
+   |            |- error: unexpected non-void return value in void function
+   |            `- note: did you mean to add a return type?
+48 | }
+49 | var td = [[Point(x: 0.1234, y: 0.9876), Point(x: 0.8765, y: 0.2345), 2.0], [Point(x: 0.0, y: 2.0), Point(x: 0.0, y: 0.0), 1.0], [Point(x: 0.1234, y: 0.9876), Point(x: 0.1234, y: 0.9876), 2.0], [Point(x: 0.1234, y: 0.9876), Point(x: 0.8765, y: 0.2345), 0.5], [Point(x: 0.1234, y: 0.9876), Point(x: 0.1234, y: 0.9876), 0.0]]

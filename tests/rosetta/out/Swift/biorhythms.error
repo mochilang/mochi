@@ -1,0 +1,65 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:38:43: error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+ 36 |     var i = 0
+ 37 |     var neg = false
+ 38 |     if str.count > 0 && Array(str[0..<1]) == "-" {
+    |                                           |- error: binary operator '==' cannot be applied to operands of type '[String.Element]' (aka 'Array<Character>') and 'String'
+    |                                           `- note: overloads for '==' exist with these partially matching parameter lists: (String, String)
+ 39 |         neg = true
+ 40 |         i = 1
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:45:29: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 43 |     let digits = ["0": 0, "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9]
+ 44 |     while i < str.count {
+ 45 |         n = n * 10 + digits[Array(str[i..<i + 1])]!
+    |                             `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 46 |         i = i + 1
+ 47 |     }
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:54:25: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 52 | }
+ 53 | func parseDate(_ s: String) -> [Int] {
+ 54 |     let y = parseIntStr(Array(s[0..<4]))
+    |                         `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 55 |     let m = parseIntStr(Array(s[5..<7]))
+ 56 |     let d = parseIntStr(Array(s[8..<10]))
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:55:25: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 53 | func parseDate(_ s: String) -> [Int] {
+ 54 |     let y = parseIntStr(Array(s[0..<4]))
+ 55 |     let m = parseIntStr(Array(s[5..<7]))
+    |                         `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 56 |     let d = parseIntStr(Array(s[8..<10]))
+ 57 |     return [y, m, d]
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:56:25: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 54 |     let y = parseIntStr(Array(s[0..<4]))
+ 55 |     let m = parseIntStr(Array(s[5..<7]))
+ 56 |     let d = parseIntStr(Array(s[8..<10]))
+    |                         `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+ 57 |     return [y, m, d]
+ 58 | }
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:70:9: warning: variable 'lengths' was never mutated; consider changing to 'let' constant
+ 68 | func daysInMonth(_ y: Int, _ m: Int) -> Int {
+ 69 |     let feb = leap(y) ? 29 : 28
+ 70 |     var lengths = [31, feb, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    |         `- warning: variable 'lengths' was never mutated; consider changing to 'let' constant
+ 71 |     return lengths[m - 1]
+ 72 | }
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:167:17: error: cannot find 'contains' in scope
+165 |             let next = quadrants[quadrant][1]
+166 |             var pct = String(percent)
+167 |             if !contains(pct, ".") {
+    |                 `- error: cannot find 'contains' in scope
+168 |                 pct = pct + ".0"
+169 |             }
+
+/tmp/TestMochiToSwiftbiorhythms876423669/001/main.swift:182:9: warning: variable 'pairs' was never mutated; consider changing to 'let' constant
+180 | }
+181 | func main() {
+182 |     var pairs = [["1943-03-09", "1972-07-11"], ["1809-01-12", "1863-11-19"], ["1809-02-12", "1863-11-19"]]
+    |         `- warning: variable 'pairs' was never mutated; consider changing to 'let' constant
+183 |     var idx = 0
+184 |     while idx < pairs.count {

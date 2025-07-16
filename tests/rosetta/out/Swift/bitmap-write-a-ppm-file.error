@@ -1,0 +1,56 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:13:28: error: cannot assign value of type '[Any]' to type '[[Colour]]'
+ 11 | }
+ 12 | func newBitmap(_ w: Int, _ h: Int, _ c: inout Colour) -> Bitmap {
+ 13 |     var rows: [[Colour]] = [Any]()
+    |                            |- error: cannot assign value of type '[Any]' to type '[[Colour]]'
+    |                            `- note: arguments to generic parameter 'Element' ('Any' and '[Colour]') are expected to be equal
+ 14 |     var y = 0
+ 15 |     while y < h {
+
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:16:29: error: cannot assign value of type '[Any]' to type '[Colour]'
+ 14 |     var y = 0
+ 15 |     while y < h {
+ 16 |         var row: [Colour] = [Any]()
+    |                             |- error: cannot assign value of type '[Any]' to type '[Colour]'
+    |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Colour') are expected to be equal
+ 17 |         var x = 0
+ 18 |         while x < w {
+
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:73:9: warning: variable 'numsize' was never mutated; consider changing to 'let' constant
+ 71 |     }
+ 72 |     var out = "P3\n# generated from Bitmap.writeppmp3\n" + String(b.width) + " " + String(b.height) + "\n" + String(maxv) + "\n"
+ 73 |     var numsize = String(maxv).count
+    |         `- warning: variable 'numsize' was never mutated; consider changing to 'let' constant
+ 74 |     y = b.height - 1
+ 75 |     while y >= 0 {
+
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:97:30: error: cannot pass immutable value as inout argument: 'black' is a 'let' constant
+ 93 | }
+ 94 | func main() {
+ 95 |     let black = Colour(R: 0, G: 0, B: 0)
+    |     `- note: change 'let' to 'var' to make it mutable
+ 96 |     let white = Colour(R: 255, G: 255, B: 255)
+ 97 |     var bm = newBitmap(4, 4, &black)
+    |                              `- error: cannot pass immutable value as inout argument: 'black' is a 'let' constant
+ 98 |     fillRect(&bm, 1, 0, 1, 2, &white)
+ 99 |     setPixel(&bm, 3, 3, &Colour(R: 127, G: 0, B: 63))
+
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:98:31: error: cannot pass immutable value as inout argument: 'white' is a 'let' constant
+ 94 | func main() {
+ 95 |     let black = Colour(R: 0, G: 0, B: 0)
+ 96 |     let white = Colour(R: 255, G: 255, B: 255)
+    |     `- note: change 'let' to 'var' to make it mutable
+ 97 |     var bm = newBitmap(4, 4, &black)
+ 98 |     fillRect(&bm, 1, 0, 1, 2, &white)
+    |                               `- error: cannot pass immutable value as inout argument: 'white' is a 'let' constant
+ 99 |     setPixel(&bm, 3, 3, &Colour(R: 127, G: 0, B: 63))
+100 |     let ppm = writePPMP3(&bm)
+
+/tmp/TestMochiToSwiftbitmap-write-a-ppm-file3789683722/001/main.swift:99:25: error: cannot pass immutable value as inout argument: function call returns immutable value
+ 97 |     var bm = newBitmap(4, 4, &black)
+ 98 |     fillRect(&bm, 1, 0, 1, 2, &white)
+ 99 |     setPixel(&bm, 3, 3, &Colour(R: 127, G: 0, B: 63))
+    |                         `- error: cannot pass immutable value as inout argument: function call returns immutable value
+100 |     let ppm = writePPMP3(&bm)
+101 |     print(ppm)

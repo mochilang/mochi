@@ -1,0 +1,48 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:15:51: error: cannot find type 'bigint' in scope
+13 |     return result
+14 | }
+15 | func pow_big(_ base: inout bigint, _ exp: Int) -> bigint {
+   |                                                   `- error: cannot find type 'bigint' in scope
+16 |     var result: bigint = 1
+17 |     var b: bigint = base
+
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:15:28: error: cannot find type 'bigint' in scope
+13 |     return result
+14 | }
+15 | func pow_big(_ base: inout bigint, _ exp: Int) -> bigint {
+   |                            `- error: cannot find type 'bigint' in scope
+16 |     var result: bigint = 1
+17 |     var b: bigint = base
+
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:30:11: error: cannot find type 'bigint' in scope
+28 | var e1 = pow_int(3, 2)
+29 | var e2 = pow_int(4, e1)
+30 | var base: bigint = 5
+   |           `- error: cannot find type 'bigint' in scope
+31 | var x: bigint = pow_big(&base, e2)
+32 | var s = String(x)
+
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:31:8: error: cannot find type 'bigint' in scope
+29 | var e2 = pow_int(4, e1)
+30 | var base: bigint = 5
+31 | var x: bigint = pow_big(&base, e2)
+   |        `- error: cannot find type 'bigint' in scope
+32 | var s = String(x)
+33 | print("5^(4^(3^2)) has", s.count, "digits:", String(s[s.index(s.startIndex, offsetBy: 0)..<s.index(s.startIndex, offsetBy: 20)]), "...", String(s[s.index(s.startIndex, offsetBy: s.count - 20)..<s.index(s.startIndex, offsetBy: s.count)]))
+
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:16:17: error: cannot find type 'bigint' in scope
+14 | }
+15 | func pow_big(_ base: inout bigint, _ exp: Int) -> bigint {
+16 |     var result: bigint = 1
+   |                 `- error: cannot find type 'bigint' in scope
+17 |     var b: bigint = base
+18 |     var e = exp
+
+/tmp/TestMochiToSwiftarbitrary-precision-integers-included-2820226872/001/main.swift:17:12: error: cannot find type 'bigint' in scope
+15 | func pow_big(_ base: inout bigint, _ exp: Int) -> bigint {
+16 |     var result: bigint = 1
+17 |     var b: bigint = base
+   |            `- error: cannot find type 'bigint' in scope
+18 |     var e = exp
+19 |     while e > 0 {

@@ -1,0 +1,18 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcholesky-decomposition955997144/001/main.swift:13:25: error: cannot assign value of type '[Any]' to type '[[Double]]'
+11 | func cholesky(_ a: [[Double]]) -> [[Double]] {
+12 |     let n = a.count
+13 |     var l: [[Double]] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[[Double]]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and '[Double]') are expected to be equal
+14 |     var i = 0
+15 |     while i < n {
+
+/tmp/TestMochiToSwiftcholesky-decomposition955997144/001/main.swift:16:29: error: cannot assign value of type '[Any]' to type '[Double]'
+14 |     var i = 0
+15 |     while i < n {
+16 |         var row: [Double] = [Any]()
+   |                             |- error: cannot assign value of type '[Any]' to type '[Double]'
+   |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Double') are expected to be equal
+17 |         var j = 0
+18 |         while j < n {

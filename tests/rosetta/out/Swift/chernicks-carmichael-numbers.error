@@ -1,0 +1,53 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:28:9: error: cannot assign to value: 'a' is a 'let' constant
+ 26 |     var n = a.count
+ 27 |     while n > 1 && a[n - 1] == 0 {
+ 28 |         a = Array(a[0..<n - 1])
+    |         `- error: cannot assign to value: 'a' is a 'let' constant
+ 29 |         n = n - 1
+ 30 |     }
+
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:37:25: error: cannot assign value of type '[Any]' to type '[Int]'
+ 35 |         return [0]
+ 36 |     }
+ 37 |     var digits: [Int] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 38 |     var n = x
+ 39 |     while n > 0 {
+
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:49:22: error: cannot assign value of type '[Any]' to type '[Int]'
+ 47 |         return [0]
+ 48 |     }
+ 49 |     var res: [Int] = [Any]()
+    |                      |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                      `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 50 |     var carry = 0
+ 51 |     var i = 0
+
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:85:16: error: cannot convert return expression of type '[Any]' to return type '[Int]'
+ 83 |     var p = 6 * m + 1
+ 84 |     if !isPrime(p) {
+ 85 |         return [Any]()
+    |                |- error: cannot convert return expression of type '[Any]' to return type '[Int]'
+    |                `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 86 |     }
+ 87 |     var prod = bigFromInt(p)
+
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:90:16: error: cannot convert return expression of type '[Any]' to return type '[Int]'
+ 88 |     p = 12 * m + 1
+ 89 |     if !isPrime(p) {
+ 90 |         return [Any]()
+    |                |- error: cannot convert return expression of type '[Any]' to return type '[Int]'
+    |                `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 91 |     }
+ 92 |     prod = bigMulSmall(prod, p)
+
+/tmp/TestMochiToSwiftchernicks-carmichael-numbers1473280116/001/main.swift:97:20: error: cannot convert return expression of type '[Any]' to return type '[Int]'
+ 95 |         p = (pow2(i) * 9 * m) + 1
+ 96 |         if !isPrime(p) {
+ 97 |             return [Any]()
+    |                    |- error: cannot convert return expression of type '[Any]' to return type '[Int]'
+    |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 98 |         }
+ 99 |         prod = bigMulSmall(prod, p)

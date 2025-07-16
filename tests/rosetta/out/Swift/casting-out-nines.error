@@ -1,0 +1,73 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:63:5: error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+61 | while idx < testCases.count {
+62 |     let tc = testCases[idx]
+63 |     print("\nTest case base = " + String(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+   |     `- error: the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions
+64 |     let s = subset(tc["base"], tc["begin"], tc["end"])
+65 |     print("Subset:  " + String(s))
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:64:22: error: value of type 'Auto1' has no subscripts
+62 |     let tc = testCases[idx]
+63 |     print("\nTest case base = " + String(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+64 |     let s = subset(tc["base"], tc["begin"], tc["end"])
+   |                      `- error: value of type 'Auto1' has no subscripts
+65 |     print("Subset:  " + String(s))
+66 |     print("Kaprekar:" + String(tc["kaprekar"]))
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:64:34: error: value of type 'Auto1' has no subscripts
+62 |     let tc = testCases[idx]
+63 |     print("\nTest case base = " + String(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+64 |     let s = subset(tc["base"], tc["begin"], tc["end"])
+   |                                  `- error: value of type 'Auto1' has no subscripts
+65 |     print("Subset:  " + String(s))
+66 |     print("Kaprekar:" + String(tc["kaprekar"]))
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:64:47: error: value of type 'Auto1' has no subscripts
+62 |     let tc = testCases[idx]
+63 |     print("\nTest case base = " + String(tc["base"]) + ", begin = " + tc["begin"] + ", end = " + tc["end"] + ":")
+64 |     let s = subset(tc["base"], tc["begin"], tc["end"])
+   |                                               `- error: value of type 'Auto1' has no subscripts
+65 |     print("Subset:  " + String(s))
+66 |     print("Kaprekar:" + String(tc["kaprekar"]))
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:66:34: error: value of type 'Auto1' has no subscripts
+64 |     let s = subset(tc["base"], tc["begin"], tc["end"])
+65 |     print("Subset:  " + String(s))
+66 |     print("Kaprekar:" + String(tc["kaprekar"]))
+   |                                  `- error: value of type 'Auto1' has no subscripts
+67 |     var sx = 0
+68 |     var valid = true
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:70:17: error: value of type 'Auto1' has no subscripts
+68 |     var valid = true
+69 |     var i = 0
+70 |     while i < tc["kaprekar"].count {
+   |                 `- error: value of type 'Auto1' has no subscripts
+71 |         let k = tc["kaprekar"][i]
+72 |         var found = false
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:71:19: error: value of type 'Auto1' has no subscripts
+69 |     var i = 0
+70 |     while i < tc["kaprekar"].count {
+71 |         let k = tc["kaprekar"][i]
+   |                   `- error: value of type 'Auto1' has no subscripts
+72 |         var found = false
+73 |         while sx < s.count {
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:17:131: error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+15 |         var v = 0
+16 |         while j < digits.count {
+17 |             if String(digits[digits.index(digits.startIndex, offsetBy: j)..<digits.index(digits.startIndex, offsetBy: j + 1)]) == Array(s[i..<i + 1]) {
+   |                                                                                                                                   `- error: cannot convert value of type 'Array<String.Element>' (aka 'Array<Character>') to expected argument type 'String'
+18 |                 v = j
+19 |                 break
+
+/tmp/TestMochiToSwiftcasting-out-nines2507053952/001/main.swift:45:25: error: cannot assign value of type '[Any]' to type '[String]'
+43 |     var b = parseIntBase(begin, base)
+44 |     var e = parseIntBase(end, base)
+45 |     var out: [String] = [Any]()
+   |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+46 |     var k = b
+47 |     while k <= e {

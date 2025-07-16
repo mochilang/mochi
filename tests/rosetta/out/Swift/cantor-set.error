@@ -1,0 +1,105 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:4:23: error: cannot assign value of type '[Any]' to type '[String]'
+ 2 | let width = 81
+ 3 | let height = 5
+ 4 | var lines: [String] = [Any]()
+   |                       |- error: cannot assign value of type '[Any]' to type '[String]'
+   |                       `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 5 | for i in 0..<height {
+ 6 |     var row = ""
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:5:5: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 3 | let height = 5
+ 4 | var lines: [String] = [Any]()
+ 5 | for i in 0..<height {
+   |     `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 6 |     var row = ""
+ 7 |     var j = 0
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:24:20: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+22 |     let lenSeg = frame["len"]
+23 |     let index = frame["index"]
+24 |     let seg = Int((lenSeg / 3))
+   |                    |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                    |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                    `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+25 |     if seg == 0 {
+26 |         continue
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:29:11: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+27 |     }
+28 |     var i = index
+29 |     while i < height {
+   |           |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |           |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |           `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+30 |         var j = start + seg
+31 |         while j < start + 2 * seg {
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:32:19: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+30 |         var j = start + seg
+31 |         while j < start + 2 * seg {
+32 |             lines[i] = setChar(lines[i], j, " ")
+   |                   |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                   |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                   `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+33 |             j = j + 1
+34 |         }
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:32:38: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+30 |         var j = start + seg
+31 |         while j < start + 2 * seg {
+32 |             lines[i] = setChar(lines[i], j, " ")
+   |                                      |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                                      |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                                      `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+33 |             j = j + 1
+34 |         }
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:35:13: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+33 |             j = j + 1
+34 |         }
+35 |         i = i + 1
+   |             |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |             |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |             `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+36 |     }
+37 |     stack = stack + [["start": start, "len": seg, "index": index + 1]]
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:37:60: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+35 |         i = i + 1
+36 |     }
+37 |     stack = stack + [["start": start, "len": seg, "index": index + 1]]
+   |                                                            |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                                                            |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                                                            `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+38 |     stack = stack + [["start": start + seg * 2, "len": seg, "index": index + 1]]
+39 | }
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:37:32: error: cannot convert value of type 'Int?' to expected dictionary value type 'Int'
+35 |         i = i + 1
+36 |     }
+37 |     stack = stack + [["start": start, "len": seg, "index": index + 1]]
+   |                                `- error: cannot convert value of type 'Int?' to expected dictionary value type 'Int'
+38 |     stack = stack + [["start": start + seg * 2, "len": seg, "index": index + 1]]
+39 | }
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:38:32: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+36 |     }
+37 |     stack = stack + [["start": start, "len": seg, "index": index + 1]]
+38 |     stack = stack + [["start": start + seg * 2, "len": seg, "index": index + 1]]
+   |                                |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                                |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                                `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+39 | }
+40 | for line in lines {
+
+/tmp/TestMochiToSwiftcantor-set1652929844/001/main.swift:38:70: error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+36 |     }
+37 |     stack = stack + [["start": start, "len": seg, "index": index + 1]]
+38 |     stack = stack + [["start": start + seg * 2, "len": seg, "index": index + 1]]
+   |                                                                      |- error: value of optional type 'Int?' must be unwrapped to a value of type 'Int'
+   |                                                                      |- note: coalesce using '??' to provide a default when the optional value contains 'nil'
+   |                                                                      `- note: force-unwrap using '!' to abort execution if the optional value contains 'nil'
+39 | }
+40 | for line in lines {

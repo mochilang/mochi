@@ -1,0 +1,64 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:13:9: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 11 |     var bits = ""
+ 12 |     var mask = 32768
+ 13 |     for i in 0..<16 {
+    |         `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 14 |         if u >= mask {
+ 15 |             bits = bits + "1"
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:30:9: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 28 |     var res = 0
+ 29 |     var bit = 1
+ 30 |     for i in 0..<16 {
+    |         `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 31 |         if ua % 2 == 1 && ub % 2 == 1 {
+ 32 |             res = res + bit
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:45:9: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 43 |     var res = 0
+ 44 |     var bit = 1
+ 45 |     for i in 0..<16 {
+    |         `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 46 |         if ua % 2 == 1 || ub % 2 == 1 {
+ 47 |             res = res + bit
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:60:9: warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 58 |     var res = 0
+ 59 |     var bit = 1
+ 60 |     for i in 0..<16 {
+    |         `- warning: immutable value 'i' was never used; consider replacing with '_' or removing it
+ 61 |         let abit = ua % 2
+ 62 |         let bbit = ub % 2
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:73:9: warning: variable 'ua' was never mutated; consider changing to 'let' constant
+ 71 | }
+ 72 | func bit_not(_ a: Int) -> Int {
+ 73 |     var ua = toUnsigned16(a)
+    |         `- warning: variable 'ua' was never mutated; consider changing to 'let' constant
+ 74 |     return 65535 - ua
+ 75 | }
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:112:9: warning: variable 'ua' was never mutated; consider changing to 'let' constant
+110 | }
+111 | func rol(_ a: Int, _ b: Int) -> Int {
+112 |     var ua = toUnsigned16(a)
+    |         `- warning: variable 'ua' was never mutated; consider changing to 'let' constant
+113 |     let left = shl(ua, b)
+114 |     let right = shr(ua, 16 - b)
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:118:9: warning: variable 'ua' was never mutated; consider changing to 'let' constant
+116 | }
+117 | func ror(_ a: Int, _ b: Int) -> Int {
+118 |     var ua = toUnsigned16(a)
+    |         `- warning: variable 'ua' was never mutated; consider changing to 'let' constant
+119 |     let right = shr(ua, b)
+120 |     let left = shl(ua, 16 - b)
+
+/tmp/TestMochiToSwiftbitwise-operations1554210450/001/main.swift:132:16: error: unexpected non-void return value in void function
+130 |     if b < 0 {
+131 |         print("Right operand is negative, but all shifts require an unsigned right operand (shift distance).")
+132 |         return nil
+    |                `- error: unexpected non-void return value in void function
+133 |     }
+134 |     print("shl: " + bin16(shl(a, b)))

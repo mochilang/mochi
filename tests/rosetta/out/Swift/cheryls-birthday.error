@@ -1,0 +1,84 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:37:28: error: cannot assign value of type '[Any]' to type '[Birthday]'
+35 | }
+36 | var choices: [Birthday] = [Birthday(month: 5, day: 15), Birthday(month: 5, day: 16), Birthday(month: 5, day: 19), Birthday(month: 6, day: 17), Birthday(month: 6, day: 18), Birthday(month: 7, day: 14), Birthday(month: 7, day: 16), Birthday(month: 8, day: 14), Birthday(month: 8, day: 15), Birthday(month: 8, day: 17)]
+37 | var filtered: [Birthday] = [Any]()
+   |                            |- error: cannot assign value of type '[Any]' to type '[Birthday]'
+   |                            `- note: arguments to generic parameter 'Element' ('Any' and 'Birthday') are expected to be equal
+38 | for bd in choices {
+39 |     if !monthUnique(&bd, choices) {
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:39:21: error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+37 | var filtered: [Birthday] = [Any]()
+38 | for bd in choices {
+39 |     if !monthUnique(&bd, choices) {
+   |                     `- error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+40 |         filtered = filtered + [bd]
+41 |     }
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:43:29: error: cannot assign value of type '[Any]' to type '[Birthday]'
+41 |     }
+42 | }
+43 | var filtered2: [Birthday] = [Any]()
+   |                             |- error: cannot assign value of type '[Any]' to type '[Birthday]'
+   |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Birthday') are expected to be equal
+44 | for bd in filtered {
+45 |     if !monthWithUniqueDay(&bd, filtered) {
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:45:28: error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+43 | var filtered2: [Birthday] = [Any]()
+44 | for bd in filtered {
+45 |     if !monthWithUniqueDay(&bd, filtered) {
+   |                            `- error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+46 |         filtered2 = filtered2 + [bd]
+47 |     }
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:49:29: error: cannot assign value of type '[Any]' to type '[Birthday]'
+47 |     }
+48 | }
+49 | var filtered3: [Birthday] = [Any]()
+   |                             |- error: cannot assign value of type '[Any]' to type '[Birthday]'
+   |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Birthday') are expected to be equal
+50 | for bd in filtered2 {
+51 |     if dayUnique(&bd, filtered2) {
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:51:18: error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+49 | var filtered3: [Birthday] = [Any]()
+50 | for bd in filtered2 {
+51 |     if dayUnique(&bd, filtered2) {
+   |                  `- error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+52 |         filtered3 = filtered3 + [bd]
+53 |     }
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:55:29: error: cannot assign value of type '[Any]' to type '[Birthday]'
+53 |     }
+54 | }
+55 | var filtered4: [Birthday] = [Any]()
+   |                             |- error: cannot assign value of type '[Any]' to type '[Birthday]'
+   |                             `- note: arguments to generic parameter 'Element' ('Any' and 'Birthday') are expected to be equal
+56 | for bd in filtered3 {
+57 |     if monthUnique(&bd, filtered3) {
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:57:20: error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+55 | var filtered4: [Birthday] = [Any]()
+56 | for bd in filtered3 {
+57 |     if monthUnique(&bd, filtered3) {
+   |                    `- error: cannot pass immutable value as inout argument: 'bd' is a 'let' constant
+58 |         filtered4 = filtered4 + [bd]
+59 |     }
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:26:44: error: cannot pass immutable value as inout argument: 'x' is a 'let' constant
+24 | func monthWithUniqueDay(_ b: inout Birthday, _ list: [Birthday]) -> Bool {
+25 |     for x in list {
+26 |         if x.month == b.month && dayUnique(&x, list) {
+   |                                            `- error: cannot pass immutable value as inout argument: 'x' is a 'let' constant
+27 |             return true
+28 |         }
+
+/tmp/TestMochiToSwiftcheryls-birthday3974641639/001/main.swift:33:9: warning: variable 'months' was never mutated; consider changing to 'let' constant
+31 | }
+32 | func bstr(_ b: inout Birthday) -> String {
+33 |     var months = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+   |         `- warning: variable 'months' was never mutated; consider changing to 'let' constant
+34 |     return months[b.month] + " " + String(b.day)
+35 | }

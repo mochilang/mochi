@@ -1,0 +1,137 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:9:43: error: expected dictionary value type
+  7 |     return String(s[s.index(s.startIndex, offsetBy: i)..<s.index(s.startIndex, offsetBy: s.count)])
+  8 | }
+  9 | func btString(_ s: String) -> [String: any] {
+    |                                           `- error: expected dictionary value type
+ 10 |     s = trimLeftZeros(s)
+ 11 |     var b: [Int] = [Any]()
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:117:9: error: keyword 'is' cannot be used as an identifier here
+115 |     let l = padLeft(label, 7)
+116 |     let bs = padLeft(btToString(b), 12)
+117 |     let is = padLeft(String(btToInt(b)), 7)
+    |         |- error: keyword 'is' cannot be used as an identifier here
+    |         `- note: if this name is unavoidable, use backticks to escape it
+118 |     print(l + " " + bs + " " + is)
+119 | }
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:118:32: error: expected expression after operator
+116 |     let bs = padLeft(btToString(b), 12)
+117 |     let is = padLeft(String(btToInt(b)), 7)
+118 |     print(l + " " + bs + " " + is)
+    |                                `- error: expected expression after operator
+119 | }
+120 | func main() {
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:10:5: error: cannot assign to value: 's' is a 'let' constant
+  8 | }
+  9 | func btString(_ s: String) -> [String: any] {
+ 10 |     s = trimLeftZeros(s)
+    |     `- error: cannot assign to value: 's' is a 'let' constant
+ 11 |     var b: [Int] = [Any]()
+ 12 |     var i = s.count - 1
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:11:20: error: cannot assign value of type '[Any]' to type '[Int]'
+  9 | func btString(_ s: String) -> [String: any] {
+ 10 |     s = trimLeftZeros(s)
+ 11 |     var b: [Int] = [Any]()
+    |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 12 |     var i = s.count - 1
+ 13 |     while i >= 0 {
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:27:28: error: unexpected non-void return value in void function
+ 25 |                 }
+ 26 |                 else {
+ 27 |                     return ["bt": [Any](), "ok": false]
+    |                            |- error: unexpected non-void return value in void function
+    |                            `- note: did you mean to add a return type?
+ 28 |                 }
+ 29 |             }
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:33:12: error: unexpected non-void return value in void function
+ 31 |         i = i - 1
+ 32 |     }
+ 33 |     return ["bt": b, "ok": true]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 34 | }
+ 35 | func btToString(_ b: [Int]) -> String {
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:60:16: error: cannot convert return expression of type '[Any]' to return type '[Int]'
+ 58 | func btInt(_ i: Int) -> [Int] {
+ 59 |     if i == 0 {
+ 60 |         return [Any]()
+    |                |- error: cannot convert return expression of type '[Any]' to return type '[Int]'
+    |                `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 61 |     }
+ 62 |     var n = i
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:63:20: error: cannot assign value of type '[Any]' to type '[Int]'
+ 61 |     }
+ 62 |     var n = i
+ 63 |     var b: [Int] = [Any]()
+    |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 64 |     while n != 0 {
+ 65 |         var m = n % 3
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:93:20: error: cannot assign value of type '[Any]' to type '[Int]'
+ 91 | }
+ 92 | func btNeg(_ b: [Int]) -> [Int] {
+ 93 |     var r: [Int] = [Any]()
+    |                    |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                    `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 94 |     var i = 0
+ 95 |     while i < b.count {
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:115:9: warning: initialization of immutable value 'l' was never used; consider replacing with assignment to '_' or removing it
+113 | }
+114 | func show(_ label: String, _ b: [Int]) {
+115 |     let l = padLeft(label, 7)
+    |         `- warning: initialization of immutable value 'l' was never used; consider replacing with assignment to '_' or removing it
+116 |     let bs = padLeft(btToString(b), 12)
+117 |     let is = padLeft(String(btToInt(b)), 7)
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:116:9: warning: initialization of immutable value 'bs' was never used; consider replacing with assignment to '_' or removing it
+114 | func show(_ label: String, _ b: [Int]) {
+115 |     let l = padLeft(label, 7)
+116 |     let bs = padLeft(btToString(b), 12)
+    |         `- warning: initialization of immutable value 'bs' was never used; consider replacing with assignment to '_' or removing it
+117 |     let is = padLeft(String(btToInt(b)), 7)
+118 |     print(l + " " + bs + " " + is)
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:121:9: warning: constant 'ares' inferred to have type '()', which may be unexpected
+119 | }
+120 | func main() {
+121 |     let ares = btString("+-0++0+")
+    |         |- warning: constant 'ares' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+122 |     let a = ares["bt"]
+123 |     let b = btInt(-436)
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:122:17: error: value of type '()' has no subscripts
+120 | func main() {
+121 |     let ares = btString("+-0++0+")
+122 |     let a = ares["bt"]
+    |                 `- error: value of type '()' has no subscripts
+123 |     let b = btInt(-436)
+124 |     let cres = btString("+-++-")
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:124:9: warning: constant 'cres' inferred to have type '()', which may be unexpected
+122 |     let a = ares["bt"]
+123 |     let b = btInt(-436)
+124 |     let cres = btString("+-++-")
+    |         |- warning: constant 'cres' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+125 |     let c = cres["bt"]
+126 |     show("a:", a)
+
+/tmp/TestMochiToSwiftbalanced-ternary1020078019/001/main.swift:125:17: error: value of type '()' has no subscripts
+123 |     let b = btInt(-436)
+124 |     let cres = btString("+-++-")
+125 |     let c = cres["bt"]
+    |                 `- error: value of type '()' has no subscripts
+126 |     show("a:", a)
+127 |     show("b:", b)

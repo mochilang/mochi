@@ -1,0 +1,17 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftblum-integer319365263/001/main.swift:35:9: warning: variable 'inc' was never mutated; consider changing to 'let' constant
+ 33 |         return 5
+ 34 |     }
+ 35 |     var inc = [4, 2, 4, 2, 4, 6, 2, 6]
+    |         `- warning: variable 'inc' was never mutated; consider changing to 'let' constant
+ 36 |     var k = 7
+ 37 |     var i = 0
+
+/tmp/TestMochiToSwiftblum-integer319365263/001/main.swift:77:23: error: cannot assign value of type '[Any]' to type '[Int]'
+ 75 | }
+ 76 | func main() {
+ 77 |     var blum: [Int] = [Any]()
+    |                       |- error: cannot assign value of type '[Any]' to type '[Int]'
+    |                       `- note: arguments to generic parameter 'Element' ('Any' and 'Int') are expected to be equal
+ 78 |     var counts = [0, 0, 0, 0]
+ 79 |     var digits = [1, 3, 7, 9]

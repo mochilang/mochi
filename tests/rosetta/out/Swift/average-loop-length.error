@@ -1,0 +1,49 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:22:9: warning: variable 'y' was never mutated; consider changing to 'let' constant
+ 20 | }
+ 21 | func fmtF(_ x: Double) -> String {
+ 22 |     var y = floorf(x * 10000.0 + 0.5) / 10000.0
+    |         `- warning: variable 'y' was never mutated; consider changing to 'let' constant
+ 23 |     var s = String(y)
+ 24 |     var dot = indexOf(s, ".")
+
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:24:9: warning: variable 'dot' was never mutated; consider changing to 'let' constant
+ 22 |     var y = floorf(x * 10000.0 + 0.5) / 10000.0
+ 23 |     var s = String(y)
+ 24 |     var dot = indexOf(s, ".")
+    |         `- warning: variable 'dot' was never mutated; consider changing to 'let' constant
+ 25 |     if dot == 0 - 1 {
+ 26 |         s = s + ".0000"
+
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:62:31: error: cannot assign value of type '[Any]' to type '[Bool]'
+ 60 |     var t = 0
+ 61 |     while t < tests {
+ 62 |         var visited: [Bool] = [Any]()
+    |                               |- error: cannot assign value of type '[Any]' to type '[Bool]'
+    |                               `- note: arguments to generic parameter 'Element' ('Any' and 'Bool') are expected to be equal
+ 63 |         var i = 0
+ 64 |         while i < n {
+
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:77:28: error: cannot convert value of type 'Int' to expected argument type 'Double'
+ 75 |         t = t + 1
+ 76 |     }
+ 77 |     return (Double(sum)) / tests
+    |                            `- error: cannot convert value of type 'Int' to expected argument type 'Double'
+ 78 | }
+ 79 | func ana(_ n: Int) -> Double {
+
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:80:9: warning: variable 'nn' was never mutated; consider changing to 'let' constant
+ 78 | }
+ 79 | func ana(_ n: Int) -> Double {
+ 80 |     var nn = Double(n)
+    |         `- warning: variable 'nn' was never mutated; consider changing to 'let' constant
+ 81 |     var term = 1.0
+ 82 |     var sum = 1.0
+
+/tmp/TestMochiToSwiftaverage-loop-length4071622288/001/main.swift:100:13: warning: variable 'line' was never mutated; consider changing to 'let' constant
+ 98 |         let b = ana(n)
+ 99 |         let err = absf(a - b) / b * 100.0
+100 |         var line = padInt(n, 3) + "  " + padFloat(a, 9) + "  " + padFloat(b, 12) + "  (" + padFloat(err, 6) + "%)"
+    |             `- warning: variable 'line' was never mutated; consider changing to 'let' constant
+101 |         print(line)
+102 |         n = n + 1

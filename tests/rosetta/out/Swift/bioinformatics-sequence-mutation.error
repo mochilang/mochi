@@ -1,0 +1,139 @@
+run error: exit status 1
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:15:42: error: expected element type
+ 13 |     return res + s
+ 14 | }
+ 15 | func makeSeq(_ s: Int, _ le: Int) -> [any] {
+    |                                          `- error: expected element type
+ 16 |     let bases = "ACGT"
+ 17 |     var out = ""
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:28:57: error: expected element type
+ 26 |     return [s, out]
+ 27 | }
+ 28 | func mutate(_ s: Int, _ dna: String, _ w: [Int]) -> [any] {
+    |                                                         `- error: expected element type
+ 29 |     let bases = "ACGT"
+ 30 |     let le = dna.count
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:21:9: error: cannot assign to value: 's' is a 'let' constant
+ 19 |     while i < le {
+ 20 |         var r = randInt(s, 4)
+ 21 |         s = r[0]
+    |         `- error: cannot assign to value: 's' is a 'let' constant
+ 22 |         let idx = Int(r[1])
+ 23 |         out = out + String(bases[bases.index(bases.startIndex, offsetBy: idx)..<bases.index(bases.startIndex, offsetBy: idx + 1)])
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:26:12: error: unexpected non-void return value in void function
+ 24 |         i = i + 1
+ 25 |     }
+ 26 |     return [s, out]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 27 | }
+ 28 | func mutate(_ s: Int, _ dna: String, _ w: [Int]) -> [any] {
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:32:5: error: cannot assign to value: 's' is a 'let' constant
+ 30 |     let le = dna.count
+ 31 |     var r = randInt(s, le)
+ 32 |     s = r[0]
+    |     `- error: cannot assign to value: 's' is a 'let' constant
+ 33 |     let p = Int(r[1])
+ 34 |     r = randInt(s, 300)
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:35:5: error: cannot assign to value: 's' is a 'let' constant
+ 33 |     let p = Int(r[1])
+ 34 |     r = randInt(s, 300)
+ 35 |     s = r[0]
+    |     `- error: cannot assign to value: 's' is a 'let' constant
+ 36 |     let x = Int(r[1])
+ 37 |     var arr: [String] = [Any]()
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:37:25: error: cannot assign value of type '[Any]' to type '[String]'
+ 35 |     s = r[0]
+ 36 |     let x = Int(r[1])
+ 37 |     var arr: [String] = [Any]()
+    |                         |- error: cannot assign value of type '[Any]' to type '[String]'
+    |                         `- note: arguments to generic parameter 'Element' ('Any' and 'String') are expected to be equal
+ 38 |     var i = 0
+ 39 |     while i < le {
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:45:9: error: cannot assign to value: 's' is a 'let' constant
+ 43 |     if x < w[0] {
+ 44 |         r = randInt(s, 4)
+ 45 |         s = r[0]
+    |         `- error: cannot assign to value: 's' is a 'let' constant
+ 46 |         let idx = Int(r[1])
+ 47 |         let b = String(bases[bases.index(bases.startIndex, offsetBy: idx)..<bases.index(bases.startIndex, offsetBy: idx + 1)])
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:62:9: error: cannot assign to value: 's' is a 'let' constant
+ 60 |     else {
+ 61 |         r = randInt(s, 4)
+ 62 |         s = r[0]
+    |         `- error: cannot assign to value: 's' is a 'let' constant
+ 63 |         let idx2 = Int(r[1])
+ 64 |         let b = String(bases[bases.index(bases.startIndex, offsetBy: idx2)..<bases.index(bases.startIndex, offsetBy: idx2 + 1)])
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:80:12: error: unexpected non-void return value in void function
+ 78 |         i = i + 1
+ 79 |     }
+ 80 |     return [s, out]
+    |            |- error: unexpected non-void return value in void function
+    |            `- note: did you mean to add a return type?
+ 81 | }
+ 82 | func prettyPrint(_ dna: String, _ rowLen: Int) {
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:91:52: error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 89 |             k = le
+ 90 |         }
+ 91 |         print(padLeft(String(i), 5) + ": " + Array(dna[i..<k]))
+    |                                                    `- error: 'subscript(_:)' is unavailable: cannot subscript String with an integer range, use a String.Index range instead.
+ 92 |         i = i + rowLen
+ 93 |     }
+
+Swift.String.subscript:3:10: note: 'subscript(_:)' has been explicitly marked unavailable here
+1 | struct String {
+2 | @available(*, unavailable, message: "cannot subscript String with an integer range, use a String.Index range instead.")
+3 |   public subscript<R>(bounds: R) -> String where R : RangeExpression, R.Bound == Int { get }}
+  |          `- note: 'subscript(_:)' has been explicitly marked unavailable here
+4 | 
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:136:9: warning: variable 'res' inferred to have type '()', which may be unexpected
+134 | func main() {
+135 |     var seed = 1
+136 |     var res = makeSeq(seed, 250)
+    |         |- warning: variable 'res' inferred to have type '()', which may be unexpected
+    |         `- note: add an explicit type annotation to silence this warning
+137 |     seed = res[0]
+138 |     var dna = String(res[1])
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:137:15: error: value of type '()' has no subscripts
+135 |     var seed = 1
+136 |     var res = makeSeq(seed, 250)
+137 |     seed = res[0]
+    |               `- error: value of type '()' has no subscripts
+138 |     var dna = String(res[1])
+139 |     prettyPrint(dna, 50)
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:138:25: error: value of type '()' has no subscripts
+136 |     var res = makeSeq(seed, 250)
+137 |     seed = res[0]
+138 |     var dna = String(res[1])
+    |                         `- error: value of type '()' has no subscripts
+139 |     prettyPrint(dna, 50)
+140 |     let muts = 10
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:148:19: error: value of type '()' has no subscripts
+146 |     while i < muts {
+147 |         res = mutate(seed, dna, w)
+148 |         seed = res[0]
+    |                   `- error: value of type '()' has no subscripts
+149 |         dna = String(res[1])
+150 |         i = i + 1
+
+/tmp/TestMochiToSwiftbioinformatics-sequence-mutation1909277802/001/main.swift:149:25: error: value of type '()' has no subscripts
+147 |         res = mutate(seed, dna, w)
+148 |         seed = res[0]
+149 |         dna = String(res[1])
+    |                         `- error: value of type '()' has no subscripts
+150 |         i = i + 1
+151 |     }
