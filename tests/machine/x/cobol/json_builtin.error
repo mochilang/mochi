@@ -1,2 +1,2 @@
-/tmp/TestCobolCompiler_VMValid_Goldenjson_builtin1146274421/001/prog.cob:12: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenjson_builtin1146274421/001/prog.cob:12: error: 'FN_JSON' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenjson_builtin2512328428/001/prog.cob:12: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenjson_builtin2512328428/001/prog.cob:12: error: 'FN_JSON' is not defined

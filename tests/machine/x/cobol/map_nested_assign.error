@@ -1,4 +1,3 @@
-/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign676117948/001/prog.cob:7: error: syntax error, unexpected DATA
-/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign676117948/001/prog.cob:8: error: level number must begin with 01 or 77
-/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign676117948/001/prog.cob:11: error: 'DATA-OUTER-INNER' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign676117948/001/prog.cob:12: error: 'DATA-OUTER-INNER' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign449907739/001/prog.cob:7: error: syntax error, unexpected DATA
+/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign449907739/001/prog.cob:8: error: level number must begin with 01 or 77
+/tmp/TestCobolCompiler_VMValid_Goldenmap_nested_assign449907739/001/prog.cob:11: error: 'DATA-OUTER-INNER' is not defined

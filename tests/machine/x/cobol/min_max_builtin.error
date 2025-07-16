@@ -1,6 +1,6 @@
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:13: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:14: error: 'FN-MIN-RES' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:15: error: syntax error, unexpected USING
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:16: error: 'FN-MAX-RES' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:13: error: 'FN_MIN' is not defined
-/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin1962718143/001/prog.cob:15: error: 'FN_MAX' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:13: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:14: error: 'FN-MIN-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:15: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:16: error: 'FN-MAX-RES' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:13: error: 'FN_MIN' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenmin_max_builtin2452765195/001/prog.cob:15: error: 'FN_MAX' is not defined

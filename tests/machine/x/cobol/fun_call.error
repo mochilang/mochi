@@ -1,0 +1,5 @@
+/tmp/TestCobolCompiler_VMValid_Goldenfun_call102415653/001/prog.cob:10: error: syntax error, unexpected USING
+/tmp/TestCobolCompiler_VMValid_Goldenfun_call102415653/001/prog.cob: in paragraph 'FN_ADD':
+/tmp/TestCobolCompiler_VMValid_Goldenfun_call102415653/001/prog.cob:15: error: syntax error, unexpected PROCEDURE
+/tmp/TestCobolCompiler_VMValid_Goldenfun_call102415653/001/prog.cob:16: error: 'A' is not defined
+/tmp/TestCobolCompiler_VMValid_Goldenfun_call102415653/001/prog.cob:16: error: 'B' is not defined
